@@ -16,9 +16,9 @@ exports[`QuickLabelPanel should render correctly 1`] = `
     <span>
       2
        
-      <Connect(Translate)>
+      <Translate>
         selected
-      </Connect(Translate)>
+      </Translate>
     </span>
     <button
       className="btn btn-default btn-header btn-toggle-on"
@@ -31,9 +31,9 @@ exports[`QuickLabelPanel should render correctly 1`] = `
       <span
         className="btn-label"
       >
-        <Connect(Translate)>
+        <Translate>
           Auto-save
-        </Connect(Translate)>
+        </Translate>
       </span>
     </button>
     <button
@@ -56,16 +56,16 @@ exports[`QuickLabelPanel should render correctly 1`] = `
       >
         <div>
           <div>
-            <Connect(Translate)
+            <Translate
               translationKey="Label your collection note"
             >
               Note: Make the sample set of documents for each topic diverse and representative. For example, use various methods to find sample documents and don't just search for the term "education" to find documents for the topic "Education".
-            </Connect(Translate)>
+            </Translate>
             <br />
             <br />
-            <Connect(Translate)>
+            <Translate>
               Return to the thesaurus page when you finished labeling to start learning.
-            </Connect(Translate)>
+            </Translate>
           </div>
         </div>
       </Notice>
@@ -80,7 +80,11 @@ exports[`QuickLabelPanel should render correctly 1`] = `
             className="title"
           >
             <label>
-              Opts
+              <Translate
+                context="System"
+              >
+                Opts
+              </Translate>
             </label>
           </li>
           <li

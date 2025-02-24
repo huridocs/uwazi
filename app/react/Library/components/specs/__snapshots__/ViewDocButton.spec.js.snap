@@ -10,9 +10,9 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
     icon="angle-right"
   />
    
-  <Connect(Translate)>
+  <Translate>
     View
-  </Connect(Translate)>
+  </Translate>
 </Connect(I18NLink)>
 `;
 
@@ -26,9 +26,9 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
     icon="angle-right"
   />
    
-  <Connect(Translate)>
+  <Translate>
     View
-  </Connect(Translate)>
+  </Translate>
 </Connect(I18NLink)>
 `;
 
@@ -42,9 +42,9 @@ exports[`ViewDocButton when targetReference is provided should render view butto
     icon="angle-right"
   />
    
-  <Connect(Translate)>
+  <Translate>
     View
-  </Connect(Translate)>
+  </Translate>
 </Connect(I18NLink)>
 `;
 
@@ -58,8 +58,8 @@ exports[`ViewDocButton when targetReference is provided should render view butto
     icon="angle-right"
   />
    
-  <Connect(Translate)>
+  <Translate>
     View
-  </Connect(Translate)>
+  </Translate>
 </Connect(I18NLink)>
 `;

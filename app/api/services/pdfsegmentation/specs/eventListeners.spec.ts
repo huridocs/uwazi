@@ -1,4 +1,5 @@
 import { applicationEventsBus } from 'api/eventsbus';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import db from 'api/utils/testing_db';
 import { registerEventListeners } from '../eventListeners';
@@ -6,11 +7,11 @@ import { SegmentationModel } from '../segmentationModel';
 
 beforeAll(async () => {
   registerEventListeners(applicationEventsBus);
-  await db.setupFixturesAndContext({});
+  await testingEnvironment.setUp({});
 });
 
 afterAll(async () => {
-  await db.disconnect();
+  await testingEnvironment.tearDown();
 });
 
 describe(`On ${FilesDeletedEvent.name}`, () => {

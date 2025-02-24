@@ -10,7 +10,7 @@ import mongoose, {
 } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { inspect } from 'util';
-import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
+import { MongooseModelWrapper } from './MongooseModelWrapper';
 import { UpdateLogger, createUpdateLogHelper } from './logHelper';
 import { ModelBulkWriteStream } from './modelBulkWriteStream';
 
@@ -35,7 +35,7 @@ export type UwaziUpdateOptions<T> = (UpdateOptions & Omit<MongooseQueryOptions<T
 export class OdmModel<T> implements SyncDBDataSource<T, T> {
   private collectionName: string;
 
-  db: MultiTenantMongooseModel<T>;
+  db: MongooseModelWrapper<T>;
 
   logHelper: UpdateLogger<T>;
 
@@ -48,7 +48,7 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
     options: { optimisticLock: boolean } = { optimisticLock: false }
   ) {
     this.collectionName = collectionName;
-    this.db = new MultiTenantMongooseModel<T>(collectionName, schema);
+    this.db = new MongooseModelWrapper<T>(collectionName, schema);
     this.logHelper = logHelper;
     this.options = options;
   }
@@ -109,9 +109,9 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
   }
 
   async create(data: Partial<DataType<T>>) {
-    const saved = await this.db.create(data);
-    await this.logHelper.upsertLogOne(saved);
-    return saved.toObject<WithId<T>>();
+    const saved = await this.db.create([data]);
+    await this.logHelper.upsertLogOne(saved[0]);
+    return saved[0].toObject<WithId<T>>();
   }
 
   async saveMultiple(
@@ -130,7 +130,7 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
       throw Error('A document was not updated!');
     }
 
-    const saved = updated.concat(created);
+    const saved = created.concat(updated);
     await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
     return saved.map(s => s.toObject<WithId<T>>());
   }

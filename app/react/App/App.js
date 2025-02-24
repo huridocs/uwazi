@@ -1,16 +1,17 @@
 /* eslint-disable import/no-named-as-default */
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router';
 import { useAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
-import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
 import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
+import { TranslateModal, t } from 'app/I18N';
+import { inlineEditAtom } from 'V2/atoms';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
@@ -26,6 +27,7 @@ import 'flowbite';
 
 const App = ({ customParams }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
   const [settings, setSettings] = useAtom(settingsAtom);
 
@@ -92,7 +94,6 @@ const App = ({ customParams }) => {
         <main className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
             <Confirm {...confirmOptions} />
-            <TranslateForm />
             <Outlet />
             <GoogleAnalytics />
             <Matomo />
@@ -101,6 +102,7 @@ const App = ({ customParams }) => {
         </main>
       </div>
       <NotificationsContainer />
+      {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>
   );
 };

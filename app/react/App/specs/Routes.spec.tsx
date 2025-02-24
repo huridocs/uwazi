@@ -9,9 +9,12 @@ import { LibraryTable } from 'app/Library/LibraryTable';
 import { PageView } from 'app/Pages/PageView';
 import { ViewerRoute } from 'app/Viewer/ViewerRoute';
 import { LibraryMap } from 'app/Library/LibraryMap';
+import LibraryRoot from 'app/Library/Library';
 
 let settings: ClientSettings;
 let userId: string;
+
+jest.mock('app/appRoutes');
 
 describe('Routes', () => {
   beforeEach(() => {
@@ -54,8 +57,12 @@ describe('Routes', () => {
           "/library/map/?searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032')";
         const { element, parameters } = getIndexElement(settings, undefined);
         expect(parameters).toBeUndefined();
-        expect(element).toMatchObject(<LibraryMap />);
-        expect(element.props.params).toMatchObject({
+        expect(element).toMatchObject(
+          <LibraryRoot>
+            <LibraryMap />
+          </LibraryRoot>
+        );
+        expect(element.props.children.props.params).toMatchObject({
           q: "(searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032'))",
         });
       });
@@ -76,7 +83,11 @@ describe('Routes', () => {
     describe('no logged in user', () => {
       it('should render the default library view', () => {
         const { element, parameters } = getIndexElement(settings, undefined);
-        expect(element).toMatchObject(<LibraryTable />);
+        expect(element).toMatchObject(
+          <LibraryRoot>
+            <LibraryTable />
+          </LibraryRoot>
+        );
         expect(parameters).toBeUndefined();
       });
     });

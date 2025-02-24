@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-export class I18N extends Component {
+class I18NComponent extends Component {
   render() {
     const dictionary = this.props.dictionaries.toJS().find(d => d.locale === this.props.locale) || {
       values: {},
@@ -13,7 +13,7 @@ export class I18N extends Component {
   }
 }
 
-I18N.propTypes = {
+I18NComponent.propTypes = {
   children: PropTypes.string,
   locale: PropTypes.string,
   dictionaries: PropTypes.object,
@@ -21,4 +21,4 @@ I18N.propTypes = {
 
 const mapStateToProps = ({ locale, dictionaries }) => ({ locale, dictionaries });
 
-export default connect(mapStateToProps)(I18N);
+export const I18N = connect(mapStateToProps)(I18NComponent);

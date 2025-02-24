@@ -3,9 +3,7 @@ import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Provider } from 'react-redux';
 import { Button, Table } from 'V2/Components/UI';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {
@@ -225,17 +223,15 @@ type Story = StoryObj<StoryProps>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <StoryComponent
-        tableData={args.tableData}
-        columnType={args.columnType}
-        dnd={{ enable: args.dnd?.enable, disableEditingGroups: args.dnd?.disableEditingGroups }}
-        enableSelections={args.enableSelections}
-        defaultSorting={args.defaultSorting}
-        sortingFn={args.sortingFn}
-        actionFn={args.actionFn}
-      />
-    </Provider>
+    <StoryComponent
+      tableData={args.tableData}
+      columnType={args.columnType}
+      dnd={{ enable: args.dnd?.enable, disableEditingGroups: args.dnd?.disableEditingGroups }}
+      enableSelections={args.enableSelections}
+      defaultSorting={args.defaultSorting}
+      sortingFn={args.sortingFn}
+      actionFn={args.actionFn}
+    />
   ),
 };
 

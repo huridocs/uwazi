@@ -110,7 +110,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
   ).create(flattenTranslations(translation));
 };
 
-export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
+export const upsertTranslationEntries = async (translations: CreateTranslationsData[]) => {
   const transactionManager = DefaultTransactionManager();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
@@ -120,12 +120,15 @@ export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
       DefaultSettingsDataSource(transactionManager)
     ),
     transactionManager
-  ).upsert(
-    translations.reduce<CreateTranslationsData[]>(
-      (flattened, t) => flattened.concat(flattenTranslations(t)),
-      []
-    )
+  ).upsert(translations);
+};
+
+export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
+  const translationsToUpsert = translations.reduce<CreateTranslationsData[]>(
+    (flattened, t) => flattened.concat(flattenTranslations(t)),
+    []
   );
+  return upsertTranslationEntries(translationsToUpsert);
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
@@ -159,10 +162,11 @@ export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) =>
     language
   );
 
+export const getTranslationsEntriesV2 = async () =>
+  new GetTranslationsService(DefaultTranslationsDataSource(DefaultTransactionManager())).getAll();
+
 export const getTranslationsV2 = async () =>
-  resultsToV1TranslationType(
-    new GetTranslationsService(DefaultTranslationsDataSource(DefaultTransactionManager())).getAll()
-  );
+  resultsToV1TranslationType(await getTranslationsEntriesV2());
 
 export const updateContextV2 = async (
   context: CreateTranslationsData['context'],

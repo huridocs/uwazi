@@ -17,9 +17,9 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
   >
     <div>
       <h3>
-        <Connect(Translate)>
+        <Translate>
           Semantic search
-        </Connect(Translate)>
+        </Translate>
         :
          
         <Connect(SearchDescription)
@@ -36,9 +36,9 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
           icon="pencil-alt"
         />
          
-        <Connect(Translate)>
+        <Translate>
           Edit all documents matching this criteria
-        </Connect(Translate)>
+        </Translate>
       </button>
     </div>
     <div
@@ -51,9 +51,9 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
           0
         </b>
          
-        <Connect(Translate)>
+        <Translate>
           documents
-        </Connect(Translate)>
+        </Translate>
       </span>
     </div>
     <RowList>
@@ -66,16 +66,16 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
               className="metadata-type-text"
             >
               <div>
-                <Connect(Translate)>
+                <Translate>
                   Sentences above threshold
-                </Connect(Translate)>
+                </Translate>
               </div>
               <div>
                 2
                  
-                <Connect(Translate)>
+                <Translate>
                   out of
-                </Connect(Translate)>
+                </Translate>
                  
                  (
                 50.00
@@ -117,16 +117,16 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
               className="metadata-type-text"
             >
               <div>
-                <Connect(Translate)>
+                <Translate>
                   Sentences above threshold
-                </Connect(Translate)>
+                </Translate>
               </div>
               <div>
                 1
                  
-                <Connect(Translate)>
+                <Translate>
                   out of
-                </Connect(Translate)>
+                </Translate>
                  
                  (
                 40.00
@@ -169,18 +169,18 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
          
       </b>
        
-      <Connect(Translate)>
+      <Translate>
         of
-      </Connect(Translate)>
+      </Translate>
       <b>
          
         0
          
       </b>
        
-      <Connect(Translate)>
+      <Translate>
         documents
-      </Connect(Translate)>
+      </Translate>
     </p>
     <div
       className="col-sm-12 text-center documents-counter"
@@ -196,9 +196,9 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
           30
         </span>
          
-        <Connect(Translate)>
+        <Translate>
           x more
-        </Connect(Translate)>
+        </Translate>
       </button>
     </div>
   </main>
@@ -215,9 +215,9 @@ exports[`SemanticSearchResults when the search is empty should render not found 
   className="row panels-layout"
 >
   <p>
-    <Connect(Translate)>
+    <Translate>
       Search not found
-    </Connect(Translate)>
+    </Translate>
   </p>
   <HelmetWrapper
     defer={true}

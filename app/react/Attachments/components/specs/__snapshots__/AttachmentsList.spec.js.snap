@@ -23,9 +23,9 @@ exports[`AttachmentsList When parent is Target Document should treat all Attachm
       }
     >
       <h2>
-        <Connect(Translate)>
+        <Translate>
           Supporting files
-        </Connect(Translate)>
+        </Translate>
       </h2>
     </Connect(NeedAuthorization)>
   </div>
@@ -58,9 +58,9 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
       }
     >
       <h2>
-        <Connect(Translate)>
+        <Translate>
           Supporting files
-        </Connect(Translate)>
+        </Translate>
       </h2>
     </Connect(NeedAuthorization)>
     <Connect(NeedAuthorization)
@@ -117,9 +117,9 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
       }
     >
       <h2>
-        <Connect(Translate)>
+        <Translate>
           Supporting files
-        </Connect(Translate)>
+        </Translate>
       </h2>
     </Connect(NeedAuthorization)>
     <Connect(NeedAuthorization)
@@ -176,9 +176,9 @@ exports[`AttachmentsList when files is empty should render nothing if user not l
       }
     >
       <h2>
-        <Connect(Translate)>
+        <Translate>
           Supporting files
-        </Connect(Translate)>
+        </Translate>
       </h2>
     </Connect(NeedAuthorization)>
     <Connect(NeedAuthorization)
@@ -235,9 +235,9 @@ exports[`AttachmentsList when it is read only should not display the upload butt
       }
     >
       <h2>
-        <Connect(Translate)>
+        <Translate>
           Supporting files
-        </Connect(Translate)>
+        </Translate>
       </h2>
     </Connect(NeedAuthorization)>
   </div>

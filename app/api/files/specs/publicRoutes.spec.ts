@@ -1,3 +1,4 @@
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
@@ -9,7 +10,6 @@ import { setupTestUploadedPaths, storage } from 'api/files';
 import { search } from 'api/search';
 import mailer from 'api/utils/mailer';
 import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
-import db from 'api/utils/testing_db';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { routes } from '../jsRoutes';
@@ -35,11 +35,11 @@ describe('public routes', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
     await setupTestUploadedPaths();
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST /api/public', () => {
     it('should create the entity and store the files', async () => {

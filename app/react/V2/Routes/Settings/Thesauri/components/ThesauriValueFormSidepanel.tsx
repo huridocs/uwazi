@@ -4,8 +4,8 @@ import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { isEmpty, last } from 'lodash';
 import { Translate } from 'app/I18N';
-import { InputField, Select } from 'app/V2/Components/Forms';
-import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
+import { InputField, Select } from 'V2/Components/Forms';
+import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusRow } from './TableComponents';
 

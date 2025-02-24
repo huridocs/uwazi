@@ -51,17 +51,17 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
         size="2x"
       />
       <p>
-        <Connect(Translate)>
+        <Translate>
           Warning: you are editing multiple entities. Fields marked with a
-        </Connect(Translate)>
+        </Translate>
          
         <Connect(Icon)
           icon="exclamation-triangle"
         />
          
-        <Connect(Translate)>
+        <Translate>
           will be updated with the same value.
-        </Connect(Translate)>
+        </Translate>
       </p>
     </div>
     <Connect(MetadataForm)
@@ -102,7 +102,11 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
       <span
         className="btn-label"
       >
-        Cancel
+        <Translate
+          context="System"
+        >
+          Cancel
+        </Translate>
       </span>
     </button>
     <button
@@ -116,7 +120,11 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
       <span
         className="btn-label"
       >
-        Save
+        <Translate
+          context="System"
+        >
+          Save
+        </Translate>
       </span>
     </button>
   </div>
@@ -153,17 +161,17 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
         size="2x"
       />
       <p>
-        <Connect(Translate)>
+        <Translate>
           Warning: you are editing multiple entities. Fields marked with a
-        </Connect(Translate)>
+        </Translate>
          
         <Connect(Icon)
           icon="exclamation-triangle"
         />
          
-        <Connect(Translate)>
+        <Translate>
           will be updated with the same value.
-        </Connect(Translate)>
+        </Translate>
       </p>
     </div>
     <Connect(MetadataForm)
@@ -215,7 +223,11 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
       <span
         className="btn-label"
       >
-        Cancel
+        <Translate
+          context="System"
+        >
+          Cancel
+        </Translate>
       </span>
     </button>
     <button
@@ -229,7 +241,11 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
       <span
         className="btn-label"
       >
-        Save
+        <Translate
+          context="System"
+        >
+          Save
+        </Translate>
       </span>
     </button>
   </div>

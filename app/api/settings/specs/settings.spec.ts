@@ -1,6 +1,7 @@
+import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import db from 'api/utils/testing_db';
-import translations from 'api/i18n/translations';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Settings } from 'shared/types/settingsType';
 import settings from '../settings';
 import fixtures, { linkFixtures, newLinks } from './fixtures';
@@ -9,11 +10,11 @@ describe('settings', () => {
   beforeEach(async () => {
     jest.restoreAllMocks();
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('save()', () => {
@@ -366,7 +367,7 @@ describe('settings', () => {
 
   describe('getLinks', () => {
     it('should return the links', async () => {
-      await db.setupFixturesAndContext(linkFixtures);
+      await testingEnvironment.setUp(linkFixtures);
       const result = await settings.getLinks();
       expect(result).toEqual(linkFixtures.settings?.[0].links);
     });
@@ -374,7 +375,7 @@ describe('settings', () => {
 
   describe('saveLinks', () => {
     it('should save the links', async () => {
-      await db.setupFixturesAndContext(linkFixtures);
+      await testingEnvironment.setUp(fixtures);
       await settings.saveLinks(newLinks);
       const result = await settings.getLinks();
       expect(result).toEqual(newLinks);

@@ -1,4 +1,5 @@
 /* eslint-disable max-lines,max-statements */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
@@ -17,11 +18,11 @@ describe('validateEntity', () => {
   beforeEach(async () => {
     jest.spyOn(entitiesIndex, 'updateMapping').mockImplementation(async () => Promise.resolve());
     //@ts-ignore
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('validateEntity', () => {

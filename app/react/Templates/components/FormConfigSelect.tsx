@@ -64,7 +64,7 @@ const FormConfigSelectComponent = ({
       )
       .map((thesaurus: ThesaurusSchema) => ({
         ...thesaurus,
-        name: t(thesaurus._id, thesaurus.name, null, false),
+        name: t(thesaurus._id!.toString(), thesaurus.name, null, false),
       })),
     'name'
   );

@@ -59,9 +59,9 @@ exports[`DocumentResults render should render results summary and snippets above
       <dt
         className="item-header"
       >
-        <Connect(Translate)>
+        <Translate>
           Threshold
-        </Connect(Translate)>
+        </Translate>
          
         30.00
          %
@@ -73,9 +73,21 @@ exports[`DocumentResults render should render results summary and snippets above
           <NumericRangeSlide
             delay={200}
             max={1}
-            maxLabel="Precision"
+            maxLabel={
+              <Translate
+                context="System"
+              >
+                Precision
+              </Translate>
+            }
             min={0.3}
-            minLabel="Exploration"
+            minLabel={
+              <Translate
+                context="System"
+              >
+                Exploration
+              </Translate>
+            }
             model=".threshold"
             step={0.01}
           />
@@ -86,9 +98,9 @@ exports[`DocumentResults render should render results summary and snippets above
       className="metadata-type-numeric"
     >
       <dt>
-        <Connect(Translate)>
+        <Translate>
           Number of sentences above threshold
-        </Connect(Translate)>
+        </Translate>
       </dt>
       <dd>
         2
@@ -98,9 +110,9 @@ exports[`DocumentResults render should render results summary and snippets above
       className="metadata-type-numeric"
     >
       <dt>
-        <Connect(Translate)>
+        <Translate>
           % of sentences above threshold
-        </Connect(Translate)>
+        </Translate>
       </dt>
       <dd>
         50.00

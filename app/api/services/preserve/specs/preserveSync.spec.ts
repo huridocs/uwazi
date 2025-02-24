@@ -1,4 +1,3 @@
-import backend from 'fetch-mock';
 import entities from 'api/entities';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
 import { storage } from 'api/files/storage';
@@ -8,6 +7,7 @@ import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
+import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
@@ -15,10 +15,10 @@ import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { config } from 'api/config';
+import { Tenant } from 'api/tenants/tenantContext';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { Tenant } from 'api/tenants/tenantContext';
-import { config } from 'api/config';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';

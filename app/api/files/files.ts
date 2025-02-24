@@ -8,13 +8,13 @@ import { search } from 'api/search';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
+import { inspect } from 'util';
 import { FileCreatedEvent } from './events/FileCreatedEvent';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { filesModel } from './filesModel';
 import { storage } from './storage';
 import { V2 } from './v2_support';
-import { inspect } from 'util';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };

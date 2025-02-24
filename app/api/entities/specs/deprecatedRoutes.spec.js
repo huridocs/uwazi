@@ -1,13 +1,13 @@
 import { search } from 'api/search';
 import 'api/utils/jasmineHelpers';
-import db from 'api/utils/testing_db';
-import documentRoutes from '../routes.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import templates from '../../templates/templates';
+import thesauri from '../../thesauri';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import * as entitiesSavingManager from '../entitySavingManager';
-import templates from '../../templates/templates';
-import thesauri from '../../thesauri';
-import fixtures, { templateId, unpublishedDocId, batmanFinishesId } from './fixtures.js';
+import documentRoutes from '../routes.js';
+import fixtures, { batmanFinishesId, templateId, unpublishedDocId } from './fixtures.js';
 
 describe('entities', () => {
   let routes;
@@ -17,11 +17,11 @@ describe('entities', () => {
     jest
       .spyOn(search, 'countPerTemplate')
       .mockImplementation(async () => Promise.resolve({ templateCount: 0 }));
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('POST', () => {

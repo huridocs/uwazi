@@ -1,13 +1,14 @@
 /* eslint-disable max-statements */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db from 'api/utils/testing_db';
 
+import { ObjectId } from 'mongodb';
 import {
   EntitySuggestionType,
   IXSuggestionStateType,
   IXSuggestionType,
   IXSuggestionsFilter,
 } from 'shared/types/suggestionType';
-import { ObjectId } from 'mongodb';
 import { Suggestions } from '../suggestions';
 import {
   factory,
@@ -15,12 +16,12 @@ import {
   file3Id,
   fixtures,
   personTemplateId,
+  relationshipAcceptanceFixtureBase,
+  selectAcceptanceFixtureBase,
+  shared2AgeSuggestionId,
   shared2enId,
   shared2esId,
   suggestionId,
-  shared2AgeSuggestionId,
-  selectAcceptanceFixtureBase,
-  relationshipAcceptanceFixtureBase,
 } from './fixtures';
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
@@ -457,12 +458,12 @@ const prepareAndAcceptRelationshipSuggestion = async (
 
 describe('suggestions', () => {
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('get()', () => {
     beforeEach(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
       await Suggestions.updateStates({});
     });
 
@@ -781,7 +782,7 @@ describe('suggestions', () => {
   describe('accept()', () => {
     describe('general', () => {
       beforeAll(async () => {
-        await db.setupFixturesAndContext(fixtures);
+        await testingEnvironment.setUp(fixtures);
         await Suggestions.updateStates({});
       });
 
@@ -867,7 +868,7 @@ describe('suggestions', () => {
 
     describe('numeric/date', () => {
       beforeAll(async () => {
-        await db.setupFixturesAndContext(fixtures);
+        await testingEnvironment.setUp(fixtures);
         await Suggestions.updateStates({});
       });
 
@@ -909,7 +910,7 @@ describe('suggestions', () => {
 
     describe('select', () => {
       beforeEach(async () => {
-        await db.setupFixturesAndContext(selectAcceptanceFixtureBase);
+        await testingEnvironment.setUp(selectAcceptanceFixtureBase);
       });
 
       it('should validate that the id exists in the dictionary', async () => {
@@ -944,7 +945,7 @@ describe('suggestions', () => {
 
     describe('multiselect', () => {
       beforeEach(async () => {
-        await db.setupFixturesAndContext(selectAcceptanceFixtureBase);
+        await testingEnvironment.setUp(selectAcceptanceFixtureBase);
       });
 
       it('should validate that the ids exist in the dictionary', async () => {
@@ -1146,7 +1147,7 @@ describe('suggestions', () => {
 
     describe('relationship', () => {
       beforeEach(async () => {
-        await db.setupFixturesAndContext(relationshipAcceptanceFixtureBase);
+        await testingEnvironment.setUp(relationshipAcceptanceFixtureBase);
       });
 
       it('should validate that the entities in the suggestion exist', async () => {
@@ -1469,7 +1470,7 @@ describe('suggestions', () => {
 
   describe('save()', () => {
     beforeEach(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     describe('on suggestion status error', () => {
@@ -1517,7 +1518,7 @@ describe('suggestions', () => {
 
   describe('updateStates()', () => {
     beforeAll(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     it.each(stateUpdateCases)('should mark $reason', async ({ state, suggestionQuery }) => {
@@ -1534,7 +1535,7 @@ describe('suggestions', () => {
 
   describe('setObsolete()', () => {
     beforeEach(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     it('should set the queried suggestions to obsolete state', async () => {
@@ -1548,7 +1549,7 @@ describe('suggestions', () => {
 
   describe('markSuggestionsWithoutSegmentation()', () => {
     beforeEach(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     it('should mark the suggestions without segmentation to error state', async () => {
@@ -1578,7 +1579,7 @@ describe('suggestions', () => {
 
   describe('saveMultiple()', () => {
     beforeEach(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     it('should handle everything at once', async () => {

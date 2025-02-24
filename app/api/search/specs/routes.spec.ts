@@ -1,14 +1,13 @@
-import request, { Response as SuperTestResponse } from 'supertest';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Application } from 'express';
+import request, { Response as SuperTestResponse } from 'supertest';
 
-import db from 'api/utils/testing_db';
-
-import { setUpApp } from 'api/utils/testingRoutes';
 import searchRoutes from 'api/search/routes';
+import { setUpApp } from 'api/utils/testingRoutes';
 
 import { UserRole } from 'shared/types/userSchema';
-import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -16,10 +15,10 @@ describe('Search routes', () => {
 
   beforeAll(async () => {
     //@ts-ignore
-    await db.clearAllAndLoad(fixtures, elasticIndex);
+    await testingEnvironment.setUp(fixtures, elasticIndex);
   }, fixturesTimeOut);
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET /search/lookup', () => {
     it('should return a list of entity options', async () => {

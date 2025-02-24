@@ -3,6 +3,11 @@ import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 import { DocumentLanguage, mapStateToProps } from '../DocumentLanguage';
 
+jest.mock('app/I18N', () => ({
+  t: (_context, key) => key,
+  Translate: ({ children }) => children,
+}));
+
 describe('DocumentLanguage', () => {
   let component;
   let props;

@@ -7,7 +7,11 @@ exports[`ItemSnippet should first metadata snippet if exists 1`] = `
   <div
     className="item-snippet-source"
   >
-    Title
+    <Translate
+      context="template"
+    >
+      Title
+    </Translate>
   </div>
   <div
     className="item-snippet"
@@ -21,7 +25,11 @@ exports[`ItemSnippet should first metadata snippet if exists 1`] = `
     <a
       onClick={[MockFunction]}
     >
-      Show more
+      <Translate
+        context="System"
+      >
+        Show more
+      </Translate>
     </a>
   </div>
 </div>
@@ -34,7 +42,11 @@ exports[`ItemSnippet should first metadata snippet if metadata only has metadata
   <div
     className="item-snippet-source"
   >
-    Summary
+    <Translate
+      context="template"
+    >
+      Summary
+    </Translate>
   </div>
   <div
     className="item-snippet"
@@ -48,7 +60,11 @@ exports[`ItemSnippet should first metadata snippet if metadata only has metadata
     <a
       onClick={[MockFunction]}
     >
-      Show more
+      <Translate
+        context="System"
+      >
+        Show more
+      </Translate>
     </a>
   </div>
 </div>
@@ -61,7 +77,11 @@ exports[`ItemSnippet should first metadata snippet when there are no document co
   <div
     className="item-snippet-source"
   >
-    Title
+    <Translate
+      context="template"
+    >
+      Title
+    </Translate>
   </div>
   <div
     className="item-snippet"
@@ -75,7 +95,11 @@ exports[`ItemSnippet should first metadata snippet when there are no document co
     <a
       onClick={[MockFunction]}
     >
-      Show more
+      <Translate
+        context="System"
+      >
+        Show more
+      </Translate>
     </a>
   </div>
 </div>
@@ -88,7 +112,11 @@ exports[`ItemSnippet should first title snippet if metadata only has title snipp
   <div
     className="item-snippet-source"
   >
-    Title
+    <Translate
+      context="template"
+    >
+      Title
+    </Translate>
   </div>
   <div
     className="item-snippet"
@@ -102,7 +130,11 @@ exports[`ItemSnippet should first title snippet if metadata only has title snipp
     <a
       onClick={[MockFunction]}
     >
-      Show more
+      <Translate
+        context="System"
+      >
+        Show more
+      </Translate>
     </a>
   </div>
 </div>
@@ -115,7 +147,11 @@ exports[`ItemSnippet should show first document snippet if there are not metadat
   <div
     className="item-snippet-source"
   >
-    Document contents
+    <Translate
+      context="System"
+    >
+      Document contents
+    </Translate>
   </div>
   <div
     className="item-snippet"
@@ -129,7 +165,11 @@ exports[`ItemSnippet should show first document snippet if there are not metadat
     <a
       onClick={[MockFunction]}
     >
-      Show more
+      <Translate
+        context="System"
+      >
+        Show more
+      </Translate>
     </a>
   </div>
 </div>

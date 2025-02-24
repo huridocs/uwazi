@@ -15,7 +15,7 @@ const updateSyncs = async (name: string, collection: string, lastSync: number) =
 async function createSyncIfNotExists(config: SettingsSyncSchema) {
   const syncs = await syncsModel.find({ name: config.name });
   if (syncs.length === 0) {
-    await syncsModel.create({ lastSyncs: {}, name: config.name });
+    await syncsModel.create([{ lastSyncs: {}, name: config.name }]);
   }
 }
 

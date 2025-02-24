@@ -18,14 +18,22 @@ exports[`QuickLabelPanel should render with thesaurus 1`] = `
       <span
         className="btn-label"
       >
-        Back to thesaurus
+        <Translate
+          context="System"
+        >
+          Back to thesaurus
+        </Translate>
       </span>
     </Connect(I18NLink)>
     <h1>
       <span
         className="large"
       >
-        Quick labeling for
+        <Translate
+          context="System"
+        >
+          Quick labeling for
+        </Translate>
          
         <b>
           thesaurus1
@@ -44,7 +52,11 @@ exports[`QuickLabelPanel should render without thesaurus 1`] = `
     className="content-header-title"
   >
     <h1>
-      Ooops... please go
+      <Translate
+        context="System"
+      >
+        Ooops... please go
+      </Translate>
        
       <Connect(I18NLink)
         className="btn btn-default"
@@ -57,7 +69,11 @@ exports[`QuickLabelPanel should render without thesaurus 1`] = `
         <span
           className="btn-label"
         >
-          Back to thesauri
+          <Translate
+            context="System"
+          >
+            Back to thesauri
+          </Translate>
         </span>
       </Connect(I18NLink)>
     </h1>

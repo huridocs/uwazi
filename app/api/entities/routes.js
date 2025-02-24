@@ -1,13 +1,15 @@
-import { search } from 'api/search';
-import { uploadMiddleware } from 'api/files';
-import { saveEntity } from 'api/entities/entitySavingManager';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import entities from './entities';
-import templates from '../templates/templates';
-import thesauri from '../thesauri/thesauri';
-import date from '../utils/date';
+import { saveEntity } from 'api/entities/entitySavingManager';
+import { uploadMiddleware } from 'api/files';
+import { search } from 'api/search';
+import { withTransaction } from 'api/utils/withTransaction';
 import needsAuthorization from '../auth/authMiddleware';
+import templates from '../templates/templates';
+import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
+import date from '../utils/date';
+import entities from './entities';
+import { tenants } from 'api/tenants';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -80,18 +82,30 @@ export default app => {
     activitylogMiddleware,
     async (req, res, next) => {
       try {
-        const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-        const result = await saveEntity(entityToSave, {
-          user: req.user,
-          language: req.language,
-          socketEmiter: req.emitToSessionSocket,
-          files: req.files,
-        });
-        const { entity } = result;
-        await updateThesauriWithEntity(entity, req);
-        return res.json(req.body.entity ? result : entity);
+        const result = await withTransaction(async ({ abort }) => {
+          const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
+          const saveResult = await saveEntity(entityToSave, {
+            user: req.user,
+            language: req.language,
+            socketEmiter: req.emitToSessionSocket,
+            files: req.files,
+          });
+          const { entity, errors } = saveResult;
+          await updateThesauriWithEntity(entity, req);
+          if (errors.length) {
+            await abort();
+          }
+          return req.body.entity ? saveResult : entity;
+        }, 'POST /api/entities');
+        res.json(result);
+        if (tenants.current().featureFlags.v1_transactions) {
+          req.emitToSessionSocket(
+            'documentProcessed',
+            req.body.entity ? result.entity.sharedId : result.sharedId
+          );
+        }
       } catch (e) {
-        return next(e);
+        next(e);
       }
     }
   );

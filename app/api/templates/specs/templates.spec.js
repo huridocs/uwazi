@@ -1,33 +1,34 @@
 import Ajv from 'ajv';
-import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
+import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
+import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { propertyTypes } from 'shared/propertyTypes';
-import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import templates from '../templates';
 
+import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import fixtures, {
-  templateToBeEditedId,
-  templateToBeDeleted,
-  thesaurusTemplateId,
-  thesaurusTemplate2Id,
-  thesaurusTemplate3Id,
-  templateWithContents,
-  swapTemplate,
-  templateToBeInherited,
   propertyToBeInherited,
   relatedTo,
-  thesauriId1,
-  thesauriId2,
   select3id,
   select4id,
+  swapTemplate,
+  templateToBeDeleted,
+  templateToBeEditedId,
+  templateToBeInherited,
+  templateWithContents,
+  thesauriId1,
+  thesauriId2,
+  thesaurusTemplate2Id,
+  thesaurusTemplate3Id,
+  thesaurusTemplateId,
 } from './fixtures/fixtures';
-import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
-import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
@@ -43,11 +44,11 @@ describe('templates', () => {
   beforeAll(async () => {
     jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
     jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-    await db.setupFixturesAndContext(fixtures, elasticIndex);
+    await testingEnvironment.setUp(fixtures, elasticIndex);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('save', () => {
@@ -321,7 +322,7 @@ describe('templates', () => {
 
     describe('when passing _id', () => {
       beforeAll(async () => {
-        await db.setupFixturesAndContext(fixtures, elasticIndex);
+        await testingEnvironment.setUp(fixtures, elasticIndex);
         jest
           .spyOn(entities, 'updateMetadataProperties')
           .mockImplementation(async () => Promise.resolve());

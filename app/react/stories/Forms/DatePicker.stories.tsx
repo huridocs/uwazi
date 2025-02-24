@@ -1,10 +1,9 @@
 import React from 'react';
-import { Provider as ReduxProvider } from 'react-redux';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { DatePicker } from 'app/V2/Components/Forms';
-import { LEGACY_createStore as createStore, TestAtomStoreProvider } from 'V2/testing';
+import { DatePicker } from 'V2/Components/Forms';
+import { TestAtomStoreProvider } from 'V2/testing';
 import { settingsAtom } from 'V2/atoms';
 
 const meta: Meta<typeof DatePicker> = {
@@ -26,24 +25,22 @@ type Story = StoryObj<typeof DatePicker>;
 
 const Primary: Story = {
   render: args => (
-    <ReduxProvider store={createStore()}>
-      <TestAtomStoreProvider initialValues={[[settingsAtom, { dateFormat: 'dd-mm-yyyy' }]]}>
-        <DatePicker
-          name={args.name}
-          label={args.label}
-          language={args.language}
-          labelToday={args.labelToday}
-          labelClear={args.labelClear}
-          dateFormat={args.dateFormat}
-          placeholder={args.placeholder}
-          hideLabel={args.hideLabel}
-          className={args.className}
-          onChange={args.onChange}
-          onBlur={args.onBlur}
-          clearFieldAction={args.clearFieldAction}
-        />
-      </TestAtomStoreProvider>
-    </ReduxProvider>
+    <TestAtomStoreProvider initialValues={[[settingsAtom, { dateFormat: 'dd-mm-yyyy' }]]}>
+      <DatePicker
+        name={args.name}
+        label={args.label}
+        language={args.language}
+        labelToday={args.labelToday}
+        labelClear={args.labelClear}
+        dateFormat={args.dateFormat}
+        placeholder={args.placeholder}
+        hideLabel={args.hideLabel}
+        className={args.className}
+        onChange={args.onChange}
+        onBlur={args.onBlur}
+        clearFieldAction={args.clearFieldAction}
+      />
+    </TestAtomStoreProvider>
   ),
 };
 

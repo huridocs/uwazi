@@ -3,8 +3,8 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { EntityTypesList } from '../EntityTypesList';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
   Link: props => <a {...props} href={props.to} />,
 }));

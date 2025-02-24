@@ -78,7 +78,7 @@ describe('RelationshipsFormButtons', () => {
         render(user, { editing: false });
         const buttons = component.find('button');
         expect(buttons.length).toBe(1);
-        expect(buttons.at(0).find('span').text()).toEqual('Edit');
+        expect(buttons.at(0).find('span.translation').text()).toEqual('Edit');
       }
     );
     it.each([editorUser, adminUser, collaboratorUser])(
@@ -87,8 +87,8 @@ describe('RelationshipsFormButtons', () => {
         render(user, { editing: true });
         const buttons = component.find('button');
         expect(buttons.length).toBe(2);
-        expect(buttons.at(0).find('span').text()).toEqual('Cancel');
-        expect(buttons.at(1).find('span').text()).toEqual('Save');
+        expect(buttons.at(0).find('span.translation').text()).toEqual('Cancel');
+        expect(buttons.at(1).find('span.translation').text()).toEqual('Save');
       }
     );
   });

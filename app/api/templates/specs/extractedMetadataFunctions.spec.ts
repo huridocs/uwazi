@@ -1,6 +1,6 @@
 import { files } from 'api/files';
 import translations from 'api/i18n/translations';
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
 import fixtures, {
@@ -14,7 +14,7 @@ import fixtures, {
 describe('updateExtractedMetadataProperties()', () => {
   beforeEach(async () => {
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    await db.clearAllAndLoad(fixtures, 'uwazi_test_index');
+    await testingEnvironment.setUp(fixtures, 'uwazi_test_index');
   });
 
   it('should remove deleted template properties from extracted metadata on files', async () => {
@@ -135,5 +135,5 @@ describe('updateExtractedMetadataProperties()', () => {
     });
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 });

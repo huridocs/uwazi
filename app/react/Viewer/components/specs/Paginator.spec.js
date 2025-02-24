@@ -17,8 +17,8 @@ const mockUseSearchParams = jest.fn().mockImplementation(() => {
   return [params];
 });
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useSearchParams: () => mockUseSearchParams(),
   useLocation: () => mockUseLocation(),
   // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types

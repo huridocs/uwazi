@@ -1,8 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
-import { Provider } from 'react-redux';
 import { mount } from '@cypress/react18';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { MultiselectList } from '../MultiselectList';
 
 describe('MultiselectList.cy.tsx', () => {
@@ -58,16 +56,14 @@ describe('MultiselectList.cy.tsx', () => {
   beforeEach(() => {
     cy.viewport(450, 650);
     mount(
-      <Provider store={createStore()}>
-        <div className="p-2 tw-content">
-          <MultiselectList
-            items={pizzas}
-            onChange={selectedItems => {
-              selected = selectedItems;
-            }}
-          />
-        </div>
-      </Provider>
+      <div className="p-2 tw-content">
+        <MultiselectList
+          items={pizzas}
+          onChange={selectedItems => {
+            selected = selectedItems;
+          }}
+        />
+      </div>
     );
   });
 
@@ -145,17 +141,15 @@ describe('MultiselectList.cy.tsx', () => {
 
       cy.viewport(450, 650);
       mount(
-        <Provider store={createStore()}>
-          <div className="p-2 tw-content">
-            <MultiselectList
-              items={pizzas}
-              onChange={selectedItems => {
-                selections.push(...selectedItems);
-              }}
-              allowSelelectAll
-            />
-          </div>
-        </Provider>
+        <div className="p-2 tw-content">
+          <MultiselectList
+            items={pizzas}
+            onChange={selectedItems => {
+              selections.push(...selectedItems);
+            }}
+            allowSelelectAll
+          />
+        </div>
       );
 
       cy.contains('button', 'Select all').click();
@@ -179,17 +173,15 @@ describe('MultiselectList.cy.tsx', () => {
 
       cy.viewport(450, 650);
       mount(
-        <Provider store={createStore()}>
-          <div className="p-2 tw-content">
-            <MultiselectList
-              items={salads}
-              onChange={selectedItems => {
-                selections.push(...selectedItems);
-              }}
-              allowSelelectAll
-            />
-          </div>
-        </Provider>
+        <div className="p-2 tw-content">
+          <MultiselectList
+            items={salads}
+            onChange={selectedItems => {
+              selections.push(...selectedItems);
+            }}
+            allowSelelectAll
+          />
+        </div>
       );
 
       cy.contains('button', 'Select all').click();
@@ -211,11 +203,9 @@ describe('MultiselectList.cy.tsx', () => {
     it('should show matching options even when not selected', () => {
       cy.viewport(450, 650);
       mount(
-        <Provider store={createStore()}>
-          <div className="p-2 tw-content">
-            <MultiselectList onChange={() => {}} items={pizzas} value={['MGT']} />
-          </div>
-        </Provider>
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={pizzas} value={['MGT']} />
+        </div>
       );
 
       cy.get('input[type=text]').type('pepperoni');
@@ -228,11 +218,9 @@ describe('MultiselectList.cy.tsx', () => {
     it('should show blank state property if there is no items passed to the component', () => {
       cy.viewport(450, 650);
       mount(
-        <Provider store={createStore()}>
-          <div className="p-2 tw-content">
-            <MultiselectList onChange={() => {}} items={[]} />
-          </div>
-        </Provider>
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={[]} />
+        </div>
       );
       cy.contains('No items available').should('be.visible');
     });
@@ -240,11 +228,9 @@ describe('MultiselectList.cy.tsx', () => {
     it('should accept a blank state string', () => {
       cy.viewport(450, 650);
       mount(
-        <Provider store={createStore()}>
-          <div className="p-2 tw-content">
-            <MultiselectList onChange={() => {}} items={[]} blankState="nada" />
-          </div>
-        </Provider>
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={[]} blankState="nada" />
+        </div>
       );
       cy.contains('nada').should('be.visible');
     });
@@ -252,15 +238,9 @@ describe('MultiselectList.cy.tsx', () => {
     it('should accept a blank state component', () => {
       cy.viewport(450, 650);
       mount(
-        <Provider store={createStore()}>
-          <div className="p-2 tw-content">
-            <MultiselectList
-              onChange={() => {}}
-              items={[]}
-              blankState={<div>no items string</div>}
-            />
-          </div>
-        </Provider>
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={[]} blankState={<div>no items string</div>} />
+        </div>
       );
       cy.contains('no items string').should('be.visible');
     });

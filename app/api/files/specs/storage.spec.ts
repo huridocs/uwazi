@@ -412,6 +412,44 @@ describe('storage', () => {
     });
   });
 
+  describe('storeMultipleFiles', () => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: false } });
+    });
+
+    afterEach(async () => {
+      await storage.removeFile('file1.txt', 'document');
+      await storage.removeFile('file2.txt', 'document');
+      await storage.removeFile('file3.txt', 'document');
+      jest.restoreAllMocks();
+    });
+
+    it('should rollback already uploaded files if an error occurs', async () => {
+      const files = [
+        { filename: 'file1.txt', file: Readable.from(['content1']), type: 'document' as const },
+        { filename: 'file2.txt', file: Readable.from(['content2']), type: 'document' as const },
+        { filename: 'file3.txt', file: Readable.from(['content3']), type: 'document' as const },
+      ];
+
+      const originalStoreFile = storage.storeFile.bind(storage);
+      jest.spyOn(storage, 'storeFile').mockImplementation(async (filename, file, type) => {
+        if (filename === 'file2.txt') {
+          throw new Error('Upload error');
+        }
+        return originalStoreFile(filename, file, type);
+      });
+
+      await expect(storage.storeMultipleFiles(files)).rejects.toThrow('Upload error');
+
+      const file1Exists = await storage.fileExists('file1.txt', 'document');
+      const file2Exists = await storage.fileExists('file2.txt', 'document');
+      const file3Exists = await storage.fileExists('file3.txt', 'document');
+
+      expect(file1Exists).toBe(false);
+      expect(file2Exists).toBe(false);
+      expect(file3Exists).toBe(false);
+    });
+  });
   describe('createDirectory', () => {
     afterEach(async () => {
       try {

@@ -1,11 +1,14 @@
 /* eslint-disable max-lines */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 
-import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
+import db from 'api/utils/testing_db';
 
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { search } from '../../search';
+import relationships from '../relationships';
 import fixtures, {
   connectionID1,
   connectionID2,
@@ -16,22 +19,20 @@ import fixtures, {
   connectionID8,
   connectionID9,
   entity3,
+  family,
+  friend,
   hub1,
+  hub11,
+  hub12,
   hub2,
   hub5,
   hub7,
   hub8,
   hub9,
-  hub11,
-  hub12,
-  friend,
-  family,
   relation1,
   relation2,
   template,
 } from './fixtures';
-import relationships from '../relationships';
-import { search } from '../../search';
 
 describe('relationships', () => {
   beforeEach(async () => {
@@ -39,11 +40,11 @@ describe('relationships', () => {
     jest
       .spyOn(entities, 'updateMetdataFromRelationships')
       .mockImplementation(async () => Promise.resolve());
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('getByDocument()', () => {

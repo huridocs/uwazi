@@ -17,6 +17,7 @@ import { availableLanguages } from 'shared/language';
 import { ContextType } from 'shared/translationSchema';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { pipeline } from 'stream/promises';
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,
@@ -25,6 +26,7 @@ import {
   getTranslationsV2ByContext,
   getTranslationsV2ByLanguage,
   updateContextV2,
+  upsertTranslationEntries,
   upsertTranslationsV2,
 } from './v2_support';
 
@@ -105,6 +107,47 @@ function processContextValues(context: TranslationContext | IndexedContext): Tra
   return { ...context, values };
 }
 
+const propagateTranslationInMetadata = async (
+  translation: TranslationType,
+  context: TranslationContext
+) => {
+  const isPresentInTheComingData = (translation.contexts || []).find(
+    _context => _context.id?.toString() === context.id?.toString()
+  );
+
+  if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
+    const thesaurus = await thesauri.getById(context.id);
+
+    const valuesChanged: IndexedContextValues = (isPresentInTheComingData.values || []).reduce(
+      (changes, value) => {
+        const currentValue = (context.values || []).find(v => v.key === value.key);
+        if (currentValue?.key && currentValue.value !== value.value) {
+          return { ...changes, [currentValue.key]: value.value } as IndexedContextValues;
+        }
+        return changes;
+      },
+      {} as IndexedContextValues
+    );
+
+    const changesMatchingDictionaryId = Object.keys(valuesChanged)
+      .map(valueChanged => {
+        const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
+        if (valueFound?.id) {
+          return { id: valueFound.id, value: valuesChanged[valueChanged] };
+        }
+        return null;
+      })
+      .filter(a => a) as { id: string; value: string }[];
+
+    return Promise.all(
+      changesMatchingDictionaryId.map(async change =>
+        thesauri.renameThesaurusInMetadata(change.id, change.value, context.id, translation.locale)
+      )
+    );
+  }
+  return Promise.resolve([]);
+};
+
 const propagateTranslation = async (
   translation: TranslationType,
   currentTranslationData: WithId<TranslationType>
@@ -112,47 +155,7 @@ const propagateTranslation = async (
   await (currentTranslationData.contexts || ([] as TranslationContext[])).reduce(
     async (promise: Promise<any>, context) => {
       await promise;
-
-      const isPresentInTheComingData = (translation.contexts || []).find(
-        _context => _context.id?.toString() === context.id?.toString()
-      );
-
-      if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
-        const thesaurus = await thesauri.getById(context.id);
-
-        const valuesChanged: IndexedContextValues = (isPresentInTheComingData.values || []).reduce(
-          (changes, value) => {
-            const currentValue = (context.values || []).find(v => v.key === value.key);
-            if (currentValue?.key && currentValue.value !== value.value) {
-              return { ...changes, [currentValue.key]: value.value } as IndexedContextValues;
-            }
-            return changes;
-          },
-          {} as IndexedContextValues
-        );
-
-        const changesMatchingDictionaryId = Object.keys(valuesChanged)
-          .map(valueChanged => {
-            const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
-            if (valueFound?.id) {
-              return { id: valueFound.id, value: valuesChanged[valueChanged] };
-            }
-            return null;
-          })
-          .filter(a => a) as { id: string; value: string }[];
-
-        return Promise.all(
-          changesMatchingDictionaryId.map(async change =>
-            thesauri.renameThesaurusInMetadata(
-              change.id,
-              change.value,
-              context.id,
-              translation.locale
-            )
-          )
-        );
-      }
-      return Promise.resolve([]);
+      return propagateTranslationInMetadata(translation, context);
     },
     Promise.resolve([])
   );
@@ -207,6 +210,24 @@ export default {
 
     await upsertTranslationsV2([translationToSave]);
     return translationToSave;
+  },
+
+  async v2StructureSave(translationsToSave: TranslationSyO[]) {
+    const { context } = translationsToSave[0];
+    const currentTranslations = await getTranslationsV2ByContext(context.id);
+    await upsertTranslationEntries(translationsToSave);
+    const thesaurusTranslations = currentTranslations[0].contexts?.[0].type === 'Thesaurus';
+    if (thesaurusTranslations) {
+      const updatedTranslations = await getTranslationsV2ByContext(context.id);
+      await Promise.all(
+        updatedTranslations.map(async translation => {
+          const originalContexts = currentTranslations.find(
+            t => t.locale === translation.locale
+          )?.contexts;
+          return propagateTranslationInMetadata(translation, (originalContexts || [context])[0]);
+        })
+      );
+    }
   },
 
   async updateEntries(

@@ -1,7 +1,12 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { clearCookiesAndLogin } from './helpers/login';
-import { clickOnCreateEntity, editPropertyForExtractor, saveEntity } from './helpers';
+import {
+  clickOnCreateEntity,
+  editPropertyForExtractor,
+  saveEntity,
+  waitForLegacyNotifications,
+} from './helpers';
 
 describe('PDF display', () => {
   before(() => {
@@ -32,6 +37,7 @@ describe('PDF display', () => {
         force: true,
       });
       saveEntity();
+      waitForLegacyNotifications();
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
     });
   });
@@ -52,17 +58,19 @@ describe('PDF display', () => {
 
     it('should paginate forward', () => {
       cy.get('.paginator').within(() => {
-        cy.contains('a', 'Next').click();
+        cy.contains('a', 'Next').realClick();
       });
       cy.contains('Los escritos de 17 de septiembre y 17 de noviembre de 2010,');
 
       cy.get('.paginator').within(() => {
-        cy.contains('a', 'Next').click();
+        cy.contains('2 / 22');
+        cy.contains('a', 'Next').realClick();
       });
       cy.contains('especial de protección de los beneficiarios de las medidas,');
 
       cy.get('.paginator').within(() => {
-        cy.contains('a', 'Next').click();
+        cy.contains('3 / 22');
+        cy.contains('a', 'Next').realClick();
       });
       cy.contains('En la presente Resolución el Tribunal examinará:');
       cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS').should('not.exist');
@@ -75,14 +83,15 @@ describe('PDF display', () => {
 
     it('should paginate backwards', () => {
       cy.get('.paginator').within(() => {
-        cy.contains('a', 'Previous').click();
+        cy.contains('4 / 22');
+        cy.contains('a', 'Previous').realClick();
       });
       cy.contains('especial de protección de los beneficiarios de las medidas,');
       cy.contains('En la presente Resolución el Tribunal examinará:').should('not.be.visible');
     });
 
     it('should show the plaintex for the page', () => {
-      cy.contains('a', 'Plain text').click();
+      cy.contains('a', 'Plain text').realClick();
       cy.get('.raw-text').should('be.visible');
       cy.get('.raw-text').within(() => {
         cy.contains('-3especial de protección');
@@ -91,7 +100,7 @@ describe('PDF display', () => {
 
     it('should paginate in plain text view', () => {
       cy.get('.paginator').within(() => {
-        cy.contains('a', 'Next').click();
+        cy.contains('a', 'Next').realClick();
       });
       cy.get('.raw-text').within(() => {
         cy.contains('-4-');
@@ -195,23 +204,21 @@ describe('PDF display', () => {
     });
   });
 
-  describe('responsiveness', () => {
+  describe('responsiveness', { viewportWidth: 768, viewportHeight: 1024 }, () => {
     describe('library', () => {
-      beforeEach(() => {
-        cy.viewport('ipad-mini');
-      });
-
       it('should navigate to the library', () => {
         cy.get('header').within(() => {
           cy.get('.menu-button').realTouch();
         });
         cy.contains('a', 'Library').realTouch();
+        cy.contains('.item-document', 'Entity with pdf');
       });
 
       it('should view the pdf correctly', () => {
         cy.contains('.item-document', 'Entity with pdf').within(() => {
           cy.contains('a', 'View').realTouch();
         });
+        cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS');
         cy.get('.closeSidepanel').realTouch();
         cy.get('aside.metadata-sidepanel').should('not.be.visible');
         cy.contains('CORTE INTERAMERICANA DE DERECHOS HUMANOS').should('be.visible');
@@ -232,11 +239,7 @@ describe('PDF display', () => {
       });
     });
 
-    describe('IX sidepanel', () => {
-      beforeEach(() => {
-        cy.viewport('iphone-x');
-      });
-
+    describe('IX sidepanel', { viewportWidth: 375, viewportHeight: 812 }, () => {
       it('should navigate to the extractor', () => {
         cy.get('header').within(() => {
           cy.get('.menu-button').realTouch();
@@ -250,7 +253,8 @@ describe('PDF display', () => {
         cy.contains('td', 'Entity with pdf (es)');
       });
 
-      it('should open the pdf sidepanel and show in the correct page', () => {
+      it('should open the pdf sidepanel and show the correct page', () => {
+        cy.contains('button', 'Open PDF').scrollIntoView();
         cy.contains('button', 'Open PDF').realTouch();
         cy.contains('Loading').should('not.exist');
         cy.get('#pdf-container').within(() => {
@@ -263,22 +267,20 @@ describe('PDF display', () => {
       });
 
       it('should only show visible pages', () => {
-        cy.get('#pdf-container').within(() => {
-          cy.get('#page-1-container .page').should('be.empty');
-          cy.get('#page-2-container .page').should('not.be.empty');
-          cy.get('#page-3-container .page').should('not.be.empty');
-          cy.get('#page-10-container .page').should('be.empty');
-          cy.get('#page-10-container').scrollIntoView();
-          cy.get('#page-1-container .page').should('be.empty');
-          cy.get('#page-2-container .page').should('be.empty');
-          cy.get('#page-3-container .page').should('be.empty');
-          cy.get('#page-10-container .page').should('not.be.empty');
-          cy.get('#page-11-container .page').should('not.be.empty');
-          cy.contains(
-            'span[role="presentation"]',
-            'El artículo 63.2 de la Convención exige que para que la Corte pueda disponer de'
-          ).should('be.visible');
-        });
+        cy.get('#page-1-container .page').should('be.empty');
+        cy.get('#page-2-container .page').should('not.be.empty');
+        cy.get('#page-3-container .page').should('not.be.empty');
+        cy.get('#page-10-container .page').should('be.empty');
+        cy.get('#page-10-container').scrollIntoView();
+        cy.get('#page-1-container .page').should('be.empty');
+        cy.get('#page-2-container .page').should('be.empty');
+        cy.get('#page-3-container .page').should('be.empty');
+        cy.get('#page-10-container .page').should('not.be.empty');
+        cy.get('#page-11-container .page').should('not.be.empty');
+        cy.contains(
+          'span[role="presentation"]',
+          'El artículo 63.2 de la Convención exige que para que la Corte pueda disponer de'
+        ).should('be.visible');
       });
     });
   });

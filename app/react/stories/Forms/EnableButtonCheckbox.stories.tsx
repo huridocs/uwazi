@@ -1,8 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { EnableButtonCheckbox } from 'app/V2/Components/Forms';
-import { LEGACY_createStore as createStore } from 'V2/testing';
-import { Provider } from 'react-redux';
 
 const meta: Meta<typeof EnableButtonCheckbox> = {
   title: 'Forms/EnableButtonCheckbox',
@@ -14,14 +12,12 @@ type Story = StoryObj<typeof EnableButtonCheckbox>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Provider store={createStore()}>
-        <EnableButtonCheckbox
-          disabled={args.disabled}
-          name={args.name}
-          defaultChecked={args.defaultChecked}
-          onChange={args.onChange}
-        />
-      </Provider>
+      <EnableButtonCheckbox
+        disabled={args.disabled}
+        name={args.name}
+        defaultChecked={args.defaultChecked}
+        onChange={args.onChange}
+      />
     </div>
   ),
 };

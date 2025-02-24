@@ -4,6 +4,7 @@ import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/Mode
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import testingDB from 'api/utils/testing_db';
 import * as mongoose from 'mongoose';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 describe('ModelWithPermissions', () => {
   let model: ModelWithPermissions<any>;
@@ -91,6 +92,7 @@ describe('ModelWithPermissions', () => {
   ];
   beforeAll(async () => {
     connection = await testingDB.connect();
+    testingEnvironment.setFakeContext();
     model = instanceModelWithPermissions<TestDoc>('docs', testSchema);
     await connection.collection('docs').insertMany(testdocs);
   });

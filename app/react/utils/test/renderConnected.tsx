@@ -1,12 +1,11 @@
 import React from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
-import { InitialEntry } from '@remix-run/router';
+import { BrowserRouter, MemoryRouter, InitialEntry } from 'react-router';
 import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { render, RenderResult } from '@testing-library/react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 const middlewares = [thunk];
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);

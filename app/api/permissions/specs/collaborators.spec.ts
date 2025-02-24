@@ -1,17 +1,17 @@
-import { testingDB } from 'api/utils/testing_db';
-import { fixtures, groupA, groupB, userA, userB } from 'api/permissions/specs/fixtures';
 import { collaborators } from 'api/permissions/collaborators';
+import { fixtures, groupA, groupB, userA, userB } from 'api/permissions/specs/fixtures';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 describe('collaborators', () => {
   beforeEach(async () => {
-    await testingDB.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('search', () => {

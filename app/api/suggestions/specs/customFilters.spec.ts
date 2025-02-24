@@ -1,4 +1,5 @@
 import { testingDB } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { SuggestionCustomFilter } from 'shared/types/suggestionType';
 import { factory as f, stateFilterFixtures } from './fixtures';
 import { Suggestions } from '../suggestions';
@@ -13,11 +14,11 @@ const blankCustomFilter: SuggestionCustomFilter = {
 };
 
 beforeAll(async () => {
-  await testingDB.setupFixturesAndContext(stateFilterFixtures);
+  await testingEnvironment.setUp(stateFilterFixtures);
   await Suggestions.updateStates({});
 });
 
-afterAll(async () => testingDB.disconnect());
+afterAll(async () => testingEnvironment.tearDown());
 
 describe('suggestions with CustomFilters', () => {
   describe('get()', () => {

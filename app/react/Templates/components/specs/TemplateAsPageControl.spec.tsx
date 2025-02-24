@@ -10,6 +10,11 @@ import { TemplateAsPageControl } from '../TemplateAsPageControl';
 
 const middlewares = [thunk];
 
+jest.mock('app/I18N', () => ({
+  t: (_context: string, key: string) => key,
+  Translate: ({ children }: { children: React.ReactElement }) => children,
+}));
+
 describe('TemplateAsPageControl', () => {
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
   let component: ShallowWrapper<typeof TemplateAsPageControl>;

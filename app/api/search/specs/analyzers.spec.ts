@@ -1,15 +1,15 @@
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elasticClient } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('custom language analyzers', () => {
   const elasticIndex = 'analyzers_index_test';
   beforeAll(async () => {
-    await db.clearAllAndLoad({}, elasticIndex);
+    await testingEnvironment.setUp({}, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('persian', () => {

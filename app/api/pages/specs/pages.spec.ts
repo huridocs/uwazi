@@ -1,4 +1,5 @@
 import { mockID } from 'shared/uniqueID';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
 
@@ -7,11 +8,11 @@ import pages from '../pages';
 
 describe('pages', () => {
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('save', () => {

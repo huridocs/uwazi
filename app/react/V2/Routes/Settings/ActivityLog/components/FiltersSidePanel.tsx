@@ -6,7 +6,7 @@ import { Translate, t } from 'app/I18N';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
-import { settingsAtom, translationsAtom } from 'app/V2/atoms';
+import { settingsAtom, localeAtom } from 'app/V2/atoms';
 
 interface ActivityLogSearch {
   username: string;
@@ -36,7 +36,7 @@ const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(m
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
   const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
-  const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
+  const locale = useAtomValue(localeAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
 
   useEffect(() => {

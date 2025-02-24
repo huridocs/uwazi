@@ -10,7 +10,11 @@ exports[`Metadata should not render metadata without value 1`] = `
   <dt
     className=""
   >
-    Label
+    <Translate
+      context="oneTranslateContext"
+    >
+      Label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -28,7 +32,11 @@ exports[`Metadata should render a Geolocation viewer when the metadata is type g
   <dt
     className=""
   >
-    Geolocation Label
+    <Translate
+      context="oneTranslateContext"
+    >
+      Geolocation Label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -56,7 +64,11 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
   <dt
     className=""
   >
-    label array
+    <Translate
+      context="oneTranslateContext"
+    >
+      label array
+    </Translate>
   </dt>
   <dd
     className=""
@@ -80,7 +92,11 @@ exports[`Metadata should render a link 1`] = `
   <dt
     className=""
   >
-    Link
+    <Translate
+      context="oneTranslateContext"
+    >
+      Link
+    </Translate>
   </dt>
   <dd
     className=""
@@ -104,7 +120,11 @@ exports[`Metadata should render a media field 1`] = `
   <dt
     className=""
   >
-    Media Label
+    <Translate
+      context="oneTranslateContext"
+    >
+      Media Label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -128,7 +148,11 @@ exports[`Metadata should render an image field 1`] = `
   <dt
     className=""
   >
-    Image Label
+    <Translate
+      context="oneTranslateContext"
+    >
+      Image Label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -151,7 +175,11 @@ exports[`Metadata should render array values separated by ", " 1`] = `
   <dt
     className=""
   >
-    label array
+    <Translate
+      context="oneTranslateContext"
+    >
+      label array
+    </Translate>
   </dt>
   <dd
     className=""
@@ -186,7 +214,11 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
   <dt
     className=""
   >
-    label array
+    <Translate
+      context="oneTranslateContext"
+    >
+      label array
+    </Translate>
   </dt>
   <dd
     className=""
@@ -236,7 +268,11 @@ exports[`Metadata should render links when the property has url 1`] = `
   <dt
     className=""
   >
-    withUrl
+    <Translate
+      context="oneTranslateContext"
+    >
+      withUrl
+    </Translate>
   </dt>
   <dd
     className=""
@@ -272,7 +308,11 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
   <dt
     className=""
   >
-    withUrl
+    <Translate
+      context="oneTranslateContext"
+    >
+      withUrl
+    </Translate>
   </dt>
   <dd
     className=""
@@ -312,12 +352,20 @@ exports[`Metadata should render property not have this item when type is null 1`
   <dt
     className=""
   >
-    metadata without property
+    <Translate
+      context="oneTranslateContext"
+    >
+      metadata without property
+    </Translate>
   </dt>
   <dd
     className=""
   >
-    No property
+    <Translate
+      context="System"
+    >
+      No property
+    </Translate>
   </dd>
 </dl>
 `;
@@ -330,7 +378,11 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
   <dt
     className=""
   >
-    sortedBy
+    <Translate
+      context="oneTranslateContext"
+    >
+      sortedBy
+    </Translate>
   </dt>
   <dd
     className="item-current-sort"
@@ -348,7 +400,11 @@ exports[`Metadata should render string values 1`] = `
   <dt
     className=""
   >
-    Label
+    <Translate
+      context="oneTranslateContext"
+    >
+      Label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -366,7 +422,11 @@ exports[`Metadata when passing a prop with multivalue and parents should render 
   <dt
     className=""
   >
-    label
+    <Translate
+      context="System"
+    >
+      label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -407,7 +467,11 @@ exports[`Metadata when passing a prop with parent should render the parent too 1
   <dt
     className=""
   >
-    label
+    <Translate
+      context="System"
+    >
+      label
+    </Translate>
   </dt>
   <dd
     className=""
@@ -425,7 +489,11 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
   <dt
     className=""
   >
-    label array
+    <Translate
+      context="oneTranslateContext"
+    >
+      label array
+    </Translate>
   </dt>
   <dd
     className=""
@@ -474,7 +542,11 @@ exports[`Metadata when passing inheritted relationships should flatten the resul
 >
   <dt
     className=""
-  />
+  >
+    <Translate
+      context="System"
+    />
+  </dt>
   <dd
     className=""
   >

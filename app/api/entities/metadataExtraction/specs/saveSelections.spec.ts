@@ -1,4 +1,5 @@
 import { files } from 'api/files';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 import { saveSelections } from '../saveSelections';
 
@@ -50,7 +51,7 @@ const fixture: DBFixture = {
 describe('saveSelections', () => {
   beforeEach(async () => {
     jest.spyOn(files, 'save');
-    await testingDB.setupFixturesAndContext(fixture);
+    await testingEnvironment.setUp(fixture);
   });
 
   afterEach(() => {
@@ -58,7 +59,7 @@ describe('saveSelections', () => {
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   it('should not call save if entity has no main file', async () => {

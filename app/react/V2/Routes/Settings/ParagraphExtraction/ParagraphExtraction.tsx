@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
@@ -52,7 +52,7 @@ const ParagraphExtractorDashboard = () => {
 
     try {
       await extractorsAPI.remove(extractorIds);
-      revalidator.revalidate();
+      await revalidator.revalidate();
       setNotifications({
         type: 'success',
         text: <Translate>Extractor/s deleted</Translate>,
@@ -69,7 +69,7 @@ const ParagraphExtractorDashboard = () => {
   };
 
   const handleSave = async () => {
-    revalidator.revalidate();
+    await revalidator.revalidate();
     setNotifications({
       type: 'success',
       text: <Translate>Paragraph Extractor added</Translate>,

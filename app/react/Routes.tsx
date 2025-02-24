@@ -1,17 +1,18 @@
 /* eslint-disable max-lines */
 import React from 'react';
-import { createRoutesFromElements, Route } from 'react-router-dom';
+import { createRoutesFromElements, Route } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
-import { LibraryCards } from 'app/Library/Library';
+import LibraryRoot from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
+import { LibraryCards } from 'app/Library/LibraryCards';
+import { LibraryTable } from 'app/Library/LibraryTable';
 import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
-import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { ClientSettings } from 'app/apiResponseTypes';
 import {
@@ -75,16 +76,35 @@ import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDa
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
   indexElement: React.ReactNode,
-  headers?: IncomingHttpHeaders
+  headers?: IncomingHttpHeaders,
+  defaultToLibrary?: boolean
 ) => (
   <Route errorElement={<RouteErrorBoundary />}>
-    <Route index element={indexElement} />
+    <Route
+      index
+      element={indexElement}
+      {...(defaultToLibrary ? { handle: { library: true } } : {})}
+    />
     <Route path="login" element={<Login />} />
-    <Route path="library" element={privateRoute(<LibraryCards />, settings)} />
-    <Route path="library/map" element={privateRoute(<LibraryMap />, settings)} />
-    <Route path="library/table" element={privateRoute(<LibraryTable />, settings)} />
-    <Route path="document/:sharedId/*" element={privateRoute(<ViewerRoute />, settings)} />
-    <Route path="entity/:sharedId/*" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route path="library/*" element={privateRoute(<LibraryRoot />, settings)}>
+      <Route index element={privateRoute(<LibraryCards />, settings)} handle={{ library: true }} />
+      <Route
+        path="map"
+        element={privateRoute(<LibraryMap />, settings)}
+        handle={{ library: true }}
+      />
+      <Route
+        path="table"
+        element={privateRoute(<LibraryTable />, settings)}
+        handle={{ library: true }}
+      />
+    </Route>
+    <Route path="document/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
+      <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
+    </Route>
+    <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
+      <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
+    </Route>
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
@@ -244,8 +264,8 @@ const getRoutes = (
   userId: string | undefined,
   headers?: IncomingHttpHeaders
 ) => {
-  const { element, parameters } = getIndexElement(settings, userId);
-  const layout = getRoutesLayout(settings, element, headers);
+  const { element, parameters, defaultToLibrary } = getIndexElement(settings, userId);
+  const layout = getRoutesLayout(settings, element, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>

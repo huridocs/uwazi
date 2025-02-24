@@ -72,9 +72,11 @@ const requestHandler = (
     .catch(err => {
       clearState(dispatch);
       if (err.status === 403) {
-        dispatch(notify(t('System', 'Invalid captcha'), 'danger'));
+        dispatch(notify(t('System', 'Invalid captcha', null, false), 'danger'));
       } else {
-        dispatch(notify(t('System', 'An error has occurred during data export'), 'danger'));
+        dispatch(
+          notify(t('System', 'An error has occurred during data export', null, false), 'danger')
+        );
       }
       return err;
     });

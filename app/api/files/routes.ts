@@ -15,6 +15,7 @@ import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
+import { withTransaction } from 'api/utils/withTransaction';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -266,18 +267,24 @@ export default (app: Application) => {
     }),
 
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
-      const [fileToDelete] = await files.get({ _id: req.query._id });
-      if (
-        !fileToDelete ||
-        !(await checkEntityPermission(fileToDelete, permissionsContext.getUserInContext(), 'write'))
-      ) {
-        throw createError('file not found', 404);
-      }
+      await withTransaction(async () => {
+        const [fileToDelete] = await files.get({ _id: req.query._id });
+        if (
+          !fileToDelete ||
+          !(await checkEntityPermission(
+            fileToDelete,
+            permissionsContext.getUserInContext(),
+            'write'
+          ))
+        ) {
+          throw createError('file not found', 404);
+        }
 
-      const [deletedFile] = await files.delete({ _id: req.query._id });
-      const thumbnailFileName = `${deletedFile._id}.jpg`;
-      await files.delete({ filename: thumbnailFileName });
-      res.json([deletedFile]);
+        const [deletedFile] = await files.delete({ _id: req.query._id });
+        const thumbnailFileName = `${deletedFile._id}.jpg`;
+        await files.delete({ filename: thumbnailFileName });
+        res.json([deletedFile]);
+      }, 'DELETE /api/files');
     }
   );
 

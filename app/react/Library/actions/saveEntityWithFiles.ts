@@ -6,6 +6,7 @@ import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
+import loadingBar from 'app/App/LoadingProgressBar';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
@@ -40,16 +41,11 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
   const entityToSave = { ...entity, documents: oldDocuments };
 
   const addedDocuments = await Promise.all(
-    (newDocuments as ClientBlobFile[]).map(async file => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      const blob = await fetch(file.data).then(async r => r.blob());
-      const newDocument = new File([blob], file.originalFile.name, { type: blob.type });
-      URL.revokeObjectURL(file.data);
-      return newDocument;
-    })
+    (newDocuments as ClientBlobFile[]).map(async file => file.originalFile)
   );
 
   return new Promise((resolve, reject) => {
+    loadingBar.start();
     const request = superagent
       .post('/api/entities')
       .set('Accept', 'application/json')
@@ -95,6 +91,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     });
 
     request.end((err, res) => {
+      loadingBar.done();
       if (!res.ok && (res.body.prettyMessage !== undefined || res.body.error !== undefined)) {
         if (err) {
           reject(

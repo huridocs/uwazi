@@ -6,12 +6,16 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { setupTestUploadedPaths } from 'api/files';
 import { UserSchema } from 'shared/types/userType';
 
+let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
+let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
+
 const testingEnvironment = {
   userInContextMockFactory: new UserInContextMockFactory(),
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
     await this.setTenant();
     this.setPermissions();
+    this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
   },
@@ -23,6 +27,28 @@ const testingEnvironment = {
       indexName: 'index',
     });
     await setupTestUploadedPaths(subPath);
+  },
+
+  setFakeContext() {
+    if (!jest.isMockFunction(appContext.get)) {
+      const originalAppContextGet = appContext.get.bind(appContext);
+      appContextGetMock = jest.spyOn(appContext, 'get').mockImplementation((key: string) => {
+        if (key === 'mongoSession' || key === 'fileOperations' || key === 'reindexOperations') {
+          return undefined;
+        }
+        return originalAppContextGet(key);
+      });
+      appContextSetMock = jest.spyOn(appContext, 'set').mockImplementation(() => {});
+    }
+  },
+
+  unsetFakeContext() {
+    if (jest.isMockFunction(appContext.get)) {
+      appContextGetMock.mockRestore();
+    }
+    if (jest.isMockFunction(appContext.set)) {
+      appContextSetMock.mockRestore();
+    }
   },
 
   async setFixtures(fixtures?: DBFixture) {

@@ -1,23 +1,23 @@
-import db from 'api/utils/testing_db';
 import { search } from 'api/search/search';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
 import { UserSchema } from 'shared/types/userType';
-import { fixturesTimeOut } from './fixtures_elastic';
-import { permissionsLevelFixtures, users, group1 } from './permissionsFiltersFixtures';
 import { EntitySchema } from '../../../shared/types/entityType';
+import { fixturesTimeOut } from './fixtures_elastic';
+import { group1, permissionsLevelFixtures, users } from './permissionsFiltersFixtures';
 
 describe('Permissions filters', () => {
   const userFactory = new UserInContextMockFactory();
   const user3WithGroups = { ...users.user3, groups: [{ _id: group1.toString(), name: 'Group1' }] };
 
   beforeAll(async () => {
-    await db.setupFixturesAndContext(permissionsLevelFixtures, 'permissionsadminfilters');
+    await testingEnvironment.setUp(permissionsLevelFixtures, 'permissionsadminfilters');
     userFactory.restore();
   }, fixturesTimeOut);
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
     userFactory.restore();
   });
 

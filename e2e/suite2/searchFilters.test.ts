@@ -59,7 +59,7 @@ describe('search filters path', () => {
 
   describe('filter one type', () => {
     it('should only show entities of that type', async () => {
-      await selectFilterOption('Mecanismo', 1);
+      await selectFilterOption('Mecanismo', 4);
       const titles = await getAllEntitiesTitles(2);
       expect(titles.length).toEqual(2);
       expect(titles[0]).toEqual('Corte Interamericana de Derechos Humanos');
@@ -69,7 +69,7 @@ describe('search filters path', () => {
 
   describe('filter by more types', () => {
     it('should show entities of those types', async () => {
-      await selectFilterOption('Informe de admisibilidad', 3);
+      await selectFilterOption('Informe de admisibilidad', 2);
       const entityTitles = await getAllEntitiesTitles(9);
       expect(entityTitles.length).toBe(9);
       expect(entityTitles).toEqual([
@@ -88,9 +88,9 @@ describe('search filters path', () => {
 
   describe('multiselect filters', () => {
     it('should filter', async () => {
-      await selectFilterOption('Mecanismo', 1);
-      await selectFilterOption('Informe de admisibilidad', 3);
-      await selectFilterOption('Ordenes de la corte', 2);
+      await selectFilterOption('Mecanismo', 4);
+      await selectFilterOption('Informe de admisibilidad', 2);
+      await selectFilterOption('Ordenes de la corte', 6);
       await expect(page).toClick('span.multiselectItem-name', { text: 'Peru' });
       await waitForEvent('DOMContentLoaded');
       const entityTitles = await getAllEntitiesTitles(6);
@@ -162,7 +162,7 @@ describe('search filters path', () => {
       await waitForEvent('DOMContentLoaded');
     });
     it('should order them by aggregated value', async () => {
-      await selectFilterOption('Ordenes de la corte', 2);
+      await selectFilterOption('Ordenes de la corte', 6);
       await waitForEvent('DOMContentLoaded');
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
@@ -253,7 +253,7 @@ describe('search filters path', () => {
 
     it('should display the No Label option with the correct aggregation when filtering by template', async () => {
       await expect(page).toClick(
-        'li.wide:nth-child(1) > ul:nth-child(1) > li:nth-child(10) > label:nth-child(2) > span:nth-child(2) > span',
+        'li.wide:nth-child(1) > ul:nth-child(1) > li:nth-child(3) > label:nth-child(2) > span:nth-child(2) > span',
         { text: 'Juez y/o Comisionado' }
       );
 

@@ -2,9 +2,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { action } from '@storybook/addon-actions';
-import { Provider } from 'react-redux';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { Translate } from 'app/I18N';
 
 const meta: Meta<typeof ConfirmationModal> = {
@@ -22,24 +20,22 @@ type Story = StoryObj<typeof ConfirmationModal>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="container w-10 h-10">
-          <ConfirmationModal
-            size="md"
-            header={args.header}
-            body={args.body}
-            acceptButton={args.acceptButton}
-            cancelButton={args.cancelButton}
-            warningText={args.warningText}
-            confirmWord={args.confirmWord}
-            usePassword={args.usePassword}
-            onAcceptClick={args.onAcceptClick}
-            onCancelClick={args.onCancelClick}
-          />
-        </div>
+    <div className="tw-content">
+      <div className="container w-10 h-10">
+        <ConfirmationModal
+          size="md"
+          header={args.header}
+          body={args.body}
+          acceptButton={args.acceptButton}
+          cancelButton={args.cancelButton}
+          warningText={args.warningText}
+          confirmWord={args.confirmWord}
+          usePassword={args.usePassword}
+          onAcceptClick={args.onAcceptClick}
+          onCancelClick={args.onCancelClick}
+        />
       </div>
-    </Provider>
+    </div>
   ),
 };
 

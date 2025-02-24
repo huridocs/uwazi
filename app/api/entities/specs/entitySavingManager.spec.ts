@@ -28,6 +28,7 @@ import {
   template2Id,
   textFile,
 } from './entitySavingManagerFixtures';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 const validPdfString = `
 %PDF-1.0
@@ -63,12 +64,12 @@ describe('entitySavingManager', () => {
   });
 
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   afterEach(() => {

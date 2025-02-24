@@ -11,17 +11,17 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
   <div
     className="force-ltr"
   >
-    <Connect(Translate)
+    <Translate
       translationKey="Import completed"
     >
       Import completed. Number of entities created:
-    </Connect(Translate)>
+    </Translate>
      
     5
     <br />
-    <Connect(Translate)>
+    <Translate>
       Indexing entities may take a few minutes
-    </Connect(Translate)>
+    </Translate>
   </div>
   <Connect(Icon)
     icon="times"
@@ -47,9 +47,9 @@ exports[`ImportProgress rendering states should render a state for errors 1`] = 
     <div
       className="force-ltr"
     >
-      <Connect(Translate)>
+      <Translate>
         The import process threw an error:
-      </Connect(Translate)>
+      </Translate>
     </div>
     <Connect(Icon)
       icon="times"
@@ -80,9 +80,9 @@ exports[`ImportProgress rendering states should render a state for errors 2`] = 
     <div
       className="force-ltr"
     >
-      <Connect(Translate)>
+      <Translate>
         The import process threw an error:
-      </Connect(Translate)>
+      </Translate>
     </div>
     <Connect(Icon)
       icon="times"
@@ -120,9 +120,9 @@ exports[`ImportProgress rendering states should render a state for normal progre
   <div
     className="force-ltr"
   >
-    <Connect(Translate)>
+    <Translate>
       Importing data in progress
-    </Connect(Translate)>
+    </Translate>
     : 
     5
   </div>

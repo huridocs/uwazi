@@ -6,9 +6,10 @@ type modalSizeType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
 interface ModalProps {
   children: string | React.ReactNode;
   size: modalSizeType;
+  id?: string;
 }
 
-const Modal = ({ children, size }: ModalProps) => {
+const Modal = ({ children, size, id }: ModalProps) => {
   const sizes = {
     sm: 'max-w-sm',
     md: 'max-w-md min-w-[24rem]',
@@ -25,6 +26,7 @@ const Modal = ({ children, size }: ModalProps) => {
       data-testid="modal"
       role="dialog"
       aria-label="Modal"
+      id={id}
     >
       <div className={`max-h-screen ${sizes[size]}`}>
         <div className="bg-white rounded-lg shadow">{children}</div>

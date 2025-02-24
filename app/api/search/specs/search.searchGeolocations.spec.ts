@@ -4,17 +4,18 @@ import { EntitySchema } from 'shared/types/entityType';
 
 import inheritanceFixtures, { ids } from './fixturesInheritance';
 import { fixturesTimeOut } from './fixtures_elastic';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 describe('search.searchGeolocations', () => {
   const user = { _id: 'u1' };
 
   beforeAll(async () => {
     const elasticIndex = 'search.geolocation_index_test';
-    await db.clearAllAndLoad(inheritanceFixtures, elasticIndex);
+    await testingEnvironment.setUp(inheritanceFixtures, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   it('should include all geolocation finds, inheriting metadata', async () => {

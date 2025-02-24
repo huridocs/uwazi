@@ -119,10 +119,18 @@ exports[`ConnectionsList when there are no references should render a blank stat
     icon="sitemap"
   />
   <h4>
-    No Connections
+    <Translate
+      context="System"
+    >
+      No Connections
+    </Translate>
   </h4>
   <p>
-    No Connections description
+    <Translate
+      context="System"
+    >
+      No Connections description
+    </Translate>
   </p>
 </div>
 `;
@@ -135,10 +143,18 @@ exports[`ConnectionsList when there are no references should render a blank stat
     icon="sitemap"
   />
   <h4>
-    No References
+    <Translate
+      context="System"
+    >
+      No References
+    </Translate>
   </h4>
   <p>
-    No References description
+    <Translate
+      context="System"
+    >
+      No References description
+    </Translate>
   </p>
 </div>
 `;

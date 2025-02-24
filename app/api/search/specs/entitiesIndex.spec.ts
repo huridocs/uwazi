@@ -1,4 +1,5 @@
 import { legacyLogger } from 'api/log';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
@@ -20,16 +21,16 @@ describe('entitiesIndex', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeEach(async () => {
-    await db.setupFixturesAndContext({}, elasticIndex);
+    await testingEnvironment.setUp({}, elasticIndex);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('indexEntities', () => {
     const loadFailingFixtures = async () => {
-      await db.setupFixturesAndContext(fixturesForIndexErrors);
+      await testingEnvironment.setUp(fixturesForIndexErrors);
       await elasticTesting.resetIndex();
       // force indexing will ensure that all exceptions are mapper_parsing. Otherwise you get different kinds of exceptions
       await forceIndexingOfNumberBasedProperty();

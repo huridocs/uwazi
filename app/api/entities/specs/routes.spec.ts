@@ -1,3 +1,4 @@
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
@@ -9,11 +10,14 @@ import routes from 'api/entities/routes';
 import { legacyLogger } from 'api/log';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
+import { appContext } from 'api/utils/AppContext';
+import { testingTenants } from 'api/utils/testingTenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { ObjectId } from 'mongodb';
 import path from 'path';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserRole } from 'shared/types/userSchema';
-import { ObjectId } from 'mongodb';
+import entities from '../entities';
 import fixtures, { permissions } from './fixtures';
 
 jest.mock(
@@ -37,10 +41,10 @@ describe('entities routes', () => {
 
   beforeEach(async () => {
     // @ts-ignore
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
     it('return asked entities with permissions', async () => {
@@ -242,6 +246,30 @@ describe('entities routes', () => {
         .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4');
 
       expect(legacyLogger.error).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
+    });
+
+    it('should run saveEntity process as a transaction', async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
+      jest.restoreAllMocks();
+      jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
+        throw new Error('error at the end of the saveEntity');
+      });
+      new UserInContextMockFactory().mock(user);
+      const response: SuperTestResponse = await request(app)
+        .post('/api/entities')
+        .field('entity', JSON.stringify(entityToSave))
+        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
+        .field('documents_originalname[0]', 'Nombre en español')
+        .expect(500);
+
+      expect(response.body).toMatchObject({
+        error: expect.any(String),
+      });
+
+      await appContext.run(async () => {
+        const myEntity = await entities.get({ title: 'my entity' });
+        expect(myEntity.length).toBe(0);
+      });
     });
   });
 });

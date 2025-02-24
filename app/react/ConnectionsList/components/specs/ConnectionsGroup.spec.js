@@ -1,9 +1,7 @@
-import { fromJS as Immutable } from 'immutable';
 import React from 'react';
-
+import { fromJS as Immutable } from 'immutable';
 import { shallow } from 'enzyme';
 import ShowIf from 'app/App/ShowIf';
-
 import { ConnectionsGroup } from '../ConnectionsGroup';
 
 describe('ConnectionsGroup', () => {
@@ -58,12 +56,16 @@ describe('ConnectionsGroup', () => {
 
       expect(subItem1.props().title).toBe('template 1');
       expect(subItem1.find('input').props().checked).toBe(false);
-      expect(subItem1.find('.multiselectItem-name').text()).toBe('template 1');
+      expect(subItem1.find('.multiselectItem-name').children().children().text()).toBe(
+        'template 1'
+      );
       expect(subItem1.find('.multiselectItem-results').text()).toBe('1');
 
       expect(subItem2.props().title).toBe('template 2');
       expect(subItem2.find('input').props().checked).toBe(false);
-      expect(subItem2.find('.multiselectItem-name').text()).toBe('template 2');
+      expect(subItem2.find('.multiselectItem-name').children().children().text()).toBe(
+        'template 2'
+      );
       expect(subItem2.find('.multiselectItem-results').text()).toBe('2');
     });
 

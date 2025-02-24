@@ -1,4 +1,4 @@
-import { Location } from 'react-router-dom';
+import { Location } from 'react-router';
 import { risonDecodeOrIgnore } from 'app/utils';
 import { isArray } from 'lodash';
 

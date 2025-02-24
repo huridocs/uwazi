@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { useNavigate, useRevalidator } from 'react-router-dom';
+import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
 import { isEqual, remove } from 'lodash';
@@ -43,11 +43,11 @@ const ThesaurusForm = ({
   const [thesauri, setThesauri] = useAtom(thesauriAtom);
   const setNotifications = useSetAtom(notificationAtom);
 
-  const handleRevalidate = (savedThesaurus: ClientThesaurus) => {
+  const handleRevalidate = async (savedThesaurus: ClientThesaurus) => {
     if (!thesaurus?._id) {
-      navigate(`../edit/${savedThesaurus._id}`);
+      await navigate(`../edit/${savedThesaurus._id}`);
     } else {
-      revalidator.revalidate();
+      await revalidator.revalidate();
     }
   };
 
@@ -68,7 +68,7 @@ const ThesaurusForm = ({
         <Translate>Thesauri added.</Translate>
       ),
     });
-    handleRevalidate(savedThesaurus);
+    await handleRevalidate(savedThesaurus);
   };
 
   const formSubmit: SubmitHandler<ClientThesaurus> = async data => {

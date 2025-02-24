@@ -1,45 +1,81 @@
-import { S3Storage, S3TimeoutError } from '../S3Storage';
+// eslint-disable-next-line max-classes-per-file
+import { S3Client } from '@aws-sdk/client-s3';
+import { S3Storage, S3Error } from '../S3Storage';
 
-let s3Storage: S3Storage;
+const expectedMetadata = {
+  requestId: 'mock-request-123',
+  cfId: 'mock-cf-456',
+  httpStatusCode: 500,
+  attempts: 3,
+  totalRetryDelay: 1000,
+};
 
-class S3TimeoutClient {
-  // eslint-disable-next-line class-methods-use-this
-  send() {
-    const error = new Error();
-    error.name = 'TimeoutError';
-    throw error;
+class MockS3Error extends Error {
+  $metadata = expectedMetadata;
+
+  constructor() {
+    super('Mock S3 Error');
+    this.name = 'S3ServiceError';
   }
 }
 
-describe('s3Storage', () => {
-  beforeAll(async () => {
-    // @ts-ignore
-    s3Storage = new S3Storage(new S3TimeoutClient());
+class MockS3Client {
+  // eslint-disable-next-line class-methods-use-this
+  send() {
+    throw new MockS3Error();
+  }
+}
+
+describe('s3Storage error handling', () => {
+  let s3Storage: S3Storage;
+
+  beforeEach(() => {
+    s3Storage = new S3Storage(new MockS3Client() as unknown as S3Client);
   });
 
-  describe('get', () => {
-    it('should throw S3TimeoutError on timeout', async () => {
-      await expect(s3Storage.get('dummy_key')).rejects.toBeInstanceOf(S3TimeoutError);
+  describe('error wrapping', () => {
+    it('should wrap S3 errors with metadata for get operation', async () => {
+      try {
+        await s3Storage.get('some_key');
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
     });
-  });
 
-  describe('upload', () => {
-    it('should throw S3TimeoutError on timeout', async () => {
-      await expect(
-        s3Storage.upload('dummy_key', Buffer.from('dummy buffer', 'utf-8'))
-      ).rejects.toBeInstanceOf(S3TimeoutError);
+    it('should wrap S3 errors with metadata for upload operation', async () => {
+      try {
+        await s3Storage.upload('some_key', Buffer.from('test'));
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
     });
-  });
 
-  describe('delete', () => {
-    it('should throw S3TimeoutError on timeout', async () => {
-      await expect(s3Storage.delete('dummy_key')).rejects.toBeInstanceOf(S3TimeoutError);
+    it('should wrap S3 errors with metadata for delete operation', async () => {
+      try {
+        await s3Storage.delete('some_key');
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
     });
-  });
 
-  describe('list', () => {
-    it('should throw S3TimeoutError on timeout', async () => {
-      await expect(s3Storage.list()).rejects.toBeInstanceOf(S3TimeoutError);
+    it('should wrap S3 errors with metadata for list operation', async () => {
+      try {
+        await s3Storage.list('some_prefix');
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(S3Error);
+        expect(error.originalError.$metadata).toEqual(expectedMetadata);
+        expect(error.httpStatusCode).toBe(500);
+      }
     });
   });
 });

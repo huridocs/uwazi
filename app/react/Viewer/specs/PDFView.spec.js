@@ -48,8 +48,8 @@ const mockUseSearchParams = jest.fn().mockImplementation(() => {
   return [params];
 });
 const mockNavigate = jest.fn().mockImplementation(path => path);
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useSearchParams: () => mockUseSearchParams(),
   useLocation: () => mockUseLocation(),
   useNavigate: () => path => mockNavigate(path),

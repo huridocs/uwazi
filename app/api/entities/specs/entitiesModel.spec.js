@@ -1,9 +1,10 @@
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import entitiesModel from '../entitiesModel';
 import testingDB from '../../utils/testing_db';
 
 describe('entitiesModel', () => {
   beforeEach(async () => {
-    await testingDB.setupFixturesAndContext({});
+    await testingEnvironment.setUp({});
   });
 
   afterAll(async () => {

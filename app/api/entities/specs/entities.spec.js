@@ -7,7 +7,7 @@ import fs from 'fs/promises';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
-import { uploadsPath, storage } from 'api/files';
+import { storage, uploadsPath } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
 import date from 'api/utils/date.js';
@@ -16,24 +16,25 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 
 import { applicationEventsBus } from 'api/eventsbus';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import entities from '../entities.js';
+import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
+import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
+import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
 import fixtures, {
   adminId,
   batmanFinishesId,
-  templateId,
+  docId1,
+  entityGetTestTemplateId,
+  syncPropertiesEntityId,
   templateChangingNames,
   templateChangingNamesProps,
-  syncPropertiesEntityId,
+  templateId,
   templateWithEntityAsThesauri,
-  docId1,
+  unpublishedDocId,
   uploadId1,
   uploadId2,
-  unpublishedDocId,
-  entityGetTestTemplateId,
 } from './fixtures.js';
-import entities from '../entities.js';
-import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
-import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
-import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -43,11 +44,11 @@ describe('entities', () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(search, 'bulkIndex').mockImplementation(async () => Promise.resolve());
     jest.spyOn(search, 'bulkDelete').mockImplementation(async () => Promise.resolve());
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('save', () => {

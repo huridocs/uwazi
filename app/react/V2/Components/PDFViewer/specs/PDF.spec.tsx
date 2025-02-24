@@ -5,9 +5,8 @@
 import React from 'react';
 import { render, act, queryAllByAttribute, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { Provider } from 'react-redux';
 import { pdfScaleAtom } from 'V2/atoms';
-import { TestAtomStoreProvider, LEGACY_createStore as createStore } from 'V2/testing';
+import { TestAtomStoreProvider } from 'V2/testing';
 import PDF, { PDFProps } from '../PDF';
 import * as helpers from '../functions/helpers';
 
@@ -78,11 +77,9 @@ describe('PDF', () => {
 
   const renderComponet = (scrollToPage?: PDFProps['scrollToPage']) => {
     renderResult = render(
-      <Provider store={createStore()}>
-        <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
-          <PDF fileUrl="url/of/file.pdf" scrollToPage={scrollToPage} highlights={highlights} />
-        </TestAtomStoreProvider>
-      </Provider>
+      <TestAtomStoreProvider initialValues={[[pdfScaleAtom, 1.5]]}>
+        <PDF fileUrl="url/of/file.pdf" scrollToPage={scrollToPage} highlights={highlights} />
+      </TestAtomStoreProvider>
     );
   };
 
