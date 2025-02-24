@@ -22,9 +22,27 @@ import { PDFUpload } from './PDFUpload';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
+
 const selectTemplateOptions = createSelector(
   s => s.templates,
-  templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
+  s => s.translations,
+  s => s.locale,
+  (templates, translations, locale) => {
+    const translationContexts = translations.find(
+      translation => translation.get('locale') === locale
+    );
+    return templates.map(tmpl => {
+      const [translationContext] = translationContexts
+        .get('contexts')
+        .filter(context => context.get('id') === tmpl.get('_id'));
+
+      const label = translationContext
+        ? t(tmpl.get('_id'), tmpl.get('name'), null, false)
+        : tmpl.get('name');
+
+      return { label, value: tmpl.get('_id') };
+    });
+  }
 );
 
 class MetadataForm extends Component {

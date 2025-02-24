@@ -21,24 +21,40 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
-  fetch(`${getIndexUrl()}/_settings`, {
-    method: 'PUT',
-    headers,
-    body: {
-      index: {
-        refresh_interval: refreshInterval,
-        number_of_replicas: numberOfReplicas,
-        translog: {
-          durability: translogDurability,
-        },
+const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) => {
+  let body = {
+    index: {
+      refresh_interval: refreshInterval,
+      number_of_replicas: numberOfReplicas,
+      translog: {
+        durability: translogDurability,
       },
     },
+  };
+
+  if (process.env.REINDEX_WITH_OPTIMIZATION) {
+    body = JSON.stringify(body);
+  }
+
+  const result = await fetch(`${getIndexUrl()}/_settings`, {
+    method: 'PUT',
+    headers,
+    body,
   });
+
+  return result;
+};
 
 const restoreSettings = async () => {
   process.stdout.write('Restoring index settings...');
-  const result = setReindexSettings('1s', 0, 'request');
+
+  const tenantReplicas = tenants.current().featureFlags?.esReplicas || 0;
+
+  if (tenants.current().featureFlags?.esReplicas) {
+    process.stdout.write('restoring ES Replicas...');
+  }
+
+  const result = setReindexSettings('1s', tenantReplicas, 'request');
   process.stdout.write(' [done]\n');
   return result;
 };
