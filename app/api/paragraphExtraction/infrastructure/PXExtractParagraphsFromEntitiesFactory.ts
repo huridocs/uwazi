@@ -5,6 +5,7 @@ import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactor
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { config } from 'api/config';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
@@ -22,7 +23,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
       entityDS: DefaultEntitiesDataSource(transactionManager),
       extractionsDS: new MongoPXExtractionsDataSource(db, transactionManager),
       extractionService: new PXExternalExtractionService({
-        url: 'http://localhost:5056',
+        url: config.externalServicesUrls.paragraphExtraction,
         httpClient: HttpClientFactory.createDefault(),
       }),
       extractorsDS: new MongoPXExtractorsDataSource(db, transactionManager),
