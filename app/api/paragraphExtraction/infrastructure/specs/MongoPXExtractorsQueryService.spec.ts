@@ -1,9 +1,4 @@
-/**
- * Get Extractors
- * 1. it should show source and target Template
- * 2. it should show the number of available Entities that can be used to be extracted
- * 3. it should calculate how many Entities was not yet extracted (It most not have an Extraction related).
- */
+import { ObjectId } from 'mongodb';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
@@ -19,11 +14,15 @@ const factory = getFixturesFactory();
 const sourceTemplate = factory.template('Source Template');
 const targetTemplate = factory.template('Target Template');
 const template = factory.template('Template');
+const paragraphProperty = factory.property('rich_text', 'markdown');
+const paragraphNumberProperty = factory.property('paragraph_number_property', 'numeric');
 
 const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
+  paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
+  paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
 const entity = factory.entity('entity', sourceTemplate.name);
@@ -101,5 +100,5 @@ describe('MongoPXExtractorsQueryService', () => {
     ]);
   });
 
-  it.todo('should count source Entities that was never extracted');
+  it.todo('should count source Entities that has never been extracted');
 });
