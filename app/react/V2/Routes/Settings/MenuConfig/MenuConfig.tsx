@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { cloneDeep, isEqual } from 'lodash';
@@ -69,7 +69,7 @@ const MenuConfig = () => {
   const save = async () => {
     const settings = await SettingsAPI.saveLinks(linkState.map(sanitizeIds));
     setSettings(settings);
-    revalidator.revalidate();
+    await revalidator.revalidate();
     setNotifications({
       type: 'success',
       text: <Translate>Updated</Translate>,

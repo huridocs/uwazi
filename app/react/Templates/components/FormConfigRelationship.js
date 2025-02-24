@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { createSelector } from 'reselect';
-
+import { sortBy } from 'lodash';
 import { Select } from 'app/ReactReduxForms';
 import { Translate, t } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -52,7 +52,10 @@ export class FormConfigRelationship extends Component {
       inheritSelectPropertyType,
     } = this.props;
 
-    const options = templates.toJS().filter(template => template._id !== templateId);
+    const options = sortBy(
+      templates.toJS().filter(template => template._id !== templateId),
+      'name'
+    );
 
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
     const canBeFilter =
@@ -76,7 +79,7 @@ export class FormConfigRelationship extends Component {
           </label>
           <Select
             model={`template.data.properties[${index}].relationType`}
-            options={relationTypes.toJS()}
+            options={sortBy(relationTypes.toJS(), 'name')}
             optionsLabel="name"
             validators={FormConfigRelationship.contentValidation()}
             optionsValue="_id"

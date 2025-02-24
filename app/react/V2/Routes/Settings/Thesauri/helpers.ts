@@ -1,5 +1,5 @@
 import { SetStateAction } from 'react';
-import { LoaderFunction } from 'react-router-dom';
+import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';

@@ -4,7 +4,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { TestAtomStoreProvider } from 'V2/testing';
 import { localeAtom } from 'V2/atoms';
 import { I18NLink } from '../I18NLinkV2';

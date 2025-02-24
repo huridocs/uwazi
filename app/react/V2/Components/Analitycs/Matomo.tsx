@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
 import { isClient } from 'app/utils';
 

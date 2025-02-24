@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useLoaderData } from 'react-router';
 import * as pxEntitiesApi from 'app/V2/api/paragraphExtractor/entities';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Table } from 'V2/Components/UI';

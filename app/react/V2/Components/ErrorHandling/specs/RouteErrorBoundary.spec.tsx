@@ -10,8 +10,8 @@ let error: any = null;
 
 const mockUseRouteError = jest.fn().mockImplementation(() => error);
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useRouteError: () => mockUseRouteError(),
 }));
 

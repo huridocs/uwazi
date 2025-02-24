@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { kebabCase } from 'lodash';
 import { CellContext } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';

@@ -13,7 +13,7 @@ jobs:
   create_pre_release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: 'staging'
           fetch-depth: 0
@@ -39,7 +39,7 @@ jobs:
         run: yarn production-build
       - uses: webfactory/ssh-agent@v0.5.4
         with:
-            ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - name: Pre release
         run: ./scripts/pre-release.sh ${{ secrets.DEPLOY_SERVER }} ${{ secrets.DEPLOY_USER }} ${{ secrets.GH_TOKEN }}
 

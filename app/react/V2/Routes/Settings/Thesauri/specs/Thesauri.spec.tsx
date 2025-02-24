@@ -13,7 +13,7 @@ import {
   render,
   cleanup,
 } from '@testing-library/react/pure';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { has } from 'lodash';
 import { templatesAtom } from 'V2/atoms';
 import { TestAtomStoreProvider } from 'V2/testing';
