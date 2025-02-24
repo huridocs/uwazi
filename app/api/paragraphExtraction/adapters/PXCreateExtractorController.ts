@@ -14,14 +14,14 @@ type PXExtractorsControllersProps = {
 } & AbstractControllerDependencies;
 
 class PXCreateExtractorController extends AbstractController {
-  createExtractor: PXCreateExtractor;
+  private createExtractor: PXCreateExtractor;
 
   constructor(dependencies: PXExtractorsControllersProps) {
     super(dependencies);
     this.createExtractor = dependencies.createExtractor;
   }
 
-  async handle(): Promise<void> {
+  protected async handle(): Promise<void> {
     const dto = InputSchema.parse(this.request.body);
 
     const output = await this.createExtractor.execute(dto);

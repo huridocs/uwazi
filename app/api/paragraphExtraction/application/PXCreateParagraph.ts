@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitySchema } from 'shared/types/entityType';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import entities from 'api/entities';
 
 import { PXExtractor } from '../domain/PXExtractor';
@@ -27,7 +28,9 @@ type PXCreateParagraphInput = {
 
 type Output = any;
 
-type Dependencies = {};
+type Dependencies = {
+  logger: Logger;
+};
 
 class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
   entitiesDS = entities;
@@ -64,6 +67,13 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
         }
       );
     }, Promise.resolve());
+
+    this.dependencies.logger.info(
+      `[PX] - Paragraph Created - ${JSON.stringify({
+        entitySharedId: firstParagraphCreated.sharedId,
+        title: firstParagraphCreated.title,
+      })}`
+    );
   }
 }
 

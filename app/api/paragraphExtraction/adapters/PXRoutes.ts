@@ -15,7 +15,7 @@ const paragraphExtractionRoutes = (app: Application) => {
       response,
       request,
       createExtractor: PXCreateExtractorFactory.createDefault(),
-    }).handle()
+    }).handleAsync()
   );
 
   app.post('/api/paragraphExtraction/extract', needsAuthorization(), async (request, response) =>
@@ -23,7 +23,7 @@ const paragraphExtractionRoutes = (app: Application) => {
       response,
       request,
       extractParagraphFromEntities: PXExtractParagraphsFromEntitiesFactory.createDefault(),
-    }).handle()
+    }).handleAsync()
   );
 
   app.get('/api/paragraphExtraction/extractors', needsAuthorization(), async (request, response) =>
@@ -31,7 +31,7 @@ const paragraphExtractionRoutes = (app: Application) => {
       response,
       request,
       extractorsQueryService: PXExtractorsQueryServiceFactory.createDefault(),
-    }).handle()
+    }).handleAsync()
   );
 };
 

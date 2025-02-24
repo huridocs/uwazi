@@ -1,14 +1,8 @@
 /* eslint-disable max-statements */
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
-import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory.js';
 import { config } from 'api/config';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
-import { PXCreateParagraphs } from 'api/paragraphExtraction/application/PXCreateParagraphs.js';
-import { PXExternalExtractionService } from 'api/paragraphExtraction/infrastructure/ExternalExtractionService/ExternalExtractionService.js';
-import { MongoPXExtractorsDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
 import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
@@ -56,22 +50,7 @@ DB.connect(config.DBHOST, dbAuth)
     const services: Record<string, any> = {
       ocr_manager: ocrManager,
       at_service: new ATServiceListener(),
-      px_listenet: new PXParagraphsResultListener({
-        createParagraphs: new PXCreateParagraphs({
-          extractorsDS: new MongoPXExtractorsDataSource(
-            DB.mongodb_Db('uwazi_development'),
-            new MongoTransactionManager(
-              DB.connectionForDB('uwazi_development').getClient(),
-              systemLogger
-            )
-          ),
-          idGenerator: MongoIdHandler,
-        }),
-        extractionService: new PXExternalExtractionService({
-          url: 'http://localhost:5056',
-          httpClient: HttpClientFactory.createDefault(),
-        }),
-      }),
+      px_paragraphs_results: new PXParagraphsResultListener(),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),
       preserve_integration: new DistributedLoop(

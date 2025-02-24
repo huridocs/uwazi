@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-import { Validator } from 'api/common.v2/contracts/Validator';
-import { PXValidationError } from './PXValidationError';
-
 type CreateExtractionIdInput = {
   extractorId: string;
   entitySharedId: string;
@@ -10,16 +7,12 @@ type CreateExtractionIdInput = {
   userId: string;
 };
 
-const validator = new Validator({
-  schema: Validator.z.object({
-    id: z.string(),
-    extractorId: z.string().min(1),
-    entitySharedId: z.string().min(1),
-    tenantName: z.string().min(1),
-    userId: z.string().min(1),
-  }),
-  name: PXValidationError.name,
-  code: PXValidationError.codes.EXTRACTION_ID_INVALID,
+const Schema = z.object({
+  id: z.string(),
+  extractorId: z.string().min(1),
+  entitySharedId: z.string().min(1),
+  tenantName: z.string().min(1),
+  userId: z.string().min(1),
 });
 
 class PXExtractionId {
@@ -40,7 +33,7 @@ class PXExtractionId {
     this.tenantName = tenantName;
     this.userId = userId;
 
-    validator.validate({
+    Schema.parse({
       id: this.id,
       extractorId: this.extractorId,
       entitySharedId: this.entitySharedId,
@@ -78,10 +71,3 @@ class PXExtractionId {
 export { PXExtractionId };
 
 export type { CreateExtractionIdInput };
-/**
- * We need to persist the PXExtraction on the database
- *
- * 1. We need to somehow create relationship between an Extractor, sharedId, User, and status
- *
- * 2. The new key, it would be tenantName + ExtractionId
- */

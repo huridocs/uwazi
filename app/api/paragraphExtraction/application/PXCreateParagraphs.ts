@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import entities from 'api/entities';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
@@ -22,7 +23,9 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
   createParagraph: PXCreateParagraph;
 
   constructor(private dependencies: Dependencies) {
-    this.createParagraph = new PXCreateParagraph({});
+    this.createParagraph = new PXCreateParagraph({
+      logger: DefaultLogger(),
+    });
   }
 
   async execute({ extractionId, paragraphs }: PXCreateParagraphsInput): Promise<Output> {

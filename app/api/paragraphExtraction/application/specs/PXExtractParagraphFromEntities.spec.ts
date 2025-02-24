@@ -33,6 +33,7 @@ import {
 } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -82,6 +83,7 @@ const setUpUseCase = () => {
     fileStorage,
     extractionsDS,
     idGenerator,
+    logger: createMockLogger(),
   });
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({

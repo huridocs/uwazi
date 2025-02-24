@@ -1,7 +1,9 @@
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
-import { PXExtractionService } from '../domain/PXExtractionService';
 import { tenants } from 'api/tenants';
+
+import { PXExtractionService } from '../domain/PXExtractionService';
+import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
+import { PXCreateParagraphsFactory } from './PXCreateParagraphsFactory';
 
 type ResultMessage = {
   key: string;
@@ -17,30 +19,29 @@ type Xml = {
   is_main_language: boolean;
 };
 
-type PXParagraphsResultListenerProps = {
-  createParagraphs: PXCreateParagraphs;
-  extractionService: PXExtractionService;
-};
-
 export class PXParagraphsResultListener {
   static SERVICE_NAME = 'extract_paragraphs';
 
   private taskManager: TaskManager;
 
-  constructor(private props: PXParagraphsResultListenerProps) {
+  private extractionService: PXExtractionService;
+
+  constructor() {
     this.taskManager = new TaskManager({
       serviceName: PXParagraphsResultListener.SERVICE_NAME,
       processResults: this.processResults.bind(this) as any,
     });
+    this.extractionService = PXExtractionServiceFactory.createDefault();
   }
 
   private async processResults(results: ResultMessage) {
     if (!results.success || !results.data_url) return;
 
-    const result = await this.props.extractionService.getParagraphsResult(results.data_url);
+    const result = await this.extractionService.getParagraphsResult(results.data_url);
 
     await tenants.run(async () => {
-      await this.props.createParagraphs.execute(result);
+      const createParagraphs = PXCreateParagraphsFactory.createDefault();
+      await createParagraphs.execute(result);
     }, result.extractionId.tenantName);
   }
 

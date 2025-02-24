@@ -16,7 +16,7 @@ type Dependencies = {
 } & AbstractControllerDependencies<Request>;
 
 class PXExtractParagraphFromEntitiesController extends AbstractController<Request> {
-  useCase: PXExtractParagraphsFromEntities;
+  private useCase: PXExtractParagraphsFromEntities;
 
   constructor(dependencies: Dependencies) {
     super(dependencies);

@@ -18,6 +18,7 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 const factory = getFixturesFactory();
 
@@ -103,6 +104,7 @@ const setUpUseCase = () => {
     extractorsDS,
     idGenerator: MongoIdHandler,
   });
+  (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
 
   return { createParagraphs };
 };

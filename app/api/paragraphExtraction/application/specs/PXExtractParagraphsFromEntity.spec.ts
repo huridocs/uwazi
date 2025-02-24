@@ -40,6 +40,7 @@ import {
   userId,
   extraction,
 } from './fixtures';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -88,6 +89,7 @@ const setUpUseCase = () => {
     fileStorage,
     extractionsDS,
     idGenerator,
+    logger: createMockLogger(),
   });
 
   return {

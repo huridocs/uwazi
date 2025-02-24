@@ -1,5 +1,9 @@
-import { config } from 'api/config';
+import util from 'util';
+import { ValidationError } from 'ajv';
+import { ZodError } from 'zod';
 import { Request, Response } from 'express';
+
+import { config } from 'api/config';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 export type Dependencies<RequestBody = any> = {
@@ -10,39 +14,60 @@ export type Dependencies<RequestBody = any> = {
 export abstract class AbstractController<RequestBody = any> {
   constructor(private dependencies: Dependencies<RequestBody>) {}
 
-  abstract handle(): Promise<void>;
+  protected abstract handle(): Promise<void>;
 
-  get request() {
+  async handleAsync() {
+    try {
+      await this.handle();
+    } catch (e) {
+      if (e instanceof ZodError) {
+        const error = new ValidationError(
+          e.errors.map(issue => ({
+            instancePath: issue.path.join('.'),
+            message: issue.message,
+          }))
+        );
+
+        error.message = util.inspect(error, false, null);
+
+        throw error;
+      }
+
+      throw e;
+    }
+  }
+
+  protected get request() {
     return this.dependencies.request;
   }
 
-  get response() {
+  protected get response() {
     return this.dependencies.response;
   }
 
-  get language() {
+  protected get language() {
     return this.request.language as LanguageISO6391;
   }
 
-  get tenantName() {
+  protected get tenantName() {
     return this.request.get('tenant') ?? config.defaultTenant.name;
   }
 
-  serverError(error: Error) {
+  protected serverError(error: Error) {
     this.response.status(500).json({
       message: error.message,
     });
   }
 
-  clientError(message: string) {
+  protected clientError(message: string) {
     this.response.status(400).json({ message });
   }
 
-  jsonResponse(body: any) {
+  protected jsonResponse(body: any) {
     this.response.status(200).json(body);
   }
 
-  ok() {
+  protected ok() {
     this.response.status(200).send();
   }
 }
