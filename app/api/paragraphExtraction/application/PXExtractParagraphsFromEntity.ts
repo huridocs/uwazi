@@ -54,7 +54,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
 
     const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
-    await this.dependencies.extractionService.extractParagraph({
+    await this.dependencies.extractionService.extractParagraphs({
       documents,
       segmentations,
       defaultLanguage,

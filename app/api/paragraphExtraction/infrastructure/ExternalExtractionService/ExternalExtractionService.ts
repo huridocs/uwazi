@@ -38,15 +38,18 @@ export class PXExternalExtractionService implements PXExtractionService {
     };
   }
 
-  async extractParagraph({
+  async extractParagraphs({
     segmentations,
     defaultLanguage,
     documents,
     files,
     extractionId,
   }: ExtractParagraphInput): Promise<void> {
-    const hasDefaultLanguage = documents.some(document => document.language === defaultLanguage);
-    const _defaultLanguage = hasDefaultLanguage ? defaultLanguage : documents[0].language;
+    const documentsHaveDefaultLanguage = documents.some(
+      document => document.language === defaultLanguage
+    );
+
+    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
 
     const dto: ExtractionDTO = {
       key: extractionId.id,
@@ -55,7 +58,7 @@ export class PXExternalExtractionService implements PXExtractionService {
 
         return {
           language,
-          main_language: language === _defaultLanguage,
+          main_language: language === mainLanguage,
           xml_file_name: segmentation.xmlname!,
           xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
             left: paragraph.left,
