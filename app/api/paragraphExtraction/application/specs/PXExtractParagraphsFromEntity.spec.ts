@@ -59,7 +59,7 @@ const createFixtures = (): DBFixture => ({
 
 const setUpUseCase = () => {
   const extractionService = {
-    extractParagraph: jest.fn(),
+    extractParagraphs: jest.fn(),
     getParagraphsResult: jest.fn(),
   };
 
@@ -176,7 +176,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       userId: new ObjectId().toString(),
     });
 
-    const [payload] = extractionService.extractParagraph.mock.lastCall;
+    const [payload] = extractionService.extractParagraphs.mock.lastCall;
 
     expect(payload.documents).toMatchObject([{ language: 'en' }, { language: 'es' }]);
   });
@@ -196,7 +196,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       userId: new ObjectId().toString(),
     });
 
-    const [payload] = extractionService.extractParagraph.mock.lastCall;
+    const [payload] = extractionService.extractParagraphs.mock.lastCall;
 
     expect(payload.segmentations).toMatchObject([
       {
@@ -271,7 +271,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       code: PXErrorCode.SEGMENTATIONS_UNAVAILABLE,
     });
 
-    expect(extractionService.extractParagraph).not.toHaveBeenCalled();
+    expect(extractionService.extractParagraphs).not.toHaveBeenCalled();
   });
 
   it('should throw if there is no Documents to be extracted', async () => {

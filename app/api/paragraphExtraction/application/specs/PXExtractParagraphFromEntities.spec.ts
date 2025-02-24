@@ -11,6 +11,8 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoPXExtractionsDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 
 import {
@@ -31,8 +33,6 @@ import {
 } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
-import { MongoPXExtractionsDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -53,7 +53,7 @@ const createFixtures = (): DBFixture => ({
 // eslint-disable-next-line max-statements
 const setUpUseCase = () => {
   const extractionService = {
-    extractParagraph: jest.fn(),
+    extractParagraphs: jest.fn(),
     getParagraphsResult: jest.fn(),
   };
 
@@ -115,11 +115,11 @@ describe('PXExtractParagraphFromEntities', () => {
 
     await extractParagraphFromEntities.execute(input);
 
-    expect(extractionService.extractParagraph).toHaveBeenCalledTimes(2);
+    expect(extractionService.extractParagraphs).toHaveBeenCalledTimes(2);
 
-    const [firstPayload] = extractionService.extractParagraph.mock.calls[0];
+    const [firstPayload] = extractionService.extractParagraphs.mock.calls[0];
 
-    const [secondPayload] = extractionService.extractParagraph.mock.calls[1];
+    const [secondPayload] = extractionService.extractParagraphs.mock.calls[1];
 
     expect(firstPayload).toMatchObject({
       documents: [

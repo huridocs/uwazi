@@ -71,7 +71,7 @@ describe('ExternalExtractionService', () => {
         userId: 'userId',
       });
 
-      await externalExtractionService.extractParagraph({
+      await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
         documents: [document],
         defaultLanguage: 'pt',
@@ -138,7 +138,7 @@ describe('ExternalExtractionService', () => {
         userId: 'userId',
       });
 
-      await externalExtractionService.extractParagraph({
+      await externalExtractionService.extractParagraphs({
         segmentations: [segmentation, segmentation2],
         documents: [document, document2],
         defaultLanguage: 'en',
