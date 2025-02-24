@@ -25,7 +25,7 @@ function excludeRefs(template) {
   return template;
 }
 
-const getMatchingHubsCount = async (entitySharedId, searchResultIds) => {
+const getMatchingHubsCount = async (entitySharedId, searchResultIds, filteredConnections) => {
   const [countResult] = await model.db.aggregate([
     { $match: { entity: entitySharedId } },
     {
@@ -38,9 +38,9 @@ const getMatchingHubsCount = async (entitySharedId, searchResultIds) => {
     },
     {
       $match: {
-        'connections.entity': {
-          $in: searchResultIds,
-        },
+        ...(filteredConnections.length
+          ? { 'connections._id': { $in: filteredConnections } }
+          : { 'connections.entity': { $in: searchResultIds } }),
       },
     },
     { $count: 'total' },
@@ -555,43 +555,42 @@ export default {
   },
 
   async _search(entitySharedId, query, language, user) {
-    const relationTypeFilter = Object.keys(query.filter || {})
-      .filter(relationTypeId => {
-        return query.filter[relationTypeId].length > 0;
-      })
-      .map(relationTypeId => {
-        if (relationTypeId === 'null') {
-          return null;
-        }
-        return new ObjectId(relationTypeId);
-      });
+    // Extract relation-template combinations from filter
+    const filterCombinations = Object.entries(query.filter || {}).reduce(
+      (acc, [relationTypeId, combinations]) => {
+        if (combinations.length === 0) return acc;
 
-    const ownRelations = await model.get({ entity: entitySharedId }, 'hub');
-    const hubsIds = ownRelations.map(relationship => relationship.hub);
-
-    const rightSideIds = (
-      await model.get(
-        {
-          hub: { $in: hubsIds },
-          entity: { $ne: entitySharedId },
-          ...(relationTypeFilter.length ? { template: { $in: relationTypeFilter } } : {}),
-        },
-        { entity: 1 }
-      )
-    ).map(r => r.entity);
-
-    const entityTemplateFilter = Object.keys(query.filter || {}).reduce(
-      (templatesToFilter, relationTypeId) => {
         return [
-          ...templatesToFilter,
-          ...query.filter[relationTypeId].map(relationTemplateIdCombo =>
-            relationTemplateIdCombo.replace(relationTypeId, '')
-          ),
+          ...acc,
+          ...combinations.map(combo => ({
+            relationTypeId: relationTypeId === 'null' ? null : new ObjectId(relationTypeId),
+            entityTemplateId: combo.replace(relationTypeId, ''),
+          })),
         ];
       },
       []
     );
 
+    const relationTypeFilter = [...new Set(filterCombinations.map(c => c.relationTypeId))];
+    const entityTemplateFilter = [...new Set(filterCombinations.map(c => c.entityTemplateId))];
+
+    // Get hub IDs for the main entity
+    const ownRelations = await model.get({ entity: entitySharedId }, 'hub');
+    const hubsIds = ownRelations.map(relationship => relationship.hub);
+
+    // Get all related entities that match the relation type filter
+    const rightSideConnections = await model.get(
+      {
+        hub: { $in: hubsIds },
+        entity: { $ne: entitySharedId },
+        ...(relationTypeFilter.length ? { template: { $in: relationTypeFilter } } : {}),
+      },
+      { entity: 1, template: 1 }
+    );
+
+    const rightSideIds = rightSideConnections.map(r => r.entity);
+
+    // Search for entities with the combined filters
     const _query = {
       ...query,
       ids: rightSideIds.length ? rightSideIds : ['no_results'],
@@ -600,11 +599,28 @@ export default {
       filter: undefined,
       types: entityTemplateFilter,
     };
+
     const searchResult = await search.search(_query, language, user);
+
+    // Filter connections that match both relation type and entity template
+    const matchingConnections = rightSideConnections.filter(connection => {
+      const matchingEntity = searchResult.rows.find(r => r.sharedId === connection.entity);
+      if (!matchingEntity) return false;
+
+      return filterCombinations.some(
+        combo =>
+          (connection.template?.equals(combo.relationTypeId) ||
+            (combo.relationTypeId === null && !connection.template)) &&
+          combo.entityTemplateId === matchingEntity.template?.toString()
+      );
+    });
+
+    const filteredConnections = matchingConnections.map(r => r._id);
 
     const totalHubs = await getMatchingHubsCount(
       entitySharedId,
-      searchResult.rows.map(r => r.sharedId)
+      searchResult.rows.map(r => r.sharedId),
+      filteredConnections
     );
 
     const agg = await model.db.aggregate([
@@ -630,16 +646,11 @@ export default {
                   {
                     $or: [
                       { $eq: ['$$conn.entity', entitySharedId] },
-                      { $in: ['$$conn.entity', searchResult.rows.map(r => r.sharedId)] },
+                      ...(filteredConnections.length
+                        ? [{ $in: ['$$conn._id', filteredConnections] }]
+                        : [{ $in: ['$$conn.entity', searchResult.rows.map(r => r.sharedId)] }]),
                     ],
                   },
-                  ...(relationTypeFilter.length
-                    ? [
-                        {
-                          $in: ['$$conn.template', relationTypeFilter],
-                        },
-                      ]
-                    : []),
                 ],
               },
             },
@@ -653,13 +664,7 @@ export default {
           },
         },
       },
-      {
-        $match: {
-          'connections.entity': {
-            $in: searchResult.rows.map(r => r.sharedId),
-          },
-        },
-      },
+      // not tested
       {
         $addFields: {
           sortValue: {
@@ -701,18 +706,18 @@ export default {
     const entitiesInvolved = await entities.get({
       sharedId: { $in: Object.keys(connectionsPerEntity) },
       language,
-      ...(entityTemplateFilter.length && {
-        $or: [{ sharedId: entitySharedId }, { template: { $in: entityTemplateFilter } }],
-      }),
     });
 
     entitiesInvolved.forEach(e => {
       e.connections = connectionsPerEntity[e.sharedId];
     });
 
+    const totalRows =
+      new Set(matchingConnections.map(r => r.entity)).size || searchResult.totalRows;
+
     return {
       aggregations: { all: {} },
-      totalRows: Number(query.limit) || 10,
+      totalRows,
       requestedHubs: Number(query.limit) || 10,
       totalHubs,
       relation: 'eq',

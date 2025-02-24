@@ -217,21 +217,26 @@ function getFixturesFactory() {
     hub: (
       hub: string,
       leftEntity: string,
-      rightEntity: string,
-      template: string | null = null
+      rightEntities: { entity: string; template: string | null }[]
     ) => [
       {
         _id: idMapper(`${hub}-1`),
         entity: leftEntity,
         hub: idMapper(hub),
-        template: template ? idMapper(template) : null
+        template: null,
+        reference: {
+          text: `${hub} left text`,
+        },
       },
-      {
-        _id: idMapper(`${hub}-2`),
-        entity: rightEntity,
+      ...rightEntities.map(({ entity, template }) => ({
+        _id: idMapper(`${entity}-${hub}-2`),
+        entity,
         hub: idMapper(hub),
-        template: template ? idMapper(template) : null
-      },
+        template: template ? idMapper(template) : null,
+        reference: {
+          text: `${hub} right text`,
+        },
+      })),
     ],
 
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
