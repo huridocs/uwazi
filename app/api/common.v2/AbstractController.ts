@@ -3,8 +3,8 @@ import { ValidationError } from 'ajv';
 import { ZodError } from 'zod';
 import { Request, Response } from 'express';
 
-import { config } from 'api/config';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { tenants } from 'api/tenants';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -63,8 +63,9 @@ export abstract class AbstractController<RequestBody = any> {
     return this.request.language as LanguageISO6391;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   protected get tenantName() {
-    return this.request.get('tenant') ?? config.defaultTenant.name;
+    return tenants.current().name;
   }
 
   protected serverError(error: Error) {
