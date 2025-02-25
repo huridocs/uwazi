@@ -17,7 +17,7 @@ export class SegmentationMapper {
         text: item.text!,
         top: item.top!,
         width: item.width!,
-        type: '', // type: Make sure if SegmentationDBO has a type or not
+        type: item.type || '',
       })),
       autoExpire: dbo.autoexpire!,
       xmlname: dbo.xmlname,
