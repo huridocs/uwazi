@@ -40,17 +40,11 @@ export class PXExternalExtractionService implements PXExtractionService {
 
   async extractParagraphs({
     segmentations,
-    defaultLanguage,
+    mainLanguage,
     documents,
     files,
     extractionId,
   }: ExtractParagraphInput): Promise<void> {
-    const documentsHaveDefaultLanguage = documents.some(
-      document => document.language === defaultLanguage
-    );
-
-    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
-
     const dto: ExtractionDTO = {
       key: extractionId.id,
       xmls: segmentations.map(segmentation => {

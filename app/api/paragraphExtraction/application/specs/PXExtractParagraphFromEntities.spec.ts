@@ -130,7 +130,7 @@ describe('PXExtractParagraphFromEntities', () => {
         { filename: file.filename, language: 'en' },
         { filename: file2.filename, language: 'es' },
       ],
-      defaultLanguage: 'en',
+      mainLanguage: 'en',
       extractionId: {
         extractorId: extractor._id.toString(),
         entitySharedId: entity.sharedId,
@@ -142,7 +142,7 @@ describe('PXExtractParagraphFromEntities', () => {
 
     expect(secondPayload).toMatchObject({
       documents: [{ filename: file3.filename, language: 'es' }],
-      defaultLanguage: 'en',
+      mainLanguage: 'es',
       extractionId: {
         extractorId: extractor._id.toString(),
         entitySharedId: entity2.sharedId,

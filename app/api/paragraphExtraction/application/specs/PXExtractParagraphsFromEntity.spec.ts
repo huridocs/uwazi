@@ -111,6 +111,26 @@ describe('PXExtractParagraphsFromEntity', () => {
     await testingEnvironment.tearDown();
   });
 
+  it("should fallback to the first document's language if no default language is present", async () => {
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      files: [file2],
+      segmentations: [segmentation2],
+    });
+
+    const { extractParagraphs, extractionService } = setUpUseCase();
+
+    await extractParagraphs.execute({
+      entitySharedId: entity.sharedId!.toString()!,
+      extractorId: extractor._id.toString(),
+      userId: userId.toString(),
+    });
+
+    const { mainLanguage } = extractionService.extractParagraphs.mock.lastCall[0];
+
+    expect(mainLanguage).toBe('es');
+  });
+
   it('should create an Extraction record for the extracted Paragraph', async () => {
     const { extractParagraphs, tenantName } = setUpUseCase();
 

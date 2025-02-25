@@ -6,7 +6,7 @@ import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Document } from 'api/files.v2/model/Document';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
@@ -59,7 +59,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
     await this.dependencies.extractionService.extractParagraphs({
       documents,
       segmentations,
-      defaultLanguage,
+      mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
       extractionId: PXExtractionId.create({
         entitySharedId: entity.sharedId,
         extractorId: extractor.id,
@@ -79,6 +79,14 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
     extraction.startProcessing();
 
     await this.dependencies.extractionsDS.save(extraction);
+  }
+
+  private static getMainLanguage(documents: Document[], defaultLanguage: LanguageISO6391) {
+    const documentsHaveDefaultLanguage = documents.some(d => d.language === defaultLanguage);
+
+    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
+
+    return mainLanguage;
   }
 
   // eslint-disable-next-line max-statements
