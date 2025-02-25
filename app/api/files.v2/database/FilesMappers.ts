@@ -6,6 +6,15 @@ import { URLAttachment } from '../model/URLAttachment';
 import { Attachment } from '../model/Attachment';
 import { CustomUpload } from '../model/CustomUpload';
 
+const toDocumentModel = (fileDBO: FileDBOType) =>
+  new Document(
+    fileDBO._id.toString(),
+    fileDBO.entity,
+    fileDBO.totalPages,
+    fileDBO.filename,
+    LanguageUtils.fromISO639_3(fileDBO.language).ISO639_1!
+  ).withCreationDate(new Date(fileDBO.creationDate));
+
 export const FileMappers = {
   toModel(fileDBO: FileDBOType): UwaziFile {
     if (fileDBO.type === 'attachment' && fileDBO.url) {
@@ -33,16 +42,8 @@ export const FileMappers = {
         fileDBO.filename
       ).withCreationDate(new Date(fileDBO.creationDate));
     }
-    return this.toDocumentModel(fileDBO);
+    return toDocumentModel(fileDBO);
   },
 
-  toDocumentModel(fileDBO: FileDBOType) {
-    return new Document(
-      fileDBO._id.toString(),
-      fileDBO.entity,
-      fileDBO.totalPages,
-      fileDBO.filename,
-      LanguageUtils.fromISO639_3(fileDBO.language).ISO639_1!
-    ).withCreationDate(new Date(fileDBO.creationDate));
-  },
+  toDocumentModel,
 };
