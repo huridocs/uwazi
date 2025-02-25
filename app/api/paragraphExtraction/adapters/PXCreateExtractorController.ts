@@ -4,27 +4,25 @@ import {
 } from 'api/common.v2/AbstractController';
 
 import { InputSchema, PXCreateExtractor } from '../application/PXCreateExtractor';
+import { PXCreateExtractorFactory } from '../infrastructure/PXCreateExtractorFactory';
 
 type Response = {
   extractorId: string;
 };
 
-type PXExtractorsControllersProps = {
-  createExtractor: PXCreateExtractor;
-} & AbstractControllerDependencies;
-
+type Dependencies = AbstractControllerDependencies;
 class PXCreateExtractorController extends AbstractController {
-  private createExtractor: PXCreateExtractor;
+  private useCase: PXCreateExtractor;
 
-  constructor(dependencies: PXExtractorsControllersProps) {
+  constructor(dependencies: Dependencies) {
     super(dependencies);
-    this.createExtractor = dependencies.createExtractor;
+    this.useCase = PXCreateExtractorFactory.createDefault();
   }
 
   protected async handle(): Promise<void> {
     const dto = InputSchema.parse(this.request.body);
 
-    const output = await this.createExtractor.execute(dto);
+    const output = await this.useCase.execute(dto);
 
     const response: Response = {
       extractorId: output.id,

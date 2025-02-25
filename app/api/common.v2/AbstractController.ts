@@ -37,6 +37,20 @@ export abstract class AbstractController<RequestBody = any> {
     }
   }
 
+  /**
+   * Adapts a controller class to an Express route handler.
+   *
+   * This method takes a controller class (not an instance), instantiates it with
+   * the request and response objects, and calls its `handleAsync` method.
+   *
+   */
+  static adapt<Controller extends AbstractController>(
+    ControllerClass: new (dependencies: Dependencies) => Controller
+  ) {
+    return async (request: Request, response: Response) =>
+      new ControllerClass({ request, response }).handleAsync();
+  }
+
   protected get request() {
     return this.dependencies.request;
   }

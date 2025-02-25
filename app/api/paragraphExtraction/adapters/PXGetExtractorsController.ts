@@ -4,22 +4,20 @@ import {
 } from 'api/common.v2/AbstractController';
 
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { PXExtractorsQueryServiceFactory } from '../infrastructure/PXExtractorsQueryServiceFactory';
 
-type PXExtractorsControllersProps = {
-  extractorsQueryService: PXExtractorsQueryService;
-} & AbstractControllerDependencies;
+type PXExtractorsControllersProps = AbstractControllerDependencies;
 
 class PXGetExtractorsController extends AbstractController {
-  extractorsQueryService: PXExtractorsQueryService;
+  queryService: PXExtractorsQueryService;
 
   constructor(dependencies: PXExtractorsControllersProps) {
     super(dependencies);
-    this.extractorsQueryService = dependencies.extractorsQueryService;
+    this.queryService = PXExtractorsQueryServiceFactory.createDefault();
   }
 
   async handle(): Promise<void> {
-    console.log(this.tenantName);
-    const output = await this.extractorsQueryService.getExtractors({}).all();
+    const output = await this.queryService.getExtractors({}).all();
 
     this.jsonResponse(output);
   }

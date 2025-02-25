@@ -8,19 +8,18 @@ import {
   InputSchema,
   PXExtractParagraphsFromEntities,
 } from '../application/PXExtractParagraphFromEntities';
+import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory';
 
 type Request = Omit<Input, 'tenantName'>;
 
-type Dependencies = {
-  extractParagraphFromEntities: PXExtractParagraphsFromEntities;
-} & AbstractControllerDependencies<Request>;
+type Dependencies = AbstractControllerDependencies<Request>;
 
 class PXExtractParagraphFromEntitiesController extends AbstractController<Request> {
   private useCase: PXExtractParagraphsFromEntities;
 
   constructor(dependencies: Dependencies) {
     super(dependencies);
-    this.useCase = dependencies.extractParagraphFromEntities;
+    this.useCase = PXExtractParagraphsFromEntitiesFactory.createDefault();
   }
 
   async handle(): Promise<void> {
