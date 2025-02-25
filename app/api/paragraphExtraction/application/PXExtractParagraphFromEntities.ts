@@ -14,7 +14,6 @@ type Dependencies = {
 
 const InputSchema = z.object({
   userId: z.string({ message: 'You should provide an User Id' }),
-  tenantName: z.string({ message: 'You should provide an Tenant name' }),
   extractorId: z.string({ message: 'You should provide an Extractor' }),
   entitySharedIds: z.array(z.string({ message: 'You should provide an Entity' })).min(1),
 });
@@ -22,12 +21,11 @@ const InputSchema = z.object({
 class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute({ entitySharedIds, extractorId, tenantName, userId }: Input): Promise<Output> {
+  async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     const promises = entitySharedIds.map(async entitySharedId =>
       this.dependencies.extractParagraphsFromEntity.execute({
         entitySharedId,
         extractorId,
-        tenantName,
         userId,
       })
     );

@@ -33,12 +33,12 @@ type Dependencies = {
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
   logger: Logger;
+  tenantName: string;
 };
 
 const Schema = z.object({
   extractorId: z.string({ message: 'You should provide an Extractor' }),
   entitySharedId: z.string({ message: 'You should provide an Entity' }),
-  tenantName: z.string(),
   userId: z.string(),
 });
 
@@ -63,7 +63,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       extractionId: PXExtractionId.create({
         entitySharedId: entity.sharedId,
         extractorId: extractor.id,
-        tenantName: input.tenantName,
+        tenantName: this.dependencies.tenantName,
         userId: input.userId,
       }),
       files,
@@ -116,7 +116,10 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   }
 
   private async getExtraction(input: Input): Promise<PXExtraction> {
-    const existingExtraction = await this.dependencies.extractionsDS.getExisting(input);
+    const existingExtraction = await this.dependencies.extractionsDS.getExisting({
+      ...input,
+      tenantName: this.dependencies.tenantName,
+    });
 
     if (existingExtraction) {
       return existingExtraction;
@@ -126,7 +129,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       id: this.dependencies.idGenerator.generate(),
       extractorId: input.extractorId,
       sourceEntityId: input.entitySharedId,
-      tenantName: input.tenantName,
+      tenantName: this.dependencies.tenantName,
       userId: input.userId,
     });
   }

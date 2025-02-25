@@ -19,11 +19,11 @@ class PXExtractParagraphFromEntitiesController extends AbstractController<Reques
 
   constructor(dependencies: Dependencies) {
     super(dependencies);
-    this.useCase = PXExtractParagraphsFromEntitiesFactory.createDefault();
+    this.useCase = PXExtractParagraphsFromEntitiesFactory.createDefault(this.tenantName);
   }
 
   async handle(): Promise<void> {
-    const dto = InputSchema.parse({ ...this.request.body, tenantName: this.tenantName });
+    const dto = InputSchema.parse(this.request.body);
 
     await this.useCase.execute(dto);
 
