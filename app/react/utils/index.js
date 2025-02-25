@@ -20,7 +20,8 @@ export function risonDecodeOrIgnore(query, defaultValue = {}) {
   try {
     return rison.decode(query);
   } catch (e) {
-    console.log('Error decoding: ', query, e);
+    //silently failing until https://github.com/huridocs/Internal-Issues/issues/266 can be solved
+    // console.log('Error decoding: ', query, e);
     return defaultValue;
   }
 }
