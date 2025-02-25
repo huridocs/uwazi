@@ -15,6 +15,7 @@ type Tenant = {
   activityLogs: string;
   featureFlags?: {
     s3Storage?: boolean;
+    esReplicas?: number;
     sync?: boolean;
     v1_transactions?: boolean;
   };
