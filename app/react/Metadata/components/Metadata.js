@@ -40,6 +40,10 @@ const renderRelationshipLinks = (linksProp, compact) => {
 const renderLink = (prop, compact) => {
   const { url, label } = prop.value;
   const renderLabel = label || url;
+  if (!renderLabel) {
+    return null;
+  }
+
   return (
     <a href={url} target="_blank" rel="noopener noreferrer">
       {renderLabel.length > 40 && compact ? `${renderLabel.substring(0, 40)}...` : renderLabel}

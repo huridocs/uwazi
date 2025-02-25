@@ -214,6 +214,13 @@ describe('MetadataForm', () => {
         templates,
         metadata: { attachments: [], sharedId: 'entitySharedId' },
         attachments: { progress: Immutable.fromJS({}) },
+        translations: Immutable.fromJS([
+          {
+            locale: 'en',
+            contexts: [{ _id: 'template1', values: { Title: 'Title translated' } }],
+          },
+        ]),
+        locale: 'en',
       };
       ownProps = { templates, templateId: templates.get(1).get('_id'), model: 'metadata' };
     });
