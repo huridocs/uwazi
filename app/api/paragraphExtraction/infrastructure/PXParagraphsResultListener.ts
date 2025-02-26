@@ -40,9 +40,13 @@ export class PXParagraphsResultListener {
     const result = await this.extractionService.getParagraphsResult(results.data_url);
 
     await tenants.run(async () => {
-      const createParagraphs = PXCreateParagraphsFactory.createDefault();
-      await createParagraphs.execute(result);
+      await this.getUseCase().execute(result);
     }, result.extractionId.tenantName);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getUseCase() {
+    return PXCreateParagraphsFactory.createDefault();
   }
 
   start(interval = 500) {
@@ -53,3 +57,5 @@ export class PXParagraphsResultListener {
     await this.taskManager.stop();
   }
 }
+
+export type { ResultMessage };
