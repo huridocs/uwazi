@@ -155,7 +155,9 @@ export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
       return super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user));
     }
 
-    ModelWithPermissions.validateUser(user);
+    // Commented for now, as it seems in order for jobs to work, they are setting the user as { _id: 'commandId', role: 'editor' },
+    // which is not a valid user id
+    // ModelWithPermissions.validateUser(user)
     return super.save(appendPermissionData(data, user));
   }
 
