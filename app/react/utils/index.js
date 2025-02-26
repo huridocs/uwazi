@@ -1,6 +1,8 @@
 import Jvent from 'jvent';
 import rison from 'rison-node';
 
+const logger = console.log;
+
 export function getPropsFromRoute({ routes }, componentProps) {
   const props = {};
   const lastRoute = routes[routes.length - 1];
@@ -18,10 +20,16 @@ export function getPropsFromRoute({ routes }, componentProps) {
 
 export function risonDecodeOrIgnore(query, defaultValue = {}) {
   try {
+    console.log = () => {};
     return rison.decode(query);
   } catch (e) {
-    console.log('Error decoding: ', query, e);
+    // silently failing until https://github.com/huridocs/Internal-Issues/issues/266 can be solved
+    // console.log('Error decoding: ', query, e);
     return defaultValue;
+  } finally {
+    // silence the console.log until we can fix the error mentioned above
+    // to avoid rison throwing console.logs
+    console.log = logger;
   }
 }
 
