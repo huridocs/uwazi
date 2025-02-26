@@ -1,5 +1,6 @@
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
@@ -40,6 +41,7 @@ export class PXParagraphsResultListener {
     const result = await this.extractionService.getParagraphsResult(results.data_url);
 
     await tenants.run(async () => {
+      permissionsContext.setCommandContext({ _id: result.extractionId.userId });
       const createParagraphs = PXCreateParagraphsFactory.createDefault();
       await createParagraphs.execute(result);
     }, result.extractionId.tenantName);

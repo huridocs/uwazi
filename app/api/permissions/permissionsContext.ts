@@ -20,8 +20,8 @@ export const permissionsContext = {
     return !['admin', 'editor'].includes(user?.role || '');
   },
 
-  setCommandContext: () => {
-    appContext.set('user', permissionsContext.commandUser);
+  setCommandContext: (user?: { _id: string }) => {
+    appContext.set('user', { ...permissionsContext.commandUser, ...user });
   },
 
   setCommandContextAsDefault: () => {
