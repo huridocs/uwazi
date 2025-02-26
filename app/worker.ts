@@ -1,20 +1,21 @@
 /* eslint-disable max-statements */
-import { DB } from 'api/odm';
 import { config } from 'api/config';
-import { tenants } from 'api/tenants';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { ocrManager } from 'api/services/ocr/OcrManager';
-import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
-import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
-import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
-import { preserveSync } from 'api/services/preserve/preserveSync';
-import { tocService } from 'api/toc_generation/tocService';
-import { syncWorker } from 'api/sync/syncWorker';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
-import { setupWorkerSockets } from 'api/socketio/setupSockets';
-import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { DB } from 'api/odm';
+import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
+import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { ocrManager } from 'api/services/ocr/OcrManager';
+import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation';
+import { preserveSync } from 'api/services/preserve/preserveSync';
+import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration';
+import { setupWorkerSockets } from 'api/socketio/setupSockets';
+import { syncWorker } from 'api/sync/syncWorker';
+import { tenants } from 'api/tenants';
+import { tocService } from 'api/toc_generation/tocService';
 import { sleep } from 'shared/tsUtils';
 import { handleError } from './api/utils/handleError.js';
 
@@ -49,6 +50,7 @@ DB.connect(config.DBHOST, dbAuth)
     const services: Record<string, any> = {
       ocr_manager: ocrManager,
       at_service: new ATServiceListener(),
+      px_paragraphs_results: new PXParagraphsResultListener(),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),
       preserve_integration: new DistributedLoop(

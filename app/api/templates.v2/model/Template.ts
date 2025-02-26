@@ -1,5 +1,5 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { Property, PropertyUpdateInfo } from './Property';
+import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 
 class Template {
   readonly id: string;
@@ -58,6 +58,10 @@ class Template {
     }
 
     return null;
+  }
+
+  getPropertiesByType(type: PropertyTypes) {
+    return this.properties.filter(p => p.type === type);
   }
 }
 

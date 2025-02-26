@@ -23,6 +23,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
+import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -383,6 +384,8 @@ function getFixturesFactory() {
     }),
 
     v2: getV2FixturesFactoryElements(idMapper),
+
+    MongoSegmentationBuilder,
   });
 }
 

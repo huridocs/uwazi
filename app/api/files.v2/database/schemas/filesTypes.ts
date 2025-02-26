@@ -11,6 +11,7 @@ interface BaseFileDBOType {
 interface DocumentFileDBOType extends BaseFileDBOType {
   type: 'document' | 'attachment' | 'custom';
   totalPages: number;
+  language: string;
 }
 
 export type FileDBOType = DocumentFileDBOType;

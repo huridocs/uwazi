@@ -72,6 +72,9 @@ export const config = {
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
+  externalServicesUrls: {
+    paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
+  },
 
   redis: {
     activated: CLUSTER_MODE,

@@ -11,6 +11,7 @@ import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import waitForExpect from 'wait-for-expect';
 import entities from '../entities';
 import {
@@ -39,6 +40,8 @@ trailer<</Root 1 0 R>>
 const tmpDir = (filename: string) => path.join(os.tmpdir(), filename);
 
 describe('entitySavingManager', () => {
+  const userInContextMock = new UserInContextMockFactory();
+
   const file = {
     originalname: 'sampleFile.txt',
     mimetype: 'text/plain',
@@ -81,11 +84,12 @@ describe('entitySavingManager', () => {
 
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
+        const mockedUser = userInContextMock.mockEditorUser();
         const entity = { title: 'newEntity', template: template1Id };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
 
         expect(savedEntity.permissions).toEqual([
-          { level: 'write', refId: 'userId', type: 'user' },
+          { level: 'write', refId: mockedUser._id.toString(), type: 'user' },
         ]);
       });
 

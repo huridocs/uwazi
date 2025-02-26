@@ -234,7 +234,11 @@ module.exports = {
       excludedFiles: './**/*.cy.tsx',
       parser: '@typescript-eslint/parser',
       parserOptions: { project: './tsconfig.json' },
-      rules: { ...rules },
+      rules: {
+        ...rules,
+        'no-empty-function': ['error', { allow: ['constructors'] }],
+        'no-useless-constructor': 'off',
+      },
     },
     {
       files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],

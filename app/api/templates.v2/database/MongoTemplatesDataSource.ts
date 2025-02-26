@@ -18,6 +18,10 @@ export class MongoTemplatesDataSource
 
   private _nameToPropertyMap?: Record<string, Property>;
 
+  getAll() {
+    return new MongoResultSet(this.getCollection().find({}), TemplateMappers.toApp);
+  }
+
   getAllRelationshipProperties() {
     const cursor = this.getCollection().aggregate([
       {
