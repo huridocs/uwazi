@@ -11,12 +11,11 @@ import { NoQualifiedTemplatesMessage } from '../components/NoQualifiedTemplate';
 import { PX_LINK_TEMPLATE_CRITERIA } from '../pxConfig';
 import { formatTemplatesToOptions } from '../utils/formatters';
 import { filterTemplatesWithParagraphs } from '../utils/filterTemplatesWithParagraphs';
+import { Steppers } from '../components/Steppers';
 
 interface ExtractorModalProps {
   extractor?: ParagraphExtractorApiPayload;
 }
-
-const isActiveStepClassName = (isActive: boolean) => (isActive ? 'bg-indigo-700' : 'bg-gray-200');
 
 const useAddExtractorModal = () => {
   const [showModal, setShowModal] = useState(false);
@@ -114,12 +113,7 @@ const useAddExtractorModal = () => {
             </div>
 
             <div className="flex flex-col">
-              <div
-                className={`flex justify-center w-full gap-2 ${targetTemplateOptions.length === 0 ? 'opacity-50' : ''}`}
-              >
-                <div className={`w-2 h-2 rounded-full ${isActiveStepClassName(step === 1)}`} />
-                <div className={`w-2 h-2 rounded-full ${isActiveStepClassName(step === 2)}`} />
-              </div>
+              <Steppers step={step} steps={3} isDisabled={targetTemplateOptions.length === 0} />
               {step === 1 && (
                 <span
                   className={`mt-5 text-gray-500 font-light text-sm ${targetTemplateOptions.length === 0 ? 'invisible' : ''}`}
