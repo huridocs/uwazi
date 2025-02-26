@@ -364,7 +364,7 @@ const MultiselectList = ({
       </div>
 
       {items.length === 0 && (
-        <div className="flex w-full h-full items-center justify-center min-h-[300px]">
+        <div className="flex w-full h-full items-center justify-center min-h-[400px]">
           {renderChild(blankState)}
         </div>
       )}

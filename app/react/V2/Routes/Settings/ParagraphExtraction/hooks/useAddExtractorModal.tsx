@@ -91,9 +91,9 @@ const useAddExtractorModal = () => {
                 }}
                 singleSelect
                 startOnSelected={!!targetTemplateId}
-                className="min-h-[327px]"
+                className="min-h-[500px]"
                 hideFilters
-                itemContainerClassName="max-h-[327px] overflow-y-auto my-4"
+                itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
                 blankState={<NoQualifiedTemplatesMessage />}
               />
             </div>
