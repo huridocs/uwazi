@@ -1,10 +1,8 @@
 import { tenants } from 'api/tenants';
+
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 
 jest.mock('api/services/tasksmanager/TaskManager');
-jest.mock('api/tenants', () => ({
-  tenants: { run: jest.fn().mockImplementation((cb: Function, _: string) => cb()) },
-}));
 
 const resultMessage: ResultMessage = {
   success: true,
@@ -20,51 +18,61 @@ const getParagraphsResultOutput = {
   },
 };
 
+let tenantUsed: string;
+
 const createSut = () => {
   const extractionService = {
     getParagraphsResult: jest.fn().mockResolvedValue(getParagraphsResultOutput),
   };
 
   const useCase = {
-    execute: jest.fn().mockResolvedValue(null),
+    execute: jest.fn().mockImplementation(() => {
+      tenantUsed = tenants.current().name;
+    }),
   };
 
-  const sut = new PXParagraphsResultListener();
-  (sut as any).extractionService = extractionService;
-  (sut as any).getUseCase = () => useCase;
+  const listener = new PXParagraphsResultListener();
+
+  (listener as any).extractionService = extractionService;
+  (listener as any).getUseCase = () => useCase;
 
   return {
-    sut,
+    listener,
+    processResults: (listener as any).processResults.bind(listener),
     extractionService,
     useCase,
   };
 };
 
 describe('PXParagraphsResultListener', () => {
+  beforeAll(async () => {
+    tenants.add({ name: 'tenantName' });
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it('should execute CreateParagraphs use case with correct params', async () => {
-    const { sut, extractionService, useCase } = createSut();
+    const { processResults, extractionService, useCase } = createSut();
 
-    await (sut as any).processResults(resultMessage);
+    await processResults(resultMessage);
 
     expect(extractionService.getParagraphsResult).toHaveBeenCalledWith(resultMessage.data_url);
     expect(useCase.execute).toHaveBeenCalledWith(getParagraphsResultOutput);
-    expect(tenants.run).toHaveBeenCalledWith(
-      expect.anything(),
-      getParagraphsResultOutput.extractionId.tenantName
-    );
+    expect(tenantUsed).toBe(getParagraphsResultOutput.extractionId.tenantName);
   });
 
   it('should not execute CreateParagraphs use case when results are not successful', async () => {
-    const { sut, extractionService, useCase } = createSut();
+    const { processResults, extractionService, useCase } = createSut();
 
-    await (sut as any).processResults({ ...resultMessage, success: false, data_url: undefined });
+    await processResults({
+      ...resultMessage,
+      success: false,
+      data_url: undefined,
+    });
 
     expect(extractionService.getParagraphsResult).not.toHaveBeenCalled();
     expect(useCase.execute).not.toHaveBeenCalled();
-    expect(tenants.run).not.toHaveBeenCalled();
   });
 });
