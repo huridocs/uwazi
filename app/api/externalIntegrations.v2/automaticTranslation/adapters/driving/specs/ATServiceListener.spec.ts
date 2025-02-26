@@ -98,7 +98,7 @@ describe('ATServiceListener', () => {
 
     it('should execute saveEntityTranslations with commandUser as its context user', async () => {
       await waitForExpect(async () => {
-        expect(userInContext).toBe(permissionsContext.commandUser);
+        expect(userInContext).toEqual(permissionsContext.commandUser);
       });
     });
   });
