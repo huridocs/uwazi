@@ -58,7 +58,7 @@ export class PXExternalExtractionService implements PXExtractionService {
             left: paragraph.left,
             top: paragraph.top,
             page_number: paragraph.pageNumber,
-            segment_type: paragraph.type,
+            type: paragraph.type,
           })),
         };
       }),

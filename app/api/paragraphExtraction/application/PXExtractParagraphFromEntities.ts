@@ -22,15 +22,15 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
   async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
-    const promises = entitySharedIds.map(async entitySharedId =>
-      this.dependencies.extractParagraphsFromEntity.execute({
+    await entitySharedIds.reduce(async (promise, entitySharedId) => {
+      await promise;
+
+      return this.dependencies.extractParagraphsFromEntity.execute({
         entitySharedId,
         extractorId,
         userId,
-      })
-    );
-
-    await Promise.all(promises);
+      });
+    }, Promise.resolve());
   }
 }
 

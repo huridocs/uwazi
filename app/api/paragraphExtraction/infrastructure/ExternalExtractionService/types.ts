@@ -2,7 +2,7 @@ type SegmentBoxDTO = {
   left: number;
   top: number;
   page_number: number;
-  segment_type: string;
+  type: string;
 };
 
 type SegmentDTO = {

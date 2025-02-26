@@ -1,9 +1,12 @@
+import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
+
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserSchema } from 'shared/types/userType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+
 import { createUpdateLogHelper } from './logHelper';
 import {
   DataType,
@@ -127,20 +130,44 @@ const controlPermissionsData = <T>(
   return { ...data, permissions: undefined };
 };
 
+export class InvalidUserIdError extends Error {
+  constructor() {
+    super('You are trying to persist a userId that is invalid');
+    this.name = 'InvalidUserIdError';
+  }
+}
+
 export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
+  private static validateUser(user: DataType<UserSchema> | undefined) {
+    try {
+      if (typeof user?._id === 'undefined') return;
+      ObjectId.createFromHexString(user._id.toString());
+    } catch (e) {
+      throw new InvalidUserIdError();
+    }
+  }
+
   async save(data: WithPermissionsDataType<T>) {
     const user = permissionsContext.getUserInContext();
     const query = { _id: data._id };
-    return data._id || data.permissions
-      ? super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user))
-      : super.save(appendPermissionData(data, user));
+
+    if (data._id || data.permissions) {
+      return super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user));
+    }
+
+    ModelWithPermissions.validateUser(user);
+    return super.save(appendPermissionData(data, user));
   }
 
   async saveMultiple(dataArray: WithPermissionsDataType<T>[]) {
     const user = permissionsContext.getUserInContext();
-    const dataArrayWithPermissions = dataArray.map(data =>
-      data._id || data.permissions ? data : appendPermissionData(data, user)
-    );
+
+    const dataArrayWithPermissions = dataArray.map(data => {
+      if (data._id || data.permissions) return data;
+
+      ModelWithPermissions.validateUser(user);
+      return appendPermissionData(data, user);
+    });
     const query = appendPermissionQuery({}, AccessLevels.WRITE, user);
     return super.saveMultiple(dataArrayWithPermissions, query, !!user);
   }
