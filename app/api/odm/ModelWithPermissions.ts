@@ -140,7 +140,7 @@ export class InvalidUserIdError extends Error {
 export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
   private static validateUser(user: DataType<UserSchema> | undefined) {
     try {
-      if (typeof user?._id === 'undefined') return;
+      if (typeof user?._id === 'undefined' || user._id === 'commandId') return;
       ObjectId.createFromHexString(user._id.toString());
     } catch (e) {
       throw new InvalidUserIdError();
@@ -155,9 +155,7 @@ export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
       return super.save(data, appendPermissionQuery(query, AccessLevels.WRITE, user));
     }
 
-    // Commented for now, as it seems in order for jobs to work, they are setting the user as { _id: 'commandId', role: 'editor' },
-    // which is not a valid user id
-    // ModelWithPermissions.validateUser(user)
+    ModelWithPermissions.validateUser(user);
     return super.save(appendPermissionData(data, user));
   }
 
