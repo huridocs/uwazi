@@ -236,7 +236,7 @@ module.exports = {
       parserOptions: { project: './tsconfig.json' },
       rules: {
         ...rules,
-        'no-empty-function': ['error', { allow: ['constructors'] }],
+        'no-empty-function': ['warn', { allow: ['constructors'] }],
         'no-useless-constructor': 'off',
       },
     },

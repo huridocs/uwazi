@@ -22,11 +22,11 @@ afterAll(async () => {
 
 let testStorageFiles: StoredFile[] = [];
 class TestFileStorage implements FileStorage {
-  async getFiles(inputs: GetFileInput[]): Promise<File[]> {
+  async getFiles(_inputs: GetFileInput[]): Promise<File[]> {
     throw new Error('Method not implemented.');
   }
 
-  async getFile(input: GetFileInput): Promise<File> {
+  async getFile(_input: GetFileInput): Promise<File> {
     throw new Error('Method not implemented.');
   }
   // eslint-disable-next-line class-methods-use-this
