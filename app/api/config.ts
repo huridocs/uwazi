@@ -49,6 +49,8 @@ export const config = {
 
   elasticsearch_nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
 
+  elasticsearch_requestTimeout: 60000,
+
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',
 
