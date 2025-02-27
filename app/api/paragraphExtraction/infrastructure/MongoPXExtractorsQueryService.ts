@@ -2,11 +2,7 @@ import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 
-import {
-  GetExtractorsInput,
-  GetExtractorsOutput,
-  PXExtractorsQueryService,
-} from '../domain/PXExtractorsQueryService';
+import { GetExtractorsOutput, PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
 
@@ -16,7 +12,7 @@ class MongoPXExtractorsQueryService
 {
   protected collectionName = mongoPXExtractorsCollection;
 
-  getExtractors(input: GetExtractorsInput): ResultSet<GetExtractorsOutput> {
+  getExtractors(): ResultSet<GetExtractorsOutput> {
     const cursor = this.getCollection().aggregate([
       // Join with the templates collection to get sourceTemplate details
       {

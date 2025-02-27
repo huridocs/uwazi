@@ -2,7 +2,6 @@ import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
 import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
 
