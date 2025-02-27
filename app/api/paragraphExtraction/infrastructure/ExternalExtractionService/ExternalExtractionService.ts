@@ -8,7 +8,8 @@ import {
   GetParagraphsResultOutput,
   PXExtractionService,
 } from '../../domain/PXExtractionService';
-import { ExtractionDTO, GetParagraphsResultDTO } from './types';
+import { GetParagraphsResultDTO } from './types';
+import { PXExtractionMapper } from './PXExtractionMapper';
 
 type Dependencies = {
   url: string;
@@ -38,42 +39,13 @@ export class PXExternalExtractionService implements PXExtractionService {
     };
   }
 
-  async extractParagraphs({
-    segmentations,
-    defaultLanguage,
-    documents,
-    files,
-    extractionId,
-  }: ExtractParagraphInput): Promise<void> {
-    const documentsHaveDefaultLanguage = documents.some(
-      document => document.language === defaultLanguage
-    );
-
-    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
-
-    const dto: ExtractionDTO = {
-      key: extractionId.id,
-      xmls: segmentations.map(segmentation => {
-        const language = documents.find(document => document.id === segmentation.fileId)?.language!;
-
-        return {
-          language,
-          main_language: language === mainLanguage,
-          xml_file_name: segmentation.xmlname!,
-          xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
-            left: paragraph.left,
-            top: paragraph.top,
-            page_number: paragraph.pageNumber,
-            type: paragraph.type,
-          })),
-        };
-      }),
-    };
+  async extractParagraphs(input: ExtractParagraphInput): Promise<void> {
+    const dto = PXExtractionMapper.toDto(input);
 
     await this.dependencies.httpClient.postFormData({
       url: `${this.dependencies.url}/extract_paragraphs`,
       files: {
-        xml_files: files,
+        xml_files: input.files,
       },
       fields: {
         json_data: new HttpField(dto),
