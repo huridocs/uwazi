@@ -95,6 +95,10 @@ describe('attachments', () => {
 
     it('should navigate to the spanish document when language is spanish', () => {
       cy.contains('a', 'Library').click();
+      cy.contains(
+        'h2.item-name',
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+      );
       cy.get('.menuNav-language').click();
       cy.get('ul.dropdown-menu.expanded').within(() => {
         cy.contains('a', 'Español').click();

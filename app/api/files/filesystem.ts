@@ -58,6 +58,8 @@ const testingUploadPaths = async (subPath: string = '') => {
     await createDirIfNotExists(`${__dirname}/specs/uploads/${subPath}`);
     await createDirIfNotExists(`${__dirname}/specs/customUploads/${subPath}`);
   }
+
+  await createDirIfNotExists(`${__dirname}/specs/uploads/segmentation/${subPath}`);
   return {
     uploadedDocuments: `${__dirname}/specs/uploads/${subPath}`,
     attachments: `${__dirname}/specs/uploads/${subPath}`,

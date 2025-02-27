@@ -16,6 +16,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import uniqueID from 'shared/uniqueID';
 import { config } from 'api/config';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { UserSchema } from '../../shared/types/userType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';

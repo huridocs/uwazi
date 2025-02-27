@@ -4,6 +4,8 @@ import { LibraryTableComponent } from 'app/Library/LibraryTable';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 
+jest.mock('app/appRoutes');
+
 describe('LibraryTable', () => {
   let component;
   let context;

@@ -2,12 +2,13 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { FilesHealthCheck } from '../FilesHealthCheck';
-import { FileStorage } from '../contracts/FileStorage';
+import { FileStorage, GetFileInput } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
 import { CustomUpload } from '../model/CustomUpload';
 import { StoredFile } from '../model/StoredFile';
+import { File } from '../model/File';
 
 const factory = getFixturesFactory();
 
@@ -21,6 +22,13 @@ afterAll(async () => {
 
 let testStorageFiles: StoredFile[] = [];
 class TestFileStorage implements FileStorage {
+  async getFiles(inputs: GetFileInput[]): Promise<File[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async getFile(input: GetFileInput): Promise<File> {
+    throw new Error('Method not implemented.');
+  }
   // eslint-disable-next-line class-methods-use-this
   getPath(file: UwaziFile): string {
     if (file instanceof URLAttachment) {

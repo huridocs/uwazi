@@ -3,17 +3,22 @@
 import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
-import { matchRoutes, RouteObject } from 'react-router-dom';
+import {
+  createStaticHandler,
+  createStaticRouter,
+  matchRoutes,
+  RouteObject,
+  StaticHandlerContext,
+  StaticRouterProvider,
+} from 'react-router';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
-import { omit, isEmpty } from 'lodash';
+import { omit, isEmpty, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
@@ -28,6 +33,7 @@ import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
+import { options } from './reactRouterConfig';
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -154,9 +160,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const reduxData = {
     user: userApiResponse.json,
-    templates: templatesApiResponse.json.rows,
+    templates: sortBy(templatesApiResponse.json.rows, 'name'),
     thesauris: thesaurisApiResponse.json.rows,
-    relationTypes: relationTypesApiResponse.json.rows,
+    relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
     translations: translationsApiResponse.json.rows,
     settings: {
       collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
@@ -254,10 +260,10 @@ const getSSRProperties = async (
   language?: string
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
-  const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
   const { fetchRequest, ssrError } = createFetchRequest(req);
+  const { query } = createStaticHandler(routes);
   const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as any);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext, options);
   const reduxState = reduxStore.getState();
 
   return {

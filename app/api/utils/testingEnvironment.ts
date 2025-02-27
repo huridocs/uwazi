@@ -20,13 +20,13 @@ const testingEnvironment = {
     await this.setElastic(elasticIndex);
   },
 
-  async setTenant(name?: string) {
+  async setTenant(name?: string, subPath = '') {
     testingTenants.mockCurrentTenant({
       name: name || testingDB.dbName || 'defaultDB',
       dbName: testingDB.dbName || name || 'defaultDB',
       indexName: 'index',
     });
-    await setupTestUploadedPaths();
+    await setupTestUploadedPaths(subPath);
   },
 
   setFakeContext() {
@@ -84,6 +84,12 @@ const testingEnvironment = {
 
   async tearDown() {
     await testingDB.disconnect();
+  },
+
+  db: {
+    async getAllFrom(collectionName: string) {
+      return testingDB.mongodb?.collection(collectionName).find().toArray();
+    },
   },
 };
 

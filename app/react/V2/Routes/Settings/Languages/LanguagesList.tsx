@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { useLoaderData, LoaderFunction } from 'react-router-dom';
+import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { Row, createColumnHelper } from '@tanstack/react-table';

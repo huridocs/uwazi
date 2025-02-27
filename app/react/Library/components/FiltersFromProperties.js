@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import rison from 'rison-node';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';

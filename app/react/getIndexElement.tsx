@@ -1,12 +1,13 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
 import { ClientSettings } from 'app/apiResponseTypes';
-import { validateHomePageRoute } from './utils/routeHelpers';
-import { PageView } from './Pages/PageView';
-import { LibraryTable } from './Library/LibraryTable';
+import React from 'react';
+import { Navigate } from 'react-router';
+import LibraryRoot from './Library/Library';
+import { LibraryCards } from './Library/LibraryCards';
 import { LibraryMap } from './Library/LibraryMap';
-import { LibraryCards } from './Library/Library';
+import { LibraryTable } from './Library/LibraryTable';
+import { PageView } from './Pages/PageView';
 import { Login } from './Users/Login';
+import { validateHomePageRoute } from './utils/routeHelpers';
 import { ViewerRoute } from './Viewer/ViewerRoute';
 
 const deconstructSearchQuery = (query?: string) => {
@@ -23,14 +24,26 @@ const getCustomLibraryPage = (customHomePage: string[]) => {
   const queryString = query ? searchQuery : '';
 
   if (customHomePage.includes('map')) {
-    return <LibraryMap params={{ q: queryString }} />;
+    return (
+      <LibraryRoot>
+        <LibraryMap params={{ q: queryString }} />
+      </LibraryRoot>
+    );
   }
 
   if (customHomePage.includes('table')) {
-    return <LibraryTable params={{ q: queryString }} />;
+    return (
+      <LibraryRoot>
+        <LibraryTable params={{ q: queryString }} />
+      </LibraryRoot>
+    );
   }
 
-  return <LibraryCards params={{ q: queryString }} />;
+  return (
+    <LibraryRoot>
+      <LibraryCards params={{ q: queryString }} />
+    </LibraryRoot>
+  );
 };
 
 const getLibraryDefault = (
@@ -48,14 +61,26 @@ const getLibraryDefault = (
 
   switch (defaultLibraryView) {
     case 'table':
-      return <LibraryTable />;
+      return (
+        <LibraryRoot>
+          <LibraryTable />
+        </LibraryRoot>
+      );
 
     case 'map':
-      return <LibraryMap />;
+      return (
+        <LibraryRoot>
+          <LibraryMap />
+        </LibraryRoot>
+      );
 
     case 'cards':
     default:
-      return <LibraryCards />;
+      return (
+        <LibraryRoot>
+          <LibraryCards />
+        </LibraryRoot>
+      );
   }
 };
 
@@ -65,7 +90,7 @@ const getIndexElement = (settings: ClientSettings | undefined, userId: string | 
   const isValidHomePage = validateHomePageRoute(settings?.home_page || '');
   let element = <Navigate to={customHomePage.join('/')} />;
   let parameters;
-
+  let defaultToLibrary = true;
   switch (true) {
     case !isValidHomePage || customHomePage.length === 0:
       element = getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
@@ -76,6 +101,7 @@ const getIndexElement = (settings: ClientSettings | undefined, userId: string | 
         const pageId = customHomePage[customHomePage.indexOf('page') + 1];
         element = <PageView params={{ sharedId: pageId }} />;
         parameters = { sharedId: pageId };
+        defaultToLibrary = false;
       }
       break;
 
@@ -83,6 +109,7 @@ const getIndexElement = (settings: ClientSettings | undefined, userId: string | 
       {
         const pageId = customHomePage[customHomePage.indexOf('entity') + 1];
         element = <ViewerRoute params={{ sharedId: pageId }} />;
+        defaultToLibrary = false;
       }
       break;
 
@@ -94,7 +121,7 @@ const getIndexElement = (settings: ClientSettings | undefined, userId: string | 
       break;
   }
 
-  return { element, parameters };
+  return { element, parameters, defaultToLibrary };
 };
 
 export { getIndexElement };

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
 import { SearchBar } from 'app/Library/components/SearchBar';

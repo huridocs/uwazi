@@ -150,9 +150,9 @@ Cypress.on('window:before:load', window => {
   );
 });
 
-Cypress.Commands.add('clearAndType', (selector, value) => {
-  cy.get(selector).clear();
-  cy.get(selector).type(value);
+Cypress.Commands.add('clearAndType', (selector, value, options) => {
+  cy.get(selector).clear(options);
+  cy.get(selector).type(value, options);
 });
 
 // eslint-disable-next-line prefer-arrow-callback
@@ -161,7 +161,7 @@ Cypress.Commands.addQuery('getByTestId', function getByTestId(id) {
   return subject => getFn(subject);
 });
 
-Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
+Cypress.Commands.add('addTimeLink', (duration, label, index = 0, seconds = -1, minutes = -1) => {
   cy.get('.timelinks-form').scrollIntoView();
   cy.get('video', { timeout: 2000 }).then(async $video => {
     await $video[0].play();
@@ -174,6 +174,11 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
 
   cy.contains('button', 'Add timelink').should('be.visible').click();
   const timeLinkSelector = `input[name="timelines.${index}.label"`;
+
+  if (seconds !== -1) {
+    cy.clearAndType(`input[name="timelines.${index}.timeMinutes"`, seconds, { delay: 0 });
+    cy.clearAndType(`input[name="timelines.${index}.timeSeconds"`, minutes, { delay: 0 });
+  }
   cy.get(timeLinkSelector).type(label);
 });
 
@@ -192,6 +197,12 @@ Cypress.Commands.add('realDragAndDrop', (subject, target) => {
     .realMouseMove(0, 0, { position: 'center' })
     .wait(100);
   target.realMouseMove(0, 0, { position: 'center' }).realMouseUp().wait(100);
+});
+
+Cypress.Commands.add('waitForLegacyNotifications', () => {
+  cy.get('.alert-wrapper').each(element => {
+    cy.wrap(element).should('be.empty');
+  });
 });
 
 export {};

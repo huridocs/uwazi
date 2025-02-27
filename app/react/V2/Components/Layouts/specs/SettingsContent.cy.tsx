@@ -1,6 +1,6 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router';
 import 'cypress-axe';
-import { BrowserRouter } from 'react-router-dom';
 import { mount } from '@cypress/react18';
 import { SettingsContent } from '../SettingsContent';
 

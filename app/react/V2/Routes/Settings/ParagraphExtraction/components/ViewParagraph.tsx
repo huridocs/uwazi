@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Translate } from 'app/I18N';
 import { PXParagraphTable } from '../types';
 import { DisplayPills } from './DisplayPills';

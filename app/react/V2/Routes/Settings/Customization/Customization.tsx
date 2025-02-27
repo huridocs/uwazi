@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useBlocker, useLoaderData } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 import { FetchResponseError } from 'shared/JSONRequest';

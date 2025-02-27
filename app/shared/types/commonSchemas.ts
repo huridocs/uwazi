@@ -252,7 +252,7 @@ export const languageSchema = {
     default: { type: 'boolean' },
     ISO639_3: { type: 'string' },
     elastic: { type: 'string' },
-    ISO639_1: { type: 'string' },
+    ISO639_1: LanguageISO6391Schema,
     localized_label: { type: 'string' },
     translationAvailable: { type: 'boolean' },
   },

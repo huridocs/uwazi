@@ -103,7 +103,7 @@ describe('DocumentTypesList', () => {
     };
     it('should list all the templates if fromFilters is false', () => {
       render({ fromFilters: false });
-      checkExpectedList(['Case', 'Judge', 'Country', 'Documents']);
+      checkExpectedList(['Case', 'Country', 'Documents', 'Judge']);
     });
 
     it.each([true, undefined])(

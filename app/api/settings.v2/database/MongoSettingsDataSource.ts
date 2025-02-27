@@ -1,5 +1,6 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { Settings as SettingsType } from 'shared/types/settingsType';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { DefaultLanguageMissingError } from '../errors/settingsErrors';
 
@@ -8,6 +9,12 @@ export class MongoSettingsDataSource
   implements SettingsDataSource
 {
   protected collectionName = 'settings';
+
+  async getInstalledLanguages(): Promise<LanguagesListSchema> {
+    const settings = await this.readSettings();
+
+    return settings?.languages || [];
+  }
 
   protected async readSettings(): Promise<SettingsType | null> {
     return this.getCollection().findOne({});

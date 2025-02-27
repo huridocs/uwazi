@@ -69,7 +69,7 @@ socket.on('translationsChange', languageTranslations => {
   } else {
     translations.push(languageTranslations);
   }
-  atomStore.set(translationsAtom, translations);
+  atomStore.set(translationsAtom, [...translations]);
 });
 
 socket.on('translationKeysChange', translationsEntries => {
@@ -80,7 +80,7 @@ socket.on('translationKeysChange', translationsEntries => {
       .contexts.find(c => c.id && c.id === item.context.id);
     modifiedContext.values[item.key] = item.value;
   });
-  atomStore.set(translationsAtom, translations);
+  atomStore.set(translationsAtom, [...translations]);
 });
 
 socket.on('translationsInstallDone', () => {
@@ -109,7 +109,7 @@ socket.on('translationsInstallError', errorMessage => {
 socket.on('translationsDelete', locale => {
   const translations = atomStore.get(translationsAtom);
   const updatedTranslations = translations.filter(language => language.locale !== locale);
-  atomStore.set(translationsAtom, updatedTranslations);
+  atomStore.set(translationsAtom, [...updatedTranslations]);
 });
 
 socket.on('translationsDeleteDone', () => {

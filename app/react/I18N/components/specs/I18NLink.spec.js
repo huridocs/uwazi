@@ -4,8 +4,8 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router';
 import { I18NLink } from '../I18NLink';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 describe('I18NLink', () => {
   let props;

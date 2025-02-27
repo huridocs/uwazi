@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
 import { TestAtomStoreProvider } from 'V2/testing';
 import { Matomo } from '../Matomo';

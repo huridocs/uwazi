@@ -16,10 +16,12 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
     this.transactionManager = transactionManager;
   }
 
-  protected getCollection(collectionName = this.collectionName) {
-    return new SyncedCollection<TSchema>(
-      new SessionScopedCollection<TSchema>(
-        this.db.collection<TSchema>(collectionName),
+  protected getCollection<Collection extends Document = TSchema>(
+    collectionName = this.collectionName
+  ) {
+    return new SyncedCollection<Collection>(
+      new SessionScopedCollection<Collection>(
+        this.db.collection<Collection>(collectionName),
         this.transactionManager
       ),
       this.transactionManager,

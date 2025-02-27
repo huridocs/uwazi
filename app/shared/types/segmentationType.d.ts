@@ -10,6 +10,7 @@ export interface ParagraphSchema {
   height?: number;
   page_number?: number;
   text?: string;
+  type?: string;
 }
 
 export type ParagraphsSchema = ParagraphSchema[];

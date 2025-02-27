@@ -1,15 +1,13 @@
 import React from 'react';
+import { Outlet, matchPath } from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
-import DocumentsList from 'app/Library/components/DocumentsList';
-import { requestState } from 'app/Library/helpers/requestState';
-import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import { withRouter } from 'app/componentWrappers';
-import { trackPage } from 'app/App/GoogleAnalytics';
+import { routes as appRoutes } from 'app/appRoutes';
 
-class Library extends RouteHandler {
+class LibraryRootComponent extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
@@ -22,23 +20,48 @@ class Library extends RouteHandler {
     this.state = { scrollCount: 0 };
   }
 
-  static async requestState(requestParams, globalResources) {
-    return requestState(requestParams, globalResources);
-  }
-
   urlHasChanged(nextProps) {
     const nextSearchParams = new URLSearchParams(nextProps.location.search);
     const currentSearchParams = new URLSearchParams(this.props.location.search);
     return nextSearchParams.get('q') !== currentSearchParams.get('q');
   }
 
-  componentWillUnmount() {
-    this.emptyState();
-  }
-
   componentDidUpdate(prevProps) {
     if (this.urlHasChanged(prevProps)) {
       this.getClientState(this.props);
+    }
+  }
+
+  findMatchingRoute = (pathname, routes, parentPath = '') => {
+    let result = null;
+
+    routes.every(route => {
+      if (result !== null) {
+        return false;
+      }
+
+      const currentPath = `${parentPath}/${route.path || ''}`.replace('//', '/');
+      const match = matchPath({ path: currentPath, end: false }, pathname);
+
+      if (match) {
+        if (currentPath === pathname && route.handle?.library) result = route;
+
+        if (route.children) {
+          const childMatch = this.findMatchingRoute(pathname, route.children, currentPath);
+          if (childMatch) result = childMatch;
+        }
+      }
+      return true;
+    });
+
+    return result;
+  };
+
+  componentWillUnmount() {
+    const nextLocation = window?.location?.pathname;
+    const matchedRoute = this.findMatchingRoute(nextLocation, appRoutes);
+    if (!matchedRoute && !nextLocation.includes('library')) {
+      this.emptyState();
     }
   }
 
@@ -56,26 +79,19 @@ class Library extends RouteHandler {
   }
 
   render() {
-    trackPage();
-    return (
-      <LibraryLayout
-        sidePanelMode={this.props.sidePanelMode}
-        scrollCallback={this.scrollCallback}
-        scrollCount={this.state.scrollCount}
-      >
-        <DocumentsList
-          storeKey="library"
-          CollectionViewer={this.props.viewer}
-          zoomIn={this.zoomIn}
-          zoomOut={this.zoomOut}
-          scrollCount={this.state.scrollCount}
-        />
-      </LibraryLayout>
-    );
+    if (this.props.children) {
+      return this.props.children;
+    }
+
+    return <Outlet />;
   }
 }
 
-const SSRLibrary = withRouter(Library);
+const SSRLibrary = withRouter(LibraryRootComponent);
 
-export const LibraryCards = Object.assign(SSRLibrary, { requestState: Library.requestState });
-export default Library;
+export const LibraryRoot = Object.assign(SSRLibrary, {
+  requestState: LibraryRootComponent.requestState,
+});
+
+export { LibraryRootComponent };
+export default LibraryRoot;

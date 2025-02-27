@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { act, fireEvent, RenderResult, screen, render } from '@testing-library/react';
-import { Location, MemoryRouter } from 'react-router-dom';
+import { Location, MemoryRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { ClientUserSchema } from 'app/apiResponseTypes';
 import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';

@@ -11,8 +11,8 @@ import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 
 const mockRedirect = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   redirect: jest.fn().mockImplementation(path => mockRedirect(path)),
 }));
 
