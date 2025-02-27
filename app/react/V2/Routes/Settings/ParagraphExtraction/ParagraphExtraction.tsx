@@ -99,7 +99,7 @@ const ParagraphExtractorDashboard = () => {
           setSelected([]);
         }}
       />
-      <AddExtractorModal extractor={selected?.length ? selected[0] : undefined} />
+      <AddExtractorModal />
     </div>
   );
 };

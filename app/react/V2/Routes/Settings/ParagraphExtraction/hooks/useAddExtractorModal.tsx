@@ -6,39 +6,30 @@ import { Translate } from 'app/I18N';
 import { Link, useRevalidator } from 'react-router';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ParagraphExtractorApiPayload } from '../types';
 import { NoQualifiedTemplatesMessage } from '../components/NoQualifiedTemplate';
 import { PX_LINK_TEMPLATE_CRITERIA } from '../pxConfig';
 import { formatTemplatesToOptions } from '../utils/formatters';
-import { filterTemplatesWithParagraphs } from '../utils/filterTemplatesWithParagraphs';
+import { filterPXQualifiedTemplates } from '../utils/filterPXQualifiedTemplates';
 import { Steppers } from '../components/Steppers';
-
-interface ExtractorModalProps {
-  extractor?: ParagraphExtractorApiPayload;
-}
+import { Select } from 'app/V2/Components/Forms';
 
 const useAddExtractorModal = () => {
   const [showModal, setShowModal] = useState(false);
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
 
-  const AddExtractorModal = ({ extractor }: ExtractorModalProps) => {
+  const AddExtractorModal = () => {
     const templates = useAtomValue(templatesAtom);
-    const [step, setStep] = useState(1);
-    const [sourceTemplateId, setSourceTemplateId] = useState<string>(
-      extractor?.sourceTemplateId ?? ''
-    );
-    const [targetTemplateId, setTargetTemplateId] = useState<string>(
-      extractor?.targetTemplateId ?? ''
-    );
+    const [sourceTemplateId, setSourceTemplateId] = useState<string>('');
+    const [targetTemplateId, setTargetTemplateId] = useState<string>('');
 
     const [targetTemplateOptions] = useState(
-      formatTemplatesToOptions(templates.filter(filterTemplatesWithParagraphs))
+      formatTemplatesToOptions(templates.filter(filterPXQualifiedTemplates))
     );
     const [sourceTemplateOptions, setSourceTemplateOptions] = useState(
       formatTemplatesToOptions(
         templates
-          .filter(filterTemplatesWithParagraphs)
+          .filter(filterPXQualifiedTemplates)
           .filter(template => template._id !== targetTemplateId)
       )
     );
@@ -52,7 +43,6 @@ const useAddExtractorModal = () => {
     const handleSubmit = async () => {
       try {
         const values = {
-          ...extractor,
           sourceTemplateId,
           targetTemplateId,
         };
@@ -69,52 +59,158 @@ const useAddExtractorModal = () => {
       }
     };
 
+    const STEPS = {
+      1: {
+        title: 'Target template',
+        body: (
+          <div>
+            <MultiselectList
+              value={[targetTemplateId]}
+              items={targetTemplateOptions}
+              onChange={selected => {
+                setTargetTemplateId(selected[0]);
+              }}
+              singleSelect
+              className="min-h-[500px]"
+              hideFilters
+              itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
+              blankState={<NoQualifiedTemplatesMessage />}
+            />
+          </div>
+        ),
+        footer: (
+          <>
+            <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button
+              className="grow bg-indigo-800 disabled:opacity-50"
+              onClick={() => setStep(2)}
+              disabled={!targetTemplateId}
+            >
+              <span className="flex items-center justify-center gap-2 flex-nowrap">
+                <Translate>Next</Translate>
+                <ArrowRightIcon className="w-5" />
+              </span>
+            </Button>
+          </>
+        ),
+      },
+      2: {
+        title: 'Extraction configuration',
+        body: (
+          <div className="flex flex-col gap-4 min-h-[500px] my-4">
+            <div>
+              <Select
+                id="rich-text-property"
+                label={
+                  <Translate className="text-sm font-semibold text-gray-900">
+                    Paragraph text extraction property (rich text):
+                  </Translate>
+                }
+                value={''}
+                options={[]}
+                onChange={() => {}}
+              />
+            </div>
+            <div>
+              <Select
+                id="numeric-text-property"
+                label={
+                  <Translate className="text-sm font-semibold text-gray-900">
+                    Paragraph text extraction property (numeric text):
+                  </Translate>
+                }
+                value={''}
+                options={[]}
+                onChange={() => {}}
+              />
+            </div>
+            <hr className="w-5" />
+            <div>
+              <Select
+                id="relationship-type"
+                label={
+                  <Translate className="text-sm font-semibold text-gray-900">
+                    Relationship type:
+                  </Translate>
+                }
+                value={''}
+                options={[]}
+                onChange={() => {}}
+              />
+            </div>
+          </div>
+        ),
+        footer: (
+          <>
+            <Button styling="light" onClick={() => setStep(1)} className="grow">
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button className="grow disabled:opacity-50" onClick={async () => setStep(3)}>
+              <span className="flex items-center justify-center gap-2 flex-nowrap">
+                <Translate>Next</Translate>
+                <ArrowRightIcon className="w-5" />
+              </span>
+            </Button>
+          </>
+        ),
+      },
+      3: {
+        title: 'Source template',
+        body: (
+          <div>
+            <MultiselectList
+              value={[sourceTemplateId]}
+              items={sourceTemplateOptions}
+              onChange={selected => {
+                setSourceTemplateId(selected[0]);
+              }}
+              allowSelelectAll={false}
+              singleSelect
+              className="min-h-[500px]"
+              itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
+            />
+          </div>
+        ),
+        footer: (
+          <>
+            <Button styling="light" onClick={() => setStep(2)} className="grow">
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button
+              className="grow disabled:opacity-50"
+              color="success"
+              onClick={async () => handleSubmit()}
+              disabled={!sourceTemplateId}
+            >
+              <span className="flex items-center justify-center gap-2 flex-nowrap">
+                <Translate>Create</Translate>
+              </span>
+            </Button>
+          </>
+        ),
+      },
+    };
+
+    const [step, setStep] = useState<keyof typeof STEPS>(1);
+
     return (
       showModal && (
         <Modal size="xxl">
           <Modal.Header>
-            <h1 className="text-lg font-semibold text-gray-900">
-              {(step === 1 && <Translate>Target template</Translate>) ||
-                (step === 2 && <Translate>Source template</Translate>)}
-            </h1>
+            <h1 className="text-lg font-semibold text-gray-900">{STEPS[step].title}</h1>
             <Modal.CloseButton onClick={() => setShowModal(false)} />
           </Modal.Header>
-
           <Modal.Body className="pt-0">
-            <div className={`${step !== 1 ? 'hidden' : ''}`}>
-              <MultiselectList
-                value={[targetTemplateId]}
-                items={targetTemplateOptions}
-                onChange={selected => {
-                  setTargetTemplateId(selected[0]);
-                }}
-                singleSelect
-                startOnSelected={!!targetTemplateId}
-                className="min-h-[500px]"
-                hideFilters
-                itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
-                blankState={<NoQualifiedTemplatesMessage />}
-              />
-            </div>
-            <div className={`${step !== 2 ? 'hidden' : ''}`}>
-              <div>
-                <MultiselectList
-                  value={[sourceTemplateId]}
-                  items={sourceTemplateOptions}
-                  onChange={selected => {
-                    setSourceTemplateId(selected[0]);
-                  }}
-                  allowSelelectAll={false}
-                  singleSelect
-                  itemContainerClassName="max-h-[327px] overflow-y-auto my-4"
-                  className="min-h-[327px]"
-                />
-              </div>
-            </div>
-
+            {STEPS[step].body}
             <div className="flex flex-col">
-              <Steppers step={step} steps={3} isDisabled={targetTemplateOptions.length === 0} />
-              {step === 1 && (
+              <Steppers
+                step={step}
+                steps={Object.keys(STEPS).length}
+                isDisabled={targetTemplateOptions.length === 0}
+              />
+              {step !== 3 && (
                 <span
                   className={`mt-5 text-gray-500 font-light text-sm ${targetTemplateOptions.length === 0 ? 'invisible' : ''}`}
                 >
@@ -126,41 +222,9 @@ const useAddExtractorModal = () => {
               )}
             </div>
           </Modal.Body>
-
           <Modal.Footer>
             <div className="flex flex-col w-full">
-              <div className="flex gap-2">
-                {step === 1 ? (
-                  <>
-                    <Button styling="light" onClick={() => setShowModal(false)} className="grow">
-                      <Translate>Cancel</Translate>
-                    </Button>
-                    <Button
-                      className="grow bg-indigo-800 disabled:opacity-50"
-                      onClick={() => setStep(2)}
-                      disabled={!targetTemplateId}
-                    >
-                      <span className="flex items-center justify-center gap-2 flex-nowrap">
-                        <Translate>Next</Translate>
-                        <ArrowRightIcon className="w-5" />
-                      </span>
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button styling="light" onClick={() => setStep(1)} className="grow">
-                      <Translate>Back</Translate>
-                    </Button>
-                    <Button
-                      className="grow bg-indigo-800 disabled:opacity-50"
-                      onClick={async () => handleSubmit()}
-                      disabled={!sourceTemplateId}
-                    >
-                      {extractor ? <Translate>Update</Translate> : <Translate>Add</Translate>}
-                    </Button>
-                  </>
-                )}
-              </div>
+              <div className="flex gap-2">{STEPS[step].footer}</div>
             </div>
           </Modal.Footer>
         </Modal>
