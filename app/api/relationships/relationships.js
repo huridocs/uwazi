@@ -19,35 +19,13 @@ import {
   guessRelationshipPropertyHub,
 } from './relationshipsHelpers';
 import { validateConnectionSchema } from './validateConnectionSchema';
+import { relationshipsSearch } from './relationshipsSearch';
 
 function excludeRefs(template) {
   delete template.refs;
   return template;
 }
 
-const getMatchingHubsCount = async (entitySharedId, searchResultIds, filteredConnections) => {
-  const [countResult] = await model.db.aggregate([
-    { $match: { entity: entitySharedId } },
-    {
-      $lookup: {
-        from: 'connections',
-        localField: 'hub',
-        foreignField: 'hub',
-        as: 'connections',
-      },
-    },
-    {
-      $match: {
-        ...(filteredConnections.length
-          ? { 'connections._id': { $in: filteredConnections } }
-          : { 'connections.entity': { $in: searchResultIds } }),
-      },
-    },
-    { $count: 'total' },
-  ]);
-
-  return countResult?.total || 0;
-};
 function getPropertiesToBeConnections(template) {
   const props = [];
   template.properties.forEach(prop => {
@@ -109,34 +87,6 @@ const conformRelationships = (rows, parentEntitySharedId) => {
       }, fromJS([]));
     return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
   }, fromJS([]));
-};
-
-const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
-  const hubs = conformRelationships(results.rows, entitySharedId).toJS();
-  results.totalHubs = hubs.length;
-  results.requestedHubs = Number(hubsLimit);
-
-  if (hubsLimit) {
-    const hubsToReturn = hubs.slice(0, hubsLimit).map(h => h.hub.toString());
-    results.rows = results.rows.reduce((limitedResults, row) => {
-      let rowInHubsToReturn = false;
-      row.connections = row.connections.reduce((limitedConnections, connection) => {
-        if (hubsToReturn.indexOf(connection.hub.toString()) !== -1) {
-          limitedConnections.push(connection);
-          rowInHubsToReturn = true;
-        }
-        return limitedConnections;
-      }, []);
-
-      if (rowInHubsToReturn) {
-        limitedResults.push(row);
-      }
-
-      return limitedResults;
-    }, []);
-  }
-
-  return results;
 };
 
 const determinePropertyValues = (entity, propertyName) => {
@@ -492,255 +442,12 @@ export default {
     }
   },
 
-  search(entitySharedId, query, language, user) {
-    const hubsLimit = query.limit || 0;
-
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
+  async search(entitySharedId, query, language, user) {
+    if (!entitySharedId || !language) {
+      throw new Error('entitySharedId and language are required');
     }
-    return Promise.all([
-      this.getByDocument(entitySharedId, language),
-      entities.getById(entitySharedId, language),
-    ]).then(([relationships, entity]) => {
-      relationships.sort((a, b) =>
-        (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString())
-      );
 
-      const filter = Object.keys(query.filter).reduce(
-        (result, filterGroupKey) => result.concat(query.filter[filterGroupKey]),
-        []
-      );
-      const filteredRelationships = relationships.filter(
-        relationship =>
-          !filter.length ||
-          filter.includes(relationship.template + relationship.entityData.template)
-      );
-
-      const ids = filteredRelationships
-        .map(relationship => relationship.entity)
-        .reduce((result, id) => {
-          if (!result.includes(id) && id !== entitySharedId) {
-            result.push(id);
-          }
-          return result;
-        }, []);
-      query.ids = ids.length ? ids : ['no_results'];
-      query.includeUnpublished = true;
-      query.limit = 9999;
-      delete query.filter;
-
-      return search.search(query, language, user).then(results => {
-        results.rows.forEach(item => {
-          item.connections = filteredRelationships.filter(
-            relationship => relationship.entity === item.sharedId
-          );
-        });
-
-        if (results.rows.length) {
-          let filteredRelationshipsHubs = results.rows.map(item =>
-            item.connections.map(relationship => relationship.hub.toString())
-          );
-          filteredRelationshipsHubs = Array.prototype.concat(...filteredRelationshipsHubs);
-          entity.connections = relationships.filter(
-            relationship =>
-              relationship.entity === entitySharedId &&
-              filteredRelationshipsHubs.includes(relationship.hub.toString())
-          );
-          results.rows.push(entity);
-        }
-
-        return limitRelationshipResults(results, entitySharedId, hubsLimit);
-      });
-    });
-  },
-
-  async _search(entitySharedId, query, language, user) {
-    // Extract relation-template combinations from filter
-    const filterCombinations = Object.entries(query.filter || {}).reduce(
-      (acc, [relationTypeId, combinations]) => {
-        if (combinations.length === 0) return acc;
-
-        return [
-          ...acc,
-          ...combinations.map(combo => ({
-            relationTypeId: relationTypeId === 'null' ? null : new ObjectId(relationTypeId),
-            entityTemplateId: combo.replace(relationTypeId, ''),
-          })),
-        ];
-      },
-      []
-    );
-
-    const relationTypeFilter = [...new Set(filterCombinations.map(c => c.relationTypeId))];
-    const entityTemplateFilter = [...new Set(filterCombinations.map(c => c.entityTemplateId))];
-
-    // Get hub IDs for the main entity
-    const ownRelations = await model.get({ entity: entitySharedId }, 'hub');
-    const hubsIds = ownRelations.map(relationship => relationship.hub);
-
-    // Get all related entities that match the relation type filter
-    const rightSideConnections = await model.get(
-      {
-        hub: { $in: hubsIds },
-        entity: { $ne: entitySharedId },
-        ...(relationTypeFilter.length ? { template: { $in: relationTypeFilter } } : {}),
-      },
-      { entity: 1, template: 1 }
-    );
-
-    const rightSideIds = rightSideConnections.map(r => r.entity);
-
-    // Search for entities with the combined filters
-    const _query = {
-      ...query,
-      ids: rightSideIds.length ? rightSideIds : ['no_results'],
-      includeUnpublished: true,
-      limit: 9999,
-      filter: undefined,
-      types: entityTemplateFilter,
-    };
-
-    const searchResult = await search.search(_query, language, user);
-
-    // Filter connections that match both relation type and entity template
-    const matchingConnections = rightSideConnections.filter(connection => {
-      const matchingEntity = searchResult.rows.find(r => r.sharedId === connection.entity);
-      if (!matchingEntity) return false;
-
-      return filterCombinations.some(
-        combo =>
-          (connection.template?.equals(combo.relationTypeId) ||
-            (combo.relationTypeId === null && !connection.template)) &&
-          combo.entityTemplateId === matchingEntity.template?.toString()
-      );
-    });
-
-    const filteredConnections = matchingConnections.map(r => r._id);
-
-    const totalHubs = await getMatchingHubsCount(
-      entitySharedId,
-      searchResult.rows.map(r => r.sharedId),
-      filteredConnections
-    );
-
-    const agg = await model.db.aggregate([
-      { $match: { entity: entitySharedId } },
-      { $project: { hub: 1 } },
-      {
-        $lookup: {
-          from: 'connections',
-          localField: 'hub',
-          foreignField: 'hub',
-          as: 'connections',
-        },
-      },
-      {
-        $project: {
-          hub: 1,
-          connections: {
-            $filter: {
-              input: '$connections',
-              as: 'conn',
-              cond: {
-                $and: [
-                  {
-                    $or: [
-                      { $eq: ['$$conn.entity', entitySharedId] },
-                      ...(filteredConnections.length
-                        ? [{ $in: ['$$conn._id', filteredConnections] }]
-                        : [{ $in: ['$$conn.entity', searchResult.rows.map(r => r.sharedId)] }]),
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-      {
-        $match: {
-          'connections.entity': {
-            $in: searchResult.rows.map(r => r.sharedId),
-          },
-        },
-      },
-      // not tested
-      {
-        $addFields: {
-          sortValue: {
-            $min: {
-              $map: {
-                input: '$connections',
-                as: 'conn',
-                in: {
-                  $cond: {
-                    if: { $ne: ['$$conn.entity', entitySharedId] },
-                    then: {
-                      $indexOfArray: [searchResult.rows.map(r => r.sharedId), '$$conn.entity'],
-                    },
-                    else: 999999, // arbitrary high number
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      {
-        $sort: { sortValue: 1 },
-      },
-      { $limit: Number(query.limit) || 10 },
-    ]);
-
-    const connectionsPerEntity = agg.reduce((memo, row) => {
-      row.connections.forEach(connection => {
-        if (!memo[connection.entity]) {
-          memo[connection.entity] = [];
-        }
-        connection.entityData = searchResult.rows.find(r => r.sharedId === connection.entity);
-        memo[connection.entity].push(connection);
-      });
-      return memo;
-    }, {});
-
-    const entitiesInvolved = await entities.get({
-      sharedId: { $in: Object.keys(connectionsPerEntity) },
-      language,
-    });
-
-    entitiesInvolved.forEach(e => {
-      e.connections = connectionsPerEntity[e.sharedId];
-    });
-
-    const totalRows =
-      new Set(matchingConnections.map(r => r.entity)).size || searchResult.totalRows;
-
-    return {
-      aggregations: { all: {} },
-      totalRows,
-      requestedHubs: Number(query.limit) || 10,
-      totalHubs,
-      relation: 'eq',
-      // rows: entitiesInvolved,
-      rows: entitiesInvolved.sort((a, b) => {
-        // Handle sharedId first (always put it at the end)
-        if (a.sharedId === entitySharedId) return 1;
-        if (b.sharedId === entitySharedId) return -1;
-
-        // Find indices in searchResults
-        const indexA = searchResult.rows.findIndex(r => r.sharedId === a.sharedId);
-        const indexB = searchResult.rows.findIndex(r => r.sharedId === b.sharedId);
-
-        // Handle cases where items are not found in searchResults
-        if (indexA === -1 && indexB === -1) return 0;
-        if (indexA === -1) return 1;
-        if (indexB === -1) return -1;
-
-        return indexA - indexB;
-      }),
-    };
-
-    return this.search(entitySharedId, query, language, user);
+    return relationshipsSearch(entitySharedId, query, language, user);
   },
 
   async delete(relationQuery, _language, updateMetdata = true) {
