@@ -115,10 +115,10 @@ describe('relationships search', () => {
       {
         title: entity1.title,
         connections: [
-          { entity: entity1.sharedId, hub: hub1[0].hub },
-          { entity: entity1.sharedId, hub: hub2[0].hub },
-          { entity: entity1.sharedId, hub: hub3[0].hub },
-          { entity: entity1.sharedId, hub: hub4[0].hub },
+          { entity: entity1.sharedId, hub: hub1[0].hub, entityData: { title: entity1.title } },
+          { entity: entity1.sharedId, hub: hub2[0].hub, entityData: { title: entity1.title } },
+          { entity: entity1.sharedId, hub: hub3[0].hub, entityData: { title: entity1.title } },
+          { entity: entity1.sharedId, hub: hub4[0].hub, entityData: { title: entity1.title } },
         ],
       },
     ]);

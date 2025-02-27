@@ -64,8 +64,11 @@ const filterMatchingConnections = (connections, searchResults, filterCombination
     );
   });
 
-const destructureHubsIntoEntities = async (hubs, searchResults, language) => {
-  const entityMap = new Map(searchResults.rows.map(entity => [entity.sharedId, entity]));
+const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, language) => {
+  const leftSideEntity = await entities.getById(entitySharedId, language);
+  const entityMap = new Map(
+    searchResults.rows.concat([leftSideEntity]).map(entity => [entity.sharedId, entity])
+  );
   const connectionsPerEntity = hubs.reduce((memo, row) => {
     row.connections.forEach(connection => {
       // eslint-disable-next-line no-param-reassign
@@ -221,6 +224,7 @@ export const relationshipsSearch = async (entitySharedId, query, language, user)
   const limit = Number(query.limit) || 10;
 
   const entitiesWithConnections = await destructureHubsIntoEntities(
+    entitySharedId,
     await getHubs(entitySharedId, filteredConnections, filteredSharedIds, limit),
     searchResult,
     language
