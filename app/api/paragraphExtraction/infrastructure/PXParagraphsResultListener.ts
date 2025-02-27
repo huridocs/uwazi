@@ -1,5 +1,7 @@
+import users from 'api/users/users';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
@@ -40,9 +42,20 @@ export class PXParagraphsResultListener {
     const result = await this.extractionService.getParagraphsResult(results.data_url);
 
     await tenants.run(async () => {
-      const createParagraphs = PXCreateParagraphsFactory.createDefault();
-      await createParagraphs.execute(result);
+      await this.setCurrentUser(result.extractionId.userId);
+      await this.getUseCase().execute(result);
     }, result.extractionId.tenantName);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getUseCase() {
+    return PXCreateParagraphsFactory.createDefault();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private async setCurrentUser(userId: string) {
+    const user = await users.getById(userId, '-password', true);
+    permissionsContext.setUserInContext(user);
   }
 
   start(interval = 500) {
@@ -53,3 +66,5 @@ export class PXParagraphsResultListener {
     await this.taskManager.stop();
   }
 }
+
+export type { ResultMessage };
