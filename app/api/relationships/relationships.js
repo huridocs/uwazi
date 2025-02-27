@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import _ from 'lodash';
 
 import templatesAPI from 'api/templates';
@@ -9,7 +8,6 @@ import { createError } from 'api/utils';
 
 import { ObjectId } from 'mongodb';
 import model from './model';
-import { search } from '../search';
 import { generateNames } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
@@ -39,55 +37,6 @@ function getPropertiesToBeConnections(template) {
   });
   return props;
 }
-
-// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
-const conformRelationships = (rows, parentEntitySharedId) => {
-  let order = -1;
-  const hubsObject = fromJS(rows || []).reduce((hubs, row) => {
-    let hubsImmutable = hubs;
-    row.get('connections').forEach(connection => {
-      const hubId = connection.get('hub').toString();
-      if (!hubsImmutable.has(hubId)) {
-        order += 1;
-        hubsImmutable = hubsImmutable.set(
-          hubId,
-          fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
-        );
-      }
-
-      if (row.get('sharedId') === parentEntitySharedId) {
-        hubsImmutable = hubsImmutable.setIn([hubId, 'leftRelationship'], connection);
-      } else {
-        const templateId = connection.get('template');
-        if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
-          hubsImmutable = hubsImmutable.setIn(
-            [hubId, 'rightRelationships', templateId],
-            fromJS([])
-          );
-        }
-        const newConnection = connection.set('entity', row.delete('connections'));
-        hubsImmutable = hubsImmutable.setIn(
-          [hubId, 'rightRelationships', templateId],
-          hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection)
-        );
-      }
-    });
-
-    return hubsImmutable;
-  }, fromJS({}));
-
-  return hubsObject.reduce((hubs, hub) => {
-    const rightRelationships = hub
-      .get('rightRelationships')
-      .reduce((memo, relationshipsArray, template) => {
-        const newMemo = memo.push(
-          fromJS({}).set('template', template).set('relationships', relationshipsArray)
-        );
-        return newMemo;
-      }, fromJS([]));
-    return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
-  }, fromJS([]));
-};
 
 const determinePropertyValues = (entity, propertyName) => {
   const metadata = entity.metadata || {};
