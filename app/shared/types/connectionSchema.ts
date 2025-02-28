@@ -9,6 +9,7 @@ export const connectionSchema = {
   additionalProperties: false,
   properties: {
     _id: objectIdSchema,
+    __v: { type: 'number' },
     hub: objectIdSchema,
     template: {
       oneOf: [{ type: 'null' }, objectIdSchema],

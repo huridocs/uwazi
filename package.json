@@ -26,7 +26,7 @@
     "preproduction-build": "yarn run tailwind",
     "production-build": "./webpack/build.sh",
     "run-production": "NODE_ENV=production node --no-experimental-fetch server.js",
-    "dev-server": "./node_modules/.bin/nodemon --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
+    "dev-server": "nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
     "dev-queue": "node --no-experimental-fetch ./scripts/run.js ../app/queueWorker.ts",
