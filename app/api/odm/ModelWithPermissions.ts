@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 

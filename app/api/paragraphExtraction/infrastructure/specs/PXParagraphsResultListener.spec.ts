@@ -15,6 +15,7 @@ const resultMessage: ResultMessage = {
 const getParagraphsResultOutput = {
   extractionId: {
     tenantName: 'tenantName',
+    userId: 'any_user_id',
   },
 };
 
@@ -35,6 +36,7 @@ const createSut = () => {
 
   (listener as any).extractionService = extractionService;
   (listener as any).getUseCase = () => useCase;
+  (listener as any).setCurrentUser = jest.fn().mockResolvedValue(null);
 
   return {
     listener,
@@ -54,10 +56,13 @@ describe('PXParagraphsResultListener', () => {
   });
 
   it('should execute CreateParagraphs use case with correct params', async () => {
-    const { processResults, extractionService, useCase } = createSut();
+    const { listener, processResults, extractionService, useCase } = createSut();
 
     await processResults(resultMessage);
 
+    expect((listener as any).setCurrentUser).toHaveBeenCalledWith(
+      getParagraphsResultOutput.extractionId.userId
+    );
     expect(extractionService.getParagraphsResult).toHaveBeenCalledWith(resultMessage.data_url);
     expect(useCase.execute).toHaveBeenCalledWith(getParagraphsResultOutput);
     expect(tenantUsed).toBe(getParagraphsResultOutput.extractionId.tenantName);
