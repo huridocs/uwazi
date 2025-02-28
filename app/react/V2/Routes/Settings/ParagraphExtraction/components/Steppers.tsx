@@ -19,7 +19,7 @@ const Steppers = ({
     <div className={`flex justify-center w-full gap-2 ${isDisabled ? 'opacity-50' : ''}`}>
       {Array.from({ length: steps }).map((_, index) => (
         <div
-          key={`step-${_}`}
+          key={`step-${index + 1}`}
           className={`w-2 h-2 rounded-full ${isActiveStepClassName(index === step - 1)}`}
         />
       ))}

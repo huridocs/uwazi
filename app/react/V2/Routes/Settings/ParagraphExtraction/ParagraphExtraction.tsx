@@ -10,7 +10,7 @@ import { PXTable, ParagraphExtractorApiResponse } from './types';
 import { formatExtractors } from './utils/formatters';
 import { PXTableFooter } from './components/PXTableFooter';
 import { usePXActionModal } from './hooks/usePXActionModal';
-import { useAddExtractorModal } from './hooks/useAddExtractorModal';
+import { AddExtractorModalComponent } from './components/Modals/AddExtractor';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
@@ -21,7 +21,6 @@ const ParagraphExtractorDashboard = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);
 
-  const { AddExtractorModal, setShowModal: showAddExtractorModal } = useAddExtractorModal();
   const { Modal: ConfirmDeleteModal, setShowModal: showConfirmModal } = usePXActionModal({
     action: 'deleteExtractor',
     actionParams: selected?.map(selection => selection._id) as string[],
@@ -87,9 +86,7 @@ const ParagraphExtractorDashboard = () => {
               </div>
             </div>
           ) : (
-            <Button type="button" onClick={() => showAddExtractorModal(true)} disabled={isSaving}>
-              <Translate>Add extractor</Translate>
-            </Button>
+            <AddExtractorModalComponent disabled={isSaving} />
           )}
         </SettingsContent.Footer>
       </SettingsContent>
@@ -99,7 +96,6 @@ const ParagraphExtractorDashboard = () => {
           setSelected([]);
         }}
       />
-      <AddExtractorModal />
     </div>
   );
 };

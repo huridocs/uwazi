@@ -1,7 +1,7 @@
 import { Template } from 'app/apiResponseTypes';
 
 const filterPXQualifiedTemplates = (template: Template) =>
-  template.properties?.some(({ name }) => name === 'rich_text') &&
-  template.properties?.some(({ name }) => name === 'numeric_text');
+  template.properties?.some(({ type }) => type === 'markdown') &&
+  template.properties?.some(({ type }) => type === 'numeric');
 
 export { filterPXQualifiedTemplates };

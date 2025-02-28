@@ -1,0 +1,34 @@
+import React from 'react';
+import { MultiselectList } from 'V2/Components/UI';
+import { useAtomValue } from 'jotai';
+import { templatesAtom } from 'V2/atoms';
+import { NoQualifiedTemplatesMessage } from './NoQualifiedTemplate';
+import { useAddExtractorContext } from '../../AddExtractorContext';
+import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates';
+import { formatTemplatesToOptions } from '../../../../../utils/formatters';
+
+const Body = () => {
+  const { targetTemplateId, setTargetTemplateId } = useAddExtractorContext();
+  const templates = useAtomValue(templatesAtom);
+  const targetTemplateOptions = formatTemplatesToOptions(
+    templates.filter(filterPXQualifiedTemplates)
+  );
+  return (
+    <div>
+      <MultiselectList
+        value={[targetTemplateId]}
+        items={targetTemplateOptions}
+        onChange={selected => {
+          setTargetTemplateId(selected[0]);
+        }}
+        singleSelect
+        className="min-h-[500px]"
+        hideFilters
+        itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
+        blankState={<NoQualifiedTemplatesMessage />}
+      />
+    </div>
+  );
+};
+
+export { Body };
