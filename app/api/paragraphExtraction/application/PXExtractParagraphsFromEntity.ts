@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
@@ -19,7 +17,11 @@ import { PXExtractionId } from '../domain/PXExtractionId';
 import { PXExtraction } from '../domain/PXExtraction';
 import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
 
-type Input = z.infer<typeof Schema>;
+type Input = {
+  userId: string;
+  extractorId: string;
+  entitySharedId: string;
+};
 
 type Output = void;
 
@@ -35,12 +37,6 @@ type Dependencies = {
   logger: Logger;
   tenantName: string;
 };
-
-const Schema = z.object({
-  extractorId: z.string({ message: 'You should provide an Extractor' }),
-  entitySharedId: z.string({ message: 'You should provide an Entity' }),
-  userId: z.string(),
-});
 
 export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}

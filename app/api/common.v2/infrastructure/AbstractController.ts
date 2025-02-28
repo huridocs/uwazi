@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { tenants } from 'api/tenants';
+import { User } from 'api/users/usersModel';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;
@@ -55,6 +56,10 @@ export abstract class AbstractController<RequestBody = any> {
     return this.dependencies.request;
   }
 
+  protected get user(): User {
+    return this.dependencies.request?.user;
+  }
+
   protected get response() {
     return this.dependencies.response;
   }
@@ -66,6 +71,12 @@ export abstract class AbstractController<RequestBody = any> {
   // eslint-disable-next-line class-methods-use-this
   protected get tenantName() {
     return tenants.current().name;
+  }
+
+  protected ensureUser() {
+    if (!this.user) {
+      throw new Error('User not found');
+    }
   }
 
   protected serverError(error: Error) {
