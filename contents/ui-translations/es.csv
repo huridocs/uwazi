@@ -2,9 +2,15 @@ Key,Spanish
 % of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
+1 Numeric Property,1 Numeric Property
+1 Numeric Property,1 Numeric Property
+1 Rich text property,1 Rich text property
+1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
+A target template needs at least,A target template needs at least
+A target template needs at least,A target template needs at least
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accept suggestion,Accept suggestion
@@ -593,6 +599,8 @@ Pages,Páginas
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
+Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
 Password,Contraseña
 Password + 2fa,Password + 2fa
@@ -669,6 +677,7 @@ Reject,Rechazar
 Relationship,Relación
 relationship consistency warning,"No se puede utilizar ""cualquier entidad o documento"" si otra relación del mismo tipo está establecida con una entidad específica. "
 Relationship Type,Tipo de relación
+Relationship type:,Relationship type:
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,relaciones
@@ -827,7 +836,6 @@ Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
 The request could not be processed.,La petición no pudo ser procesada.
-The target template needs at least 1 rich text property,The target template needs at least 1 rich text property
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!

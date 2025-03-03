@@ -2,9 +2,15 @@ Key,English
 % of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
+1 Numeric Property,1 Numeric Property
+1 Numeric Property,1 Numeric Property
+1 Rich text property,1 Rich text property
+1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,A generated ID will be the default title.
+A target template needs at least,A target template needs at least
+A target template needs at least,A target template needs at least
 A valid email is required,A valid email is required
 Accept,Accept
 Accept suggestion,Accept suggestion
@@ -597,6 +603,8 @@ Pages,Pages
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
+Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
 Password,Password
 Password + 2fa,Password + 2fa
@@ -673,6 +681,7 @@ Reject,Reject
 Relationship,Relationship
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type:,Relationship type:
 Relationship types,Relationship types
 relationships,relationships
 Relationships,Relationships
@@ -832,7 +841,6 @@ Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,The import process threw an error:
 The request could not be processed.,The request could not be processed.
-The target template needs at least 1 rich text property,The target template needs at least 1 rich text property
 The template contains errors,The template contains errors
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!

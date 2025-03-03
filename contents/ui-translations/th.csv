@@ -2,9 +2,15 @@ Key,Thai
 % of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
+1 Numeric Property,1 Numeric Property
+1 Numeric Property,1 Numeric Property
+1 Rich text property,1 Rich text property
+1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
+A target template needs at least,A target template needs at least
+A target template needs at least,A target template needs at least
 A valid email is required,จำเป็นต้องใช้อีเมล
 Accept,ตกลง
 Accept suggestion,Accept suggestion
@@ -595,6 +601,8 @@ Pages,หน้า
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
+Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
 Password,รหัสผ่าน
 Password + 2fa,Password + 2fa
@@ -671,6 +679,7 @@ Reject,ปฏิเสธ
 Relationship,ความสัมพันธ์
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type:,Relationship type:
 Relationship types,ประเภทความสัมพันธ์
 relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
@@ -830,7 +839,6 @@ Text,ข้อความ
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,กระบวนการนำเข้าเกิดความผิดพลาด
 The request could not be processed.,The request could not be processed.
-The target template needs at least 1 rich text property,The target template needs at least 1 rich text property
 The template contains errors,มีข้อผิดพลาดที่แม่แบบ
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!

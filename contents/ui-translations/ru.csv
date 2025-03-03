@@ -2,9 +2,15 @@ Key,Russian
 % of sentences above threshold,% предложений выше порога
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
+1 Numeric Property,1 Numeric Property
+1 Numeric Property,1 Numeric Property
+1 Rich text property,1 Rich text property
+1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,Сгенерированный идентификатор будет назначен заголовком по умолчанию
+A target template needs at least,A target template needs at least
+A target template needs at least,A target template needs at least
 A valid email is required,Требутся электронная почта
 Accept,Принять
 Accept suggestion,Accept suggestion
@@ -592,6 +598,8 @@ Pages,Страницы
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
+Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
 Password,Пароль
 Password + 2fa,Password + 2fa
@@ -668,6 +676,7 @@ Reject,Отклонить
 Relationship,Взаимосвязь
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type:,Relationship type:
 Relationship types,Типы взаимосвязей
 relationships,Взаимосвязи
 Relationships,Взаимосвязи
@@ -827,7 +836,6 @@ Text,Текст
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,Процесс импорта выдал ошибку:
 The request could not be processed.,The request could not be processed.
-The target template needs at least 1 rich text property,The target template needs at least 1 rich text property
 The template contains errors,Шаблон содержит ошибки
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
