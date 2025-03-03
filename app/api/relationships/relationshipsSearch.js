@@ -66,9 +66,11 @@ const filterMatchingConnections = (connections, searchResults, filterCombination
 
 const destructureHubsIntoEntities = async (entitySharedId, hubs, searchResults, language) => {
   const leftSideEntity = await entities.getById(entitySharedId, language);
-  const entityMap = new Map(
-    searchResults.rows.concat([leftSideEntity]).map(entity => [entity.sharedId, entity])
-  );
+  let foundEntities = searchResults.rows;
+  if (leftSideEntity) {
+    foundEntities = foundEntities.concat([leftSideEntity]);
+  }
+  const entityMap = new Map(foundEntities.map(entity => [entity.sharedId, entity]));
   const connectionsPerEntity = hubs.reduce((memo, row) => {
     row.connections.forEach(connection => {
       // eslint-disable-next-line no-param-reassign

@@ -83,6 +83,18 @@ describe('relationships search', () => {
     await testingEnvironment.tearDown();
   });
 
+  it('should return empty results when entity does not exists (should be 404, this is for backwards compat)', async () => {
+    const results = await relationships.search('entity5', {}, 'en', {});
+
+    expect(results).toMatchObject({
+      totalHubs: 0,
+      totalRows: 0,
+      requestedHubs: 10,
+    });
+
+    expect(results.rows).toEqual([]);
+  });
+
   it('should return all hubs for a specific entity', async () => {
     const results = await relationships.search('entity1', { sort: '_id' }, 'en', {});
 
