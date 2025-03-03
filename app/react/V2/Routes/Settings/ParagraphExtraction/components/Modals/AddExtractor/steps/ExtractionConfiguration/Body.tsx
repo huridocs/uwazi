@@ -2,9 +2,32 @@ import React, { useMemo } from 'react';
 import { Translate } from 'app/I18N';
 import { OptionSchema, Select } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'app/V2/atoms';
+import { relationshipTypesAtom, templatesAtom } from 'app/V2/atoms';
 import { TemplateSchema } from 'shared/types/templateType';
 import { useAddExtractorContext } from '../../AddExtractorContext';
+
+const getOptions = (options: OptionSchema[]) => [
+  {
+    key: `select-${Math.random().toString()}`,
+    value: '',
+    label: 'Select...',
+  },
+  ...options,
+];
+
+const getTemplateProperties = (
+  type: TemplateSchema['type'],
+  targetTemplate?: TemplateSchema
+): OptionSchema[] =>
+  targetTemplate?.properties
+    ? targetTemplate.properties
+        .filter(property => property.type === type)
+        .map(property => ({
+          key: property._id?.toString(),
+          value: property._id?.toString() ?? '',
+          label: property.label,
+        }))
+    : [];
 
 const Body = () => {
   const {
@@ -17,42 +40,26 @@ const Body = () => {
     setRelationshipId,
   } = useAddExtractorContext();
   const templates = useAtomValue(templatesAtom);
+  const relationTypes = useAtomValue(relationshipTypesAtom);
   const targetTemplate = templates.find(template => template._id === targetTemplateId);
 
-  const getProperties = useMemo(
-    () =>
-      (type: TemplateSchema['type']): OptionSchema[] =>
-        targetTemplate?.properties
-          ? targetTemplate.properties
-              .filter(property => property.type === type)
-              .map(property => ({
-                key: property._id?.toString(),
-                value: property._id?.toString() ?? '',
-                label: property.label,
-              }))
-          : [],
+  const richTextProperties = useMemo(
+    () => getTemplateProperties('markdown', targetTemplate),
     [targetTemplate]
   );
-
-  const getOptions = (options: OptionSchema[], setValue: (value: string) => void) => {
-    if (options.length === 1) {
-      setValue(options[0].value);
-      return options;
-    }
-
-    return [
-      {
-        key: `select-${Math.random().toString()}`,
-        value: '',
-        label: 'Select...',
-      },
-      ...options,
-    ];
-  };
-
-  const richTextProperties = useMemo(() => getProperties('markdown'), [getProperties]);
-  const numericProperties = useMemo(() => getProperties('numeric'), [getProperties]);
-  const relationships = useMemo(() => getProperties('relationship'), [getProperties]);
+  const numericProperties = useMemo(
+    () => getTemplateProperties('numeric', targetTemplate),
+    [targetTemplate]
+  );
+  const relationships = useMemo(
+    () =>
+      relationTypes.map(relation => ({
+        key: relation._id,
+        value: relation._id,
+        label: relation.name,
+      })),
+    [relationTypes]
+  );
 
   return (
     <div className="flex flex-col gap-4 min-h-[500px] my-4">
@@ -65,7 +72,7 @@ const Body = () => {
             </Translate>
           }
           value={richTextId}
-          options={getOptions(richTextProperties, setRichTextId)}
+          options={getOptions(richTextProperties)}
           onChange={evt => {
             setRichTextId(evt.target.value);
           }}
@@ -80,7 +87,7 @@ const Body = () => {
             </Translate>
           }
           value={numericId}
-          options={getOptions(numericProperties, setNumericId)}
+          options={getOptions(numericProperties)}
           onChange={evt => {
             setNumericId(evt.target.value);
           }}
@@ -96,7 +103,7 @@ const Body = () => {
             </Translate>
           }
           value={relationshipId}
-          options={getOptions(relationships, setRelationshipId)}
+          options={getOptions(relationships)}
           onChange={evt => {
             setRelationshipId(evt.target.value);
           }}
