@@ -8,6 +8,9 @@ export type ParagraphExtractorApiPayload = {
   _id?: string;
   sourceTemplateId: string;
   targetTemplateId: string;
+  richTextId: string;
+  numericId: string;
+  relationshipId: string;
 };
 
 export type ParagraphExtractorApiResponse = ParagraphExtractorApiPayload & {

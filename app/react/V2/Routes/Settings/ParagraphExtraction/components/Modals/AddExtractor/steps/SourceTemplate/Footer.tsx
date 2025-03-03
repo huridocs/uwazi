@@ -10,13 +10,24 @@ import { useAddExtractorContext } from '../../AddExtractorContext';
 const Footer = () => {
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
-  const { sourceTemplateId, setStep, targetTemplateId, setShowModal } = useAddExtractorContext();
+  const {
+    sourceTemplateId,
+    setStep,
+    targetTemplateId,
+    setShowModal,
+    richTextId,
+    numericId,
+    relationshipId,
+  } = useAddExtractorContext();
 
   const handleSubmit = async () => {
     try {
       const values = {
         sourceTemplateId,
         targetTemplateId,
+        richTextId,
+        numericId,
+        relationshipId,
       };
       await extractorsAPI.save(values);
       setShowModal(false);

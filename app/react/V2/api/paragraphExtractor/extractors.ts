@@ -54,6 +54,7 @@ const save = async (
   extractorValues: ParagraphExtractorApiPayload
 ): Promise<ParagraphExtractorApiResponse> => {
   const requestParams = new RequestParams(extractorValues);
+  // const response = await api.delete(apiEndpoint, requestParams);
 
   const dummyEntry = {
     ...extractorValues,
