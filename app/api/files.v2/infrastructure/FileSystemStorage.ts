@@ -30,7 +30,7 @@ export class FileSystemStorage implements FileStorage {
     throw new Error('Method not implemented.');
   }
 
-  getPath(file: UwaziFile): string {
+  getPath(_file: UwaziFile): string {
     throw new Error('Method not implemented.');
   }
 }

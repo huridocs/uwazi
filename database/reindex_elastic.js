@@ -13,7 +13,7 @@ import { legacyLogger } from '../app/api/log';
 
 const getIndexUrl = () => {
   const elasticUrl = config.elasticsearch_nodes[0];
-  return `${elasticUrl}/${config.defaultTenant.indexName}`;
+  return `${elasticUrl}/${tenants.current().indexName}`;
 };
 
 const headers = {
@@ -90,7 +90,7 @@ const indexEntities = async () => {
 
 /*eslint-disable max-statements*/
 const prepareIndex = async () => {
-  process.stdout.write(`Deleting index ${config.defaultTenant.indexName}...`);
+  process.stdout.write(`Deleting index ${tenants.current().indexName}...`);
   try {
     await fetch(getIndexUrl(), { method: 'delete' });
   } catch (err) {
@@ -104,7 +104,7 @@ const prepareIndex = async () => {
   }
   process.stdout.write(' [done]\n');
 
-  process.stdout.write(`Creating index ${config.defaultTenant.indexName}...\r\n`);
+  process.stdout.write(`Creating index ${tenants.current().indexName}...\r\n`);
   process.stdout.write(' - Base properties mapping\r\n');
 
   await fetch(getIndexUrl(), {
@@ -168,6 +168,7 @@ if (process.env.DBUSER) {
 
 DB.connect(config.DBHOST, dbAuth).then(async () => {
   const start = Date.now();
+  await tenants.setupTenants();
 
   await tenants.run(async () => {
     try {
@@ -179,7 +180,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
       await processErrors(err);
     }
     await endScriptProcedures();
-  });
+  }, process.env.UWAZI_TENANT || config.defaultTenant.name);
 
   const end = Date.now();
   process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);

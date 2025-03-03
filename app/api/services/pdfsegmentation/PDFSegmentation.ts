@@ -1,20 +1,19 @@
-import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath, storage } from 'api/files';
-import { Readable } from 'stream';
-import urljoin from 'url-join';
+import { storage, uploadsPath } from 'api/files';
+import { FileNotFound } from 'api/files/FileNotFound';
 import { filesModel } from 'api/files/filesModel';
-import path from 'path';
-import { Settings } from 'shared/types/settingsType';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import settings from 'api/settings/settings';
 import { tenants } from 'api/tenants/tenantContext';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import request from 'shared/JSONRequest';
 import { handleError } from 'api/utils';
-import { SegmentationType } from 'shared/types/segmentationType';
+import path from 'path';
+import request from 'shared/JSONRequest';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
+import { SegmentationType } from 'shared/types/segmentationType';
+import { Settings } from 'shared/types/settingsType';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
 import { SegmentationModel } from './segmentationModel';
-import { FileNotFound } from 'api/files/FileNotFound';
-import { inspect } from 'util';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';

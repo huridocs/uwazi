@@ -72,7 +72,7 @@ describe('MongoPXExtractorsQueryService', () => {
   it('should return target and source', async () => {
     const { extractorsQueryService } = setUpSut();
 
-    const extractors = await extractorsQueryService.getExtractors({}).all();
+    const extractors = await extractorsQueryService.getExtractors().all();
 
     expect(extractors).toMatchObject([
       {
@@ -91,7 +91,7 @@ describe('MongoPXExtractorsQueryService', () => {
   it('should count source Entities to be extracted which belongs to Extractor', async () => {
     const { extractorsQueryService } = setUpSut();
 
-    const extractors = await extractorsQueryService.getExtractors({}).all();
+    const extractors = await extractorsQueryService.getExtractors().all();
 
     expect(extractors).toMatchObject([
       {
