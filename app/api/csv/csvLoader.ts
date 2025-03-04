@@ -132,7 +132,8 @@ export class CSVLoader extends EventEmitter {
             template,
             file,
             propNameToThesauriId,
-            indexedTranslations
+            indexedTranslations,
+            dateFormat
           );
           this.emit('entityLoaded', entity);
         }

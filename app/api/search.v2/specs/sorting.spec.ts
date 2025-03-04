@@ -41,6 +41,7 @@ describe('Sorting', () => {
 
     await setupTestingEnviroment(
       {
+        relationtypes: [factory.relationType('rel1')],
         templates: [
           factory.template('templateA', [
             factory.property('textProperty', 'text'),

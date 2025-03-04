@@ -8,9 +8,9 @@ exports[`MetadataProperty simple component when type is custom type errors shoul
     icon="exclamation-triangle"
   />
    
-  <Connect(Translate)>
+  <Translate>
     Duplicated label
-  </Connect(Translate)>
+  </Translate>
 </span>
 `;
 
@@ -21,10 +21,10 @@ exports[`MetadataProperty simple component when type is custom type errors shoul
   <Connect(Icon)
     icon="exclamation-triangle"
   />
-  <Connect(Translate)
+  <Translate
     translationKey="relationship consistency warning"
   >
     Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
-  </Connect(Translate)>
+  </Translate>
 </span>
 `;

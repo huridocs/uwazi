@@ -92,6 +92,10 @@ export default {
     return model.get(query);
   },
 
+  count(query) {
+    return model.count(query);
+  },
+
   getById(id) {
     return model.getById(id);
   },

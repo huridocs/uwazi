@@ -262,6 +262,19 @@ describe('Viewer uiActions', () => {
     });
   });
 
+  describe('scrollToPage', () => {
+    it('should scroll to the page passed forcing the load', async () => {
+      spyOn(scroller, 'to').and.callFake(async () => Promise.resolve());
+      actions.scrollToPage(3, 1, true);
+      expect(scroller.to).toHaveBeenCalledWith('.document-viewer div#page-3', '.document-viewer', {
+        dividerOffset: 1,
+        duration: 1,
+        force: true,
+        offset: 50,
+      });
+    });
+  });
+
   describe('highlightSnippet', () => {
     it('should unmark all and mark snippets passed only once (only the ones for the pages being rendered)', () => {
       const container = document.createElement('div');

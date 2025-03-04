@@ -106,6 +106,9 @@ describe('syncWorker', () => {
       name: 'host1',
       dbName: 'host1',
       indexName: 'host1',
+      featureFlags: {
+        sync: true,
+      },
       ...(await testingUploadPaths()),
     });
 
@@ -113,6 +116,9 @@ describe('syncWorker', () => {
       name: 'host2',
       dbName: 'host2',
       indexName: 'host2',
+      featureFlags: {
+        sync: true,
+      },
       ...(await testingUploadPaths()),
     });
 
@@ -488,26 +494,6 @@ describe('syncWorker', () => {
     });
   });
 
-  describe('when active is false', () => {
-    it('should not sync anything', async () => {
-      await applyFixtures();
-      await runAllTenants();
-      const changedFixtures = _.cloneDeep(host1Fixtures);
-      //@ts-ignore
-      changedFixtures.settings[0].sync[0].config.templates = {};
-      //@ts-ignore
-      changedFixtures.settings[0].sync[0].active = false;
-      await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
-
-      await runAllTenants();
-
-      await tenants.run(async () => {
-        const syncedTemplates = await templates.get();
-        expect(syncedTemplates).toHaveLength(1);
-      }, 'target1');
-    }, 10000);
-  });
-
   it('should sync collections in correct preference order', async () => {
     const originalBatchLimit = syncWorker.UPDATE_LOG_TARGET_COUNT;
     syncWorker.UPDATE_LOG_TARGET_COUNT = 1;
@@ -567,12 +553,13 @@ describe('syncWorker', () => {
 
     await applyFixtures();
     syncWorker.UPDATE_LOG_TARGET_COUNT = originalBatchLimit;
-  });
+  }, 10000);
 
   it('should throw an error, when trying to sync a collection that is not in the order list', async () => {
     const fixtures = _.cloneDeep(orderedHostFixtures);
     //@ts-ignore
     fixtures.settings[0].sync[0].config.pages = [];
+
     await applyFixtures(fixtures, {});
 
     await expect(runAllTenants).rejects.toThrow(
@@ -581,4 +568,41 @@ describe('syncWorker', () => {
 
     await applyFixtures();
   });
+
+  describe('when active is false', () => {
+    it('should not sync anything', async () => {
+      await applyFixtures();
+      await runAllTenants();
+      const changedFixtures = _.cloneDeep(host1Fixtures);
+      //@ts-ignore
+      changedFixtures.settings[0].sync[0].config.templates = {};
+      tenants.add({ ...tenants.tenants.host1, featureFlags: { sync: false } });
+
+      await db.setupFixturesAndContext({ ...changedFixtures }, undefined, 'host1');
+
+      await runAllTenants();
+
+      await tenants.run(async () => {
+        const syncedTemplates = await templates.get();
+        expect(syncedTemplates).toHaveLength(1);
+      }, 'target1');
+    }, 10000);
+  });
+
+  it('should only sync on targeted tenants', async () => {
+    await applyFixtures();
+    const _fixtures = { ...host1Fixtures };
+
+    //@ts-ignore
+    _fixtures.settings[0].sync[0].active = false;
+
+    await db.setupFixturesAndContext(_fixtures, undefined, 'host1');
+
+    await runAllTenants();
+
+    await tenants.run(async () => {
+      const syncedTemplates = await templates.get();
+      expect(syncedTemplates).toHaveLength(0);
+    }, 'target1');
+  }, 10000);
 });

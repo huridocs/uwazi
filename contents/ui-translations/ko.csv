@@ -308,6 +308,7 @@ Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
 Error adding thesauri.,Error adding thesauri.
+Error loading your image,Error loading your image
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,탐색
@@ -847,7 +848,6 @@ This content is automatically generated,콘텐츠가 자동으로 생성되었�
 This entity is not public.,공개된 엔티티가 아닙니다.
 This entity is restricted from public view.,이 엔티티는 공개 모드에서 제한됩니다.
 This field is required,This field is required
-This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.

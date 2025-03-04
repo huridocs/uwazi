@@ -6,6 +6,7 @@ import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const template1Id = db.id();
+const simpleTemplateId = db.id();
 const multiSelectThesaurusId = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
@@ -48,6 +49,24 @@ const commonTranslationsV2 = (language: LanguageISO6391): TranslationDBO[] => [
 
 export default {
   templates: [
+    {
+      _id: simpleTemplateId,
+      name: 'Simple template',
+      properties: [
+        {
+          _id: db.id(),
+          type: propertyTypes.text,
+          label: 'simple text field',
+          name: templateUtils.safeName('simple text field'),
+        },
+        {
+          _id: db.id(),
+          type: propertyTypes.date,
+          label: 'Date field',
+          name: templateUtils.safeName('Date field'),
+        },
+      ],
+    },
     {
       _id: templateToRelateId,
       name: 'template to relate',
@@ -180,4 +199,4 @@ export default {
   ],
 };
 
-export { template1Id, templateWithGeneratedTitle, thesauri1Id };
+export { template1Id, templateWithGeneratedTitle, thesauri1Id, simpleTemplateId };

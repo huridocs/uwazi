@@ -1,18 +1,18 @@
-import db from 'api/utils/testing_db';
 import { search } from 'api/search/search';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
-import { Aggregations, AggregationBucket } from 'shared/types/aggregations';
-import { UserSchema } from 'shared/types/userType';
+import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { UserSchema } from 'shared/types/userType';
 import { fixturesTimeOut } from './fixtures_elastic';
 import {
-  permissionsLevelFixtures,
-  users,
   group1,
+  permissionsLevelFixtures,
   template1Id,
   template2Id,
   template3Id,
+  users,
 } from './permissionsFiltersFixtures';
 
 function getAggregationCountByType(typesBuckets: AggregationBucket[], templateId: ObjectIdSchema) {
@@ -26,12 +26,12 @@ describe('Permissions filters', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
-    await db.setupFixturesAndContext(permissionsLevelFixtures, 'permissionslevelfixtures');
+    await testingEnvironment.setUp(permissionsLevelFixtures, 'permissionslevelfixtures');
     userFactory.restore();
   }, fixturesTimeOut);
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
     userFactory.restore();
   });
 

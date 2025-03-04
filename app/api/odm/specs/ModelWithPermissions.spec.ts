@@ -4,6 +4,7 @@ import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/Mode
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import testingDB from 'api/utils/testing_db';
 import * as mongoose from 'mongoose';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 describe('ModelWithPermissions', () => {
   let model: ModelWithPermissions<any>;
@@ -18,6 +19,8 @@ describe('ModelWithPermissions', () => {
     permissions: { type: mongoose.Schema.Types.Mixed, select: false },
     fixed: Boolean,
   });
+  const userId1 = testingDB.id();
+  const userId2 = testingDB.id();
   const readDocId = testingDB.id();
   const writeDocId = testingDB.id();
   const writeDoc2Id = testingDB.id();
@@ -33,19 +36,25 @@ describe('ModelWithPermissions', () => {
       _id: readDocId,
       name: 'readDoc',
       published: false,
-      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
+      permissions: [
+        { refId: userId1.toString(), type: PermissionType.USER, level: AccessLevels.READ },
+      ],
       fixed: true,
     },
     {
       _id: writeDocId,
       name: 'writeDoc',
-      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [
+        { refId: userId1.toString(), type: PermissionType.USER, level: AccessLevels.WRITE },
+      ],
       fixed: true,
     },
     {
       _id: writeDoc2Id,
       name: 'writeDoc2',
-      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [
+        { refId: userId1.toString(), type: PermissionType.USER, level: AccessLevels.WRITE },
+      ],
       fixed: true,
     },
     {
@@ -57,7 +66,9 @@ describe('ModelWithPermissions', () => {
     {
       _id: otherOwnerId,
       name: 'no shared with user',
-      permissions: [{ refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [
+        { refId: userId2.toString(), type: PermissionType.USER, level: AccessLevels.WRITE },
+      ],
       fixed: true,
     },
     {
@@ -80,7 +91,9 @@ describe('ModelWithPermissions', () => {
     {
       _id: deleteDocId,
       name: 'docToDelete',
-      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [
+        { refId: userId1.toString(), type: PermissionType.USER, level: AccessLevels.WRITE },
+      ],
     },
     {
       _id: public2Id,
@@ -91,6 +104,7 @@ describe('ModelWithPermissions', () => {
   ];
   beforeAll(async () => {
     connection = await testingDB.connect();
+    testingEnvironment.setFakeContext();
     model = instanceModelWithPermissions<TestDoc>('docs', testSchema);
     await connection.collection('docs').insertMany(testdocs);
   });
@@ -103,7 +117,7 @@ describe('ModelWithPermissions', () => {
     describe('collaborator user', () => {
       beforeAll(async () => {
         jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue({
-          _id: 'user1',
+          _id: userId1,
           username: 'User 1',
           email: 'user@test.test',
           role: 'collaborator',
@@ -227,10 +241,11 @@ describe('ModelWithPermissions', () => {
 
         it('should add the user in the permissions property of the new doc', async () => {
           const saved = await model.save({ name: 'newDoc' });
+
           expect(saved).toEqual(
             expect.objectContaining({
               name: 'newDoc',
-              permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
+              permissions: [{ refId: userId1.toString(), type: 'user', level: 'write' }],
             })
           );
         });
@@ -301,11 +316,11 @@ describe('ModelWithPermissions', () => {
           expect(saved).toMatchObject([
             {
               name: 'newDoc',
-              permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
+              permissions: [{ refId: userId1.toString(), type: 'user', level: 'write' }],
             },
             {
               name: 'newDoc2',
-              permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
+              permissions: [{ refId: userId1.toString(), type: 'user', level: 'write' }],
             },
           ]);
         });

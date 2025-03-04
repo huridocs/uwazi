@@ -11,6 +11,7 @@ import { SearchResponse, IndicesPutMapping, IndicesDelete, IndicesCreate } from 
 
 const elasticClient = new elasticSearch.Client({
   nodes: config.elasticsearch_nodes,
+  requestTimeout: config.elasticsearch_requestTimeout,
 });
 
 const elastic = {

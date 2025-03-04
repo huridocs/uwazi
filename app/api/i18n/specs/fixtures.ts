@@ -199,6 +199,13 @@ const fixtures: DBFixture = {
     {
       _id: entityTemplateId,
       type: 'template',
+      properties: [
+        {
+          type: 'select',
+          name: 'Dictionary',
+          content: dictionaryId.toString(),
+        },
+      ],
     },
     {
       _id: documentTemplateId,
@@ -213,6 +220,21 @@ const fixtures: DBFixture = {
       template: entityTemplateId,
       published: false,
       metadata: {},
+    },
+    {
+      language: 'es',
+      sharedId: 'entity1',
+      title: '1',
+      template: entityTemplateId,
+      published: false,
+      metadata: {
+        Dictionary: [
+          {
+            value: '1',
+            label: 'Password',
+          },
+        ],
+      },
     },
   ],
   pages: [

@@ -32,6 +32,7 @@ class PDF extends Component {
     this.pageLoading = this.pageLoading.bind(this);
     this.onPageVisible = this.onPageVisible.bind(this);
     this.onPageHidden = this.onPageHidden.bind(this);
+    this.containerWidth = 0;
   }
 
   componentDidMount() {
@@ -42,6 +43,8 @@ class PDF extends Component {
       });
       document.addEventListener('textlayerrendered', this.props.onPageLoaded, { once: true });
     }
+
+    this.containerWidth = this.props.parentRef.current?.clientWidth;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -148,21 +151,22 @@ class PDF extends Component {
 
   render() {
     return (
-      <div
-        ref={ref => {
-          this.pdfContainer = ref;
-        }}
-        style={this.props.style}
+      <HandleTextSelection
+        onSelect={this.props.onTextSelection}
+        onDeselect={this.props.onTextDeselection}
       >
-        <HandleTextSelection
-          onSelect={this.props.onTextSelection}
-          onDeselect={this.props.onTextDeselection}
+        <div
+          ref={ref => {
+            this.pdfContainer = ref;
+          }}
+          style={this.props.style}
+          id="pdf-container"
         >
           {(() => {
             const pages = [];
             for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
               pages.push(
-                <div className="page-wrapper" key={page}>
+                <div key={page}>
                   <SelectionRegion regionId={page.toString()}>
                     <PDFPage
                       onUnload={this.pageUnloaded}
@@ -172,6 +176,7 @@ class PDF extends Component {
                       page={page}
                       pdf={this.state.pdf}
                       highlightReference={this.props.highlightReference}
+                      containerWidth={this.containerWidth}
                     />
                   </SelectionRegion>
                 </div>
@@ -179,8 +184,8 @@ class PDF extends Component {
             }
             return pages;
           })()}
-        </HandleTextSelection>
-      </div>
+        </div>
+      </HandleTextSelection>
     );
   }
 }
@@ -207,6 +212,7 @@ PDF.propTypes = {
   onLoad: PropTypes.func.isRequired,
   style: PropTypes.object,
   highlightReference: PropTypes.func,
+  parentRef: PropTypes.object.isRequired,
 };
 
 export default PDF;

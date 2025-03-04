@@ -52,8 +52,6 @@ const customExtendedTags = [
   'bar',
   'tooltip',
   'stackeddualbarchart',
-  'librarychart',
-  'librarycharts',
   'coloredbar',
   'extendedtooltip',
 ];

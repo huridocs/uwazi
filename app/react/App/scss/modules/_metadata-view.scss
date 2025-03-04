@@ -174,7 +174,8 @@ ul.comma-separated li {
 
 @mixin media-error {
   padding: 10px;
-  border: 1px #ff775c solid;
+  border: 1px #d43f3a solid;
+  color: #444444;
 }
 
 dl.metadata-type-multimedia {
@@ -184,7 +185,9 @@ dl.metadata-type-multimedia {
   }
 
   img {
-    box-shadow: 3px 1px 6px 0px rgba(0, 0, 0, 0.2), -3px 1px 6px 0px rgba(0, 0, 0, 0.2);
+    box-shadow:
+      3px 1px 6px 0px rgba(0, 0, 0, 0.2),
+      -3px 1px 6px 0px rgba(0, 0, 0, 0.2);
 
     &.contain {
       max-width: calc(100% - 10px);

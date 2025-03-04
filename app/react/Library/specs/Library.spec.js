@@ -1,10 +1,59 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
-import Library from 'app/Library/Library';
+import { LibraryRootComponent } from 'app/Library/Library';
 import RouteHandler from 'app/App/RouteHandler';
 import createStore from 'app/store';
-import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryLayout from 'app/Library/LibraryLayout';
+
+const routes = [
+  {
+    path: '/',
+    children: [
+      {
+        children: [
+          { index: true },
+          { path: 'login' },
+          {
+            path: 'library/*',
+            children: [
+              { index: true, handle: { library: true } },
+              { path: 'map', handle: { library: true } },
+              { path: 'table', handle: { library: true } },
+            ],
+          },
+        ],
+      },
+      {
+        path: 'en',
+        children: [
+          {
+            children: [
+              { index: true },
+              { path: 'login' },
+              {
+                path: 'library/*',
+                children: [
+                  { index: true, handle: { library: true } },
+                  { path: 'map', handle: { library: true } },
+                  { path: 'table', handle: { library: true } },
+                ],
+              },
+            ],
+          },
+          { path: '*' },
+        ],
+        handle: { library: true },
+      },
+    ],
+    handle: { library: true },
+  },
+];
+
+jest.mock('app/appRoutes', () => ({
+  routes,
+}));
 
 describe('Library', () => {
   const templates = [
@@ -35,13 +84,8 @@ describe('Library', () => {
       },
     };
 
-    component = shallow(<Library {...props} />, { context });
+    component = shallow(<LibraryRootComponent {...props} />, { context });
     instance = component.instance();
-  });
-
-  it('should render the DocumentsList (by default)', () => {
-    expect(component.find(DocumentsList).length).toBe(1);
-    expect(component.find(DocumentsList).props().storeKey).toBe('library');
   });
 
   describe('urlHasChanged', () => {
@@ -72,19 +116,36 @@ describe('Library', () => {
     });
   });
 
-  describe('scroll counting for mobile responsiveness', () => {
-    it('should increase the scroll count on scrolling event', () => {
-      const layout = component.find(LibraryLayout);
-      expect(component.state().scrollCount).toBe(0);
-      expect(component.find(DocumentsList).props().scrollCount).toBe(0);
-      layout
-        .props()
-        .scrollCallback({ target: { className: 'main-container document-viewer with-footer' } });
-      layout.props().scrollCallback({ target: { className: 'other element' } });
-      layout.props().scrollCallback({ target: { className: 'document-viewer' } });
+  describe('cleanup', () => {
+    beforeEach(() => {
+      component = shallow(<LibraryRootComponent {...props} />, { context });
+      instance = component.instance();
+      spyOn(instance, 'emptyState');
+    });
 
-      expect(component.state().scrollCount).toBe(2);
-      expect(component.find(DocumentsList).props().scrollCount).toBe(2);
+    it.each([
+      ['/library/some-path', false],
+      ['/library/map', false],
+      ['/library/table', false],
+      ['/en/library/some-path', false],
+      ['/en/library/map', false],
+      ['/en/library/table', false],
+      ['/', false],
+      ['/en', false],
+      ['/some-path', true],
+      ['/no-match', true],
+    ])('should %s call emptyState when unmounting and route is %s', (pathname, shouldCall) => {
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { pathname },
+      });
+
+      component.unmount();
+      if (shouldCall) {
+        expect(instance.emptyState).toHaveBeenCalled();
+      } else {
+        expect(instance.emptyState).not.toHaveBeenCalled();
+      }
     });
   });
 });

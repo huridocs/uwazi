@@ -2,8 +2,8 @@ import { actions as formActions } from 'react-redux-form';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import { RequestParams } from 'app/utils/RequestParams';
+import { t } from 'app/I18N';
 import I18NApi from '../I18NApi';
-import t from '../t';
 
 export function inlineEditTranslation(contextId, key) {
   return dispatch => {

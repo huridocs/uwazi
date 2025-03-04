@@ -7,10 +7,10 @@ import { screen, act, fireEvent } from '@testing-library/react';
 import { notificationActions } from 'app/Notifications';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import * as actions from '../../actions/metadataExtractionActions';
-import { MetadataExtractor, selection } from '../MetadataExtractor';
+import { MetadataExtractor, Selection } from '../MetadataExtractor';
 
 describe('MetadataExtractor', () => {
-  let selected: selection | undefined;
+  let selected: Selection | undefined;
 
   beforeEach(() => {
     spyOn(actions, 'updateSelection').and.returnValue(() => {});

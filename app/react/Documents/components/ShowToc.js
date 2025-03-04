@@ -2,23 +2,20 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { scrollToToc } from 'app/Viewer/actions/uiActions';
-import Immutable from 'immutable';
 import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
-
+import { selectionHandlers } from 'V2/Components/PDFViewer';
 import './scss/showToc.scss';
 
-export class ShowToc extends Component {
+class ShowToc extends Component {
   scrollTo(tocElement, e) {
     e.preventDefault();
-    this.props.scrollToToc(tocElement.toJS());
+    this.props.scrollToToc(tocElement);
   }
 
   render() {
-    const toc = Immutable.fromJS(this.props.toc);
-
-    if (!toc.size) {
+    if (!this.props.toc.length) {
       return (
         <div className="blank-state">
           <Icon icon="font" />
@@ -28,29 +25,34 @@ export class ShowToc extends Component {
       );
     }
 
+    const { documentScale } = this.props;
+
     return (
       <div className="toc">
         <ul className="toc-view">
-          {toc.map((tocElement, index) => (
-            <li className={`toc-indent-${tocElement.get('indentation')}`} key={index}>
-              <ShowIf if={!this.props.readOnly}>
-                <a
-                  className="toc-view-link"
-                  href="#"
-                  onClick={this.scrollTo.bind(this, tocElement)}
-                >
-                  {tocElement.get('label')}
-                  <span className="page-number">
-                    {tocElement.getIn(['selectionRectangles', 0]) &&
-                      tocElement.getIn(['selectionRectangles', 0]).get('page')}
-                  </span>
-                </a>
-              </ShowIf>
-              <ShowIf if={this.props.readOnly}>
-                <span className="toc-view-link">{tocElement.get('label')}</span>
-              </ShowIf>
-            </li>
-          ))}
+          {this.props.toc.map((tocElement, index) => {
+            const scaledToc = selectionHandlers.adjustSelectionsToScale(tocElement, documentScale);
+
+            return (
+              <li className={`toc-indent-${scaledToc.indentation}`} key={index}>
+                <ShowIf if={!this.props.readOnly}>
+                  <a
+                    className="toc-view-link"
+                    href="#"
+                    onClick={this.scrollTo.bind(this, scaledToc)}
+                  >
+                    {scaledToc.label}
+                    <span className="page-number">
+                      {scaledToc.selectionRectangles[0] && scaledToc.selectionRectangles[0].page}
+                    </span>
+                  </a>
+                </ShowIf>
+                <ShowIf if={this.props.readOnly}>
+                  <span className="toc-view-link">{scaledToc.label}</span>
+                </ShowIf>
+              </li>
+            );
+          })}
         </ul>
       </div>
     );
@@ -65,10 +67,14 @@ ShowToc.propTypes = {
   toc: PropTypes.array,
   readOnly: PropTypes.bool,
   scrollToToc: PropTypes.func,
+  documentScale: PropTypes.number,
 };
 
 function mapDispatchToProps() {
   return { scrollToToc };
 }
 
-export default connect(null, mapDispatchToProps)(ShowToc);
+const mapStateToProps = store => ({ documentScale: store.documentViewer.documentScale });
+
+export { ShowToc };
+export default connect(mapStateToProps, mapDispatchToProps)(ShowToc);

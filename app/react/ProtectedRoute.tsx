@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router';
 import { store } from 'app/store';
 import { ClientSettings } from 'app/apiResponseTypes';
 

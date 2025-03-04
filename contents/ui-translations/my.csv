@@ -308,6 +308,7 @@ Entity types,ဖြည့်သွင်းချက် အမျိုးအစ
 Entity updated,Entity updated
 Error,ချွတ်ယွင်းချက်
 Error adding thesauri.,Error adding thesauri.
+Error loading your image,Error loading your image
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,စူးစမ်းလေ့လာခြင်း
@@ -847,7 +848,6 @@ This content is automatically generated,ဤအကြောင်းအရာက�
 This entity is not public.,ဤဖြည့်သွင်းချက်ကို အများမမြင်နိုင်ပါ။
 This entity is restricted from public view.,ဤဖြည့်သွင်းချက်ကို အများမမြင်နိုင်အောင် ကန့်သတ်ထားသည်။
 This field is required,This field is required
-This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,ဤရွေးချယ်မှုသည် သင့်အခြေအနေတွင် ကွတ်ကီးများ အသုံးပြုမှုအကြောင်း အသိပေးချက် ပြသပါမည်။

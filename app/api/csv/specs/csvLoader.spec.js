@@ -1,23 +1,26 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import path from 'path';
 
 import { CSVLoader } from 'api/csv';
-import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
+import { simpleTemplateId, templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import entities from 'api/entities';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import moment from 'moment';
 import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
+import testingDB from 'api/utils/testing_db';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
   const loader = new CSVLoader();
 
   beforeAll(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   beforeEach(() => {
@@ -26,7 +29,7 @@ describe('csvLoader', () => {
     jest.spyOn(entities, 'save').mockImplementation(async e => e);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('user', () => {
     it('should use the passed user', async () => {
@@ -39,7 +42,7 @@ describe('csvLoader', () => {
     let csv;
     let readStreamMock;
     beforeEach(async () => {
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
 
       const nonExistent = 'Russian';
 
@@ -126,7 +129,7 @@ describe('csvLoader', () => {
 
     beforeAll(async () => {
       jest.restoreAllMocks();
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
       loader.on('entityLoaded', entity => {
         events.push(entity.title);
       });
@@ -217,7 +220,7 @@ describe('csvLoader', () => {
     it('should stop processing on the first error', async () => {
       const testingLoader = new CSVLoader();
 
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
       jest.spyOn(entities, 'save').mockImplementation(entity => {
         throw new Error(`error-${entity.title}`);
       });
@@ -232,7 +235,7 @@ describe('csvLoader', () => {
     it('should throw the error that occurred even if it was not the first row', async () => {
       const testingLoader = new CSVLoader();
 
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
       jest
         .spyOn(entities, 'save')
         .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
@@ -255,7 +258,7 @@ describe('csvLoader', () => {
         }
         return entity;
       });
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     it('should emit an error', async () => {
@@ -315,7 +318,7 @@ describe('csvLoader', () => {
   describe('when sharedId is provided', () => {
     beforeEach(async () => {
       jest.restoreAllMocks();
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     it('should update the entity', async () => {
@@ -342,7 +345,7 @@ describe('csvLoader', () => {
   describe('when the title is not provided', () => {
     beforeEach(async () => {
       jest.restoreAllMocks();
-      await db.setupFixturesAndContext(fixtures);
+      await testingEnvironment.setUp(fixtures);
     });
 
     describe('title not marked with generated Id option', () => {
@@ -398,6 +401,63 @@ describe('csvLoader', () => {
         expect(result[1].title).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
         expect(result[0].title !== result[1].title);
       });
+    });
+  });
+
+  describe('should parse date respecting the dateFormat on settings collection ', () => {
+    beforeEach(() => jest.restoreAllMocks());
+
+    const setDateFormat = async dateFormat => {
+      const _fixtures = { ...fixtures };
+      _fixtures.settings = [
+        {
+          ..._fixtures.settings[0],
+          languages: [
+            { key: 'en', label: 'English', default: true },
+            { key: 'es', label: 'Spanish' },
+          ],
+          dateFormat,
+        },
+      ];
+
+      await testingDB.setupFixturesAndContext(_fixtures);
+      testingEnvironment.setFakeContext();
+    };
+
+    it('should correctly parse MM/dd/yyyy', async () => {
+      const dateFormat = 'MM/dd/yyyy';
+      await setDateFormat(dateFormat);
+
+      const dateOnCSV = '12/31/2024';
+      const csv = path.join(__dirname, '/simple_template.csv');
+      const selectedLanguageOnUserInterface = 'es';
+      const expectedDate = moment.utc(dateOnCSV, [dateFormat.toUpperCase()]).unix();
+
+      await loader.load(csv, simpleTemplateId, { language: selectedLanguageOnUserInterface });
+
+      const [englishEntity] = await entities.get({ language: 'en' });
+      const [spanishEntity] = await entities.get({ language: 'es' });
+
+      expect(spanishEntity.metadata.date_field).toEqual([{ value: expectedDate }]);
+      expect(englishEntity.metadata.date_field).toEqual([{ value: expectedDate }]);
+    });
+
+    it('should correctly parse yyyy/MM/dd', async () => {
+      const dateFormat = 'yyyy/MM/dd';
+      await setDateFormat(dateFormat);
+
+      const dateOnCSV = '2024/12/31';
+      const csv = path.join(__dirname, '/simple_template_2.csv');
+      const selectedLanguageOnUserInterface = 'es';
+      const expectedDate = moment.utc(dateOnCSV, [dateFormat.toUpperCase()]).unix();
+
+      await loader.load(csv, simpleTemplateId, { language: selectedLanguageOnUserInterface });
+
+      const [englishEntity] = await entities.get({ language: 'en' });
+      const [spanishEntity] = await entities.get({ language: 'es' });
+
+      expect(spanishEntity.metadata.date_field).toEqual([{ value: expectedDate }]);
+      expect(englishEntity.metadata.date_field).toEqual([{ value: expectedDate }]);
     });
   });
 });

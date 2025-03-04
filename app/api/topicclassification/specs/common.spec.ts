@@ -1,6 +1,6 @@
 import templates from 'api/templates';
 import { extractSequence } from 'api/topicclassification';
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { buildFullModelName, getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from '../../../shared/types/templateType';
@@ -8,11 +8,11 @@ import fixtures, { moviesId, template1 } from './fixtures';
 
 describe('templates utils', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('buildModelName', () => {

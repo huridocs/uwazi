@@ -9,27 +9,7 @@ exports[`GaugeChart Markdown component should allow rendering value with prefix,
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={600}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={600}
     >
       <Pie
@@ -120,27 +100,7 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={220}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={220}
     >
       <Pie

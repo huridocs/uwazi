@@ -1,17 +1,13 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { Provider } from 'react-redux';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { CopyValueInput } from '../CopyValueInput';
 
 describe('CopyValueInput', () => {
   const Component = () => (
-    <Provider store={createStore()}>
-      <div className="tw-content" style={{ height: '200px', paddingTop: '40px' }}>
-        <CopyValueInput label="name" value="some testing value" id="my-value" />
-      </div>
-    </Provider>
+    <div className="tw-content" style={{ height: '200px', paddingTop: '40px' }}>
+      <CopyValueInput label="name" value="some testing value" id="my-value" />
+    </div>
   );
 
   before(() => {
@@ -41,9 +37,8 @@ describe('CopyValueInput', () => {
     cy.get('input').should('have.value', 'some testing value');
     cy.get('[data-testid="copy-value-button"]').focus();
     cy.get('[data-testid="copy-value-button"]').realClick();
-    cy.window() //
+    cy.window()
       .then(async win => win.navigator.clipboard.readText())
-
       .should('equal', 'some testing value');
   });
 });

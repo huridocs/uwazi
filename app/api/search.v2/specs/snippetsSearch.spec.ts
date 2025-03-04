@@ -1,21 +1,21 @@
+import { searchRoutes } from 'api/search.v2/routes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { advancedSort } from 'app/utils/advancedSort';
+import { Application } from 'express';
 import qs from 'qs';
 import request from 'supertest';
-import { Application } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { searchRoutes } from 'api/search.v2/routes';
-import { testingDB } from 'api/utils/testing_db';
-import { advancedSort } from 'app/utils/advancedSort';
 
 import entities from 'api/entities';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { SearchQuery } from 'shared/types/SearchQueryType';
-import { fixturesSnippetsSearch, entity1enId, entity2enId } from './fixturesSnippetsSearch';
+import { entity1enId, entity2enId, fixturesSnippetsSearch } from './fixturesSnippetsSearch';
 
 describe('searchSnippets', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
-    await testingDB.setupFixturesAndContext(fixturesSnippetsSearch, 'entities.v2.snippets_search');
+    await testingEnvironment.setUp(fixturesSnippetsSearch, 'entities.v2.snippets_search');
     await entities.save(await entities.getById({ _id: entity2enId.toString() }), {
       user: {},
       language: 'en',
@@ -23,7 +23,7 @@ describe('searchSnippets', () => {
     await elasticTesting.refresh();
   });
 
-  afterAll(async () => testingDB.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   async function search(filter: SearchQuery['filter'], fields = ['snippets', 'title']) {
     return request(app).get('/api/v2/search').query(qs.stringify({ filter, fields })).expect(200);

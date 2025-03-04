@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
@@ -15,7 +15,6 @@ import {
   PropertyValueSchema,
   MetadataObjectSchema,
 } from 'shared/types/commonTypes';
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
@@ -23,7 +22,7 @@ import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
-import { notificationAtom, thesauriAtom } from 'V2/atoms';
+import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
 import { Highlights } from '../types';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
@@ -153,6 +152,7 @@ const PDFSidepanel = ({
   const [selectAndSearch, setSelectAndSearch] = useState(false);
   const [selectAndSearchValue, setSelectAndSearchValue] = useState<string | undefined>();
   const [options, setOptions] = useState<MultiselectListOption[]>([]);
+  const pdfScalingValue = useAtomValue(pdfScaleAtom);
 
   useEffect(() => {
     if (suggestion) {
@@ -324,19 +324,29 @@ const PDFSidepanel = ({
     }
 
     if (selectedText) {
+      const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
+        selectedText,
+        pdfScalingValue,
+        true
+      );
+
       setHighlights(
-        selectionHandlers.getHighlightsFromSelection(selectedText, HighlightColors.NEW)
+        selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
       );
       setSelections(
         selectionHandlers.updateFileSelection(
           { name: suggestion?.propertyName || '', id: property._id as string },
           pdf?.extractedMetadata,
-          selectedText
+          normalizedSelections
         )
       );
 
       if (property.type === 'date' || property.type === 'numeric') {
-        const coercedValue = await coerceValue(property.type, selectedText.text, pdf?.language);
+        const coercedValue = await coerceValue(
+          property.type,
+          normalizedSelections.text,
+          pdf?.language
+        );
 
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
@@ -347,7 +357,7 @@ const PDFSidepanel = ({
           setSelectionError(undefined);
         }
       } else {
-        setValue('field', selectedText.text, { shouldDirty: true });
+        setValue('field', normalizedSelections.text, { shouldDirty: true });
       }
     }
   };
@@ -457,7 +467,7 @@ const PDFSidepanel = ({
           className="flex flex-col h-full gap-4 p-0"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="w-full md:m-auto grow">
+          <div className="grow">
             {pdf && (
               <PDF
                 fileUrl={`/api/files/${pdf.filename}`}
@@ -474,9 +484,6 @@ const PDFSidepanel = ({
                 onDeselect={() => {
                   setSelectionError(undefined);
                   setSelectedText(undefined);
-                }}
-                size={{
-                  width: '100%',
                 }}
                 scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
               />

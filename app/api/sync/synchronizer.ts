@@ -22,7 +22,7 @@ const uploadFile = async (
 };
 
 export const synchronizer = {
-  async syncDelete(change: DataType<UpdateLog>, url: string, cookie: string) {
+  async syncDelete(change: UpdateLog, url: string, cookie: string) {
     await this.syncData(
       {
         url,
@@ -40,7 +40,7 @@ export const synchronizer = {
       change,
       data,
       cookie,
-    }: { url: string; change: DataType<UpdateLog>; data: DataType<any>; cookie: string },
+    }: { url: string; change: UpdateLog; data: DataType<any>; cookie: string },
     action: keyof typeof request
   ) {
     await request[action](

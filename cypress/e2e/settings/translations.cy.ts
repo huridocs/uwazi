@@ -52,7 +52,7 @@ describe('Translations', () => {
     });
 
     it('should have breadcrumb navigation', () => {
-      cy.contains('li > a > .translation', 'Translations').click();
+      cy.contains('li a > .translation', 'Translations').click();
       cy.contains('caption', 'System translations');
     });
 
@@ -145,12 +145,14 @@ describe('Translations', () => {
 
     it('should translate a text', () => {
       cy.contains('span', 'Filters').click();
-      cy.get('input[id=es]').clear();
-      cy.get('input[id=es]').type('Filtros', { delay: 0 });
-      cy.get('input[id=en]').clear();
-      cy.get('input[id=en]').type('Filtering', { delay: 0 });
-      cy.contains('button', 'Submit').click();
-      cy.get('[data-testid=modal]').should('not.exist');
+      cy.get('#translationsFormModal').within(() => {
+        cy.get('input[name="data.1.value"]').clear();
+        cy.get('input[name="data.1.value"]').type('Filtros', { delay: 0 });
+        cy.get('input[name="data.0.value"]').clear();
+        cy.get('input[name="data.0.value"]').type('Filtering', { delay: 0 });
+        cy.contains('button', 'Save').click();
+      });
+      cy.get('#translationsFormModal').should('not.exist');
     });
 
     it('should deactive the live translate and check the translatations in english and spanish', () => {

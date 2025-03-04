@@ -308,6 +308,7 @@ Entity types,Varlık türü
 Entity updated,Entity updated
 Error,Hata
 Error adding thesauri.,Error adding thesauri.
+Error loading your image,Error loading your image
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Arama
@@ -847,7 +848,6 @@ This content is automatically generated,Bu içerik otomatik olarak oluşturulur
 This entity is not public.,Bu varlık açık değil.
 This entity is restricted from public view.,Bu varlığın genel görünümü kısıtlanmıştır.
 This field is required,This field is required
-This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."

@@ -1,8 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Provider } from 'react-redux';
 import { MultiSelect } from 'V2/Components/Forms';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 
 const meta: Meta<typeof MultiSelect> = {
   title: 'Forms/MultiSelect',
@@ -13,23 +11,21 @@ type Story = StoryObj<typeof MultiSelect>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="md:w-1/2">
-          <h1 className="pb-2">Multiselect component</h1>
-          <MultiSelect
-            label={args.label}
-            options={args.options}
-            hasErrors={args.hasErrors}
-            onChange={args.onChange}
-            disabled={args.disabled}
-            placeholder={args.placeholder}
-            canBeEmpty={args.canBeEmpty}
-            value={args.value}
-          />
-        </div>
+    <div className="tw-content">
+      <div className="md:w-1/2">
+        <h1 className="pb-2">Multiselect component</h1>
+        <MultiSelect
+          label={args.label}
+          options={args.options}
+          hasErrors={args.hasErrors}
+          onChange={args.onChange}
+          disabled={args.disabled}
+          placeholder={args.placeholder}
+          canBeEmpty={args.canBeEmpty}
+          value={args.value}
+        />
       </div>
-    </Provider>
+    </div>
   ),
 };
 

@@ -2,6 +2,7 @@
 import { createReadStream } from 'fs';
 import { config } from 'api/config';
 import { files, storage, testingUploadPaths } from 'api/files';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
 import testingDB from 'api/utils/testing_db';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -34,7 +35,7 @@ describe('convertToPdfWorker', () => {
   beforeAll(async () => {
     await testingDB.connect({ defaultTenant: false });
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
-    await testingDB.setupFixturesAndContext({
+    await testingEnvironment.setUp({
       settings: [
         {
           features: { convertToPdf: { active: true, url: 'http://localhost:5060' } },
@@ -73,7 +74,7 @@ describe('convertToPdfWorker', () => {
 
   afterAll(async () => {
     redisClient.end(true);
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
     await worker.stop();
   });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router';
 import { has } from 'lodash';
 import Footer from 'app/App/Footer';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';

@@ -1,22 +1,47 @@
-import { _Object, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
+import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { Tenant } from 'api/tenants/tenantContext';
 import path from 'path';
-import { FileStorage } from '../contracts/FileStorage';
+import { FileStorage, GetFileInput } from '../contracts/FileStorage';
 import { Attachment } from '../model/Attachment';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
 import { CustomUpload } from '../model/CustomUpload';
 import { StoredFile } from '../model/StoredFile';
+import { PathManager } from './PathManager';
+import { File } from '../model/File';
 
 export class S3FileStorage implements FileStorage {
+  private bucket = config.s3.bucket;
+
   private s3Client: S3Client;
 
   private tenant: Tenant;
 
+  private pathManager: PathManager;
+
   constructor(s3Client: S3Client, tenant: Tenant) {
     this.s3Client = s3Client;
     this.tenant = tenant;
+    this.pathManager = new PathManager({ tenant });
+  }
+
+  async getFile(input: GetFileInput) {
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: this.pathManager.createPath(input),
+    });
+
+    const response = await this.s3Client.send(command);
+
+    return new File({ source: response.Body as Readable, filename: input.filename });
+  }
+
+  async getFiles(inputs: GetFileInput[]): Promise<File[]> {
+    const promises = inputs.map(async input => this.getFile(input));
+
+    return Promise.all(promises);
   }
 
   getPath(file: UwaziFile): string {

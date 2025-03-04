@@ -1,6 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@testing-library/jest-dom';
+import { TextEncoder, TextDecoder } from 'util';
 import Adapter from '@cfaester/enzyme-adapter-react-18';
+
+Object.assign(global, { TextDecoder, TextEncoder });
 
 const { configure } = require('enzyme');
 

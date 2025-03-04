@@ -27,6 +27,23 @@ const elasticTesting = {
   async getIndexedEntities(sort = 'title.sort') {
     return (await elastic.search({ sort: [sort] })).body.hits.hits.map(i => i._source);
   },
+
+  async getIndexedFullTextFromFiles() {
+    const result = await elastic.search({
+      body: {
+        query: {
+          has_parent: {
+            parent_type: 'entity',
+            query: {
+              match_all: {},
+            },
+          },
+        },
+      },
+    });
+
+    return result.body.hits.hits.map(i => i._source);
+  },
 };
 
 export { elasticTesting };

@@ -54,6 +54,9 @@ exports[`Doc when target reference is specified should pass the target reference
             icon="exchange-alt"
           />
           <span>
+            <Translate
+              context="context"
+            />
             
           </span>
         </div>
@@ -88,6 +91,9 @@ exports[`Doc when target reference is specified should pass the target reference
             icon="exchange-alt"
           />
           <span>
+            <Translate
+              context="context"
+            />
             
           </span>
         </div>

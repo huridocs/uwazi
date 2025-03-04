@@ -217,14 +217,14 @@ exports[`MarkdownMedia render uploaded files should render the edition mode 1`] 
         type="button"
       >
         <span
-          class="translation active"
+          class="translation "
         >
           Add timelink
         </span>
       </button>
       <h5>
         <span
-          class="translation active"
+          class="translation "
         >
           Timelinks
         </span>

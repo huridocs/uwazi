@@ -1,5 +1,5 @@
 import { createClient, RedisClient } from 'redis';
-import cookie from 'cookie';
+import * as cookie from 'cookie';
 import { Server } from 'http';
 import { Server as SocketIoServer } from 'socket.io';
 import { Application, Request, Response, NextFunction } from 'express';
@@ -46,9 +46,10 @@ const setupApiSockets = (server: Server, app: Application) => {
     //eslint-disable-next-line @typescript-eslint/no-floating-promises
     socket.join(socket.request.headers.tenant || config.defaultTenant.name);
     const socketCookie = cookie.parse(socket.request.headers.cookie || '');
+
     if (socketCookie) {
       //eslint-disable-next-line @typescript-eslint/no-floating-promises
-      socket.join(socketCookie['connect.sid']);
+      socket.join(socketCookie['connect.sid'] || 'default-session-id');
     }
   });
 

@@ -26,6 +26,7 @@ describe('Public Form', () => {
         });
 
       cy.contains('button', 'Save').click();
+      cy.contains('Dismiss').click();
     });
   });
 
@@ -41,10 +42,15 @@ describe('Public Form', () => {
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
+      cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
       cy.contains('Basic').click();
+
+      //wait for /pages GET request
+      cy.wait('@fetchPage');
+      cy.get('input[id="page-url"]').should('not.have.value', '');
       cy.get('input[id="page-url"]').then(url => {
         cy.contains('a', 'Menu').click();
         cy.contains('button', 'Add link').click();
@@ -96,9 +102,11 @@ describe('Public Form', () => {
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
+      cy.intercept('GET', '/api/page*').as('fetchPage');
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.contains('Dismiss').click();
+      cy.wait('@fetchPage');
     });
 
     it('should revisit the page and fill the text, select and date fields', () => {
@@ -174,9 +182,21 @@ describe('Public Form', () => {
     it('should check the second entity with files', () => {
       cy.get('.library-viewer').scrollTo('top');
       cy.contains('h2', 'Entity with image and media fields').click();
+      cy.intercept('GET', '/api/files/*').as('waitForImages');
       cy.contains('aside.is-active a', 'View').click();
-      cy.get('.attachments-list-parent').eq(0).scrollIntoView();
-      cy.get('.attachments-list-parent').eq(0).toMatchImageSnapshot();
+      //wait for .multimedia-img to be visible
+      cy.get('.multimedia-img').should('be.visible');
+
+      cy.wait('@waitForImages');
+
+      //cy.get('.attachments-list-parent').eq(0).scrollIntoView();
+      //cy.get('.attachments-list-parent').eq(0).toMatchImageSnapshot();
+
+      // get the names of the supporting files in first span of .attachment-name
+      cy.get('.attachment-name span:first-of-type').then($spans => {
+        const names = $spans.toArray().map(span => span.textContent);
+        expect(names).to.deep.equal(['batman.jpg', 'batman.jpg', 'short-video.mp4']);
+      });
     });
   });
 

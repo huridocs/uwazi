@@ -24,7 +24,7 @@ const findLabel = (value, propertyData, thesauriById, translation) => {
     []
   );
 
-  const thesaurusElement = flattenedValues.find(v => v.id === value.toString());
+  const thesaurusElement = flattenedValues.find(v => v.id.toString() === value.toString());
   if (thesaurusElement) {
     const context = translation.contexts.find(
       ctx => ctx.id.toString() === propertyData.content.toString()

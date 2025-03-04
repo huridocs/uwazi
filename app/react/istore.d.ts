@@ -178,6 +178,7 @@ export interface IStore {
     sidepanel: {
       metadata: ClientEntitySchema;
     };
+    documentScale: number;
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;

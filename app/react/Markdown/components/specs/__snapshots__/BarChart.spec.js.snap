@@ -16,8 +16,6 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -44,17 +42,6 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -198,8 +185,6 @@ exports[`BarChart Markdown component when excludeZero should render without zero
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -221,17 +206,6 @@ exports[`BarChart Markdown component when excludeZero should render without zero
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -420,8 +394,6 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -438,17 +410,6 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -582,8 +543,6 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -601,17 +560,6 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -745,8 +693,6 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -783,17 +729,6 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}

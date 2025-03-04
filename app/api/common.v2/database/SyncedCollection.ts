@@ -121,17 +121,15 @@ export class SyncedCollection<TSchema extends Document = Document>
   }
 
   async bulkWrite(
-    operations: AnyBulkWriteOperation<TSchema>[],
+    operations: ReadonlyArray<AnyBulkWriteOperation<TSchema>>,
     options?: BulkWriteOptions | undefined
   ): Promise<BulkWriteResult> {
     const updateConditions = operations
       .map((op: any) => op.updateOne?.filter || op.updateMany?.filter)
       .filter((op: any) => op);
-
     const deleteConditions = operations
       .map((op: any) => op.deleteOne?.filter || op.deleteMany?.filter)
       .filter((op: any) => op);
-
     await this.upsertSyncLogs(deleteConditions, true);
     const result = await this.collection.bulkWrite(operations, options);
     await Promise.all([
@@ -145,8 +143,8 @@ export class SyncedCollection<TSchema extends Document = Document>
 
   async updateOne(
     filter: Filter<TSchema>,
-    update: UpdateFilter<TSchema> | Partial<TSchema>,
-    options?: UpdateOptions | undefined
+    update: UpdateFilter<TSchema> | Document[],
+    options?: UpdateOptions
   ): Promise<UpdateResult<TSchema>> {
     const result = await this.collection.updateOne(filter, update, options);
     await this.upsertSyncLogs([filter]);
@@ -204,8 +202,8 @@ export class SyncedCollection<TSchema extends Document = Document>
   }
 
   async countDocuments(
-    filter?: Document | undefined,
-    options?: CountDocumentsOptions | undefined
+    filter?: Filter<Document>,
+    options?: CountDocumentsOptions
   ): Promise<number> {
     return this.collection.countDocuments(filter, options);
   }

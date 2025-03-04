@@ -30,18 +30,18 @@ exports[`ImportPanel rendering states should render a form 1`] = `
       <div
         className="force-ltr"
       >
-        <Connect(Translate)>
+        <Translate>
           Upload a ZIP or CSV file.
-        </Connect(Translate)>
+        </Translate>
          
         <a
           href="https://github.com/huridocs/uwazi/wiki/Import-CSV"
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Connect(Translate)>
+          <Translate>
             Import instructions
-          </Connect(Translate)>
+          </Translate>
         </a>
       </div>
     </div>
@@ -65,9 +65,9 @@ exports[`ImportPanel rendering states should render a form 1`] = `
             <label
               htmlFor="file"
             >
-              <Connect(Translate)>
+              <Translate>
                 File
-              </Connect(Translate)>
+              </Translate>
             </label>
           </li>
           <li
@@ -91,9 +91,9 @@ exports[`ImportPanel rendering states should render a form 1`] = `
             <label
               htmlFor="template"
             >
-              <Connect(Translate)>
+              <Translate>
                 Template
-              </Connect(Translate)>
+              </Translate>
             </label>
           </li>
           <li
@@ -132,9 +132,9 @@ exports[`ImportPanel rendering states should render a form 1`] = `
         <span
           className="btn-label"
         >
-          <Connect(Translate)>
+          <Translate>
             Import
-          </Connect(Translate)>
+          </Translate>
         </span>
       </button>
     </div>
@@ -171,9 +171,9 @@ exports[`ImportPanel rendering states when the import starts should render an up
     <div
       className="force-ltr"
     >
-      <Connect(Translate)>
+      <Translate>
         Uploading file
-      </Connect(Translate)>
+      </Translate>
        
       23
       %
@@ -211,9 +211,9 @@ exports[`ImportPanel rendering states when the upload starts should render an up
     <div
       className="force-ltr"
     >
-      <Connect(Translate)>
+      <Translate>
         Uploading file
-      </Connect(Translate)>
+      </Translate>
        
       23
       %

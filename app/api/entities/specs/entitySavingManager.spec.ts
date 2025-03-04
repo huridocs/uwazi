@@ -1,17 +1,18 @@
 /* eslint-disable max-lines */
 import { saveEntity } from 'api/entities/entitySavingManager';
-import * as os from 'os';
 import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from 'api/files';
 import * as processDocumentApi from 'api/files/processDocument';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
+import * as os from 'os';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
-import waitForExpect from 'wait-for-expect';
 import entities from '../entities';
 import {
   anotherTextFile,
@@ -38,6 +39,8 @@ trailer<</Root 1 0 R>>
 const tmpDir = (filename: string) => path.join(os.tmpdir(), filename);
 
 describe('entitySavingManager', () => {
+  const userInContextMock = new UserInContextMockFactory();
+
   const file = {
     originalname: 'sampleFile.txt',
     mimetype: 'text/plain',
@@ -63,12 +66,12 @@ describe('entitySavingManager', () => {
   });
 
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   afterEach(() => {
@@ -80,11 +83,12 @@ describe('entitySavingManager', () => {
 
     describe('new entity', () => {
       it('should create an entity without attachments', async () => {
+        const mockedUser = userInContextMock.mockEditorUser();
         const entity = { title: 'newEntity', template: template1Id };
         const { entity: savedEntity } = await saveEntity(entity, { ...reqData });
 
         expect(savedEntity.permissions).toEqual([
-          { level: 'write', refId: 'userId', type: 'user' },
+          { level: 'write', refId: mockedUser._id.toString(), type: 'user' },
         ]);
       });
 
@@ -442,10 +446,6 @@ describe('entitySavingManager', () => {
           }
         ));
 
-        await waitForExpect(async () => {
-          expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-        });
-
         const [processedEntity] = await entities.getUnrestrictedWithDocuments({
           _id: savedEntity._id,
         });
@@ -472,10 +472,6 @@ describe('entitySavingManager', () => {
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
             socketEmiter: emiter,
           }));
-
-          await waitForExpect(async () => {
-            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-          });
 
           const [processedEntity] = await entities.getUnrestrictedWithDocuments({
             _id: savedEntity._id,
@@ -556,7 +552,7 @@ describe('entitySavingManager', () => {
         it('should not reprocess existing documents', async () => {
           jest
             .spyOn(processDocumentApi, 'processDocument')
-            .mockResolvedValueOnce({ _id: db.id() as ObjectId });
+            .mockResolvedValueOnce({ __v: 1, _id: db.id() as ObjectId });
 
           const changedFile = { ...mainPdfFile, originalname: 'Renamed main pdf.pdf' };
 
@@ -573,10 +569,6 @@ describe('entitySavingManager', () => {
             socketEmiter: emiter,
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
           }));
-
-          await waitForExpect(async () => {
-            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-          });
 
           expect(savedEntity.documents).toMatchObject([
             {

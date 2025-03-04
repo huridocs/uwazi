@@ -205,6 +205,7 @@ const fixtures: DBFixture = {
       languages: [{ key: 'es', label: 'ES', default: true }],
       publicFormDestination: 'http://localhost:54321',
       allowedPublicTemplates: [allowedPublicTemplate.toString()],
+      openPublicEndpoint: true,
     },
   ],
   users: [collabUser, writerUser, adminUser],

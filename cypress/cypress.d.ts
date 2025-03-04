@@ -14,8 +14,14 @@ declare global {
     interface Chainable {
       selection(subject: string, fn: any): Chainable;
       setSelection(subject: string, query?: string | object, endQuery?: any[]): Chainable;
-      clearAndType(selector: string, value: string, options? = {}): Chainable;
-      addTimeLink(duration: number, label: string, index?: number): Chainable;
+      clearAndType(selector: string, value: string, options?): Chainable;
+      addTimeLink(
+        duration: number,
+        label: string,
+        index?: number,
+        seconds?: number,
+        minutes?: number
+      ): Chainable;
       blankState(): Chainable;
       getByTestId(id: string): Chainable<Element>;
       shouldNotBeActionable(
@@ -26,6 +32,7 @@ declare global {
       ): Chainable<Element>;
       checkAccessibility(components: React.ReactNode[]);
       realDragAndDrop(subject: Chainable, target: Chainable): void;
+      waitForLegacyNotifications();
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;

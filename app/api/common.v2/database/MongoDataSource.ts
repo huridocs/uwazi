@@ -4,7 +4,7 @@ import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
 import { SyncedCollection } from './SyncedCollection';
 
-export abstract class MongoDataSource<CollectionSchema extends Document = any> {
+export abstract class MongoDataSource<TSchema extends Document = Document> {
   private db: Db;
 
   protected abstract collectionName: string;
@@ -16,10 +16,12 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     this.transactionManager = transactionManager;
   }
 
-  protected getCollection(collectionName = this.collectionName) {
-    return new SyncedCollection<CollectionSchema>(
-      new SessionScopedCollection<CollectionSchema>(
-        this.db.collection(collectionName),
+  protected getCollection<Collection extends Document = TSchema>(
+    collectionName = this.collectionName
+  ) {
+    return new SyncedCollection<Collection>(
+      new SessionScopedCollection<Collection>(
+        this.db.collection<Collection>(collectionName),
         this.transactionManager
       ),
       this.transactionManager,
@@ -45,6 +47,6 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   }
 
   protected createBulkStream() {
-    return new BulkWriteStream(this.getCollection());
+    return new BulkWriteStream<TSchema>(this.getCollection());
   }
 }

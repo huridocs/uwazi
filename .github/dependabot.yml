@@ -5,18 +5,17 @@ updates:
     schedule:
       interval: daily
     ignore:
-      - dependency-name: "@types/*"
-      - dependency-name: "@sentry/node" #6880
-        versions: [">= 7.114.0"]
+      - dependency-name: '@types/*'
+      - dependency-name: '@sentry/node' #6880
+        versions: ['>= 7.114.0']
       - dependency-name: flowbite #Flowbite & flowbite-datepicker upgrade #6993
-        versions: [">= 2.3.1"]
+        versions: ['>= 2.3.1']
       - dependency-name: flowbite-datepicker #Flowbite & flowbite-datepicker upgrade #6993
-        versions: [">= 1.2.8"]
+        versions: ['>= 1.2.8']
       - dependency-name: flowbite-react #Flowbite & flowbite-datepicker upgrade #6993
-        versions: [">= 0.10.1"]
+        versions: ['>= 0.10.1']
       - dependency-name: Mongoose #Mongoose upgrade #7017
         versions: [">= 8.4.3"]
-      - dependency-name: cookie
       - dependency-name: "@socket.io*"
       - dependency-name: bootstrap
       - dependency-name: express-prom-bundle
@@ -24,14 +23,13 @@ updates:
       - dependency-name: otplib
       - dependency-name: redux
       - dependency-name: redux-thunk
-      - dependency-name: "@typescript-eslint/eslint-plugin"
-      - dependency-name: "@typescript-eslint/parser"
+      - dependency-name: '@typescript-eslint/eslint-plugin'
+      - dependency-name: '@typescript-eslint/parser'
       - dependency-name: eslint #6784
       - dependency-name: fetch-mock
-      - dependency-name: react-router-dom
       - dependency-name: react-datepicker
       - dependency-name: recharts
-      - dependency-name: "@headlessui/react"
+      - dependency-name: '@headlessui/react'
       - dependency-name: react-player
     open-pull-requests-limit: 5
     labels:
@@ -41,19 +39,19 @@ updates:
       babel:
         applies-to: version-updates
         patterns:
-          - "@babel*"
+          - '@babel*'
       storybook:
         applies-to: version-updates
         patterns:
-          - "@storybook*"
+          - '@storybook*'
       sentry:
         applies-to: version-updates
         patterns:
-          - "@sentry*"
+          - '@sentry*'
       dnd-kit:
         applies-to: version-updates
         patterns:
-          - "@dnd-kit*"
+          - '@dnd-kit*'
       socket.io:
         applies-to: version-updates
         patterns:
@@ -70,9 +68,9 @@ updates:
         applies-to: version-updates
         update-types: [minor, patch]
         patterns:
-          - "*"
+          - '*'
       dev-major-dependencies:
         applies-to: version-updates
         update-types: [major]
         patterns:
-          - "*"
+          - '*'

@@ -1,4 +1,5 @@
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NextFunction } from 'express';
 import captchaMiddleware from '../captchaMiddleware';
 import { CaptchaModel } from '../CaptchaModel';
@@ -26,10 +27,10 @@ describe('captchaMiddleware', () => {
       captchas: [{ _id: captchaId, text: 'k0n2170' }],
     };
 
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   it('should return an error when there is no captcha in the request', async () => {
     const middleWare = captchaMiddleware();

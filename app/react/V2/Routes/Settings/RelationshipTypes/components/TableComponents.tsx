@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
@@ -10,6 +10,7 @@ type Relationships = ClientRelationshipType & { rowId: string };
 interface TableRelationshipType extends Relationships {
   templates: Template[];
   disableRowSelection: boolean;
+  translation: string;
 }
 
 const EditButton = ({ cell, column }: CellContext<TableRelationshipType, string>) => (
@@ -24,8 +25,7 @@ const EditButton = ({ cell, column }: CellContext<TableRelationshipType, string>
 
 const TitleCell = ({ cell, getValue }: CellContext<TableRelationshipType, string>) => (
   <div className="flex gap-2 items-center">
-    <span className="text-indigo-800">{t(cell.row.original._id, getValue(), null, false)}</span>(
-    {getValue()})
+    <span className="text-indigo-800">{cell.row.original.translation}</span>({getValue()})
   </div>
 );
 

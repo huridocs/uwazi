@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
-import { testingDB } from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
-import { search } from 'api/search';
 import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { PermissionsDataSchema } from 'shared/types/permissionType';
+import { search } from 'api/search';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
+import { AccessLevels, MixedAccess, PermissionType } from 'shared/types/permissionSchema';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 const publicPermission = {
@@ -25,11 +25,11 @@ const mockCollab = () =>
 
 describe('permissions', () => {
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('set entities permissions', () => {

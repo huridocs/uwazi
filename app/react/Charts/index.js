@@ -2,8 +2,6 @@ import loadable from '@loadable/component';
 
 import colorScheme from './utils/colorScheme';
 import arrayUtils from './utils/arrayUtils';
-import LibraryChart from './components/LibraryChart';
-import LibraryCharts from './components/LibraryCharts';
 import ExtendedTooltip from './components/ExtendedTooltip';
 
 const Bar = loadable(
@@ -25,14 +23,4 @@ const StackedDualBarChart = loadable(
     )
 );
 
-export {
-  Bar,
-  ColoredBar,
-  ExtendedTooltip,
-  LibraryChart,
-  LibraryCharts,
-  Pie,
-  StackedDualBarChart,
-  colorScheme,
-  arrayUtils,
-};
+export { Bar, ColoredBar, ExtendedTooltip, Pie, StackedDualBarChart, colorScheme, arrayUtils };

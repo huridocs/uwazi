@@ -33,6 +33,7 @@ describe('ATServiceListener', () => {
       settings: [{ features: { automaticTranslation: { active: true } } }],
     });
     testingEnvironment.resetPermissions();
+    testingEnvironment.unsetFakeContext();
     await testingEnvironment.setTenant('tenant');
 
     executeSpy = jest.fn().mockImplementation(() => {

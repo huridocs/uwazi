@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData } from 'react-router';
 import uniqueID from 'shared/uniqueID';
 import { Translate } from 'app/I18N';
 import { ClientTemplateSchema } from 'app/istore';

@@ -27,10 +27,10 @@ export interface EntitySuggestionType {
   currentValue?: PropertyValueSchema | PropertyValueSchema[];
   labeledValue?: PropertyValueSchema;
   selectionRectangles?: {
-    top?: number;
-    left?: number;
-    width?: number;
-    height?: number;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
     page?: string;
   }[];
   segment: string;
@@ -72,10 +72,10 @@ export interface IXSuggestionType {
   date?: number;
   error?: string;
   selectionRectangles?: {
-    top?: number;
-    left?: number;
-    width?: number;
-    height?: number;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
     page?: string;
   }[];
 }

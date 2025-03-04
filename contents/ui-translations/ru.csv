@@ -305,6 +305,7 @@ Entity types,Типы объектов
 Entity updated,Entity updated
 Error,Ошибка
 Error adding thesauri.,Error adding thesauri.
+Error loading your image,Error loading your image
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Изучение
@@ -844,7 +845,6 @@ This content is automatically generated,Этот контент генериру
 This entity is not public.,Этот объект не является общедоступным.
 This entity is restricted from public view.,Этот объект ограничен для общедоступного просмотра.
 This field is required,This field is required
-This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,Эта опция покажет уведомление об использовании файлов cookie в вашей базе данных.

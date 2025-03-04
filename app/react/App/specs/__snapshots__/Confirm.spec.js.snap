@@ -9,21 +9,21 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
 >
   <Body>
     <h4>
-      <Connect(Translate)>
+      <Translate>
         Confirm action
-      </Connect(Translate)>
+      </Translate>
     </h4>
     <p>
-      <Connect(Translate)
+      <Translate
         translationKey=""
       >
         Are you sure you want to continue?
-      </Connect(Translate)>
+      </Translate>
     </p>
     <p>
-      <Connect(Translate)>
+      <Translate>
         If you want to continue, please type
-      </Connect(Translate)>
+      </Translate>
        '
       CONFIRM
       '
@@ -41,9 +41,9 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       onClick={[Function]}
       type="button"
     >
-      <Connect(Translate)>
+      <Translate>
         Cancel
-      </Connect(Translate)>
+      </Translate>
     </button>
     <button
       className="btn confirm-button btn-danger"
@@ -51,9 +51,9 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
       onClick={[Function]}
       type="button"
     >
-      <Connect(Translate)>
+      <Translate>
         Accept
-      </Connect(Translate)>
+      </Translate>
     </button>
   </Footer>
 </Modal>
@@ -68,16 +68,16 @@ exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1
 >
   <Body>
     <h4>
-      <Connect(Translate)>
+      <Translate>
         Confirm action
-      </Connect(Translate)>
+      </Translate>
     </h4>
     <p>
-      <Connect(Translate)
+      <Translate
         translationKey=""
       >
         Are you sure you want to continue?
-      </Connect(Translate)>
+      </Translate>
     </p>
   </Body>
   <Footer>
@@ -87,9 +87,9 @@ exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1
       onClick={[Function]}
       type="button"
     >
-      <Connect(Translate)>
+      <Translate>
         Accept
-      </Connect(Translate)>
+      </Translate>
     </button>
   </Footer>
 </Modal>

@@ -1,12 +1,13 @@
 import entities from 'api/entities';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 import entitiesModel from '../entitiesModel';
 
 const factory = getFixturesFactory();
 const loadFixtures = async () =>
-  db.setupFixturesAndContext(
+  testingEnvironment.setUp(
     {
       templates: [factory.template('templateA', [])],
       entities: [
@@ -29,7 +30,7 @@ const loadFixtures = async () =>
   );
 
 describe('Entities deleteMultiple', () => {
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('without errors', () => {
     beforeAll(async () => {

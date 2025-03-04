@@ -67,21 +67,33 @@ describe('MediaField', () => {
     name: '',
   };
 
-  const render = (otherProps = {}) => {
-    ({ renderResult } = renderConnectedContainer(
-      <MediaField
-        formField=""
-        type={MediaModalType.Image}
-        value={null}
-        {...{ ...baseProps, ...otherProps }}
-      />,
-      () => defaultState
-    ));
+  const render = async (otherProps = {}) => {
+    await act(async () => {
+      ({ renderResult } = renderConnectedContainer(
+        <MediaField
+          formField=""
+          type={MediaModalType.Image}
+          value={null}
+          {...{ ...baseProps, ...otherProps }}
+        />,
+        () => defaultState
+      ));
+    });
   };
 
   describe('Object URL handling', () => {
     const mockedCreateObjectURL: jest.Mock = jest.fn();
     const mockedRevokeObjectURL: jest.Mock = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      global.fetch = jest.fn();
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
     beforeAll(() => {
       URL.createObjectURL = mockedCreateObjectURL;
@@ -96,20 +108,21 @@ describe('MediaField', () => {
 
     it('should create an object URL with the file', async () => {
       const file = new File(['hello'], 'hello.png', { type: 'image/png' });
-      render(imageProps);
-      const img = screen.getByRole('presentation') as HTMLImageElement;
+      await render(imageProps);
+
+      const img = screen.getByRole('img') as HTMLImageElement;
       expect(img.src).toEqual('blob:abc');
       expect(mockedCreateObjectURL).toHaveBeenCalledWith(file);
     });
 
     it('should revoke the created URL', async () => {
-      render(imageProps);
+      await render(imageProps);
       renderResult.unmount();
       expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
     });
 
     it('should change the media value according with markdownmedia variations', async () => {
-      render(mediaProps);
+      await render(mediaProps);
 
       await act(async () => {
         fireEvent.click(screen.getByText('Add timelink').parentElement!);
@@ -158,12 +171,10 @@ describe('MediaField', () => {
     });
 
     it('should show and error if the image is not valid', async () => {
-      render(imageProps);
+      await render(imageProps);
       const img = renderResult.container.getElementsByTagName('img')[0];
       fireEvent.error(img);
-      expect(
-        await screen.findByText('This file type is not supported on media fields')
-      ).toBeInTheDocument();
+      expect(await screen.findByText('Error loading your image')).toBeInTheDocument();
     });
   });
 });

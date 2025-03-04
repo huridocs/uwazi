@@ -10,7 +10,6 @@ const saveEntity = async (
     user,
     language,
     files: reqFiles,
-    socketEmiter,
   }: { user: UserSchema; language: string; socketEmiter?: Function; files?: FileAttachment[] }
 ) => {
   const { attachments, documents } = (reqFiles || []).reduce(
@@ -36,12 +35,7 @@ const saveEntity = async (
     documents
   );
 
-  const fileSaveErrors = await saveFiles(
-    proccessedAttachments,
-    proccessedDocuments,
-    updatedEntity,
-    socketEmiter
-  );
+  const fileSaveErrors = await saveFiles(proccessedAttachments, proccessedDocuments, updatedEntity);
 
   const [entityWithAttachments]: EntityWithFilesSchema[] =
     await entities.getUnrestrictedWithDocuments(

@@ -1,98 +1,111 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
-import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { EventBus, PDFJSViewer } from './pdfjs';
+import { useAtom } from 'jotai';
+import { pdfScaleAtom } from 'V2/atoms';
+import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
 import { TextHighlight } from './types';
+import { calculateScaling } from './functions/calculateScaling';
+import { adjustSelectionsToScale } from './functions/handleTextSelection';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
+  eventBus: typeof EventBus.prototype;
   highlights?: TextHighlight[];
+  containerWidth?: number;
 }
 
-const PDFPage = ({ pdf, page, highlights }: PDFPageProps) => {
-  const pageContainerRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [pdfPage, setPdfPage] = useState<PDFPageProxy>();
+const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPageProps) => {
   const [error, setError] = useState<string>();
+  const [pdfScale, setPdfScale] = useAtom(pdfScaleAtom);
+  const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const currentContainer = pageContainerRef.current;
+    let observer: IntersectionObserver;
+
     pdf
       .getPage(page)
-      .then(result => setPdfPage(result))
-      .catch((e: Error) => setError(e.message));
-  }, [page, pdf]);
+      .then(pdfPage => {
+        if (currentContainer && pdfPage) {
+          const originalViewport = pdfPage.getViewport({ scale: 1 });
+          const scale = calculateScaling(
+            originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
+            containerWidth
+          );
+          const defaultViewport = pdfPage.getViewport({ scale });
 
-  useEffect(() => {
-    if (pageContainerRef.current && pdfPage) {
-      const currentContainer = pageContainerRef.current;
+          setPdfScale(scale);
 
-      const handleIntersection: IntersectionObserverCallback = entries => {
-        const [entry] = entries;
-        if (!isVisible) {
-          setIsVisible(entry.isIntersecting);
+          const pageViewer = new PDFJSViewer.PDFPageView({
+            container: currentContainer,
+            id: page,
+            scale,
+            defaultViewport,
+            annotationMode: 0,
+            eventBus,
+          });
+
+          pageViewer.setPdfPage(pdfPage);
+
+          const handleIntersection: IntersectionObserverCallback = entries => {
+            const [entry] = entries;
+            if (entry.isIntersecting) {
+              if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
+                pageViewer.draw().catch(e => {
+                  setError(e.message);
+                });
+              }
+            } else {
+              if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
+                pageViewer.cancelRendering();
+              }
+              if (pageViewer.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
+                pageViewer.destroy();
+              }
+            }
+          };
+
+          observer = new IntersectionObserver(handleIntersection, {
+            root: null,
+            threshold: 0.1,
+          });
+
+          observer.observe(currentContainer);
         }
-      };
-
-      const observer = new IntersectionObserver(handleIntersection, {
-        root: null,
-        rootMargin: '100px',
-        threshold: 0.1,
+      })
+      .catch((e: Error) => {
+        setError(e.message);
       });
 
-      observer.observe(currentContainer);
-
-      return () => observer.unobserve(currentContainer);
-    }
-
-    return () => {};
-  });
-
-  useEffect(() => {
-    if (pageContainerRef.current && pdfPage) {
-      const currentContainer = pageContainerRef.current;
-      const defaultViewport = pdfPage.getViewport({ scale: 1 });
-
-      const handlePlaceHolder = () => {
-        currentContainer.style.height = `${defaultViewport.height}px`;
-      };
-
-      if (isVisible) {
-        const pageViewer = new PDFJSViewer.PDFPageView({
-          container: currentContainer,
-          id: page,
-          scale: 1,
-          defaultViewport,
-          annotationMode: 0,
-          eventBus: new EventBus(),
-        });
-
-        pageViewer.setPdfPage(pdfPage);
-        currentContainer.style.height = 'auto';
-        pageViewer.draw().catch((e: Error) => setError(e.message));
-      }
-
-      if (!isVisible) {
-        handlePlaceHolder();
-      }
-    }
-  }, [isVisible, page, pdfPage]);
+    return () => {
+      if (currentContainer) observer.unobserve(currentContainer);
+    };
+    //pdf rendering is expensive and we want to make sure there's a single effect that runs only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
-    <div ref={pageContainerRef}>
-      {isVisible &&
-        highlights?.map(highlight => (
+    <div ref={pageContainerRef} className="pdf-page">
+      {highlights?.map(highlight => {
+        const scaledHightlight = {
+          ...highlight,
+          textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),
+        };
+        return (
           <Highlight
-            key={highlight.key}
-            textSelection={highlight.textSelection}
-            color={highlight.color}
+            key={scaledHightlight.key}
+            textSelection={scaledHightlight.textSelection}
+            color={scaledHightlight.color}
           />
-        ))}
+        );
+      })}
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import db from 'api/utils/testing_db';
-import { Request, NextFunction, Response } from 'express';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { NextFunction, Request, Response } from 'express';
 import middleware from '../languageMiddleware';
 import fixtures from './languageFixtures';
 
@@ -11,7 +11,7 @@ describe('languageMiddleware', () => {
   const createRequest = (request: Partial<Request>) => <Request>{ ...request };
 
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
     req = <Request>{
       get: (headerName: string) =>
         //@ts-ignore
@@ -21,7 +21,7 @@ describe('languageMiddleware', () => {
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('when there is an error', () => {

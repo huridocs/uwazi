@@ -1,11 +1,14 @@
 import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
+import { useAtomValue } from 'jotai';
 import { IStore } from 'app/istore';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { unique } from 'shared/filterUnique';
 import { SelectionRectangleSchema } from 'shared/types/commonTypes';
+import { pdfScaleAtom } from 'V2/atoms';
+import { selectionHandlers } from 'V2/Components/PDFViewer';
 
 type ReferenceGroup = {
   _id: string;
@@ -27,6 +30,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
   props: PageReferencesProps
 ) => {
   const referenceGroup = useRef<string[]>();
+  const pdfScaleFactor = useAtomValue(pdfScaleAtom);
 
   const handleClick = useCallback(
     (reference: ConnectionSchema) =>
@@ -49,7 +53,10 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
           ({ page, ...otherProps }) => ({ regionId: page, ...otherProps })
         );
 
-        const highlight = { ...reference.reference, selectionRectangles };
+        const highlight = selectionHandlers.adjustSelectionsToScale(
+          { ...reference.reference, selectionRectangles },
+          pdfScaleFactor
+        );
 
         if (props.groupedReferences && reference._id) {
           props.groupedReferences.forEach(group => {

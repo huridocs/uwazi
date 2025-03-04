@@ -1,4 +1,5 @@
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { validatePage } from 'shared/types/pageSchema';
 import { PageType } from 'shared/types/pageType';
@@ -27,11 +28,11 @@ describe('pageSchema', () => {
         entityView: true,
       };
 
-      await db.clearAllAndLoad({ templates });
+      await testingEnvironment.setUp({ templates });
     });
 
     afterAll(async () => {
-      await db.disconnect();
+      await testingEnvironment.tearDown();
     });
 
     it('should not allow to disable the entity view page when the page is in use by a template', async () => {

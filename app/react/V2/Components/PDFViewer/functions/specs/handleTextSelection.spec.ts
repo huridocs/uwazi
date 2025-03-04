@@ -3,6 +3,7 @@ import {
   getHighlightsFromSelection,
   updateFileSelection,
   deleteFileSelection,
+  adjustSelectionsToScale,
 } from '../handleTextSelection';
 import {
   selectionsFromFile,
@@ -305,6 +306,75 @@ describe('PDF selections handlers', () => {
         property2Selection,
         titleSelection,
       ]);
+    });
+  });
+
+  describe('adjust selections to pdf scale', () => {
+    it('should return the original selection if there is no valid scaling', () => {
+      expect(adjustSelectionsToScale(selections[0], 1)).toEqual(selections[0]);
+      expect(adjustSelectionsToScale(selections[0], 0)).toEqual(selections[0]);
+    });
+
+    it('should return the same selections if the rectangles are empty', () => {
+      expect(
+        adjustSelectionsToScale(
+          {
+            text: 'no rectangles',
+            selectionRectangles: [],
+          },
+          1.5
+        )
+      ).toEqual({
+        text: 'no rectangles',
+        selectionRectangles: [],
+      });
+    });
+
+    it('should scale selections', () => {
+      expect(adjustSelectionsToScale(selections[0], 1.5)).toEqual({
+        text: 'selection 1',
+        selectionRectangles: [
+          {
+            left: 1.5,
+            top: 1.5,
+            width: 1.5,
+            height: 1.5,
+            regionId: '1',
+          },
+        ],
+      });
+    });
+
+    it('should normalize selections', () => {
+      expect(
+        adjustSelectionsToScale(
+          {
+            text: 'selection in scaled pdf',
+            selectionRectangles: [
+              {
+                left: 10,
+                top: 10,
+                width: 10,
+                height: 2,
+                regionId: '1',
+              },
+            ],
+          },
+          2,
+          true
+        )
+      ).toEqual({
+        text: 'selection in scaled pdf',
+        selectionRectangles: [
+          {
+            left: 5,
+            top: 5,
+            width: 5,
+            height: 1,
+            regionId: '1',
+          },
+        ],
+      });
     });
   });
 });

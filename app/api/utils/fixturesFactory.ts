@@ -23,6 +23,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
+import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -214,6 +215,31 @@ function getFixturesFactory() {
       name,
     }),
 
+    hub: (
+      hub: string,
+      leftEntity: string,
+      rightEntities: { entity: string; template: string | null }[]
+    ) => [
+      {
+        _id: idMapper(`${hub}-1`),
+        entity: leftEntity,
+        hub: idMapper(hub),
+        template: null,
+        reference: {
+          text: `${hub} left text`,
+        },
+      },
+      ...rightEntities.map(({ entity, template }) => ({
+        _id: idMapper(`${entity}-${hub}-2`),
+        entity,
+        hub: idMapper(hub),
+        template: template ? idMapper(template) : null,
+        reference: {
+          text: `${hub} right text`,
+        },
+      })),
+    ],
+
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {
         relationType: idMapper('rel1').toString(),
@@ -383,6 +409,8 @@ function getFixturesFactory() {
     }),
 
     v2: getV2FixturesFactoryElements(idMapper),
+
+    MongoSegmentationBuilder,
   });
 }
 

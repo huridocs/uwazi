@@ -307,6 +307,7 @@ Entity types,أنواع الكيانات
 Entity updated,Entity updated
 Error,خطأ
 Error adding thesauri.,Error adding thesauri.
+Error loading your image,Error loading your image
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,استكشاف
@@ -846,7 +847,6 @@ This content is automatically generated,أنشئ هذا المحتوى تلقا�
 This entity is not public.,هذا الكيان (الإدخال) ليس عام
 This entity is restricted from public view.,هذا الكيان (الإدخال) ممنوع من المعاينة العامة
 This field is required,This field is required
-This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,سيظهر هذا الخيار إشعاراً حول استخدام ملفات تعريف الارتباط في قاعدة بياناتك

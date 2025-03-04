@@ -2,7 +2,6 @@
 import { createReadStream } from 'fs';
 import entities from 'api/entities';
 import { search } from 'api/search';
-import entitiesModel from 'api/entities/entitiesModel';
 import { processDocument } from 'api/files/processDocument';
 import { RawEntity } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -62,6 +61,7 @@ const entityObject = async (
   template: TemplateSchema,
   { language, dateFormat = 'YYYY/MM/DD' }: Options
 ) => ({
+  language,
   title: titleByTemplate(template, toImportEntity),
   template: template._id,
   metadata: await toMetadata(template, toImportEntity, dateFormat),
@@ -174,34 +174,36 @@ const translateEntity = async (
   template: TemplateSchema,
   importFile: ImportFile,
   propNameToThesauriId: Record<string, string>,
-  indexedTranslations: FullyIndexedTranslations
+  indexedTranslations: FullyIndexedTranslations,
+  dateFormat?: string
 ) => {
-  await entitiesModel.saveMultiple(
-    await Promise.all(
-      translations.map(async translatedEntity => {
-        const translatedEntityObject = await entityObject(
-          {
-            ...translatedEntity,
-            propertiesFromColumns: {
-              ...translatedEntity.propertiesFromColumns,
-              id: ensure(entity.sharedId),
-            },
-          },
-          template,
-          {
-            language: translatedEntity.language,
-          }
-        );
+  await translations.reduce(async (prevPromise, translation) => {
+    await prevPromise;
 
-        return translateSelectLabels(
-          translatedEntityObject,
-          translatedEntity.language,
-          indexedTranslations,
-          propNameToThesauriId
-        );
-      })
-    )
-  );
+    const entityParsed = await entityObject(
+      {
+        ...translation,
+        propertiesFromColumns: {
+          ...translation.propertiesFromColumns,
+          id: ensure(entity.sharedId),
+        },
+      },
+      template,
+      {
+        language: translation.language,
+        dateFormat,
+      }
+    );
+
+    const toSave = translateSelectLabels(
+      entityParsed,
+      translation.language,
+      indexedTranslations,
+      propNameToThesauriId
+    );
+
+    await entities.save(toSave, { language: translation.language, user: {} });
+  }, Promise.resolve());
 
   await Promise.all(
     translations.map(async translatedEntity => {

@@ -1,10 +1,19 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
+import { atomStore, translationsAtom } from 'V2/atoms';
 import { socket } from '../../socket';
 import '../sockets';
 import { store } from '../../store';
+import {
+  currentTranslations,
+  newLanguage,
+  updatedTranslation,
+  translationKeysChangeArguments,
+  translationKeysChangeResult,
+} from './fixtures/fixtures';
 
 describe('sockets', () => {
   beforeEach(() => {
@@ -113,13 +122,42 @@ describe('sockets', () => {
   });
 
   describe('translationsChange', () => {
+    beforeEach(() => {
+      atomStore.set(
+        translationsAtom,
+        currentTranslations.map(t => ({ ...t }))
+      );
+      spyOn(atomStore, 'set');
+    });
+
     it('should emit a translationsChange event', () => {
-      socket._callbacks.$translationsChange[0]({ id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        customIndex: 'locale',
-        type: 'translations/UPDATE',
-        value: { id: '123' },
-      });
+      socket._callbacks.$translationsChange[0](updatedTranslation);
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([updatedTranslation, currentTranslations[1]])
+      );
+    });
+
+    it('should add a new language to the translations', () => {
+      socket._callbacks.$translationsChange[0](newLanguage);
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([...currentTranslations, newLanguage])
+      );
+    });
+  });
+
+  describe('translationKeysChange', () => {
+    const initialTranslations = [...currentTranslations.map(t => ({ ...t })), newLanguage];
+
+    beforeEach(() => {
+      atomStore.set(translationsAtom, initialTranslations);
+      spyOn(atomStore, 'set');
+    });
+
+    it('should emit a translationKeysChange event', () => {
+      socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
+      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), translationKeysChangeResult);
     });
   });
 
@@ -152,13 +190,17 @@ describe('sockets', () => {
   });
 
   describe('translationsDelete', () => {
+    beforeEach(() => {
+      atomStore.set(
+        translationsAtom,
+        currentTranslations.map(t => ({ ...t }))
+      );
+      spyOn(atomStore, 'set');
+    });
+
     it('should emit a translationsDelete event', () => {
-      socket._callbacks.$translationsDelete[0]('localeString');
-      expect(store.dispatch).toHaveBeenCalledWith({
-        customIndex: 'locale',
-        type: 'translations/REMOVE',
-        value: { locale: 'localeString' },
-      });
+      socket._callbacks.$translationsDelete[0]('es');
+      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), [currentTranslations[0]]);
     });
   });
 

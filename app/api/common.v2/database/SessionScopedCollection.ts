@@ -72,8 +72,8 @@ export class SessionScopedCollection<TSchema extends Document = Document>
   }
 
   async bulkWrite(
-    operations: AnyBulkWriteOperation<TSchema>[],
-    options?: BulkWriteOptions | undefined
+    operations: ReadonlyArray<AnyBulkWriteOperation<TSchema>>,
+    options?: BulkWriteOptions
   ): Promise<BulkWriteResult> {
     return this.collection.bulkWrite(operations, this.appendSession(options));
   }
@@ -130,10 +130,7 @@ export class SessionScopedCollection<TSchema extends Document = Document>
     return this.collection.find(filter || {}, this.appendSession(options));
   }
 
-  async countDocuments(
-    filter?: Document | undefined,
-    options?: CountDocumentsOptions | undefined
-  ): Promise<number> {
+  async countDocuments(filter?: Filter<TSchema>, options?: CountDocumentsOptions): Promise<number> {
     return this.collection.countDocuments(filter, this.appendSession(options));
   }
 

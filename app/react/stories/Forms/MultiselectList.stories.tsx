@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Provider } from 'react-redux';
 import { MultiselectList } from 'V2/Components/Forms';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 
 const meta: Meta<typeof MultiselectList> = {
   title: 'Forms/MultiselectList',
@@ -15,32 +13,30 @@ const StoryComponent = ({ args }: any) => {
   const [searchAndFocus, setSearchAndFocus] = useState('');
 
   return (
-    <Provider store={createStore()}>
-      <>
-        <div className="tw-content">
-          <div className="w-full p-4 m-auto md:w-1/2 min-h-[300px]">
-            <MultiselectList
-              label={args.label}
-              items={args.items}
-              onChange={args.onChange}
-              hasErrors={args.hasErrors}
-              checkboxes={args.checkboxes}
-              foldableGroups={args.foldableGroups}
-              allowSelelectAll={args.allowSelelectAll}
-              startOnSelected={args.startOnSelected}
-              value={args.value}
-              search={searchAndFocus}
-            />
-          </div>
+    <>
+      <div className="tw-content">
+        <div className="w-full p-4 m-auto md:w-1/2 min-h-[300px]">
+          <MultiselectList
+            label={args.label}
+            items={args.items}
+            onChange={args.onChange}
+            hasErrors={args.hasErrors}
+            checkboxes={args.checkboxes}
+            foldableGroups={args.foldableGroups}
+            allowSelelectAll={args.allowSelelectAll}
+            startOnSelected={args.startOnSelected}
+            value={args.value}
+            search={searchAndFocus}
+          />
         </div>
-        <button type="button" className="tw-hidden" onClick={() => setSearchAndFocus('another')}>
-          Search & Focus
-        </button>
-        <button type="button" className="tw-hidden" onClick={() => setSearchAndFocus('')}>
-          Clear
-        </button>
-      </>
-    </Provider>
+      </div>
+      <button type="button" className="tw-hidden" onClick={() => setSearchAndFocus('another')}>
+        Search & Focus
+      </button>
+      <button type="button" className="tw-hidden" onClick={() => setSearchAndFocus('')}>
+        Clear
+      </button>
+    </>
   );
 };
 

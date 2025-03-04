@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
-import { fixturer } from 'api/utils/testing_db';
+import testingDB, { fixturer } from 'api/utils/testing_db';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -79,8 +79,8 @@ describe('PDFSegmentation', () => {
 
   beforeEach(async () => {
     segmentPdfs = new PDFSegmentation();
-    dbOne = DB.connectionForDB(tenantOne.dbName).db;
-    dbTwo = DB.connectionForDB(tenantTwo.dbName).db;
+    dbOne = testingDB.db(tenantOne.dbName);
+    dbTwo = testingDB.db(tenantTwo.dbName);
 
     tenants.tenants = { tenantOne };
     fileA = await fs.readFile(`app/api/services/pdfsegmentation/specs/uploads/${fixturesPdfNameA}`);

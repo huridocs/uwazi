@@ -51,7 +51,7 @@ describe('EntitiesUpdateLogHelper', () => {
         fixtureFactory.id('files-thumbnail1'),
         fixtureFactory.id('files-document1'),
       ].forEach(id => {
-        const original = fixtures.updatelogs.find(log => log._id.toString() === id.toString());
+        const original = fixtures.updatelogs.find(log => log._id!.toString() === id.toString());
         const current = logs.find(log => log._id.toString() === id.toString());
 
         expect(current!.timestamp).toBeGreaterThan(original!.timestamp! as number);

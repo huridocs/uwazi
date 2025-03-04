@@ -112,8 +112,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -132,17 +130,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -300,8 +287,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -320,17 +305,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -468,8 +442,6 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -488,17 +460,6 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
       }
       height={300}
       layout="vertical"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -636,8 +597,6 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
     height={320}
   >
     <BarChart
-      barCategoryGap="10%"
-      barGap={4}
       data={
         Array [
           Object {
@@ -656,17 +615,6 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
       }
       height={300}
       layout="horizontal"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      reverseStackOrder={false}
-      stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}

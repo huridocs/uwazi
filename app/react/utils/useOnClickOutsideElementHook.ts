@@ -13,7 +13,7 @@ export function useOnClickOutsideElement<T extends HTMLElement>(
       cb(event);
     };
 
-    document.addEventListener('click', onClickHandler);
+    document.addEventListener('click', onClickHandler, { capture: true });
     return () => {
       document.removeEventListener('click', onClickHandler);
     };

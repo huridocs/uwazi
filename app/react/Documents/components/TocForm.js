@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Form, Field } from 'react-redux-form';
 import { Icon } from 'UI';
 
-export class TocForm extends Component {
+class TocForm extends Component {
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
@@ -70,4 +70,5 @@ TocForm.propTypes = {
   onSubmit: PropTypes.func,
 };
 
+export { TocForm };
 export default TocForm;

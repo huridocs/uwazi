@@ -4,13 +4,22 @@ import {
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
+  S3ServiceException,
   _Object,
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 
-class S3TimeoutError extends Error {
-  constructor(cause: Error) {
+class S3Error extends Error {
+  constructor(cause: S3ServiceException) {
     super(cause.message, { cause });
+  }
+
+  get originalError() {
+    return this.cause as S3ServiceException;
+  }
+
+  get httpStatusCode() {
+    return this.originalError.$metadata.httpStatusCode;
   }
 }
 
@@ -18,10 +27,7 @@ const catchS3Errors = async <T>(cb: () => Promise<T>): Promise<T> => {
   try {
     return await cb();
   } catch (err) {
-    if (err.name === 'TimeoutError') {
-      throw new S3TimeoutError(err);
-    }
-    throw err;
+    throw new S3Error(err);
   }
 };
 
@@ -92,4 +98,4 @@ export class S3Storage {
   }
 }
 
-export { S3TimeoutError };
+export { S3Error };

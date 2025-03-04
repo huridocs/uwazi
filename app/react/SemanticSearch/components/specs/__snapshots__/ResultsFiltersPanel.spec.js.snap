@@ -11,7 +11,11 @@ exports[`ResultsFiltersPanel render should render search filters and instruction
     <div
       className="sidepanel-title"
     >
-      Fine tune
+      <Translate
+        context="System"
+      >
+        Fine tune
+      </Translate>
     </div>
     <Connect(Form)
       model="semanticSearch.resultsFilters"
@@ -24,7 +28,11 @@ exports[`ResultsFiltersPanel render should render search filters and instruction
           key="Threshold"
         >
           <dt>
-            Threshold
+            <Translate
+              context="System"
+            >
+              Threshold
+            </Translate>
              
             80.00%
           </dt>
@@ -32,9 +40,21 @@ exports[`ResultsFiltersPanel render should render search filters and instruction
             <NumericRangeSlide
               delay={200}
               max={1}
-              maxLabel="Precision"
+              maxLabel={
+                <Translate
+                  context="System"
+                >
+                  Precision
+                </Translate>
+              }
               min={0.3}
-              minLabel="Exploration"
+              minLabel={
+                <Translate
+                  context="System"
+                >
+                  Exploration
+                </Translate>
+              }
               model=".threshold"
               prefix="threshold"
               step={0.01}
@@ -46,16 +66,32 @@ exports[`ResultsFiltersPanel render should render search filters and instruction
           key="Minimum relevant sentences per document"
         >
           <dt>
-            Minimum relevant sentences per document
+            <Translate
+              context="System"
+            >
+              Minimum relevant sentences per document
+            </Translate>
              
           </dt>
           <dd>
             <NumericRangeSlide
               delay={200}
               max={50}
-              maxLabel=""
+              maxLabel={
+                <Translate
+                  context="System"
+                >
+                  
+                </Translate>
+              }
               min={1}
-              minLabel=""
+              minLabel={
+                <Translate
+                  context="System"
+                >
+                  
+                </Translate>
+              }
               model=".minRelevantSentences"
               prefix="minRelevantSentences"
               step={1}
@@ -75,25 +111,25 @@ exports[`ResultsFiltersPanel render should render search filters and instruction
           size="2x"
         />
         <p>
-          <Connect(Translate)
+          <Translate
             translationKey="Semantic search overview"
           >
             Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. .
-          </Connect(Translate)>
+          </Translate>
         </p>
         <p>
-          <Connect(Translate)
+          <Translate
             translationKey="Semantic search threshold help"
           >
             The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.
-          </Connect(Translate)>
+          </Translate>
         </p>
         <p>
-          <Connect(Translate)
+          <Translate
             translationKey="Semantic search minimum sentences help"
           >
             Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.
-          </Connect(Translate)>
+          </Translate>
         </p>
       </div>
     </div>

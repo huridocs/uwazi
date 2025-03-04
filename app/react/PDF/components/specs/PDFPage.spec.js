@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -13,6 +14,7 @@ jest.mock('../../PDFJS', () => ({
   default: {
     getDocument: jest.fn().mockReturnValue(Promise.resolve(pdfObject)),
   },
+  PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
   EventBus: function () {},
 }));
 
@@ -20,6 +22,7 @@ describe('PDFPage', () => {
   let component;
   let instance;
   let container;
+  let pdfPageWidth = 100;
 
   let props;
 
@@ -32,8 +35,11 @@ describe('PDFPage', () => {
       page: 2,
       getViewportContainer: () => container,
       pdf: {
-        getPage: jest.fn().mockReturnValueOnce(Promise.resolve({ getViewport: jest.fn() })),
+        getPage: jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve({ getViewport: () => ({ width: pdfPageWidth }) })),
       },
+      containerWidth: 100,
     };
   });
 
@@ -103,13 +109,14 @@ describe('PDFPage', () => {
     });
 
     describe('when its not rendered and no pdfPageView exists', () => {
+      const pdfPageViewPrototype = {
+        setPdfPage: jest.fn(),
+        draw: jest.fn().mockReturnValue(Promise.resolve()),
+      };
+
       it('should create pdfPageView object and render the page', done => {
         render();
         instance.state.rendered = false;
-        const pdfPageViewPrototype = {
-          setPdfPage: jest.fn(),
-          draw: jest.fn().mockReturnValueOnce(Promise.resolve()),
-        };
 
         PDFJS.PDFPageView = function pdfPageView() {};
         PDFJS.DefaultTextLayerFactory = function pdfPageView() {};
@@ -122,6 +129,27 @@ describe('PDFPage', () => {
           expect(instance.state.rendered).toBe(true);
           expect(pdfPageViewPrototype.setPdfPage).toHaveBeenCalled();
           expect(pdfPageViewPrototype.draw).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should set the scale of the pdf', done => {
+        render();
+        instance.state.rendered = false;
+
+        PDFJS.PDFPageView = jest.fn().mockImplementation(() => pdfPageViewPrototype);
+
+        instance.renderPage();
+
+        setTimeout(() => {
+          expect(PDFJS.PDFPageView).toHaveBeenCalledWith(
+            expect.objectContaining({
+              defaultViewport: {
+                width: 100,
+              },
+              scale: 2,
+            })
+          );
           done();
         });
       });

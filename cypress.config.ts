@@ -3,6 +3,8 @@ import { defineConfig } from 'cypress';
 
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
+const retries = process.env.CYPRESS_RETRIES ? parseInt(process.env.CYPRESS_RETRIES, 10) : 0;
+
 export default defineConfig({
   viewportWidth: 1280,
   viewportHeight: 768,
@@ -11,7 +13,7 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000',
     video: true,
-    retries: 2,
+    retries,
     screenshotOnRunFailure: false,
     testIsolation: false,
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',

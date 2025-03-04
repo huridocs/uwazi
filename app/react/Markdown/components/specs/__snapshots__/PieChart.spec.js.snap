@@ -17,27 +17,7 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={222}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={222}
     >
       <Pie
@@ -152,27 +132,7 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={222}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={222}
     >
       <Pie
@@ -278,27 +238,7 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={222}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={222}
     >
       <Pie
@@ -404,27 +344,7 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={222}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={222}
     >
       <Pie
@@ -540,27 +460,7 @@ exports[`PieChart Markdown component when passing scatter should display nested 
     width="100%"
   >
     <PieChart
-      barCategoryGap="10%"
-      barGap={4}
-      cx="50%"
-      cy="50%"
-      endAngle={360}
       height={222}
-      innerRadius={0}
-      layout="centric"
-      margin={
-        Object {
-          "bottom": 5,
-          "left": 5,
-          "right": 5,
-          "top": 5,
-        }
-      }
-      outerRadius="80%"
-      reverseStackOrder={false}
-      stackOffset="none"
-      startAngle={0}
-      syncMethod="index"
       width={222}
     >
       <Pie

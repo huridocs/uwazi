@@ -1,7 +1,5 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Provider } from 'react-redux';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { MediaPlayer } from 'V2/Components/UI';
 
 const meta: Meta<typeof MediaPlayer> = {
@@ -13,18 +11,16 @@ type Story = StoryObj<typeof MediaPlayer>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="p-4 rounded border">
-          <MediaPlayer
-            url={args.url}
-            width={args.width}
-            height={args.height}
-            thumbnail={args.thumbnail}
-          />
-        </div>
+    <div className="tw-content">
+      <div className="p-4 rounded border">
+        <MediaPlayer
+          url={args.url}
+          width={args.width}
+          height={args.height}
+          thumbnail={args.thumbnail}
+        />
       </div>
-    </Provider>
+    </div>
   ),
 };
 

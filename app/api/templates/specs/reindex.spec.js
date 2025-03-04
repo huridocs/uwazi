@@ -1,6 +1,6 @@
 import translations from 'api/i18n';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { search } from 'api/search';
-import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { checkIfReindex } from '../reindex';
 import templates from '../templates';
@@ -20,7 +20,7 @@ const expectReindex = async (template, reindex) => {
 describe('reindex', () => {
   beforeAll(async () => {
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    await db.setupFixturesAndContext(fixtures, 'reindex');
+    await testingEnvironment.setUp(fixtures, 'reindex');
     jest.spyOn(search, 'indexEntities').mockReturnValue({});
   });
 
@@ -29,7 +29,7 @@ describe('reindex', () => {
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('Not Reindex', () => {
@@ -89,7 +89,7 @@ describe('reindex', () => {
 
   describe('Reindex', () => {
     beforeAll(async () => {
-      await db.setupFixturesAndContext(fixtures, 'reindex');
+      await testingEnvironment.setUp(fixtures, 'reindex');
       jest.spyOn(search, 'indexEntities').mockReturnValue({});
     });
 

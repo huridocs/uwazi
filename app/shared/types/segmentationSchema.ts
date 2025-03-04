@@ -18,6 +18,7 @@ export const paragraphSchema = {
     height: { type: 'number' },
     page_number: { type: 'number' },
     text: { type: 'string' },
+    type: { type: 'string' },
   },
 };
 

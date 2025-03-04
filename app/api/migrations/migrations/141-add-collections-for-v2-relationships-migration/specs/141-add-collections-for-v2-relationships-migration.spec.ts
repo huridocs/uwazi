@@ -55,12 +55,12 @@ describe('migration add collections for v2 relationships migration', () => {
   });
 
   it('should set unique index on the migration fields', async () => {
-    const relCollection = await db.collection('relationshipMigrationFields');
+    const relCollection = db.collection('relationshipMigrationFields');
     const indexInfo = await relCollection.indexInformation({ full: true });
     const uniqueIndex = indexInfo.find(
       (index: any) => index.name === 'sourceTemplate_1_relationType_1_targetTemplate_1'
     );
-    expect(uniqueIndex.unique).toBe(true);
+    expect(uniqueIndex?.unique).toBe(true);
   });
 
   it('should check if a reindex is needed', async () => {

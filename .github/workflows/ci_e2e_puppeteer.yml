@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite-dir: ['regression_suites', 'suite1', 'suite2', 'mobile']
+        suite-dir: ['suite1', 'suite2', 'mobile']
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
@@ -27,7 +27,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 5.0.27
+          mongodb-version: 6.0
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -48,7 +48,7 @@ jobs:
       - run: sudo apt-get install poppler-utils
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ./prod
           key: >-

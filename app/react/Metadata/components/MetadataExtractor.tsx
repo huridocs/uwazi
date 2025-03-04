@@ -17,7 +17,7 @@ type OwnPropTypes = {
   locale?: string;
 };
 
-type selection = {
+type Selection = {
   text: string;
   selectionRectangles: SelectionRectanglesSchema;
 };
@@ -25,7 +25,7 @@ type selection = {
 const mapStateToProps = (state: IStore) => ({
   selection: state.documentViewer.uiState
     .get('reference')
-    .get('sourceRange') as unknown as selection,
+    .get('sourceRange') as unknown as Selection,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
@@ -60,7 +60,9 @@ const MetadataExtractorComponent = ({
         'warning'
       );
     }
+
     setSelection(selection);
+
     updateField(selection.text);
   };
 
@@ -79,5 +81,5 @@ const MetadataExtractorComponent = ({
 
 const container = connector(MetadataExtractorComponent);
 
-export type { selection };
+export type { Selection };
 export { container as MetadataExtractor };

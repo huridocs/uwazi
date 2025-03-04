@@ -87,7 +87,7 @@ describe('users routes', () => {
       beforeEach(() => {
         jest
           .spyOn(users, 'save')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User>));
+          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
       });
 
       it('should call users save with the body', async () => {
@@ -119,7 +119,7 @@ describe('users routes', () => {
       it('should call users newUser with the body', async () => {
         jest
           .spyOn(users, 'newUser')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User>));
+          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
         const response = await request(app).post('/api/users/new').send(userToUpdate);
 
         expect(response.status).toBe(200);
@@ -257,7 +257,7 @@ describe('users routes', () => {
       it('should call users.unlockAccount with the body', async () => {
         jest
           .spyOn(users, 'unlockAccount')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User>));
+          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
         const response = await request(app)
           .post('/api/unlockAccount')
           .send({ username: 'user1', code: 'code' });

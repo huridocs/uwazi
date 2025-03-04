@@ -225,9 +225,9 @@ const settingsSyncSchema = {
   required: ['url', 'username', 'password', 'name', 'config'],
   properties: {
     url: { type: 'string' },
-    active: { type: 'boolean' },
     username: { type: 'string' },
     password: { type: 'string' },
+    active: { type: 'boolean' },
     name: { type: 'string' },
     config: {
       type: 'object',

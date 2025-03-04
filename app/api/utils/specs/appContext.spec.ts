@@ -48,6 +48,25 @@ describe('appContext', () => {
     });
   });
 
+  describe('setValueAsDefault', () => {
+    it('should set a value that will be used as default when run is executed', async () => {
+      appContext.setValueAsDefault('defaultKey', 'defaultValue');
+      await appContext.run(
+        async () => {
+          expect(appContext.get('defaultKey')).toBe('defaultValue');
+          expect(appContext.get('tenant')).toBe('test_tenant');
+        },
+        { tenant: 'test_tenant' }
+      );
+      await appContext.run(
+        async () => {
+          expect(appContext.get('defaultKey')).toBe('another value');
+        },
+        { defaultKey: 'another value' }
+      );
+    });
+  });
+
   describe('when outside a context', () => {
     const error = new Error('Accessing nonexistent async context');
 

@@ -1,0 +1,2751 @@
+exports[`PDF display > Library > should check the document #0`] = `
+<div data-region-selector-id="1">
+  <div
+    id="page-1"
+    class="pdf-page"
+    style="height: 1120px; --scale-factor: 1.3888888888888888;"
+  >
+    <div
+      class="page"
+      data-page-number="1"
+      role="region"
+      data-l10n-id="pdfjs-page-landmark"
+      data-l10n-args='{"page":1}'
+      data-loaded="true"
+      style="width: round(down, var(--scale-factor) * 612px, var(--scale-round-x, 1px)); height: round(down, var(--scale-factor) * 792px, var(--scale-round-y, 1px));"
+      aria-label="Page ⁨1⁩"
+    >
+      <div class="canvasWrapper">
+        <canvas role="presentation" width="850" height="1100"
+          ><span class="structTree"
+            ><span role="group"
+              ><span aria-owns="p3R_mc0"></span><span aria-owns="p3R_mc1"></span
+              ><span aria-owns="p3R_mc2"></span><span aria-owns="p3R_mc3"></span
+              ><span aria-owns="p3R_mc4"></span><span aria-owns="p3R_mc5"></span
+              ><span aria-owns="p3R_mc6"></span><span aria-owns="p3R_mc7"></span
+              ><span aria-owns="p3R_mc8"></span><span aria-owns="p3R_mc9"></span
+              ><span aria-owns="p3R_mc10"></span
+              ><span aria-owns="p3R_mc11"></span
+              ><span aria-owns="p3R_mc12"></span
+              ><span aria-owns="p3R_mc13"></span
+              ><span aria-owns="p3R_mc14"></span
+              ><span aria-owns="p3R_mc15"></span
+              ><span aria-owns="p3R_mc16"></span
+              ><span aria-owns="p3R_mc17"></span
+              ><span aria-owns="p3R_mc18"></span
+              ><span aria-owns="p3R_mc19"></span
+              ><span aria-owns="p3R_mc20"></span
+              ><span aria-owns="p3R_mc21"></span
+              ><span aria-owns="p3R_mc22"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span
+                    ><span aria-owns="p3R_mc23"></span
+                    ><span aria-owns="p3R_mc24"></span
+                    ><span aria-owns="p3R_mc25"></span
+                    ><span aria-owns="p3R_mc26"></span
+                    ><span aria-owns="p3R_mc27"></span></span></span></span
+              ><span aria-owns="p3R_mc28"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p3R_mc29"></span></span></span
+              ><span aria-owns="p3R_mc30"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p3R_mc31"></span></span></span
+              ><span aria-owns="p3R_mc32"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p3R_mc33"></span></span></span
+              ><span aria-owns="p3R_mc34"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p3R_mc35"></span></span></span
+              ><span aria-owns="p3R_mc36"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p3R_mc37"></span></span></span></span></span
+        ></canvas>
+      </div>
+      <div
+        tabindex="0"
+        class="textLayer"
+        data-main-rotation="0"
+        style="width: round(down, var(--scale-factor) * 612px, var(--scale-round-x, 1px)); height: round(down, var(--scale-factor) * 792px, var(--scale-round-y, 1px));"
+      >
+        <span class="markedContent" id="p3R_mc0"></span
+        ><span class="markedContent" id="p3R_mc1"></span
+        ><span class="markedContent" id="p3R_mc2"></span
+        ><span class="markedContent" id="p3R_mc3"></span
+        ><span class="markedContent" id="p3R_mc4"></span
+        ><span class="markedContent" id="p3R_mc5"></span
+        ><span class="markedContent" id="p3R_mc6"></span
+        ><span class="markedContent" id="p3R_mc7"></span
+        ><span class="markedContent" id="p3R_mc8"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*241.13px); top: calc(var(--scale-factor)*167.19px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13342);"
+            >RESOLUCIÓN DE LA</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*153.62px); top: calc(var(--scale-factor)*179.43px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12699);"
+            >CORTE INTERAMERICANA DE DERECHOS HUMANOS</span
+          ></span
+        ><span class="markedContent" id="p3R_mc9"></span
+        ><span class="markedContent" id="p3R_mc10"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*225.77px); top: calc(var(--scale-factor)*203.67px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.19105);"
+            >DE 26 DE JUNIO DE 2012</span
+          ></span
+        ><span class="markedContent" id="p3R_mc11"></span
+        ><span class="markedContent" id="p3R_mc12"></span
+        ><span class="markedContent" id="p3R_mc13"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*220.85px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17022);"
+            >MEDIDAS PROVISIONALES</span
+          ></span
+        ><span class="markedContent" id="p3R_mc14"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*173.66px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12893);"
+            >RESPECTO DE LA REPÚBLICA DE COLOMBIA</span
+          ></span
+        ><span class="markedContent" id="p3R_mc15"></span
+        ><span class="markedContent" id="p3R_mc16"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*183.26px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1287);"
+            >CASO 19 COMERCIANTES</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*324.38px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*327.89px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.19367);"
+            >Vs.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*345.06px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*348.43px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15998);"
+            >COLOMBIA</span
+          ></span
+        ><span class="markedContent" id="p3R_mc17"></span
+        ><span class="markedContent" id="p3R_mc18"></span
+        ><span class="markedContent" id="p3R_mc19"></span
+        ><span class="markedContent" id="p3R_mc20"></span
+        ><span class="markedContent" id="p3R_mc21"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*337.38px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21693);"
+            >VISTO:</span
+          ></span
+        ><span class="markedContent" id="p3R_mc22"></span
+        ><span class="markedContent" id="p3R_mc23"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20257);"
+            >1.</span
+          ></span
+        ><span class="markedContent" id="p3R_mc24"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13999);"
+            >La Sentencia de fondo, reparaciones y costas dictada por la Corte
+            Interamericana de</span
+          ></span
+        ><span class="markedContent" id="p3R_mc25"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*373.86px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.19101);"
+            >Derechos Humanos (en adelante “la Corte Interamericana”, “la Corte”
+            o “el Tribunal”) el 5</span
+          ></span
+        ><span class="markedContent" id="p3R_mc26"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*385.98px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16512);"
+            >de julio de 2004.</span
+          ></span
+        ><span class="markedContent" id="p3R_mc27"></span
+        ><span class="markedContent" id="p3R_mc28"></span
+        ><span class="markedContent" id="p3R_mc29"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*410.34px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20257);"
+            >2.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*410.34px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*410.34px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13701);"
+            >Las Resoluciones dictadas por el Presidente de la Corte el 30 de
+            julio de 2004, 28 de</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*422.46px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16502);"
+            >abril de 2006 y 6 de febrero de 2007, así como las resoluciones de
+            la Corte Interamericana</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*434.60px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17949);"
+            >de 3 de septiembre de 2004, 4 de julio de 2006, 12 de mayo de 2007,
+            8 de julio de 2009 y</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14922);"
+            >26 de agosto de 2010. En esta última resolución el Tribunal
+            decidió:</span
+          ></span
+        ><span class="markedContent" id="p3R_mc30"></span
+        ><span class="markedContent" id="p3R_mc31"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*470.73px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20714);"
+            >1.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*106.51px); top: calc(var(--scale-factor)*470.73px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*134.42px); top: calc(var(--scale-factor)*470.73px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14163);"
+            >Continuar supervisando el cumplimiento de la obligación de
+            garantizar la vida, integridad</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*480.45px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.16507);"
+            >y seguridad de Carmen Rosa Barrera Sánchez, Lina Noralba Navarro
+            Flórez, Luz Marina Pérez</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*490.17px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.18241);"
+            >Quintero, Miryam Mantilla Sánchez, Ana Murillo Delgado de Chaparro,
+            Suney Dinora Jáuregui</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*499.89px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13706);"
+            >Jaimes, Ofelia Sauza Suárez de Uribe, Rosalbina Suárez Bravo de
+            Sauza, Marina Lobo Pacheco,</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*509.61px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12775);"
+            >Manuel Ayala Mantilla, Jorge Corzo Viviescas, Alejandro Flórez
+            Pérez, Luz Marina Pinzón Reyes y</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*519.33px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.15617);"
+            >sus familias, según lo señalado en el punto resolutivo undécimo de
+            la Sentencia, en el marco de</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11884);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*105.42px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*111.50px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13565);"
+            >implementación</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*175.38px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*181.32px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09965);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*191.15px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*197.15px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08603);"
+            >las</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*208.30px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*214.30px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11407);"
+            >medidas</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*248.13px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*254.13px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12662);"
+            >provisionales,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*309.46px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*315.42px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09965);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*325.25px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*331.25px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12791);"
+            >conformidad</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*381.10px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*387.12px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09635);"
+            >con</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*401.31px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*407.38px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10726);"
+            >lo</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*414.30px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*420.44px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10598);"
+            >establecido</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*465.39px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*471.42px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10594);"
+            >en</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*481.30px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*487.37px); top: calc(var(--scale-factor)*529.05px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11884);"
+            >la</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*538.77px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13123);"
+            >Resolución de la Corte de 8 de julio de 2009.</span
+          ></span
+        ><span class="markedContent" id="p3R_mc32"></span
+        ><span class="markedContent" id="p3R_mc33"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*558.21px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20714);"
+            >2.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*106.51px); top: calc(var(--scale-factor)*558.21px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*134.42px); top: calc(var(--scale-factor)*558.21px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13885);"
+            >Requerir al Estado de Colombia que mantenga las medidas que hubiese
+            adoptado y que</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*567.93px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.19268);"
+            >adopte, sin dilación, las medidas necesarias para proteger los
+            derechos a la vida e integridad</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*577.65px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.18184);"
+            >personal de los señores Wilmar Rodríguez Quintero, Yimmy Efraín
+            Rodríguez Quintero, Nubia</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12905);"
+            >Saravia,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*131.69px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*138.00px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10466);"
+            >Karen</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*161.67px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*167.87px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10148);"
+            >Dayana</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*198.36px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*204.68px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08147);"
+            >Rodríguez</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*244.76px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*251.10px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12925);"
+            >Saravia,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*284.37px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*290.67px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1368);"
+            >Valeria</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*318.42px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*324.74px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08147);"
+            >Rodríguez</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*364.82px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*371.15px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11116);"
+            >Saravia</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*401.42px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*407.74px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+            >y</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*412.50px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*418.89px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1281);"
+            >William</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*448.08px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*454.53px); top: calc(var(--scale-factor)*587.49px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.07843);"
+            >Rodríguez</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*597.21px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.19311);"
+            >Quintero, para lo cual deberá brindar participación a los
+            beneficiarios de estas medidas o sus</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12804);"
+            >representantes</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*158.87px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*164.52px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10594);"
+            >en</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*174.40px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*179.99px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11884);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*186.98px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*192.47px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11908);"
+            >planificación</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*241.94px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*247.52px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+            >e</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*252.31px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*257.83px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13565);"
+            >implementación</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*321.71px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*327.17px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09965);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*336.99px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*342.40px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08603);"
+            >las</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*353.55px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*359.19px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11882);"
+            >mismas</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*390.15px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*395.67px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+            >y</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*400.43px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*405.98px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1381);"
+            >que,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*423.77px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*429.36px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10594);"
+            >en</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*439.24px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*444.71px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13007);"
+            >general,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*477.51px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*483.09px); top: calc(var(--scale-factor)*606.96px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08525);"
+            >les</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*616.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12841);"
+            >mantenga informados sobre el avance de su ejecución.</span
+          ></span
+        ><span class="markedContent" id="p3R_mc34"></span
+        ><span class="markedContent" id="p3R_mc35"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*636.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20714);"
+            >3.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*106.51px); top: calc(var(--scale-factor)*636.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*134.42px); top: calc(var(--scale-factor)*636.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.16318);"
+            >Levantar y dar por concluidas las medidas provisionales otorgadas a
+            favor de Salomón</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*645.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.17276);"
+            >Flórez Contreras, Sandra Belinda Montero Fuentes, y sus respectivas
+            familias, de conformidad</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*655.56px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11576);"
+            >con lo establecido en […] esta Resolución.</span
+          ></span
+        ><span class="markedContent" id="p3R_mc36"></span
+        ><span class="markedContent" id="p3R_mc37"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*675.00px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20714);"
+            >4.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*106.51px); top: calc(var(--scale-factor)*675.00px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*134.42px); top: calc(var(--scale-factor)*675.00px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.17155);"
+            >Declarar que las medidas provisionales ordenadas por la Corte
+            Interamericana a favor</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*684.72px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.21115);"
+            >de Luis José Pundor Quintero y su familia quedarán sin efectos
+            durante el tiempo que éstos</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13089);"
+            >continúen</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*137.82px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*144.37px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11563);"
+            >residiendo</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*185.72px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*192.23px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14133);"
+            >fuera</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*213.12px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*219.56px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09965);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*229.39px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*235.87px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11278);"
+            >Colombia,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*276.11px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*282.53px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09965);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*292.36px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*298.84px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12536);"
+            >conformidad</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*348.58px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*355.20px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08704);"
+            >con</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*369.28px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*375.70px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12655);"
+            >lo</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*382.74px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*389.25px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10894);"
+            >establecido</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*434.32px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*440.83px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10594);"
+            >en</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*450.71px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*457.14px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09702);"
+            >[…]</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*470.85px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*477.70px); top: calc(var(--scale-factor)*694.44px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1163);"
+            >esta</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*704.16px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09267);"
+            >Resolución.</span
+          ></span
+        >
+        <div class="endOfContent"></div>
+      </div>
+      <div class="annotationLayer" hidden=""></div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that the pdf renders and scrolls to the selection #0`] = `
+<div data-region-selector-id="2">
+  <div class="pdf-page" style="--scale-factor: 0.9852941176470589;">
+    <div
+      class="page"
+      data-page-number="2"
+      role="region"
+      data-l10n-id="pdfjs-page-landmark"
+      data-l10n-args='{"page":2}'
+      style="width: round(down, var(--scale-factor) * 612px, var(--scale-round-x, 1px)); height: round(down, var(--scale-factor) * 792px, var(--scale-round-y, 1px));"
+      aria-label="Page ⁨2⁩"
+      data-loaded="true"
+    >
+      <div class="canvasWrapper">
+        <canvas role="presentation" width="603" height="780"
+          ><span class="structTree"
+            ><span role="group"
+              ><span aria-owns="p18R_mc0"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span
+                    ><span aria-owns="p18R_mc1"></span
+                    ><span aria-owns="p18R_mc2"></span
+                    ><span aria-owns="p18R_mc3"></span
+                    ><span aria-owns="p18R_mc4"></span
+                    ><span aria-owns="p18R_mc5"></span
+                    ><span aria-owns="p18R_mc6"></span
+                    ><span aria-owns="p18R_mc7"></span></span></span></span
+              ><span aria-owns="p18R_mc8"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p18R_mc9"></span></span></span
+              ><span aria-owns="p18R_mc10"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p18R_mc11"></span></span></span
+              ><span
+                ><span
+                  ><span aria-owns="p18R_mc22"></span
+                  ><span aria-owns="p18R_mc23"></span
+                  ><span aria-owns="p18R_mc24"></span
+                  ><span aria-owns="p18R_mc25"></span
+                  ><span aria-owns="p18R_mc26"></span
+                  ><span aria-owns="p18R_mc27"></span
+                  ><span aria-owns="p18R_mc28"></span
+                  ><span aria-owns="p18R_mc29"></span
+                  ><span aria-owns="p18R_mc30"></span
+                  ><span aria-owns="p18R_mc31"></span
+                  ><span aria-owns="p18R_mc32"></span
+                  ><span aria-owns="p18R_mc33"></span
+                  ><span aria-owns="p18R_mc34"></span></span
+                ><span aria-owns="p18R_mc35"></span
+                ><span
+                  ><span aria-owns="p18R_mc36"></span
+                  ><span aria-owns="p18R_mc37"></span
+                  ><span aria-owns="p18R_mc38"></span
+                  ><span aria-owns="p18R_mc39"></span
+                  ><span aria-owns="p18R_mc40"></span
+                  ><span aria-owns="p18R_mc41"></span
+                  ><span aria-owns="p18R_mc42"></span
+                  ><span aria-owns="p18R_mc43"></span
+                  ><span aria-owns="p18R_mc44"></span
+                  ><span aria-owns="p18R_mc45"></span
+                  ><span aria-owns="p18R_mc46"></span
+                  ><span aria-owns="p18R_mc47"></span
+                  ><span aria-owns="p18R_mc48"></span
+                  ><span aria-owns="p18R_mc49"></span
+                  ><span aria-owns="p18R_mc50"></span
+                  ><span aria-owns="p18R_mc51"></span
+                  ><span aria-owns="p18R_mc52"></span></span
+                ><span aria-owns="p18R_mc53"></span></span
+              ><span aria-owns="p18R_mc12"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p18R_mc13"></span></span></span
+              ><span aria-owns="p18R_mc14"></span
+              ><span aria-owns="p18R_mc15"></span
+              ><span aria-owns="p18R_mc16"></span
+              ><span aria-owns="p18R_mc17"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span aria-owns="p18R_mc18"></span></span></span
+              ><span aria-owns="p18R_mc19"></span
+              ><span aria-owns="p18R_mc20"></span
+              ><span role="list"
+                ><span role="listitem"
+                  ><span
+                    aria-owns="p18R_mc21"
+                  ></span></span></span></span></span
+        ></canvas>
+      </div>
+      <div
+        tabindex="0"
+        class="textLayer"
+        data-main-rotation="0"
+        style="width: round(down, var(--scale-factor) * 612px, var(--scale-round-x, 1px)); height: round(down, var(--scale-factor) * 792px, var(--scale-round-y, 1px));"
+      >
+        <span class="markedContent"></span><span class="markedContent"></span
+        ><span class="markedContent"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*297.05px); top: calc(var(--scale-factor)*37.69px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >-</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*301.61px); top: calc(var(--scale-factor)*37.69px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >2</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*307.97px); top: calc(var(--scale-factor)*37.69px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >-</span
+          ></span
+        ><span class="markedContent" id="p18R_mc0"></span
+        ><span class="markedContent" id="p18R_mc1"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20416);"
+            >3.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18299);"
+            >Los escritos de 17 de septiembre y 17 de noviembre de 2010, de 28
+            de marzo, 13</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*94.35px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.22503);"
+            >de abril, 27 de mayo, 11 de agosto, 10 de octubre y 7 de diciembre
+            de 2011 y de 10 de</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1974);"
+            >febrero y 12 de abril de 2012, mediante los cuales</span
+          ></span
+        ><span class="markedContent" id="p18R_mc2"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*326.48px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*331.37px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14636);"
+            >la República de Colom</span
+          ></span
+        ><span class="markedContent" id="p18R_mc3"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*446.23px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18069);"
+            >bia (en adelante</span
+          ></span
+        ><span class="markedContent" id="p18R_mc4"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18612);"
+            >“el Estado” o “Colombia”)</span
+          ></span
+        ><span class="markedContent" id="p18R_mc5"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*194.14px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*198.86px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17481);"
+            >informó sobre la implementación de las medidas provisionales
+            y</span
+          ></span
+        ><span class="markedContent" id="p18R_mc6"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*130.71px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14048);"
+            >presentó solicitudes de levantamiento respecto de algunos
+            beneficiarios.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc7"></span
+        ><span class="markedContent" id="p18R_mc8"></span
+        ><span class="markedContent" id="p18R_mc9"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20416);"
+            >4.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17707);"
+            >Los escritos de 12 de agosto, 14 y 26 de octubre y 24 de noviembre
+            de 2010, de 3</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*167.19px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18177);"
+            >de junio, 29 de noviembre y 2 y 26 de diciembre de 2011, y de 18 de
+            abril y 21 de junio de</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*179.43px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14945);"
+            >2012 y sus anexos, mediante los cuales los representantes de los
+            beneficiarios (en adelante</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16188);"
+            >“los</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*81.02px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*88.65px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15981);"
+            >representantes”)</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*173.26px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*181.08px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13779);"
+            >presentaron</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*241.46px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*249.30px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.0782);"
+            >sus</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*265.98px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*273.76px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10947);"
+            >observaciones</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*344.90px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*352.64px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >a</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*358.63px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*366.42px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15186);"
+            >lo</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*375.33px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*382.95px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1538);"
+            >informado</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*433.97px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*442.03px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15534);"
+            >por</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*458.63px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*466.48px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11197);"
+            >el</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*475.09px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*482.90px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09073);"
+            >Estado</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*516.66px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*524.39px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >e</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*203.67px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13964);"
+            >información adicional respecto a la implementación de las presentes
+            medidas provisionales.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc10"></span
+        ><span class="markedContent" id="p18R_mc11"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20416);"
+            >5.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17913);"
+            >Las comunicaciones de 12 de abril, 26 de mayo, 14 de julio y 20 de
+            septiembre de</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.2097);"
+            >2011 y de 13 de enero, 11 de abril y 8 de junio de 2012</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*355.75px); top: calc(var(--scale-factor)*240.70px); font-size: calc(var(--scale-factor)*5.04px); font-family: sans-serif;"
+            >1</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*358.99px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15717);"
+            >, mediante las cuales la Comisión</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1588);"
+            >Interamericana</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*139.25px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*145.74px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10049);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*157.91px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*164.32px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09678);"
+            >Derechos</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*210.99px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*217.44px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10824);"
+            >Humanos</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*264.60px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*271.04px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17267);"
+            >(en</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*287.89px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*294.42px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13278);"
+            >adelante</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*337.63px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*344.05px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21412);"
+            >“la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*357.46px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*363.95px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10409);"
+            >Comisión</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*409.71px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*416.23px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16778);"
+            >Interamericana”</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*497.54px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*504.02px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >o</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*510.06px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*516.49px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21412);"
+            >“la</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16325);"
+            >Comisión”) presentó sus observaciones</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*265.54px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*271.25px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20536);"
+            >a los informes estatales y a las correspondientes</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13158);"
+            >observaciones de los representantes.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc12"></span
+        ><span class="markedContent" id="p18R_mc13"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20416);"
+            >6.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16852);"
+            >Las notas de 22 de septiembre y 22 de noviembre de 2010 y de 6 de
+            abril de 2011,</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*313.14px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16189);"
+            >mediante las cuales la Secretaría de la Corte, siguiendo
+            instrucciones de la Presidencia del</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16144);"
+            >Tribunal,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*106.90px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*114.50px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14109);"
+            >solicitó</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*149.18px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*156.68px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13165);"
+            >expresamente</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*227.98px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*235.47px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >a</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*241.46px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*249.02px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10567);"
+            >los</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*263.07px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*270.71px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13746);"
+            >representantes</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*346.16px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*353.68px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1167);"
+            >que</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*372.21px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*379.81px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10139);"
+            >en</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*392.00px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*399.60px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.0782);"
+            >sus</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*416.28px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*423.95px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10761);"
+            >observaciones</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*494.96px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*502.48px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >a</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*508.47px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*516.03px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10567);"
+            >los</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*337.38px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16986);"
+            >informes estatales se refirieran a la solicitud de levantamiento de
+            las medidas ordenadas a</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*349.50px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16255);"
+            >favor del beneficiario William Rodríguez Quintero, así como a la
+            solicitud del Estado de que</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14414);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*71.25px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*77.38px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11258);"
+            >Corte</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*104.43px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*110.48px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15264);"
+            >“evalúe</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*148.07px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*154.11px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11331);"
+            >[…]</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*171.33px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*177.48px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1287);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*186.21px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*192.34px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13031);"
+            >vigencia</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*233.57px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*239.70px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21137);"
+            >de las</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*271.84px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*277.93px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11757);"
+            >medidas</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*319.94px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*326.03px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12846);"
+            >provisionales</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*391.52px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*397.60px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13103);"
+            >otorgadas</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*447.62px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*453.72px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >a</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*459.70px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*465.83px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16339);"
+            >favor</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*491.55px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*497.60px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >d</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*504.46px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >e</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*510.40px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*516.44px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10488);"
+            >las</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*373.86px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16677);"
+            >personas identificadas en el punto resolutivo No. 1 de la
+            Resolución de la […] Corte […] de</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*385.98px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15516);"
+            >26 de agosto de 2010”.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc14"></span
+        ><span class="markedContent" id="p18R_mc15"></span
+        ><span class="markedContent" id="p18R_mc16"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*422.46px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14104);"
+            >CONSIDERANDO QUE:</span
+          ></span
+        ><span class="markedContent" id="p18R_mc17"></span
+        ><span class="markedContent" id="p18R_mc18"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20416);"
+            >1.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12165);"
+            >Colombia es Estado Parte de la Convención Americana sobre Derechos
+            Humanos (en</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17709);"
+            >adelante “la Convención Americana”</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*251.72px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*257.81px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.25948);"
+            >o “la Convención”) desde el 31 de julio de 1973 y</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11076);"
+            >reconoció</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*110.29px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*117.91px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14414);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*126.76px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*134.44px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12273);"
+            >competencia</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*197.74px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*205.42px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10049);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*217.59px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*225.20px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14414);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*234.05px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*241.73px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11258);"
+            >Corte</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*268.78px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*276.51px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1648);"
+            >Interamericana,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*356.98px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*364.64px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13808);"
+            >conforme</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*411.81px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*419.54px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12612);"
+            >al</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*428.25px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*436.08px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14181);"
+            >artículo</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*473.31px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*480.93px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14551);"
+            >62</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*493.60px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*501.31px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10049);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*513.48px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*521.09px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14414);"
+            >la</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*483.32px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14894);"
+            >Convención, el 21 de junio de 1985.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc19"></span
+        ><span class="markedContent" id="p18R_mc20"></span
+        ><span class="markedContent" id="p18R_mc21"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20416);"
+            >2.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*72.39px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16011);"
+            >La disposición establecida en el artículo 63.2 de la Convención
+            confiere un carácter</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*531.92px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16983);"
+            >obligatorio a la adopción, por parte del Estado, de las medidas
+            provisionales que le ordene</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11981);"
+            >este</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*83.45px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*90.22px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16456);"
+            >Tribunal,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*134.84px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*141.64px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13149);"
+            >ya</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*153.52px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*160.36px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1167);"
+            >que</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*178.88px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*185.76px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11197);"
+            >el</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*194.37px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*201.34px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15364);"
+            >principio</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*244.06px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*250.84px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09609);"
+            >básico</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*282.35px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*289.10px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1267);"
+            >del</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*304.05px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*311.02px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09849);"
+            >Derecho</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*352.31px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*359.35px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16956);"
+            >Internacional,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*429.17px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*435.97px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11501);"
+            >respaldado</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*490.83px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*497.61px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15534);"
+            >por</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*514.22px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*521.11px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14414);"
+            >la</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*556.16px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18268);"
+            >jurisprudencia internacional, ha señalado que los Estados deben
+            cumplir sus obligaciones</span
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10944);"
+            >convencionales</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*138.44px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*145.13px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10049);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*157.30px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*163.95px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12246);"
+            >buena</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*194.99px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*201.71px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13864);"
+            >fe</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*211.15px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*217.79px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >(</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*222.53px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12811);"
+            >pacta</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*249.97px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*256.70px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15955);"
+            >sunt</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*278.50px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*285.24px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12497);"
+            >servanda</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*331.37px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >)</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*335.89px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*337.63px); top: calc(var(--scale-factor)*566.57px); font-size: calc(var(--scale-factor)*6.48px); font-family: sans-serif;"
+            >2</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*341.75px); top: calc(var(--scale-factor)*566.57px); font-size: calc(var(--scale-factor)*6.48px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*343.39px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+            >.</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*347.02px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*353.71px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.0714);"
+            >Estas</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*380.35px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*387.18px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11208);"
+            >órdenes</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*427.14px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*433.93px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14617);"
+            >implican</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*475.73px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*482.47px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14461);"
+            >un</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*495.13px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*501.89px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11974);"
+            >deber</span
+          ></span
+        ><span class="markedContent"></span
+        ><span class="markedContent" id="p18R_mc22"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*621.78px); font-size: calc(var(--scale-factor)*5.04px); font-family: sans-serif;"
+            >1</span
+          ></span
+        ><span class="markedContent" id="p18R_mc23"></span
+        ><span class="markedContent" id="p18R_mc24"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*65.61px); top: calc(var(--scale-factor)*621.78px); font-size: calc(var(--scale-factor)*5.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13916);"
+            >La Comisión Interamericana presentó estas observaciones</span
+          ></span
+        ><span class="markedContent" id="p18R_mc25"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*336.72px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*340.39px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.19871);"
+            >el 8 de junio de 2012</span
+          ></span
+        ><span class="markedContent" id="p18R_mc26"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*429.71px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*433.27px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.15922);"
+            >sin haber podido contar</span
+          ></span
+        ><span class="markedContent" id="p18R_mc27"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13489);"
+            >previamente con las respectivas observaciones de los
+            representantes</span
+          ></span
+        ><span class="markedContent" id="p18R_mc28"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*343.85px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*347.35px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12127);"
+            >al</span
+          ></span
+        ><span class="markedContent" id="p18R_mc29"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*354.35px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*357.55px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.15176);"
+            >informe</span
+          ></span
+        ><span class="markedContent" id="p18R_mc30"></span
+        ><span class="markedContent" id="p18R_mc31"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*388.37px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*391.63px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1657);"
+            >estatal de 12 de abril de 2012</span
+          ></span
+        ><span class="markedContent" id="p18R_mc32"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*515.02px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20722);"
+            >, ya</span
+          ></span
+        ><span class="markedContent" id="p18R_mc33"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*642.24px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14176);"
+            >que éstos las presentaron el 21 de junio de 2012.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc34"></span
+        ><span class="markedContent" id="p18R_mc35"></span
+        ><span class="markedContent" id="p18R_mc36"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*660.66px); font-size: calc(var(--scale-factor)*5.04px); font-family: sans-serif;"
+            >2</span
+          ></span
+        ><span class="markedContent" id="p18R_mc37"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*65.61px); top: calc(var(--scale-factor)*660.66px); font-size: calc(var(--scale-factor)*5.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14205);"
+            >Cfr. Asunto James y otros.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc38"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*205.89px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*208.85px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09273);"
+            >Medidas Provisio</span
+          ></span
+        ><span class="markedContent" id="p18R_mc39"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*275.69px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13567);"
+            >nales respecto de Trinidad y Tobago.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc40"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*424.79px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*427.63px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11074);"
+            >Resolución de la Corte</span
+          ></span
+        ><span class="markedContent" id="p18R_mc41"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*517.80px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*520.78px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10078);"
+            >de</span
+          ></span
+        ><span class="markedContent" id="p18R_mc42"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.22068);"
+            >14 de junio de 1998, Considerando sexto;</span
+          ></span
+        ><span class="markedContent" id="p18R_mc43"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*243.74px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*248.57px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.18938);"
+            >Asunto Alvarado Reyes y otros</span
+          ></span
+        ><span class="markedContent" id="p18R_mc44"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*379.75px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.16931);"
+            >. Medidas Provisionales respecto de</span
+          ></span
+        ><span class="markedContent" id="p18R_mc45"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12453);"
+            >México. Resolución</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*140.64px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*145.50px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10078);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*155.33px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*160.25px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11999);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*167.24px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*172.12px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10632);"
+            >Corte</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*193.83px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*198.75px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.23962);"
+            >de 26</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*223.64px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*228.48px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10078);"
+            >de</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*238.31px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*243.23px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12886);"
+            >mayo</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*265.38px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*270.21px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.21469);"
+            >de 2010,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*308.15px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*313.01px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09601);"
+            >Considerando</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*367.78px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*372.61px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.17201);"
+            >quinto,</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*400.84px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*405.83px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+            >y</span
+          ></span
+        ><span class="markedContent" id="p18R_mc46"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*410.59px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*415.75px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10808);"
+            >Asunto</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*443.43px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*448.38px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10078);"
+            >de</span
+          ></span
+        ><span class="markedContent" id="p18R_mc47"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*458.20px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*463.15px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11999);"
+            >la</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*470.14px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*475.03px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.08952);"
+            >Fundación</span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*515.85px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*520.72px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10078);"
+            >de</span
+          ></span
+        ><span class="markedContent" id="p18R_mc48"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12276);"
+            >Antropología Forense.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc49"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*151.55px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+          >
+          </span
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*155.30px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14537);"
+            >Medidas Provisionales respecto de Guatemala. Resolución del
+            Presidente de la Corte de 21</span
+          ></span
+        ><span class="markedContent" id="p18R_mc50"
+          ><br role="presentation" /><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*700.56px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13595);"
+            >de julio de 2010, Considerando cuarto</span
+          ></span
+        ><span class="markedContent" id="p18R_mc51"
+          ><span
+            role="presentation"
+            dir="ltr"
+            style="left: calc(var(--scale-factor)*216.65px); top: calc(var(--scale-factor)*700.56px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif;"
+            >.</span
+          ></span
+        ><span class="markedContent" id="p18R_mc52"></span
+        ><span class="markedContent" id="p18R_mc53"></span>
+        <div class="endOfContent"></div>
+      </div>
+    </div>
+    <div
+      class="highlight-rectangle"
+      style="top: 151.371px; left: 101.457px; width: 421.199px; height: 11.3506px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
+    ></div>
+  </div>
+</div>
+`;
+
+exports[`PDF display > responsiveness > library > should check that the selection looks ok #0`] = `
+<div
+  class="highlight-rectangle"
+  style="top: 192.791px; left: 129.219px; width: 536.452px; height: 14.4565px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
+></div>
+`;

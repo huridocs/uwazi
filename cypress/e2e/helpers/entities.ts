@@ -28,4 +28,11 @@ const grantPermission = (row: number, previous: string, action: string = 'write'
   cy.contains('Update success');
 };
 
-export { clickOnCreateEntity, clickOnEditEntity, shareSearchTerm, grantPermission };
+const saveEntity = (message = 'Entity created') => {
+  cy.intercept('POST', '/api/entities').as('saveEntity');
+  cy.contains('button', 'Save').click();
+  cy.wait('@saveEntity');
+  cy.contains(message);
+};
+
+export { clickOnCreateEntity, clickOnEditEntity, shareSearchTerm, grantPermission, saveEntity };

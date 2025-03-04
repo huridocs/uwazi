@@ -1,15 +1,19 @@
 import { NoSuchKey, S3Client } from '@aws-sdk/client-s3';
-import { config } from 'api/config';
-import { tenants } from 'api/tenants';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { inspect } from 'util';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { access, readdir } from 'fs/promises';
 import path from 'path';
+
+import { config } from 'api/config';
+import { legacyLogger } from 'api/log';
+import { tenants } from 'api/tenants';
 import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
+
 import { FileNotFound } from './FileNotFound';
 import {
   activityLogPath,
@@ -19,9 +23,9 @@ import {
   deleteFile,
   uploadsPath,
 } from './filesystem';
-import { S3Storage } from './S3Storage';
+import { S3Error, S3Storage } from './S3Storage';
 
-type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
+export type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
 let s3Instance: S3Storage;
 const s3 = () => {
@@ -42,7 +46,7 @@ const s3 = () => {
   return s3Instance;
 };
 
-const paths: { [k in FileTypes]: (filename: string) => string } = {
+export const paths: { [k in FileTypes]: (filename: string) => string } = {
   custom: customUploadsPath,
   document: uploadsPath,
   segmentation: filename => uploadsPath(`segmentation/${filename}`),
@@ -59,7 +63,7 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
     stream.on('error', (err: unknown) => reject(err));
   });
 
-const s3KeyWithPath = (filename: string, type: FileTypes) => {
+export const s3KeyWithPath = (filename: string, type: FileTypes) => {
   const sliceValue = type === 'segmentation' ? -3 : -2;
   return path.join(
     tenants.current().name,
@@ -77,7 +81,10 @@ const catchFileNotFound = async <T>(cb: () => Promise<T>, filename: string): Pro
   try {
     return await cb();
   } catch (err) {
-    if (err?.code === 'ENOENT' || err instanceof NoSuchKey) {
+    if (
+      err?.code === 'ENOENT' ||
+      (err instanceof S3Error && err.originalError instanceof NoSuchKey)
+    ) {
       throw new FileNotFound(filename, storageType);
     }
     throw err;
@@ -122,7 +129,10 @@ export const storage = {
         await access(paths[type](filename));
       }
     } catch (err) {
-      if (err?.code === 'ENOENT' || err instanceof NoSuchKey) {
+      if (
+        err?.code === 'ENOENT' ||
+        (err instanceof S3Error && err.originalError instanceof NoSuchKey)
+      ) {
         return false;
       }
       if (err) {
@@ -172,5 +182,30 @@ export const storage = {
     }
 
     return paths[type](filename);
+  },
+
+  async storeMultipleFiles(files: { filename: string; file: Readable; type: FileTypes }[]) {
+    const uploadedFiles: { filename: string; type: FileTypes }[] = [];
+
+    try {
+      await files.reduce(async (promise, { filename, file, type }) => {
+        await promise;
+        await this.storeFile(filename, file, type);
+        uploadedFiles.push({ filename, type });
+      }, Promise.resolve());
+    } catch (error) {
+      await Promise.all(
+        uploadedFiles.map(async ({ filename, type }) => {
+          try {
+            await this.removeFile(filename, type);
+          } catch (rollbackError) {
+            legacyLogger.error(
+              inspect(new Error('Failed to rollback file', { cause: rollbackError }))
+            );
+          }
+        })
+      );
+      throw error;
+    }
   },
 };

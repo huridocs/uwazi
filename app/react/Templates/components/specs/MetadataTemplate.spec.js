@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
+import { BrowserRouter } from 'react-router';
 import { DragDropContext } from 'react-dnd-old';
 import { Provider } from 'react-redux';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
@@ -11,10 +12,8 @@ import Immutable from 'immutable';
 import thunk from 'redux-thunk';
 import { shallow } from 'enzyme';
 import { TestBackend } from 'react-dnd-test-backend';
-
 import entitiesApi from 'app/Entities/EntitiesAPI';
 import pagesApi from 'app/Pages/PagesAPI';
-
 import {
   MetadataTemplate,
   dropTarget,
@@ -22,7 +21,6 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
-import { BrowserRouter } from 'react-router-dom';
 import * as templateActions from '../../actions/templateActions';
 
 function sourceTargetTestContext(Target, Source, actions) {

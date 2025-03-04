@@ -13,11 +13,11 @@ exports[`Tip should render children 1`] = `
       type="checkbox"
     />
      
-    <Connect(Translate)
+    <Translate
       translationKey="label"
     >
       label
-    </Connect(Translate)>
+    </Translate>
   </label>
   children text!
 </Modeled(Connect(Field))>
@@ -36,11 +36,11 @@ exports[`Tip should render label and input for the model 1`] = `
       type="checkbox"
     />
      
-    <Connect(Translate)
+    <Translate
       translationKey="label"
     >
       label
-    </Connect(Translate)>
+    </Translate>
   </label>
 </Modeled(Connect(Field))>
 `;

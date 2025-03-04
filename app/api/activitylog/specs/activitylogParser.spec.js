@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 /* eslint-disable max-statements */
 
 import db from 'api/utils/testing_db';
@@ -27,11 +28,11 @@ describe('Activitylog Parser', () => {
       action: 'MIGRATE',
       description: 'Dummy log',
     });
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   async function testBeautified(log, expected) {

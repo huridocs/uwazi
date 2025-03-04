@@ -8,6 +8,11 @@ import Immutable from 'immutable';
 import { PDF } from 'app/PDF';
 import { Document } from 'app/Viewer/components/Document.js';
 
+jest.mock('V2/atoms', () => ({
+  atomStore: { get: () => 2 },
+}));
+
+// eslint-disable-next-line max-statements
 describe('Document', () => {
   let component;
   let instance;
@@ -116,7 +121,7 @@ describe('Document', () => {
   });
 
   describe('onTextSelected', () => {
-    it('should set the selection changing regionId to page', () => {
+    it('should set the selection changing regionId to page and adjusting based on rendering scale', () => {
       render();
 
       const textSelection = {
@@ -131,8 +136,8 @@ describe('Document', () => {
       expect(props.setSelection).toHaveBeenCalledWith(
         {
           selectionRectangles: [
-            { height: 12, left: 27, page: '51', top: 186, width: 23 },
-            { height: 89, left: 47, page: '52', top: 231, width: 11 },
+            { height: 6, left: 13.5, page: '51', top: 93, width: 11.5 },
+            { height: 44.5, left: 23.5, page: '52', top: 115.5, width: 5.5 },
           ],
           text: 'Wham Bam Shang-A-Lang',
         },

@@ -1,18 +1,18 @@
 /* eslint-disable max-nested-callbacks */
-import mailer from 'api/utils/mailer';
-import db from 'api/utils/testing_db';
 import settings from 'api/settings';
-import fixtures from './fixtures.js';
+import mailer from 'api/utils/mailer';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import contact from '../contact';
+import fixtures from './fixtures.js';
 
 describe('contact', () => {
   beforeEach(async () => {
     jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve());
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(done => {
-    db.disconnect().then(done);
+    testingEnvironment.tearDown().then(done);
   });
 
   describe('sendMessage', () => {

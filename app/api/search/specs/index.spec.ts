@@ -3,11 +3,12 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { search } from '../search';
 import { elastic } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 describe('index (search)', () => {
   beforeEach(async () => {
     const elasticIndex = 'index_for_index_testing';
-    await db.setupFixturesAndContext({}, elasticIndex);
+    await testingEnvironment.setUp({}, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => {

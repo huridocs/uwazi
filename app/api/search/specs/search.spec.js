@@ -1,12 +1,12 @@
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import date from 'api/utils/date';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import db from 'api/utils/testing_db';
 import * as searchLimitsConfig from 'shared/config';
 import { UserRole } from 'shared/types/userSchema';
 import elasticResult from './elasticResult';
-import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
+import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 
 const editorUser = { _id: 'userId', role: 'editor' };
 
@@ -19,7 +19,7 @@ describe('search', () => {
   beforeAll(async () => {
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
-    await db.setupFixturesAndContext(elasticFixtures, elasticIndex);
+    await testingEnvironment.setUp(elasticFixtures, elasticIndex);
   }, fixturesTimeOut);
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('search', () => {
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('searchSnippets', () => {

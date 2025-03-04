@@ -5,8 +5,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
   height={320}
 >
   <BarChart
-    barCategoryGap="10%"
-    barGap={4}
     data={
       Array [
         Object {
@@ -18,7 +16,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       ]
     }
     height={300}
-    layout="horizontal"
     margin={
       Object {
         "bottom": 0,
@@ -27,9 +24,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
         "top": 0,
       }
     }
-    reverseStackOrder={false}
-    stackOffset="none"
-    syncMethod="index"
   >
     <XAxis
       allowDataOverflow={false}
@@ -215,11 +209,8 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
   height={320}
 >
   <BarChart
-    barCategoryGap="10%"
-    barGap={4}
     data={Array []}
     height={300}
-    layout="horizontal"
     margin={
       Object {
         "bottom": 0,
@@ -228,9 +219,6 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
         "top": 0,
       }
     }
-    reverseStackOrder={false}
-    stackOffset="none"
-    syncMethod="index"
   >
     <XAxis
       allowDataOverflow={false}

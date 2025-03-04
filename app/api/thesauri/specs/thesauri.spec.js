@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import _ from 'lodash';
 
 import translations from 'api/i18n/translations';
@@ -21,11 +22,11 @@ const factory = getFixturesFactory();
 describe('thesauri', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    await testingDB.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
     search.indexEntities.mockRestore();
   });
 

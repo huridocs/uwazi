@@ -49,11 +49,7 @@ const DocumentContentSnippets = ({
     {documentSnippets.map((snippet, index) => {
       const selected = snippet.get('text') === selectedSnippet.get('text') ? 'selected' : '';
       const filename = snippet.get('filename');
-      console.log('filename', filename);
       const page = snippet.get('page');
-      console.log(
-        `${documentViewUrl}?page=${page}&searchTerm=${searchTerm || ''}${filename ? `&file=${filename}` : ''}`
-      );
       return (
         <li key={index} className={`snippet-list-item fulltext-snippet ${selected}`}>
           <I18NLink

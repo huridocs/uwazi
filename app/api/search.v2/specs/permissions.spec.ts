@@ -1,8 +1,8 @@
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { Application } from 'express';
 import request from 'supertest';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingDB } from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
 import { searchRoutes } from '../routes';
@@ -13,10 +13,10 @@ describe('entities GET permissions + published filter', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
-    await testingDB.setupFixturesAndContext(permissionsLevelFixtures, 'entities.v2.permissions');
+    await testingEnvironment.setUp(permissionsLevelFixtures, 'entities.v2.permissions');
   });
 
-  afterAll(async () => testingDB.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET/public entities', () => {
     describe('when user is not logged in', () => {

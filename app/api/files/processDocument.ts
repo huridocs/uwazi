@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
 import settings from 'api/settings';
 import { FileType } from 'shared/types/fileType';
@@ -10,6 +11,7 @@ export const processPDF = async (
   file: FileType & { destination?: string },
   detectLanguage = true
 ) => {
+  let thumbnail;
   const pdf = new PDF(file);
   const upload = await files.save({
     ...file,
@@ -24,7 +26,13 @@ export const processPDF = async (
       conversion.language = file.language;
     }
 
-    const thumbnail = await pdf.createThumbnail(upload._id.toString());
+    const saved = await files.save({
+      ...upload,
+      ...conversion,
+      status: 'ready',
+    });
+
+    thumbnail = await pdf.createThumbnail(upload._id.toString());
 
     await files.save({
       entity: entitySharedId,
@@ -34,18 +42,13 @@ export const processPDF = async (
       mimetype: 'image/jpeg',
     });
 
-    const saved = await files.save({
-      ...upload,
-      ...conversion,
-      status: 'ready',
-    });
-
     return saved;
   } catch (e) {
     await files.save({
       ...upload,
       status: 'failed',
     });
+
     throw e;
   }
 };

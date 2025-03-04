@@ -1,4 +1,5 @@
 import entities from 'api/entities';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fileExistsOnPath, uploadsPath } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
@@ -20,10 +21,10 @@ describe('documents', () => {
     // @ts-ignore
     jest.spyOn(search, 'bulkIndex').mockImplementation(async () => Promise.resolve());
     mockID();
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('get', () => {
     describe('when passing query', () => {

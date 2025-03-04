@@ -1,6 +1,6 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { useLoaderData, LoaderFunction } from 'react-router-dom';
+import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';

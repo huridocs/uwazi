@@ -91,7 +91,11 @@ exports[`HubRelationshipMetadata should render the metadata correctly when text 
       key="text"
     >
       <dt>
-        Text
+        <Translate
+          context="System"
+        >
+          Text
+        </Translate>
       </dt>
       <dd>
         <div

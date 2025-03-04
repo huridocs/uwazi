@@ -1,7 +1,7 @@
 /** @format */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import thesauri from 'api/thesauri';
-import db from 'api/utils/testing_db';
 
 import { fixtures, thesauri1Id } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
@@ -13,8 +13,8 @@ const rawEntityWithSelectValue = val => ({
 });
 
 describe('select', () => {
-  beforeEach(async () => db.clearAllAndLoad(fixtures));
-  afterAll(async () => db.disconnect());
+  beforeEach(async () => testingEnvironment.setUp(fixtures));
+  afterAll(async () => testingEnvironment.tearDown());
 
   it('should find thesauri value and return the id and value', async () => {
     const templateProp = { name: 'select_prop', content: thesauri1Id };

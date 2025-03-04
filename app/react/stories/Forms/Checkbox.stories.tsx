@@ -3,8 +3,6 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
 import { Checkbox } from 'app/V2/Components/Forms';
-import { LEGACY_createStore as createStore } from 'V2/testing';
-import { Provider } from 'react-redux';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Forms/Checkbox',
@@ -18,17 +16,15 @@ type Story = StoryObj<typeof Checkbox>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <Checkbox
-        label={args.label}
-        defaultChecked={args.defaultChecked}
-        checked={args.checked}
-        name={args.name}
-        onChange={args.onChange}
-        className={args.className}
-        disabled={args.disabled}
-      />
-    </Provider>
+    <Checkbox
+      label={args.label}
+      defaultChecked={args.defaultChecked}
+      checked={args.checked}
+      name={args.name}
+      onChange={args.onChange}
+      className={args.className}
+      disabled={args.disabled}
+    />
   ),
 };
 

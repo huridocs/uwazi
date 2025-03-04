@@ -184,9 +184,40 @@ const deleteFileSelection = (
   return updatedSelections;
 };
 
+const adjustSelectionsToScale = (
+  selection: TextSelection,
+  scalingFactor: number,
+  normalize?: boolean
+): TextSelection => {
+  if (scalingFactor === 1 || scalingFactor === 0) {
+    return selection;
+  }
+
+  const scaledSelection = { ...selection };
+
+  if (scaledSelection.selectionRectangles?.length) {
+    scaledSelection.selectionRectangles = selection.selectionRectangles.map(rectangle => {
+      const left = rectangle.left || 0;
+      const top = rectangle.top || 0;
+      const width = rectangle.width || 0;
+      const height = rectangle.height || 0;
+      return {
+        ...rectangle,
+        left: normalize ? left / scalingFactor : left * scalingFactor,
+        top: normalize ? top / scalingFactor : top * scalingFactor,
+        width: normalize ? width / scalingFactor : width * scalingFactor,
+        height: normalize ? height / scalingFactor : height * scalingFactor,
+      };
+    });
+  }
+
+  return scaledSelection;
+};
+
 export {
   getHighlightsFromFile,
   getHighlightsFromSelection,
   updateFileSelection,
   deleteFileSelection,
+  adjustSelectionsToScale,
 };

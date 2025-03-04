@@ -48,8 +48,8 @@ const mockUseSearchParams = jest.fn().mockImplementation(() => {
   return [params];
 });
 const mockNavigate = jest.fn().mockImplementation(path => path);
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useSearchParams: () => mockUseSearchParams(),
   useLocation: () => mockUseLocation(),
   useNavigate: () => path => mockNavigate(path),
@@ -271,7 +271,7 @@ describe('PDFView', () => {
         render();
         component.find({ page: 15 }).at(0).props().changePage(16);
         expect(mockNavigate).not.toHaveBeenCalled();
-        expect(uiActions.scrollToPage).toHaveBeenCalledWith(16);
+        expect(uiActions.scrollToPage).toHaveBeenCalledWith(16, 50, false);
       });
     });
   });

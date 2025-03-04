@@ -7,9 +7,9 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -17,11 +17,11 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -29,9 +29,9 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <Connect(SharedProperties)
@@ -47,9 +47,9 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -57,11 +57,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -69,9 +69,9 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -82,11 +82,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -94,11 +94,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       model="template.data.properties[2].defaultfilter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as default filter description"
         >
           Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -106,11 +106,11 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       model="template.data.properties[2].prioritySorting"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Priority sorting description"
         >
           Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -127,9 +127,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -137,11 +137,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -149,9 +149,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -162,11 +162,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -183,9 +183,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -193,11 +193,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -205,9 +205,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -218,11 +218,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -239,9 +239,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -249,11 +249,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -261,9 +261,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -274,11 +274,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -295,9 +295,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -305,11 +305,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -317,9 +317,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -330,11 +330,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -351,9 +351,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -361,11 +361,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -373,9 +373,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -386,11 +386,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -398,11 +398,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].defaultfilter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as default filter description"
         >
           Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -410,11 +410,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].prioritySorting"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Priority sorting description"
         >
           Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -431,9 +431,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -441,11 +441,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -453,9 +453,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -466,11 +466,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -478,11 +478,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].defaultfilter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as default filter description"
         >
           Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -490,11 +490,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].prioritySorting"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Priority sorting description"
         >
           Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -511,9 +511,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -521,11 +521,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -533,9 +533,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -546,11 +546,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -558,11 +558,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].defaultfilter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as default filter description"
         >
           Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -570,11 +570,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].prioritySorting"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Priority sorting description"
         >
           Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -591,9 +591,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -601,11 +601,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -613,9 +613,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -626,11 +626,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -638,11 +638,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].defaultfilter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as default filter description"
         >
           Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
     <PropertyConfigOption
@@ -650,11 +650,11 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       model="template.data.properties[2].prioritySorting"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Priority sorting description"
         >
           Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>
@@ -671,9 +671,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     model="template.data.properties[2].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -681,11 +681,11 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     model="template.data.properties[2].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -693,9 +693,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     model="template.data.properties[2].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div
@@ -706,11 +706,11 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       model="template.data.properties[2].filter"
     >
       <Tip>
-        <Connect(Translate)
+        <Translate
           translationKey="Property as filter description"
         >
           This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.
-        </Connect(Translate)>
+        </Translate>
       </Tip>
     </PropertyConfigOption>
   </div>

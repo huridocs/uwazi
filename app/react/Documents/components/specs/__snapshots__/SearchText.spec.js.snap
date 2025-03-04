@@ -8,10 +8,18 @@ exports[`SearchText blankState when there is no search term should render a blan
     icon="search"
   />
   <h4>
-    Search text
+    <Translate
+      context="System"
+    >
+      Search text
+    </Translate>
   </h4>
   <p>
-    Search text description
+    <Translate
+      context="System"
+    >
+      Search text description
+    </Translate>
   </p>
 </div>
 `;
@@ -24,10 +32,18 @@ exports[`SearchText blankState when there is search term should render a no matc
     icon="search"
   />
   <h4>
-    No text match
+    <Translate
+      context="System"
+    >
+      No text match
+    </Translate>
   </h4>
   <p>
-    No text match description
+    <Translate
+      context="System"
+    >
+      No text match description
+    </Translate>
   </p>
 </div>
 `;

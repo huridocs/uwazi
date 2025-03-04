@@ -4,6 +4,7 @@ import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
 
 export interface TemplatesDataSource {
+  getAll(): ResultSet<Template>;
   getAllTemplatesIds(): ResultSet<string>;
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
   getAllProperties(): ResultSet<Property>;

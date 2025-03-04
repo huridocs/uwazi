@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import rison from 'rison-node';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
@@ -15,6 +15,17 @@ import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
+
+const extractRelationshipLabel = (filteredProperty, label, templates) => {
+  const relatedTemplate = templates.find(template => template._id === filteredProperty.content);
+  if (!relatedTemplate?.properties) return label;
+
+  const templateProperty = relatedTemplate.properties.find(
+    property => property._id === filteredProperty?.inherit?.property
+  );
+
+  return templateProperty?.content ? t(templateProperty.content, label, undefined, false) : label;
+};
 
 const optionUrl = (value, name, query) => {
   const q = rison.encode({
@@ -31,18 +42,19 @@ const optionUrl = (value, name, query) => {
 
   return `/library/?q=${q}`;
 };
-const labelForOption = (filteredProperty, option) => {
+
+const labelForOption = (filteredProperty, option, templates) => {
   switch (true) {
     case option.id === 'missing':
       return t('System', 'No Label', undefined, false);
     case filteredProperty.type === 'relationship':
-      return option.label;
+      return extractRelationshipLabel(filteredProperty, option.label, templates);
     default:
       return t(filteredProperty.content, option.label, undefined, false);
   }
 };
 
-const prepareOptions = (property, location) => {
+const prepareOptions = (property, location, templates) => {
   const query = searchParamsFromLocationSearch(location, 'q') || {};
   const filteredProperty = {
     ...property,
@@ -51,7 +63,7 @@ const prepareOptions = (property, location) => {
   return filteredProperty.options.map(option => {
     const finalTranslatedOption = {
       ...option,
-      label: labelForOption(filteredProperty, option),
+      label: labelForOption(filteredProperty, option, templates),
       url: optionUrl(option.value, property.name, query),
     };
 
@@ -113,7 +125,9 @@ const FiltersFromProperties = ({
           onChange,
         };
 
-        const propertyOptions = property.options ? prepareOptions(property, location) : [];
+        const propertyOptions = property.options
+          ? prepareOptions(property, location, templates)
+          : [];
 
         let filter = <TextFilter {...commonProps} />;
 

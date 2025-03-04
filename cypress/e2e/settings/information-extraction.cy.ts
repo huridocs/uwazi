@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import { clearCookiesAndLogin } from '../helpers';
+import { clearCookiesAndLogin, editPropertyForExtractor } from '../helpers';
 import 'cypress-axe';
 
 const labelEntityTitle = (
@@ -21,17 +21,6 @@ const labelEntityTitle = (
 
 const checkTemplatesList = (templates: string[]) => {
   templates.map(template => cy.getByTestId('pill-comp').contains(template));
-};
-
-const editPropertyForExtractor = (
-  alias: string,
-  templateName: string,
-  property: string,
-  shouldUnfold = true
-) => {
-  cy.contains('span', templateName).as(alias);
-  if (shouldUnfold) cy.get(`@${alias}`).click();
-  cy.get(`@${alias}`).parent().parent().contains('span', property).click();
 };
 
 describe('Information Extraction', () => {
@@ -336,11 +325,10 @@ describe('Information Extraction', () => {
     });
 
     it('should click to fill with a new text', () => {
-      cy.contains('The Spectacular Spider-Man').parent().parent().siblings().last().click();
+      cy.contains('tr', 'The Spectacular Spider-Man').contains('button', 'Open PDF').click();
       cy.get('aside').within(() => {
         cy.get('input').clear();
       });
-      cy.get('#pdf-container').scrollTo(0, 0);
       cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)

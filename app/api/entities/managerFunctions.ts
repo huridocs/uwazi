@@ -6,7 +6,7 @@ import { files as filesAPI, storage } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import { legacyLogger } from 'api/log';
-import { prettifyError } from 'api/utils/handleError';
+import { handleError, prettifyError } from 'api/utils/handleError';
 import { ClientEntitySchema } from 'app/istore';
 import { FileType } from 'shared/types/fileType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
@@ -174,8 +174,7 @@ const handleAttachmentInMetadataProperties = (
 const saveFiles = async (
   attachments: FileType[],
   documents: FileType[],
-  entity: ClientEntitySchema,
-  socketEmiter?: Function
+  entity: ClientEntitySchema
 ) => {
   const saveResults: string[] = [];
 
@@ -197,21 +196,15 @@ const saveFiles = async (
   );
 
   if (documentsToProcess.length) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.allSettled(
+    const documentsBeingProcessed = Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
     ).then(results => {
       results
         .filter(result => result.status === 'rejected')
-        .map(rejected => {
-          const { reason } = rejected as PromiseRejectedResult;
-          return legacyLogger.error(prettifyError(reason));
-        });
-
-      if (socketEmiter) {
-        socketEmiter('documentProcessed', entity.sharedId!);
-      }
+        .map(rejected => handleError(rejected.reason));
     });
+
+    await documentsBeingProcessed;
   }
 
   if (attachments.length || documents.length) {

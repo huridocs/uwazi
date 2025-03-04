@@ -310,6 +310,7 @@ Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
+Error loading your image,Error loading your image
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Exploration
@@ -849,7 +850,6 @@ This content is automatically generated,This content is automatically generated
 This entity is not public.,This entity is not public.
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required
-This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.

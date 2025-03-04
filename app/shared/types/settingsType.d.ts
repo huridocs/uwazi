@@ -144,9 +144,9 @@ export type SettingsSyncRelationtypesSchema = string[];
 
 export interface SettingsSyncSchema {
   url: string;
-  active?: boolean;
   username: string;
   password: string;
+  active?: boolean;
   name: string;
   config: {
     templates?: {

@@ -31,4 +31,5 @@ export default combineReducers({
     }),
     tab: createReducer('viewer.sidepanel.tab', ''),
   }),
+  documentScale: createReducer('viewer/documentScale', 1),
 });

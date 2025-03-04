@@ -1,5 +1,6 @@
 import mongoose, { Connection, ConnectOptions } from 'mongoose';
 import { config } from 'api/config';
+import { DbOptions } from 'mongodb';
 
 let connection: Connection;
 
@@ -23,6 +24,10 @@ const DB = {
 
   connectionForDB(dbName: string, options = { useCache: true, noListener: true }) {
     return this.getConnection().useDb(dbName, options);
+  },
+
+  mongodb_Db(dbName: string, options?: DbOptions) {
+    return this.getConnection().getClient().db(dbName, options);
   },
 
   getConnection() {

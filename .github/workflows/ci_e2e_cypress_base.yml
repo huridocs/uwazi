@@ -13,6 +13,8 @@ concurrency:
 jobs:
   e2e-cypress:
     runs-on: ubuntu-20.04
+    env:
+      CYPRESS_RETRIES: 2
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
@@ -28,7 +30,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 5.0.27
+          mongodb-version: 6.0
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v4
@@ -39,7 +41,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -49,7 +51,7 @@ jobs:
       - run: sudo apt-get install poppler-utils
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ./prod
           key: >-
@@ -96,7 +98,7 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-          TRANSPILED: true          
+          TRANSPILED: true
       - run: yarn ix-config
         env:
           DBHOST: localhost:27017
@@ -119,18 +121,18 @@ jobs:
           browser: chrome
           component: false
           config-file: cypress.config.ts
-          spec: "cypress/e2e/*.cy.ts"
+          spec: 'cypress/e2e/*.cy.ts'
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: snapshots
           path: cypress/e2e/**/__image_snapshots__/
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: video

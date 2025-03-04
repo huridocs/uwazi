@@ -1,17 +1,17 @@
 import Ajv from 'ajv';
-import userGroups from 'api/usergroups/userGroups';
-import db from 'api/utils/testing_db';
 import { models } from 'api/odm';
+import userGroups from 'api/usergroups/userGroups';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { UserSchema } from 'shared/types/userType';
 import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures';
 
 describe('userGroups', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('get', () => {
     it('should return populated user groups from model', async () => {

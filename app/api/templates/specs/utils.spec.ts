@@ -1,18 +1,19 @@
-import db from 'api/utils/testing_db';
-import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
+import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { PropertySchema } from 'shared/types/commonTypes';
 import {
   generateIds,
+  generateNames,
+  getDeletedProperties,
   getUpdatedIds,
   getUpdatedNames,
-  getDeletedProperties,
-  generateNames,
   PropertyOrThesaurusSchema,
 } from '../utils';
 
 describe('templates utils', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad({});
+    await testingEnvironment.setUp({});
   });
 
   describe('name generation', () => {
@@ -418,4 +419,4 @@ describe('templates utils', () => {
   });
 });
 
-afterAll(async () => db.disconnect());
+afterAll(async () => testingEnvironment.tearDown());

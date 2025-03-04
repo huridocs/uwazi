@@ -10,7 +10,7 @@ describe('RetrieveStats', () => {
   let db: Db;
 
   beforeAll(async () => {
-    db = (await testingDB.connect()).db;
+    db = (await testingDB.connect()).db as Db;
   });
 
   beforeEach(async () => {

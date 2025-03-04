@@ -7,6 +7,7 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { config } from 'api/config';
 import { DB } from '../DB';
 import { instanceModel } from '../model';
+import testingDB from 'api/utils/testing_db';
 
 const testSchema = new mongoose.Schema({
   name: { type: String, index: true },
@@ -27,8 +28,8 @@ describe('DB', () => {
   beforeEach(async () => {
     const uri = config.DBHOST;
     await DB.connect(`${uri}_DB_spec_ts`);
-    db1 = DB.getConnection().useDb('db1').db;
-    db2 = DB.getConnection().useDb('db2').db;
+    db1 = testingDB.db('db1');
+    db2 = testingDB.db('db2');
   });
 
   afterAll(async () => {

@@ -23,4 +23,12 @@ export const permissionsContext = {
   setCommandContext: () => {
     appContext.set('user', permissionsContext.commandUser);
   },
+
+  setUserInContext(user: UserSchema) {
+    appContext.set('user', user);
+  },
+
+  setCommandContextAsDefault: () => {
+    appContext.setValueAsDefault('user', permissionsContext.commandUser);
+  },
 };

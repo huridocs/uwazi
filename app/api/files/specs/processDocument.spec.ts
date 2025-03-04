@@ -1,3 +1,4 @@
+import testingDB from 'api/utils/testing_db';
 import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
@@ -5,7 +6,7 @@ import {
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
-import { files } from '../files';
+import { files, UpdateFileError } from '../files';
 import { attachmentsPath, setupTestUploadedPaths } from '../filesystem';
 import { processDocument } from '../processDocument';
 
@@ -75,5 +76,21 @@ describe('processDocument', () => {
       const [file] = await files.get({ entity: 'entity_shared_id' });
       expect(file).toBeUndefined();
     });
+  });
+
+  it('should not persist file or thumbnail if there is an UpdateFileError', async () => {
+    const _id = testingDB.id();
+    const promise = processDocument('any_entity_shared_id', {
+      _id,
+      filename: 'any_file_name',
+      originalname: 'any_original_name',
+    });
+
+    await expect(promise).rejects.toEqual(new UpdateFileError());
+    const [file] = await files.get({ _id });
+    const [thumbnail] = await files.get({ entity: _id, type: 'thumbnail' });
+
+    expect(file).toBeUndefined();
+    expect(thumbnail).toBeUndefined();
   });
 });

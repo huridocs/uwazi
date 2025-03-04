@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { Translate } from 'app/I18N';
 import { CurrentLocationLink } from 'app/Layout';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
@@ -20,7 +20,7 @@ const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => {} }) => {
         queryParams={{ page: prevPage }}
         onClick={e => {
           e.preventDefault();
-          onPageChange(prevPage);
+          onPageChange(prevPage, true);
         }}
         {...disableButton(page, 1)}
       >
@@ -31,7 +31,7 @@ const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => {} }) => {
         queryParams={{ page: nextPage }}
         onClick={e => {
           e.preventDefault();
-          onPageChange(nextPage);
+          onPageChange(nextPage, true);
         }}
         {...disableButton(page, totalPages)}
       >

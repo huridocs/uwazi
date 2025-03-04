@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { COLORS } from 'app/utils/colors';
-import t from '../I18N/t';
+import { t } from 'app/I18N';
 
 const getTemplateInfo = createSelector(
   s => s.templates,

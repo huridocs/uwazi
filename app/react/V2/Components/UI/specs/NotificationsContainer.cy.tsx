@@ -1,8 +1,6 @@
 import React from 'react';
 import { Provider, useSetAtom } from 'jotai';
 import { mount } from '@cypress/react18';
-import { Provider as ReduxProvider } from 'react-redux';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { notificationAtom, notificationAtomType } from 'V2/atoms';
 import { NotificationsContainer } from '../NotificationsContainer';
 
@@ -21,14 +19,12 @@ describe('Notifications container', () => {
     };
 
     return (
-      <ReduxProvider store={createStore()}>
-        <>
-          <NotificationsContainer />
-          <button type="button" id="send-notification" onClick={onClick}>
-            Send notification
-          </button>
-        </>
-      </ReduxProvider>
+      <>
+        <NotificationsContainer />
+        <button type="button" id="send-notification" onClick={onClick}>
+          Send notification
+        </button>
+      </>
     );
   };
 

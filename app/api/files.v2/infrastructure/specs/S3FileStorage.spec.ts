@@ -9,6 +9,7 @@ import {
 import { config } from 'api/config';
 import { Attachment } from 'api/files.v2/model/Attachment';
 import { Document } from 'api/files.v2/model/Document';
+import { testingTenants } from 'api/utils/testingTenants';
 import { Tenant } from 'api/tenants/tenantContext';
 import { S3FileStorage } from '../S3FileStorage';
 
@@ -45,6 +46,8 @@ describe('S3FileStorage', () => {
       customUploads: 'test-tenant/customUploads',
       activityLogs: 'test-tenant/log',
     };
+
+    testingTenants.mockCurrentTenant(tenant);
 
     s3fileStorage = new S3FileStorage(s3Client, tenant);
   });
@@ -134,17 +137,13 @@ describe('S3FileStorage', () => {
   describe('getPath', () => {
     it.each([
       {
-        file: new Document('id', 'entity', 1, 'document'),
+        file: new Document('id', 'entity', 1, 'document', 'ab'),
         expected: 'test-tenant/documents/document',
       },
       {
         file: new Attachment('id', 'entity', 1, 'attachment'),
         expected: 'test-tenant/attachments/attachment',
       },
-      // {
-      //   file: new URLAttachment('id', 'filename', 'entity', 1, 'url'),
-      //   expected: 'test-tenant/?????/filename',
-      // },
     ])(
       'should use dinamic paths based on tenant ($file.filename -> $expected)',
       async ({ file, expected }) => {
@@ -152,5 +151,75 @@ describe('S3FileStorage', () => {
         expect(key).toBe(expected);
       }
     );
+  });
+
+  describe('getFile', () => {
+    it('should retrieve a file from S3', async () => {
+      const inputs = [
+        {
+          Body: 'document',
+          Key: 'test-tenant/documents/document.txt',
+          type: 'document',
+          filename: 'document.txt',
+        },
+        {
+          Body: 'attachment',
+          Key: 'test-tenant/attachments/attachment.txt',
+          type: 'attachment',
+          filename: 'attachment.txt',
+        },
+        {
+          Body: 'custom',
+          Key: 'test-tenant/customUploads/custom.txt',
+          type: 'custom',
+          filename: 'custom.txt',
+        },
+        {
+          Body: 'activitylog',
+          Key: 'test-tenant/log/activitylog.txt',
+          type: 'activitylog',
+          filename: 'activitylog.txt',
+        },
+        {
+          Body: 'thumbnail',
+          Key: 'test-tenant/documents/thumbnail.txt',
+          type: 'thumbnail',
+          filename: 'thumbnail.txt',
+        },
+        {
+          Body: 'segmentation',
+          Key: 'test-tenant/documents/segmentation/segmentation.txt',
+          type: 'segmentation',
+          filename: 'segmentation.txt',
+        },
+      ];
+
+      const promises = inputs.map(async ({ Key, Body, type, filename }) => {
+        await s3Client.send(
+          new PutObjectCommand({
+            Bucket: 'uwazi-development',
+            Key,
+            Body,
+          })
+        );
+
+        const file = await s3fileStorage.getFile({
+          filename,
+          type: type as any,
+        });
+
+        const content = await file.asContentString();
+
+        expect(content).toBe(Body);
+      });
+
+      await Promise.all(promises);
+    });
+
+    it('should throw an error if the file does not exist', async () => {
+      await expect(
+        s3fileStorage.getFile({ filename: 'file_that_do_not_exist', type: 'document' })
+      ).rejects.toThrow();
+    });
   });
 });

@@ -1,12 +1,12 @@
-import db from 'api/utils/testing_db';
-import thesauri from 'api/thesauri';
 import translations from 'api/i18n';
 import settings from 'api/settings';
+import thesauri from 'api/thesauri';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
+import { IndexedContextValues } from 'api/i18n/translations';
+import { WithId } from 'api/odm';
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { WithId } from 'api/odm';
-import { IndexedContextValues } from 'api/i18n/translations';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
@@ -19,13 +19,13 @@ const getTranslation = async (lang: string, id: ObjectId) =>
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   let thesauriId: ObjectId;
   let result: WithId<ThesaurusSchema>;
   describe('load thesauri', () => {
     beforeAll(async () => {
-      await db.clearAllAndLoad(fixtures);
+      await testingEnvironment.setUp(fixtures);
 
       await settings.addLanguage({ key: 'es', label: 'spanish' });
       await translations.addLanguage('es');

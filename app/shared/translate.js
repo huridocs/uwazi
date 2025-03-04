@@ -1,10 +1,8 @@
-/** @format */
-
-export function getLocaleTranslation(translations, locale) {
+function getLocaleTranslation(translations, locale) {
   return translations.find(d => d.locale === locale) || { contexts: [] };
 }
 
-export function getContext(translation, contextId = '') {
+function getContext(translation, contextId = '') {
   return (
     translation.contexts.find(ctx => ctx.id.toString() === contextId.toString()) || { values: {} }
   );
@@ -13,3 +11,5 @@ export function getContext(translation, contextId = '') {
 export default function translate(context, key, text) {
   return context.values[key] || text;
 }
+
+export { getLocaleTranslation, getContext };

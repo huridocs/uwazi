@@ -27,6 +27,8 @@ import {
   OrderedBulkOperation,
   UnorderedBulkOperation,
   ListSearchIndexesCursor,
+  IndexDescriptionCompact,
+  IndexDescriptionInfo,
 } from 'mongodb';
 
 export abstract class CollectionWrapper<TSchema extends Document = Document> {
@@ -127,17 +129,9 @@ export abstract class CollectionWrapper<TSchema extends Document = Document> {
     throw new Error('Method not implemented.');
   }
 
-  async indexInformation(_options?: IndexInformationOptions | undefined): Promise<Document> {
-    throw new Error('Method not implemented.');
-  }
-
   async estimatedDocumentCount(
     _options?: EstimatedDocumentCountOptions | undefined
   ): Promise<number> {
-    throw new Error('Method not implemented.');
-  }
-
-  async indexes(_options?: IndexInformationOptions | undefined): Promise<Document[]> {
     throw new Error('Method not implemented.');
   }
 
@@ -175,11 +169,58 @@ export abstract class CollectionWrapper<TSchema extends Document = Document> {
     throw new Error('Method not implemented.');
   }
 
+  get timeoutMS(): number | undefined {
+    throw new Error('Method not implemented.');
+  }
+
   async dropSearchIndex(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
   async updateSearchIndex(): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+
+  async indexInformation(
+    options: IndexInformationOptions & {
+      full: true;
+    }
+  ): Promise<IndexDescriptionInfo[]>;
+
+  async indexInformation(
+    options: IndexInformationOptions & {
+      full?: false;
+    }
+  ): Promise<IndexDescriptionCompact>;
+
+  async indexInformation(): Promise<IndexDescriptionCompact>;
+
+  async indexInformation(
+    options?: IndexInformationOptions
+  ): Promise<IndexDescriptionCompact | IndexDescriptionInfo[]> {
+    return this.collection.indexInformation({
+      ...options,
+      full: options?.full ?? false,
+    });
+  }
+
+  async indexes(
+    options: IndexInformationOptions & { full?: true }
+  ): Promise<IndexDescriptionInfo[]>;
+
+  async indexes(
+    options: IndexInformationOptions & { full: false }
+  ): Promise<IndexDescriptionCompact>;
+
+  async indexes(
+    options: IndexInformationOptions
+  ): Promise<IndexDescriptionCompact | IndexDescriptionInfo[]>;
+
+  async indexes(options?: ListIndexesOptions): Promise<IndexDescriptionInfo[]>;
+
+  async indexes(
+    options?: IndexInformationOptions
+  ): Promise<IndexDescriptionCompact | IndexDescriptionInfo[]> {
+    return this.collection.indexes(options);
   }
 }

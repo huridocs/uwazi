@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PDF should render the pdf file 1`] = `
+<div>
+  <div
+    role="none"
+  >
+    <div
+      id="pdf-container"
+      style="height: 100%; width: 100%; overflow: auto; padding-left: 10px; padding-right: 10px;"
+    >
+      <div
+        id="page-1-container"
+      >
+        <div
+          data-region-selector-id="1"
+        >
+          <div
+            class="pdf-page"
+          />
+        </div>
+      </div>
+      <div
+        id="page-2-container"
+      >
+        <div
+          data-region-selector-id="2"
+        >
+          <div
+            class="pdf-page"
+          >
+            <div
+              class="highlight-rectangle"
+              style="top: 32px; left: 0px; width: 160px; height: 48px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: red; z-index: 1;"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        id="page-3-container"
+      >
+        <div
+          data-region-selector-id="3"
+        >
+          <div
+            class="pdf-page"
+          />
+        </div>
+      </div>
+      <div
+        id="page-4-container"
+      >
+        <div
+          data-region-selector-id="4"
+        >
+          <div
+            class="pdf-page"
+          />
+        </div>
+      </div>
+      <div
+        id="page-5-container"
+      >
+        <div
+          data-region-selector-id="5"
+        >
+          <div
+            class="pdf-page"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

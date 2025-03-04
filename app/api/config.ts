@@ -49,6 +49,8 @@ export const config = {
 
   elasticsearch_nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
 
+  elasticsearch_requestTimeout: 60000,
+
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',
 
@@ -68,9 +70,13 @@ export const config = {
     activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
     featureFlags: {
       s3Storage: false,
+      esReplicas: 0,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
+  externalServicesUrls: {
+    paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
+  },
 
   redis: {
     activated: CLUSTER_MODE,

@@ -30,7 +30,11 @@ exports[`MultiSelect should display a not found message when there are no option
   <span
     className="no-options-message"
   >
-    No options found
+    <Translate
+      context="System"
+    >
+      No options found
+    </Translate>
   </span>
   <li
     className="multiselectActions"
@@ -50,9 +54,9 @@ exports[`MultiSelect should display a not found message when there are no option
         <span>
           -5
            
-          <Connect(Translate)>
+          <Translate>
             x more
-          </Connect(Translate)>
+          </Translate>
         </span>
       </button>
     </ShowIf>
@@ -526,9 +530,9 @@ exports[`MultiSelect should not render an empty group 1`] = `
         <span>
           -2
            
-          <Connect(Translate)>
+          <Translate>
             x more
-          </Connect(Translate)>
+          </Translate>
         </span>
       </button>
     </ShowIf>

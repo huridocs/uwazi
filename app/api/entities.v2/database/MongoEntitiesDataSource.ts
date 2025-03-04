@@ -5,6 +5,7 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import entities from 'api/entities/entities';
 import v1EntitiesModel from 'api/entities/entitiesModel';
+import { search } from 'api/search';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
@@ -13,7 +14,6 @@ import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
-import { search } from 'api/search';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>

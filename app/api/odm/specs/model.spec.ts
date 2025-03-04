@@ -1,4 +1,5 @@
 import { legacyLogger } from 'api/log';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UpdateLogHelper } from 'api/odm/logHelper';
 import { tenants } from 'api/tenants';
 import { model as updatelogsModel } from 'api/updatelogs';
@@ -23,12 +24,12 @@ describe('ODM Model', () => {
   const originalDatenow = Date.now;
 
   beforeEach(async () => {
-    await testingDB.setupFixturesAndContext({});
+    await testingEnvironment.setUp({});
   });
 
   afterAll(async () => {
     Date.now = originalDatenow;
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   const instanceTestingModel = (collectionName: string, schema: Schema) => {

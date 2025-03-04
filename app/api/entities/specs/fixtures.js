@@ -683,6 +683,12 @@ export default {
       name: 'templateForGetWithRelationships',
     },
   ],
+  relationtypes: [
+    { _id: relationType1 },
+    { _id: relationType2 },
+    { _id: relationType3 },
+    { _id: relationType4 },
+  ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1, entityData: {} },
     { _id: db.id(), entity: 'shared2', template: relationType1, hub: hub1, entityData: {} },

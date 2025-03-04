@@ -7,6 +7,8 @@ import { RenderResult } from '@testing-library/react';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { TestAtomStoreProvider } from 'V2/testing';
+import { pdfScaleAtom } from 'V2/atoms';
 import { PageSelections } from '../PageSelections';
 
 const defaultEntityDocument: ClientFile = {
@@ -61,6 +63,7 @@ describe('Page selections highlights', () => {
   };
   let file: any | ClientFile;
   let selections: ExtractedMetadataSchema[];
+  let pdfScalingValue = 1;
 
   beforeEach(() => {
     file = defaultEntityDocument;
@@ -82,7 +85,12 @@ describe('Page selections highlights', () => {
         }),
       },
     };
-    ({ renderResult } = renderConnectedContainer(<PageSelections />, () => state));
+    ({ renderResult } = renderConnectedContainer(
+      <TestAtomStoreProvider initialValues={[[pdfScaleAtom, pdfScalingValue]]}>
+        <PageSelections />
+      </TestAtomStoreProvider>,
+      () => state
+    ));
   };
 
   it('should only render when editing the entity and has a document', () => {
@@ -101,13 +109,22 @@ describe('Page selections highlights', () => {
     expect(renderResult.container.children.length).toBe(2);
   });
 
+  it('should adjust selections by the pdf scaling factor', () => {
+    pdfScalingValue = 1.5;
+    render();
+    expect(renderResult.baseElement).toMatchSnapshot();
+  });
+
   it('should highligh new selections', () => {
     selections = [
       {
         propertyID: '4356fdsassda',
         name: 'property_name',
         timestamp: 'today',
-        selection: { text: 'new selected text', selectionRectangles: [{ top: 10, page: '1' }] },
+        selection: {
+          text: 'new selected text',
+          selectionRectangles: [{ top: 10, left: 1, width: 20, height: 1, page: '1' }],
+        },
       },
     ];
     render();
@@ -121,7 +138,7 @@ describe('Page selections highlights', () => {
         timestamp: 'newTitle',
         selection: {
           text: 'new selected text to replace current title',
-          selectionRectangles: [{ top: 10, page: '1' }],
+          selectionRectangles: [{ top: 10, left: 1, width: 20, height: 1, page: '1' }],
         },
       },
     ];
@@ -139,7 +156,7 @@ describe('Page selections highlights', () => {
         timestamp: 'newProperty',
         selection: {
           text: 'new selected text to replace current selected text for the property',
-          selectionRectangles: [{ top: 10, page: '1' }],
+          selectionRectangles: [{ top: 10, left: 1, width: 20, height: 1, page: '1' }],
         },
       },
     ];

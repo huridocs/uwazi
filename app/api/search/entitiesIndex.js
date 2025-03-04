@@ -9,11 +9,12 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { LanguageUtils } from 'shared/language';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
+import { otherLanguageSchema } from 'shared/language/availableLanguages';
+import { getTenantESMapping } from 'api/tenants/tenantESMapping';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import { elastic } from './elastic';
 
-export class IndexError extends Error {}
+class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = async entitiesToIndex => {
   const db = getConnection();
@@ -50,8 +51,10 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
     language = detectLanguage(fullText);
   }
   if (defaultDocument.language) {
-    language = LanguageUtils.fromISO639_3(defaultDocument.language).elastic;
+    language =
+      LanguageUtils.fromISO639_3(defaultDocument.language)?.elastic || otherLanguageSchema.elastic;
   }
+
   const fullTextObject = {
     [`fullText_${language}`]: fullText,
     filename: defaultDocument.filename,
@@ -180,9 +183,9 @@ const updateMapping = async tmpls => {
 
 const reindexAll = async (tmpls, searchInstance) => {
   await elastic.indices.delete();
-  await elastic.indices.create({ body: elasticMapping });
+  await elastic.indices.create({ body: getTenantESMapping() });
   await updateMapping(tmpls);
   return indexEntities({ query: {}, searchInstance });
 };
 
-export { bulkIndex, indexEntities, updateMapping, reindexAll };
+export { IndexError, bulkIndex, indexEntities, updateMapping, reindexAll };

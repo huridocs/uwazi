@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import entities from 'api/entities';
 import { applicationEventsBus } from 'api/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
@@ -7,13 +8,13 @@ import { search } from 'api/search';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
+import { inspect } from 'util';
 import { FileCreatedEvent } from './events/FileCreatedEvent';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { filesModel } from './filesModel';
 import { storage } from './storage';
 import { V2 } from './v2_support';
-import { inspect } from 'util';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -25,11 +26,19 @@ const deduceMimeType = (_file: FileType) => {
   return file;
 };
 
+export class UpdateFileError extends Error {
+  constructor() {
+    super('Can not update a File that does not exist');
+  }
+}
+
 export const files = {
   async save(_file: FileType, index = true) {
     const file = deduceMimeType(_file);
 
     const existingFile = file._id ? await filesModel.getById(file._id) : undefined;
+    if (file._id && !existingFile) throw new UpdateFileError();
+
     const savedFile = await filesModel.save(await validateFile(file));
     if (index) {
       await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');

@@ -2,12 +2,14 @@ import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
 
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 
 import { Loader } from 'app/components/Elements/Loader';
 import { PDF } from 'app/PDF';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
+import { selectionHandlers } from 'V2/Components/PDFViewer';
+import { atomStore, pdfScaleAtom } from 'V2/atoms';
 
 import determineDirection from '../utils/determineDirection';
 
@@ -27,6 +29,7 @@ class Document extends Component {
     this.onTextSelected = this.onTextSelected.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.highlightReference = this.highlightReference.bind(this);
+    this.containerRef = createRef();
   }
 
   componentDidUpdate(prevProps) {
@@ -43,7 +46,12 @@ class Document extends Component {
     const selectionRectangles = textSelection.selectionRectangles.map(
       ({ regionId, ...otherProps }) => ({ ...otherProps, page: regionId })
     );
-    this.props.setSelection({ ...textSelection, selectionRectangles }, this.props.file._id);
+    const highlight = selectionHandlers.adjustSelectionsToScale(
+      { ...textSelection, selectionRectangles },
+      atomStore.get(pdfScaleAtom),
+      true
+    );
+    this.props.setSelection(highlight, this.props.file._id);
     this.props.deactivateReference();
   }
 
@@ -87,7 +95,7 @@ class Document extends Component {
   handleOver() {}
 
   renderPDF(file) {
-    if (!file._id) {
+    if (!file._id && this.containerRef) {
       return <Loader />;
     }
 
@@ -104,14 +112,15 @@ class Document extends Component {
         highlightReference={this.highlightReference}
         activeReference={this.props.activeReference}
         key={file.filename}
+        parentRef={this.containerRef}
       />
     );
   }
 
   render() {
     const { file } = this.props;
-
     const Header = this.props.header;
+
     return (
       <div>
         <div
@@ -122,8 +131,7 @@ class Document extends Component {
           <Header />
           <div
             className="pages"
-            // eslint-disable-next-line react/no-unused-class-component-methods
-            ref={ref => (this.pagesContainer = ref)}
+            ref={this.containerRef}
             onMouseOver={this.handleOver.bind(this)}
             onClick={this.handleClick}
           >

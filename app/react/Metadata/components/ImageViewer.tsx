@@ -2,8 +2,8 @@ import { Translate } from 'app/I18N';
 import React, { useState } from 'react';
 
 interface ImageViewerProps {
-  key: string;
-  className: string;
+  key?: string;
+  className?: string;
   src: string;
   alt: string;
 }
@@ -14,19 +14,12 @@ const ImageViewer = (props: ImageViewerProps) => {
   if (errorFlag) {
     return (
       <div className="media-error">
-        <Translate>This file type is not supported on image fields</Translate>
+        <Translate>Error loading your image</Translate>
       </div>
     );
   }
 
-  return (
-    <img
-      {...props}
-      onError={() => {
-        setErrorFlag(true);
-      }}
-    />
-  );
+  return <img {...props} onError={() => setErrorFlag(true)} alt={props.alt} />;
 };
 
 export { ImageViewer, type ImageViewerProps };

@@ -3,13 +3,40 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { screen, RenderResult } from '@testing-library/react';
+import { screen, RenderResult, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { Provider as AtomProvider } from 'jotai';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { store } from 'app/store';
-import { t } from 'app/I18N';
+import { atomStore, localeAtom, translationsAtom } from 'V2/atoms';
+import { ClientTranslationSchema } from 'app/istore';
 import { FormConfigSelect } from '../FormConfigSelect';
+
+const translations: ClientTranslationSchema[] = [
+  {
+    locale: 'es',
+    contexts: [
+      {
+        _id: '1',
+        id: '1',
+        label: 'Thesauri 1',
+        values: {
+          'Thesauri 1': 'Diccionario B',
+        },
+        type: 'Thesaurus',
+      },
+      {
+        _id: '2',
+        id: '2',
+        label: 'Thesauri 2',
+        values: {
+          'Thesauri 2': 'Diccionario A',
+        },
+        type: 'Thesaurus',
+      },
+    ],
+  },
+];
 
 const defineTemplateInStore = (
   content: string,
@@ -36,11 +63,11 @@ describe('FormConfigSelect', () => {
   let renderResult: RenderResult;
   let reduxStore: MockStoreEnhanced;
   let state: any;
+  let locale = 'en';
 
   beforeEach(() => {
     state = {
       ...defaultState,
-      locale: 'en',
       template: { ...defineTemplateInStore('1', 'id1') },
       thesauris: Immutable.fromJS([
         { _id: '1', values: [], name: 'Thesauri 1' },
@@ -49,37 +76,17 @@ describe('FormConfigSelect', () => {
       templates: Immutable.fromJS([
         { properties: [{ content: '1', type: 'select' }], name: 'template1' },
       ]),
-      translations: Immutable.fromJS([
-        {
-          locale: 'es',
-          contexts: [
-            {
-              _id: '1',
-              id: '1',
-              label: 'Thesauri 1',
-              values: {
-                'Thesauri 1': 'Diccionario B',
-              },
-              type: 'Thesaurus',
-            },
-            {
-              _id: '2',
-              id: '2',
-              label: 'Thesauri 2',
-              values: {
-                'Thesauri 2': 'Diccionario A',
-              },
-              type: 'Thesaurus',
-            },
-          ],
-        },
-      ]),
     };
   });
 
   const render = () => {
+    atomStore.set(translationsAtom, translations);
+    atomStore.set(localeAtom, locale);
+
     ({ store: reduxStore, renderResult } = renderConnectedContainer(
-      <FormConfigSelect type="select" index={0} />,
+      <AtomProvider store={atomStore}>
+        <FormConfigSelect type="select" index={0} />
+      </AtomProvider>,
       () => state
     ));
   };
@@ -92,9 +99,7 @@ describe('FormConfigSelect', () => {
   });
 
   it('should render the select with the sorted translated dictionaries', () => {
-    state.locale = 'es';
-    jest.spyOn(store!, 'getState').mockImplementationOnce(() => ({ ...state }));
-    t.resetCachedTranslation();
+    locale = 'es';
 
     render();
     const options = screen.getAllByText('Diccionario', { exact: false });
@@ -103,17 +108,17 @@ describe('FormConfigSelect', () => {
   });
 
   describe('validation', () => {
-    it('should show a warning when changing the select thesaurus', () => {
-      t.resetCachedTranslation();
+    it('should show a warning when changing the select thesaurus', async () => {
       render();
 
       state = { ...state, template: { ...defineTemplateInStore('2', 'id1') } };
 
-      renderResult.rerender(
-        <Provider store={reduxStore}>
-          <FormConfigSelect type="select" index={0} />
-        </Provider>
-      );
+      await act(() => {
+        reduxStore.dispatch({
+          type: 'rrf/change',
+          value: 'id1',
+        });
+      });
 
       const warning = screen.queryByText(
         'By making this change, any values from the previous thesaurus',

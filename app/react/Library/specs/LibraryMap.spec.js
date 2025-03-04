@@ -5,6 +5,8 @@ import RouteHandler from 'app/App/RouteHandler';
 import { MapView } from 'app/Library/components/MapView';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 
+jest.mock('app/appRoutes');
+
 describe('LibraryMap', () => {
   let component;
 

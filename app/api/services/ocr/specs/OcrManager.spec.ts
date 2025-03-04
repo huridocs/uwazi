@@ -41,6 +41,7 @@ class Mocks {
       'processDocumentApi.processDocument': jest
         .spyOn(processDocumentApi, 'processDocument')
         .mockResolvedValue({
+          __v: 0,
           _id: fixturesFactory.id('resultFile'),
           originalname: 'ocr_sourceFileName.pdf',
           entity: 'parentEntity',

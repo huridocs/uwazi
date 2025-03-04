@@ -6,7 +6,7 @@ type LanguageCode = 'elastic' | 'ISO639_3' | 'ISO639_1';
 const otherLanguageSchema: LanguageSchema = {
   label: 'Other',
   key: 'other' as any,
-  ISO639_1: 'other',
+  ISO639_1: 'other' as any,
   ISO639_3: 'other',
   elastic: 'other',
   localized_label: 'Other',

@@ -30,6 +30,7 @@ describe('PDF', () => {
       file: 'file_url',
       filename: 'original.pdf',
       onLoad: jasmine.createSpy('onLoad'),
+      parentRef: { current: { clientWidth: 500 } },
     };
   });
 
