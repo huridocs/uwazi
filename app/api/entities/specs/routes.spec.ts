@@ -11,7 +11,6 @@ import { legacyLogger } from 'api/log';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { appContext } from 'api/utils/AppContext';
-import { testingTenants } from 'api/utils/testingTenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { ObjectId } from 'mongodb';
 import path from 'path';

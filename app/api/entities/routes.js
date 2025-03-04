@@ -9,7 +9,6 @@ import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '../utils/date';
 import entities from './entities';
-import { tenants } from 'api/tenants';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);

@@ -13,7 +13,6 @@ import { elasticTesting } from '../elastic_testing';
 import { getFixturesFactory } from '../fixturesFactory';
 import { testingEnvironment } from '../testingEnvironment';
 import { withTransaction } from '../withTransaction';
-import { testingTenants } from '../testingTenants';
 
 const factory = getFixturesFactory();
 
