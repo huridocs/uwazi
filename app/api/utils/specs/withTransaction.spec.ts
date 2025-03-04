@@ -50,7 +50,6 @@ describe('withTransaction utility', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp({ transactiontests: [] });
-    testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
     testingEnvironment.unsetFakeContext();
   });
 
@@ -170,26 +169,6 @@ describe('withTransaction utility', () => {
     });
   });
 
-  it('should do nothing when the feature flag is off when there is an error', async () => {
-    testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: false } });
-
-    await appContext.run(async () => {
-      let error: Error | undefined;
-      try {
-        await withTransaction(async () => {
-          await model.save({ title: 'test-flag-off', value: 1 });
-          throw new Error('Testing error');
-        });
-      } catch (e) {
-        error = e;
-      }
-      expect(error?.message).toBe('Testing error');
-
-      const docs = await model.get({ title: 'test-flag-off' });
-      expect(docs).toHaveLength(1);
-    });
-  });
-
   it('should clear the context after a transaction', async () => {
     await appContext.run(async () => {
       await withTransaction(async () => {
@@ -269,20 +248,6 @@ describe('withTransaction utility', () => {
         });
 
         expect(sessionToTest?.hasEnded).toBe(true);
-      });
-    });
-
-    it('should do nothing when the feature flag is off', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: false } });
-
-      await appContext.run(async () => {
-        await withTransaction(async ({ abort }) => {
-          await model.save({ title: 'test-flag-off-abort' });
-          await abort();
-        });
-
-        const docs = await model.get({ title: 'test-flag-off-abort' });
-        expect(docs).toHaveLength(1);
       });
     });
   });

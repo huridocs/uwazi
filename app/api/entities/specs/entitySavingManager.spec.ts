@@ -447,10 +447,6 @@ describe('entitySavingManager', () => {
           }
         ));
 
-        await waitForExpect(async () => {
-          expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-        });
-
         const [processedEntity] = await entities.getUnrestrictedWithDocuments({
           _id: savedEntity._id,
         });
@@ -477,10 +473,6 @@ describe('entitySavingManager', () => {
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
             socketEmiter: emiter,
           }));
-
-          await waitForExpect(async () => {
-            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-          });
 
           const [processedEntity] = await entities.getUnrestrictedWithDocuments({
             _id: savedEntity._id,
@@ -578,10 +570,6 @@ describe('entitySavingManager', () => {
             socketEmiter: emiter,
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
           }));
-
-          await waitForExpect(async () => {
-            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-          });
 
           expect(savedEntity.documents).toMatchObject([
             {

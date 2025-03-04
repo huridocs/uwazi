@@ -98,12 +98,10 @@ export default app => {
           return req.body.entity ? saveResult : entity;
         }, 'POST /api/entities');
         res.json(result);
-        if (tenants.current().featureFlags.v1_transactions) {
-          req.emitToSessionSocket(
-            'documentProcessed',
-            req.body.entity ? result.entity.sharedId : result.sharedId
-          );
-        }
+        req.emitToSessionSocket(
+          'documentProcessed',
+          req.body.entity ? result.entity.sharedId : result.sharedId
+        );
       } catch (e) {
         next(e);
       }

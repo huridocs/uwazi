@@ -457,7 +457,6 @@ describe('files routes', () => {
           next();
         }
       );
-      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
       jest.restoreAllMocks();
       jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
       jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {

@@ -249,7 +249,6 @@ describe('entities routes', () => {
     });
 
     it('should run saveEntity process as a transaction', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
       jest.restoreAllMocks();
       jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
         throw new Error('error at the end of the saveEntity');
