@@ -1,7 +1,5 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
-
-import { Link } from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
 import { t, Translate } from 'app/I18N';
@@ -367,11 +365,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           </span>
           <span className="multiselectItem-name" onClick={clickEvent}>
             <CustomIcon className="item-icon" data={option.icon} />
-            {this.state.serverSideRender && option.url ? (
-              <Link to={option.url}>{option[optionsLabel]}</Link>
-            ) : (
-              option[optionsLabel]
-            )}
+            {option[optionsLabel]}
           </span>
           &nbsp;
         </label>

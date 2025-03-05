@@ -15,8 +15,15 @@ import { LibraryFooter } from './components/LibraryFooter';
 
 class LibraryLayoutBase extends Component {
   render() {
-    const { className, children, quickLabelThesaurus, sidePanelMode, scrollCallback, scrollCount } =
-      this.props;
+    const {
+      className,
+      children,
+      quickLabelThesaurus,
+      sidePanelMode,
+      scrollCallback,
+      scrollCount,
+      noindex,
+    } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
     } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ]`;
@@ -25,6 +32,7 @@ class LibraryLayoutBase extends Component {
       <div className="row panels-layout" data-testid="library-content">
         <Helmet>
           <title>{t('System', 'Library', null, false)}</title>
+          {noindex && <meta name="robots" content="noindex" />}
         </Helmet>
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass} onScroll={scrollCallback}>
@@ -59,10 +67,16 @@ LibraryLayoutBase.propTypes = {
   sidePanelMode: PropTypes.string,
   scrollCallback: PropTypes.instanceOf(Function),
   scrollCount: PropTypes.number,
+  noindex: PropTypes.bool.isRequired,
 };
 
 export { LibraryLayoutBase };
 
-export default connect(state => ({
-  quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),
-}))(LibraryLayoutBase);
+export default connect(state => {
+  const filters = state.library.search.filters;
+  const noindex = filters && Object.keys(filters).length > 0;
+  return {
+    quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),
+    noindex,
+  };
+})(LibraryLayoutBase);

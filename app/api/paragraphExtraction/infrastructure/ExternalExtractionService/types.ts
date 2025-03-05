@@ -12,7 +12,7 @@ type SegmentDTO = {
   xml_segments_boxes: SegmentBoxDTO[];
 };
 
-type ExtractionDTO = {
+type ExtractionDTODevelopment = {
   key: string;
   xmls: SegmentDTO[];
 };
@@ -35,4 +35,21 @@ type GetParagraphsResultDTO = {
   paragraphs: ParagraphDTO[];
 };
 
-export type { ExtractionDTO, GetParagraphsResultDTO };
+type ExtractionDTOProduction = {
+  key: string;
+  xmls: {
+    xml_file_name: string;
+    language: string;
+    is_main_language: boolean;
+    xml_segments_boxes: {
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+      page_number: number;
+      segment_type: string;
+    }[];
+  }[];
+};
+
+export type { ExtractionDTODevelopment, ExtractionDTOProduction, GetParagraphsResultDTO };

@@ -9,7 +9,6 @@ import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '../utils/date';
 import entities from './entities';
-import { tenants } from 'api/tenants';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -98,12 +97,10 @@ export default app => {
           return req.body.entity ? saveResult : entity;
         }, 'POST /api/entities');
         res.json(result);
-        if (tenants.current().featureFlags.v1_transactions) {
-          req.emitToSessionSocket(
-            'documentProcessed',
-            req.body.entity ? result.entity.sharedId : result.sharedId
-          );
-        }
+        req.emitToSessionSocket(
+          'documentProcessed',
+          req.body.entity ? result.entity.sharedId : result.sharedId
+        );
       } catch (e) {
         next(e);
       }

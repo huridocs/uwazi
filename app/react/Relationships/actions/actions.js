@@ -190,9 +190,12 @@ function saveRelationships() {
         ])
       )
       .then(([response, parentEntity]) => {
-        dispatch(actions.set('entityView/entity', parentEntity));
-        dispatch(actions.set('viewer/doc', parentEntity));
-
+        if (parentEntity.documents?.length) {
+          const defaultDoc = getState().documentViewer.doc.get('defaultDoc');
+          dispatch(actions.set('viewer/doc', { ...parentEntity, defaultDoc }));
+        } else {
+          dispatch(actions.set('entityView/entity', parentEntity));
+        }
         dispatch(uiActions.closePanel());
         dispatch(
           edit(

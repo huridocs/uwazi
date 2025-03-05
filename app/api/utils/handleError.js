@@ -119,6 +119,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     ? ajvPrettifier(result)
     : fallbackPrettifier(result, obfuscatedRequest);
 
+  result.code = result.code || 500;
   return result;
 };
 

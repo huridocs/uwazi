@@ -13,7 +13,6 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { TypeOfFile } from 'shared/types/fileSchema';
 import { FileAttachment } from './entitySavingManager';
-import { tenants } from 'api/tenants';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -175,8 +174,7 @@ const handleAttachmentInMetadataProperties = (
 const saveFiles = async (
   attachments: FileType[],
   documents: FileType[],
-  entity: ClientEntitySchema,
-  socketEmiter?: Function
+  entity: ClientEntitySchema
 ) => {
   const saveResults: string[] = [];
 
@@ -204,15 +202,9 @@ const saveFiles = async (
       results
         .filter(result => result.status === 'rejected')
         .map(rejected => handleError(rejected.reason));
-
-      if (socketEmiter && !tenants.current().featureFlags?.v1_transactions) {
-        socketEmiter('documentProcessed', entity.sharedId!);
-      }
     });
 
-    if (tenants.current().featureFlags?.v1_transactions) {
-      await documentsBeingProcessed;
-    }
+    await documentsBeingProcessed;
   }
 
   if (attachments.length || documents.length) {

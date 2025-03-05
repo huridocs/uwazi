@@ -11,7 +11,6 @@ import { legacyLogger } from 'api/log';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { appContext } from 'api/utils/AppContext';
-import { testingTenants } from 'api/utils/testingTenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { ObjectId } from 'mongodb';
 import path from 'path';
@@ -249,7 +248,6 @@ describe('entities routes', () => {
     });
 
     it('should run saveEntity process as a transaction', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
       jest.restoreAllMocks();
       jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
         throw new Error('error at the end of the saveEntity');
