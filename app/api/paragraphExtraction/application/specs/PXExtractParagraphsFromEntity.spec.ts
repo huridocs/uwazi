@@ -132,7 +132,7 @@ describe('PXExtractParagraphsFromEntity', () => {
   });
 
   it('should create an Extraction record for the extracted Paragraph', async () => {
-    const { extractParagraphs, tenantName } = setUpUseCase();
+    const { extractParagraphs } = setUpUseCase();
 
     await extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
@@ -147,19 +147,15 @@ describe('PXExtractParagraphsFromEntity', () => {
         _id: expect.any(ObjectId),
         sourceEntityId: entity.sharedId,
         extractorId: extractor._id,
-        userId,
         status: PXExtraction.status.Processing,
-        tenantName,
       },
     ]);
   });
 
   it('should update an Extraction record if there is already one', async () => {
-    const tenantName = tenants.current().name;
-    const _extraction = { ...extraction, tenantName };
     await testingEnvironment.setFixtures({
       ...createFixtures(),
-      [mongoPXExtractionsCollection]: [_extraction],
+      [mongoPXExtractionsCollection]: [extraction],
     });
 
     const { extractParagraphs } = setUpUseCase();
@@ -175,11 +171,9 @@ describe('PXExtractParagraphsFromEntity', () => {
     expect(result).toHaveLength(1);
     expect(result).toEqual([
       {
-        _id: _extraction._id,
-        tenantName: _extraction.tenantName,
-        sourceEntityId: _extraction.sourceEntityId,
-        extractorId: _extraction.extractorId,
-        userId: _extraction.userId,
+        _id: extraction._id,
+        sourceEntityId: extraction.sourceEntityId,
+        extractorId: extraction.extractorId,
         status: PXExtraction.status.Processing,
       },
     ]);

@@ -76,6 +76,4 @@ export const extraction: MongoPXExtractionDBO = {
   extractorId: extractor._id,
   sourceEntityId: entity.sharedId!,
   status: PXExtraction.status.Finished,
-  tenantName: 'default',
-  userId,
 };

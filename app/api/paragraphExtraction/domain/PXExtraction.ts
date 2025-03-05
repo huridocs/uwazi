@@ -3,15 +3,12 @@ enum ExtractionStatus {
   Failed = 'failed',
   Finished = 'finished',
   Queued = 'queued',
-  Cancelled = 'cancelled',
 }
 
 type PXExtractionProps = {
   id: string;
   sourceEntityId: string;
   extractorId: string;
-  tenantName: string;
-  userId: string;
   status: ExtractionStatus;
 };
 
@@ -24,26 +21,16 @@ class PXExtraction {
 
   extractorId: string;
 
-  tenantName: string;
-
-  userId: string;
-
   status: ExtractionStatus;
 
   constructor(props: PXExtractionProps) {
     this.sourceEntityId = props.sourceEntityId;
     this.extractorId = props.extractorId;
     this.id = props.id;
-    this.tenantName = props.tenantName;
-    this.userId = props.userId;
     this.status = props.status;
   }
 
-  static create(props: Omit<PXExtractionProps, 'status'>) {
-    return new PXExtraction({ ...props, status: ExtractionStatus.Processing });
-  }
-
-  startProcessing() {
+  processing() {
     this.status = ExtractionStatus.Processing;
   }
 }

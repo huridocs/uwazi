@@ -72,7 +72,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       })}`
     );
 
-    extraction.startProcessing();
+    extraction.processing();
 
     await this.dependencies.extractionsDS.save(extraction);
   }
@@ -120,21 +120,17 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   }
 
   private async getExtraction(input: Input): Promise<PXExtraction> {
-    const existingExtraction = await this.dependencies.extractionsDS.getExisting({
-      ...input,
-      tenantName: this.dependencies.tenantName,
-    });
+    const existingExtraction = await this.dependencies.extractionsDS.getExisting(input);
 
     if (existingExtraction) {
       return existingExtraction;
     }
 
-    return PXExtraction.create({
+    return new PXExtraction({
       id: this.dependencies.idGenerator.generate(),
       extractorId: input.extractorId,
       sourceEntityId: input.entitySharedId,
-      tenantName: this.dependencies.tenantName,
-      userId: input.userId,
+      status: PXExtraction.status.Finished,
     });
   }
 
