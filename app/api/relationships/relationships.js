@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import _ from 'lodash';
 
 import templatesAPI from 'api/templates';
@@ -9,7 +8,6 @@ import { createError } from 'api/utils';
 
 import { ObjectId } from 'mongodb';
 import model from './model';
-import { search } from '../search';
 import { generateNames } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
@@ -19,6 +17,7 @@ import {
   guessRelationshipPropertyHub,
 } from './relationshipsHelpers';
 import { validateConnectionSchema } from './validateConnectionSchema';
+import { relationshipsSearch } from './relationshipsSearch';
 
 function excludeRefs(template) {
   delete template.refs;
@@ -38,83 +37,6 @@ function getPropertiesToBeConnections(template) {
   });
   return props;
 }
-
-// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
-const conformRelationships = (rows, parentEntitySharedId) => {
-  let order = -1;
-  const hubsObject = fromJS(rows || []).reduce((hubs, row) => {
-    let hubsImmutable = hubs;
-    row.get('connections').forEach(connection => {
-      const hubId = connection.get('hub').toString();
-      if (!hubsImmutable.has(hubId)) {
-        order += 1;
-        hubsImmutable = hubsImmutable.set(
-          hubId,
-          fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
-        );
-      }
-
-      if (row.get('sharedId') === parentEntitySharedId) {
-        hubsImmutable = hubsImmutable.setIn([hubId, 'leftRelationship'], connection);
-      } else {
-        const templateId = connection.get('template');
-        if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
-          hubsImmutable = hubsImmutable.setIn(
-            [hubId, 'rightRelationships', templateId],
-            fromJS([])
-          );
-        }
-        const newConnection = connection.set('entity', row.delete('connections'));
-        hubsImmutable = hubsImmutable.setIn(
-          [hubId, 'rightRelationships', templateId],
-          hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection)
-        );
-      }
-    });
-
-    return hubsImmutable;
-  }, fromJS({}));
-
-  return hubsObject.reduce((hubs, hub) => {
-    const rightRelationships = hub
-      .get('rightRelationships')
-      .reduce((memo, relationshipsArray, template) => {
-        const newMemo = memo.push(
-          fromJS({}).set('template', template).set('relationships', relationshipsArray)
-        );
-        return newMemo;
-      }, fromJS([]));
-    return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
-  }, fromJS([]));
-};
-
-const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
-  const hubs = conformRelationships(results.rows, entitySharedId).toJS();
-  results.totalHubs = hubs.length;
-  results.requestedHubs = Number(hubsLimit);
-
-  if (hubsLimit) {
-    const hubsToReturn = hubs.slice(0, hubsLimit).map(h => h.hub.toString());
-    results.rows = results.rows.reduce((limitedResults, row) => {
-      let rowInHubsToReturn = false;
-      row.connections = row.connections.reduce((limitedConnections, connection) => {
-        if (hubsToReturn.indexOf(connection.hub.toString()) !== -1) {
-          limitedConnections.push(connection);
-          rowInHubsToReturn = true;
-        }
-        return limitedConnections;
-      }, []);
-
-      if (rowInHubsToReturn) {
-        limitedResults.push(row);
-      }
-
-      return limitedResults;
-    }, []);
-  }
-
-  return results;
-};
 
 const determinePropertyValues = (entity, propertyName) => {
   const metadata = entity.metadata || {};
@@ -469,66 +391,12 @@ export default {
     }
   },
 
-  search(entitySharedId, query, language, user) {
-    const hubsLimit = query.limit || 0;
-
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
+  async search(entitySharedId, query, language, user) {
+    if (!entitySharedId || !language) {
+      throw new Error('entitySharedId and language are required');
     }
-    return Promise.all([
-      this.getByDocument(entitySharedId, language),
-      entities.getById(entitySharedId, language),
-    ]).then(([relationships, entity]) => {
-      relationships.sort((a, b) =>
-        (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString())
-      );
 
-      const filter = Object.keys(query.filter).reduce(
-        (result, filterGroupKey) => result.concat(query.filter[filterGroupKey]),
-        []
-      );
-      const filteredRelationships = relationships.filter(
-        relationship =>
-          !filter.length ||
-          filter.includes(relationship.template + relationship.entityData.template)
-      );
-
-      const ids = filteredRelationships
-        .map(relationship => relationship.entity)
-        .reduce((result, id) => {
-          if (!result.includes(id) && id !== entitySharedId) {
-            result.push(id);
-          }
-          return result;
-        }, []);
-      query.ids = ids.length ? ids : ['no_results'];
-      query.includeUnpublished = true;
-      query.limit = 9999;
-      delete query.filter;
-
-      return search.search(query, language, user).then(results => {
-        results.rows.forEach(item => {
-          item.connections = filteredRelationships.filter(
-            relationship => relationship.entity === item.sharedId
-          );
-        });
-
-        if (results.rows.length) {
-          let filteredRelationshipsHubs = results.rows.map(item =>
-            item.connections.map(relationship => relationship.hub.toString())
-          );
-          filteredRelationshipsHubs = Array.prototype.concat(...filteredRelationshipsHubs);
-          entity.connections = relationships.filter(
-            relationship =>
-              relationship.entity === entitySharedId &&
-              filteredRelationshipsHubs.includes(relationship.hub.toString())
-          );
-          results.rows.push(entity);
-        }
-
-        return limitRelationshipResults(results, entitySharedId, hubsLimit);
-      });
-    });
+    return relationshipsSearch(entitySharedId, query, language, user);
   },
 
   async delete(relationQuery, _language, updateMetdata = true) {

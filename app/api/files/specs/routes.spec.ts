@@ -12,7 +12,6 @@ import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingTenants } from 'api/utils/testingTenants';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
@@ -457,7 +456,6 @@ describe('files routes', () => {
           next();
         }
       );
-      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
       jest.restoreAllMocks();
       jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
       jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {

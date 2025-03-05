@@ -8,6 +8,7 @@ import { EntitySchema } from 'shared/types/entityType';
 
 export interface ConnectionSchema {
   _id?: ObjectIdSchema;
+  __v?: number;
   hub?: ObjectIdSchema;
   template?: null | ObjectIdSchema;
   file?: ObjectIdSchema;

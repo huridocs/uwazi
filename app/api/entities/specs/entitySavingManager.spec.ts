@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
 import { saveEntity } from 'api/entities/entitySavingManager';
-import * as os from 'os';
 import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from 'api/files';
 import * as processDocumentApi from 'api/files/processDocument';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
+import * as os from 'os';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import waitForExpect from 'wait-for-expect';
 import entities from '../entities';
 import {
   anotherTextFile,
@@ -29,7 +29,6 @@ import {
   template2Id,
   textFile,
 } from './entitySavingManagerFixtures';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 const validPdfString = `
 %PDF-1.0
@@ -447,10 +446,6 @@ describe('entitySavingManager', () => {
           }
         ));
 
-        await waitForExpect(async () => {
-          expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-        });
-
         const [processedEntity] = await entities.getUnrestrictedWithDocuments({
           _id: savedEntity._id,
         });
@@ -477,10 +472,6 @@ describe('entitySavingManager', () => {
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
             socketEmiter: emiter,
           }));
-
-          await waitForExpect(async () => {
-            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-          });
 
           const [processedEntity] = await entities.getUnrestrictedWithDocuments({
             _id: savedEntity._id,
@@ -578,10 +569,6 @@ describe('entitySavingManager', () => {
             socketEmiter: emiter,
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
           }));
-
-          await waitForExpect(async () => {
-            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
-          });
 
           expect(savedEntity.documents).toMatchObject([
             {

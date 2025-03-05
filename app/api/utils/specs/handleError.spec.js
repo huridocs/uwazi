@@ -217,13 +217,14 @@ describe('handleError without context', () => {
 
 describe('prettifyError', () => {
   describe('when the error does not fall into any other category, and the resulting message would be empty', () => {
-    it('should return JSON representation of the original error object as a message.', () => {
+    it('should return code 500 and JSON representation of the original error object as a message.', () => {
       const prettied = prettifyError({
         json: {},
         status: '404',
         headers: 'some_headers',
       });
 
+      expect(prettied.code).toBe(500);
       expect(prettied.prettyMessage).toBe(
         '{\n  "json": {},\n  "status": "404",\n  "headers": "some_headers"\n}'
       );

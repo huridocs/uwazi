@@ -757,14 +757,17 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = await aggregationProperties(properties, allProps);
 
   const filters = processFilters(query.filters, [...allProps, ...properties], dictionaries);
   // this is where the query filters are built
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  queryBuilder.aggregations(aggregations, includeReviewAggregations);
+  query.performAggregations = query.performAggregations || true;
+  if (query.performAggregations) {
+    const aggregations = await aggregationProperties(properties, allProps);
+    queryBuilder.aggregations(aggregations, includeReviewAggregations);
+  }
 
   return queryBuilder;
 };

@@ -32,7 +32,6 @@ const mongoSchema = new mongoose.Schema({
     s3Storage: Boolean,
     esReplicas: Number,
     sync: Boolean,
-    v1_transactions: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
