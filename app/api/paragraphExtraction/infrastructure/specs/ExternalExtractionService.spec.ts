@@ -5,7 +5,7 @@ import { Server } from 'http';
 
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
@@ -57,7 +57,7 @@ describe('ExternalExtractionService', () => {
         url: 'http://localhost:5056',
       });
 
-      const extractionId = PXExtractionId.create({
+      const extractionId = PXExtractionKey.create({
         entitySharedId: 'entitySharedId',
         extractorId: extractor.id,
         tenantName: 'tenantName',
@@ -130,7 +130,7 @@ describe('ExternalExtractionService', () => {
         'http://localhost:5056/paragraphs_results'
       );
 
-      const extractionId = PXExtractionId.create({
+      const extractionId = PXExtractionKey.create({
         entitySharedId: 'entitySharedId',
         extractorId: 'extractorId',
         tenantName: 'tenantName',

@@ -15,7 +15,7 @@ const Schema = z.object({
   userId: z.string().min(1),
 });
 
-class PXExtractionId {
+export class PXExtractionKey {
   private static separator = '_____';
 
   extractorId: string;
@@ -27,7 +27,7 @@ class PXExtractionId {
   userId: string;
 
   constructor(id: string) {
-    const { extractorId, entitySharedId, tenantName, userId } = PXExtractionId.split(id);
+    const { extractorId, entitySharedId, tenantName, userId } = PXExtractionKey.split(id);
     this.extractorId = extractorId;
     this.entitySharedId = entitySharedId;
     this.tenantName = tenantName;
@@ -43,7 +43,7 @@ class PXExtractionId {
   }
 
   get id() {
-    return PXExtractionId.join({
+    return PXExtractionKey.join({
       entitySharedId: this.entitySharedId,
       extractorId: this.extractorId,
       tenantName: this.tenantName,
@@ -52,7 +52,7 @@ class PXExtractionId {
   }
 
   private static split(id: string) {
-    const [extractorId, entitySharedId, tenantName, userId] = id.split(PXExtractionId.separator);
+    const [extractorId, entitySharedId, tenantName, userId] = id.split(PXExtractionKey.separator);
 
     return { extractorId, entitySharedId, tenantName, userId };
   }
@@ -60,14 +60,12 @@ class PXExtractionId {
   private static join(input: CreateExtractionIdInput): string {
     const value = [input.extractorId, input.entitySharedId, input.tenantName, input.userId];
 
-    return value.join(PXExtractionId.separator);
+    return value.join(PXExtractionKey.separator);
   }
 
   static create(input: CreateExtractionIdInput) {
-    return new PXExtractionId(PXExtractionId.join(input));
+    return new PXExtractionKey(PXExtractionKey.join(input));
   }
 }
-
-export { PXExtractionId };
 
 export type { CreateExtractionIdInput };

@@ -11,14 +11,14 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntitySchema } from 'shared/types/entityType';
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 const factory = getFixturesFactory();
 
@@ -153,7 +153,7 @@ describe('PXCreateParagraphs', () => {
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
 
-    const extractionId = PXExtractionId.create({
+    const extractionId = PXExtractionKey.create({
       entitySharedId: entityEn.sharedId!,
       extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
@@ -273,7 +273,7 @@ describe('PXCreateParagraphs', () => {
 
     const { createParagraphs } = setUpUseCase();
 
-    const extractionId = PXExtractionId.create({
+    const extractionId = PXExtractionKey.create({
       entitySharedId: entityEn.sharedId!,
       extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
@@ -333,7 +333,7 @@ describe('PXCreateParagraphs', () => {
       ],
     });
 
-    const extractionId = PXExtractionId.create({
+    const extractionId = PXExtractionKey.create({
       entitySharedId: entityEn.sharedId!,
       extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
@@ -396,7 +396,7 @@ describe('PXCreateParagraphs', () => {
       ],
     });
 
-    const extractionId = PXExtractionId.create({
+    const extractionId = PXExtractionKey.create({
       entitySharedId: entityEn.sharedId!,
       extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
@@ -471,7 +471,7 @@ describe('PXCreateParagraphs', () => {
       entities: [sourceEntityThatDoesNotBelongToExtractor],
     });
 
-    const extractionId = PXExtractionId.create({
+    const extractionId = PXExtractionKey.create({
       entitySharedId: entityEn.sharedId!,
       extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
@@ -500,7 +500,7 @@ describe('PXCreateParagraphs', () => {
       [mongoPXExtractorsCollection]: [],
     });
 
-    const extractionId = PXExtractionId.create({
+    const extractionId = PXExtractionKey.create({
       entitySharedId: entityEn.sharedId!,
       extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,

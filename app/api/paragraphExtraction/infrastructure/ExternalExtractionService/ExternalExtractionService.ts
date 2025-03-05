@@ -1,7 +1,7 @@
 import { HttpClient } from 'api/common.v2/contracts/HttpClient';
 import { HttpField } from 'api/common.v2/contracts/HttpField';
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 
 import {
   ExtractParagraphInput,
@@ -21,7 +21,7 @@ export class PXExternalExtractionService implements PXExtractionService {
 
   async getParagraphsResult(url: string): Promise<GetParagraphsResultOutput> {
     const dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
-    const extractionId = new PXExtractionId(dto.key);
+    const extractionId = new PXExtractionKey(dto.key);
 
     return {
       availableLanguages: dto.available_languages as LanguageISO6391[],

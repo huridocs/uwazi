@@ -1,15 +1,15 @@
-import { PXExtractionId } from '../PXExtractionId';
+import { PXExtractionKey } from '../PXExtractionKey';
 
-describe('PXExtractionId', () => {
-  it('should create a PXExtractionId instance with correct properties', () => {
-    const extractionId = PXExtractionId.create({
+describe('PXExtractionKey', () => {
+  it('should create a PXExtractionKey instance with correct properties', () => {
+    const extractionId = PXExtractionKey.create({
       extractorId: 'extractor123',
       entitySharedId: 'entity456',
       tenantName: 'tenant name',
       userId: 'user id',
     });
 
-    expect(extractionId).toBeInstanceOf(PXExtractionId);
+    expect(extractionId).toBeInstanceOf(PXExtractionKey);
     expect(extractionId.id).toBe('extractor123_____entity456_____tenant name_____user id');
     expect(extractionId.extractorId).toBe('extractor123');
     expect(extractionId.entitySharedId).toBe('entity456');
@@ -18,11 +18,11 @@ describe('PXExtractionId', () => {
   });
 
   it('should create an instance with correct properties ', () => {
-    const extractionId = new PXExtractionId(
+    const extractionId = new PXExtractionKey(
       'extractor123_____entity456_____tenant name_____user id'
     );
 
-    expect(extractionId).toBeInstanceOf(PXExtractionId);
+    expect(extractionId).toBeInstanceOf(PXExtractionKey);
     expect(extractionId.id).toBe('extractor123_____entity456_____tenant name_____user id');
     expect(extractionId.extractorId).toBe('extractor123');
     expect(extractionId.entitySharedId).toBe('entity456');
@@ -31,6 +31,6 @@ describe('PXExtractionId', () => {
   });
 
   it('should throw an error if id format is incorrect', () => {
-    expect(() => new PXExtractionId('incorrectFormat')).toThrow();
+    expect(() => new PXExtractionKey('incorrectFormat')).toThrow();
   });
 });

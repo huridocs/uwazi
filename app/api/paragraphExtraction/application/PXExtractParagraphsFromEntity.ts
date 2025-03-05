@@ -13,7 +13,7 @@ import { Logger } from 'api/log.v2/contracts/Logger';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
-import { PXExtractionId } from '../domain/PXExtractionId';
+import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXExtraction } from '../domain/PXExtraction';
 import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
 
@@ -56,7 +56,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       documents,
       segmentations,
       mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
-      extractionId: PXExtractionId.create({
+      extractionId: PXExtractionKey.create({
         entitySharedId: entity.sharedId,
         extractorId: extractor.id,
         tenantName: this.dependencies.tenantName,
