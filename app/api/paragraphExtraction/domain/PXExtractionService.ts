@@ -8,7 +8,7 @@ type ExtractParagraphInput = {
   segmentations: Segmentation[];
   documents: Document[];
   mainLanguage: LanguageISO6391;
-  extractionId: PXExtractionKey;
+  extractionKey: PXExtractionKey;
   files: File[];
 };
 
@@ -25,7 +25,7 @@ type ParagraphOutput = {
 };
 
 type GetParagraphsResultOutput = {
-  extractionId: PXExtractionKey;
+  extractionKey: PXExtractionKey;
   mainLanguage: LanguageISO6391;
   availableLanguages: LanguageISO6391[];
   paragraphs: ParagraphOutput[];

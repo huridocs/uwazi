@@ -13,7 +13,7 @@ const resultMessage: ResultMessage = {
 };
 
 const getParagraphsResultOutput = {
-  extractionId: {
+  extractionKey: {
     tenantName: 'tenantName',
     userId: 'any_user_id',
   },
@@ -61,11 +61,11 @@ describe('PXParagraphsResultListener', () => {
     await processResults(resultMessage);
 
     expect((listener as any).setCurrentUser).toHaveBeenCalledWith(
-      getParagraphsResultOutput.extractionId.userId
+      getParagraphsResultOutput.extractionKey.userId
     );
     expect(extractionService.getParagraphsResult).toHaveBeenCalledWith(resultMessage.data_url);
     expect(useCase.execute).toHaveBeenCalledWith(getParagraphsResultOutput);
-    expect(tenantUsed).toBe(getParagraphsResultOutput.extractionId.tenantName);
+    expect(tenantUsed).toBe(getParagraphsResultOutput.extractionKey.tenantName);
   });
 
   it('should not execute CreateParagraphs use case when results are not successful', async () => {

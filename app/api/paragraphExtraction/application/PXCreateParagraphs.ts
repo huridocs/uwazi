@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
@@ -31,9 +30,10 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     });
   }
 
-  async execute({ extractionId, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
-    const user = { _id: new ObjectId(extractionId.userId) };
-    const extraction = await this.dependencies.extractionsDS.getById(extractionId.extractionId);
+  // eslint-disable-next-line max-statements
+  async execute({ extractionKey, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
+    const user = { _id: new ObjectId(extractionKey.userId) };
+    const extraction = await this.dependencies.extractionsDS.getById(extractionKey.extractionId);
     if (!extraction) {
       throw new Error('Extraction not found');
     }

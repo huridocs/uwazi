@@ -42,9 +42,9 @@ export class PXParagraphsResultListener {
     const result = await this.extractionService.getParagraphsResult(results.data_url);
 
     await tenants.run(async () => {
-      await this.setCurrentUser(result.extractionId.userId);
+      await this.setCurrentUser(result.extractionKey.userId);
       await this.getUseCase().execute(result);
-    }, result.extractionId.tenantName);
+    }, result.extractionKey.tenantName);
   }
 
   // eslint-disable-next-line class-methods-use-this

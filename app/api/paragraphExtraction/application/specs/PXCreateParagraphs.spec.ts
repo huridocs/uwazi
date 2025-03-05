@@ -178,7 +178,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['es', 'en', 'pt'],
-      extractionId,
+      extractionKey: extractionId,
       mainLanguage: 'es',
       paragraphs: [
         {
@@ -297,7 +297,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['es'],
-      extractionId,
+      extractionKey: extractionId,
       mainLanguage: 'es',
       paragraphs: [
         {
@@ -356,7 +356,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['es', 'en'],
-      extractionId,
+      extractionKey: extractionId,
       mainLanguage: 'es',
       paragraphs: [
         {
@@ -418,7 +418,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['pt', 'en'],
-      extractionId,
+      extractionKey: extractionId,
       mainLanguage: 'pt',
       paragraphs: [
         {
@@ -492,7 +492,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['pt'],
-      extractionId,
+      extractionKey: extractionId,
       mainLanguage: 'pt',
       paragraphs: [],
     };
@@ -520,7 +520,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['pt'],
-      extractionId,
+      extractionKey: extractionId,
       mainLanguage: 'pt',
       paragraphs: [],
     };

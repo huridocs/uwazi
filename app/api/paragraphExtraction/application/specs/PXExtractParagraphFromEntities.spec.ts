@@ -131,7 +131,7 @@ describe('PXExtractParagraphFromEntities', () => {
         { filename: file2.filename, language: 'es' },
       ],
       mainLanguage: 'en',
-      extractionId: {
+      extractionKey: {
         extractionId: expect.any(String),
         tenantName,
         userId: input.userId,
@@ -142,7 +142,7 @@ describe('PXExtractParagraphFromEntities', () => {
     expect(secondPayload).toMatchObject({
       documents: [{ filename: file3.filename, language: 'es' }],
       mainLanguage: 'es',
-      extractionId: {
+      extractionKey: {
         extractionId: expect.any(String),
         tenantName,
         userId: input.userId,

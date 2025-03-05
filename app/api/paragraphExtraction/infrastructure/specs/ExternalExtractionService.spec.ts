@@ -67,7 +67,7 @@ describe('ExternalExtractionService', () => {
         segmentations: [segmentation],
         documents: [document],
         mainLanguage: 'pt',
-        extractionId: extractionKey,
+        extractionKey,
         files: [
           FileBuilder.create().withFilename('file1.txt').build(),
           FileBuilder.create().withFilename('file2.txt').build(),
@@ -138,7 +138,7 @@ describe('ExternalExtractionService', () => {
       const expectedOutput: GetParagraphsResultOutput = {
         availableLanguages: ['en', 'es', 'fr'],
         mainLanguage: 'en',
-        extractionId,
+        extractionKey: extractionId,
         paragraphs: [
           {
             paragraphNumber: 1,
