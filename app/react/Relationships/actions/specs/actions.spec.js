@@ -4,11 +4,9 @@ import { fromJS as Immutable } from 'immutable';
 import { mockID } from 'shared/uniqueID.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import SearchApi from 'app/Search/SearchAPI';
-
 import api from 'app/utils/api';
 import * as types from '../actionTypes';
 import * as actions from '../actions';
-
 import * as routeUtils from '../../utils/routeUtils';
 
 const middlewares = [thunk];
@@ -235,6 +233,13 @@ describe('Relationships actions', () => {
   describe('saveRelationships', () => {
     let store;
     let hubs;
+    let entity = {
+      _id: '1',
+      sharedId: 'entityId',
+      entity: 'fullEntity',
+      searchResults: 'storeSearchResults',
+    };
+    let defaultDoc;
 
     function getState() {
       return {
@@ -245,6 +250,9 @@ describe('Relationships actions', () => {
             searchResults: 'storeSearchResults',
           },
           hubs,
+        },
+        documentViewer: {
+          doc: Immutable({ ...entity, ...(defaultDoc && { defaultDoc, documents: [defaultDoc] }) }),
         },
       };
     }
@@ -313,7 +321,7 @@ describe('Relationships actions', () => {
       ]);
 
       spyOn(api, 'post').and.returnValue(Promise.resolve('POSTresponse'));
-      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { rows: ['entity'] } }));
+      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { rows: [entity] } }));
       spyOn(routeUtils, 'requestState').and.returnValue(
         Promise.resolve(['reloadedConnectionsGroups', 'reloadedSearchResults'])
       );
@@ -332,8 +340,7 @@ describe('Relationships actions', () => {
                 value: 'reloadedConnectionsGroups',
               },
               { type: 'relationships/list/searchResults/SET', value: 'reloadedSearchResults' },
-              { type: 'entityView/entity/SET', value: 'entity' },
-              { type: 'viewer/doc/SET', value: 'entity' },
+              { type: 'entityView/entity/SET', value: entity },
               { type: 'CLOSE_RELATIONSHIPS_PANEL' },
               {
                 type: 'EDIT_RELATIONSHIPS',
@@ -350,7 +357,49 @@ describe('Relationships actions', () => {
               {
                 type: 'SET_REFERENCES',
                 references: {
-                  rows: ['entity'],
+                  rows: [entity],
+                },
+              },
+            ]);
+            done();
+          });
+      });
+
+      it('should update the store to update the document viewer if the entity has document', done => {
+        defaultDoc = { _id: '1', title: 'MyDoc' };
+        entity.documents = [defaultDoc];
+
+        actions
+          .saveRelationships()(store.dispatch, getState)
+          .then(() => {
+            expect(store.getActions()).toEqual([
+              { type: types.SAVING_RELATIONSHIPS },
+              {
+                type: 'relationships/list/connectionsGroups/SET',
+                value: 'reloadedConnectionsGroups',
+              },
+              { type: 'relationships/list/searchResults/SET', value: 'reloadedSearchResults' },
+              {
+                type: 'viewer/doc/SET',
+                value: { ...entity, defaultDoc: Immutable(defaultDoc) },
+              },
+              { type: 'CLOSE_RELATIONSHIPS_PANEL' },
+              {
+                type: 'EDIT_RELATIONSHIPS',
+                value: false,
+                results: 'storeSearchResults',
+                parentEntity: 'fullEntity',
+                editing: false,
+              },
+              { type: 'SAVED_RELATIONSHIPS', response: 'POSTresponse' },
+              {
+                type: 'NOTIFY',
+                notification: { message: 'Relationships saved', type: 'success', id: 'unique_id' },
+              },
+              {
+                type: 'SET_REFERENCES',
+                references: {
+                  rows: [entity],
                 },
               },
             ]);
