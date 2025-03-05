@@ -9,11 +9,10 @@ import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
   key: PXExtractionKey.create({
-    entitySharedId: 'entitySharedId',
-    extractorId: 'extractorId',
     tenantName: 'tenantName',
     userId: 'userId',
-  }).id,
+    extractionId: 'any_extraction_id',
+  }).key,
   main_language: 'en',
   available_languages: ['en', 'es', 'fr'],
   paragraphs: [

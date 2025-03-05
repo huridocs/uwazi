@@ -3,31 +3,31 @@ import { PXExtractionKey } from '../PXExtractionKey';
 describe('PXExtractionKey', () => {
   it('should create a PXExtractionKey instance with correct properties', () => {
     const extractionId = PXExtractionKey.create({
-      extractorId: 'extractor123',
-      entitySharedId: 'entity456',
-      tenantName: 'tenant name',
-      userId: 'user id',
+      tenantName: 'any_tenant_name',
+      userId: 'any_user_id',
+      extractionId: 'any_extraction_id',
     });
 
-    expect(extractionId).toBeInstanceOf(PXExtractionKey);
-    expect(extractionId.id).toBe('extractor123_____entity456_____tenant name_____user id');
-    expect(extractionId.extractorId).toBe('extractor123');
-    expect(extractionId.entitySharedId).toBe('entity456');
-    expect(extractionId.tenantName).toBe('tenant name');
-    expect(extractionId.userId).toBe('user id');
+    expect(extractionId.key).toBe(
+      `any_tenant_name${PXExtractionKey.separator}any_extraction_id${PXExtractionKey.separator}any_user_id`
+    );
+    expect(extractionId.tenantName).toBe('any_tenant_name');
+    expect(extractionId.extractionId).toBe('any_extraction_id');
+    expect(extractionId.userId).toBe('any_user_id');
   });
 
   it('should create an instance with correct properties ', () => {
     const extractionId = new PXExtractionKey(
-      'extractor123_____entity456_____tenant name_____user id'
+      `any_tenant_name${PXExtractionKey.separator}any_extraction_id${PXExtractionKey.separator}any_user_id`
     );
 
     expect(extractionId).toBeInstanceOf(PXExtractionKey);
-    expect(extractionId.id).toBe('extractor123_____entity456_____tenant name_____user id');
-    expect(extractionId.extractorId).toBe('extractor123');
-    expect(extractionId.entitySharedId).toBe('entity456');
-    expect(extractionId.userId).toBe('user id');
-    expect(extractionId.tenantName).toBe('tenant name');
+    expect(extractionId.key).toBe(
+      `any_tenant_name${PXExtractionKey.separator}any_extraction_id${PXExtractionKey.separator}any_user_id`
+    );
+    expect(extractionId.userId).toBe('any_user_id');
+    expect(extractionId.extractionId).toBe('any_extraction_id');
+    expect(extractionId.tenantName).toBe('any_tenant_name');
   });
 
   it('should throw an error if id format is incorrect', () => {

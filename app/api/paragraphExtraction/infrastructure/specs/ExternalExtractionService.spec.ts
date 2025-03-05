@@ -9,7 +9,7 @@ import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey'
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
-import { document, extractor, mockGetParagraphsResult, segmentation } from './fixtures';
+import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 
 const upload = multer();
 const app = express();
@@ -57,18 +57,17 @@ describe('ExternalExtractionService', () => {
         url: 'http://localhost:5056',
       });
 
-      const extractionId = PXExtractionKey.create({
-        entitySharedId: 'entitySharedId',
-        extractorId: extractor.id,
+      const extractionKey = PXExtractionKey.create({
         tenantName: 'tenantName',
         userId: 'userId',
+        extractionId: 'any_extraction_id',
       });
 
       await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
         documents: [document],
         mainLanguage: 'pt',
-        extractionId,
+        extractionId: extractionKey,
         files: [
           FileBuilder.create().withFilename('file1.txt').build(),
           FileBuilder.create().withFilename('file2.txt').build(),
@@ -78,7 +77,7 @@ describe('ExternalExtractionService', () => {
 
       expect(body).toEqual({
         json_data: JSON.stringify({
-          key: extractionId.id,
+          key: extractionKey.key,
           xmls: [
             {
               language: 'pt',
@@ -131,10 +130,9 @@ describe('ExternalExtractionService', () => {
       );
 
       const extractionId = PXExtractionKey.create({
-        entitySharedId: 'entitySharedId',
-        extractorId: 'extractorId',
         tenantName: 'tenantName',
         userId: 'userId',
+        extractionId: 'any_extraction_id',
       });
 
       const expectedOutput: GetParagraphsResultOutput = {

@@ -57,10 +57,9 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       segmentations,
       mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
       extractionId: PXExtractionKey.create({
-        entitySharedId: entity.sharedId,
-        extractorId: extractor.id,
         tenantName: this.dependencies.tenantName,
         userId: input.userId,
+        extractionId: extraction.id,
       }),
       files,
     });

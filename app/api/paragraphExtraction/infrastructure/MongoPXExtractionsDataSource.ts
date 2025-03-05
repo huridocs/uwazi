@@ -14,6 +14,23 @@ export class MongoPXExtractionsDataSource
 {
   protected collectionName = mongoPXExtractionsCollection;
 
+  async getById(extractionId: string): Promise<PXExtraction | undefined> {
+    const dbo: MongoPXExtractionDBO | undefined | null = await this.getCollection().findOne({
+      _id: new ObjectId(extractionId),
+    });
+
+    if (!dbo) {
+      return undefined;
+    }
+
+    return new PXExtraction({
+      id: dbo._id.toString(),
+      extractorId: dbo.extractorId.toString(),
+      sourceEntityId: dbo.sourceEntityId.toString(),
+      status: dbo.status as ExtractionStatus,
+    });
+  }
+
   async save(extraction: PXExtraction): Promise<void> {
     const dbo: MongoPXExtractionDBO = {
       _id: new ObjectId(extraction.id),

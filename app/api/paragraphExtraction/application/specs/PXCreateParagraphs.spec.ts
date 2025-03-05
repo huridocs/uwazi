@@ -18,6 +18,13 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
+import {
+  mongoPXExtractionsCollection,
+  MongoPXExtractionsDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
+import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
+
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
 
 const factory = getFixturesFactory();
@@ -80,8 +87,16 @@ const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
+const extractionDBO: MongoPXExtractionDBO = {
+  _id: factory.id('extractionDBO'),
+  extractorId: extractor._id,
+  sourceEntityId: entityEn.sharedId!,
+  status: PXExtraction.status.Processing,
+};
+
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
+  [mongoPXExtractionsCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate, template],
   entities: [entityEn, entityEs, entityPt, sourceEntityThatDoesNotBelongToExtractor],
   settings: [
@@ -99,10 +114,12 @@ const setUpUseCase = () => {
   const db = getConnection();
   const transaction = DefaultTransactionManager();
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
+  const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,
     idGenerator: MongoIdHandler,
+    extractionsDS,
   });
   (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
 
@@ -154,8 +171,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionId = PXExtractionKey.create({
-      entitySharedId: entityEn.sharedId!,
-      extractorId: extractor._id.toString(),
+      extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -274,8 +290,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionId = PXExtractionKey.create({
-      entitySharedId: entityEn.sharedId!,
-      extractorId: extractor._id.toString(),
+      extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -334,8 +349,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const extractionId = PXExtractionKey.create({
-      entitySharedId: entityEn.sharedId!,
-      extractorId: extractor._id.toString(),
+      extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -397,10 +411,9 @@ describe('PXCreateParagraphs', () => {
     });
 
     const extractionId = PXExtractionKey.create({
-      entitySharedId: entityEn.sharedId!,
-      extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
+      extractionId: extractionDBO._id.toString(),
     });
 
     const input: PXCreateParagraphsInput = {
@@ -472,10 +485,9 @@ describe('PXCreateParagraphs', () => {
     });
 
     const extractionId = PXExtractionKey.create({
-      entitySharedId: entityEn.sharedId!,
-      extractorId: extractor._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
+      extractionId: extractionDBO._id.toString(),
     });
 
     const input: PXCreateParagraphsInput = {
@@ -501,8 +513,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const extractionId = PXExtractionKey.create({
-      entitySharedId: entityEn.sharedId!,
-      extractorId: extractor._id.toString(),
+      extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });

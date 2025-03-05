@@ -6,7 +6,7 @@ import { ExtractionDTODevelopment, ExtractionDTOProduction } from './types';
 class PXExtractionMapperDevelopment {
   static toDto(input: ExtractParagraphInput): ExtractionDTODevelopment {
     return {
-      key: input.extractionId.id,
+      key: input.extractionId.key,
       xmls: input.segmentations.map(segmentation => {
         const language = input.documents.find(d => d.id === segmentation.fileId)?.language!;
 
@@ -29,7 +29,7 @@ class PXExtractionMapperDevelopment {
 class PXExtractionMapperProduction {
   static toDto(input: ExtractParagraphInput): ExtractionDTOProduction {
     return {
-      key: input.extractionId.id,
+      key: input.extractionId.key,
       xmls: input.segmentations.map(segmentation => {
         const language = input.documents.find(d => d.id === segmentation.fileId)?.language!;
 

@@ -132,8 +132,7 @@ describe('PXExtractParagraphFromEntities', () => {
       ],
       mainLanguage: 'en',
       extractionId: {
-        extractorId: extractor._id.toString(),
-        entitySharedId: entity.sharedId,
+        extractionId: expect.any(String),
         tenantName,
         userId: input.userId,
       },
@@ -144,8 +143,7 @@ describe('PXExtractParagraphFromEntities', () => {
       documents: [{ filename: file3.filename, language: 'es' }],
       mainLanguage: 'es',
       extractionId: {
-        extractorId: extractor._id.toString(),
-        entitySharedId: entity2.sharedId,
+        extractionId: expect.any(String),
         tenantName,
         userId: input.userId,
       },
