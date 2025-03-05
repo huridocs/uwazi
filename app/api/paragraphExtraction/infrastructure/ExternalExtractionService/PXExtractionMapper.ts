@@ -3,18 +3,6 @@ import { ExtractParagraphInput } from 'api/paragraphExtraction/domain/PXExtracti
 
 import { ExtractionDTODevelopment, ExtractionDTOProduction } from './types';
 
-const getMainLanguage = (input: ExtractParagraphInput) => {
-  const documentsHaveDefaultLanguage = input.documents.some(
-    document => document.language === input.defaultLanguage
-  );
-
-  const mainLanguage = documentsHaveDefaultLanguage
-    ? input.defaultLanguage
-    : input.documents[0].language;
-
-  return mainLanguage;
-};
-
 class PXExtractionMapperDevelopment {
   static toDto(input: ExtractParagraphInput): ExtractionDTODevelopment {
     return {
@@ -24,7 +12,7 @@ class PXExtractionMapperDevelopment {
 
         return {
           language,
-          main_language: language === getMainLanguage(input),
+          main_language: language === input.mainLanguage,
           xml_file_name: segmentation.xmlname!,
           xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
             left: paragraph.left,
@@ -47,7 +35,7 @@ class PXExtractionMapperProduction {
 
         return {
           language,
-          is_main_language: language === getMainLanguage(input),
+          is_main_language: language === input.mainLanguage,
           xml_file_name: segmentation.xmlname!,
           xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
             left: paragraph.left,
