@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import qs from 'qs';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { store } from 'app/store';

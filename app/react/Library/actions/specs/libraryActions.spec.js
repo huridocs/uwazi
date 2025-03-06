@@ -6,7 +6,7 @@ import qs from 'qs';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { APIURL } from 'app/config.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as types from 'app/Library/actions/actionTypes';
