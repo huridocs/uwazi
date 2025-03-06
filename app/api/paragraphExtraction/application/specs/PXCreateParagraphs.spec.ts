@@ -167,6 +167,10 @@ describe('PXCreateParagraphs', () => {
 
   it.todo('should throw if the source Entity does not belong to the Extractor');
 
+  it.todo('should set Extraction status to failed if no Paragraph is created');
+
+  it.todo('should set Extraction status to finished if at least one Paragraph is created');
+
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
 
