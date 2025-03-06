@@ -8,6 +8,7 @@ export const StandardJSONWriter: LogWriter = (log: LogEntry) => {
       level: log.level.name,
       tenant: log.tenant.name,
       message: log.message,
+      ...log.metadata,
     })}\n`
   );
 };
@@ -15,6 +16,7 @@ export const StandardJSONWriter: LogWriter = (log: LogEntry) => {
 export const UwaziJSONWriter: LogWriter = (log: LogEntry) => {
   process.stdout.write(
     `${JSON.stringify({
+      ...log.metadata,
       time: log.timeToString(),
       level: log.level.name,
       tenant: log.tenant.name,

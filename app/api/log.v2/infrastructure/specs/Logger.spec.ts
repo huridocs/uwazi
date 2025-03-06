@@ -104,6 +104,86 @@ describe('Logger', () => {
     expect(stdoutMock).toHaveBeenCalledWith(expected);
   });
 
+  it.each([
+    {
+      logger: standardLogger,
+      level: 'debug',
+      message: 'debug message',
+      metadata: { extra: 'info' },
+      expected: `${mockedDateString} - [DEBUG] - [testTenant]:debug message\n{"extra":"info"}`,
+    },
+    {
+      logger: jsonLogger,
+      level: 'debug',
+      message: 'debug message',
+      metadata: { extra: 'info' },
+      expected: `{"time":"${mockedDateString}","level":"DEBUG","tenant":"testTenant","message":"debug message","extra":"info"}\n`,
+    },
+    {
+      logger: standardLogger,
+      level: 'info',
+      message: 'info message',
+      metadata: { extra: 'info' },
+      expected: `${mockedDateString} - [INFO] - [testTenant]:info message\n{"extra":"info"}`,
+    },
+    {
+      logger: jsonLogger,
+      level: 'info',
+      message: 'info message',
+      metadata: { extra: 'info' },
+      expected: `{"time":"${mockedDateString}","level":"INFO","tenant":"testTenant","message":"info message","extra":"info"}\n`,
+    },
+    {
+      logger: standardLogger,
+      level: 'warning',
+      message: 'warning message',
+      metadata: { extra: 'info' },
+      expected: `${mockedDateString} - [WARNING] - [testTenant]:warning message\n{"extra":"info"}`,
+    },
+    {
+      logger: jsonLogger,
+      level: 'warning',
+      message: 'warning message',
+      metadata: { extra: 'info' },
+      expected: `{"time":"${mockedDateString}","level":"WARNING","tenant":"testTenant","message":"warning message","extra":"info"}\n`,
+    },
+    {
+      logger: standardLogger,
+      level: 'error',
+      message: 'error message',
+      metadata: { extra: 'info' },
+      expected: `${mockedDateString} - [ERROR] - [testTenant]:error message\n{"extra":"info"}`,
+    },
+    {
+      logger: jsonLogger,
+      level: 'error',
+      message: 'error message',
+      metadata: { extra: 'info' },
+      expected: `{"time":"${mockedDateString}","level":"ERROR","tenant":"testTenant","message":"error message","extra":"info"}\n`,
+    },
+    {
+      logger: standardLogger,
+      level: 'critical',
+      message: 'critical message',
+      metadata: { extra: 'info' },
+      expected: `${mockedDateString} - [CRITICAL] - [testTenant]:critical message\n{"extra":"info"}`,
+    },
+    {
+      logger: jsonLogger,
+      level: 'critical',
+      message: 'critical message',
+      metadata: { extra: 'info' },
+      expected: `{"time":"${mockedDateString}","level":"CRITICAL","tenant":"testTenant","message":"critical message","extra":"info"}\n`,
+    },
+  ])(
+    'should accept extra params as an optional map on $level',
+    ({ logger, level, message, expected, metadata }) => {
+      // @ts-ignore
+      logger[level](message, metadata);
+      expect(stdoutMock).toHaveBeenCalledWith(expected);
+    }
+  );
+
   it('should be able to log multiple lines together', () => {
     const message = ['multiple', 'line', 'message'];
     standardLogger.debug(message);
