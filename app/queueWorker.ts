@@ -1,13 +1,30 @@
-/* eslint-disable max-statements */
+import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { config } from 'api/config';
+import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
-import { QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
-import { tenants } from 'api/tenants';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { QueueWorkerErrorHandler, QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
+import { tenants } from 'api/tenants';
 import { inspect } from 'util';
 import { registerJobs } from './queueRegistry';
+
+if (config.sentry.dsn) {
+  Sentry.init({
+    release: config.VERSION,
+    dsn: config.sentry.dsn,
+    environment: config.ENVIRONMENT,
+    integrations: [
+      Sentry.httpIntegration({ tracing: true }),
+      new Tracing.Integrations.Mongo({ useMongoose: true }),
+      nodeProfilingIntegration(),
+    ],
+    tracesSampleRate: config.sentry.tracesSampleRate,
+  });
+}
 
 let dbAuth = {};
 
@@ -37,47 +54,50 @@ function register<T extends Dispatchable>(
   );
 }
 
-function log(level: 'info' | 'error', message: string | object) {
-  process.stdout.write(
-    `${JSON.stringify({
-      time: new Date().toISOString(),
-      level,
-      pid: process.pid,
-      ...(typeof message === 'string' ? { message } : message),
-    })}\n`
-  );
-}
+const captureError: QueueWorkerErrorHandler = (error, context) => {
+  Sentry.withScope(scope => {
+    if (context?.job) {
+      scope.setExtra('job', context.job);
+    }
+    Sentry.captureException(error);
+  });
+};
 
-log('info', 'Starting worker');
+const logger = SystemLogger();
+
+logger.info('Starting worker');
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
-    log('info', 'Connected to MongoDB');
+    logger.info('Connected to MongoDB');
     const adapter = DefaultQueueAdapter();
-    const queueWorker = new QueueWorker(config.queueName, adapter, log);
+    const queueWorker = new QueueWorker(config.queueName, adapter, logger, captureError);
 
     await tenants.setupTenants();
-    log('info', 'Set tenants up');
+    logger.info('Set tenants up');
 
     registerJobs(register.bind(queueWorker));
-    log('info', { message: 'Registered jobs', jobs: queueWorker.getRegisteredJobs() });
+    logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
     process.on('SIGINT', async () => {
-      log('info', 'SIGINT received. Stopping worker');
+      logger.info('SIGINT received. Stopping worker');
       await queueWorker.stop();
     });
 
     process.on('SIGTERM', async () => {
-      log('info', 'SIGTERM received. Stopping worker');
+      logger.info('SIGTERM received. Stopping worker');
       await queueWorker.stop();
     });
 
-    log('info', 'Queue worker started');
+    logger.info('Queue worker started');
     await queueWorker.start();
-    log('info', 'Queue worker stopped');
+    logger.info('Queue worker stopped');
 
     await DB.disconnect();
-    log('info', 'Disconected from MongoDB');
-
-    process.exit(0);
+    logger.info('Disconected from MongoDB');
   })
-  .catch(e => log('error', inspect(e)));
+  .catch(async e => {
+    logger.error(inspect(e));
+    captureError(e);
+    await Sentry.close(2000);
+    process.exit(1);
+  });

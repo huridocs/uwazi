@@ -1,9 +1,10 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';
@@ -49,7 +50,7 @@ it('should process all the jobs', async () => {
   const dispatcher1 = new NamespacedDispatcher('namespace1', 'name', adapter);
   const dispatcher2 = new NamespacedDispatcher('namespace2', 'name', adapter);
 
-  const worker = new QueueWorker('name', adapter, () => {});
+  const worker = new QueueWorker('name', adapter, createMockLogger());
 
   const signals = createSignals();
 
@@ -104,7 +105,7 @@ it('should finish the in-progress job before stopping', async () => {
   const dispatcher1 = new NamespacedDispatcher('namespace1', 'name', adapter);
   const dispatcher2 = new NamespacedDispatcher('namespace2', 'name', adapter);
 
-  const worker = new QueueWorker('name', adapter, () => {});
+  const worker = new QueueWorker('name', adapter, createMockLogger());
 
   const signals = createSignals();
 
@@ -154,7 +155,7 @@ it('should finish the in-progress job before stopping', async () => {
   ]);
 }, 10000);
 
-it('should log and continue if a job fails', async () => {
+it('should log, report error and continue if a job fails', async () => {
   class FailOnceJob implements Dispatchable {
     static failed = false;
 
@@ -169,11 +170,12 @@ it('should log and continue if a job fails', async () => {
     }
   }
 
-  const logMock = jest.fn();
+  const logMock = createMockLogger();
 
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
-  const queueWorker = new QueueWorker('name', adapter, logMock);
+  const onError = jest.fn();
+  const queueWorker = new QueueWorker('name', adapter, logMock, onError);
 
   queueWorker.register(FailOnceJob, async () => new FailOnceJob());
 
@@ -181,12 +183,14 @@ it('should log and continue if a job fails', async () => {
 
   await Promise.all([queueWorker.start(), sleep(200).then(async () => queueWorker.stop())]);
 
-  expect(logMock).toHaveBeenCalledWith(
-    'error',
+  expect(onError).toHaveBeenCalledWith(
+    new Error('failing'),
     expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
   );
-  expect(logMock).toHaveBeenCalledWith(
-    'info',
-    expect.objectContaining({ message: expect.stringContaining('Sleeping') })
+
+  expect(logMock.error).toHaveBeenCalledWith(
+    expect.any(String),
+    expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
   );
+  expect(logMock.info).toHaveBeenCalledWith('sleeping', { waitTime: 1000 });
 });

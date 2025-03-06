@@ -2,9 +2,9 @@ import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant'
 import { Tenant } from 'api/tenants/tenantContext';
 import { Logger } from '../contracts/Logger';
 import { LogLevel, LogLevels } from './LogLevels';
-import { LogEntry } from './LogEntry';
+import { LogEntry, LogMetadata } from './LogEntry';
 import { LogWriter } from './LogWriter';
-import { UwaziJSONWriter } from './writers/StandardJSONWriter';
+import { StandardJSONWriter } from './writers/StandardJSONWriter';
 
 class StandardLogger implements Logger {
   private write: LogWriter;
@@ -16,36 +16,36 @@ class StandardLogger implements Logger {
     this.tenant = tenant;
   }
 
-  private log(level: LogLevel, _message: string | string[]): void {
+  private log(level: LogLevel, _message: string | string[], metadata?: LogMetadata): void {
     const message = Array.isArray(_message) ? _message.join('\n') : _message;
-    const entry = new LogEntry(message, Date.now(), level, this.tenant);
+    const entry = new LogEntry(message, Date.now(), level, this.tenant, metadata);
 
     this.write(entry);
   }
 
-  debug(message: string | string[]): void {
-    this.log(LogLevels.DEBUG, message);
+  debug(message: string | string[], metadata?: LogMetadata): void {
+    this.log(LogLevels.DEBUG, message, metadata);
   }
 
-  info(message: string | string[]): void {
-    this.log(LogLevels.INFO, message);
+  info(message: string | string[], metadata?: LogMetadata): void {
+    this.log(LogLevels.INFO, message, metadata);
   }
 
-  warning(message: string | string[]): void {
-    this.log(LogLevels.WARNING, message);
+  warning(message: string | string[], metadata?: LogMetadata): void {
+    this.log(LogLevels.WARNING, message, metadata);
   }
 
-  error(message: string | string[]): void {
-    this.log(LogLevels.ERROR, message);
+  error(message: string | string[], metadata?: LogMetadata): void {
+    this.log(LogLevels.ERROR, message, metadata);
   }
 
-  critical(message: string | string[]): void {
-    this.log(LogLevels.CRITICAL, message);
+  critical(message: string | string[], metadata?: LogMetadata): void {
+    this.log(LogLevels.CRITICAL, message, metadata);
   }
 }
 
-const DefaultLogger = (writer = UwaziJSONWriter) => new StandardLogger(writer, getTenant());
-const SystemLogger = (writer = UwaziJSONWriter) =>
+const DefaultLogger = (writer = StandardJSONWriter) => new StandardLogger(writer, getTenant());
+const SystemLogger = (writer = StandardJSONWriter) =>
   new StandardLogger(writer, {
     name: 'System Logger',
     dbName: 'N/a',

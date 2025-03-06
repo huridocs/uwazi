@@ -13,7 +13,7 @@ function getConnection(): Db {
 }
 
 function getSharedConnection(): Db {
-  return DB.mongodb_Db(getTenant().dbName);
+  return DB.mongodb_Db(config.SHARED_DB);
 }
 
 function getClient(): MongoClient {

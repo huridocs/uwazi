@@ -1,10 +1,11 @@
 /* eslint-disable no-await-in-loop */
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { performance } from 'perf_hooks';
+import { inspect } from 'util';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
 import { UnregisteredJobError } from './errors';
 import { Job, QueueAdapter } from './QueueAdapter';
-import { inspect } from 'util';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -23,12 +24,17 @@ const defaultPerformance = {
 interface Registry {
   [name: string]: (namespace: string) => Promise<Dispatchable>;
 }
+
+export type QueueWorkerErrorHandler = (error: Error, context?: { job: Job }) => void;
+
 export class QueueWorker {
   private queueName: string;
 
   private adapter: QueueAdapter;
 
-  private logger: (level: 'info' | 'error', message: string | object) => void;
+  private logger: Logger;
+
+  private onError: QueueWorkerErrorHandler;
 
   private options: Required<WorkerOptions>;
 
@@ -45,17 +51,19 @@ export class QueueWorker {
   constructor(
     queueName: string,
     adapter: QueueAdapter,
-    logger: (level: 'info' | 'error', message: string | object) => void
+    logger: Logger,
+    // eslint-disable-next-line no-empty-function
+    onError: QueueWorkerErrorHandler = () => {}
   ) {
     this.queueName = queueName;
     this.adapter = adapter;
     this.options = { ...optionsDefaults };
     this.logger = logger;
+    this.onError = onError;
   }
 
   private logAndResetMetrics() {
-    this.logger('info', {
-      message: 'Performance metrics',
+    this.logger.info('Performance metrics', {
       processingTime: this.performance.processingTime,
       count: this.performance.count,
       totalTime: performance.now() - this.performance.batchStart,
@@ -71,7 +79,7 @@ export class QueueWorker {
   private async sleep() {
     if (this.timesSlept === 0) {
       this.logAndResetMetrics();
-      this.logger('info', { message: 'Sleeping', waitTime: this.options.waitTime });
+      this.logger.info('sleeping', { waitTime: this.options.waitTime });
     }
 
     this.timesSlept += 1;
@@ -91,7 +99,7 @@ export class QueueWorker {
     if (this.isStopping()) return null;
 
     if (this.timesSlept) {
-      this.logger('info', { message: 'Resumed', timesSlept: this.timesSlept });
+      this.logger.info('Resumed', { timesSlept: this.timesSlept });
       this.timesSlept = 0;
     }
 
@@ -116,15 +124,15 @@ export class QueueWorker {
     const heartbeatCallback = async () => this.adapter.renewJobLock(job);
 
     try {
-      this.logger('info', { message: 'Processing job', ...job });
+      this.logger.info('Processing job', { job });
+
+      const startTime = performance.now();
       await dispatchable.handleDispatch(heartbeatCallback, job.params);
-      this.logger('info', { message: 'Processed job', ...job });
+      this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
-      this.logger('error', {
-        message: inspect(e),
-        job,
-      });
+      if (this.onError) this.onError(e, { job });
+      this.logger.error(inspect(e), { job });
     } finally {
       this.logProcess(start);
     }
