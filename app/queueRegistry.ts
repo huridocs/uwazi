@@ -5,6 +5,7 @@ import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispat
 //   UpdateRelationshipPropertiesJob as createUpdateRelationshipPropertiesJob,
 // } from 'api/relationships.v2/services/service_factories';
 // import { UpdateRelationshipPropertiesJob } from 'api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
+// eslint-disable-next-line max-len
 // import { UpdateTemplateRelationshipPropertiesJob } from 'api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
 
 function randomIntFromInterval(min: number, max: number) {

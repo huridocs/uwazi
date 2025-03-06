@@ -125,8 +125,10 @@ export class QueueWorker {
 
     try {
       this.logger.info('Processing job', { job });
+
+      const startTime = performance.now();
       await dispatchable.handleDispatch(heartbeatCallback, job.params);
-      this.logger.info('Job processed', { job });
+      this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
       if (this.onError) this.onError(e, { job });

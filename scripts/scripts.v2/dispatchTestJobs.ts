@@ -15,9 +15,10 @@ if (process.env.DBUSER) {
 
 (async () => {
   await DB.connect(config.DBHOST, dbAuth);
-  const dispatcher = await DefaultDispatcher('default');
+  const dispatcher = await DefaultDispatcher(process.env.TENANT || 'default');
   for (let i = 0; i < 100; i += 1) {
-    await dispatcher.dispatch(TestJob, {});
+    // eslint-disable-next-line no-await-in-loop
+    await dispatcher.dispatch(TestJob, undefined);
   }
   await DB.disconnect();
 })();
