@@ -17,8 +17,16 @@ export class TestJob implements Dispatchable {
 
   // eslint-disable-next-line class-methods-use-this
   async handleDispatch(_heartbeat: HeartbeatCallback) {
-    await new Promise(resolve => {
-      setTimeout(resolve, randomIntFromInterval(0, 5000));
+    await new Promise((resolve, reject) => {
+      setTimeout(
+        () => {
+          if (Math.floor(Math.random() * 10) === 0) {
+            reject(new Error('Random error occurred'));
+          }
+          resolve({});
+        },
+        randomIntFromInterval(0, 5000)
+      );
     });
   }
 }

@@ -1,7 +1,7 @@
 import { Tenant } from 'api/tenants/tenantContext';
 import { LogLevel } from './LogLevels';
 
-export type LogMetadata = Record<string, string | number>;
+export type LogMetadata = Record<string, any>;
 
 export class LogEntry {
   message: string;
