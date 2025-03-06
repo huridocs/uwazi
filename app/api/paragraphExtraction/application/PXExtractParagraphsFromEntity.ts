@@ -1,12 +1,10 @@
-import { z } from 'zod';
-
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Document } from 'api/files.v2/model/Document';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
@@ -19,7 +17,11 @@ import { PXExtractionId } from '../domain/PXExtractionId';
 import { PXExtraction } from '../domain/PXExtraction';
 import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
 
-type Input = z.infer<typeof Schema>;
+type Input = {
+  userId: string;
+  extractorId: string;
+  entitySharedId: string;
+};
 
 type Output = void;
 
@@ -33,14 +35,8 @@ type Dependencies = {
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
   logger: Logger;
+  tenantName: string;
 };
-
-const Schema = z.object({
-  extractorId: z.string({ message: 'You should provide an Extractor' }),
-  entitySharedId: z.string({ message: 'You should provide an Entity' }),
-  tenantName: z.string(),
-  userId: z.string(),
-});
 
 export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
@@ -59,11 +55,11 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
     await this.dependencies.extractionService.extractParagraphs({
       documents,
       segmentations,
-      defaultLanguage,
+      mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
       extractionId: PXExtractionId.create({
         entitySharedId: entity.sharedId,
         extractorId: extractor.id,
-        tenantName: input.tenantName,
+        tenantName: this.dependencies.tenantName,
         userId: input.userId,
       }),
       files,
@@ -79,6 +75,14 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
     extraction.startProcessing();
 
     await this.dependencies.extractionsDS.save(extraction);
+  }
+
+  private static getMainLanguage(documents: Document[], defaultLanguage: LanguageISO6391) {
+    const documentsHaveDefaultLanguage = documents.some(d => d.language === defaultLanguage);
+
+    const mainLanguage = documentsHaveDefaultLanguage ? defaultLanguage : documents[0].language;
+
+    return mainLanguage;
   }
 
   // eslint-disable-next-line max-statements
@@ -116,7 +120,10 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   }
 
   private async getExtraction(input: Input): Promise<PXExtraction> {
-    const existingExtraction = await this.dependencies.extractionsDS.getExisting(input);
+    const existingExtraction = await this.dependencies.extractionsDS.getExisting({
+      ...input,
+      tenantName: this.dependencies.tenantName,
+    });
 
     if (existingExtraction) {
       return existingExtraction;
@@ -126,7 +133,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       id: this.dependencies.idGenerator.generate(),
       extractorId: input.extractorId,
       sourceEntityId: input.entitySharedId,
-      tenantName: input.tenantName,
+      tenantName: this.dependencies.tenantName,
       userId: input.userId,
     });
   }

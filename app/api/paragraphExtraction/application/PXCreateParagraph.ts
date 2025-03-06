@@ -50,19 +50,18 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
       user,
     });
 
-    const paragraphsCreated = await this.entitiesDS.getAllLanguages(firstParagraphCreated.sharedId);
-
-    // Todo: We have a save conflict here
-    // If I update a specif entity language, the others one increase the version number ?
-    // If this is true, then we need use a getById on each iteration of this reduce method.
-    await paragraphsCreated.reduce(async (promise, paragraphCreated) => {
+    await paragraphs.reduce(async (promise, paragraphTranslation) => {
       await promise;
 
-      const paragraphToSave = paragraphs.find(p => p.language === paragraphCreated.language);
+      const existingTranslation = await this.entitiesDS.getById(
+        firstParagraphCreated.sharedId,
+        paragraphTranslation.language
+      );
+
       return this.entitiesDS.save(
-        { ...paragraphCreated, ...paragraphToSave },
+        { ...existingTranslation, ...paragraphTranslation },
         {
-          language: paragraphCreated.language,
+          language: paragraphTranslation.language,
           user,
         }
       );

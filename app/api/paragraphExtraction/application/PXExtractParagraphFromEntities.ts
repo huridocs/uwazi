@@ -1,10 +1,12 @@
-import { z } from 'zod';
-
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 
 import { PXExtractParagraphsFromEntity } from './PXExtractParagraphsFromEntity';
 
-type Input = z.infer<typeof InputSchema>;
+type Input = {
+  userId: string;
+  extractorId: string;
+  entitySharedIds: string[];
+};
 
 type Output = any;
 
@@ -12,24 +14,16 @@ type Dependencies = {
   extractParagraphsFromEntity: PXExtractParagraphsFromEntity;
 };
 
-const InputSchema = z.object({
-  userId: z.string({ message: 'You should provide an User Id' }),
-  tenantName: z.string({ message: 'You should provide an Tenant name' }),
-  extractorId: z.string({ message: 'You should provide an Extractor' }),
-  entitySharedIds: z.array(z.string({ message: 'You should provide an Entity' })).min(1),
-});
-
 class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute({ entitySharedIds, extractorId, tenantName, userId }: Input): Promise<Output> {
+  async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     await entitySharedIds.reduce(async (promise, entitySharedId) => {
       await promise;
 
       return this.dependencies.extractParagraphsFromEntity.execute({
         entitySharedId,
         extractorId,
-        tenantName,
         userId,
       });
     }, Promise.resolve());
@@ -49,6 +43,6 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
  * 5. When making queries to populate our user interfaces, we should retrieve the Entity and associated status
  */
 
-export { InputSchema, PXExtractParagraphsFromEntities };
+export { PXExtractParagraphsFromEntities };
 
 export type { Input };

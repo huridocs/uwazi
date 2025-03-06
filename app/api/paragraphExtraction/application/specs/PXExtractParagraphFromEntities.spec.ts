@@ -14,6 +14,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { MongoPXExtractionsDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 import {
   defaultTemplate,
@@ -33,7 +34,6 @@ import {
 } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -73,6 +73,7 @@ const setUpUseCase = () => {
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
   const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
   const idGenerator = MongoIdHandler;
+  const tenantName = tenants.current().name;
 
   const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
     entityDS,
@@ -84,6 +85,7 @@ const setUpUseCase = () => {
     extractionsDS,
     idGenerator,
     logger: createMockLogger(),
+    tenantName,
   });
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({
@@ -91,6 +93,7 @@ const setUpUseCase = () => {
   });
 
   return {
+    tenantName,
     extractionService,
     extractParagraphFromEntities,
   };
@@ -106,12 +109,11 @@ describe('PXExtractParagraphFromEntities', () => {
   });
 
   it('should extract all Entities correctly', async () => {
-    const { extractParagraphFromEntities, extractionService } = setUpUseCase();
+    const { extractParagraphFromEntities, extractionService, tenantName } = setUpUseCase();
 
     const input: Input = {
       extractorId: extractor._id.toString(),
       entitySharedIds: [entity.sharedId!, entity2.sharedId!],
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     };
 
@@ -128,11 +130,11 @@ describe('PXExtractParagraphFromEntities', () => {
         { filename: file.filename, language: 'en' },
         { filename: file2.filename, language: 'es' },
       ],
-      defaultLanguage: 'en',
+      mainLanguage: 'en',
       extractionId: {
         extractorId: extractor._id.toString(),
         entitySharedId: entity.sharedId,
-        tenantName: input.tenantName,
+        tenantName,
         userId: input.userId,
       },
       files,
@@ -140,11 +142,11 @@ describe('PXExtractParagraphFromEntities', () => {
 
     expect(secondPayload).toMatchObject({
       documents: [{ filename: file3.filename, language: 'es' }],
-      defaultLanguage: 'en',
+      mainLanguage: 'es',
       extractionId: {
         extractorId: extractor._id.toString(),
         entitySharedId: entity2.sharedId,
-        tenantName: input.tenantName,
+        tenantName,
         userId: input.userId,
       },
       files,

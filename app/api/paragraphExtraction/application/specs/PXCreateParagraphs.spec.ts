@@ -384,12 +384,13 @@ describe('PXCreateParagraphs', () => {
 
     await testingEnvironment.setFixtures({
       ...createFixtures(),
-      entities: [entityEs, entityPt],
+      entities: [entityEn, entityEs, entityPt],
       settings: [
         {
           languages: [
             { label: 'Spanish', key: 'es', default: true },
             { label: 'Portuguese', key: 'pt' },
+            { label: 'English', key: 'en' },
           ],
         },
       ],
@@ -403,13 +404,19 @@ describe('PXCreateParagraphs', () => {
     });
 
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['pt'],
+      availableLanguages: ['pt', 'en'],
       extractionId,
       mainLanguage: 'pt',
       paragraphs: [
         {
           paragraphNumber: 1,
           translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in English',
+            },
             {
               isMainLanguage: true,
               language: 'pt',
@@ -426,6 +433,16 @@ describe('PXCreateParagraphs', () => {
     const extractedParagraphs = await getExtractedParagraphs();
     const extractedSpanish = filterAndSortParagraphs(extractedParagraphs, 'es');
     const extractedPortuguese = filterAndSortParagraphs(extractedParagraphs, 'pt');
+    const extractedEnglish = filterAndSortParagraphs(extractedParagraphs, 'en');
+
+    expect(extractedEnglish).toMatchObject([
+      createExpectedParagraph(
+        'Source Entity English.01',
+        'en',
+        'Paragraph 1 in English',
+        extractionId.userId
+      ),
+    ]);
 
     expect(extractedSpanish).toMatchObject([
       createExpectedParagraph(

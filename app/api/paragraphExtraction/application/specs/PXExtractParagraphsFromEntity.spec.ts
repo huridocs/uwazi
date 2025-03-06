@@ -20,6 +20,7 @@ import {
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
@@ -40,7 +41,6 @@ import {
   userId,
   extraction,
 } from './fixtures';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -79,6 +79,7 @@ const setUpUseCase = () => {
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
   const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
   const idGenerator = MongoIdHandler;
+  const tenantName = tenants.current().name;
 
   const extractParagraphs = new PXExtractParagraphsFromEntity({
     entityDS,
@@ -90,9 +91,11 @@ const setUpUseCase = () => {
     extractionsDS,
     idGenerator,
     logger: createMockLogger(),
+    tenantName,
   });
 
   return {
+    tenantName,
     extractionService,
     fileStorage,
     extractParagraphs,
@@ -108,13 +111,32 @@ describe('PXExtractParagraphsFromEntity', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create an Extraction record for the extracted Paragraph', async () => {
-    const { extractParagraphs } = setUpUseCase();
+  it("should fallback to the first document's language if no default language is present", async () => {
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      files: [file2],
+      segmentations: [segmentation2],
+    });
+
+    const { extractParagraphs, extractionService } = setUpUseCase();
 
     await extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
+      userId: userId.toString(),
+    });
+
+    const { mainLanguage } = extractionService.extractParagraphs.mock.lastCall[0];
+
+    expect(mainLanguage).toBe('es');
+  });
+
+  it('should create an Extraction record for the extracted Paragraph', async () => {
+    const { extractParagraphs, tenantName } = setUpUseCase();
+
+    await extractParagraphs.execute({
+      entitySharedId: entity.sharedId!.toString()!,
+      extractorId: extractor._id.toString(),
       userId: userId.toString(),
     });
 
@@ -127,7 +149,7 @@ describe('PXExtractParagraphsFromEntity', () => {
         extractorId: extractor._id,
         userId,
         status: PXExtraction.status.Processing,
-        tenantName: tenants.current().name,
+        tenantName,
       },
     ]);
   });
@@ -145,7 +167,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     await extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName,
       userId: userId.toString(),
     });
 
@@ -174,7 +195,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     await extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -194,7 +214,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     await extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -215,7 +234,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     const promise = extractParagraphs.execute({
       entitySharedId: entity.sharedId!,
       extractorId: new ObjectId().toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -230,7 +248,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     const promise = extractParagraphs.execute({
       entitySharedId: new ObjectId().toString(),
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -245,7 +262,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     const promise = extractParagraphs.execute({
       entitySharedId: invalidEntity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -265,7 +281,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     const promise = extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -287,7 +302,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     const promise = extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 
@@ -304,7 +318,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     const promise = extractParagraphs.execute({
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
-      tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
 

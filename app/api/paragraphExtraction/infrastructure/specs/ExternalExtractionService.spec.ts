@@ -9,14 +9,7 @@ import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
-import {
-  document,
-  document2,
-  extractor,
-  mockGetParagraphsResult,
-  segmentation,
-  segmentation2,
-} from './fixtures';
+import { document, extractor, mockGetParagraphsResult, segmentation } from './fixtures';
 
 const upload = multer();
 const app = express();
@@ -74,7 +67,7 @@ describe('ExternalExtractionService', () => {
       await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
         documents: [document],
-        defaultLanguage: 'pt',
+        mainLanguage: 'pt',
         extractionId,
         files: [
           FileBuilder.create().withFilename('file1.txt').build(),
@@ -122,35 +115,6 @@ describe('ExternalExtractionService', () => {
           buffer: expect.any(Buffer),
           size: 15,
         },
-      ]);
-    });
-
-    it('should choose the first Document language if default language is not present', async () => {
-      const externalExtractionService = new PXExternalExtractionService({
-        httpClient: HttpClientFactory.createDefault(),
-        url: 'http://localhost:5056',
-      });
-
-      const extractionId = PXExtractionId.create({
-        entitySharedId: 'entitySharedId',
-        extractorId: extractor.id,
-        tenantName: 'tenantName',
-        userId: 'userId',
-      });
-
-      await externalExtractionService.extractParagraphs({
-        segmentations: [segmentation, segmentation2],
-        documents: [document, document2],
-        defaultLanguage: 'en',
-        extractionId,
-        files: [],
-      });
-
-      const payload = JSON.parse(body.json_data);
-
-      expect(payload.xmls).toMatchObject([
-        { language: 'pt', main_language: true },
-        { language: 'es', main_language: false },
       ]);
     });
   });

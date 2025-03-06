@@ -29,11 +29,11 @@ export class PXParagraphsResultListener {
   private extractionService: PXExtractionService;
 
   constructor() {
+    this.extractionService = PXExtractionServiceFactory.createDefault();
     this.taskManager = new TaskManager({
       serviceName: PXParagraphsResultListener.SERVICE_NAME,
       processResults: this.processResults.bind(this) as any,
     });
-    this.extractionService = PXExtractionServiceFactory.createDefault();
   }
 
   private async processResults(results: ResultMessage) {

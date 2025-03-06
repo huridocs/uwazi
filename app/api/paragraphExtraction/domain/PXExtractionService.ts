@@ -7,7 +7,7 @@ import { PXExtractionId } from './PXExtractionId';
 type ExtractParagraphInput = {
   segmentations: Segmentation[];
   documents: Document[];
-  defaultLanguage: LanguageISO6391;
+  mainLanguage: LanguageISO6391;
   extractionId: PXExtractionId;
   files: File[];
 };

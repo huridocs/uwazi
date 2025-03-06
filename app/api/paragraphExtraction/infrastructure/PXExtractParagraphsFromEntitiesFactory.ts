@@ -14,7 +14,7 @@ import { MongoPXExtractionsDataSource } from './MongoPXExtractionsDataSource';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 
 export class PXExtractParagraphsFromEntitiesFactory {
-  static createDefault() {
+  static createDefault(tenantName: string) {
     const db = getConnection();
     const transactionManager = DefaultTransactionManager();
 
@@ -28,6 +28,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
       idGenerator: MongoIdHandler,
       settingsDS: DefaultSettingsDataSource(transactionManager),
       logger: DefaultLogger(),
+      tenantName,
     });
 
     return new PXExtractParagraphsFromEntities({

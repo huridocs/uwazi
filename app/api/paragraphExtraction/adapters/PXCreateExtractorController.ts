@@ -1,7 +1,7 @@
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from 'api/common.v2/AbstractController';
+} from 'api/common.v2/infrastructure/AbstractController';
 
 import { InputSchema, PXCreateExtractor } from '../application/PXCreateExtractor';
 import { PXCreateExtractorFactory } from '../infrastructure/PXCreateExtractorFactory';
