@@ -23,6 +23,7 @@ describe('Error handling middleware', () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       error: 'error',
+      logLevel: 'error',
       prettyMessage: '\nerror',
       requestId: contextRequestId,
     });
