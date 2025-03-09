@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 const objectPath = (path, object) =>
   path.split('.').reduce((o, key) => {
     if (!o || !key) {
@@ -236,4 +237,32 @@ const extendedHtmlTags = visualizationHtmlTags
   .concat(extendedValidHtmlTags)
   .concat(customExtendedTags);
 
-export { objectPath, logError, extendedHtmlTags, visualizationHtmlTags };
+const errorCollector = {
+  errors: {},
+  add(error, type, context) {
+    this.errors[type] = this.errors[type] || [];
+    this.errors[type].push({ context, error });
+  },
+  clear() {
+    this.errors = {};
+  },
+  display() {
+    return Object.entries(this.errors).reduce((acc, [type, value]) => {
+      const message = type;
+      const errors = value.map(error => error.error).join('\n');
+      return `${acc}${message}\n${errors}`;
+    }, '');
+  },
+  getErrors() {
+    return this.errors;
+  },
+  hasErrors() {
+    return Object.keys(this.errors).length > 0;
+  },
+  report() {
+    // eslint-disable-next-line no-console
+    console.error('Markdown Errors: ', this.getErrors());
+  },
+};
+
+export { objectPath, logError, extendedHtmlTags, visualizationHtmlTags, errorCollector };
