@@ -9,6 +9,9 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
+import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
+import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
+import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 const factory = getFixturesFactory();
 const sourceTemplate = factory.template('Source Template');
@@ -31,12 +34,23 @@ const entityPt = factory.entity('entity', sourceTemplate.name, {}, { language: '
 const entity2 = factory.entity('entity2', sourceTemplate.name);
 const entity2Pt = factory.entity('entity2', sourceTemplate.name, {}, { language: 'pt' });
 
+const extractionDBO: MongoPXExtractionDBO = {
+  _id: factory.id('extractionDBO'),
+  entitySharedId: entity.sharedId!,
+  extractorId: extractor._id,
+  failedParagraphsCount: 0,
+  paragraphsCount: 10,
+  successfulParagraphsCount: 10,
+  status: ExtractionStatus.Finished,
+};
+
 const entityThatDoesNotBelongToExtractor = factory.entity(
   'entityThatDoesNotBelongToExtractor',
   template.name
 );
 
 const createFixtures = (): DBFixture => ({
+  [mongoPXExtractionsCollection]: [extractionDBO],
   [mongoPXExtractorsCollection]: [extractor],
   templates: [sourceTemplate, targetTemplate],
   entities: [entity, entity2, entityPt, entity2Pt, entityThatDoesNotBelongToExtractor],
@@ -100,5 +114,15 @@ describe('MongoPXExtractorsQueryService', () => {
     ]);
   });
 
-  it.todo('should count source Entities that has never been extracted');
+  it('should count source Entities that has never been extracted', async () => {
+    const { extractorsQueryService } = setUpSut();
+
+    const extractors = await extractorsQueryService.getExtractors().all();
+
+    expect(extractors).toMatchObject([
+      {
+        notExtractedEntitiesCount: 1,
+      },
+    ]);
+  });
 });

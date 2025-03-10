@@ -18,7 +18,7 @@ class PXGetExtractorsController extends AbstractController {
 
   async handle(): Promise<void> {
     const output = await this.queryService.getExtractors({}).all();
-
+    console.log('process', process.env.NODE_ENV);
     this.jsonResponse(output);
   }
 }

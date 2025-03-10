@@ -14,7 +14,6 @@ import { EntitySchema } from 'shared/types/entityType';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
@@ -90,8 +89,11 @@ const extractor: MongoPXExtractorDBO = {
 const extractionDBO: MongoPXExtractionDBO = {
   _id: factory.id('extractionDBO'),
   extractorId: extractor._id,
-  sourceEntityId: entityEn.sharedId!,
+  entitySharedId: entityEn.sharedId!,
   status: PXExtraction.status.Processing,
+  failedParagraphsCount: 0,
+  paragraphsCount: 0,
+  successfulParagraphsCount: 0,
 };
 
 const createFixtures = (): DBFixture => ({
@@ -118,7 +120,6 @@ const setUpUseCase = () => {
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,
-    idGenerator: MongoIdHandler,
     extractionsDS,
   });
   (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
@@ -167,14 +168,12 @@ describe('PXCreateParagraphs', () => {
 
   it.todo('should throw if the source Entity does not belong to the Extractor');
 
-  it.todo('should set Extraction status to failed if no Paragraph is created');
+  it.todo('should change Extraction status to "error" on fail');
 
-  it.todo('should set Extraction status to finished if at least one Paragraph is created');
-
-  it('should create an Entity per paragraph with available translations', async () => {
+  it('should update Paragraphs count', async () => {
     const { createParagraphs } = setUpUseCase();
 
-    const extractionId = PXExtractionKey.create({
+    const extractionKey = PXExtractionKey.create({
       extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
@@ -182,7 +181,82 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['es', 'en', 'pt'],
-      extractionKey: extractionId,
+      extractionKey,
+      mainLanguage: 'es',
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 1 in portuguese',
+            },
+          ],
+        },
+        {
+          paragraphNumber: 2,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 2 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 2 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 2 in portuguese',
+            },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+
+    expect(extractions).toMatchObject([
+      {
+        _id: extractionDBO._id,
+        paragraphsCount: 2,
+      },
+    ]);
+  });
+
+  it('should create an Entity per paragraph with available translations', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const extractionKey = PXExtractionKey.create({
+      extractionId: extractionDBO._id.toString(),
+      tenantName: tenants.current().name,
+      userId: new ObjectId().toString(),
+    });
+
+    const input: PXCreateParagraphsInput = {
+      availableLanguages: ['es', 'en', 'pt'],
+      extractionKey,
       mainLanguage: 'es',
       paragraphs: [
         {
@@ -241,7 +315,7 @@ describe('PXCreateParagraphs', () => {
     const extractedSpanish = filterAndSortParagraphs(extractedParagraphs, 'es');
     const extractedPortuguese = filterAndSortParagraphs(extractedParagraphs, 'pt');
 
-    const { userId } = extractionId;
+    const { userId } = extractionKey;
 
     expect(extractedPortuguese).toMatchObject([
       createExpectedParagraph(
@@ -293,7 +367,7 @@ describe('PXCreateParagraphs', () => {
 
     const { createParagraphs } = setUpUseCase();
 
-    const extractionId = PXExtractionKey.create({
+    const extractionKey = PXExtractionKey.create({
       extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
@@ -301,7 +375,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['es'],
-      extractionKey: extractionId,
+      extractionKey,
       mainLanguage: 'es',
       paragraphs: [
         {
@@ -329,7 +403,7 @@ describe('PXCreateParagraphs', () => {
           'Source Entity Spanish.01',
           'es',
           'Paragraph 1 in spanish',
-          extractionId.userId
+          extractionKey.userId
         ),
         metadata: {
           paragraph: [{ value: 'Paragraph 1 in spanish', label: 'Paragraph' }],
@@ -352,7 +426,7 @@ describe('PXCreateParagraphs', () => {
       ],
     });
 
-    const extractionId = PXExtractionKey.create({
+    const extractionKey = PXExtractionKey.create({
       extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
@@ -360,7 +434,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['es', 'en'],
-      extractionKey: extractionId,
+      extractionKey,
       mainLanguage: 'es',
       paragraphs: [
         {
@@ -392,7 +466,7 @@ describe('PXCreateParagraphs', () => {
         'Source Entity Spanish.01',
         'es',
         'Paragraph 1 in spanish',
-        extractionId.userId
+        extractionKey.userId
       ),
     ]);
   });
@@ -414,7 +488,7 @@ describe('PXCreateParagraphs', () => {
       ],
     });
 
-    const extractionId = PXExtractionKey.create({
+    const extractionKey = PXExtractionKey.create({
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
       extractionId: extractionDBO._id.toString(),
@@ -422,7 +496,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['pt', 'en'],
-      extractionKey: extractionId,
+      extractionKey,
       mainLanguage: 'pt',
       paragraphs: [
         {
@@ -457,7 +531,7 @@ describe('PXCreateParagraphs', () => {
         'Source Entity English.01',
         'en',
         'Paragraph 1 in English',
-        extractionId.userId
+        extractionKey.userId
       ),
     ]);
 
@@ -466,7 +540,7 @@ describe('PXCreateParagraphs', () => {
         'Source Entity Spanish.01',
         'es',
         'Paragraph 1 in Portuguese',
-        extractionId.userId
+        extractionKey.userId
       ),
     ]);
 
@@ -475,7 +549,7 @@ describe('PXCreateParagraphs', () => {
         'Source Entity Portuguese.01',
         'pt',
         'Paragraph 1 in Portuguese',
-        extractionId.userId
+        extractionKey.userId
       ),
     ]);
   });
@@ -488,7 +562,7 @@ describe('PXCreateParagraphs', () => {
       entities: [sourceEntityThatDoesNotBelongToExtractor],
     });
 
-    const extractionId = PXExtractionKey.create({
+    const extractionKey = PXExtractionKey.create({
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
       extractionId: extractionDBO._id.toString(),
@@ -496,7 +570,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['pt'],
-      extractionKey: extractionId,
+      extractionKey,
       mainLanguage: 'pt',
       paragraphs: [],
     };
@@ -516,7 +590,7 @@ describe('PXCreateParagraphs', () => {
       [mongoPXExtractorsCollection]: [],
     });
 
-    const extractionId = PXExtractionKey.create({
+    const extractionKey = PXExtractionKey.create({
       extractionId: extractionDBO._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
@@ -524,7 +598,7 @@ describe('PXCreateParagraphs', () => {
 
     const input: PXCreateParagraphsInput = {
       availableLanguages: ['pt'],
-      extractionKey: extractionId,
+      extractionKey,
       mainLanguage: 'pt',
       paragraphs: [],
     };

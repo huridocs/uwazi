@@ -1,5 +1,4 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
@@ -16,7 +15,6 @@ export class PXCreateParagraphsFactory {
     return new PXCreateParagraphs({
       extractorsDS,
       extractionsDS,
-      idGenerator: MongoIdHandler,
     });
   }
 }

@@ -1,8 +1,13 @@
 import { ObjectId } from 'mongodb';
+import { ExtractionStatus } from '../domain/PXExtraction';
 
 export type MongoPXExtractionDBO = {
   _id: ObjectId;
-  sourceEntityId: string;
+  entitySharedId: string;
   extractorId: ObjectId;
-  status: string;
+
+  status: ExtractionStatus;
+  paragraphsCount: number;
+  failedParagraphsCount: number;
+  successfulParagraphsCount: number;
 };

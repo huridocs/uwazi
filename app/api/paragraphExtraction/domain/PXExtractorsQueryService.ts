@@ -10,6 +10,7 @@ type ExtractorDTO = {
   sourceTemplate: TemplateDTO;
   targetTemplate: TemplateDTO;
   sourceEntitiesCount: number;
+  notExtractedEntitiesCount: number;
 };
 
 type GetExtractorsOutput = ExtractorDTO;

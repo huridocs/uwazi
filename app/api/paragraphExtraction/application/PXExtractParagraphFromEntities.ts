@@ -1,6 +1,7 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 
 import { PXExtractParagraphsFromEntity } from './PXExtractParagraphsFromEntity';
+import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
 
 type Input = {
   userId: string;
@@ -12,6 +13,7 @@ type Output = any;
 
 type Dependencies = {
   extractParagraphsFromEntity: PXExtractParagraphsFromEntity;
+  extractionsDS: PXExtractionsDataSource;
 };
 
 class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
@@ -21,10 +23,16 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
     await entitySharedIds.reduce(async (promise, entitySharedId) => {
       await promise;
 
+      const extraction = await this.dependencies.extractionsDS.create({
+        entitySharedId,
+        extractorId,
+      });
+
       return this.dependencies.extractParagraphsFromEntity.execute({
         entitySharedId,
         extractorId,
         userId,
+        extraction,
       });
     }, Promise.resolve());
   }

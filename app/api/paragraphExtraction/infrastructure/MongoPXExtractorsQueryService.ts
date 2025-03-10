@@ -44,6 +44,7 @@ class MongoPXExtractorsQueryService
           pipeline: [{ $group: { _id: '$sharedId' } }],
         },
       },
+
       // Unwind the sourceTemplate array
       {
         $unwind: '$sourceTemplate',

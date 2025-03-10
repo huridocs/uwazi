@@ -1,6 +1,6 @@
 enum ExtractionStatus {
   Processing = 'processing',
-  Failed = 'failed',
+  Error = 'error',
   Finished = 'finished',
   Queued = 'queued',
 }
@@ -10,6 +10,16 @@ type PXExtractionProps = {
   sourceEntityId: string;
   extractorId: string;
   status: ExtractionStatus;
+};
+
+type PXExtractionModel = {
+  id: string;
+  entitySharedId: string;
+  extractorId: string;
+  status: ExtractionStatus;
+  paragraphsCount: number;
+  failedParagraphsCount: number;
+  successfulParagraphsCount: number;
 };
 
 class PXExtraction {
@@ -35,6 +45,6 @@ class PXExtraction {
   }
 }
 
-export { PXExtraction };
+export { PXExtraction, ExtractionStatus };
 
-export type { ExtractionStatus };
+export type { PXExtractionModel };
