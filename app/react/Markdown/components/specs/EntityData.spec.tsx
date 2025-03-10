@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { act } from 'react';
-import { screen, RenderResult } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { TestAtomStoreProvider } from 'V2/testing';
 import { localeAtom, translationsAtom } from 'V2/atoms';
@@ -11,7 +11,6 @@ import { EntityData, EntityDataProps } from '../EntityData';
 
 describe('EntityData Markdown', () => {
   let consoleErrorSpy: jasmine.Spy;
-  let renderResult: RenderResult;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -27,7 +26,7 @@ describe('EntityData Markdown', () => {
 
   const render = async (props: EntityDataProps) => {
     await act(async () => {
-      ({ renderResult } = renderConnectedContainer(
+      renderConnectedContainer(
         <TestAtomStoreProvider
           initialValues={[
             [translationsAtom, translations],
@@ -37,7 +36,7 @@ describe('EntityData Markdown', () => {
           <EntityData {...props} />
         </TestAtomStoreProvider>,
         () => state
-      ));
+      );
     });
   };
 
