@@ -1,73 +1,97 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import { Translate, I18NApi } from 'app/I18N';
-import { Template } from 'app/apiResponseTypes';
-import { RequestParams } from 'app/utils/RequestParams';
-import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
+import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Table, Button } from 'V2/Components/UI';
 import { Sidepanel } from 'V2/Components/UI/Sidepanel';
 import { templatesAtom } from 'V2/atoms';
+import { useLoaderData, useSearchParams } from 'react-router';
+import { Settings } from 'shared/types/settingsType';
+import { Icon } from 'app/UI';
 import { tableBuilder } from './components/PXParagraphTableElements';
 import { TableTitle } from './components/TableTitle';
 import { PXParagraphTable, PXParagraphApiResponse, PXEntityApiResponse } from './types';
-import { getTemplateName } from './utils/getTemplateName';
 import { ViewParagraph } from './components/ViewParagraph';
-
-const formatParagraphData = (
-  paragraphs: PXParagraphApiResponse[],
-  templates: Template[],
-  languagePool: LanguageSchema[]
-): PXParagraphTable[] =>
-  paragraphs.map(paragraph => {
-    const templateName = getTemplateName(templates, paragraph.templateId);
-    const languages = paragraph.languages.map(language => {
-      const { label = language } = languagePool.find(pool => pool.key === language) || {};
-      return label;
-    });
-    return {
-      ...paragraph,
-      rowId: paragraph._id || '',
-      templateName,
-      languages,
-    };
-  });
+import { formatParagraphData } from './utils/formatters';
+import { PXTableFooter } from './components/PXTableFooter';
+import { getLanguageName } from './utils/getLanguageName';
+import { EntityFilterSidePanel } from './components/EntityFilterSidePanel';
 
 const PXParagraphDashboard = () => {
   const {
     paragraphs = [],
     extractorId,
     languages = [],
+    settings,
   } = useLoaderData() as {
     extractorId: string;
     entity: PXEntityApiResponse;
     paragraphs: PXParagraphApiResponse[];
     languages: LanguageSchema[];
+    settings: Settings;
   };
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
   const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphTable>(undefined);
   const [paragraphInfo, setParagraphInfo] = useState<undefined | PXParagraphTable>(undefined);
+  const [entityLanguages, setEntityLanguages] = useState<string[]>([]);
   const templates = useAtomValue(templatesAtom);
 
   const pxParagraphData = useMemo(
-    () => formatParagraphData(paragraphs, templates, languages),
-    [paragraphs, templates, languages]
+    () => formatParagraphData(paragraphs, templates, settings),
+    [paragraphs, templates, settings]
   );
 
+  const [showFilter, setShowFilter] = useState(false);
+  const [filters, setFilters] = useState<any[]>([]);
+  const [searchParams] = useSearchParams();
+
   useEffect(() => {
-    if (pxParagraphData.length) {
-      setParagraphInfo(pxParagraphData[0]);
+    if (pxParagraphData.length > 0) {
+      const [pxParagraphDatum] = pxParagraphData;
+      setParagraphInfo(pxParagraphDatum);
+
+      const availableLanguages = [
+        ...pxParagraphDatum.languages.map(lang => getLanguageName(languages, lang)),
+        ...pxParagraphData
+          .filter(datum => datum.paragraphCount === pxParagraphDatum.paragraphCount)
+          .reduce((subRowLanguages: string[], curr) => {
+            if (curr.subRows) {
+              curr.subRows.forEach(subRow => {
+                subRow.languages.forEach((lang: string) => {
+                  const languageName = getLanguageName(languages, lang);
+                  subRowLanguages.push(languageName);
+                });
+              });
+            }
+            return subRowLanguages;
+          }, []),
+      ];
+      setEntityLanguages(availableLanguages);
+      setFilters([
+        {
+          label: 'Languages',
+          key: 'languages',
+          options: availableLanguages.map(lang => ({
+            key: lang,
+            label: getLanguageName(languages, lang),
+            count: 1,
+          })),
+        },
+      ]);
     }
-  }, [pxParagraphData]);
+  }, [pxParagraphData, languages]);
 
   const openSidePanel = (id: string): void => {
     setSidePanel(true);
     const targetParagraph = pxParagraphData.find(paragraph => paragraph._id === id);
-    setParagraphOnView(targetParagraph);
+    if (targetParagraph) {
+      setParagraphOnView({
+        ...targetParagraph,
+        languages: [getLanguageName(languages, targetParagraph.languages[0])],
+      });
+    }
   };
 
   return (
@@ -78,11 +102,14 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title="Paragraphs"
+          title={paragraphInfo?.title || ''}
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],
-              ['Entities', `/settings/paragraph-extraction/${extractorId}/entities`],
+              [
+                paragraphInfo?.template?.name || '',
+                `/settings/paragraph-extraction/${extractorId}/entities`,
+              ],
             ])
           }
         />
@@ -94,17 +121,52 @@ const PXParagraphDashboard = () => {
               paragraphInfo && (
                 <TableTitle
                   items={[
-                    paragraphInfo.templateName,
-                    paragraphInfo.document,
-                    paragraphInfo.languages.join(', '),
+                    { ...paragraphInfo.template },
+                    ...entityLanguages.map(language => ({ name: language })),
                   ]}
+                  Buttons={
+                    filters.length > 0 && (
+                      <div className="flex gap-3">
+                        <Button
+                          className="leading-4 flex gap-2 items-center text-gray-800"
+                          styling="light"
+                          onClick={() => setShowFilter(true)}
+                        >
+                          <Icon icon="filter" />
+                          <Translate>Filters</Translate>
+                        </Button>
+                        <Button
+                          styling="light"
+                          className="leading-4 flex gap-2 items-center text-gray-800"
+                        >
+                          <Translate>Open PDF</Translate>
+                        </Button>
+                      </div>
+                    )
+                  }
                 />
               )
             }
             defaultSorting={[{ id: '_id', desc: false }]}
+            footer={
+              <PXTableFooter
+                totalPages={10}
+                currentDataLength={10}
+                total={100}
+                searchParams={searchParams}
+              />
+            }
+            groupColumnPosition={3}
           />
         </SettingsContent.Body>
       </SettingsContent>
+      {filters.length > 0 && (
+        <EntityFilterSidePanel
+          availableFilters={filters}
+          show={showFilter}
+          setShow={setShowFilter}
+        />
+      )}
       <Sidepanel
         withOverlay
         isOpen={sidePanel}
@@ -132,14 +194,4 @@ const PXParagraphDashboard = () => {
   );
 };
 
-const PXParagraphLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId = '' } }) => {
-    const [paragraphs = [], languages] = await Promise.all([
-      pxParagraphApi.getByParagraphExtractorId(extractorId),
-      I18NApi.getLanguages(new RequestParams({}, headers)),
-    ]);
-    return { paragraphs, extractorId, languages };
-  };
-
-export { PXParagraphDashboard, PXParagraphLoader };
+export { PXParagraphDashboard };

@@ -245,4 +245,152 @@ describe('MultiselectList.cy.tsx', () => {
       cy.contains('no items string').should('be.visible');
     });
   });
+
+  describe('hide filters property', () => {
+    it('should load/show filters when hideFilters is not set', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={[]} />
+        </div>
+      );
+      cy.get('[data-testid="multiselectlist-filters"]').should('exist');
+    });
+
+    it('should not load/show filters when hideFilters is true', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={[]} hideFilters />
+        </div>
+      );
+      cy.get('[data-testid="multiselectlist-filters"]').should('not.exist');
+    });
+  });
+
+  describe('custom class name properties', () => {
+    it('should apply a custom class name to each item', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            onChange={() => {}}
+            items={[
+              {
+                label: 'Item 1',
+                searchLabel: 'Item 1',
+                value: 'item1',
+              },
+              {
+                label: 'Item 2',
+                searchLabel: 'Item 2',
+                value: 'item2',
+              },
+            ]}
+            itemClassName="bg-gray-50"
+          />
+        </div>
+      );
+      cy.get('li').should('have.class', 'bg-gray-50');
+    });
+
+    it('should apply the default class name to each item if no custom class name is provided', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            onChange={() => {}}
+            items={[
+              {
+                label: 'Item 1',
+                searchLabel: 'Item 1',
+                value: 'item1',
+              },
+              {
+                label: 'Item 2',
+                searchLabel: 'Item 2',
+                value: 'item2',
+              },
+            ]}
+          />
+        </div>
+      );
+      cy.get('li').should('have.class', 'bg-gray-50');
+    });
+
+    it('should apply a custom class name to each checkbox item', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            onChange={() => {}}
+            items={[
+              {
+                label: 'Item 1',
+                searchLabel: 'Item 1',
+                value: 'item1',
+              },
+              {
+                label: 'Item 2',
+                searchLabel: 'Item 2',
+                value: 'item2',
+              },
+            ]}
+            checkboxes
+            itemClassName="bg-gray-50"
+          />
+        </div>
+      );
+      cy.get('li').should('have.class', 'bg-gray-50');
+    });
+
+    it('should apply the default class name to each checkbox item if no custom class name is provided', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            onChange={() => {}}
+            items={[
+              {
+                label: 'Item 1',
+                searchLabel: 'Item 1',
+                value: 'item1',
+              },
+              {
+                label: 'Item 2',
+                searchLabel: 'Item 2',
+                value: 'item2',
+              },
+            ]}
+            checkboxes
+          />
+        </div>
+      );
+      cy.get('li').should('have.class', 'mb-2');
+    });
+
+    it('should apply a custom class name to the items container', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            onChange={() => {}}
+            items={[]}
+            itemContainerClassName="custom-container-class"
+          />
+        </div>
+      );
+      cy.get('ul').should('have.class', 'custom-container-class');
+    });
+
+    it('should apply the default class name to the items container if no custom class name for the container is provided', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList onChange={() => {}} items={[]} />
+        </div>
+      );
+      cy.get('ul').should('have.class', 'w-full px-2 pt-2 grow');
+    });
+  });
 });

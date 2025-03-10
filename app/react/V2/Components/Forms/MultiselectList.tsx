@@ -32,6 +32,9 @@ interface MultiselectListProps {
   startOnSelected?: boolean;
   search?: string;
   suggestions?: boolean;
+  itemClassName?: string | null;
+  itemContainerClassName?: string | null;
+  hideFilters?: boolean;
   blankState?: string | React.ReactNode;
 }
 
@@ -52,6 +55,9 @@ const MultiselectList = ({
   startOnSelected = false,
   search = '',
   suggestions = false,
+  hideFilters = false,
+  itemClassName = null,
+  itemContainerClassName = null,
   blankState = <Translate>No items available</Translate>,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
@@ -200,11 +206,11 @@ const MultiselectList = ({
 
     const selected = selectedItems.includes(item.value);
     const borderSyles = selected
-      ? 'border-sucess-200'
+      ? 'border-success-200'
       : 'border-transparent hover:border-primary-300';
 
     return (
-      <li key={item.value} className="mb-4">
+      <li key={item.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
         <button
           type="button"
           className={`w-full flex text-left p-2.5 border ${borderSyles} rounded-lg items-center`}
@@ -229,7 +235,7 @@ const MultiselectList = ({
     return (
       <li
         key={item.value}
-        className={`mb-2 ${!selected && searchTerm && !showAll ? 'opacity-70' : ''}`}
+        className={`${!selected && searchTerm && !showAll ? 'opacity-70' : ''} ${itemClassName ?? ' bg-gray-50 rounded-lg mb-2'} `}
       >
         <Checkbox
           name={item.value}
@@ -258,7 +264,7 @@ const MultiselectList = ({
     const isOpen = isGroupOpen(group.value);
     if (foldableGroups) {
       return (
-        <li key={group.value} className="mb-4">
+        <li key={group.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
           <div
             className={`flex justify-between p-3 mb-4 rounded-lg ${isOpen ? 'bg-indigo-50' : 'bg-gray-50'}`}
             onClick={() => handleGroupToggle(group.value)}
@@ -274,15 +280,19 @@ const MultiselectList = ({
               <Translate>Group</Translate>
             </button>
           </div>
-          {isOpen && <ul className="pl-4">{group.items?.map(renderItem)}</ul>}
+          {isOpen && (
+            <ul className={`${itemContainerClassName ?? 'pl-4 '}`}>
+              {group.items?.map(renderItem)}
+            </ul>
+          )}
         </li>
       );
     }
 
     return (
-      <li key={group.value} className="mb-4">
+      <li key={group.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
         <span className="block mb-4 text-sm font-bold text-gray-900">{group.label}</span>
-        <ul className="">{group.items?.map(renderItem)}</ul>
+        <ul className={`${itemContainerClassName ?? ''}`}>{group.items?.map(renderItem)}</ul>
       </li>
     );
   };
@@ -319,44 +329,46 @@ const MultiselectList = ({
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
         />
-        <div className="flex mx-1 my-4 flex-nowrap">
-          <RadioSelect
-            name="filter"
-            orientation="horizontal"
-            options={[
-              {
-                label: <Translate data-testid="multiselectlist-show-all">All</Translate>,
-                value: 'true',
-                defaultChecked: !startOnSelected,
-              },
-              {
-                label: renderSelectedLabel(),
-                value: 'false',
-                disabled: selectedOrSuggestedItems.size === 0,
-                defaultChecked: startOnSelected,
-              },
-            ]}
-            onChange={applyFilter}
-            className="flex-grow"
-          />
-          {allowSelelectAll && (
-            <button
-              type="button"
-              className="text-gray-400 underline"
-              onClick={() => handleSelectAll()}
-            >
-              <Translate>Select all</Translate>
-            </button>
-          )}
-        </div>
+        {!hideFilters && (
+          <div className="flex mx-1 my-4 flex-nowrap" data-testid="multiselectlist-filters">
+            <RadioSelect
+              name="filter"
+              orientation="horizontal"
+              options={[
+                {
+                  label: <Translate data-testid="multiselectlist-show-all">All</Translate>,
+                  value: 'true',
+                  defaultChecked: !startOnSelected,
+                },
+                {
+                  label: renderSelectedLabel(),
+                  value: 'false',
+                  disabled: selectedOrSuggestedItems.size === 0,
+                  defaultChecked: startOnSelected,
+                },
+              ]}
+              onChange={applyFilter}
+              className="flex-grow"
+            />
+            {allowSelelectAll && (
+              <button
+                type="button"
+                className="text-gray-400 underline"
+                onClick={() => handleSelectAll()}
+              >
+                <Translate>Select all</Translate>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {items.length === 0 && (
-        <div className="flex w-full h-full items-center justify-center min-h-[300px]">
+        <div className="flex w-full h-full items-center justify-center min-h-[400px]">
           {renderChild(blankState)}
         </div>
       )}
-      <ul className="w-full px-2 pt-2 grow" ref={optionsRef}>
+      <ul className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow '}`} ref={optionsRef}>
         {filteredItems.map(renderItem)}
       </ul>
     </div>

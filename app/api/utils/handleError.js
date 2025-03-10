@@ -1,6 +1,8 @@
+import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { config } from 'api/config';
 import { FileNotFound } from 'api/files/FileNotFound';
 import { S3Error } from 'api/files/S3Storage';
 import { legacyLogger } from 'api/log';
@@ -120,6 +122,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     : fallbackPrettifier(result, obfuscatedRequest);
 
   result.code = result.code || 500;
+  result.logLevel = result.logLevel || 'error';
   return result;
 };
 
@@ -185,6 +188,10 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
   sendLog(result, error, {});
 
   result = simplifyError(result, error);
+
+  if (config.sentry.dsn && result.logLevel === 'error') {
+    Sentry.captureException(error);
+  }
 
   return result;
 };

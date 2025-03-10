@@ -77,7 +77,9 @@ const http = Server(app);
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  process.exit(1);
+  Sentry.close(2000).then(() => {
+    process.exit(1);
+  });
 };
 
 process.on('unhandledRejection', uncaughtError);

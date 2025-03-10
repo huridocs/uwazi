@@ -1,37 +1,16 @@
-/* eslint-disable max-statements */
 import React, { useMemo, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
+import { Button, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { Template } from 'app/apiResponseTypes';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from 'V2/atoms';
-import { tableColumns } from './components/PXTableElements';
+import { useAtomValue } from 'jotai';
+import { templatesAtom } from 'V2/atoms';
+import { tableColumns, NoDataMessage } from './components/PXTableElements';
 import { PXTable, ParagraphExtractorApiResponse } from './types';
-import { List } from './components/List';
-import { ExtractorModal } from './components/ExtractorModal';
-import { getTemplateName } from './utils/getTemplateName';
-
-const formatExtractors = (
-  extractors: ParagraphExtractorApiResponse[],
-  templates: Template[]
-): PXTable[] =>
-  extractors.map(extractor => {
-    const targetTemplateName = getTemplateName(templates, extractor.templateTo);
-    const originTemplateNames = (extractor.templatesFrom || []).map(templateFrom =>
-      getTemplateName(templates, templateFrom)
-    );
-
-    return {
-      ...extractor,
-      rowId: extractor._id || '',
-      originTemplateNames,
-      targetTemplateName,
-    };
-  });
+import { formatExtractors } from './utils/formatters';
+import { PXTableFooter } from './components/PXTableFooter';
+import { usePXActionModal } from './hooks/usePXActionModal';
+import { AddExtractorModalComponent } from './components/Modals/AddExtractor';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
@@ -39,47 +18,20 @@ const ParagraphExtractorDashboard = () => {
   };
 
   const templates = useAtomValue(templatesAtom);
-  const revalidator = useRevalidator();
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);
-  const [confirmModal, setConfirmModal] = useState(false);
-  const [extractorModal, setExtractorModal] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
 
-  const deleteExtractors = async () => {
-    setIsSaving(true);
-    const extractorIds = selected?.map(selection => selection._id) as string[];
-
-    try {
-      await extractorsAPI.remove(extractorIds);
-      await revalidator.revalidate();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Extractor/s deleted</Translate>,
-      });
-    } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleSave = async () => {
-    await revalidator.revalidate();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Paragraph Extractor added</Translate>,
-    });
-  };
+  const { Modal: ConfirmDeleteModal, setShowModal: showConfirmModal } = usePXActionModal({
+    action: 'deleteExtractor',
+    actionParams: selected?.map(selection => selection._id) as string[],
+  });
 
   const paragraphExtractorData = useMemo(
     () => formatExtractors(extractors, templates),
     [extractors, templates]
   );
+
+  const [searchParams] = useSearchParams();
 
   return (
     <div
@@ -103,66 +55,49 @@ const ParagraphExtractorDashboard = () => {
               setSelected(() => paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
             }}
             defaultSorting={[{ id: '_id', desc: false }]}
+            noDataMessage={<NoDataMessage />}
+            footer={
+              <PXTableFooter
+                totalPages={10}
+                currentDataLength={10}
+                total={100}
+                searchParams={searchParams}
+              />
+            }
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer className="flex gap-2">
-          {selected?.length === 1 ? (
-            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
-              <Translate>Edit Extractor</Translate>
-            </Button>
-          ) : undefined}
-
+        <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
           {selected?.length ? (
-            <Button
-              type="button"
-              color="error"
-              onClick={() => setConfirmModal(true)}
-              disabled={isSaving}
-            >
-              <Translate>Delete</Translate>
-            </Button>
+            <div className="flex gap-2 items-center ">
+              <Button
+                type="button"
+                color="error"
+                onClick={() => showConfirmModal(true)}
+                disabled={isSaving}
+              >
+                <Translate>Delete</Translate>
+              </Button>
+              <div className="text-gray-500">
+                <Translate>Selected</Translate>{' '}
+                <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
+                <Translate>of</Translate>{' '}
+                <span className="text-gray-900 font-semibold">{paragraphExtractorData.length}</span>
+              </div>
+            </div>
           ) : (
-            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
-              <Translate>Create Extractor</Translate>
-            </Button>
+            <AddExtractorModalComponent disabled={isSaving} />
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-
-      {confirmModal && (
-        <ConfirmationModal
-          header="Delete extractors"
-          warningText="Do you want to delete the following items?"
-          body={<List items={selected || []} />}
-          onAcceptClick={async () => {
-            await deleteExtractors();
-            setConfirmModal(false);
-            setSelected([]);
-          }}
-          onCancelClick={() => setConfirmModal(false)}
-          dangerStyle
-        />
-      )}
-
-      {extractorModal && (
-        <ExtractorModal
-          setShowModal={setExtractorModal}
-          onClose={() => setExtractorModal(false)}
-          onAccept={handleSave}
-          templates={templates}
-          extractor={selected?.length ? selected[0] : undefined}
-        />
-      )}
+      <ConfirmDeleteModal
+        setIsProcessing={setIsSaving}
+        onSuccess={() => {
+          setSelected([]);
+        }}
+      />
     </div>
   );
 };
 
-const ParagraphExtractorLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const extractors = await extractorsAPI.get(headers);
-    return { extractors };
-  };
-
-export { ParagraphExtractorDashboard, ParagraphExtractorLoader };
+export { ParagraphExtractorDashboard };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
 // import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -9,17 +10,33 @@ import {
 let dummyData = [
   {
     _id: '1',
-    templatesFrom: ['66fbe4f28542cc5545e05a46', '66fbe4d28542cc5545e0599c'],
-    templateTo: '66ffac5860f7ab062d87d13e',
+    sourceTemplateId: '66fbe4f28542cc5545e05a46',
+    targetTemplateId: '66ffac5860f7ab062d87d13e',
     documents: 831,
-    generatedEntities: 12000,
+    count: {
+      generatedEntities: 1224,
+      new: 5,
+    },
   },
   {
     _id: '2',
-    templatesFrom: ['66fbe4d28542cc5545e0599c', 'Judge Documents'],
-    templateTo: '66ffac5860f7ab062d87d13e',
+    sourceTemplateId: '66fbe4d28542cc5545e0599c',
+    targetTemplateId: '66ffac5860f7ab062d87d13e',
     documents: 500,
-    generatedEntities: 12001,
+    count: {
+      generatedEntities: 12001,
+      new: 2,
+    },
+  },
+  {
+    _id: '3',
+    sourceTemplateId: '66fbe4d28542cc5545e0599c',
+    targetTemplateId: '66ffac5860f7ab062d87d13e',
+    documents: 500,
+    count: {
+      generatedEntities: 1201,
+      new: 0,
+    },
   },
 ] as ParagraphExtractorApiResponse[];
 
@@ -33,28 +50,20 @@ const get = async (headers?: IncomingHttpHeaders) =>
     });
   });
 
-const getById = async (extractorId: string, headers?: IncomingHttpHeaders) => {
-  try {
-    const requestParams = new RequestParams({ id: extractorId }, headers);
-    // const { json: response } = await api.get(apiEndpoint, requestParams);
-    const id = requestParams.data?.id;
-    return dummyData.find(datum => datum._id === id);
-    // return response;
-  } catch (e) {
-    return e;
-  }
-};
-
 const save = async (
   extractorValues: ParagraphExtractorApiPayload
 ): Promise<ParagraphExtractorApiResponse> => {
-  // const requestParams = new RequestParams(extractorValues);
+  const requestParams = new RequestParams(extractorValues);
+  // const response = await api.delete(apiEndpoint, requestParams);
 
   const dummyEntry = {
     ...extractorValues,
     documents: Math.floor(Math.random() * 1000),
-    generatedEntities: Math.floor(Math.random() * 1000),
-    _id: extractorValues?._id ?? Math.floor(Math.random() * 100).toString(),
+    count: {
+      generatedEntities: Math.floor(Math.random() * 100),
+      new: Math.floor(Math.random() * 10),
+    },
+    _id: Math.floor(Math.random() * 100).toString(),
   };
 
   dummyData.push(dummyEntry);
@@ -74,4 +83,4 @@ const remove = async (ids: string[]) => {
   return true;
 };
 
-export { get, save, remove, getById };
+export { get, save, remove };
