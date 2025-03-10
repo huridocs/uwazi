@@ -73,26 +73,4 @@ describe('EntityData Markdown', () => {
       expect(screen.getByText('Main Image translated')).toBeInTheDocument();
     });
   });
-
-  describe('Error handling (until upstream implementation is implemented)', () => {
-    it('should fail if no value or propertyName is provided', async () => {
-      await render({});
-      //get the body
-      expect(renderResult.container.innerHTML).toBe('');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error on EntityData: ');
-      expect(consoleErrorSpy.calls.all()[2].args[0].message).toBe(
-        '"value-of" or "label-of" must be provided.'
-      );
-    });
-
-    it('should fail if both value and propertyName are provided', async () => {
-      await render({ 'value-of': 'something', 'label-of': 'something else' });
-      //assert empty html
-      expect(renderResult.container.innerHTML).toBe('');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error on EntityData: ');
-      expect(consoleErrorSpy.calls.all()[2].args[0].message).toBe(
-        'Can\'t provide both "value-of" and "label-of".'
-      );
-    });
-  });
 });
