@@ -28,8 +28,6 @@ function toUrlParams(_data) {
     return `?${_data}`;
   }
 
-  console.log('here with: ', _data);
-
   const data = { ..._data };
   if (!data || Object.keys(data).length === 0) {
     return '';
