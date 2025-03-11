@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from 'app/utils';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { atomStore, userAtom } from 'app/V2/atoms';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
@@ -48,11 +48,10 @@ class MarkdownViewer extends Component {
       const user = atomStore.get(userAtom);
       if (user._id) {
         // prepare the error message to be shown to the logged in user
-        store.dispatch(notify(errorCollector.display(), 'danger', 20000));
+        store.dispatch(notify(errorCollector.display(), 'warning', 20000));
       }
 
       errorCollector.clear();
-      throw new Error(t('System', 'Page is not available.', null, false));
     }
   }
 
