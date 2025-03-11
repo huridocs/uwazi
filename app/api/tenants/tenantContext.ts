@@ -17,6 +17,7 @@ type Tenant = {
     s3Storage?: boolean;
     esReplicas?: number;
     sync?: boolean;
+    deactivateTestJob?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
