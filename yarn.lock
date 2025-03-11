@@ -2103,9 +2103,10 @@
   resolved "https://registry.yarnpkg.com/@huridocs/react-text-selection-handler/-/react-text-selection-handler-0.3.1.tgz#f201eac484d6bc75dd8aed0c24c6465e6a122134"
   integrity sha512-Un16Qv1kpFglRB/Hg0T/QOM91/rmLgWks6X3FWg7nXpw6NJkQi/R7IHwRMHwH282m78MP9iDB41uZ/WIEaAxfQ==
 
-"@huridocs/rison@https://github.com/huridocs/rison.git#intial-updates":
-  version "2.1.1"
-  resolved "https://github.com/huridocs/rison.git#ded6e1bf3a4c566ca3b258e3ed9be2afae389ba3"
+"@huridocs/rison@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@huridocs/rison/-/rison-2.1.2.tgz#cd029be97a140d94bd55802ce5b3afe9b2d20d3e"
+  integrity sha512-ghBB1yfBvpbfbtCBo4j4y/mVFMDjPnt+bntMsMlnjXWZSfluHUhn6zI0GNNERJEu47UlOzCOOqDmPnlTRT9fuQ==
 
 "@icons/material@^0.2.4":
   version "0.2.4"
