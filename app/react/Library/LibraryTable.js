@@ -15,7 +15,7 @@ class LibraryTableComponent extends LibraryRootComponent {
   render() {
     trackPage();
     return (
-      <LibraryLayout sidePanelMode="unpinned-mode">
+      <LibraryLayout sidePanelMode="unpinned-mode" noindex>
         <DocumentsList
           storeKey="library"
           CollectionViewer={TableViewer}
