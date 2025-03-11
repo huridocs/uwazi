@@ -1,8 +1,8 @@
 import 'isomorphic-fetch';
 import superagent from 'superagent';
+import rison from '@huridocs/rison';
 import { assign } from 'lodash';
 import { getResponseType } from 'shared/apiClient/httpResponses';
-import { risonDecodeOrIgnore } from 'app/utils';
 
 let cookie;
 
@@ -23,6 +23,19 @@ class FetchResponseError extends Error {
   }
 }
 
+const attemptRisonDecode = string => {
+  const errcb = e => {
+    throw Error(`rison decoder error: ${e}`);
+  };
+
+  const risonParser = new rison.parser(errcb); // eslint-disable-line new-cap
+  risonParser.error = message => {
+    this.message = message;
+  };
+
+  risonParser.parse(string);
+};
+
 function toUrlParams(_data) {
   if (typeof _data === 'string') {
     return `?${_data}`;
@@ -35,22 +48,24 @@ function toUrlParams(_data) {
 
   return `?${Object.keys(data)
     .map(key => {
-      if (typeof data[key] === 'undefined' || data[key] === null) return;
+      if (typeof data[key] === 'undefined' || data[key] === null) {
+        return;
+      }
 
       if (typeof data[key] === 'object') {
         data[key] = JSON.stringify(data[key]);
       }
 
       let encodedValue = encodeURIComponent(data[key]);
+
       if (encodeURIComponent(key) === 'q') {
         try {
-          risonDecodeOrIgnore(data[key]);
+          attemptRisonDecode(data[key]);
           encodedValue = data[key];
         } catch (err) {
           encodedValue = encodeURIComponent(data[key]);
         }
       }
-
       return `${encodeURIComponent(key)}=${encodedValue}`;
     })
     .filter(param => param)
