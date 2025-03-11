@@ -176,6 +176,7 @@ function processFilters(readOnlySearch, filters, options = {}) {
   search.filters = {};
 
   const getValue = value => (encoding ? encodeURIComponent(value) : value);
+
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
       if (
@@ -259,6 +260,7 @@ function searchDocuments(
         {
           limit,
           from,
+          encoding: false,
         }
       ),
       searchTerm: state.search.searchTerm,
@@ -272,7 +274,6 @@ function searchDocuments(
     if (currentSearch.userSelectedSorting) {
       dispatch(actions.set('library.selectedSorting', currentSearch));
     }
-
     return setSearchInUrl(searchParams, location, navigate);
   };
 }
