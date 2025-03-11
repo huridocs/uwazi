@@ -1,7 +1,7 @@
 import Jvent from 'jvent';
 import rison from '@huridocs/rison';
 
-export function getPropsFromRoute({ routes }, componentProps) {
+const getPropsFromRoute = ({ routes }, componentProps) => {
   const props = {};
   const lastRoute = routes[routes.length - 1];
 
@@ -14,17 +14,18 @@ export function getPropsFromRoute({ routes }, componentProps) {
   }, lastRoute);
 
   return props;
-}
+};
 
-export function risonDecodeOrIgnore(query, defaultValue = {}) {
+const risonDecodeOrIgnore = (query, defaultValue = {}) => {
   try {
     return rison.decode(query);
   } catch (e) {
-    console.log('uwazi error: ', e);
-    // console.log('Error decoding: ', query, e);
+    console.error('Error decoding: ', query, e);
     return defaultValue;
   }
-}
+};
 
-export const isClient = typeof document !== 'undefined';
-export const events = new Jvent();
+const isClient = typeof document !== 'undefined';
+const events = new Jvent();
+
+export { isClient, events, risonDecodeOrIgnore, getPropsFromRoute };
