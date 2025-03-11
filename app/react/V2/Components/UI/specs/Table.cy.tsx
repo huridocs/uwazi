@@ -131,7 +131,7 @@ describe('Table', () => {
       checkRowContent(1, [
         'Drag row',
         'Select',
-        'Group',
+        '',
         'Group 1',
         dataWithNested[0].description,
         '10',
@@ -679,6 +679,14 @@ describe('Table', () => {
       });
 
       cy.contains('This group is empty');
+    });
+  });
+
+  describe('No data', () => {
+    it('should render no data message if data is empty', () => {
+      Basic.args.tableData = [];
+      mount(<Basic />);
+      cy.contains('NO DATA AVAILABLE');
     });
   });
 });

@@ -215,7 +215,7 @@ HTMLCollection [
 
 exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
 <div
-  class="bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 bg-indigo-50 bg-primary-50"
+  class="bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 bg-indigo-50 bg-indigo-50"
   data-testid="settings-content-footer"
 >
   <div
@@ -439,7 +439,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                     </span>
                   </th>
                   <th
-                    class="p-4 text-sm text-gray-500 uppercase border-b undefined"
+                    class="p-4 text-sm text-gray-500 uppercase border-b "
                     colspan="1"
                     scope="col"
                   >
@@ -685,7 +685,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
         </div>
       </div>
       <div
-        class="bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 bg-indigo-50 bg-primary-50"
+        class="bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 bg-indigo-50 bg-indigo-50"
         data-testid="settings-content-footer"
       >
         <div
