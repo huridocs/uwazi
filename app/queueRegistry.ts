@@ -44,7 +44,7 @@ export class DenormalizeEntityInMemoryTestJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
   async handleDispatch(
     _heartbeat: HeartbeatCallback,
-    params: { sharedId: string; tenantName: string; userId: string }
+    params: { sharedId: string; tenantName: string }
   ) {
     await tenants.run(async () => {
       try {

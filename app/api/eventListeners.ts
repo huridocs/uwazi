@@ -2,7 +2,6 @@ import { DenormalizeEntityInMemoryTestJob } from '../queueRegistry';
 import { EntityCreatedEvent } from './entities/events/EntityCreatedEvent';
 import { EventsBus } from './eventsbus';
 import { AutomaticTranslationFactory } from './externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
-import { permissionsContext } from './permissions/permissionsContext';
 import { DefaultDispatcher } from './queue.v2/configuration/factories';
 import { registerEventListeners as registerSegmentationListeners } from './services/pdfsegmentation/eventListeners';
 import { Suggestions } from './suggestions/suggestions';
@@ -14,12 +13,11 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   AutomaticTranslationFactory.defaultATEntityCreationListener(eventsBus).start();
 
   eventsBus.on(EntityCreatedEvent, async event => {
-    if (!tenants.current().featureFlags?.deactivateTestJob) {
+    if (!tenants.current().featureFlags?.deactivateTestJob && event.entities[0]) {
       const dispatcher = await DefaultDispatcher(tenants.current().name);
       await dispatcher.dispatch(DenormalizeEntityInMemoryTestJob, {
         sharedId: event.entities[0].sharedId!,
         tenantName: tenants.current().name,
-        userId: permissionsContext.getUserInContext()?._id?.toString()!,
       });
     }
   });
