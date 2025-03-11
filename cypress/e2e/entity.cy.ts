@@ -546,5 +546,19 @@ describe('Entities', () => {
     it('should not have metadata.', () => {
       cy.get('div.metadata.tab-content-visible div.view > dl > div').should('have.length', 0);
     });
+
+    it("should change an entity's template", () => {
+      clickOnEditEntity();
+      cy.contains('#metadataForm', 'Type').get('select').eq(0).select('Causa');
+      cy.get('select:first-of-type').select('Causa');
+      cy.contains('Changing the type will erase all relationships to this entity');
+      saveEntity('Entity updated');
+    });
+
+    it('should show only the filtered entities', () => {
+      cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
+      cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Causa').click();
+      cy.get('.item-document').should('have.length', 12);
+    });
   });
 });

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
 import { Link } from 'react-router';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import ShowIf from 'app/App/ShowIf';
 import { withRouter } from 'app/componentWrappers';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
@@ -155,7 +155,7 @@ class DocumentTypesList extends Component {
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
 
-    const query = searchParamsFromLocationSearch(this.props.location, 'q') || {
+    const query = searchParamsFromLocationSearch(this.props.location) || {
       filters: [],
     };
 

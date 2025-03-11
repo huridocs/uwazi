@@ -144,11 +144,36 @@ describe('text references', () => {
 });
 
 describe('Entity with main documents', () => {
-  it('Should create a new entity with a main documents', () => {
+  it('Should filter by restricted entities', () => {
     cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
     cy.contains('a', 'Library').click();
     cy.contains('Filters');
     selectRestrictedEntities();
+    cy.get('.item-document').should('have.length', 6);
+  });
+
+  it('should create an entity by uploading a pdf with the default template', () => {
+    cy.get('label[for="pdf-upload-button"]').click();
+    cy.get('#pdf-upload-button').first().selectFile('./cypress/test_files/valid.pdf', {
+      force: true,
+    });
+    cy.waitForLegacyNotifications();
+    cy.contains('.item-info', 'Mecanismo');
+  });
+
+  it('should change the language of the document', () => {
+    cy.contains('.item-document:nth-child(1) span', 'Valid').click();
+    cy.get('#tab-metadata').click();
+    cy.contains('.filelist-header', 'Primary Documents');
+    cy.contains('.file-originalname', 'valid.pdf');
+    cy.contains('.file-edit', 'Edit').click();
+    cy.get('#language').select('English (English)');
+    cy.contains('button', 'Save').click();
+    cy.contains('div.alert', 'File updated').should('be.visible');
+    cy.get('.is-active .closeSidepanel').click();
+  });
+
+  it('Should create a new entity with a main documents', () => {
     clickOnCreateEntity();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Entity with main documents', {
@@ -204,6 +229,7 @@ describe('Entity with main documents', () => {
     cy.waitForLegacyNotifications();
     cy.contains('.item-document', 'Entity with main documents').click();
     cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
+    cy.contains('Conversion failed');
     cy.contains('.file-originalname', 'invalid.pdf').should('exist');
   });
 
