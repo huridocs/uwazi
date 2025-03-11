@@ -55,7 +55,7 @@ const labelForOption = (filteredProperty, option, templates) => {
 };
 
 const prepareOptions = (property, location, templates) => {
-  const query = searchParamsFromLocationSearch(location, 'q') || {};
+  const query = searchParamsFromLocationSearch(location) || {};
   const filteredProperty = {
     ...property,
     options: property.options.filter(option => option.id !== 'any'),

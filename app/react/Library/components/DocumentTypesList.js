@@ -155,7 +155,7 @@ class DocumentTypesList extends Component {
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
 
-    const query = searchParamsFromLocationSearch(this.props.location, 'q') || {
+    const query = searchParamsFromLocationSearch(this.props.location) || {
       filters: [],
     };
 
