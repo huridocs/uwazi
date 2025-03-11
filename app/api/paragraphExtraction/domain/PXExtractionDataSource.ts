@@ -1,17 +1,36 @@
-import { PXExtraction } from './PXExtraction';
+import { PXExtraction, PXExtractionModel } from './PXExtraction';
 
-type GetExistingInput = {
+type CreateInput = {
   extractorId: string;
   entitySharedId: string;
-  tenantName: string;
-  userId: string;
+};
+
+type GetExistingInput = CreateInput;
+
+type EnqueueInput = GetExistingInput;
+
+type InitProcessInput = GetExistingInput;
+
+type UpdateParagraphsCountInput = {
+  id: string;
+  count: number;
 };
 
 export interface PXExtractionsDataSource {
-  save(extraction: PXExtraction): Promise<void>;
-  edit(extraction: PXExtraction): Promise<void>;
-  create(extraction: PXExtraction): Promise<void>;
+  getById(extractionId: string): Promise<PXExtractionModel | undefined>;
   getExisting(input: GetExistingInput): Promise<PXExtraction | undefined>;
+  initProcess(input: InitProcessInput): Promise<PXExtractionModel>;
+  incrementSuccess(extractionId: string): Promise<PXExtractionModel>;
+  incrementFail(extractionId: string): Promise<PXExtractionModel>;
+  create(input: CreateInput): Promise<PXExtractionModel>;
+  setAsError(extractionId: string): Promise<PXExtractionModel>;
+  updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXExtractionModel>;
 }
 
-export type { GetExistingInput };
+export type {
+  GetExistingInput,
+  CreateInput,
+  EnqueueInput,
+  InitProcessInput,
+  UpdateParagraphsCountInput,
+};

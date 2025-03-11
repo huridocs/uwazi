@@ -7,6 +7,8 @@ import entities from 'api/entities';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
+import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXExtractionModel } from '../domain/PXExtraction';
 
 /**
  * Notes
@@ -24,58 +26,73 @@ type PXCreateParagraphInput = {
   extractor: PXExtractor;
   user: { _id: ObjectId };
   paragraph: ParagraphOutput;
+  extraction: PXExtractionModel;
 };
+
+type LegacyEntitiesDS = typeof entities;
 
 type Output = any;
 
 type Dependencies = {
   logger: Logger;
+  extractionsDS: PXExtractionsDataSource;
+  entitiesDS?: LegacyEntitiesDS;
 };
 
 class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
-  entitiesDS = entities;
+  private dependencies: Required<Dependencies>;
 
-  constructor(private dependencies: Dependencies) {}
+  constructor(dependencies: Dependencies) {
+    this.dependencies = { ...dependencies, entitiesDS: dependencies?.entitiesDS ?? entities };
+  }
 
   async execute({
     paragraph,
     extractor,
     sourceEntities,
     user,
+    extraction,
   }: PXCreateParagraphInput): Promise<Output> {
-    const [first, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
+    try {
+      const [first, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
 
-    const firstParagraphCreated = await this.entitiesDS.save(first, {
-      language: first.language,
-      user,
-    });
+      const firstParagraphCreated = await this.dependencies.entitiesDS.save(first, {
+        language: first.language,
+        user,
+      });
 
-    await paragraphs.reduce(async (promise, paragraphTranslation) => {
-      await promise;
+      await paragraphs.reduce(async (promise, paragraphTranslation) => {
+        await promise;
 
-      const existingTranslation = await this.entitiesDS.getById(
-        firstParagraphCreated.sharedId,
-        paragraphTranslation.language
+        const existingTranslation = await this.dependencies.entitiesDS.getById(
+          firstParagraphCreated.sharedId,
+          paragraphTranslation.language
+        );
+
+        return this.dependencies.entitiesDS.save(
+          { ...existingTranslation, ...paragraphTranslation },
+          {
+            language: paragraphTranslation.language,
+            user,
+          }
+        );
+      }, Promise.resolve());
+
+      await this.dependencies.extractionsDS.incrementSuccess(extraction.id);
+
+      this.dependencies.logger.info(
+        `[PX] - Paragraph Created - ${JSON.stringify({
+          entitySharedId: firstParagraphCreated.sharedId,
+          title: firstParagraphCreated.title,
+        })}`
       );
-
-      return this.entitiesDS.save(
-        { ...existingTranslation, ...paragraphTranslation },
-        {
-          language: paragraphTranslation.language,
-          user,
-        }
-      );
-    }, Promise.resolve());
-
-    this.dependencies.logger.info(
-      `[PX] - Paragraph Created - ${JSON.stringify({
-        entitySharedId: firstParagraphCreated.sharedId,
-        title: firstParagraphCreated.title,
-      })}`
-    );
+    } catch (e) {
+      await this.dependencies.extractionsDS.incrementFail(extraction.id);
+      throw e;
+    }
   }
 }
 
 export { PXCreateParagraph };
 
-export type { PXCreateParagraphInput };
+export type { PXCreateParagraphInput, LegacyEntitiesDS };

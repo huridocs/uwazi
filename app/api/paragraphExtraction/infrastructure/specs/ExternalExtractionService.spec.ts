@@ -5,11 +5,11 @@ import { Server } from 'http';
 
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
-import { document, extractor, mockGetParagraphsResult, segmentation } from './fixtures';
+import { document, mockGetParagraphsResult, segmentation } from './fixtures';
 
 const upload = multer();
 const app = express();
@@ -57,18 +57,17 @@ describe('ExternalExtractionService', () => {
         url: 'http://localhost:5056',
       });
 
-      const extractionId = PXExtractionId.create({
-        entitySharedId: 'entitySharedId',
-        extractorId: extractor.id,
+      const extractionKey = PXExtractionKey.create({
         tenantName: 'tenantName',
         userId: 'userId',
+        extractionId: 'any_extraction_id',
       });
 
       await externalExtractionService.extractParagraphs({
         segmentations: [segmentation],
         documents: [document],
         mainLanguage: 'pt',
-        extractionId,
+        extractionKey,
         files: [
           FileBuilder.create().withFilename('file1.txt').build(),
           FileBuilder.create().withFilename('file2.txt').build(),
@@ -78,13 +77,15 @@ describe('ExternalExtractionService', () => {
 
       expect(body).toEqual({
         json_data: JSON.stringify({
-          key: extractionId.id,
+          key: extractionKey.key,
           xmls: [
             {
               language: 'pt',
-              main_language: true,
+              is_main_language: true,
               xml_file_name: 'any_file_name',
-              xml_segments_boxes: [{ left: 0, top: 0, page_number: 0, type: 'any_type' }],
+              xml_segments_boxes: [
+                { left: 0, top: 0, page_number: 0, segment_type: 'any_type', width: 0, height: 0 },
+              ],
             },
           ],
         }),
@@ -130,17 +131,16 @@ describe('ExternalExtractionService', () => {
         'http://localhost:5056/paragraphs_results'
       );
 
-      const extractionId = PXExtractionId.create({
-        entitySharedId: 'entitySharedId',
-        extractorId: 'extractorId',
+      const extractionId = PXExtractionKey.create({
         tenantName: 'tenantName',
         userId: 'userId',
+        extractionId: 'any_extraction_id',
       });
 
       const expectedOutput: GetParagraphsResultOutput = {
         availableLanguages: ['en', 'es', 'fr'],
         mainLanguage: 'en',
-        extractionId,
+        extractionKey: extractionId,
         paragraphs: [
           {
             paragraphNumber: 1,

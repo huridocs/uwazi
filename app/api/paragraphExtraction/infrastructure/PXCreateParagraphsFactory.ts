@@ -1,18 +1,20 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
+import { MongoPXExtractionsDataSource } from './MongoPXExtractionsDataSource';
 
 export class PXCreateParagraphsFactory {
   static createDefault() {
     const db = getConnection();
     const transactionManager = DefaultTransactionManager();
+    const extractorsDS = new MongoPXExtractorsDataSource(db, transactionManager);
+    const extractionsDS = new MongoPXExtractionsDataSource(db, transactionManager);
 
     return new PXCreateParagraphs({
-      extractorsDS: new MongoPXExtractorsDataSource(db, transactionManager),
-      idGenerator: MongoIdHandler,
+      extractorsDS,
+      extractionsDS,
     });
   }
 }

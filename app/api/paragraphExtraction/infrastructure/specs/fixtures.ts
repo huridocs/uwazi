@@ -1,4 +1,4 @@
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
 import { Property } from 'api/templates.v2/model/Property';
@@ -8,12 +8,11 @@ import { Document } from 'api/files.v2/model/Document';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
-  key: PXExtractionId.create({
-    entitySharedId: 'entitySharedId',
-    extractorId: 'extractorId',
+  key: PXExtractionKey.create({
     tenantName: 'tenantName',
     userId: 'userId',
-  }).id,
+    extractionId: 'any_extraction_id',
+  }).key,
   main_language: 'en',
   available_languages: ['en', 'es', 'fr'],
   paragraphs: [
