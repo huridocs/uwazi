@@ -290,11 +290,8 @@ const PDFSidepanel = ({
     if (property.type === 'date' && isDirty && metadata) {
       metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
     }
-
-    const [savedFile, savedEntity] = await Promise.all([
-      handleFileSave(pdf, selections),
-      handleEntitySave(entity, property.name, metadata, isDirty),
-    ]);
+    const savedFile = await handleFileSave(pdf, selections);
+    const savedEntity = await handleEntitySave(entity, property.name, metadata, isDirty);
 
     if (savedFile instanceof FetchResponseError || savedEntity instanceof FetchResponseError) {
       const details =
