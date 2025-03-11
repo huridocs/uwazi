@@ -24,6 +24,11 @@ describe('LibraryModeToggleButtons', () => {
     component = shallow(<LibraryModeToggleButtons {...props} />);
   };
 
+  beforeAll(() => {
+    //mock isClient
+    spyOn(require('app/utils'), 'isClient').and.returnValue(true);
+  });
+
   describe('render()', () => {
     beforeEach(() => {
       props = defaultProps;
