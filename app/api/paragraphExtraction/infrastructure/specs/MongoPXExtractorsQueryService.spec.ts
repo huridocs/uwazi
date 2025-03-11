@@ -7,11 +7,11 @@ import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastruct
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
 import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
 import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 const factory = getFixturesFactory();
 const sourceTemplate = factory.template('Source Template');
@@ -83,6 +83,7 @@ describe('MongoPXExtractorsQueryService', () => {
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
+
   it('should return target and source', async () => {
     const { extractorsQueryService } = setUpSut();
 
@@ -90,14 +91,9 @@ describe('MongoPXExtractorsQueryService', () => {
 
     expect(extractors).toMatchObject([
       {
-        sourceTemplate: {
-          templateId: sourceTemplate._id,
-          name: sourceTemplate.name,
-        },
-        targetTemplate: {
-          templateId: targetTemplate._id,
-          name: targetTemplate.name,
-        },
+        _id: extractor._id,
+        sourceTemplateId: sourceTemplate._id,
+        targetTemplateId: targetTemplate._id,
       },
     ]);
   });
@@ -109,19 +105,9 @@ describe('MongoPXExtractorsQueryService', () => {
 
     expect(extractors).toMatchObject([
       {
-        sourceEntitiesCount: 2,
-      },
-    ]);
-  });
-
-  it('should count source Entities that has never been extracted', async () => {
-    const { extractorsQueryService } = setUpSut();
-
-    const extractors = await extractorsQueryService.getExtractors().all();
-
-    expect(extractors).toMatchObject([
-      {
-        notExtractedEntitiesCount: 1,
+        count: {
+          generatedEntities: 2,
+        },
       },
     ]);
   });

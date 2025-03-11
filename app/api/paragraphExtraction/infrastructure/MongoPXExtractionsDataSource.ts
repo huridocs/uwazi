@@ -27,6 +27,10 @@ export class MongoPXExtractionsDataSource
       { upsert: false, returnDocument: 'after' }
     );
 
+    if (!dbo) {
+      throw new Error(`Can not update an Extraction that does not exist. Id : ${input.id}`);
+    }
+
     return MongoPXExtractionsDataSource.toDomain(dbo);
   }
 
@@ -58,6 +62,12 @@ export class MongoPXExtractionsDataSource
       { upsert: false, returnDocument: 'after' }
     );
 
+    if (!dbo) {
+      throw new Error(
+        `Can not set an error of an Extraction that does not exist. Id : ${extractionId}`
+      );
+    }
+
     return MongoPXExtractionsDataSource.toDomain(dbo);
   }
 
@@ -78,6 +88,12 @@ export class MongoPXExtractionsDataSource
       ],
       { upsert: false, returnDocument: 'after' }
     );
+
+    if (!dbo) {
+      throw new Error(
+        `Can not increment failing paragraphs of an Extraction that does not exist. Id : ${extractionId}`
+      );
+    }
 
     return MongoPXExtractionsDataSource.toDomain(dbo);
   }
@@ -100,6 +116,12 @@ export class MongoPXExtractionsDataSource
       { upsert: false, returnDocument: 'after' }
     );
 
+    if (!dbo) {
+      throw new Error(
+        `Can not increment successful paragraphs of an Extraction that does not exist. Id : ${extractionId}`
+      );
+    }
+
     return MongoPXExtractionsDataSource.toDomain(dbo);
   }
 
@@ -109,6 +131,13 @@ export class MongoPXExtractionsDataSource
       { $set: { status: ExtractionStatus.Processing } },
       { upsert: false, returnDocument: 'after' }
     );
+
+    if (!dbo) {
+      throw new Error(
+        `Can not init processing of an Extraction that does not exist. 
+        entitySharedId:${input.entitySharedId} extractorId:${input.extractorId}`
+      );
+    }
 
     return MongoPXExtractionsDataSource.toDomain(dbo);
   }
@@ -140,17 +169,6 @@ export class MongoPXExtractionsDataSource
     }
 
     return MongoPXExtractionsDataSource.toDomain(dbo);
-  }
-
-  async save(extraction: PXExtraction): Promise<void> {
-    const dbo: MongoPXExtractionDBO = {
-      _id: new ObjectId(extraction.id),
-      extractorId: new ObjectId(extraction.extractorId),
-      entitySharedId: extraction.sourceEntityId,
-      status: extraction.status,
-    };
-
-    await this.getCollection().updateOne({ _id: dbo._id }, { $set: dbo }, { upsert: true });
   }
 
   async getExisting(input: GetExistingInput): Promise<PXExtraction | undefined> {
