@@ -1,25 +1,44 @@
+import { ObjectId } from 'mongodb';
 import { tenants } from 'api/tenants';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
+import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
+import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
 
 jest.mock('api/services/tasksmanager/TaskManager');
 
+jest.spyOn(tenants, 'run');
+
+const extractionDBO: MongoPXExtractionDBO = {
+  _id: new ObjectId(),
+  entitySharedId: 'any_entity_shared_id',
+  extractorId: new ObjectId(),
+  status: ExtractionStatus.Processing,
+  paragraphsCount: 1,
+  failedParagraphsCount: 0,
+  successfulParagraphsCount: 0,
+};
+
+const extractionKey = PXExtractionKey.create({
+  extractionId: extractionDBO._id.toString(),
+  tenantName: 'any_tenant_name',
+  userId: 'any_user_id',
+});
+
 const resultMessage: ResultMessage = {
   success: true,
-  key: 'key',
+  key: extractionKey.key,
   data_url: 'data_url',
   error_message: '',
   xmls: [],
 };
 
 const getParagraphsResultOutput = {
-  extractionId: {
-    tenantName: 'tenantName',
-    userId: 'any_user_id',
-  },
+  extractionKey,
 };
-
-let tenantUsed: string;
 
 const createSut = () => {
   const extractionService = {
@@ -27,9 +46,7 @@ const createSut = () => {
   };
 
   const useCase = {
-    execute: jest.fn().mockImplementation(() => {
-      tenantUsed = tenants.current().name;
-    }),
+    execute: jest.fn(),
   };
 
   const listener = new PXParagraphsResultListener();
@@ -47,11 +64,14 @@ const createSut = () => {
 };
 
 describe('PXParagraphsResultListener', () => {
-  beforeAll(async () => {
-    tenants.add({ name: 'tenantName' });
+  beforeEach(async () => {
+    await testingEnvironment.setUp({
+      [mongoPXExtractionsCollection]: [extractionDBO],
+    });
   });
 
-  afterEach(() => {
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
     jest.resetAllMocks();
   });
 
@@ -61,23 +81,45 @@ describe('PXParagraphsResultListener', () => {
     await processResults(resultMessage);
 
     expect((listener as any).setCurrentUser).toHaveBeenCalledWith(
-      getParagraphsResultOutput.extractionId.userId
+      getParagraphsResultOutput.extractionKey.userId
     );
     expect(extractionService.getParagraphsResult).toHaveBeenCalledWith(resultMessage.data_url);
     expect(useCase.execute).toHaveBeenCalledWith(getParagraphsResultOutput);
-    expect(tenantUsed).toBe(getParagraphsResultOutput.extractionId.tenantName);
+    expect(tenants.run).toHaveBeenCalledWith(expect.any(Function), extractionKey.tenantName);
   });
 
   it('should not execute CreateParagraphs use case when results are not successful', async () => {
     const { processResults, extractionService, useCase } = createSut();
 
-    await processResults({
+    const promise = processResults({
       ...resultMessage,
       success: false,
       data_url: undefined,
     });
 
+    await expect(promise).rejects.toThrow();
     expect(extractionService.getParagraphsResult).not.toHaveBeenCalled();
     expect(useCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('should set Extraction status to "error" when the operation failed', async () => {
+    const { processResults } = createSut();
+
+    const promise = processResults({
+      ...resultMessage,
+      success: false,
+      data_url: undefined,
+    });
+
+    await expect(promise).rejects.toThrow();
+
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+
+    expect(extractions).toMatchObject([
+      {
+        _id: extractionDBO._id,
+        status: ExtractionStatus.Error,
+      },
+    ]);
   });
 });

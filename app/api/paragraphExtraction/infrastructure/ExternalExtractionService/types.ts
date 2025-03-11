@@ -1,22 +1,3 @@
-type SegmentBoxDTO = {
-  left: number;
-  top: number;
-  page_number: number;
-  type: string;
-};
-
-type SegmentDTO = {
-  xml_file_name: string;
-  language: string;
-  main_language: boolean;
-  xml_segments_boxes: SegmentBoxDTO[];
-};
-
-type ExtractionDTODevelopment = {
-  key: string;
-  xmls: SegmentDTO[];
-};
-
 type TranslationDTO = {
   language: string;
   text: string;
@@ -35,7 +16,7 @@ type GetParagraphsResultDTO = {
   paragraphs: ParagraphDTO[];
 };
 
-type ExtractionDTOProduction = {
+type ExtractionDTO = {
   key: string;
   xmls: {
     xml_file_name: string;
@@ -52,4 +33,4 @@ type ExtractionDTOProduction = {
   }[];
 };
 
-export type { ExtractionDTODevelopment, ExtractionDTOProduction, GetParagraphsResultDTO };
+export type { ExtractionDTO, GetParagraphsResultDTO };

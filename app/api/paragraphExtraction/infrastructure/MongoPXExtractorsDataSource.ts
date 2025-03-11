@@ -3,7 +3,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
 import { PXExtractor } from '../domain/PXExtractor';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
+import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -55,13 +55,7 @@ export class MongoPXExtractorsDataSource
 
     if (!extractor) return undefined;
 
-    return new PXExtractor({
-      id: extractor._id,
-      sourceTemplate: TemplateMappers.toApp(extractor.sourceTemplate),
-      targetTemplate: TemplateMappers.toApp(extractor.targetTemplate),
-      paragraphNumberPropertyId: extractor.paragraphNumberPropertyId.toString(),
-      paragraphPropertyId: extractor.paragraphPropertyId.toString(),
-    });
+    return MongoPXExtractorsDataSource.toDomain(extractor as MongoPXDenormalizedExtractorDBO);
   }
 
   async create(extractor: PXExtractor): Promise<void> {
@@ -74,5 +68,15 @@ export class MongoPXExtractorsDataSource
     };
 
     await this.getCollection().insertOne(mongoExtractor);
+  }
+
+  static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {
+    return new PXExtractor({
+      id: dbo._id.toString(),
+      sourceTemplate: TemplateMappers.toApp(dbo.sourceTemplate),
+      targetTemplate: TemplateMappers.toApp(dbo.targetTemplate),
+      paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
+      paragraphPropertyId: dbo.paragraphPropertyId.toString(),
+    });
   }
 }

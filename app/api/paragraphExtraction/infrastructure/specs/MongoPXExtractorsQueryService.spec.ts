@@ -7,8 +7,11 @@ import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastruct
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
+import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
+import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
 
 const factory = getFixturesFactory();
 const sourceTemplate = factory.template('Source Template');
@@ -31,12 +34,23 @@ const entityPt = factory.entity('entity', sourceTemplate.name, {}, { language: '
 const entity2 = factory.entity('entity2', sourceTemplate.name);
 const entity2Pt = factory.entity('entity2', sourceTemplate.name, {}, { language: 'pt' });
 
+const extractionDBO: MongoPXExtractionDBO = {
+  _id: factory.id('extractionDBO'),
+  entitySharedId: entity.sharedId!,
+  extractorId: extractor._id,
+  failedParagraphsCount: 0,
+  paragraphsCount: 10,
+  successfulParagraphsCount: 10,
+  status: ExtractionStatus.Finished,
+};
+
 const entityThatDoesNotBelongToExtractor = factory.entity(
   'entityThatDoesNotBelongToExtractor',
   template.name
 );
 
 const createFixtures = (): DBFixture => ({
+  [mongoPXExtractionsCollection]: [extractionDBO],
   [mongoPXExtractorsCollection]: [extractor],
   templates: [sourceTemplate, targetTemplate],
   entities: [entity, entity2, entityPt, entity2Pt, entityThatDoesNotBelongToExtractor],
@@ -69,6 +83,7 @@ describe('MongoPXExtractorsQueryService', () => {
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
+
   it('should return target and source', async () => {
     const { extractorsQueryService } = setUpSut();
 
@@ -76,14 +91,9 @@ describe('MongoPXExtractorsQueryService', () => {
 
     expect(extractors).toMatchObject([
       {
-        sourceTemplate: {
-          templateId: sourceTemplate._id,
-          name: sourceTemplate.name,
-        },
-        targetTemplate: {
-          templateId: targetTemplate._id,
-          name: targetTemplate.name,
-        },
+        _id: extractor._id,
+        sourceTemplateId: sourceTemplate._id,
+        targetTemplateId: targetTemplate._id,
       },
     ]);
   });
@@ -95,10 +105,10 @@ describe('MongoPXExtractorsQueryService', () => {
 
     expect(extractors).toMatchObject([
       {
-        sourceEntitiesCount: 2,
+        count: {
+          generatedEntities: 2,
+        },
       },
     ]);
   });
-
-  it.todo('should count source Entities that has never been extracted');
 });

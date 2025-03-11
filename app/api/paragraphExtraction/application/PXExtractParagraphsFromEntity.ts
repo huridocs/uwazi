@@ -13,14 +13,15 @@ import { Logger } from 'api/log.v2/contracts/Logger';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
-import { PXExtractionId } from '../domain/PXExtractionId';
-import { PXExtraction } from '../domain/PXExtraction';
+import { PXExtractionKey } from '../domain/PXExtractionKey';
+import { PXExtractionModel } from '../domain/PXExtraction';
 import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
 
 type Input = {
   userId: string;
   extractorId: string;
   entitySharedId: string;
+  extraction: PXExtractionModel;
 };
 
 type Output = void;
@@ -41,40 +42,43 @@ type Dependencies = {
 export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
+  // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<Output> {
-    const { extractor, entity, installedLanguages, extraction } = await this.getInitialData(input);
+    try {
+      await this.dependencies.extractionsDS.initProcess(input.extraction);
 
-    const documents = await this.getDocuments(entity, installedLanguages);
+      const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
-    const segmentations = await this.getSegmentations(documents, entity);
+      const documents = await this.getDocuments(entity, installedLanguages);
 
-    const files = await this.getSegmentationFiles(segmentations, entity);
+      const segmentations = await this.getSegmentations(documents, entity);
 
-    const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
+      const files = await this.getSegmentationFiles(segmentations, entity);
 
-    await this.dependencies.extractionService.extractParagraphs({
-      documents,
-      segmentations,
-      mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
-      extractionId: PXExtractionId.create({
-        entitySharedId: entity.sharedId,
-        extractorId: extractor.id,
-        tenantName: this.dependencies.tenantName,
-        userId: input.userId,
-      }),
-      files,
-    });
+      const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
-    this.dependencies.logger.info(
-      `[PX] - Extract Paragraphs Request - ${JSON.stringify({
-        entitySharedId: entity.sharedId,
-        extractorId: extractor.id,
-      })}`
-    );
+      await this.dependencies.extractionService.extractParagraphs({
+        documents,
+        segmentations,
+        mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
+        extractionKey: PXExtractionKey.create({
+          tenantName: this.dependencies.tenantName,
+          userId: input.userId,
+          extractionId: input.extraction.id,
+        }),
+        files,
+      });
 
-    extraction.startProcessing();
-
-    await this.dependencies.extractionsDS.save(extraction);
+      this.dependencies.logger.info(
+        `[PX] - Extract Paragraphs Request - ${JSON.stringify({
+          entitySharedId: entity.sharedId,
+          extractorId: extractor.id,
+        })}`
+      );
+    } catch (e) {
+      await this.dependencies.extractionsDS.setAsError(input.extraction.id);
+      throw e;
+    }
   }
 
   private static getMainLanguage(documents: Document[], defaultLanguage: LanguageISO6391) {
@@ -87,11 +91,10 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
 
   // eslint-disable-next-line max-statements
   private async getInitialData(input: Input) {
-    const [extractor, entities, installedLanguages, extraction] = await Promise.all([
+    const [extractor, entities, installedLanguages] = await Promise.all([
       this.dependencies.extractorsDS.getById(input.extractorId),
       this.dependencies.entityDS.getByIds([input.entitySharedId]).all(),
       this.dependencies.settingsDS.getInstalledLanguages(),
-      this.getExtraction(input),
     ]);
 
     const [entity] = entities;
@@ -116,26 +119,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
         `The Entity "${entity.title}" does not have valid template configured by this Extractor`
       );
     }
-    return { extractor, entity, installedLanguages, extraction };
-  }
-
-  private async getExtraction(input: Input): Promise<PXExtraction> {
-    const existingExtraction = await this.dependencies.extractionsDS.getExisting({
-      ...input,
-      tenantName: this.dependencies.tenantName,
-    });
-
-    if (existingExtraction) {
-      return existingExtraction;
-    }
-
-    return PXExtraction.create({
-      id: this.dependencies.idGenerator.generate(),
-      extractorId: input.extractorId,
-      sourceEntityId: input.entitySharedId,
-      tenantName: this.dependencies.tenantName,
-      userId: input.userId,
-    });
+    return { extractor, entity, installedLanguages };
   }
 
   private async getSegmentationFiles(segmentations: Segmentation[], entity: Entity) {
