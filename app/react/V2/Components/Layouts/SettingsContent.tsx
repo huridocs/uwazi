@@ -69,8 +69,8 @@ SettingsContent.Footer = ({
   highlighted = false,
 }: SettingsContentFooterProps) => (
   <div
-    className={`bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 ${className} ${
-      highlighted ? 'bg-primary-50' : 'bg-white'
+    className={`bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 sticky z-1 ${className} ${
+      highlighted ? 'bg-indigo-50' : 'bg-white'
     }`}
     data-testid="settings-content-footer"
   >

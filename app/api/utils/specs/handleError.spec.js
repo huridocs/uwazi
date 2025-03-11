@@ -129,6 +129,11 @@ original error: {
     });
   });
 
+  it('should have a default "error" logLevel', () => {
+    const error = handleError({ message: 'error' });
+    expect(error.logLevel).toBe('error');
+  });
+
   describe('when error is uncaught', () => {
     it('should append the info into the message', () => {
       const uncaught = true;

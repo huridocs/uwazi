@@ -3,7 +3,7 @@ import { config } from 'api/config';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
-import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
+import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';

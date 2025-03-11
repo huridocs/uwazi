@@ -2,9 +2,12 @@ Key,Russian
 % of sentences above threshold,% предложений выше порога
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
+1 Numeric Property,1 Numeric Property
+1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,Сгенерированный идентификатор будет назначен заголовком по умолчанию
+A target template needs at least,A target template needs at least
 A valid email is required,Требутся электронная почта
 Accept,Принять
 Accept suggestion,Accept suggestion
@@ -28,6 +31,7 @@ Add date,Добавить дату
 Add entities / documents,Добавить объекты/документы
 Add entity type,Add entity type
 Add Extractor,Add Extractor
+Add extractor,Add extractor
 Add file,Добавить файл
 Add from URL,Добавить из URL
 Add from web,Добавить из Интернета
@@ -125,6 +129,7 @@ Check to make this instance public (non-logged in users can see public documents
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
+Clear All,Clear All
 Clear coordinates,Очистить координаты
 Clear Filters,Очистить фильтры
 Clear PDF selection,Clear PDF selection
@@ -312,6 +317,8 @@ Exploration,Изучение
 Export CSV,Экспортировать CSV
 Exporting entities to CSV,Экспортировать объекты в CSV
 Extension Token,Extension Token
+Extract new paragraphs,Extract new paragraphs
+Extract paragraphs,Extract paragraphs
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -351,7 +358,6 @@ Full edit mode,Режим полного редактирования
 Full width,Full width
 General,Общий
 General Information,General Information
-Generated Entities,Generated Entities
 Global CSS,Глобальные CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -388,6 +394,7 @@ Importing data in progress,Импорт данных в ходе выполне�
 in,в
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,В очереди на оптическое распознавание символов
+In queue,In queue
 incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,Индексация объектов может занять несколько минут
 Info,Информация
@@ -433,6 +440,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language(s),Language(s)
 Language:,Language:
 Languages,Языки
 Languages installed successfully,Languages installed successfully
@@ -509,6 +517,7 @@ Narrow your search,Ограничить свой поиск
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New,New
 New entity,Новый объект
 New group,New group
 New language added,Добавлен новый язык
@@ -524,7 +533,9 @@ No common filters,Нет общих фильтров
 No Connections,Нет связей
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+NO DATA AVAILABLE,NO DATA AVAILABLE
 No Documents found,Документы не найдены
+NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,Нет иконки/флажка
@@ -583,8 +594,9 @@ Page,Страница
 Pages,Страницы
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
-Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
+Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
 Password,Пароль
 Password + 2fa,Password + 2fa
@@ -649,12 +661,10 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,Опубликовать
 Published,В открытом доступе
 QR Code,QR Code
-Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,Запрос
 Quick labeling for,Быстрая маркировка для
 RAW,RAW
 Re-uploaded document,Re-uploaded document
-Read Documentation,Read Documentation
 Receiving email,Электронная почта получателя
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Reference,Reference
@@ -663,6 +673,7 @@ Reject,Отклонить
 Relationship,Взаимосвязь
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type:,Relationship type:
 Relationship types,Типы взаимосвязей
 relationships,Взаимосвязи
 Relationships,Взаимосвязи
@@ -778,6 +789,8 @@ Sort ascending,Sort ascending
 Sort by,Сортировать по
 Sort descending,Sort descending
 sorted by,отсортировано по
+Source template,Source template
+Source Template,Source Template
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -807,7 +820,6 @@ Table of contents,Содержание
 Table view,Табличный вид
 Target Template,Target Template
 Target template,Target template
-Target Template:,Target Template:
 Template,Шаблон
 Template conflict,Template conflict
 Template name,Template name
@@ -816,7 +828,6 @@ Template with a long number of entities,"The template has changed and the associ
 Template(s),Template(s)
 Templates,Шаблоны
 Templates meeting,Templates meeting
-Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,Текст
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

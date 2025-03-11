@@ -71,6 +71,7 @@ export const config = {
     featureFlags: {
       s3Storage: false,
       esReplicas: 0,
+      deactivateTestJob: false,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,

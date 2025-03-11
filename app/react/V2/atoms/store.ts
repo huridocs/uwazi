@@ -3,7 +3,7 @@ import { sortBy } from 'lodash';
 import { isClient } from 'app/utils';
 import { store } from 'app/store';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
-import { ClientTemplateSchema, ClientTranslationSchema } from 'app/istore';
+import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from 'app/istore';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 import { relationshipTypesAtom } from './relationshipTypes';
@@ -20,6 +20,7 @@ type AtomStoreData = {
   settings?: ClientSettings;
   thesauri?: ClientThesaurus[];
   templates?: ClientTemplateSchema[];
+  relationTypes?: RelationshipTypesType[];
   user?: ClientUserSchema;
   ciMatomoActive?: boolean;
   translations: ClientTranslationSchema[];
@@ -39,6 +40,7 @@ const hydrateAtomStore = (data: AtomStoreData) => {
   if (data.settings) atomStore.set(settingsAtom, data.settings);
   if (data.thesauri) atomStore.set(thesauriAtom, data.thesauri);
   if (data.templates) atomStore.set(templatesAtom, data.templates);
+  if (data.relationTypes) atomStore.set(relationshipTypesAtom, data.relationTypes);
   atomStore.set(userAtom, data.user);
   atomStore.set(translationsAtom, data.translations);
   atomStore.set(localeAtom, data.locale || 'en');

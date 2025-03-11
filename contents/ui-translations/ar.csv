@@ -2,9 +2,12 @@ Key,Arabic
 % of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
+1 Numeric Property,1 Numeric Property
+1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,سيكون معرف تم إنشاؤه العنوان.
+A target template needs at least,A target template needs at least
 A valid email is required,البريد الإلكتروني مطلوب
 Accept,قبول
 Accept suggestion,Accept suggestion
@@ -28,6 +31,7 @@ Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
 Add entity type,Add entity type
 Add Extractor,Add Extractor
+Add extractor,Add extractor
 Add file,اضف ملف
 Add from URL,إضافة من عنوان URL
 Add from web,أضف من الويب
@@ -127,6 +131,7 @@ Check to make this instance public (non-logged in users can see public documents
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
+Clear All,Clear All
 Clear coordinates,مسح الإحداثيات
 Clear Filters,مسح عوامل التصفية
 Clear PDF selection,Clear PDF selection
@@ -314,6 +319,8 @@ Exploration,استكشاف
 Export CSV,تصدير ملف القيم المفصولة بفواصل
 Exporting entities to CSV,تصدير كيانات (إدخالات) إلى ملف القيم المفصولة بفواصل
 Extension Token,Extension Token
+Extract new paragraphs,Extract new paragraphs
+Extract paragraphs,Extract paragraphs
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -353,7 +360,6 @@ Full edit mode,وضع التحرير الكامل
 Full width,Full width
 General,عام
 General Information,General Information
-Generated Entities,Generated Entities
 Global CSS,خاصية CSS العالمية
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -390,6 +396,7 @@ Importing data in progress,جاري استيراد البيانات
 in,في
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,جاري التعرف الضوئي علي الحروف
+In queue,In queue
 incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,قد تستغرق فهرسة الكيانات (الإدخالات) بضع دقائق
 Info,معلومات
@@ -435,6 +442,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language(s),Language(s)
 Language:,Language:
 Languages,اللغات
 Languages installed successfully,Languages installed successfully
@@ -511,6 +519,7 @@ Narrow your search,ضيق نطاق بحثك
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New,New
 New entity,كيان جديد
 New group,New group
 New language added,أضيفت لغة جديدة
@@ -526,7 +535,9 @@ No common filters,لا مشترك بين قوائم التصفيه
 No Connections,لا اتصالات
 No Connections description,الاتصالات هل العلاقات المباشرة بين تلك الوثيقة و الوثائق والكيانات الاخرد
 No context,No context
+NO DATA AVAILABLE,NO DATA AVAILABLE
 No Documents found,لم يعثر على مستندات
+NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,لا توجد أيقونة/ علامة
@@ -585,8 +596,9 @@ Page,صفحة
 Pages,الصفحات
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
-Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
+Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
@@ -651,12 +663,10 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,انشر
 Published,منشور
 QR Code,QR Code
-Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,استعلام
 Quick labeling for,تسمية سريعة لـ
 RAW,RAW
 Re-uploaded document,Re-uploaded document
-Read Documentation,Read Documentation
 Receiving email,البريد الالكتروني المستقبل
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Reference,Reference
@@ -665,6 +675,7 @@ Reject,رفض
 Relationship,صلة
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type:,Relationship type:
 Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
@@ -780,6 +791,8 @@ Sort ascending,Sort ascending
 Sort by,ترتيب حسب
 Sort descending,Sort descending
 sorted by,مرتبة حسب
+Source template,Source template
+Source Template,Source Template
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -809,7 +822,6 @@ Table of contents,جدول المحتويات
 Table view,معاينة الجدول
 Target Template,Target Template
 Target template,Target template
-Target Template:,Target Template:
 Template,قالب
 Template conflict,Template conflict
 Template name,Template name
@@ -818,7 +830,6 @@ Template with a long number of entities,"The template has changed and the associ
 Template(s),Template(s)
 Templates,قوالب
 Templates meeting,Templates meeting
-Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

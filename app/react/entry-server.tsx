@@ -183,6 +183,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       templates: templatesApiResponse.json.rows,
       user: userApiResponse.json,
       translations: translationsApiResponse.json.rows,
+      relationTypes: sortBy(relationTypesApiResponse.json.rows, 'name'),
     },
   };
 };

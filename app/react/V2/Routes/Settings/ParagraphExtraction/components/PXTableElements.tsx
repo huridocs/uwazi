@@ -7,6 +7,7 @@ import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { PXTable } from '../types';
 import { TableTitle } from './TableTitle';
+import { DisplayPill } from './DisplayPills';
 
 const extractorColumnHelper = createColumnHelper<PXTable>();
 
@@ -14,90 +15,97 @@ const TableHeaderContainer = ({ children }: { children: React.ReactNode }) => (
   <span className="text-gray-500 font-semibold text-xs">{children}</span>
 );
 
-const TemplateFromHeader = () => (
+const SourceTemplateHeader = () => (
   <TableHeaderContainer>
-    <Translate>Template</Translate>
+    <Translate>Source Template</Translate>
   </TableHeaderContainer>
 );
-const TemplateToHeader = () => (
+const TargetTemplateHeader = () => (
   <TableHeaderContainer>
     <Translate>Target Template</Translate>
   </TableHeaderContainer>
 );
-const DocumentsHeader = () => (
+const EntitiesCountHeader = () => (
   <TableHeaderContainer>
-    <Translate>Documents</Translate>
+    <Translate>Entities</Translate>
   </TableHeaderContainer>
 );
-const GeneratedEntitiesHeader = () => (
-  <TableHeaderContainer>
-    <Translate>Generated Entities</Translate>
-  </TableHeaderContainer>
-);
-const ActionHeader = () => (
-  <TableHeaderContainer>
-    <Translate>Action</Translate>
-  </TableHeaderContainer>
+const ActionHeader = () => <TableHeaderContainer> </TableHeaderContainer>;
+
+const NewEntitiesCountPill = ({ count }: { count: number }) => (
+  <Pill color="indigo" className="font-medium px-1 rounded-md text-xs">
+    {count} <Translate>New</Translate>
+  </Pill>
 );
 
-const NumericCell = ({
+const NumericCell = ({ cell }: CellContext<PXTable, PXTable['count']>) => {
+  const count = cell.getValue();
+  return (
+    <div className="flex gap-2 items-center">
+      <span className="text-sm font-normal text-gray-500">{count.generatedEntities}</span>
+      {count.new > 0 && <NewEntitiesCountPill count={count.new} />}
+    </div>
+  );
+};
+
+const TemplatesCell = ({
   cell,
-}: CellContext<PXTable, PXTable['documents'] | PXTable['generatedEntities']>) => (
-  <span className="text-sm font-normal text-gray-500">{cell.getValue()}</span>
-);
-
-const TemplatesCell = ({ cell }: CellContext<PXTable, PXTable['templateTo']>) => (
+}: CellContext<PXTable, PXTable['targetTemplate'] | PXTable['sourceTemplate']>) => (
   <div className="flex flex-wrap gap-2">
     <div className="whitespace-nowrap">
-      <Pill color="gray">{cell.getValue()}</Pill>
+      <DisplayPill color={cell.getValue().color}>
+        <span className="text-xs font-medium">{cell.getValue().name}</span>
+      </DisplayPill>
     </div>
   </div>
 );
 
-const TemplateFromCell = ({ cell }: CellContext<PXTable, PXTable['originTemplateNames']>) => (
-  <div className="flex flex-wrap gap-2">
-    {cell.getValue().map(value => (
-      <div key={value} className="whitespace-nowrap">
-        <Pill color="gray">{value}</Pill>
-      </div>
-    ))}
+const ActionButtons = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
+  <div className="flex gap-2 justify-end">
+    <Link to={`${cell.getValue()}/entities`}>
+      <Button className="leading-4" styling="outline">
+        <Translate>View</Translate>
+      </Button>
+    </Link>
   </div>
 );
 
-const LinkButton = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
-  <Link to={`${cell.getValue()}/entities`}>
-    <Button className="leading-4" styling="outline">
-      <Translate>View</Translate>
-    </Button>
-  </Link>
-);
-
 const tableColumns = [
-  extractorColumnHelper.accessor('originTemplateNames', {
-    header: TemplateFromHeader,
-    enableSorting: true,
-    cell: TemplateFromCell,
-  }),
-  extractorColumnHelper.accessor('targetTemplateName', {
-    header: TemplateToHeader,
+  extractorColumnHelper.accessor('sourceTemplate', {
+    header: SourceTemplateHeader,
     enableSorting: true,
     cell: TemplatesCell,
+    meta: {
+      headerClassName: 'w-1/4',
+    },
   }),
-  extractorColumnHelper.accessor('documents', {
-    header: DocumentsHeader,
+  extractorColumnHelper.accessor('targetTemplate', {
+    header: TargetTemplateHeader,
+    enableSorting: true,
+    cell: TemplatesCell,
+    meta: {
+      headerClassName: 'w-1/4',
+    },
+  }),
+  extractorColumnHelper.accessor('count', {
+    header: EntitiesCountHeader,
     enableSorting: true,
     cell: NumericCell,
-  }),
-  extractorColumnHelper.accessor('generatedEntities', {
-    header: GeneratedEntitiesHeader,
-    enableSorting: true,
-    cell: NumericCell,
+    meta: {
+      headerClassName: 'w-1/4',
+    },
   }),
   extractorColumnHelper.accessor('_id', {
     header: ActionHeader,
-    enableSorting: true,
-    cell: LinkButton,
+    enableSorting: false,
+    cell: ActionButtons,
   }),
 ];
 
-export { tableColumns, TableTitle };
+const NoDataMessage = () => (
+  <div className="min-h-[400px] flex items-center justify-center">
+    <Translate className="text-gray-500 font-semibold text-xs">NO EXTRACTORS</Translate>.
+  </div>
+);
+
+export { tableColumns, TableTitle, NoDataMessage, NewEntitiesCountPill };
