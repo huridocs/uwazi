@@ -42,6 +42,7 @@ if (window.SENTRY_APP_DSN) {
         ),
       }),
       new Sentry.Replay(),
+      Sentry.captureConsoleIntegration({ levels: ['error'] }),
     ],
 
     tracesSampleRate: 0.1,
