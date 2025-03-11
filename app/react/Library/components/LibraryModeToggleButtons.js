@@ -5,8 +5,9 @@ import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { createSelector } from 'reselect';
+import { isClient } from 'app/utils';
 
-export class LibraryModeToggleButtons extends Component {
+class LibraryModeToggleButtons extends Component {
   render() {
     const { zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl, tableViewMode, mapViewMode } =
       this.props;
@@ -49,16 +50,18 @@ export class LibraryModeToggleButtons extends Component {
             <Icon icon="th" />
             <span className="tab-link-tooltip">{t('System', 'Cards view')}</span>
           </I18NLink>
-          <I18NLink
-            to={`library/table${searchUrl}`}
-            className="btn btn-default"
-            activeclassname="is-active"
-            aria-label={t('System', 'library table view', null, false)}
-          >
-            <Icon icon="align-justify" />
-            <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
-          </I18NLink>
-          {showGeolocation && (
+          {isClient && (
+            <I18NLink
+              to={`library/table${searchUrl}`}
+              className="btn btn-default"
+              activeclassname="is-active"
+              aria-label={t('System', 'library table view', null, false)}
+            >
+              <Icon icon="align-justify" />
+              <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
+            </I18NLink>
+          )}
+          {showGeolocation && isClient && (
             <I18NLink
               to={`library/map${searchUrl}`}
               className="btn btn-default"
@@ -116,4 +119,5 @@ export function mapStateToProps(state, props) {
         : state.library.ui.get('zoomLevel'),
   };
 }
+export { LibraryModeToggleButtons };
 export default connect(mapStateToProps)(LibraryModeToggleButtons);

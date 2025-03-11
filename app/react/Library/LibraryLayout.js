@@ -72,11 +72,11 @@ LibraryLayoutBase.propTypes = {
 
 export { LibraryLayoutBase };
 
-export default connect(state => {
+export default connect((state, { noindex }) => {
   const filters = state.library.search.filters;
-  const noindex = filters && Object.keys(filters).length > 0;
+  const _noindex = (filters && Object.keys(filters).length > 0) || noindex;
   return {
     quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),
-    noindex,
+    noindex: Boolean(_noindex),
   };
 })(LibraryLayoutBase);
