@@ -44,6 +44,7 @@ import {
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
+  [mongoPXExtractionsCollection]: [extraction],
   templates: [sourceTemplate, targetTemplate, defaultTemplate],
   entities: [entity, invalidEntity],
   settings: [
@@ -111,6 +112,48 @@ describe('PXExtractParagraphsFromEntity', () => {
     await testingEnvironment.tearDown();
   });
 
+  it('should change Extraction status to "processing" on success', async () => {
+    const { extractParagraphs } = setUpUseCase();
+
+    await extractParagraphs.execute({
+      entitySharedId: entity.sharedId!.toString()!,
+      extractorId: extractor._id.toString(),
+      userId: userId.toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
+    });
+
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+
+    expect(extractions).toMatchObject([
+      {
+        _id: extraction._id,
+        status: PXExtraction.status.Processing,
+      },
+    ]);
+  });
+
+  it('should change Extraction status to "error" on fail', async () => {
+    const { extractParagraphs } = setUpUseCase();
+
+    const promise = extractParagraphs.execute({
+      entitySharedId: 'entity_shared_id_that_does_not_exist',
+      extractorId: extractor._id.toString(),
+      userId: userId.toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
+    });
+
+    await expect(promise).rejects.toThrow();
+
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+
+    expect(extractions).toMatchObject([
+      {
+        _id: extraction._id,
+        status: PXExtraction.status.Error,
+      },
+    ]);
+  });
+
   it("should fallback to the first document's language if no default language is present", async () => {
     await testingEnvironment.setFixtures({
       ...createFixtures(),
@@ -124,65 +167,12 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: userId.toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     const { mainLanguage } = extractionService.extractParagraphs.mock.lastCall[0];
 
     expect(mainLanguage).toBe('es');
-  });
-
-  it('should create an Extraction record for the extracted Paragraph', async () => {
-    const { extractParagraphs, tenantName } = setUpUseCase();
-
-    await extractParagraphs.execute({
-      entitySharedId: entity.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: userId.toString(),
-    });
-
-    const result = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
-
-    expect(result).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        sourceEntityId: entity.sharedId,
-        extractorId: extractor._id,
-        userId,
-        status: PXExtraction.status.Processing,
-        tenantName,
-      },
-    ]);
-  });
-
-  it('should update an Extraction record if there is already one', async () => {
-    const tenantName = tenants.current().name;
-    const _extraction = { ...extraction, tenantName };
-    await testingEnvironment.setFixtures({
-      ...createFixtures(),
-      [mongoPXExtractionsCollection]: [_extraction],
-    });
-
-    const { extractParagraphs } = setUpUseCase();
-
-    await extractParagraphs.execute({
-      entitySharedId: entity.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: userId.toString(),
-    });
-
-    const result = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
-
-    expect(result).toHaveLength(1);
-    expect(result).toEqual([
-      {
-        _id: _extraction._id,
-        tenantName: _extraction.tenantName,
-        sourceEntityId: _extraction.sourceEntityId,
-        extractorId: _extraction.extractorId,
-        userId: _extraction.userId,
-        status: PXExtraction.status.Processing,
-      },
-    ]);
   });
 
   it('should only extract Documents which language are installed on Settings collections', async () => {
@@ -196,6 +186,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     const [payload] = extractionService.extractParagraphs.mock.lastCall;
@@ -215,6 +206,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     const [payload] = extractionService.extractParagraphs.mock.lastCall;
@@ -235,6 +227,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!,
       extractorId: new ObjectId().toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -249,6 +242,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: new ObjectId().toString(),
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -263,6 +257,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: invalidEntity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -282,6 +277,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -303,6 +299,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -319,6 +316,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
+      extraction: MongoPXExtractionsDataSource.toDomain(extraction),
     });
 
     await expect(promise).rejects.toMatchObject({

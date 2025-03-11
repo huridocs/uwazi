@@ -1,11 +1,15 @@
 import users from 'api/users/users';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 import { PXCreateParagraphsFactory } from './PXCreateParagraphsFactory';
+import { PXExtractionKey } from '../domain/PXExtractionKey';
+import { MongoPXExtractionsDataSource } from './MongoPXExtractionsDataSource';
 
 type ResultMessage = {
   key: string;
@@ -37,14 +41,29 @@ export class PXParagraphsResultListener {
   }
 
   private async processResults(results: ResultMessage) {
-    if (!results.success || !results.data_url) return;
-
-    const result = await this.extractionService.getParagraphsResult(results.data_url);
+    const extractionKey = new PXExtractionKey(results.key);
 
     await tenants.run(async () => {
-      await this.setCurrentUser(result.extractionId.userId);
-      await this.getUseCase().execute(result);
-    }, result.extractionId.tenantName);
+      try {
+        if (!results.success || !results.data_url) {
+          throw new Error(`Paragraph Extraction failed - ${JSON.stringify(extractionKey)}`);
+        }
+
+        const result = await this.extractionService.getParagraphsResult(results.data_url);
+
+        await this.setCurrentUser(extractionKey.userId);
+        await this.getUseCase().execute(result);
+      } catch (e) {
+        const extractionsDS = new MongoPXExtractionsDataSource(
+          getConnection(),
+          DefaultTransactionManager()
+        );
+
+        await extractionsDS.setAsError(extractionKey.extractionId);
+
+        throw e;
+      }
+    }, extractionKey.tenantName);
   }
 
   // eslint-disable-next-line class-methods-use-this

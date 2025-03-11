@@ -31,8 +31,11 @@ export class PXExtractParagraphsFromEntitiesFactory {
       tenantName,
     });
 
+    const extractionsDS = new MongoPXExtractionsDataSource(db, transactionManager);
+
     return new PXExtractParagraphsFromEntities({
       extractParagraphsFromEntity,
+      extractionsDS,
     });
   }
 }
