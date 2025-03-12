@@ -44,31 +44,31 @@ describe('Logger', () => {
         logger: standardLogger,
         level: 'debug',
         message: 'debug message',
-        expected: `${mockedDateString} - [DEBUG] - [testTenant]:debug message\n`,
+        expected: `${mockedDateString} - [debug] - [testTenant]:debug message\n`,
       },
       {
         logger: standardLogger,
         level: 'info',
         message: 'info message',
-        expected: `${mockedDateString} - [INFO] - [testTenant]:info message\n`,
+        expected: `${mockedDateString} - [info] - [testTenant]:info message\n`,
       },
       {
         logger: standardLogger,
         level: 'warning',
         message: 'warning message',
-        expected: `${mockedDateString} - [WARNING] - [testTenant]:warning message\n`,
+        expected: `${mockedDateString} - [warning] - [testTenant]:warning message\n`,
       },
       {
         logger: standardLogger,
         level: 'error',
         message: 'error message',
-        expected: `${mockedDateString} - [ERROR] - [testTenant]:error message\n`,
+        expected: `${mockedDateString} - [error] - [testTenant]:error message\n`,
       },
       {
         logger: standardLogger,
         level: 'critical',
         message: 'critical message',
-        expected: `${mockedDateString} - [CRITICAL] - [testTenant]:critical message\n`,
+        expected: `${mockedDateString} - [critical] - [testTenant]:critical message\n`,
       },
     ])('should log $level', ({ logger, level, message, expected }) => {
       // @ts-ignore
@@ -82,35 +82,35 @@ describe('Logger', () => {
         level: 'debug',
         message: 'debug message',
         metadata: { extra: 'info' },
-        expected: `${mockedDateString} - [DEBUG] - [testTenant]:debug message\n{"extra":"info"}`,
+        expected: `${mockedDateString} - [debug] - [testTenant]:debug message\n{"extra":"info"}`,
       },
       {
         logger: standardLogger,
         level: 'info',
         message: 'info message',
         metadata: { extra: 'info' },
-        expected: `${mockedDateString} - [INFO] - [testTenant]:info message\n{"extra":"info"}`,
+        expected: `${mockedDateString} - [info] - [testTenant]:info message\n{"extra":"info"}`,
       },
       {
         logger: standardLogger,
         level: 'warning',
         message: 'warning message',
         metadata: { extra: 'info' },
-        expected: `${mockedDateString} - [WARNING] - [testTenant]:warning message\n{"extra":"info"}`,
+        expected: `${mockedDateString} - [warning] - [testTenant]:warning message\n{"extra":"info"}`,
       },
       {
         logger: standardLogger,
         level: 'error',
         message: 'error message',
         metadata: { extra: 'info' },
-        expected: `${mockedDateString} - [ERROR] - [testTenant]:error message\n{"extra":"info"}`,
+        expected: `${mockedDateString} - [error] - [testTenant]:error message\n{"extra":"info"}`,
       },
       {
         logger: standardLogger,
         level: 'critical',
         message: 'critical message',
         metadata: { extra: 'info' },
-        expected: `${mockedDateString} - [CRITICAL] - [testTenant]:critical message\n{"extra":"info"}`,
+        expected: `${mockedDateString} - [critical] - [testTenant]:critical message\n{"extra":"info"}`,
       },
     ] as const)(
       'should accept extra params as an optional map on $level',
@@ -128,8 +128,8 @@ describe('Logger', () => {
         level: 'debug',
         message: 'debug message',
         expected: {
-          time: mockedDateString,
-          level: 'DEBUG',
+          timestamp: mockedDateString,
+          level: 'debug',
           tenant: 'testTenant',
           message: 'debug message',
         },
@@ -139,8 +139,8 @@ describe('Logger', () => {
         level: 'info',
         message: 'info message',
         expected: {
-          time: mockedDateString,
-          level: 'INFO',
+          timestamp: mockedDateString,
+          level: 'info',
           tenant: 'testTenant',
           message: 'info message',
         },
@@ -150,8 +150,8 @@ describe('Logger', () => {
         level: 'warning',
         message: 'warning message',
         expected: {
-          time: mockedDateString,
-          level: 'WARNING',
+          timestamp: mockedDateString,
+          level: 'warning',
           tenant: 'testTenant',
           message: 'warning message',
         },
@@ -161,8 +161,8 @@ describe('Logger', () => {
         level: 'error',
         message: 'error message',
         expected: {
-          time: mockedDateString,
-          level: 'ERROR',
+          timestamp: mockedDateString,
+          level: 'error',
           tenant: 'testTenant',
           message: 'error message',
         },
@@ -172,8 +172,8 @@ describe('Logger', () => {
         level: 'critical',
         message: 'critical message',
         expected: {
-          time: mockedDateString,
-          level: 'CRITICAL',
+          timestamp: mockedDateString,
+          level: 'critical',
           tenant: 'testTenant',
           message: 'critical message',
         },
@@ -191,8 +191,8 @@ describe('Logger', () => {
         message: 'debug message',
         metadata: { extra: 'info' },
         expected: {
-          time: mockedDateString,
-          level: 'DEBUG',
+          timestamp: mockedDateString,
+          level: 'debug',
           tenant: 'testTenant',
           message: 'debug message',
           extra: 'info',
@@ -204,8 +204,8 @@ describe('Logger', () => {
         message: 'info message',
         metadata: { extra: 'info' },
         expected: {
-          time: mockedDateString,
-          level: 'INFO',
+          timestamp: mockedDateString,
+          level: 'info',
           tenant: 'testTenant',
           message: 'info message',
           extra: 'info',
@@ -217,8 +217,8 @@ describe('Logger', () => {
         message: 'warning message',
         metadata: { extra: 'info' },
         expected: {
-          time: mockedDateString,
-          level: 'WARNING',
+          timestamp: mockedDateString,
+          level: 'warning',
           tenant: 'testTenant',
           message: 'warning message',
           extra: 'info',
@@ -230,8 +230,8 @@ describe('Logger', () => {
         message: 'error message',
         metadata: { extra: 'info' },
         expected: {
-          time: mockedDateString,
-          level: 'ERROR',
+          timestamp: mockedDateString,
+          level: 'error',
           tenant: 'testTenant',
           message: 'error message',
           extra: 'info',
@@ -243,8 +243,8 @@ describe('Logger', () => {
         message: 'critical message',
         metadata: { extra: 'info' },
         expected: {
-          time: mockedDateString,
-          level: 'CRITICAL',
+          timestamp: mockedDateString,
+          level: 'critical',
           tenant: 'testTenant',
           message: 'critical message',
           extra: 'info',
@@ -263,7 +263,7 @@ describe('Logger', () => {
   it('should be able to log multiple lines together', () => {
     const message = ['multiple', 'line', 'message'];
     standardLogger.debug(message);
-    const expected = `${mockedDateString} - [DEBUG] - [testTenant]:multiple\nline\nmessage\n`;
+    const expected = `${mockedDateString} - [debug] - [testTenant]:multiple\nline\nmessage\n`;
     expect(stdoutMock).toHaveBeenCalledWith(expected);
   });
 });
