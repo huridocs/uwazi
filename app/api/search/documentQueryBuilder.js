@@ -352,16 +352,14 @@ export default function () {
       );
     },
 
-    aggregations(properties, includeReviewAggregations) {
+    aggregations(properties) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
           baseQuery
         );
       });
-      if (includeReviewAggregations) {
-        // We want to remove the one-up, OneUp review or "suggestions" and deprecate this flag
-      }
+
       return this;
     },
 
