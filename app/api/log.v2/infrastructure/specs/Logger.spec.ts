@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { Tenant } from 'api/tenants/tenantContext';
-import { StandardLogger } from '../StandardLogger';
+import { StandardLogger, withFeature } from '../StandardLogger';
 import { StandardJSONWriter } from '../writers/StandardJSONWriter';
 import { StandardWriter } from '../writers/StandardWriter';
 
@@ -254,6 +254,46 @@ describe('Logger', () => {
       'should accept extra params as an optional map on $level',
       ({ logger, level, message, expected, metadata }) => {
         logger[level](message, metadata);
+        const logged = stdoutMock.mock.calls[0][0];
+        expect(JSON.parse(logged)).toMatchObject(expected);
+      }
+    );
+  });
+
+  describe('withFeature decorator', () => {
+    it.each([
+      {
+        feature: 'feature_name',
+        level: 'info',
+        expected: { message: 'info with feature', level: 'info', feature: 'feature_name' },
+      },
+      {
+        feature: 'feature_name',
+        level: 'debug',
+        expected: { message: 'debug with feature', level: 'debug', feature: 'feature_name' },
+      },
+      {
+        feature: 'feature_name',
+        level: 'error',
+        expected: { message: 'error with feature', level: 'error', feature: 'feature_name' },
+      },
+      {
+        feature: 'feature_name',
+        level: 'warning',
+        expected: { message: 'warning with feature', level: 'warning', feature: 'feature_name' },
+      },
+      {
+        feature: 'feature_name',
+        level: 'critical',
+        expected: { message: 'critical with feature', level: 'critical', feature: 'feature_name' },
+      },
+    ] as const)(
+      'should decorate log with extra "feature" property on $level',
+      async ({ level, expected, feature }) => {
+        const featureLogger = new StandardLogger(withFeature(StandardJSONWriter, feature), tenant);
+
+        featureLogger[level](`${level} with feature`);
+
         const logged = stdoutMock.mock.calls[0][0];
         expect(JSON.parse(logged)).toMatchObject(expected);
       }

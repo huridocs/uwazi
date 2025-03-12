@@ -56,4 +56,15 @@ const SystemLogger = (writer = StandardJSONWriter) =>
     uploadedDocuments: 'N/a',
   });
 
+export const withFeature =
+  (writer: LogWriter, featureName: string): LogWriter =>
+  (log: LogEntry) => {
+    writer(
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+        ...log.metadata,
+        feature: featureName,
+      })
+    );
+  };
+
 export { StandardLogger, DefaultLogger, SystemLogger };
