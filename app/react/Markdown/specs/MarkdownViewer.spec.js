@@ -6,7 +6,6 @@ import { shallow } from 'enzyme';
 
 import { atomStore, userAtom } from 'app/V2/atoms';
 import { store } from 'app/store';
-import { notify } from 'app/Notifications/actions/notificationsActions';
 import CustomHookComponents from '../CustomHooks';
 import MarkdownViewer from '../MarkdownViewer';
 import { errorCollector } from '../utils';
