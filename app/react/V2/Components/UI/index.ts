@@ -7,7 +7,7 @@ export { ToggleButton } from './ToggleButton';
 export { NotificationsContainer } from './NotificationsContainer';
 export { Tabs } from './Tabs';
 export { Sidepanel } from './Sidepanel';
-export { MultiselectList } from '../Forms/MultiselectList';
+export { MultiselectList } from '../Forms/MultiselectList/MultiselectList';
 export { ConfirmationModal } from './ConfirmationModal';
 export { Card } from './Card';
 export { CopyValueInput } from './CopyValueInput';
