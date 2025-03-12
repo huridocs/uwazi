@@ -360,14 +360,7 @@ export default function () {
         );
       });
       if (includeReviewAggregations) {
-        // suggested has an implied '__' as a prefix
-        properties.forEach(property => {
-          baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
-            property,
-            baseQuery,
-            true
-          );
-        });
+        // We want to remove the one-up, OneUp review or "suggestions" and deprecate this flag
       }
       return this;
     },
