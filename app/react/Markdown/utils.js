@@ -261,7 +261,7 @@ const errorCollector = {
   },
   report() {
     // eslint-disable-next-line no-console
-    // a mechanism to log the errors to anywhere we want - for now a noop
+    console.info('Markdown Errors: ', this.getErrors());
   },
 };
 

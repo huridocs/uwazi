@@ -10,12 +10,8 @@ import { state, translations } from './fixture/state';
 import { EntityData, EntityDataProps } from '../EntityData';
 
 describe('EntityData Markdown', () => {
-  let consoleErrorSpy: jasmine.Spy;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
-    spyOn(console, 'error').and.callFake(consoleErrorSpy);
     global.fetch = jest.fn();
     (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
   });
