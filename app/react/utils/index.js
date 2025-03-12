@@ -1,5 +1,6 @@
 import Jvent from 'jvent';
 import rison from '@huridocs/rison';
+import { captureException } from '@sentry/react';
 
 const getPropsFromRoute = ({ routes }, componentProps) => {
   const props = {};
@@ -20,7 +21,8 @@ const risonDecodeOrIgnore = (query, defaultValue = {}) => {
   try {
     return rison.decode(query);
   } catch (e) {
-    console.error('Error decoding: ', query, e);
+    const error = new Error(`Error decoding ${query}`, { cause: e });
+    captureException(error);
     return defaultValue;
   }
 };
