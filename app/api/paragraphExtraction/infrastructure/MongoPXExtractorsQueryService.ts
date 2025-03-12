@@ -6,12 +6,26 @@ import { GetExtractorsOutput, PXExtractorsQueryService } from '../domain/PXExtra
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
 import { mongoPXExtractionsCollection } from './MongoPXExtractionsDataSource';
+import { MongoPXExtractionDBO } from './MongoPXExtractionDBO';
 
 class MongoPXExtractorsQueryService
   extends MongoDataSource<MongoPXExtractorDBO>
   implements PXExtractorsQueryService
 {
   protected collectionName = mongoPXExtractorsCollection;
+
+  private static countNotExtractedEntities(
+    sourceEntities: { _id: string }[],
+    extractions: MongoPXExtractionDBO[]
+  ) {
+    const isEntityExtracted = (entity: { _id: string }) =>
+      extractions.some((e: MongoPXExtractionDBO) => e.entitySharedId === entity._id);
+
+    return sourceEntities.reduce(
+      (counter: number, entity: { _id: string }) => counter + (isEntityExtracted(entity) ? 0 : 1),
+      0
+    );
+  }
 
   getExtractors(): ResultSet<GetExtractorsOutput> {
     const cursor = this.getCollection().aggregate([
@@ -52,7 +66,10 @@ class MongoPXExtractorsQueryService
           targetTemplateId: item.targetTemplateId.toString(),
           count: {
             generatedEntities: item.sourceEntities.length,
-            new: item.sourceEntities.length - item.extractions.length,
+            new: MongoPXExtractorsQueryService.countNotExtractedEntities(
+              item.sourceEntities,
+              item.extractions
+            ),
           },
         }) as GetExtractorsOutput
     );
