@@ -5,6 +5,7 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { GetExtractorsOutput, PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
+import { mongoPXExtractionsCollection } from './MongoPXExtractionsDataSource';
 
 class MongoPXExtractorsQueryService
   extends MongoDataSource<MongoPXExtractorDBO>
@@ -24,25 +25,37 @@ class MongoPXExtractorsQueryService
         },
       },
       {
-        $addFields: {
-          count: {
-            generatedEntities: { $size: '$sourceEntities' },
-            new: 0,
-          },
+        $lookup: {
+          from: mongoPXExtractionsCollection,
+          localField: '_id',
+          foreignField: 'extractorId',
+          as: 'extractions',
         },
       },
-      // Project the required fields
       {
         $project: {
           _id: 1,
           sourceTemplateId: 1,
           targetTemplateId: 1,
-          count: 1,
+          extractions: 1,
+          sourceEntities: 1,
         },
       },
     ]);
 
-    return new MongoResultSet(cursor, item => item as GetExtractorsOutput);
+    return new MongoResultSet(
+      cursor,
+      item =>
+        ({
+          _id: item._id.toString(),
+          sourceTemplateId: item.sourceTemplateId.toString(),
+          targetTemplateId: item.targetTemplateId.toString(),
+          count: {
+            generatedEntities: item.sourceEntities.length,
+            new: item.sourceEntities.length - item.extractions.length,
+          },
+        }) as GetExtractorsOutput
+    );
   }
 }
 

@@ -15,6 +15,7 @@ import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
 
 const factory = getFixturesFactory();
 const sourceTemplate = factory.template('Source Template');
+const sourceTemplate2 = factory.template('Source Template 2');
 const targetTemplate = factory.template('Target Template');
 const template = factory.template('Template');
 const paragraphProperty = factory.property('rich_text', 'markdown');
@@ -28,11 +29,22 @@ const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
+const extractor2: MongoPXExtractorDBO = {
+  _id: factory.id('extractor2'),
+  sourceTemplateId: sourceTemplate2._id,
+  targetTemplateId: targetTemplate._id,
+  paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
+  paragraphPropertyId: paragraphProperty._id as ObjectId,
+};
+
 const entity = factory.entity('entity', sourceTemplate.name);
 const entityPt = factory.entity('entity', sourceTemplate.name, {}, { language: 'pt' });
 
 const entity2 = factory.entity('entity2', sourceTemplate.name);
-const entity2Pt = factory.entity('entity2', sourceTemplate.name, {}, { language: 'pt' });
+const entityPt2 = factory.entity('entity2', sourceTemplate.name, {}, { language: 'pt' });
+
+const entity3 = factory.entity('entity3', sourceTemplate2.name);
+const entityPt3 = factory.entity('entity3', sourceTemplate2.name, {}, { language: 'pt' });
 
 const extractionDBO: MongoPXExtractionDBO = {
   _id: factory.id('extractionDBO'),
@@ -51,9 +63,17 @@ const entityThatDoesNotBelongToExtractor = factory.entity(
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractionsCollection]: [extractionDBO],
-  [mongoPXExtractorsCollection]: [extractor],
-  templates: [sourceTemplate, targetTemplate],
-  entities: [entity, entity2, entityPt, entity2Pt, entityThatDoesNotBelongToExtractor],
+  [mongoPXExtractorsCollection]: [extractor, extractor2],
+  templates: [sourceTemplate, sourceTemplate2, targetTemplate],
+  entities: [
+    entity,
+    entity2,
+    entityPt,
+    entityPt2,
+    entity3,
+    entityPt3,
+    entityThatDoesNotBelongToExtractor,
+  ],
   settings: [
     {
       languages: [
@@ -84,16 +104,23 @@ describe('MongoPXExtractorsQueryService', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should return target and source', async () => {
+  it('should return an list of extractors', async () => {
     const { extractorsQueryService } = setUpSut();
 
     const extractors = await extractorsQueryService.getExtractors().all();
 
     expect(extractors).toMatchObject([
       {
-        _id: extractor._id,
-        sourceTemplateId: sourceTemplate._id,
-        targetTemplateId: targetTemplate._id,
+        _id: extractor._id.toString(),
+        sourceTemplateId: sourceTemplate._id.toString(),
+        targetTemplateId: targetTemplate._id.toString(),
+        count: { generatedEntities: 2, new: 1 },
+      },
+      {
+        _id: extractor2._id.toString(),
+        sourceTemplateId: sourceTemplate2._id.toString(),
+        targetTemplateId: targetTemplate._id.toString(),
+        count: { generatedEntities: 1, new: 1 },
       },
     ]);
   });
@@ -105,9 +132,31 @@ describe('MongoPXExtractorsQueryService', () => {
 
     expect(extractors).toMatchObject([
       {
+        _id: extractor._id.toString(),
+        count: { generatedEntities: 2 },
+      },
+      {
+        _id: extractor2._id.toString(),
+        count: { generatedEntities: 1 },
+      },
+    ]);
+  });
+
+  it('should count source Entities that has never been extracted', async () => {
+    const { extractorsQueryService } = setUpSut();
+
+    const extractors = await extractorsQueryService.getExtractors().all();
+
+    expect(extractors).toMatchObject([
+      {
+        _id: extractor._id.toString(),
         count: {
-          generatedEntities: 2,
+          new: 1,
         },
+      },
+      {
+        _id: extractor2._id.toString(),
+        count: { new: 1 },
       },
     ]);
   });
