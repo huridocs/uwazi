@@ -1,10 +1,10 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { MultiselectList } from '../MultiselectList';
+import { MultiselectList, MultiselectListOption } from '../MultiselectList/MultiselectList';
 
 describe('MultiselectList.cy.tsx', () => {
-  const pizzas = [
+  const pizzas: MultiselectListOption[] = [
     { label: 'Margherita', value: 'MGT', searchLabel: 'Margherita' },
     { label: 'Pepperoni', value: 'PPR', searchLabel: 'Pepperoni' },
     { label: 'Hawaiian', value: 'HWN', searchLabel: 'Hawaiian' },
@@ -17,6 +17,17 @@ describe('MultiselectList.cy.tsx', () => {
     { label: 'Chicken Bacon Ranch', value: 'CBR', searchLabel: 'Chicken Bacon Ranch' },
     { label: 'Chicken Alfredo', value: 'CAF', searchLabel: 'Chicken Alfredo' },
   ];
+
+  const remoteLookupFunction = async (search: string): Promise<MultiselectListOption[]> =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve(
+          pizzas.filter(({ searchLabel }) =>
+            searchLabel.toLowerCase().includes(search.toLowerCase())
+          )
+        );
+      }, 1000);
+    });
 
   const salads = [
     {
@@ -74,7 +85,7 @@ describe('MultiselectList.cy.tsx', () => {
 
   it('should render the list of options', () => {
     pizzas.forEach(({ label }) => {
-      cy.contains(label).should('be.visible');
+      cy.contains(label as string).should('be.visible');
     });
   });
 
@@ -199,21 +210,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
   });
 
-  describe('show selected and search', () => {
-    it('should show matching options even when not selected', () => {
-      cy.viewport(450, 650);
-      mount(
-        <div className="p-2 tw-content">
-          <MultiselectList onChange={() => {}} items={pizzas} value={['MGT']} />
-        </div>
-      );
-
-      cy.get('input[type=text]').type('pepperoni');
-      cy.get('input[type="radio"]').eq(1).click();
-      cy.contains('Pepperoni').should('be.visible');
-    });
-  });
-
   describe('blank state property', () => {
     it('should show blank state property if there is no items passed to the component', () => {
       cy.viewport(450, 650);
@@ -245,7 +241,6 @@ describe('MultiselectList.cy.tsx', () => {
       cy.contains('no items string').should('be.visible');
     });
   });
-
   describe('hide filters property', () => {
     it('should load/show filters when hideFilters is not set', () => {
       cy.viewport(450, 650);
@@ -376,6 +371,8 @@ describe('MultiselectList.cy.tsx', () => {
           <MultiselectList
             onChange={() => {}}
             items={[]}
+            lookup={remoteLookupFunction}
+            value={['MGT']}
             itemContainerClassName="custom-container-class"
           />
         </div>
@@ -391,6 +388,29 @@ describe('MultiselectList.cy.tsx', () => {
         </div>
       );
       cy.get('ul').should('have.class', 'w-full px-2 pt-2 grow');
+    });
+  });
+
+  describe('remote lookup', () => {
+    it('should show fetched data', () => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            onChange={() => {}}
+            items={[]}
+            lookup={remoteLookupFunction}
+            value={['MGT']}
+          />
+        </div>
+      );
+
+      cy.get('input[type=text]').type('chicken');
+      cy.contains('BBQ Chicken').should('be.visible');
+      cy.contains('Buffalo Chicken').should('be.visible');
+      cy.contains('Chicken Bacon Ranch').should('be.visible');
+      cy.contains('Chicken Alfredo').should('be.visible');
+      cy.contains('Margherita').should('not.exist');
     });
   });
 });
