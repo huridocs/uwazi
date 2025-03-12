@@ -33,6 +33,31 @@ const getById = async ({
   }
 };
 
+const getBySharedId = async ({
+  sharedId,
+  language,
+  omitRelationships = true,
+}: EntityApiParams & {
+  sharedId: string;
+  language: string;
+}): Promise<EntitySchema[]> => {
+  try {
+    const requestParams = new RequestParams({
+      sharedId,
+      omitRelationships,
+    });
+
+    api.locale(language);
+
+    const {
+      json: { rows: response },
+    } = await api.get('entities', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
 const save = async (entity: EntitySchema): Promise<EntitySchema | FetchResponseError> => {
   try {
     const requestParams = new RequestParams(entity);
@@ -61,4 +86,4 @@ const coerceValue = async (
   }
 };
 
-export { getById, save, coerceValue, formatter };
+export { getById, save, coerceValue, formatter, getBySharedId };

@@ -4,12 +4,13 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useState, useRef } from 'react';
 import { Translate } from 'app/I18N';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+
 import { isString } from 'lodash';
-import { InputField, RadioSelect } from '.';
-import { Pill } from '../UI/Pill';
-import { Label } from './Label';
-import { Checkbox } from './Checkbox';
+import { InputField, RadioSelect } from '..';
+import { Label } from '../Label';
+import { Checkbox } from '../Checkbox';
+import { MultiselectListButtonItem } from './MultiselectListButtonItem';
+import { MultiselectListGroup } from './MultiselectListGroup';
 
 interface MultiselectListOption {
   label: string | React.ReactNode;
@@ -18,9 +19,10 @@ interface MultiselectListOption {
   items?: MultiselectListOption[];
   suggested?: boolean;
 }
+
 interface MultiselectListProps {
   items: MultiselectListOption[];
-  onChange: (selectedItems: string[]) => void;
+  onChange: (selectedValue: string[]) => void;
   label?: string | React.ReactNode;
   hasErrors?: boolean;
   className?: string;
@@ -32,14 +34,23 @@ interface MultiselectListProps {
   startOnSelected?: boolean;
   search?: string;
   suggestions?: boolean;
-  itemClassName?: string | null;
-  itemContainerClassName?: string | null;
+  itemClassName?: string;
+  itemContainerClassName?: string;
   hideFilters?: boolean;
   blankState?: string | React.ReactNode;
+  lookup?: (searchterm: string) => Promise<MultiselectListOption[]>;
 }
 
 const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
+
+const debounce = (func: (...args: any[]) => void, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
 
 const MultiselectList = ({
   items,
@@ -56,23 +67,27 @@ const MultiselectList = ({
   search = '',
   suggestions = false,
   hideFilters = false,
-  itemClassName = null,
-  itemContainerClassName = null,
+  itemClassName,
+  itemContainerClassName,
   blankState = <Translate>No items available</Translate>,
+  lookup,
 }: MultiselectListProps) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
-  const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
+  const [selectedValue, setSelectedValue] = useState<string[]>(value || []);
+  const [selecteditems, setSelecteditems] = useState<MultiselectListOption[]>([]);
+  const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedValue.length));
   const [searchTerm, setSearchTerm] = useState('');
   const [externalSearch, setExternalSearch] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [searching, setSearching] = useState(false);
   const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
-    new Set(selectedItems)
+    new Set(selectedValue)
   );
   const optionsRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    const newSet = new Set<string>(selectedItems);
+    const newSet = new Set<string>(selectedValue);
+    const selected: MultiselectListOption[] = [];
     items.forEach(item => {
       if (item.suggested) {
         newSet.add(item.value);
@@ -87,8 +102,18 @@ const MultiselectList = ({
       }
     });
 
+    selectedValue.forEach(val => {
+      const item = filteredItems.find(
+        i => i.value === val || i.items?.some(subitem => subitem.value === val)
+      );
+      if (item) {
+        selected.push(item);
+      }
+    });
+
     setSelectedOrSuggestedItems(newSet);
-  }, [items, selectedItems]);
+    setSelecteditems(selected);
+  }, [items, selectedValue]);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -113,43 +138,54 @@ const MultiselectList = ({
 
   useEffect(() => {
     if (value) {
-      setSelectedItems(value);
+      setSelectedValue(value);
     }
   }, [value]);
 
   useEffect(() => {
-    let filtered = [...items];
+    let filtered: MultiselectListOption[] = [];
 
-    filtered = filtered
+    const filterByLookup = async () => {
+      setSearching(true);
+      if (lookup && searchTerm) {
+        filtered = await lookup(searchTerm);
+      }
+      selecteditems.forEach(item => {
+        if (!filtered.find(i => i.value === item.value)) {
+          filtered.push(item);
+        }
+      });
+      setSearching(false);
+      setFilteredItems(filtered);
+    };
+
+    const debouncedFilterByLookup = debounce(filterByLookup, 300);
+
+    if (lookup && searchTerm) {
+      debouncedFilterByLookup();
+      return;
+    }
+
+    const labelIncludesSearch = (_label: string) => {
+      const a = _label
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '');
+      const b = searchTerm
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '');
+      return a.includes(b);
+    };
+
+    filtered = items
       .map(item => {
-        const itemiSelected = selectedItems.includes(item.value) || item.suggested;
-        const containsSelected = item.items?.some(
-          childItem => selectedItems.includes(childItem.value) || childItem.suggested
-        );
-
-        const matchesSearch =
-          !searchTerm || item.searchLabel.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = !searchTerm || labelIncludesSearch(item.searchLabel);
 
         const containsChildrenMatchingSearch =
-          !searchTerm ||
-          item.items?.some(childItem =>
-            childItem.searchLabel.toLowerCase().includes(searchTerm.toLowerCase())
-          );
+          !searchTerm || item.items?.some(childItem => labelIncludesSearch(childItem.searchLabel));
 
-        if (showAll && !searchTerm) {
-          return item;
-        }
-
-        if (!showAll && !searchTerm && (itemiSelected || containsSelected)) {
-          return {
-            ...item,
-            items: item.items?.filter(
-              childItem => selectedItems.includes(childItem.value) || childItem.suggested
-            ),
-          };
-        }
-
-        if (searchTerm && (matchesSearch || containsChildrenMatchingSearch)) {
+        if (matchesSearch || containsChildrenMatchingSearch) {
           return {
             ...item,
             items: item.items?.filter(childItem =>
@@ -157,25 +193,23 @@ const MultiselectList = ({
             ),
           };
         }
-
-        return null;
       })
       .filter(item => item) as MultiselectListOption[];
 
     setFilteredItems(filtered);
-  }, [items, searchTerm, showAll, selectedItems]);
+  }, [items, searchTerm, lookup, selecteditems]);
 
   const handleSelect = (_value: string) => {
     let newValues;
     if (singleSelect) {
-      newValues = selectedItems.includes(_value) ? [] : [_value];
+      newValues = selectedValue.includes(_value) ? [] : [_value];
     } else {
-      newValues = selectedItems.includes(_value)
-        ? selectedItems.filter(item => item !== _value)
-        : [...selectedItems, _value];
+      newValues = selectedValue.includes(_value)
+        ? selectedValue.filter(item => item !== _value)
+        : [...selectedValue, _value];
     }
 
-    setSelectedItems(newValues);
+    setSelectedValue(newValues);
     setExternalSearch('');
     if (onChange) onChange(newValues);
   };
@@ -191,7 +225,7 @@ const MultiselectList = ({
       }
     });
 
-    setSelectedItems(allValues);
+    setSelectedValue(allValues);
     if (onChange) onChange(allValues);
   };
 
@@ -204,26 +238,16 @@ const MultiselectList = ({
       return renderGroup(item);
     }
 
-    const selected = selectedItems.includes(item.value);
-    const borderSyles = selected
-      ? 'border-success-200'
-      : 'border-transparent hover:border-primary-300';
+    const selected = selectedValue.includes(item.value);
 
     return (
-      <li key={item.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
-        <button
-          type="button"
-          className={`w-full flex text-left p-2.5 border ${borderSyles} rounded-lg items-center`}
-          onClick={() => handleSelect(item.value)}
-        >
-          <span className="flex-1">{item.label}</span>
-          <div className="flex-1">
-            <Pill className="float-right" color={selected ? 'green' : 'primary'}>
-              {selected ? <Translate>Selected</Translate> : <Translate>Select</Translate>}
-            </Pill>
-          </div>
-        </button>
-      </li>
+      <MultiselectListButtonItem
+        key={item.value}
+        item={item}
+        selected={selected}
+        onClick={() => handleSelect(item.value)}
+        itemClassName={itemClassName}
+      />
     );
   };
 
@@ -231,7 +255,7 @@ const MultiselectList = ({
     if (item.items) {
       return renderGroup(item);
     }
-    const selected = selectedItems.includes(item.value);
+    const selected = selectedValue.includes(item.value);
     return (
       <li
         key={item.value}
@@ -257,43 +281,38 @@ const MultiselectList = ({
 
   const isGroupOpen = (groupKey: string) => openGroups.includes(groupKey);
 
-  const renderItem = (item: MultiselectListOption) =>
-    checkboxes ? renderCheckboxItem(item) : renderButtonItem(item);
+  const renderItem = (item: MultiselectListOption) => {
+    const itemHasSelectedChildren = item.items?.some(
+      childItem => selectedValue.includes(childItem.value) || childItem.suggested
+    );
+
+    if (
+      !showAll &&
+      !selectedValue.includes(item.value) &&
+      !item.suggested &&
+      !itemHasSelectedChildren
+    ) {
+      return null;
+    }
+
+    return checkboxes ? renderCheckboxItem(item) : renderButtonItem(item);
+  };
 
   const renderGroup = (group: MultiselectListOption) => {
     const isOpen = isGroupOpen(group.value);
-    if (foldableGroups) {
-      return (
-        <li key={group.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
-          <div
-            className={`flex justify-between p-3 mb-4 rounded-lg ${isOpen ? 'bg-indigo-50' : 'bg-gray-50'}`}
-            onClick={() => handleGroupToggle(group.value)}
-          >
-            <span className="block text-sm font-bold text-gray-900">{group.label}</span>
-            <button
-              className="text-indigo-800 bg-indigo-200 rounded-[6px] text-xs font-medium px-1.5 py-0.5 flex flex-row items-center justify-center gap-1"
-              type="button"
-            >
-              <div className="w-3 h-3 text-sm">
-                {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-              </div>
-              <Translate>Group</Translate>
-            </button>
-          </div>
-          {isOpen && (
-            <ul className={`${itemContainerClassName ?? 'pl-4 '}`}>
-              {group.items?.map(renderItem)}
-            </ul>
-          )}
-        </li>
-      );
-    }
 
     return (
-      <li key={group.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
-        <span className="block mb-4 text-sm font-bold text-gray-900">{group.label}</span>
-        <ul className={`${itemContainerClassName ?? ''}`}>{group.items?.map(renderItem)}</ul>
-      </li>
+      <MultiselectListGroup
+        key={group.value}
+        label={group.label}
+        isOpen={isOpen}
+        foldable={foldableGroups}
+        onClick={() => handleGroupToggle(group.value)}
+        itemContainerClassName={itemContainerClassName}
+        itemClassName={itemClassName}
+      >
+        {group.items?.map(renderItem)}
+      </MultiselectListGroup>
     );
   };
 
@@ -309,7 +328,7 @@ const MultiselectList = ({
 
     return (
       <>
-        <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
+        <Translate>Selected</Translate> {selectedValue.length ? `(${selectedValue.length})` : ''}
       </>
     );
   };
@@ -363,7 +382,7 @@ const MultiselectList = ({
         )}
       </div>
 
-      {items.length === 0 && (
+      {filteredItems.length === 0 && !searching && (
         <div className="flex w-full h-full items-center justify-center min-h-[400px]">
           {renderChild(blankState)}
         </div>
