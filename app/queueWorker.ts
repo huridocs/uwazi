@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { config } from 'api/config';
-import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { SystemLogger, withFeature } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -11,6 +11,7 @@ import { QueueWorkerErrorHandler, QueueWorker } from 'api/queue.v2/infrastructur
 import { tenants } from 'api/tenants';
 import { inspect } from 'util';
 import { registerJobs } from './queueRegistry';
+import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJSONWriter';
 
 if (config.sentry.dsn) {
   Sentry.init({
@@ -63,7 +64,7 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
   });
 };
 
-const logger = SystemLogger();
+const logger = SystemLogger(withFeature(StandardJSONWriter, 'Queue worker'));
 
 logger.info('Starting worker');
 DB.connect(config.DBHOST, dbAuth)
