@@ -217,7 +217,7 @@ describe('Entities', () => {
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
       cy.contains('#metadataForm', 'Type').get('select').eq(0).select('All props');
-      cy.get('select:first-of-type').select('All props');
+      cy.contains('#metadataForm', 'Type');
       cy.get('.form-group.text input').type('demo text', { delay: 0 });
       cy.get('.form-group.numeric input').type('42', { delay: 0 });
 
