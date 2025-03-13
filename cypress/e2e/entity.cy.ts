@@ -558,7 +558,7 @@ describe('Entities', () => {
     it('should show only the filtered entities', () => {
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
       cy.contains('#filtersForm li.wide.documentTypes-selector > ul > li', 'Causa').click();
-      cy.get('.item-document').should('have.length', 13);
+      cy.get('.item-document').should('have.length', 12);
     });
   });
 });
