@@ -124,15 +124,19 @@ describe('withTransaction utility', () => {
 
   it('should handle concurrent transactions', async () => {
     await appContext.run(async () => {
-      const transaction1 = withTransaction(async () => {
-        await model.save({ title: 'concurrent1', value: 1 });
-        return 'tx1';
-      });
+      const transaction1 = appContext.run(async () =>
+        withTransaction(async () => {
+          await model.save({ title: 'concurrent1', value: 1 });
+          return 'tx1';
+        })
+      );
 
-      const transaction2 = withTransaction(async () => {
-        await model.save({ title: 'concurrent2', value: 2 });
-        return 'tx2';
-      });
+      const transaction2 = appContext.run(async () =>
+        withTransaction(async () => {
+          await model.save({ title: 'concurrent2', value: 2 });
+          return 'tx2';
+        })
+      );
 
       const [result1, result2] = await Promise.all([transaction1, transaction2]);
       expect(result1).toBe('tx1');

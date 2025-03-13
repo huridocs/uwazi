@@ -17,7 +17,7 @@ class AppContext {
     return data;
   }
 
-  async run(cb: () => Promise<void>, data: ContextData = {}): Promise<void> {
+  async run<T>(cb: () => Promise<T>, data: ContextData = {}): Promise<T> {
     return new Promise((resolve, reject) => {
       this.storage.run({ ...this.defaultData, ...data }, () => {
         cb().then(resolve).catch(reject);
