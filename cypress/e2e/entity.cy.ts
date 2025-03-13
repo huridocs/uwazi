@@ -363,6 +363,7 @@ describe('Entities', () => {
       cy.contains('Update');
       cy.wait('@getFile');
       cy.wait('@getFile');
+      cy.wait('@getFile');
       clickMediaAction('Media', 'Update');
       addVideo('', false);
       cy.contains('button', 'Add timelink').click();
