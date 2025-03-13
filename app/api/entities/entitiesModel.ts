@@ -24,7 +24,6 @@ const mongoSchema = new mongoose.Schema(
     creationDate: Number,
     editDate: Number,
     metadata: { type: mongoose.Schema.Types.Mixed, default: {} },
-    suggestedMetadata: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     permissions: { type: mongoose.Schema.Types.Mixed, select: false },
     obsoleteMetadata: { type: [String] },

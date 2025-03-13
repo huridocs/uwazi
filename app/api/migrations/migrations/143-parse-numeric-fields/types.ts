@@ -150,7 +150,6 @@ interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   obsoleteMetadata?: string[];
-  suggestedMetadata?: MetadataSchema;
   permissions?: PermissionSchema[];
   [k: string]: unknown | undefined;
 }
