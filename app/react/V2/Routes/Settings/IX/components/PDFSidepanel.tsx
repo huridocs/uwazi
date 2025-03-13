@@ -24,6 +24,9 @@ import { InputField, MultiselectList, MultiselectListOption } from 'V2/Component
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
 import { Highlights } from '../types';
+import { lookup } from 'app/V2/api/search';
+import { preloadOptionsLimit } from 'shared/config';
+import { ClientThesaurusValue } from 'app/apiResponseTypes';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 
@@ -79,6 +82,28 @@ const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestio
   ]);
 
   return { file: file[0], entity: entity[0] };
+};
+
+const loadValuesAndSuggestions = async (
+  value: string[],
+  suggestions: string[],
+  language: string
+) => {
+  const entities = await Promise.all(
+    value.map(async sharedId => {
+      const [entity] = await entitiesAPI.getBySharedId({ sharedId, language });
+      return entity;
+    })
+  );
+
+  const suggestionsEntities = await Promise.all(
+    suggestions.map(async sharedId => {
+      const [entity] = await entitiesAPI.getBySharedId({ sharedId, language });
+      return entity;
+    })
+  );
+
+  return [...entities, ...suggestionsEntities].filter(entity => entity);
 };
 
 const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadataSchema[]) => {
@@ -152,6 +177,7 @@ const PDFSidepanel = ({
   const [selectAndSearch, setSelectAndSearch] = useState(false);
   const [selectAndSearchValue, setSelectAndSearchValue] = useState<string | undefined>();
   const [options, setOptions] = useState<MultiselectListOption[]>([]);
+  const [currentValueOptions, setCurrentValueOptions] = useState<MultiselectListOption[]>([]);
   const pdfScalingValue = useAtomValue(pdfScaleAtom);
 
   useEffect(() => {
@@ -186,11 +212,21 @@ const PDFSidepanel = ({
   const watchField = watch('field');
 
   useEffect(() => {
+    if (
+      property?.type !== 'select' &&
+      property?.type !== 'multiselect' &&
+      property?.type !== 'relationship'
+    ) {
+      return;
+    }
+
+    const currentValues = (getValues('field') as string[]) || [];
+    const suggestions = (suggestion?.suggestedValue as string[]) || [];
+
     const renderLabel = (value: any) => {
       const matchingStyles = 'bg-success-50 text-success-800';
       const nonMatchingStyles = 'bg-orange-50 text-orange-800';
-      const currentValues = (getValues('field') as string[]) || [];
-      const suggestions = (suggestion?.suggestedValue as string[]) || [];
+
       const isSelected = currentValues.includes(value.id);
       const isSuggested = suggestions.includes(value.id);
       let styles = '';
@@ -210,7 +246,6 @@ const PDFSidepanel = ({
     };
 
     const _options: MultiselectListOption[] = [];
-
     thesaurus?.values.forEach((value: any) => {
       _options.push({
         label: renderLabel(value),
@@ -234,6 +269,23 @@ const PDFSidepanel = ({
       setThesaurus(_thesaurus);
     }
 
+    if (!property?.content && property) {
+      const limit = preloadOptionsLimit();
+      const thesaurusOfTypeTemplate = thesauris.filter(thes => thes.type === 'template');
+      const limitPerThesaurus = limit / thesaurusOfTypeTemplate.length;
+
+      const combinedTheasaurus = thesaurusOfTypeTemplate.reduce(
+        (acc: ClientThesaurusValue[], thes) => {
+          const values = thes.values.slice(0, limitPerThesaurus);
+          return acc.concat(values);
+        },
+        []
+      );
+      const _thesaurus = { values: combinedTheasaurus };
+      console.log(_thesaurus);
+      setThesaurus(_thesaurus);
+    }
+
     return () => {
       setThesaurus(undefined);
     };
@@ -249,11 +301,32 @@ const PDFSidepanel = ({
         .catch(e => {
           throw e;
         });
+
+      if (property?.type === 'relationship') {
+        loadValuesAndSuggestions(
+          suggestion.currentValue as string[],
+          suggestion.suggestedValue as string[],
+          suggestion.language
+        )
+          .then(entities => {
+            const preloadedOptions = entities.map(_entity => ({
+              label: _entity.title as string,
+              value: _entity.sharedId as string,
+              searchLabel: _entity.title as string,
+            }));
+
+            setCurrentValueOptions(preloadedOptions);
+          })
+          .catch(e => {
+            throw e;
+          });
+      }
     }
 
     return () => {
       setPdf(undefined);
       setEntity(undefined);
+      setCurrentValueOptions([]);
     };
   }, [suggestion]);
 
@@ -414,6 +487,26 @@ const PDFSidepanel = ({
     );
   };
 
+  const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
+    const response = await lookup(
+      searchTerm || '',
+      property?.content ? [property.content] : undefined
+    );
+    return response.options.map((option: any) => ({
+      label: option.label,
+      value: option.value,
+      searchLabel: option.label,
+    }));
+  };
+
+  const uniqueOptions = [...options, ...currentValueOptions].reduce((acc, option) => {
+    if (!acc.find(_option => _option.value === option.value)) {
+      acc.push(option);
+    }
+
+    return acc;
+  }, [] as MultiselectListOption[]);
+
   const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => (
     <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
       <Controller
@@ -424,11 +517,12 @@ const PDFSidepanel = ({
           <MultiselectList
             onChange={onChange}
             value={value as string[]}
-            items={options}
+            items={uniqueOptions}
             checkboxes
             singleSelect={type === 'select'}
             search={selectAndSearchValue}
             suggestions
+            lookup={_lookup}
           />
         )}
       />

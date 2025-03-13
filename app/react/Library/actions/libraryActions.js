@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import qs from 'qs';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { store } from 'app/store';
@@ -176,6 +176,7 @@ function processFilters(readOnlySearch, filters, options = {}) {
   search.filters = {};
 
   const getValue = value => (encoding ? encodeURIComponent(value) : value);
+
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
       if (
@@ -259,6 +260,7 @@ function searchDocuments(
         {
           limit,
           from,
+          encoding: false,
         }
       ),
       searchTerm: state.search.searchTerm,
@@ -272,7 +274,6 @@ function searchDocuments(
     if (currentSearch.userSelectedSorting) {
       dispatch(actions.set('library.selectedSorting', currentSearch));
     }
-
     return setSearchInUrl(searchParams, location, navigate);
   };
 }

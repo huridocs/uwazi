@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 import superagent from 'superagent';
-
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { assign } from 'lodash';
 import { getResponseType } from 'shared/apiClient/httpResponses';
 
@@ -37,7 +36,7 @@ const attemptRisonDecode = string => {
   risonParser.parse(string);
 };
 
-export function toUrlParams(_data) {
+function toUrlParams(_data) {
   if (typeof _data === 'string') {
     return `?${_data}`;
   }
@@ -182,4 +181,4 @@ export default {
   },
 };
 
-export { FetchResponseError };
+export { FetchResponseError, toUrlParams };
