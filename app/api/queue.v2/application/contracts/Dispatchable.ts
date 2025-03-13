@@ -1,6 +1,6 @@
 type Primitive = string | number | boolean;
 type RecordValue = Primitive | RecordValue[] | { [key: string]: RecordValue };
-type Params = Record<string, RecordValue>;
+export type Params = Record<string, RecordValue>;
 
 export interface HeartbeatCallback {
   (): Promise<void>;
