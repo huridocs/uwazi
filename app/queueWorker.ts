@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import * as Tracing from '@sentry/tracing';
 import { config } from 'api/config';
+import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
+import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';
 import { SystemLogger, withFeature } from 'api/log.v2/infrastructure/StandardLogger';
 import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJSONWriter';
 import { DB } from 'api/odm';
@@ -10,9 +12,8 @@ import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispat
 import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructure/QueueWorker';
 import { tenants } from 'api/tenants';
-import { inspect } from 'util';
-import { registerJobs } from './queueRegistry';
 import { prettifyError } from 'api/utils/handleError';
+import { registerJobs } from './queueRegistry';
 
 if (config.sentry.dsn) {
   Sentry.init({
@@ -56,7 +57,20 @@ function register<T extends Dispatchable>(
   );
 }
 
-const logger = SystemLogger(withFeature(StandardJSONWriter, 'Queue worker'));
+const replaceTenantWithJobNamespace =
+  (writer: LogWriter): LogWriter =>
+  (log: LogEntry) => {
+    writer(
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+        ...log.metadata,
+        ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
+      })
+    );
+  };
+
+const logger = SystemLogger(
+  replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
+);
 
 const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
