@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { t } from 'app/I18N';
@@ -55,7 +55,7 @@ const labelForOption = (filteredProperty, option, templates) => {
 };
 
 const prepareOptions = (property, location, templates) => {
-  const query = searchParamsFromLocationSearch(location, 'q') || {};
+  const query = searchParamsFromLocationSearch(location) || {};
   const filteredProperty = {
     ...property,
     options: property.options.filter(option => option.id !== 'any'),
