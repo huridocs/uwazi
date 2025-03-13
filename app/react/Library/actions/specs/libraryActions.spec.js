@@ -6,7 +6,7 @@ import qs from 'qs';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { APIURL } from 'app/config.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as types from 'app/Library/actions/actionTypes';
@@ -268,11 +268,11 @@ describe('libraryActions', () => {
         actions.searchDocuments({ search, location, navigate, filters }, limit)(dispatch, getState);
 
         expect(navigate).toHaveBeenCalledWith(
-          "/library/?q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+          "/library/?q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))"
         );
       });
 
-      it('should encode filters with unsafe characters when passed', () => {
+      it('should return filters with special characters as they are', () => {
         const search = {
           searchTerm: 'batman',
           filters: {
@@ -292,7 +292,7 @@ describe('libraryActions', () => {
         navigate.mockClear();
         actions.searchDocuments({ search, location, navigate, filters }, limit)(dispatch, getState);
         expect(navigate).toHaveBeenCalledWith(
-          "/library/?q=(filters:(author:batman&spiderman,nested:nestedValue,select:selectValue,unsafe%26char:character),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+          "/library/?q=(filters:(author:batman&spiderman,nested:nestedValue,select:selectValue,unsafe&char:character),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))"
         );
       });
       it('should use customFilters from the current search on the store', () => {
@@ -302,7 +302,7 @@ describe('libraryActions', () => {
         actions.searchDocuments({ location, navigate }, limit)(dispatch, getState);
 
         expect(navigate).toHaveBeenCalledWith(
-          "/library/?q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+          "/library/?q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))"
         );
       });
 

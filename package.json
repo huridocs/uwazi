@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.203.8",
+  "version": "1.203.9",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -101,6 +101,7 @@
     "@heroicons/react": "^2.2.0",
     "@hookform/error-message": "^2.0.1",
     "@huridocs/react-text-selection-handler": "^0.3.0",
+    "@huridocs/rison": "^2.1.2",
     "@loadable/component": "^5.16.4",
     "@popperjs/core": "^2.11.8",
     "@sentry/node": "^7.114.0",
@@ -222,7 +223,6 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.0.1",
     "reselect": "^4.1.8",
-    "rison-node": "^2.1.1",
     "rsmq": "^0.12.4",
     "rtlcss": "^4.3.0",
     "sanitize-filename": "^1.6.3",
