@@ -553,6 +553,7 @@ describe('Entities', () => {
       cy.get('select:first-of-type').select('Causa');
       cy.contains('Changing the type will erase all relationships to this entity');
       saveEntity('Entity updated');
+      cy.waitForLegacyNotifications();
     });
 
     it('should show only the filtered entities', () => {
