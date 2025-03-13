@@ -19,7 +19,7 @@ type UpdateParagraphsCountInput = {
 export interface PXExtractionsDataSource {
   getById(extractionId: string): Promise<PXExtractionModel | undefined>;
   getExisting(input: GetExistingInput): Promise<PXExtraction | undefined>;
-  initProcess(input: InitProcessInput): Promise<PXExtractionModel>;
+  initProcess(extractionId: string): Promise<PXExtractionModel>;
   incrementSuccess(extractionId: string): Promise<PXExtractionModel>;
   incrementFail(extractionId: string): Promise<PXExtractionModel>;
   create(input: CreateInput): Promise<PXExtractionModel>;
