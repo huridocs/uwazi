@@ -53,13 +53,17 @@ export class QueueWorker {
     adapter: QueueAdapter,
     logger: Logger,
     // eslint-disable-next-line no-empty-function
-    onError: QueueWorkerErrorHandler = () => {}
+    onError?: QueueWorkerErrorHandler
   ) {
     this.queueName = queueName;
     this.adapter = adapter;
     this.options = { ...optionsDefaults };
     this.logger = logger;
-    this.onError = onError;
+    this.onError =
+      onError ??
+      ((e: Error, context?: { job: Job }) => {
+        logger.error(inspect(e), { job: context?.job });
+      });
   }
 
   private logAndResetMetrics() {
@@ -131,8 +135,7 @@ export class QueueWorker {
       this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
-      if (this.onError) this.onError(e, { job });
-      this.logger.error(inspect(e), { job });
+      this.onError(e, { job });
     } finally {
       this.logProcess(start);
     }
