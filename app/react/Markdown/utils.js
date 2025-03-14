@@ -1,4 +1,7 @@
 /* eslint-disable max-lines */
+import { captureException } from '@sentry/react';
+import { isClient } from '../utils';
+
 const objectPath = (path, object) =>
   path.split('.').reduce((o, key) => {
     if (!o || !key) {
@@ -260,8 +263,10 @@ const errorCollector = {
     return Object.keys(this.errors).length > 0;
   },
   report() {
-    // eslint-disable-next-line no-console
-    console.info('Markdown Errors: ', this.getErrors());
+    if (isClient) {
+      const error = new Error('Markdown Errors:', { cause: this.getErrors() });
+      captureException(error);
+    }
   },
 };
 
