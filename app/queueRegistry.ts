@@ -1,3 +1,4 @@
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { denormalizeMetadata } from 'api/entities/denormalize';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -27,12 +28,17 @@ export class TestJob implements Dispatchable {
     await new Promise((resolve, reject) => {
       setTimeout(
         () => {
-          if (Math.floor(Math.random() * 10) === 0) {
+          if (Math.floor(Math.random() * 5) === 0) {
+            reject(
+              new ValidationError([{ path: '/', message: 'Random validation error occurred' }])
+            );
+          }
+          if (Math.floor(Math.random() * 5) === 0) {
             reject(new Error('Random error occurred'));
           }
           resolve({});
         },
-        randomIntFromInterval(0, 5000)
+        randomIntFromInterval(0, 1500)
       );
     });
   }
@@ -50,6 +56,9 @@ export class DenormalizeEntityInMemoryTestJob implements Dispatchable {
       try {
         permissionsContext.setCommandContext();
         const entityInAllLanguages = await entities.getAllLanguages(params.sharedId);
+        if (!entityInAllLanguages.length) {
+          throw new ValidationError([{ path: '/', message: 'Random validation error occurred' }]);
+        }
         const template = await templates.getById(entityInAllLanguages[0].template!);
         await entityInAllLanguages.reduce(async (prev, entity) => {
           await prev;
