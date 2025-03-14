@@ -2,6 +2,8 @@ import Jvent from 'jvent';
 import rison from '@huridocs/rison';
 import { captureException } from '@sentry/react';
 
+const isClient = typeof document !== 'undefined';
+
 const getPropsFromRoute = ({ routes }, componentProps) => {
   const props = {};
   const lastRoute = routes[routes.length - 1];
@@ -21,13 +23,14 @@ const risonDecodeOrIgnore = (query, defaultValue = {}) => {
   try {
     return rison.decode(query);
   } catch (e) {
-    const error = new Error(`Error decoding ${query}`, { cause: e });
-    captureException(error);
+    if (isClient) {
+      const error = new Error('Error decoding query', { cause: e });
+      captureException(error);
+    }
     return defaultValue;
   }
 };
 
-const isClient = typeof document !== 'undefined';
 const events = new Jvent();
 
 export { isClient, events, risonDecodeOrIgnore, getPropsFromRoute };
