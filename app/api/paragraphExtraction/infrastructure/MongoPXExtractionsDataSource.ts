@@ -5,7 +5,6 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import {
   CreateInput,
   GetExistingInput,
-  InitProcessInput,
   PXExtractionsDataSource,
   UpdateParagraphsCountInput,
 } from '../domain/PXExtractionDataSource';
@@ -125,9 +124,9 @@ export class MongoPXExtractionsDataSource
     return MongoPXExtractionsDataSource.toDomain(dbo);
   }
 
-  async initProcess(input: InitProcessInput): Promise<PXExtractionModel> {
+  async initProcess(extractionId: string): Promise<PXExtractionModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
-      { extractorId: new ObjectId(input.extractorId), entitySharedId: input.entitySharedId },
+      { _id: new ObjectId(extractionId) },
       { $set: { status: ExtractionStatus.Processing } },
       { upsert: false, returnDocument: 'after' }
     );
@@ -135,7 +134,7 @@ export class MongoPXExtractionsDataSource
     if (!dbo) {
       throw new Error(
         `Can not init processing of an Extraction that does not exist. 
-        entitySharedId:${input.entitySharedId} extractorId:${input.extractorId}`
+        id: ${extractionId}`
       );
     }
 
