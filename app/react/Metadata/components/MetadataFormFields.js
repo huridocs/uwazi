@@ -11,7 +11,6 @@ import { FormGroup } from 'app/Forms';
 import { t, Translate } from 'app/I18N';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import Tip from 'app/Layout/Tip';
-import { propertyTypes } from 'shared/propertyTypes';
 import { preloadOptionsLimit } from 'shared/config';
 import { generateID } from 'shared/IDGenerator';
 
@@ -27,7 +26,6 @@ import {
   MultiDate,
   MultiDateRange,
   MultiSelect,
-  MultiSuggest,
   Nested,
   Numeric,
   Select,
@@ -400,10 +398,6 @@ class MetadataFormFields extends Component {
   render() {
     const { thesauris, template, model, showSubset, storeKey, pdfLanguage, locale } = this.props;
 
-    const mlThesauri = thesauris
-      .filter(thes => !!thes.get('enable_classification'))
-      .map(thes => thes.get('_id'))
-      .toJS();
     const fields = groupSameRelationshipFields(template.get('properties').toJS());
     return (
       <div>
@@ -429,16 +423,6 @@ class MetadataFormFields extends Component {
                   }`}
                 >
                   {this.renderLabel(property)}
-                  {mlThesauri.includes(property.content) &&
-                  [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
-                    <li className="wide">
-                      <MultiSuggest
-                        model={`.suggestedMetadata.${property.name}`}
-                        selectModel={`.metadata.${property.name}`}
-                        propertyType={property.type}
-                      />
-                    </li>
-                  ) : null}
                   <li className="wide">
                     <div className="metadata-extractor-container">
                       {showIXButtons && (

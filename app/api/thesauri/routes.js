@@ -23,7 +23,6 @@ const routes = app => {
                 _id: { type: 'string' },
                 __v: { type: 'number' },
                 name: { type: 'string' },
-                enable_classification: { type: 'boolean' },
                 values: {
                   type: 'array',
                   items: {

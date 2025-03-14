@@ -4,7 +4,6 @@ import { DB } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { IndexError } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
