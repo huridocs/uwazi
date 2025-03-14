@@ -1,1 +1,1 @@
-declare module 'rison-node';
+declare module '@huridocs/rison';

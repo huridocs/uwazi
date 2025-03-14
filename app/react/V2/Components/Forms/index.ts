@@ -13,5 +13,5 @@ export { Checkbox } from './Checkbox';
 export { EnableButtonCheckbox } from './EnableButtonCheckbox';
 export { ColorPicker } from './ColorPicker';
 export { DatePicker, DateRangePicker } from './DatePicker/DatePicker';
-export { MultiselectList } from './MultiselectList';
-export type { MultiselectListOption } from './MultiselectList';
+export { MultiselectList } from './MultiselectList/MultiselectList';
+export type { MultiselectListOption } from './MultiselectList/MultiselectList';
