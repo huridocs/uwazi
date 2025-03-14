@@ -4,7 +4,6 @@ import {
   Dependencies as AbstractControllerDependencies,
 } from 'api/common.v2/infrastructure/AbstractController';
 
-import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities';
 import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory';
 
 type Request = z.infer<typeof RequestSchema>;
@@ -17,19 +16,18 @@ const RequestSchema = z.object({
 });
 
 class PXExtractParagraphFromEntitiesController extends AbstractController<Request> {
-  private useCase: PXExtractParagraphsFromEntities;
-
   constructor(dependencies: Dependencies) {
     super(dependencies);
-    this.useCase = PXExtractParagraphsFromEntitiesFactory.createDefault(this.tenantName);
   }
 
   async handle(): Promise<void> {
     this.ensureUser();
 
+    const useCase = await PXExtractParagraphsFromEntitiesFactory.createDefault(this.tenantName);
+
     const dto = RequestSchema.parse(this.request.body);
 
-    await this.useCase.execute({ ...dto, userId: this.user._id.toString() });
+    await useCase.execute({ ...dto, userId: this.user._id.toString() });
 
     this.ok();
   }

@@ -1,6 +1,7 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { denormalizeMetadata } from 'api/entities/denormalize';
+import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -86,4 +87,5 @@ export function registerJobs(
   // register(UpdateTemplateRelationshipPropertiesJob, createUpdateTemplateRelationshipPropertiesJob);
   register(DenormalizeEntityInMemoryTestJob, async () => new DenormalizeEntityInMemoryTestJob());
   register(TestJob, async () => new TestJob());
+  register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 }

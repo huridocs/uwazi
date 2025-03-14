@@ -49,3 +49,5 @@ export class NamespacedDispatcher implements JobsDispatcher {
     });
   }
 }
+
+export type { QueueOptions };

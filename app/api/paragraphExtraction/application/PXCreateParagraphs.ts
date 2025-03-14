@@ -9,6 +9,7 @@ import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
 import { PXCreateParagraph } from './PXCreateParagraph';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 type PXCreateParagraphsInput = GetParagraphsResultOutput;
 
@@ -60,11 +61,9 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
-    const promises = paragraphs.map(async paragraph =>
+    await ArrayUtils.parallelFor(paragraphs, async paragraph =>
       this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, extraction })
     );
-
-    await Promise.all(promises);
   }
 }
 
