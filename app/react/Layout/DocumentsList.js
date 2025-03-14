@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { SearchBar } from 'app/Library/components/SearchBar';
 import ConnectionSearchBar from 'app/ConnectionsList/components/SearchBar';
 import { Loader } from 'app/components/Elements/Loader';

@@ -2,7 +2,7 @@ import { Form, Field } from 'react-redux-form';
 import { useNavigate } from 'react-router';
 import React from 'react';
 import PropTypes from 'prop-types';
-import rison from 'rison-node';
+import rison from '@huridocs/rison';
 import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import ModalTips from 'app/App/ModalTips';
