@@ -3,10 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
-import {
-  CreateInput,
-  InitProcessInput,
-} from 'api/paragraphExtraction/domain/PXExtractionDataSource';
+import { CreateInput } from 'api/paragraphExtraction/domain/PXExtractionDataSource';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import {
@@ -102,12 +99,7 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({ [mongoPXExtractionsCollection]: [extractionCreated] });
     const { extractionsDS } = createSut();
 
-    const input: InitProcessInput = {
-      entitySharedId: extractionCreated.entitySharedId,
-      extractorId: extractionCreated.extractorId.toString(),
-    };
-
-    const extraction = await extractionsDS.initProcess(input);
+    const extraction = await extractionsDS.initProcess(extractionCreated._id.toString());
 
     expect(extraction).toMatchObject({
       status: ExtractionStatus.Processing,

@@ -1,17 +1,19 @@
 import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
+import * as Tracing from '@sentry/tracing';
 import { config } from 'api/config';
+import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
+import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';
 import { SystemLogger, withFeature } from 'api/log.v2/infrastructure/StandardLogger';
+import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJSONWriter';
 import { DB } from 'api/odm';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { QueueWorkerErrorHandler, QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
+import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructure/QueueWorker';
 import { tenants } from 'api/tenants';
-import { inspect } from 'util';
+import { prettifyError } from 'api/utils/handleError';
 import { registerJobs } from './queueRegistry';
-import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJSONWriter';
 
 if (config.sentry.dsn) {
   Sentry.init({
@@ -55,16 +57,33 @@ function register<T extends Dispatchable>(
   );
 }
 
-const captureError: QueueWorkerErrorHandler = (error, context) => {
-  Sentry.withScope(scope => {
-    if (context?.job) {
-      scope.setExtra('job', context.job);
-    }
-    Sentry.captureException(error);
-  });
-};
+const replaceTenantWithJobNamespace =
+  (writer: LogWriter): LogWriter =>
+  (log: LogEntry) => {
+    writer(
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+        ...log.metadata,
+        ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
+      })
+    );
+  };
 
-const logger = SystemLogger(withFeature(StandardJSONWriter, 'Queue worker'));
+const logger = SystemLogger(
+  replaceTenantWithJobNamespace(withFeature(StandardJSONWriter, 'Queue worker'))
+);
+
+const captureError: QueueWorkerErrorHandler = (error, context) => {
+  const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
+  logger[prettyError.logLevel](prettyError.message, { job: context?.job });
+  if (prettyError.logLevel === 'error') {
+    Sentry.withScope(scope => {
+      if (context?.job) {
+        scope.setExtra('job', context.job);
+      }
+      Sentry.captureException(error);
+    });
+  }
+};
 
 logger.info('Starting worker');
 DB.connect(config.DBHOST, dbAuth)
@@ -97,7 +116,6 @@ DB.connect(config.DBHOST, dbAuth)
     logger.info('Disconected from MongoDB');
   })
   .catch(async e => {
-    logger.error(inspect(e));
     captureError(e);
     await Sentry.close(2000);
     process.exit(1);
