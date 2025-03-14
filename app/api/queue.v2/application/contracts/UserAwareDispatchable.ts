@@ -4,9 +4,9 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 
 import { Dispatchable, HeartbeatCallback } from './Dispatchable';
 
-type TenantAwareDispatchableParams = { tenantName: string; userId: string };
+export type UserAwareDispatchableParams = { tenantName: string; userId: string };
 
-abstract class TenantAwareDispatchable<CustomParams extends TenantAwareDispatchableParams>
+export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispatchableParams>
   implements Dispatchable
 {
   protected params!: CustomParams;
@@ -43,7 +43,3 @@ abstract class TenantAwareDispatchable<CustomParams extends TenantAwareDispatcha
     }, this.tenantName);
   }
 }
-
-export { TenantAwareDispatchable };
-
-export type { TenantAwareDispatchableParams };

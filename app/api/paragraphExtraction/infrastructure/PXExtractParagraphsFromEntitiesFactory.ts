@@ -12,7 +12,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
 
     const extractionsDS = new MongoPXExtractionsDataSource(db, transactionManager);
 
-    const dispatcher = await DefaultDispatcher(tenantName);
+    const dispatcher = await DefaultDispatcher(tenantName, { lockWindow: 1000 * 60 });
 
     return new PXExtractParagraphsFromEntities({
       extractionsDS,
