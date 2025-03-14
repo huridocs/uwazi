@@ -155,7 +155,7 @@ it('should finish the in-progress job before stopping', async () => {
   ]);
 }, 10000);
 
-it('should log, report error and continue if a job fails', async () => {
+it('should report error and continue if a job fails', async () => {
   class FailOnceJob implements Dispatchable {
     static failed = false;
 
@@ -188,9 +188,39 @@ it('should log, report error and continue if a job fails', async () => {
     expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
   );
 
+  expect(logMock.info).toHaveBeenCalledWith('sleeping', { waitTime: 1000 });
+});
+
+it('default onError should log the error', async () => {
+  class FailOnceJob implements Dispatchable {
+    static failed = false;
+
+    // eslint-disable-next-line class-methods-use-this
+    async handleDispatch(): Promise<void> {
+      if (FailOnceJob.failed) {
+        return;
+      }
+
+      FailOnceJob.failed = true;
+      throw new Error('failing');
+    }
+  }
+
+  const logMock = createMockLogger();
+  const adapter = DefaultTestingQueueAdapter();
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
+  const queueWorker = new QueueWorker('name', adapter, logMock);
+
+  queueWorker.register(FailOnceJob, async () => new FailOnceJob());
+
+  await dispatcher.dispatch(FailOnceJob, undefined);
+
+  await Promise.all([queueWorker.start(), sleep(200).then(async () => queueWorker.stop())]);
+
   expect(logMock.error).toHaveBeenCalledWith(
     expect.any(String),
     expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
   );
+
   expect(logMock.info).toHaveBeenCalledWith('sleeping', { waitTime: 1000 });
 });
