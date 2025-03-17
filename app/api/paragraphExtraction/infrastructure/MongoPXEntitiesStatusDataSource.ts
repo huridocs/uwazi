@@ -4,9 +4,9 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 
 import {
   CreateInput,
-  PXExtractionsDataSource,
+  PXEntitiesStatusDataSource,
   UpdateParagraphsCountInput,
-} from '../domain/PXExtractionDataSource';
+} from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
@@ -14,7 +14,7 @@ export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
 export class MongoPXEntitiesStatusDataSource
   extends MongoDataSource<MongoPXEntityStatus>
-  implements PXExtractionsDataSource
+  implements PXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
 

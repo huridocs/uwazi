@@ -14,7 +14,7 @@ import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -31,7 +31,7 @@ type Dependencies = {
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
   extractionService: PXExtractionService;
-  extractionsDS: PXExtractionsDataSource;
+  extractionsDS: PXEntitiesStatusDataSource;
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
   logger: Logger;

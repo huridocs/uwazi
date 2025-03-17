@@ -8,7 +8,7 @@ import entities from 'api/entities';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 
 /**
@@ -36,7 +36,7 @@ type Output = any;
 
 type Dependencies = {
   logger: Logger;
-  extractionsDS: PXExtractionsDataSource;
+  extractionsDS: PXEntitiesStatusDataSource;
   entitiesDS?: LegacyEntitiesDS;
 };
 

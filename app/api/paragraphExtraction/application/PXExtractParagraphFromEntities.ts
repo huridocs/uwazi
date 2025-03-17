@@ -2,7 +2,7 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntitiesJob';
 
 type Input = {
@@ -15,7 +15,7 @@ type Output = any;
 
 type Dependencies = {
   dispatcher: JobsDispatcher;
-  extractionsDS: PXExtractionsDataSource;
+  extractionsDS: PXEntitiesStatusDataSource;
   tenantName: string;
 };
 

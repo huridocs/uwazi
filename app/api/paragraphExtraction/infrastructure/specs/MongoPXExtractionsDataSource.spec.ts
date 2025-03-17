@@ -3,7 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
-import { CreateInput } from 'api/paragraphExtraction/domain/PXExtractionDataSource';
+import { CreateInput } from 'api/paragraphExtraction/domain/PXEntitiesStatusDataSource';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import {

@@ -16,7 +16,7 @@ type UpdateParagraphsCountInput = {
   count: number;
 };
 
-export interface PXExtractionsDataSource {
+export interface PXEntitiesStatusDataSource {
   getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
   initProcess(extractionId: string): Promise<PXEntityStatusModel>;
   incrementSuccess(extractionId: string): Promise<PXEntityStatusModel>;

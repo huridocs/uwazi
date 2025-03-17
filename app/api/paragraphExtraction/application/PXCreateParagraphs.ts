@@ -3,13 +3,13 @@ import { ObjectId } from 'mongodb';
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import entities from 'api/entities';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
 import { PXCreateParagraph } from './PXCreateParagraph';
 import { PXValidationError } from '../domain/PXValidationError';
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
 type PXCreateParagraphsInput = GetParagraphsResultOutput;
 
@@ -17,7 +17,7 @@ type Output = any;
 
 type Dependencies = {
   extractorsDS: PXExtractorsDataSource;
-  extractionsDS: PXExtractionsDataSource;
+  extractionsDS: PXEntitiesStatusDataSource;
 };
 
 export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Output> {
