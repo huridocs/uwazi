@@ -9,7 +9,7 @@ import {
   createBlankSuggestionsForPartialExtractor,
 } from 'api/suggestions/blankSuggestions';
 import { Subset } from 'shared/tsUtils';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
 type AllowedPropertyTypes =
@@ -40,7 +40,10 @@ const checkTypeIsAllowed = (type: string) => {
   return type;
 };
 
-const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
+const templatePropertyExistenceCheck = async (
+  propertyName: string,
+  templateIds: ObjectIdSchema[]
+) => {
   const tArray = await templates.get({ _id: { $in: templateIds } });
   const usedTemplates = objectIndex(
     tArray,
@@ -48,7 +51,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     t => t
   );
   templateIds.forEach(id => {
-    if (!(id in usedTemplates)) {
+    if (!(id.toString() in usedTemplates)) {
       throw Error('Missing template.');
     }
   });
@@ -58,7 +61,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
   }
 
   templateIds.forEach(id => {
-    const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
+    const property = usedTemplates[id.toString()].properties?.find(p => p.name === propertyName);
 
     if (!property) {
       throw new Error('Missing property.');
@@ -106,32 +109,36 @@ export const Extractors = {
     await model.delete({ _id: { $in: ids } });
     await Suggestions.delete({ extractorId: { $in: ids } });
   },
-  create: async (name: string, property: string, templateIds: string[]) => {
+  create: async (extractor: Omit<IXExtractorType, '_id'>) => {
+    const { name, source, property, templates: templateIds } = extractor;
     await templatePropertyExistenceCheck(property, templateIds);
     const saved = await model.save({
       name,
+      source,
       property,
       templates: templateIds,
     });
     await createBlankSuggestionsForExtractor(saved);
     return saved;
   },
-  update: async (id: string, name: string, property: string, templateIds: string[]) => {
-    const [extractor] = await model.get({ _id: new ObjectId(id) });
-    if (!extractor) throw Error('Missing extractor.');
+  update: async (extractor: IXExtractorType) => {
+    const { _id, name, source, property, templates: templateIds } = extractor;
+    const [curentExtractor] = await model.get({ _id });
+    if (!curentExtractor) throw Error('Missing extractor.');
     await templatePropertyExistenceCheck(property, templateIds);
 
     const updated = await model.save({
-      ...extractor,
+      ...curentExtractor,
       name,
+      source,
       property,
       templates: templateIds,
     });
 
-    if (property !== extractor.property) {
+    if (property !== curentExtractor.property) {
       await handlePropertyUpdate(updated);
     } else {
-      await handleTemplateUpdate(extractor, updated);
+      await handleTemplateUpdate(curentExtractor, updated);
     }
 
     return updated;

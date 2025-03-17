@@ -10,7 +10,7 @@ export const IXExtractorSchema = {
   properties: {
     _id: objectIdSchema,
     name: { type: 'string' },
-    source: { type: 'string' },
+    source: { oneOf: [{ const: '__default_pdf' }, { type: 'string' }] },
     property: { type: 'string' },
     templates: { type: 'array', items: objectIdSchema },
   },

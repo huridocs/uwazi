@@ -121,6 +121,7 @@ const ExtractorModal = ({
   const [step, setStep] = useState(1);
   const [name, setName] = useState(extractor?.name || '');
   const [values, setValues] = useState<string[]>(initialValues);
+  const [source, setSource] = useState('pdf');
   const [options, setOptions] = useState(formatOptions(initialValues, templates));
   const [hasNameError, setNameError] = useState(false);
 
@@ -130,17 +131,18 @@ const ExtractorModal = ({
     onClose();
   };
 
-  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
-    if (!submittedName.length) {
+  const handleSubmit = () => {
+    if (!name.length) {
       setNameError(true);
       return;
     }
 
-    const result: null | IXExtractorInfo = submitedValues.length
+    const result: null | IXExtractorInfo = values.length
       ? ({
-          name: submittedName,
-          property: submitedValues[0].split('-', 2)[1],
-          templates: uniq(submitedValues.map(value => value.split('-', 2)[0])),
+          name,
+          source,
+          property: values[0].split('-', 2)[1],
+          templates: uniq(values.map(value => value.split('-', 2)[0])),
         } as IXExtractorInfo)
       : null;
 
@@ -216,7 +218,13 @@ const ExtractorModal = ({
               <Translate>Common sources</Translate>
             </h6>
             <div className="flex flex-wrap p-3">
-              <RadioSelect name="pdf" options={getAvailableSources(templates, values)} />
+              <RadioSelect
+                name="pdf"
+                options={getAvailableSources(templates, values)}
+                onChange={selected => {
+                  setSource(selected.currentTarget.value);
+                }}
+              />
             </div>
           </div>
         </div>
@@ -247,7 +255,7 @@ const ExtractorModal = ({
                 <Button styling="light" onClick={() => setStep(1)} className="grow">
                   <Translate>Back</Translate>
                 </Button>
-                <Button className="grow" onClick={() => handleSubmit(name, values)} color="success">
+                <Button className="grow" onClick={() => handleSubmit()} color="success">
                   {extractor ? <Translate>Update</Translate> : <Translate>Create</Translate>}
                 </Button>
               </>

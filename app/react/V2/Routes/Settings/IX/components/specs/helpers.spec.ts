@@ -298,7 +298,7 @@ describe('helpers', () => {
 
     it('should return the pdf source by default', () => {
       const result = getAvailableSources(templates, []);
-      expect(result).toEqual([{ label: 'PDF', value: 'pdf', defaultChecked: true }]);
+      expect(result).toEqual([{ label: 'PDF', value: '__default_pdf', defaultChecked: true }]);
       expect(translate.t).toHaveBeenCalledWith('System', 'PDF', 'PDF', false);
     });
 
@@ -308,18 +308,18 @@ describe('helpers', () => {
         '3-Informe de admisibilidad',
         '2-Ordenes de la corte',
       ]);
-      expect(result).toEqual([{ label: 'PDF', value: 'pdf', defaultChecked: true }]);
+      expect(result).toEqual([{ label: 'PDF', value: '__default_pdf', defaultChecked: true }]);
     });
 
     it('should return the default if text fields have diferent names', () => {
       const result = getAvailableSources(templates, ['1-Mecanismo', '5-Ordenes del presidente']);
-      expect(result).toEqual([{ label: 'PDF', value: 'pdf', defaultChecked: true }]);
+      expect(result).toEqual([{ label: 'PDF', value: '__default_pdf', defaultChecked: true }]);
     });
 
     it('should return the common text fields amongs templates', () => {
       const result = getAvailableSources(templates, ['1-Mecanismo', '3-Informe de admisibilidad']);
       expect(result).toEqual([
-        { label: 'PDF', value: 'pdf', defaultChecked: true },
+        { label: 'PDF', value: '__default_pdf', defaultChecked: true },
         { label: 'Descripción', value: 'descripcion' },
       ]);
       expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
@@ -333,7 +333,7 @@ describe('helpers', () => {
         '3-Informe de admisibilidad',
       ]);
       expect(result).toEqual([
-        { label: 'PDF', value: 'pdf', defaultChecked: true },
+        { label: 'PDF', value: '__default_pdf', defaultChecked: true },
         { label: 'Descripción', value: 'descripcion' },
       ]);
       expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
@@ -346,7 +346,7 @@ describe('helpers', () => {
         '2-Ordenes de la corte',
       ]);
       expect(result).toEqual([
-        { label: 'PDF', value: 'pdf', defaultChecked: true },
+        { label: 'PDF', value: '__default_pdf', defaultChecked: true },
         { label: 'Opinión', value: 'opini_n' },
         { label: 'Descripción', value: 'descripcion' },
       ]);

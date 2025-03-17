@@ -179,7 +179,12 @@ describe('ixextractors', () => {
 
   describe('create()', () => {
     it('should create a new ixextractor', async () => {
-      await Extractors.create('age_test', 'age', [fixtureFactory.id('personTemplate').toString()]);
+      await Extractors.create({
+        name: 'age_test',
+        property: 'age',
+        source: '__default_pdf',
+        templates: [fixtureFactory.id('personTemplate').toString()],
+      });
       const [ixextractor] = await Extractors.get({ name: 'age_test' });
       expect(ixextractor).toMatchObject({
         name: 'age_test',
@@ -192,6 +197,7 @@ describe('ixextractors', () => {
       {
         case: 'a property',
         name: 'age_test',
+        source: 'rich_text_property',
         property: 'age',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -224,6 +230,7 @@ describe('ixextractors', () => {
       {
         case: 'title',
         name: 'title_test',
+        source: '__default_pdf',
         property: 'title',
         templates: [
           fixtureFactory.id('personTemplate').toString(),
@@ -283,6 +290,7 @@ describe('ixextractors', () => {
       {
         case: 'selects',
         name: 'occupation_test',
+        source: '__default_pdf',
         property: 'occupation',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -315,6 +323,7 @@ describe('ixextractors', () => {
       {
         case: 'multiselects',
         name: 'spoken_languages_test',
+        source: '__default_pdf',
         property: 'spoken_languages',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -347,6 +356,7 @@ describe('ixextractors', () => {
       {
         case: 'relationships',
         name: 'pets_test',
+        source: '__default_pdf',
         property: 'pets',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -378,8 +388,8 @@ describe('ixextractors', () => {
       },
     ])(
       'should create empty suggestions for $case',
-      async ({ name, property, templates, expectedSuggestions }) => {
-        await Extractors.create(name, property, templates);
+      async ({ name, property, source, templates, expectedSuggestions }) => {
+        await Extractors.create({ name, property, source, templates });
         const [extractor] = await Extractors.get({ name });
         const suggestions = _.orderBy(await Suggestions.getByExtractor(extractor._id), [
           'entityId',
@@ -391,9 +401,12 @@ describe('ixextractors', () => {
 
     it('should throw if the property does not exist', async () => {
       await expect(async () =>
-        Extractors.create('invalid extractor', 'invalid_property', [
-          fixtureFactory.id('personTemplate').toString(),
-        ])
+        Extractors.create({
+          name: 'invalid extractor',
+          source: '__default_pdf',
+          property: 'invalid_property',
+          templates: [fixtureFactory.id('personTemplate').toString()],
+        })
       ).rejects.toEqual(new Error('Missing property.'));
       const [extractor] = await Extractors.get({ name: 'invalid extractor' });
       expect(extractor).toBe(undefined);
@@ -401,9 +414,12 @@ describe('ixextractors', () => {
 
     it('should throw if the property is not of an allowed type', async () => {
       await expect(async () =>
-        Extractors.create('invalid extractor', 'location', [
-          fixtureFactory.id('personTemplate').toString(),
-        ])
+        Extractors.create({
+          name: 'invalid extractor',
+          source: '__default_pdf',
+          property: 'location',
+          templates: [fixtureFactory.id('personTemplate').toString()],
+        })
       ).rejects.toEqual(new Error('Property type not allowed.'));
       const [extractor] = await Extractors.get({ name: 'invalid extractor' });
       expect(extractor).toBe(undefined);
@@ -412,12 +428,13 @@ describe('ixextractors', () => {
 
   describe('update()', () => {
     it('should delete the existing suggestions when removing a template and add an empty suggestion when adding a template', async () => {
-      await Extractors.update(
-        fixtureFactory.id('existingExtractor').toString(),
-        'existingExtractor',
-        'kind',
-        [fixtureFactory.id('animalTemplate').toString()]
-      );
+      await Extractors.update({
+        _id: fixtureFactory.id('existingExtractor'),
+        name: 'existingExtractor',
+        source: '__default_pdf',
+        property: 'kind',
+        templates: [fixtureFactory.id('animalTemplate').toString()],
+      });
 
       const [extractor] = await Extractors.get({ name: 'existingExtractor' });
       expect(extractor.templates).toEqual([fixtureFactory.id('animalTemplate')]);
@@ -443,15 +460,16 @@ describe('ixextractors', () => {
         }),
       ]);
 
-      await Extractors.update(
-        fixtureFactory.id('existingExtractor').toString(),
-        'existingExtractor',
-        'kind',
-        [
+      await Extractors.update({
+        _id: fixtureFactory.id('existingExtractor'),
+        name: 'existingExtractor',
+        source: '__default_pdf',
+        property: 'kind',
+        templates: [
           fixtureFactory.id('animalTemplate').toString(),
           fixtureFactory.id('plantTemplate').toString(),
-        ]
-      );
+        ],
+      });
 
       suggestions = await testingDB.mongodb
         ?.collection('ixsuggestions')
@@ -486,12 +504,13 @@ describe('ixextractors', () => {
 
     it('should delete existing suggestions when the property is changed, and create new blank suggestions', async () => {
       const [existing] = await Extractors.get({ name: 'existingExtractor' });
-      await Extractors.update(
-        existing._id.toString(),
-        'existingExtractor',
-        'title',
-        existing.templates.map(t => t.toString())
-      );
+      await Extractors.update({
+        _id: existing._id,
+        source: '__default_pdf',
+        name: 'existingExtractor',
+        property: 'title',
+        templates: existing.templates.map(t => t.toString()),
+      });
       const suggestions = _.orderBy(await Suggestions.getByExtractor(existing._id), [
         'entityId',
         'language',
@@ -527,12 +546,13 @@ describe('ixextractors', () => {
     it('should throw if the property does not exist', async () => {
       const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
       await expect(async () =>
-        Extractors.update(
-          existing._id.toString(),
-          'existingExtractor',
-          'missing_property',
-          existing.templates.map(t => t.toString())
-        )
+        Extractors.update({
+          _id: existing._id,
+          name: 'existingExtractor',
+          source: '__default_pdf',
+          property: 'missing_property',
+          templates: existing.templates.map(t => t.toString()),
+        })
       ).rejects.toEqual(new Error('Missing property.'));
       const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
       expect(extractor).toEqual(existing);
@@ -541,12 +561,13 @@ describe('ixextractors', () => {
     it('should throw if the property is not of an allowed type', async () => {
       const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
       await expect(async () =>
-        Extractors.update(
-          existing._id.toString(),
-          'existingExtractor',
-          'location',
-          existing.templates.map(t => t.toString())
-        )
+        Extractors.update({
+          _id: existing._id,
+          name: 'existingExtractor',
+          source: '__default_pdf',
+          property: 'location',
+          templates: existing.templates.map(t => t.toString()),
+        })
       ).rejects.toEqual(new Error('Property type not allowed.'));
       const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
       expect(extractor).toEqual(existing);

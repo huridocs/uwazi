@@ -1,12 +1,11 @@
+import { IXExtractorType } from 'shared/types/extractorType';
 import { SettingsLinkSchema } from 'shared/types/settingsType';
 
-interface IXExtractorInfo {
+interface IXExtractorInfo extends IXExtractorType {
   _id: string;
-  name: string;
-  property: string;
   templates: string[];
-  source: string;
 }
+
 type DraggableValue<T> = T & {
   items?: IDraggable<T>[];
 };

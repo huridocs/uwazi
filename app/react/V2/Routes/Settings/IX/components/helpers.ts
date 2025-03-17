@@ -230,7 +230,7 @@ const getAvailableSources = (
   const baseOptions: RadioProps['options'] = [
     {
       label: t('System', 'PDF', 'PDF', false),
-      value: 'pdf',
+      value: '__default_pdf',
       defaultChecked: true,
     },
   ];

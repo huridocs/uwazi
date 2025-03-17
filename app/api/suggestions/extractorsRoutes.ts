@@ -21,6 +21,7 @@ export const extractorsRoutes = (app: Application) => {
           required: ['name', 'property', 'templates'],
           properties: {
             name: { type: 'string' },
+            source: { type: 'string' },
             property: { type: 'string' },
             templates: { type: 'array', items: { type: 'string' } },
           },
@@ -28,7 +29,12 @@ export const extractorsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      const created = await Extractors.create(req.body.name, req.body.property, req.body.templates);
+      const created = await Extractors.create({
+        name: req.body.name,
+        source: req.body.source,
+        property: req.body.property,
+        templates: req.body.templates,
+      });
       res.json(created);
     }
   );
@@ -47,6 +53,7 @@ export const extractorsRoutes = (app: Application) => {
           properties: {
             _id: { type: 'string' },
             name: { type: 'string' },
+            source: { type: 'string' },
             property: { type: 'string' },
             templates: { type: 'array', items: { type: 'string' } },
           },
@@ -54,12 +61,13 @@ export const extractorsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      const updated = await Extractors.update(
-        req.body._id,
-        req.body.name,
-        req.body.property,
-        req.body.templates
-      );
+      const updated = await Extractors.update({
+        _id: req.body._id,
+        name: req.body.name,
+        source: req.body.property,
+        property: req.body.property,
+        templates: req.body.templates,
+      });
       res.json(updated);
     }
   );
