@@ -11,7 +11,7 @@ import {
 import { ExtractionStatus, PXExtraction, PXExtractionModel } from '../domain/PXExtraction';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
-export const mongoPXEntitiesStatusCollection = 'px_extractions';
+export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
 export class MongoPXEntitiesStatusDataSource
   extends MongoDataSource<MongoPXEntityStatus>
