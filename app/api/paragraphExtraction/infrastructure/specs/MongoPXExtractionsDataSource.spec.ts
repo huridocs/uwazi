@@ -7,7 +7,7 @@ import { CreateInput } from 'api/paragraphExtraction/domain/PXExtractionDataSour
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import {
-  mongoPXExtractionsCollection,
+  mongoPXEntitiesStatusCollection,
   MongoPXExtractionsDataSource,
 } from '../MongoPXExtractionsDataSource';
 
@@ -65,7 +65,7 @@ describe('MongoPXExtractionsDataSource', () => {
     const extractionCreated = createExtractionDBO();
 
     await testingEnvironment.setFixtures({
-      [mongoPXExtractionsCollection]: [{ ...extractionCreated, paragraphsCount: 0 }],
+      [mongoPXEntitiesStatusCollection]: [{ ...extractionCreated, paragraphsCount: 0 }],
     });
     const { extractionsDS } = createSut();
 
@@ -83,7 +83,9 @@ describe('MongoPXExtractionsDataSource', () => {
   it('should set status as Error', async () => {
     const extractionCreated = createExtractionDBO();
 
-    await testingEnvironment.setFixtures({ [mongoPXExtractionsCollection]: [extractionCreated] });
+    await testingEnvironment.setFixtures({
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
+    });
     const { extractionsDS } = createSut();
 
     const extraction = await extractionsDS.setAsError(extractionCreated._id.toString());
@@ -96,7 +98,9 @@ describe('MongoPXExtractionsDataSource', () => {
   it('should init process', async () => {
     const extractionCreated = createExtractionDBO();
 
-    await testingEnvironment.setFixtures({ [mongoPXExtractionsCollection]: [extractionCreated] });
+    await testingEnvironment.setFixtures({
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
+    });
     const { extractionsDS } = createSut();
 
     const extraction = await extractionsDS.initProcess(extractionCreated._id.toString());
@@ -109,7 +113,9 @@ describe('MongoPXExtractionsDataSource', () => {
   it('should increment successfulParagraphsCount', async () => {
     const extractionCreated = createExtractionDBO();
 
-    await testingEnvironment.setFixtures({ [mongoPXExtractionsCollection]: [extractionCreated] });
+    await testingEnvironment.setFixtures({
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
+    });
     const { extractionsDS } = createSut();
 
     const extraction = await extractionsDS.incrementSuccess(extractionCreated._id.toString());
@@ -122,7 +128,9 @@ describe('MongoPXExtractionsDataSource', () => {
   it('should increment failedParagraphsCount', async () => {
     const extractionCreated = createExtractionDBO();
 
-    await testingEnvironment.setFixtures({ [mongoPXExtractionsCollection]: [extractionCreated] });
+    await testingEnvironment.setFixtures({
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
+    });
     const { extractionsDS } = createSut();
 
     const extraction = await extractionsDS.incrementFail(extractionCreated._id.toString());
@@ -138,7 +146,9 @@ describe('MongoPXExtractionsDataSource', () => {
       failedParagraphsCount: 9,
     };
 
-    await testingEnvironment.setFixtures({ [mongoPXExtractionsCollection]: [extractionCreated] });
+    await testingEnvironment.setFixtures({
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
+    });
     const { extractionsDS } = createSut();
 
     const extraction = await extractionsDS.incrementSuccess(extractionCreated._id.toString());
@@ -155,7 +165,7 @@ describe('MongoPXExtractionsDataSource', () => {
     };
 
     await testingEnvironment.setFixtures({
-      [mongoPXExtractionsCollection]: [extractionCreated],
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
     const { extractionsDS } = createSut();
 
@@ -175,7 +185,7 @@ describe('MongoPXExtractionsDataSource', () => {
     };
 
     await testingEnvironment.setFixtures({
-      [mongoPXExtractionsCollection]: [extractionCreated],
+      [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
 
     const { extractionsDS } = createSut();
@@ -188,7 +198,7 @@ describe('MongoPXExtractionsDataSource', () => {
 
     await Promise.all(promises);
 
-    const extraction = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extraction = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extraction![0]).toMatchObject({
       failedParagraphsCount: 0,

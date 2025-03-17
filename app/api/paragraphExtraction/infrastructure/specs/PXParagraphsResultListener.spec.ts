@@ -5,7 +5,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
-import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXExtractionsDataSource';
 import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
 
 jest.mock('api/services/tasksmanager/TaskManager');
@@ -66,7 +66,7 @@ const createSut = () => {
 describe('PXParagraphsResultListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({
-      [mongoPXExtractionsCollection]: [extractionDBO],
+      [mongoPXEntitiesStatusCollection]: [extractionDBO],
     });
   });
 
@@ -113,7 +113,7 @@ describe('PXParagraphsResultListener', () => {
 
     await expect(promise).rejects.toThrow();
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {

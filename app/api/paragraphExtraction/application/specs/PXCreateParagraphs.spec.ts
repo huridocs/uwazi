@@ -18,7 +18,7 @@ import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationEr
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 import {
-  mongoPXExtractionsCollection,
+  mongoPXEntitiesStatusCollection,
   MongoPXExtractionsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
@@ -98,7 +98,7 @@ const extractionDBO: MongoPXEntityStatus = {
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
-  [mongoPXExtractionsCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate, template],
   entities: [entityEn, entityEs, entityPt, sourceEntityThatDoesNotBelongToExtractor],
   settings: [
@@ -235,7 +235,7 @@ describe('PXCreateParagraphs', () => {
 
     await createParagraphs.execute(input);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {

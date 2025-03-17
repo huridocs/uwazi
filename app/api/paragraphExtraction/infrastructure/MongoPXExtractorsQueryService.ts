@@ -5,7 +5,7 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { GetExtractorsOutput, PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
-import { mongoPXExtractionsCollection } from './MongoPXExtractionsDataSource';
+import { mongoPXEntitiesStatusCollection } from './MongoPXExtractionsDataSource';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 class MongoPXExtractorsQueryService
@@ -40,7 +40,7 @@ class MongoPXExtractorsQueryService
       },
       {
         $lookup: {
-          from: mongoPXExtractionsCollection,
+          from: mongoPXEntitiesStatusCollection,
           localField: '_id',
           foreignField: 'extractorId',
           as: 'extractions',

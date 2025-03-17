@@ -15,7 +15,7 @@ import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
 import { tenants } from 'api/tenants';
 import {
-  mongoPXExtractionsCollection,
+  mongoPXEntitiesStatusCollection,
   MongoPXExtractionsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
@@ -44,7 +44,7 @@ import {
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
-  [mongoPXExtractionsCollection]: [extraction],
+  [mongoPXEntitiesStatusCollection]: [extraction],
   templates: [sourceTemplate, targetTemplate, defaultTemplate],
   entities: [entity, invalidEntity],
   settings: [
@@ -122,7 +122,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       extractionId: extraction._id.toString(),
     });
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
@@ -144,7 +144,7 @@ describe('PXExtractParagraphsFromEntity', () => {
 
     await expect(promise).rejects.toThrow();
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {

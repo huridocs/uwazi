@@ -6,7 +6,7 @@ import {
   MongoPXExtractorsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import {
-  mongoPXExtractionsCollection,
+  mongoPXEntitiesStatusCollection,
   MongoPXExtractionsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
@@ -104,7 +104,7 @@ const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractorDBO],
-  [mongoPXExtractionsCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate],
   entities: [entityEn, entityEs, entityPt],
   settings: [
@@ -162,7 +162,7 @@ describe('PXCreateParagraph', () => {
 
     await createParagraph.execute(input);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
@@ -213,7 +213,7 @@ describe('PXCreateParagraph', () => {
 
     await expect(promise).rejects.toThrow();
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {

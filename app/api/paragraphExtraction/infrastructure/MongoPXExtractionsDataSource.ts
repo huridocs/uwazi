@@ -11,13 +11,13 @@ import {
 import { ExtractionStatus, PXExtraction, PXExtractionModel } from '../domain/PXExtraction';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
-export const mongoPXExtractionsCollection = 'px_extractions';
+export const mongoPXEntitiesStatusCollection = 'px_extractions';
 
 export class MongoPXExtractionsDataSource
   extends MongoDataSource<MongoPXEntityStatus>
   implements PXExtractionsDataSource
 {
-  protected collectionName = mongoPXExtractionsCollection;
+  protected collectionName = mongoPXEntitiesStatusCollection;
 
   async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXExtractionModel> {
     const dbo = await this.getCollection().findOneAndUpdate(

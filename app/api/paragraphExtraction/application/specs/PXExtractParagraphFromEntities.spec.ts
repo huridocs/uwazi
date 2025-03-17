@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
-  mongoPXExtractionsCollection,
+  mongoPXEntitiesStatusCollection,
   MongoPXExtractionsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
@@ -58,7 +58,7 @@ describe('PXExtractParagraphFromEntities', () => {
 
     await extractParagraphFromEntities.execute(input);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {

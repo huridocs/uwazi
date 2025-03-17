@@ -10,7 +10,7 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
-import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXExtractionsDataSource';
 import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
 
 const factory = getFixturesFactory();
@@ -62,7 +62,7 @@ const entityThatDoesNotBelongToExtractor = factory.entity(
 );
 
 const createFixtures = (): DBFixture => ({
-  [mongoPXExtractionsCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [extractionDBO],
   [mongoPXExtractorsCollection]: [extractor, extractor2],
   templates: [sourceTemplate, sourceTemplate2, targetTemplate],
   entities: [
