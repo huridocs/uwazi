@@ -4,8 +4,8 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
   mongoPXEntitiesStatusCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -21,7 +21,7 @@ const setUpUseCase = () => {
   const transaction = DefaultTransactionManager();
   const connection = getConnection();
 
-  const extractionsDS = new MongoPXExtractionsDataSource(connection, transaction);
+  const extractionsDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
   };

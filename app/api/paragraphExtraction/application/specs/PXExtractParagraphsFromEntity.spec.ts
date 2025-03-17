@@ -16,8 +16,8 @@ import { DBFixture } from 'api/utils/testing_db';
 import { tenants } from 'api/tenants';
 import {
   mongoPXEntitiesStatusCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
@@ -78,7 +78,7 @@ const setUpUseCase = () => {
   const settingsDS = DefaultSettingsDataSource(transaction);
   const filesDS = DefaultFilesDataSource(transaction);
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
+  const extractionsDS = new MongoPXEntitiesStatusDataSource(db, transaction);
   const idGenerator = MongoIdHandler;
   const tenantName = tenants.current().name;
 

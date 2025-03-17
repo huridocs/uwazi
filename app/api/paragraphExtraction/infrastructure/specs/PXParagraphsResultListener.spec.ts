@@ -5,7 +5,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXExtractionsDataSource';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
 
 jest.mock('api/services/tasksmanager/TaskManager');

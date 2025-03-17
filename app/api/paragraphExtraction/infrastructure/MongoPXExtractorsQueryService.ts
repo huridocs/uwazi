@@ -5,7 +5,7 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { GetExtractorsOutput, PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
-import { mongoPXEntitiesStatusCollection } from './MongoPXExtractionsDataSource';
+import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 class MongoPXExtractorsQueryService

@@ -19,8 +19,8 @@ import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
 import {
   mongoPXEntitiesStatusCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
 
@@ -116,7 +116,7 @@ const setUpUseCase = () => {
   const db = getConnection();
   const transaction = DefaultTransactionManager();
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
+  const extractionsDS = new MongoPXEntitiesStatusDataSource(db, transaction);
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,

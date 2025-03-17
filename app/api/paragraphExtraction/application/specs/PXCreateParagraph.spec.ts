@@ -7,8 +7,8 @@ import {
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import {
   mongoPXEntitiesStatusCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
@@ -85,13 +85,13 @@ const extractionDBO: MongoPXEntityStatus = {
   successfulParagraphsCount: 0,
 };
 
-const extraction = MongoPXExtractionsDataSource.toDomain(extractionDBO);
+const extraction = MongoPXEntitiesStatusDataSource.toDomain(extractionDBO);
 
 const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
   const connection = getConnection();
   const transaction = DefaultTransactionManager();
 
-  const extractionsDS = new MongoPXExtractionsDataSource(connection, transaction);
+  const extractionsDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
 
   const createParagraph = new PXCreateParagraph({
     logger: createMockLogger(),

@@ -13,7 +13,7 @@ import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 export const mongoPXEntitiesStatusCollection = 'px_extractions';
 
-export class MongoPXExtractionsDataSource
+export class MongoPXEntitiesStatusDataSource
   extends MongoDataSource<MongoPXEntityStatus>
   implements PXExtractionsDataSource
 {
@@ -30,7 +30,7 @@ export class MongoPXExtractionsDataSource
       throw new Error(`Can not update an Extraction that does not exist. Id : ${input.id}`);
     }
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   private static computeStatus() {
@@ -67,7 +67,7 @@ export class MongoPXExtractionsDataSource
       );
     }
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async incrementFail(extractionId: string): Promise<PXExtractionModel> {
@@ -81,7 +81,7 @@ export class MongoPXExtractionsDataSource
         },
         {
           $set: {
-            status: MongoPXExtractionsDataSource.computeStatus(),
+            status: MongoPXEntitiesStatusDataSource.computeStatus(),
           },
         },
       ],
@@ -94,7 +94,7 @@ export class MongoPXExtractionsDataSource
       );
     }
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async incrementSuccess(extractionId: string): Promise<PXExtractionModel> {
@@ -108,7 +108,7 @@ export class MongoPXExtractionsDataSource
         },
         {
           $set: {
-            status: MongoPXExtractionsDataSource.computeStatus(),
+            status: MongoPXEntitiesStatusDataSource.computeStatus(),
           },
         },
       ],
@@ -121,7 +121,7 @@ export class MongoPXExtractionsDataSource
       );
     }
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async initProcess(extractionId: string): Promise<PXExtractionModel> {
@@ -138,7 +138,7 @@ export class MongoPXExtractionsDataSource
       );
     }
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async create(input: CreateInput): Promise<PXExtractionModel> {
@@ -155,7 +155,7 @@ export class MongoPXExtractionsDataSource
 
     await this.getCollection().insertOne(dbo);
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async getById(extractionId: string): Promise<PXExtractionModel | undefined> {
@@ -167,7 +167,7 @@ export class MongoPXExtractionsDataSource
       return undefined;
     }
 
-    return MongoPXExtractionsDataSource.toDomain(dbo);
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async getExisting(input: GetExistingInput): Promise<PXExtraction | undefined> {

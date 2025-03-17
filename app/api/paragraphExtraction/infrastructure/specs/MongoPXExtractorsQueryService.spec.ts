@@ -10,7 +10,7 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
-import { mongoPXEntitiesStatusCollection } from '../MongoPXExtractionsDataSource';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
 
 const factory = getFixturesFactory();

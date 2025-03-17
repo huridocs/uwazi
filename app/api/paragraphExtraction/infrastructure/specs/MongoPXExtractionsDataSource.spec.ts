@@ -8,13 +8,13 @@ import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import {
   mongoPXEntitiesStatusCollection,
-  MongoPXExtractionsDataSource,
-} from '../MongoPXExtractionsDataSource';
+  MongoPXEntitiesStatusDataSource,
+} from '../MongoPXEntitiesStatusDataSource';
 
 const createSut = () => {
   const transaction = DefaultTransactionManager();
   const connection = getConnection();
-  const extractionsDS = new MongoPXExtractionsDataSource(connection, transaction);
+  const extractionsDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
 
   return { extractionsDS };
 };
