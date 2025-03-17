@@ -5,6 +5,7 @@ interface IXExtractorInfo {
   name: string;
   property: string;
   templates: string[];
+  source: string;
 }
 type DraggableValue<T> = T & {
   items?: IDraggable<T>[];
