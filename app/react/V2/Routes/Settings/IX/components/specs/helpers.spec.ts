@@ -1,6 +1,8 @@
+import * as translate from 'app/I18N/translateFunction';
 import { formatOptions } from '../ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
-import { templates } from './fixtures';
+import { getAvailableSources } from '../helpers';
+import { templates, templatesWithCommonProperties } from './fixtures';
 
 describe('helpers', () => {
   describe('formatOptions', () => {
@@ -281,6 +283,72 @@ describe('helpers', () => {
           propertyLabel: 'Fecha',
           rowId: 'exractor2',
         },
+      ]);
+    });
+  });
+
+  describe('getAvailableSources', () => {
+    beforeAll(() => {
+      jest.spyOn(translate, 't');
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return the pdf source by default', () => {
+      const result = getAvailableSources(templates, []);
+      expect(result).toEqual([{ label: 'PDF', value: 'pdf', defaultChecked: true }]);
+      expect(translate.t).toHaveBeenCalledWith('System', 'PDF', 'PDF', false);
+    });
+
+    it('should return the default if there is no common text field between templates', () => {
+      const result = getAvailableSources(templates, [
+        '1-Mecanismo',
+        '3-Informe de admisibilidad',
+        '2-Ordenes de la corte',
+      ]);
+      expect(result).toEqual([{ label: 'PDF', value: 'pdf', defaultChecked: true }]);
+    });
+
+    it('should return the default if text fields have diferent names', () => {
+      const result = getAvailableSources(templates, ['1-Mecanismo', '5-Ordenes del presidente']);
+      expect(result).toEqual([{ label: 'PDF', value: 'pdf', defaultChecked: true }]);
+    });
+
+    it('should return the common text fields amongs templates', () => {
+      const result = getAvailableSources(templates, ['1-Mecanismo', '3-Informe de admisibilidad']);
+      expect(result).toEqual([
+        { label: 'PDF', value: 'pdf', defaultChecked: true },
+        { label: 'Descripción', value: 'descripcion' },
+      ]);
+      expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
+      expect(translate.t).toHaveBeenNthCalledWith(2, '1', 'Descripción', 'Descripción', false);
+    });
+
+    it('should not repeat the common property amongs templates', () => {
+      const result = getAvailableSources(templates, [
+        '4-País',
+        '1-Mecanismo',
+        '3-Informe de admisibilidad',
+      ]);
+      expect(result).toEqual([
+        { label: 'PDF', value: 'pdf', defaultChecked: true },
+        { label: 'Descripción', value: 'descripcion' },
+      ]);
+      expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
+      expect(translate.t).toHaveBeenNthCalledWith(2, '1', 'Descripción', 'Descripción', false);
+    });
+
+    it('should return all the common properties amongs templates', () => {
+      const result = getAvailableSources(templatesWithCommonProperties, [
+        '1-Mecanismo',
+        '2-Ordenes de la corte',
+      ]);
+      expect(result).toEqual([
+        { label: 'PDF', value: 'pdf', defaultChecked: true },
+        { label: 'Opinión', value: 'opini_n' },
+        { label: 'Descripción', value: 'descripcion' },
       ]);
     });
   });

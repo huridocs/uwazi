@@ -10,6 +10,7 @@ import { IXExtractorInfo } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
+import { getAvailableSources } from './helpers';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
 type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
@@ -167,7 +168,6 @@ const ExtractorModal = ({
       <Modal.Body className="pt-0">
         <InputField
           className="mt-6"
-          clearFieldAction={() => {}}
           id="extractor-name"
           placeholder="Extractor name"
           hasErrors={hasNameError}
@@ -216,16 +216,7 @@ const ExtractorModal = ({
               <Translate>Common sources</Translate>
             </h6>
             <div className="flex flex-wrap p-3">
-              <RadioSelect
-                name="pdf"
-                options={[
-                  {
-                    label: <Translate>PDF</Translate>,
-                    value: 'true',
-                    defaultChecked: true,
-                  },
-                ]}
-              />
+              <RadioSelect name="pdf" options={getAvailableSources(templates, values)} />
             </div>
           </div>
         </div>

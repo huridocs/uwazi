@@ -299,6 +299,12 @@ const templates: ClientTemplateSchema[] = [
         type: 'text',
         name: 'resumen',
       },
+      {
+        _id: '14',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
     ],
     commonProperties: [
       {
@@ -375,6 +381,12 @@ const templates: ClientTemplateSchema[] = [
         type: 'text',
         name: 'resumen',
       },
+      {
+        _id: '35',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
     ],
     commonProperties: [
       {
@@ -413,6 +425,12 @@ const templates: ClientTemplateSchema[] = [
         content: 'thesaurus2',
         name: 'categor_a',
       },
+      {
+        _id: '45',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
     ],
     commonProperties: [
       {
@@ -442,6 +460,12 @@ const templates: ClientTemplateSchema[] = [
         content: 'thesaurus2',
         name: 'categor_a',
       },
+      {
+        _id: '53',
+        label: 'Resumen de la order',
+        type: 'markdown',
+        name: 'resumen_de_la_orden',
+      },
     ],
     commonProperties: [
       {
@@ -453,6 +477,84 @@ const templates: ClientTemplateSchema[] = [
       },
       {
         _id: '52',
+        label: 'Date added',
+        name: 'creationDate',
+        type: 'date',
+        isCommonProperty: true,
+      },
+    ],
+  },
+];
+
+const templatesWithCommonProperties: ClientTemplateSchema[] = [
+  {
+    _id: '1',
+    name: 'Mecanismo',
+    default: true,
+    properties: [
+      {
+        _id: '13',
+        label: 'Opinión',
+        type: 'markdown',
+        name: 'opini_n',
+      },
+      {
+        _id: '14',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
+    ],
+    commonProperties: [
+      {
+        _id: '11',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+      {
+        _id: '12',
+        label: 'Date added',
+        name: 'creationDate',
+        type: 'date',
+        isCommonProperty: true,
+      },
+    ],
+  },
+  {
+    _id: '2',
+    name: 'Ordenes de la corte',
+    properties: [
+      {
+        _id: '23',
+        label: 'Fecha',
+        type: 'date',
+        name: 'fecha',
+      },
+      {
+        _id: '24',
+        label: 'Opinión',
+        type: 'markdown',
+        name: 'opini_n',
+      },
+      {
+        _id: '25',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
+    ],
+    commonProperties: [
+      {
+        _id: '21',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+      {
+        _id: '22',
         label: 'Date added',
         name: 'creationDate',
         type: 'date',
@@ -475,4 +577,5 @@ export {
   propertyDocumentDate,
   propertyMultiselect,
   templates,
+  templatesWithCommonProperties,
 };

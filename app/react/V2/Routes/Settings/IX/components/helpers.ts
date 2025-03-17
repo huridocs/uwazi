@@ -1,6 +1,9 @@
-/* eslint-disable max-statements */
-import { ClientEntitySchema } from 'app/istore';
+/* eslint-disable max-lines */
+import { uniqBy } from 'lodash';
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { t } from 'app/I18N';
+import { RadioProps } from 'app/V2/Components/Forms';
 import {
   SuggestionValue,
   TableSuggestion,
@@ -205,4 +208,74 @@ const updateSuggestions = (
   return merged;
 };
 
-export { updateSuggestions, updateSuggestionsByEntity, generateChildrenRows };
+const propertyIsInAllTemplates = (
+  templates: ClientTemplateSchema[],
+  property: { templateId: string; propertyName: string; propertyLabel: string }
+) =>
+  templates.every(template =>
+    template.properties
+      .filter(templateProperty => templateProperty.type === 'markdown')
+      .some(templateProperty => {
+        if (templateProperty.name === property.propertyName) {
+          return true;
+        }
+        return false;
+      })
+  );
+
+const getAvailableSources = (
+  templates: ClientTemplateSchema[],
+  selectedTemplates: string[]
+): RadioProps['options'] => {
+  const baseOptions: RadioProps['options'] = [
+    {
+      label: t('System', 'PDF', 'PDF', false),
+      value: 'pdf',
+      defaultChecked: true,
+    },
+  ];
+  const templateIds = selectedTemplates.map(selected => selected.split('-', 2)[0]);
+  const templatesIncluded = templates.filter(template =>
+    templateIds.includes(template._id.toString())
+  );
+  let markdownProperties: { templateId: string; propertyName: string; propertyLabel: string }[] =
+    [];
+
+  templatesIncluded.every(template => {
+    const templateMarkdownProperties = template.properties?.filter(
+      property => property.type === 'markdown'
+    );
+
+    if (!templateMarkdownProperties.length) {
+      markdownProperties = [];
+      return false;
+    }
+
+    markdownProperties.push(
+      ...templateMarkdownProperties.map(templateMarkdownProperty => ({
+        templateId: template._id.toString(),
+        propertyName: templateMarkdownProperty.name,
+        propertyLabel: templateMarkdownProperty.label,
+      }))
+    );
+
+    return true;
+  });
+
+  return [
+    ...baseOptions,
+    ...uniqBy(markdownProperties, 'propertyName')
+      .filter(markdownProperty => propertyIsInAllTemplates(templatesIncluded, markdownProperty))
+      .map(markdownProperty => ({
+        label: t(
+          markdownProperty.templateId,
+          markdownProperty.propertyLabel,
+          markdownProperty.propertyLabel,
+          false
+        ),
+        value: markdownProperty.propertyName,
+      })),
+  ];
+};
+
+export { updateSuggestions, updateSuggestionsByEntity, generateChildrenRows, getAvailableSources };
