@@ -14,10 +14,16 @@ export type PXExtractorProps = {
   targetTemplate: Template;
   paragraphPropertyId: string;
   paragraphNumberPropertyId: string;
+  sourceRelationshipTypeId: string;
+  targetRelationshipTypeId: string;
 };
 
 export class PXExtractor {
   id: string;
+
+  sourceRelationshipTypeId: string;
+
+  targetRelationshipTypeId: string;
 
   targetTemplate: Template;
 
@@ -35,6 +41,8 @@ export class PXExtractor {
     this.paragraphNumberProperty = props.targetTemplate.getPropertyById(
       props.paragraphNumberPropertyId
     )!;
+    this.sourceRelationshipTypeId = props.sourceRelationshipTypeId;
+    this.targetRelationshipTypeId = props.targetRelationshipTypeId;
 
     this.validate();
   }

@@ -61,12 +61,26 @@ const entityPt = factory.entity(
   { language: 'pt', title: 'Source Entity Portuguese' }
 );
 
+const sourceRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 const extractorDBO: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
 const extractor = MongoPXExtractorsDataSource.toDomain({
@@ -103,6 +117,7 @@ const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
 };
 
 const createFixtures = (): DBFixture => ({
+  relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractorDBO],
   [mongoPXExtractionsCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate],

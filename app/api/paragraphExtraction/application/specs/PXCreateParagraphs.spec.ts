@@ -78,12 +78,26 @@ const entityPt = factory.entity(
   { language: 'pt', title: 'Source Entity Portuguese' }
 );
 
+const sourceRelationshipType = {
+  _id: factory.id('sourceRelationshipType'),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: factory.id('targetRelationshipType'),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
 const extractionDBO: MongoPXExtractionDBO = {
@@ -97,6 +111,7 @@ const extractionDBO: MongoPXExtractionDBO = {
 };
 
 const createFixtures = (): DBFixture => ({
+  relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractor],
   [mongoPXExtractionsCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate, template],
