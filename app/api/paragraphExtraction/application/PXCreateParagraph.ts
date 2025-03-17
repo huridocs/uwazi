@@ -9,7 +9,7 @@ import entities from 'api/entities';
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
-import { PXExtractionModel } from '../domain/PXExtraction';
+import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 
 /**
  * Notes
@@ -27,7 +27,7 @@ type PXCreateParagraphInput = {
   extractor: PXExtractor;
   user: { _id: ObjectId };
   paragraph: ParagraphOutput;
-  extraction: PXExtractionModel;
+  extraction: PXEntityStatusModel;
 };
 
 type LegacyEntitiesDS = typeof entities;

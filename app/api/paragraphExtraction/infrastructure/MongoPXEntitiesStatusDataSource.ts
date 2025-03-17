@@ -8,7 +8,7 @@ import {
   PXExtractionsDataSource,
   UpdateParagraphsCountInput,
 } from '../domain/PXExtractionDataSource';
-import { ExtractionStatus, PXExtraction, PXExtractionModel } from '../domain/PXExtraction';
+import { EntityStatus, PXExtraction, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
@@ -19,7 +19,7 @@ export class MongoPXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
 
-  async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXExtractionModel> {
+  async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(input.id) },
       { $set: { paragraphsCount: input.count } },
@@ -46,18 +46,18 @@ export class MongoPXEntitiesStatusDataSource
         else: {
           $cond: {
             if: { $gte: ['$successfulParagraphsCount', 1] },
-            then: ExtractionStatus.Finished,
-            else: ExtractionStatus.Error,
+            then: EntityStatus.Finished,
+            else: EntityStatus.Error,
           },
         },
       },
     };
   }
 
-  async setAsError(extractionId: string): Promise<PXExtractionModel> {
+  async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(extractionId) },
-      { $set: { status: ExtractionStatus.Error } },
+      { $set: { status: EntityStatus.Error } },
       { upsert: false, returnDocument: 'after' }
     );
 
@@ -70,7 +70,7 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async incrementFail(extractionId: string): Promise<PXExtractionModel> {
+  async incrementFail(extractionId: string): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(extractionId) },
       [
@@ -97,7 +97,7 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async incrementSuccess(extractionId: string): Promise<PXExtractionModel> {
+  async incrementSuccess(extractionId: string): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(extractionId) },
       [
@@ -124,10 +124,10 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async initProcess(extractionId: string): Promise<PXExtractionModel> {
+  async initProcess(extractionId: string): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(extractionId) },
-      { $set: { status: ExtractionStatus.Processing } },
+      { $set: { status: EntityStatus.Processing } },
       { upsert: false, returnDocument: 'after' }
     );
 
@@ -141,13 +141,13 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async create(input: CreateInput): Promise<PXExtractionModel> {
+  async create(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatus = {
       _id: new ObjectId(),
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
 
-      status: ExtractionStatus.Queued,
+      status: EntityStatus.Queued,
       failedParagraphsCount: 0,
       paragraphsCount: 0,
       successfulParagraphsCount: 0,
@@ -158,7 +158,7 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async getById(extractionId: string): Promise<PXExtractionModel | undefined> {
+  async getById(extractionId: string): Promise<PXEntityStatusModel | undefined> {
     const dbo = await this.getCollection().findOne({
       _id: new ObjectId(extractionId),
     });
@@ -184,11 +184,11 @@ export class MongoPXEntitiesStatusDataSource
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),
       sourceEntityId: dbo.entitySharedId.toString(),
-      status: dbo.status as ExtractionStatus,
+      status: dbo.status as EntityStatus,
     });
   }
 
-  static toDomain(dbo: MongoPXEntityStatus): PXExtractionModel {
+  static toDomain(dbo: MongoPXEntityStatus): PXEntityStatusModel {
     return {
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),

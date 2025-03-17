@@ -4,7 +4,7 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 import { CreateInput } from 'api/paragraphExtraction/domain/PXExtractionDataSource';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import {
   mongoPXEntitiesStatusCollection,
@@ -23,7 +23,7 @@ const createExtractionDBO = () => ({
   _id: new ObjectId(),
   extractorId: new ObjectId(),
   entitySharedId: new ObjectId().toString(),
-  status: ExtractionStatus.Queued,
+  status: EntityStatus.Queued,
   failedParagraphsCount: 2,
   paragraphsCount: 10,
   successfulParagraphsCount: 0,
@@ -54,7 +54,7 @@ describe('MongoPXExtractionsDataSource', () => {
       id: expect.any(String),
       extractorId: input.extractorId,
       entitySharedId: input.entitySharedId,
-      status: ExtractionStatus.Queued,
+      status: EntityStatus.Queued,
       paragraphsCount: 0,
       failedParagraphsCount: 0,
       successfulParagraphsCount: 0,
@@ -91,7 +91,7 @@ describe('MongoPXExtractionsDataSource', () => {
     const extraction = await extractionsDS.setAsError(extractionCreated._id.toString());
 
     expect(extraction).toMatchObject({
-      status: ExtractionStatus.Error,
+      status: EntityStatus.Error,
     });
   });
 
@@ -106,7 +106,7 @@ describe('MongoPXExtractionsDataSource', () => {
     const extraction = await extractionsDS.initProcess(extractionCreated._id.toString());
 
     expect(extraction).toMatchObject({
-      status: ExtractionStatus.Processing,
+      status: EntityStatus.Processing,
     });
   });
 
@@ -154,7 +154,7 @@ describe('MongoPXExtractionsDataSource', () => {
     const extraction = await extractionsDS.incrementSuccess(extractionCreated._id.toString());
 
     expect(extraction).toMatchObject({
-      status: ExtractionStatus.Finished,
+      status: EntityStatus.Finished,
     });
   });
 
@@ -172,7 +172,7 @@ describe('MongoPXExtractionsDataSource', () => {
     const extraction = await extractionsDS.incrementFail(extractionCreated._id.toString());
 
     expect(extraction).toMatchObject({
-      status: ExtractionStatus.Error,
+      status: EntityStatus.Error,
     });
   });
 
@@ -204,7 +204,7 @@ describe('MongoPXExtractionsDataSource', () => {
       failedParagraphsCount: 0,
       successfulParagraphsCount: 100,
       paragraphsCount: 100,
-      status: ExtractionStatus.Finished,
+      status: EntityStatus.Finished,
     });
   });
 

@@ -1,4 +1,4 @@
-enum ExtractionStatus {
+enum EntityStatus {
   Processing = 'processing',
   Error = 'error',
   Finished = 'finished',
@@ -9,21 +9,21 @@ type PXExtractionProps = {
   id: string;
   sourceEntityId: string;
   extractorId: string;
-  status: ExtractionStatus;
+  status: EntityStatus;
 };
 
-type PXExtractionModel = {
+type PXEntityStatusModel = {
   id: string;
   entitySharedId: string;
   extractorId: string;
-  status: ExtractionStatus;
+  status: EntityStatus;
   paragraphsCount: number;
   failedParagraphsCount: number;
   successfulParagraphsCount: number;
 };
 
 class PXExtraction {
-  static status = ExtractionStatus;
+  static status = EntityStatus;
 
   id: string;
 
@@ -31,7 +31,7 @@ class PXExtraction {
 
   extractorId: string;
 
-  status: ExtractionStatus;
+  status: EntityStatus;
 
   constructor(props: PXExtractionProps) {
     this.sourceEntityId = props.sourceEntityId;
@@ -41,10 +41,10 @@ class PXExtraction {
   }
 
   processing() {
-    this.status = ExtractionStatus.Processing;
+    this.status = EntityStatus.Processing;
   }
 }
 
-export { PXExtraction, ExtractionStatus };
+export { PXExtraction, EntityStatus };
 
-export type { PXExtractionModel };
+export type { PXEntityStatusModel };

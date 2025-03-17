@@ -7,7 +7,7 @@ import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastruct
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
@@ -53,7 +53,7 @@ const extractionDBO: MongoPXEntityStatus = {
   failedParagraphsCount: 0,
   paragraphsCount: 10,
   successfulParagraphsCount: 10,
-  status: ExtractionStatus.Finished,
+  status: EntityStatus.Finished,
 };
 
 const entityThatDoesNotBelongToExtractor = factory.entity(

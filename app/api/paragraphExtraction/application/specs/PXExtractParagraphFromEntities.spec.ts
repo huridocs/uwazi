@@ -6,7 +6,7 @@ import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -64,12 +64,12 @@ describe('PXExtractParagraphFromEntities', () => {
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedIds[0],
-        status: ExtractionStatus.Queued,
+        status: EntityStatus.Queued,
       },
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedIds[1],
-        status: ExtractionStatus.Queued,
+        status: EntityStatus.Queued,
       },
     ]);
   });

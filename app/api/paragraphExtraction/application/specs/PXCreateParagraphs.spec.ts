@@ -22,7 +22,7 @@ import {
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
-import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
+import { PXExtraction } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
 

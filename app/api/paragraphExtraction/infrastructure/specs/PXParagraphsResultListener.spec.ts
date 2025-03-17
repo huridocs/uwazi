@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { tenants } from 'api/tenants';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
@@ -16,7 +16,7 @@ const extractionDBO: MongoPXEntityStatus = {
   _id: new ObjectId(),
   entitySharedId: 'any_entity_shared_id',
   extractorId: new ObjectId(),
-  status: ExtractionStatus.Processing,
+  status: EntityStatus.Processing,
   paragraphsCount: 1,
   failedParagraphsCount: 0,
   successfulParagraphsCount: 0,
@@ -118,7 +118,7 @@ describe('PXParagraphsResultListener', () => {
     expect(extractions).toMatchObject([
       {
         _id: extractionDBO._id,
-        status: ExtractionStatus.Error,
+        status: EntityStatus.Error,
       },
     ]);
   });

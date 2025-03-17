@@ -1,4 +1,4 @@
-import { PXExtraction, PXExtractionModel } from './PXExtraction';
+import { PXExtraction, PXEntityStatusModel } from './PXEntityStatusModel';
 
 type CreateInput = {
   extractorId: string;
@@ -17,14 +17,14 @@ type UpdateParagraphsCountInput = {
 };
 
 export interface PXExtractionsDataSource {
-  getById(extractionId: string): Promise<PXExtractionModel | undefined>;
+  getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
   getExisting(input: GetExistingInput): Promise<PXExtraction | undefined>;
-  initProcess(extractionId: string): Promise<PXExtractionModel>;
-  incrementSuccess(extractionId: string): Promise<PXExtractionModel>;
-  incrementFail(extractionId: string): Promise<PXExtractionModel>;
-  create(input: CreateInput): Promise<PXExtractionModel>;
-  setAsError(extractionId: string): Promise<PXExtractionModel>;
-  updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXExtractionModel>;
+  initProcess(extractionId: string): Promise<PXEntityStatusModel>;
+  incrementSuccess(extractionId: string): Promise<PXEntityStatusModel>;
+  incrementFail(extractionId: string): Promise<PXEntityStatusModel>;
+  create(input: CreateInput): Promise<PXEntityStatusModel>;
+  setAsError(extractionId: string): Promise<PXEntityStatusModel>;
+  updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel>;
 }
 
 export type {

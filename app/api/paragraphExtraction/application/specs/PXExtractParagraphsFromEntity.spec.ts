@@ -18,7 +18,7 @@ import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
+import { PXExtraction } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 

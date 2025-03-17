@@ -11,7 +11,7 @@ import {
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -79,7 +79,7 @@ const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   extractorId: extractorDBO._id,
   entitySharedId: entityEn.sharedId!,
-  status: ExtractionStatus.Processing,
+  status: EntityStatus.Processing,
   paragraphsCount: 2,
   failedParagraphsCount: 0,
   successfulParagraphsCount: 0,
