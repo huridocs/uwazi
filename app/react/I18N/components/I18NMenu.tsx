@@ -131,7 +131,7 @@ const I18NMenu = () => {
               );
             })}
 
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin']}>
               <li className="menuNav-item">
                 <button
                   className="live-translate"

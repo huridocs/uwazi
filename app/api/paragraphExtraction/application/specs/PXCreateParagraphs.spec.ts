@@ -149,7 +149,7 @@ const createExpectedParagraph = (
   template: targetTemplate._id,
   language,
   metadata: {
-    extracted_paragraph: [{ label: 'Extracted Paragraph', value: text }],
+    extracted_paragraph: [{ value: text }],
   },
   user: new ObjectId(userId),
   published: false,
@@ -406,8 +406,8 @@ describe('PXCreateParagraphs', () => {
           extractionKey.userId
         ),
         metadata: {
-          paragraph: [{ value: 'Paragraph 1 in spanish', label: 'Paragraph' }],
-          paragraph_number: [{ value: 1, label: 'Paragraph Number' }],
+          paragraph: [{ value: 'Paragraph 1 in spanish' }],
+          paragraph_number: [{ value: 1 }],
         },
       },
     ]);

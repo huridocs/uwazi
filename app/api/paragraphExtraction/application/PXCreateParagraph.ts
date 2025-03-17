@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitySchema } from 'shared/types/entityType';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import entities from 'api/entities';
 
@@ -61,22 +62,20 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
         user,
       });
 
-      await paragraphs.reduce(async (promise, paragraphTranslation) => {
-        await promise;
-
+      await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
         const existingTranslation = await this.dependencies.entitiesDS.getById(
           firstParagraphCreated.sharedId,
           paragraphTranslation.language
         );
 
-        return this.dependencies.entitiesDS.save(
+        await this.dependencies.entitiesDS.save(
           { ...existingTranslation, ...paragraphTranslation },
           {
             language: paragraphTranslation.language,
             user,
           }
         );
-      }, Promise.resolve());
+      });
 
       await this.dependencies.extractionsDS.incrementSuccess(extraction.id);
 
