@@ -8,8 +8,8 @@ import entities from 'api/entities';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
-import { PXExtractionModel } from '../domain/PXExtraction';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 
 /**
  * Notes
@@ -27,7 +27,7 @@ type PXCreateParagraphInput = {
   extractor: PXExtractor;
   user: { _id: ObjectId };
   paragraph: ParagraphOutput;
-  extraction: PXExtractionModel;
+  entityStatus: PXEntityStatusModel;
 };
 
 type LegacyEntitiesDS = typeof entities;
@@ -36,7 +36,7 @@ type Output = any;
 
 type Dependencies = {
   logger: Logger;
-  extractionsDS: PXExtractionsDataSource;
+  entitiesStatusDS: PXEntitiesStatusDataSource;
   entitiesDS?: LegacyEntitiesDS;
 };
 
@@ -52,7 +52,7 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
     extractor,
     sourceEntities,
     user,
-    extraction,
+    entityStatus,
   }: PXCreateParagraphInput): Promise<Output> {
     try {
       const [first, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
@@ -77,7 +77,7 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
         );
       });
 
-      await this.dependencies.extractionsDS.incrementSuccess(extraction.id);
+      await this.dependencies.entitiesStatusDS.incrementSuccess(entityStatus.id);
 
       this.dependencies.logger.info(
         `[PX] - Paragraph Created - ${JSON.stringify({
@@ -86,7 +86,7 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
         })}`
       );
     } catch (e) {
-      await this.dependencies.extractionsDS.incrementFail(extraction.id);
+      await this.dependencies.entitiesStatusDS.incrementFail(entityStatus.id);
       throw e;
     }
   }

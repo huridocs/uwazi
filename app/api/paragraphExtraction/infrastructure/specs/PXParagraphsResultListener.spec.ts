@@ -2,21 +2,21 @@ import { ObjectId } from 'mongodb';
 import { tenants } from 'api/tenants';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
-import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
-import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
+import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
 
 jest.mock('api/services/tasksmanager/TaskManager');
 
 jest.spyOn(tenants, 'run');
 
-const extractionDBO: MongoPXExtractionDBO = {
+const extractionDBO: MongoPXEntityStatus = {
   _id: new ObjectId(),
   entitySharedId: 'any_entity_shared_id',
   extractorId: new ObjectId(),
-  status: ExtractionStatus.Processing,
+  status: EntityStatus.Processing,
   paragraphsCount: 1,
   failedParagraphsCount: 0,
   successfulParagraphsCount: 0,
@@ -66,7 +66,7 @@ const createSut = () => {
 describe('PXParagraphsResultListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({
-      [mongoPXExtractionsCollection]: [extractionDBO],
+      [mongoPXEntitiesStatusCollection]: [extractionDBO],
     });
   });
 
@@ -113,12 +113,12 @@ describe('PXParagraphsResultListener', () => {
 
     await expect(promise).rejects.toThrow();
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
         _id: extractionDBO._id,
-        status: ExtractionStatus.Error,
+        status: EntityStatus.Error,
       },
     ]);
   });

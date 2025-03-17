@@ -16,13 +16,13 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import {
-  mongoPXExtractionsCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
-import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
-import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
+  mongoPXEntitiesStatusCollection,
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
 
@@ -86,11 +86,11 @@ const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
-const extractionDBO: MongoPXExtractionDBO = {
+const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,
-  status: PXExtraction.status.Processing,
+  status: EntityStatus.Processing,
   failedParagraphsCount: 0,
   paragraphsCount: 0,
   successfulParagraphsCount: 0,
@@ -98,7 +98,7 @@ const extractionDBO: MongoPXExtractionDBO = {
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
-  [mongoPXExtractionsCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate, template],
   entities: [entityEn, entityEs, entityPt, sourceEntityThatDoesNotBelongToExtractor],
   settings: [
@@ -116,11 +116,11 @@ const setUpUseCase = () => {
   const db = getConnection();
   const transaction = DefaultTransactionManager();
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transaction);
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,
-    extractionsDS,
+    entitiesStatusDS,
   });
   (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
 
@@ -149,7 +149,7 @@ const createExpectedParagraph = (
   template: targetTemplate._id,
   language,
   metadata: {
-    extracted_paragraph: [{ label: 'Extracted Paragraph', value: text }],
+    extracted_paragraph: [{ value: text }],
   },
   user: new ObjectId(userId),
   published: false,
@@ -235,7 +235,7 @@ describe('PXCreateParagraphs', () => {
 
     await createParagraphs.execute(input);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
@@ -406,8 +406,8 @@ describe('PXCreateParagraphs', () => {
           extractionKey.userId
         ),
         metadata: {
-          paragraph: [{ value: 'Paragraph 1 in spanish', label: 'Paragraph' }],
-          paragraph_number: [{ value: 1, label: 'Paragraph Number' }],
+          paragraph: [{ value: 'Paragraph 1 in spanish' }],
+          paragraph_number: [{ value: 1 }],
         },
       },
     ]);
