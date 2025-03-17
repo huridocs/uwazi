@@ -325,7 +325,6 @@ export const metadataObjectSchema = {
     value: propertyValueSchema,
     attachment: { type: 'number' },
     label: { type: 'string' },
-    suggestion_confidence: { type: 'number' },
     suggestion_model: { type: 'string' },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
     inheritedValue: { type: 'array', items: inheritedValueSchema },
