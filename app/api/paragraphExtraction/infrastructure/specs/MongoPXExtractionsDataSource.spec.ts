@@ -14,9 +14,9 @@ import {
 const createSut = () => {
   const transaction = DefaultTransactionManager();
   const connection = getConnection();
-  const extractionsDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
 
-  return { extractionsDS };
+  return { entitiesStatusDS };
 };
 
 const createExtractionDBO = () => ({
@@ -42,15 +42,15 @@ describe('MongoPXExtractionsDataSource', () => {
   it.todo('should throw an error if Extraction does not exist');
 
   it('should create an Extraction if it does not exist', async () => {
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
     const input: CreateInput = {
       entitySharedId: new ObjectId().toString(),
       extractorId: new ObjectId().toString(),
     };
-    const extraction = await extractionsDS.create(input);
+    const entityStatus = await entitiesStatusDS.create(input);
 
-    expect(extraction).toEqual({
+    expect(entityStatus).toEqual({
       id: expect.any(String),
       extractorId: input.extractorId,
       entitySharedId: input.entitySharedId,
@@ -67,14 +67,14 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [{ ...extractionCreated, paragraphsCount: 0 }],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.updateParagraphsCount({
+    const entityStatus = await entitiesStatusDS.updateParagraphsCount({
       id: extractionCreated._id.toString(),
       count: 20,
     });
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       id: extractionCreated._id.toString(),
       paragraphsCount: 20,
     });
@@ -86,11 +86,11 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.setAsError(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.setAsError(extractionCreated._id.toString());
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       status: EntityStatus.Error,
     });
   });
@@ -101,11 +101,11 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.initProcess(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.initProcess(extractionCreated._id.toString());
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       status: EntityStatus.Processing,
     });
   });
@@ -116,11 +116,11 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.incrementSuccess(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.incrementSuccess(extractionCreated._id.toString());
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       successfulParagraphsCount: 1,
     });
   });
@@ -131,11 +131,11 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.incrementFail(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.incrementFail(extractionCreated._id.toString());
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       failedParagraphsCount: 3,
     });
   });
@@ -149,11 +149,11 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.incrementSuccess(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.incrementSuccess(extractionCreated._id.toString());
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       status: EntityStatus.Finished,
     });
   });
@@ -167,11 +167,11 @@ describe('MongoPXExtractionsDataSource', () => {
     await testingEnvironment.setFixtures({
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
-    const extraction = await extractionsDS.incrementFail(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.incrementFail(extractionCreated._id.toString());
 
-    expect(extraction).toMatchObject({
+    expect(entityStatus).toMatchObject({
       status: EntityStatus.Error,
     });
   });
@@ -188,19 +188,19 @@ describe('MongoPXExtractionsDataSource', () => {
       [mongoPXEntitiesStatusCollection]: [extractionCreated],
     });
 
-    const { extractionsDS } = createSut();
+    const { entitiesStatusDS } = createSut();
 
     const quantity = Array(100).fill(1);
 
     const promises = quantity.map(async _ =>
-      extractionsDS.incrementSuccess(extractionCreated._id.toString())
+      entitiesStatusDS.incrementSuccess(extractionCreated._id.toString())
     );
 
     await Promise.all(promises);
 
-    const extraction = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+    const entityStatus = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
-    expect(extraction![0]).toMatchObject({
+    expect(entityStatus![0]).toMatchObject({
       failedParagraphsCount: 0,
       successfulParagraphsCount: 100,
       paragraphsCount: 100,

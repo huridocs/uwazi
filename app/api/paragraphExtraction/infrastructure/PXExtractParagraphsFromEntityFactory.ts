@@ -19,7 +19,7 @@ export class PXExtractParagraphsFromEntityFactory {
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
       entityDS: DefaultEntitiesDataSource(transactionManager),
-      extractionsDS: new MongoPXEntitiesStatusDataSource(db, transactionManager),
+      entitiesStatusDS: new MongoPXEntitiesStatusDataSource(db, transactionManager),
       extractionService: PXExtractionServiceFactory.createDefault(),
       extractorsDS: new MongoPXExtractorsDataSource(db, transactionManager),
       filesDS: DefaultFilesDataSource(transactionManager),

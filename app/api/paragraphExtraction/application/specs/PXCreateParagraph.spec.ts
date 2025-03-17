@@ -85,17 +85,17 @@ const extractionDBO: MongoPXEntityStatus = {
   successfulParagraphsCount: 0,
 };
 
-const extraction = MongoPXEntitiesStatusDataSource.toDomain(extractionDBO);
+const entityStatus = MongoPXEntitiesStatusDataSource.toDomain(extractionDBO);
 
 const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
   const connection = getConnection();
   const transaction = DefaultTransactionManager();
 
-  const extractionsDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
 
   const createParagraph = new PXCreateParagraph({
     logger: createMockLogger(),
-    extractionsDS,
+    entitiesStatusDS,
     entitiesDS,
   });
 
@@ -131,7 +131,7 @@ describe('PXCreateParagraph', () => {
     const { createParagraph } = setUpUseCase();
 
     const input: PXCreateParagraphInput = {
-      extraction,
+      entityStatus,
       user: new ObjectId(),
       extractor,
       sourceEntities: [entityEn, entityEs, entityPt],
@@ -180,7 +180,7 @@ describe('PXCreateParagraph', () => {
     const { createParagraph } = setUpUseCase(entitiesDS);
 
     const input: PXCreateParagraphInput = {
-      extraction,
+      entityStatus,
       user: new ObjectId(),
       extractor,
       sourceEntities: [entityEn, entityEs, entityPt],

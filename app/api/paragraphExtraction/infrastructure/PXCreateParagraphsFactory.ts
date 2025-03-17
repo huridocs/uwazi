@@ -10,11 +10,11 @@ export class PXCreateParagraphsFactory {
     const db = getConnection();
     const transactionManager = DefaultTransactionManager();
     const extractorsDS = new MongoPXExtractorsDataSource(db, transactionManager);
-    const extractionsDS = new MongoPXEntitiesStatusDataSource(db, transactionManager);
+    const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transactionManager);
 
     return new PXCreateParagraphs({
       extractorsDS,
-      extractionsDS,
+      entitiesStatusDS,
     });
   }
 }

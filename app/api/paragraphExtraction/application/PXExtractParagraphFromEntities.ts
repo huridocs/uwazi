@@ -15,7 +15,7 @@ type Output = any;
 
 type Dependencies = {
   dispatcher: JobsDispatcher;
-  extractionsDS: PXEntitiesStatusDataSource;
+  entitiesStatusDS: PXEntitiesStatusDataSource;
   tenantName: string;
 };
 
@@ -24,7 +24,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
 
   async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     await ArrayUtils.sequentialFor(entitySharedIds, async entitySharedId => {
-      const extraction = await this.dependencies.extractionsDS.create({
+      const entityStatus = await this.dependencies.entitiesStatusDS.create({
         entitySharedId,
         extractorId,
       });
@@ -33,7 +33,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         entitySharedId,
         extractorId,
         userId,
-        extractionId: extraction.id,
+        extractionId: entityStatus.id,
         tenantName: this.dependencies.tenantName,
       });
     });

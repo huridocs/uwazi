@@ -54,12 +54,12 @@ export class PXParagraphsResultListener {
         await this.setCurrentUser(extractionKey.userId);
         await this.getUseCase().execute(result);
       } catch (e) {
-        const extractionsDS = new MongoPXEntitiesStatusDataSource(
+        const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(
           getConnection(),
           DefaultTransactionManager()
         );
 
-        await extractionsDS.setAsError(extractionKey.extractionId);
+        await entitiesStatusDS.setAsError(extractionKey.extractionId);
 
         throw e;
       }

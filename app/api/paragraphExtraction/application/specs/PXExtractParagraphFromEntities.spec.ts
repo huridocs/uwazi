@@ -21,13 +21,13 @@ const setUpUseCase = () => {
   const transaction = DefaultTransactionManager();
   const connection = getConnection();
 
-  const extractionsDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
   };
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({
-    extractionsDS,
+    entitiesStatusDS,
     dispatcher,
     tenantName: 'any_tenant',
   });

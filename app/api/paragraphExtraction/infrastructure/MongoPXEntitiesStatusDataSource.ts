@@ -26,7 +26,7 @@ export class MongoPXEntitiesStatusDataSource
     );
 
     if (!dbo) {
-      throw new Error(`Can not update an Extraction that does not exist. Id : ${input.id}`);
+      throw new Error(`Can not update an Entity Status that does not exist. Id : ${input.id}`);
     }
 
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
@@ -62,7 +62,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!dbo) {
       throw new Error(
-        `Can not set an error of an Extraction that does not exist. Id : ${extractionId}`
+        `Can not set an error of an Entity Status that does not exist. Id : ${extractionId}`
       );
     }
 
@@ -89,7 +89,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!dbo) {
       throw new Error(
-        `Can not increment failing paragraphs of an Extraction that does not exist. Id : ${extractionId}`
+        `Can not increment failing paragraphs of an Entity Status that does not exist. Id : ${extractionId}`
       );
     }
 
@@ -116,7 +116,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!dbo) {
       throw new Error(
-        `Can not increment successful paragraphs of an Extraction that does not exist. Id : ${extractionId}`
+        `Can not increment successful paragraphs of an Entity Status that does not exist. Id : ${extractionId}`
       );
     }
 
@@ -132,7 +132,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!dbo) {
       throw new Error(
-        `Can not init processing of an Extraction that does not exist. 
+        `Can not init processing of an Entity Status that does not exist. 
         id: ${extractionId}`
       );
     }

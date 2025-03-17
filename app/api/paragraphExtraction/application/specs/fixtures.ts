@@ -32,8 +32,8 @@ export const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
-export const extraction: MongoPXEntityStatus = {
-  _id: factory.id('extraction'),
+export const entityStatus: MongoPXEntityStatus = {
+  _id: factory.id('entityStatus'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
   failedParagraphsCount: 0,

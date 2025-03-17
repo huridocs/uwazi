@@ -116,11 +116,11 @@ const setUpUseCase = () => {
   const db = getConnection();
   const transaction = DefaultTransactionManager();
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const extractionsDS = new MongoPXEntitiesStatusDataSource(db, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transaction);
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,
-    extractionsDS,
+    entitiesStatusDS,
   });
   (createParagraphs.createParagraph as any).dependencies.logger = createMockLogger();
 

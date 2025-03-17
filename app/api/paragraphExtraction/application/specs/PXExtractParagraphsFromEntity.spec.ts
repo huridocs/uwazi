@@ -38,13 +38,13 @@ import {
   file,
   files,
   userId,
-  extraction,
+  entityStatus,
 } from './fixtures';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
-  [mongoPXEntitiesStatusCollection]: [extraction],
+  [mongoPXEntitiesStatusCollection]: [entityStatus],
   templates: [sourceTemplate, targetTemplate, defaultTemplate],
   entities: [entity, invalidEntity],
   settings: [
@@ -78,7 +78,7 @@ const setUpUseCase = () => {
   const settingsDS = DefaultSettingsDataSource(transaction);
   const filesDS = DefaultFilesDataSource(transaction);
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const extractionsDS = new MongoPXEntitiesStatusDataSource(db, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transaction);
   const idGenerator = MongoIdHandler;
   const tenantName = tenants.current().name;
 
@@ -89,7 +89,7 @@ const setUpUseCase = () => {
     settingsDS,
     extractionService,
     fileStorage,
-    extractionsDS,
+    entitiesStatusDS,
     idGenerator,
     logger: createMockLogger(),
     tenantName,
@@ -119,14 +119,14 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: userId.toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
-        _id: extraction._id,
+        _id: entityStatus._id,
         status: EntityStatus.Processing,
       },
     ]);
@@ -139,7 +139,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: 'entity_shared_id_that_does_not_exist',
       extractorId: extractor._id.toString(),
       userId: userId.toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toThrow();
@@ -148,7 +148,7 @@ describe('PXExtractParagraphsFromEntity', () => {
 
     expect(extractions).toMatchObject([
       {
-        _id: extraction._id,
+        _id: entityStatus._id,
         status: EntityStatus.Error,
       },
     ]);
@@ -167,7 +167,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: userId.toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     const { mainLanguage } = extractionService.extractParagraphs.mock.lastCall[0];
@@ -186,7 +186,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     const [payload] = extractionService.extractParagraphs.mock.lastCall;
@@ -206,7 +206,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     const [payload] = extractionService.extractParagraphs.mock.lastCall;
@@ -227,7 +227,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!,
       extractorId: new ObjectId().toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -242,7 +242,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: new ObjectId().toString(),
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -257,7 +257,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: invalidEntity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -277,7 +277,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -299,7 +299,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -316,7 +316,7 @@ describe('PXExtractParagraphsFromEntity', () => {
       entitySharedId: entity.sharedId!.toString()!,
       extractorId: extractor._id.toString(),
       userId: new ObjectId().toString(),
-      extractionId: extraction._id.toString(),
+      extractionId: entityStatus._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
