@@ -16,13 +16,13 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
-import { PXExtraction } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
 
@@ -90,7 +90,7 @@ const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,
-  status: PXExtraction.status.Processing,
+  status: EntityStatus.Processing,
   failedParagraphsCount: 0,
   paragraphsCount: 0,
   successfulParagraphsCount: 0,

@@ -18,7 +18,6 @@ import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { PXExtraction } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
@@ -41,6 +40,7 @@ import {
   userId,
   extraction,
 } from './fixtures';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -127,7 +127,7 @@ describe('PXExtractParagraphsFromEntity', () => {
     expect(extractions).toMatchObject([
       {
         _id: extraction._id,
-        status: PXExtraction.status.Processing,
+        status: EntityStatus.Processing,
       },
     ]);
   });
@@ -149,7 +149,7 @@ describe('PXExtractParagraphsFromEntity', () => {
     expect(extractions).toMatchObject([
       {
         _id: extraction._id,
-        status: PXExtraction.status.Error,
+        status: EntityStatus.Error,
       },
     ]);
   });

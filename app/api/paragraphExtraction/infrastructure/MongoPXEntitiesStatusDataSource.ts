@@ -4,11 +4,10 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 
 import {
   CreateInput,
-  GetExistingInput,
   PXExtractionsDataSource,
   UpdateParagraphsCountInput,
 } from '../domain/PXExtractionDataSource';
-import { EntityStatus, PXExtraction, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
+import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
@@ -168,24 +167,6 @@ export class MongoPXEntitiesStatusDataSource
     }
 
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async getExisting(input: GetExistingInput): Promise<PXExtraction | undefined> {
-    const dbo: MongoPXEntityStatus | undefined | null = await this.getCollection().findOne({
-      extractorId: new ObjectId(input.extractorId),
-      entitySharedId: input.entitySharedId,
-    });
-
-    if (!dbo) {
-      return undefined;
-    }
-
-    return new PXExtraction({
-      id: dbo._id.toString(),
-      extractorId: dbo.extractorId.toString(),
-      sourceEntityId: dbo.entitySharedId.toString(),
-      status: dbo.status as EntityStatus,
-    });
   }
 
   static toDomain(dbo: MongoPXEntityStatus): PXEntityStatusModel {
