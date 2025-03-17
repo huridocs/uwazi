@@ -6,7 +6,7 @@ import { GetExtractorsOutput, PXExtractorsQueryService } from '../domain/PXExtra
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
 import { mongoPXExtractionsCollection } from './MongoPXExtractionsDataSource';
-import { MongoPXExtractionDBO } from './MongoPXExtractionDBO';
+import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 class MongoPXExtractorsQueryService
   extends MongoDataSource<MongoPXExtractorDBO>
@@ -16,10 +16,10 @@ class MongoPXExtractorsQueryService
 
   private static countNotExtractedEntities(
     sourceEntities: { _id: string }[],
-    extractions: MongoPXExtractionDBO[]
+    extractions: MongoPXEntityStatus[]
   ) {
     const isEntityExtracted = (entity: { _id: string }) =>
-      extractions.some((e: MongoPXExtractionDBO) => e.entitySharedId === entity._id);
+      extractions.some((e: MongoPXEntityStatus) => e.entitySharedId === entity._id);
 
     return sourceEntities.reduce(
       (counter: number, entity: { _id: string }) => counter + (isEntityExtracted(entity) ? 0 : 1),

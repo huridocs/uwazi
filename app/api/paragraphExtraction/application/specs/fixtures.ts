@@ -1,6 +1,6 @@
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
-import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
@@ -32,7 +32,7 @@ export const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
-export const extraction: MongoPXExtractionDBO = {
+export const extraction: MongoPXEntityStatus = {
   _id: factory.id('extraction'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,

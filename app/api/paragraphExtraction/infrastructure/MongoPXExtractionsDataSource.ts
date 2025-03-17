@@ -9,12 +9,12 @@ import {
   UpdateParagraphsCountInput,
 } from '../domain/PXExtractionDataSource';
 import { ExtractionStatus, PXExtraction, PXExtractionModel } from '../domain/PXExtraction';
-import { MongoPXExtractionDBO } from './MongoPXExtractionDBO';
+import { MongoPXEntityStatus } from './MongoPXEntityStatus';
 
 export const mongoPXExtractionsCollection = 'px_extractions';
 
 export class MongoPXExtractionsDataSource
-  extends MongoDataSource<MongoPXExtractionDBO>
+  extends MongoDataSource<MongoPXEntityStatus>
   implements PXExtractionsDataSource
 {
   protected collectionName = mongoPXExtractionsCollection;
@@ -142,7 +142,7 @@ export class MongoPXExtractionsDataSource
   }
 
   async create(input: CreateInput): Promise<PXExtractionModel> {
-    const dbo: MongoPXExtractionDBO = {
+    const dbo: MongoPXEntityStatus = {
       _id: new ObjectId(),
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
@@ -171,7 +171,7 @@ export class MongoPXExtractionsDataSource
   }
 
   async getExisting(input: GetExistingInput): Promise<PXExtraction | undefined> {
-    const dbo: MongoPXExtractionDBO | undefined | null = await this.getCollection().findOne({
+    const dbo: MongoPXEntityStatus | undefined | null = await this.getCollection().findOne({
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
     });
@@ -188,7 +188,7 @@ export class MongoPXExtractionsDataSource
     });
   }
 
-  static toDomain(dbo: MongoPXExtractionDBO): PXExtractionModel {
+  static toDomain(dbo: MongoPXEntityStatus): PXExtractionModel {
     return {
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),

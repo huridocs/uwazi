@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { ExtractionStatus } from '../domain/PXExtraction';
 
-export type MongoPXExtractionDBO = {
+export type MongoPXEntityStatus = {
   _id: ObjectId;
   entitySharedId: string;
   extractorId: ObjectId;

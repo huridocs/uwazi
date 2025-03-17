@@ -10,7 +10,7 @@ import {
   MongoPXExtractionsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
@@ -75,7 +75,7 @@ const extractor = MongoPXExtractorsDataSource.toDomain({
   targetTemplate: targetTemplate as any,
 });
 
-const extractionDBO: MongoPXExtractionDBO = {
+const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   extractorId: extractorDBO._id,
   entitySharedId: entityEn.sharedId!,

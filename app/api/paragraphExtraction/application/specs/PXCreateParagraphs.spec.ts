@@ -21,7 +21,7 @@ import {
   mongoPXExtractionsCollection,
   MongoPXExtractionsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
-import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
@@ -86,7 +86,7 @@ const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
-const extractionDBO: MongoPXExtractionDBO = {
+const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,

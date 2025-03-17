@@ -11,7 +11,7 @@ import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
 import { mongoPXExtractionsCollection } from '../MongoPXExtractionsDataSource';
-import { MongoPXExtractionDBO } from '../MongoPXExtractionDBO';
+import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
 
 const factory = getFixturesFactory();
 const sourceTemplate = factory.template('Source Template');
@@ -46,7 +46,7 @@ const entityPt2 = factory.entity('entity2', sourceTemplate.name, {}, { language:
 const entity3 = factory.entity('entity3', sourceTemplate2.name);
 const entityPt3 = factory.entity('entity3', sourceTemplate2.name, {}, { language: 'pt' });
 
-const extractionDBO: MongoPXExtractionDBO = {
+const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
