@@ -3,10 +3,10 @@ import { ObjectId } from 'mongodb';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import {
-  mongoPXExtractionsCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+  mongoPXEntitiesStatusCollection,
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -21,13 +21,13 @@ const setUpUseCase = () => {
   const transaction = DefaultTransactionManager();
   const connection = getConnection();
 
-  const extractionsDS = new MongoPXExtractionsDataSource(connection, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
   };
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({
-    extractionsDS,
+    entitiesStatusDS,
     dispatcher,
     tenantName: 'any_tenant',
   });
@@ -58,18 +58,18 @@ describe('PXExtractParagraphFromEntities', () => {
 
     await extractParagraphFromEntities.execute(input);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedIds[0],
-        status: ExtractionStatus.Queued,
+        status: EntityStatus.Queued,
       },
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedIds[1],
-        status: ExtractionStatus.Queued,
+        status: EntityStatus.Queued,
       },
     ]);
   });

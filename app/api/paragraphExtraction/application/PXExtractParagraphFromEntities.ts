@@ -2,7 +2,7 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntitiesJob';
 
 type Input = {
@@ -15,7 +15,7 @@ type Output = any;
 
 type Dependencies = {
   dispatcher: JobsDispatcher;
-  extractionsDS: PXExtractionsDataSource;
+  entitiesStatusDS: PXEntitiesStatusDataSource;
   tenantName: string;
 };
 
@@ -24,7 +24,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
 
   async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     await ArrayUtils.sequentialFor(entitySharedIds, async entitySharedId => {
-      const extraction = await this.dependencies.extractionsDS.create({
+      const entityStatus = await this.dependencies.entitiesStatusDS.create({
         entitySharedId,
         extractorId,
       });
@@ -33,7 +33,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         entitySharedId,
         extractorId,
         userId,
-        extractionId: extraction.id,
+        extractionId: entityStatus.id,
         tenantName: this.dependencies.tenantName,
       });
     });
