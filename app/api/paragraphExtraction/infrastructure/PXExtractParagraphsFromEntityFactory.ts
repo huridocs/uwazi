@@ -9,7 +9,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
-import { MongoPXExtractionsDataSource } from './MongoPXExtractionsDataSource';
+import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 
 export class PXExtractParagraphsFromEntityFactory {
@@ -19,7 +19,7 @@ export class PXExtractParagraphsFromEntityFactory {
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
       entityDS: DefaultEntitiesDataSource(transactionManager),
-      extractionsDS: new MongoPXExtractionsDataSource(db, transactionManager),
+      entitiesStatusDS: new MongoPXEntitiesStatusDataSource(db, transactionManager),
       extractionService: PXExtractionServiceFactory.createDefault(),
       extractorsDS: new MongoPXExtractorsDataSource(db, transactionManager),
       filesDS: DefaultFilesDataSource(transactionManager),

@@ -9,7 +9,7 @@ import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 import { PXCreateParagraphsFactory } from './PXCreateParagraphsFactory';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { MongoPXExtractionsDataSource } from './MongoPXExtractionsDataSource';
+import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
 
 type ResultMessage = {
   key: string;
@@ -54,12 +54,12 @@ export class PXParagraphsResultListener {
         await this.setCurrentUser(extractionKey.userId);
         await this.getUseCase().execute(result);
       } catch (e) {
-        const extractionsDS = new MongoPXExtractionsDataSource(
+        const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(
           getConnection(),
           DefaultTransactionManager()
         );
 
-        await extractionsDS.setAsError(extractionKey.extractionId);
+        await entitiesStatusDS.setAsError(extractionKey.extractionId);
 
         throw e;
       }

@@ -6,12 +6,12 @@ import {
   MongoPXExtractorsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import {
-  mongoPXExtractionsCollection,
-  MongoPXExtractionsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+  mongoPXEntitiesStatusCollection,
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -75,27 +75,27 @@ const extractor = MongoPXExtractorsDataSource.toDomain({
   targetTemplate: targetTemplate as any,
 });
 
-const extractionDBO: MongoPXExtractionDBO = {
+const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   extractorId: extractorDBO._id,
   entitySharedId: entityEn.sharedId!,
-  status: ExtractionStatus.Processing,
+  status: EntityStatus.Processing,
   paragraphsCount: 2,
   failedParagraphsCount: 0,
   successfulParagraphsCount: 0,
 };
 
-const extraction = MongoPXExtractionsDataSource.toDomain(extractionDBO);
+const entityStatus = MongoPXEntitiesStatusDataSource.toDomain(extractionDBO);
 
 const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
   const connection = getConnection();
   const transaction = DefaultTransactionManager();
 
-  const extractionsDS = new MongoPXExtractionsDataSource(connection, transaction);
+  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
 
   const createParagraph = new PXCreateParagraph({
     logger: createMockLogger(),
-    extractionsDS,
+    entitiesStatusDS,
     entitiesDS,
   });
 
@@ -104,7 +104,7 @@ const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractorDBO],
-  [mongoPXExtractionsCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate],
   entities: [entityEn, entityEs, entityPt],
   settings: [
@@ -131,7 +131,7 @@ describe('PXCreateParagraph', () => {
     const { createParagraph } = setUpUseCase();
 
     const input: PXCreateParagraphInput = {
-      extraction,
+      entityStatus,
       user: new ObjectId(),
       extractor,
       sourceEntities: [entityEn, entityEs, entityPt],
@@ -162,7 +162,7 @@ describe('PXCreateParagraph', () => {
 
     await createParagraph.execute(input);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {
@@ -180,7 +180,7 @@ describe('PXCreateParagraph', () => {
     const { createParagraph } = setUpUseCase(entitiesDS);
 
     const input: PXCreateParagraphInput = {
-      extraction,
+      entityStatus,
       user: new ObjectId(),
       extractor,
       sourceEntities: [entityEn, entityEs, entityPt],
@@ -213,7 +213,7 @@ describe('PXCreateParagraph', () => {
 
     await expect(promise).rejects.toThrow();
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
     expect(extractions).toMatchObject([
       {

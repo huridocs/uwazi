@@ -14,7 +14,7 @@ import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -31,7 +31,7 @@ type Dependencies = {
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
   extractionService: PXExtractionService;
-  extractionsDS: PXExtractionsDataSource;
+  entitiesStatusDS: PXEntitiesStatusDataSource;
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
   logger: Logger;
@@ -46,7 +46,7 @@ export class PXExtractParagraphsFromEntity
   // eslint-disable-next-line max-statements
   async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
     try {
-      await this.dependencies.extractionsDS.initProcess(input.extractionId);
+      await this.dependencies.entitiesStatusDS.initProcess(input.extractionId);
 
       const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
@@ -84,7 +84,7 @@ export class PXExtractParagraphsFromEntity
         })}`
       );
     } catch (e) {
-      await this.dependencies.extractionsDS.setAsError(input.extractionId);
+      await this.dependencies.entitiesStatusDS.setAsError(input.extractionId);
       throw e;
     }
   }
