@@ -58,6 +58,7 @@ const getIcon = (color: Color) => {
 
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
+const SourceHeader = () => <Translate>Source</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Document FOR</Translate>;
 const CurrentValueHeader = () => (
@@ -255,6 +256,10 @@ const extractorsTableColumns = [
   extractorColumnHelper.accessor('propertyType', {
     header: PropertyHeader,
     cell: PropertyCell,
+    meta: { headerClassName: 'w-1/6' },
+  }),
+  extractorColumnHelper.accessor('source', {
+    header: SourceHeader,
     meta: { headerClassName: 'w-1/6' },
   }),
   extractorColumnHelper.accessor('namedTemplates', {

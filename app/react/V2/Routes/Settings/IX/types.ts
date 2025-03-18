@@ -7,11 +7,12 @@ interface IXProperty extends PropertySchema {
   type: 'text' | 'date' | 'numeric' | 'markdown';
 }
 
-type Extractor = ClientIXExtractorType & {
+type TableExtractor = ClientIXExtractorType & {
   rowId: string;
   namedTemplates: string[];
   propertyLabel: string;
   propertyType: IXProperty['type'];
+  source: string;
 };
 
 type Highlights = { [page: string]: TextHighlight[] };
@@ -39,10 +40,7 @@ interface MultiValueSuggestion extends EntitySuggestionType {
 
 type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
 
-type TableExtractor = Extractor & { rowId: string };
-
 export type {
-  Extractor,
   TableExtractor,
   Highlights,
   TableSuggestion,

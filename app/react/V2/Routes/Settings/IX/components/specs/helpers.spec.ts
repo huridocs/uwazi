@@ -257,7 +257,7 @@ describe('helpers', () => {
           propertyType: 'text',
           propertyLabel: 'Title',
           rowId: 'exractor1',
-          source: { pdf: true },
+          source: 'PDF',
         },
         {
           _id: 'exractor2',
@@ -268,7 +268,7 @@ describe('helpers', () => {
           propertyType: 'date',
           propertyLabel: 'Fecha',
           rowId: 'exractor2',
-          source: { property: 'descripcion' },
+          source: 'Descripción',
         },
       ]);
     });

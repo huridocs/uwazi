@@ -23,29 +23,45 @@ const formatExtractors = (
   extractors.map(extractor => {
     let propertyType: TableExtractor['propertyType'] = 'text';
     let propertyLabel = '';
+    let sourceLabel: string | undefined;
 
-    const namedTemplates = extractor.templates.map(extractorTemplate => {
-      const templateName =
-        templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate;
-      return templateName;
-    });
+    const namedTemplates = extractor.templates.map(
+      extractorTemplate =>
+        templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate
+    );
 
-    templates.forEach(template => {
+    templates.some(template => {
       const property = template.properties.find(
         templateProperty => templateProperty.name === extractor.property
       );
 
-      if (!property && !propertyLabel) {
-        propertyLabel = t(template._id, 'Title', null, false);
+      if (!sourceLabel) {
+        sourceLabel =
+          template.properties.find(
+            templateProperty => templateProperty.name === extractor.source.property
+          )?.label || '';
       }
 
       if (property) {
         propertyType = property.type as TableExtractor['propertyType'];
         propertyLabel = t(template._id, property.label, null, false);
+        return true;
       }
+
+      propertyLabel = t(template._id, 'Title', null, false);
+      return false;
     });
 
-    return { ...extractor, rowId: extractor._id!, namedTemplates, propertyType, propertyLabel };
+    return {
+      ...extractor,
+      rowId: extractor._id!,
+      namedTemplates,
+      propertyType,
+      propertyLabel,
+      source: sourceLabel
+        ? t(templates[0]._id, sourceLabel, sourceLabel, false)
+        : t('System', 'PDF', 'PDF', false),
+    };
   });
 
 const IXDashboard = () => {
