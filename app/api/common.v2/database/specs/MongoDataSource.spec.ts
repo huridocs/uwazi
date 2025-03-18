@@ -150,7 +150,9 @@ describe('session scoped collection', () => {
       '$method should write changes transactionally',
       async ({ callback, expectedOnAbort, expectedOnSuccess }) => {
         const transactionManager1 = DefaultTransactionManager();
-        const dataSource1 = new DataSource(getConnection(), transactionManager1);
+        const dataSource1 = new DataSource(getConnection(), transactionManager1, {
+          useSyncedCollection: false,
+        });
 
         try {
           await transactionManager1.run(async () => {

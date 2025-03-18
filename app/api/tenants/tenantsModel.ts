@@ -104,7 +104,9 @@ class TenantsModel extends EventEmitter {
   }
 
   async change() {
+    console.log('about to get tenants:');
     const tenants = await this.get();
+    console.log('Got:', tenants);
     this.emit('change', tenants);
   }
 
