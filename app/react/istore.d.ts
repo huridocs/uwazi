@@ -11,7 +11,7 @@ import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/api
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
@@ -203,5 +203,5 @@ export interface IStore {
   translations: IImmutable<ClientTranslationSchema[]>;
   inlineEdit: IImmutable<InlineEdit>;
   locale: string;
-  ixExtractors: Immutable<IXExtractorInfo[]>;
+  ixExtractors: Immutable<ClientIXExtractorType[]>;
 }

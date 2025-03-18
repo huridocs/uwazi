@@ -1,8 +1,8 @@
 import { IXExtractorType } from 'shared/types/extractorType';
 import { SettingsLinkSchema } from 'shared/types/settingsType';
 
-interface IXExtractorInfo extends IXExtractorType {
-  _id: string;
+interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
+  _id?: string;
   templates: string[];
 }
 
@@ -57,7 +57,7 @@ enum ItemTypes {
 
 export { ItemTypes };
 export type {
-  IXExtractorInfo,
+  ClientIXExtractorType,
   ISublink,
   ILink,
   IDraggable,

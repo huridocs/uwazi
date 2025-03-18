@@ -10,14 +10,14 @@ import { ClientTemplateSchema } from 'app/istore';
 import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { ExtractorModal } from './components/ExtractorModal';
 import { extractorsTableColumns } from './components/TableElements';
 import { List } from './components/List';
 import { TableExtractor } from './types';
 
 const formatExtractors = (
-  extractors: IXExtractorInfo[],
+  extractors: ClientIXExtractorType[],
   templates: ClientTemplateSchema[]
 ): TableExtractor[] =>
   extractors.map(extractor => {
@@ -45,12 +45,12 @@ const formatExtractors = (
       }
     });
 
-    return { ...extractor, rowId: extractor._id, namedTemplates, propertyType, propertyLabel };
+    return { ...extractor, rowId: extractor._id!, namedTemplates, propertyType, propertyLabel };
   });
 
 const IXDashboard = () => {
   const { extractors, templates } = useLoaderData() as {
-    extractors: IXExtractorInfo[];
+    extractors: ClientIXExtractorType[];
     templates: ClientTemplateSchema[];
   };
   const [isSaving, setIsSaving] = useState(false);
@@ -87,7 +87,7 @@ const IXDashboard = () => {
     }
   };
 
-  const handleSave = async (extractor: IXExtractorInfo) => {
+  const handleSave = async (extractor: ClientIXExtractorType) => {
     setIsSaving(true);
 
     try {

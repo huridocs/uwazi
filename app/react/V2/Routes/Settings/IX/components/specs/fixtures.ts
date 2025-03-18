@@ -564,6 +564,23 @@ const templatesWithCommonProperties: ClientTemplateSchema[] = [
   },
 ];
 
+const extractors = [
+  {
+    _id: 'exractor1',
+    name: 'Titles',
+    property: 'title',
+    source: { pdf: true },
+    templates: ['1', '2', '3', '5'],
+  },
+  {
+    _id: 'exractor2',
+    name: 'Fechas',
+    property: 'fecha',
+    source: { property: 'descripcion' },
+    templates: ['2'],
+  },
+];
+
 export {
   suggestion1,
   suggestion2,
@@ -578,4 +595,5 @@ export {
   propertyMultiselect,
   templates,
   templatesWithCommonProperties,
+  extractors,
 };

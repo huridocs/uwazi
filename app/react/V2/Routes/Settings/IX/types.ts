@@ -1,4 +1,4 @@
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TextHighlight } from 'V2/Components/PDFViewer/types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
@@ -7,7 +7,7 @@ interface IXProperty extends PropertySchema {
   type: 'text' | 'date' | 'numeric' | 'markdown';
 }
 
-type Extractor = IXExtractorInfo & {
+type Extractor = ClientIXExtractorType & {
   rowId: string;
   namedTemplates: string[];
   propertyLabel: string;

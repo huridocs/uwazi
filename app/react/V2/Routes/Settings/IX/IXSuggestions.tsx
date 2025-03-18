@@ -19,7 +19,7 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { IXExtractorInfo } from 'app/V2/shared/types';
+import { ClientIXExtractorType } from 'app/V2/shared/types';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
 import { socket } from 'app/socket';
@@ -71,7 +71,7 @@ const IXSuggestions = () => {
   } = useLoaderData() as {
     totalPages: number;
     suggestions: TableSuggestion[];
-    extractor: IXExtractorInfo;
+    extractor: ClientIXExtractorType;
     templates: ClientTemplateSchema[];
     aggregation: any;
     currentStatus: ixStatus;
@@ -170,7 +170,7 @@ const IXSuggestions = () => {
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
   const fetchAgregations = async () => {
-    const newAggregations = await suggestionsAPI.aggregation(extractor._id);
+    const newAggregations = await suggestionsAPI.aggregation(extractor._id!);
     setAggregations(newAggregations);
   };
 
@@ -218,10 +218,10 @@ const IXSuggestions = () => {
     try {
       if (status.status === 'ready') {
         setStatus({ status: 'sending_labeled_data' });
-        const response = await suggestionsAPI.findSuggestions(extractor._id);
+        const response = await suggestionsAPI.findSuggestions(extractor._id!);
         setStatus(response);
       } else {
-        await suggestionsAPI.cancel(extractor._id);
+        await suggestionsAPI.cancel(extractor._id!);
         if (status.status === 'error') {
           setStatus({ status: 'ready' });
         } else {

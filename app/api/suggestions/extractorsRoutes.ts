@@ -18,11 +18,18 @@ export const extractorsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['name', 'property', 'templates'],
+          required: ['name', 'property', 'source', 'templates'],
           properties: {
             name: { type: 'string' },
-            source: { type: 'string' },
             property: { type: 'string' },
+            source: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                pdf: { type: 'boolean' },
+                property: { type: 'string' },
+              },
+            },
             templates: { type: 'array', items: { type: 'string' } },
           },
         },
@@ -49,12 +56,19 @@ export const extractorsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['name', 'property', 'templates', '_id'],
+          required: ['name', 'property', 'source', 'templates', '_id'],
           properties: {
             _id: { type: 'string' },
             name: { type: 'string' },
-            source: { type: 'string' },
             property: { type: 'string' },
+            source: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                pdf: { type: 'boolean' },
+                property: { type: 'string' },
+              },
+            },
             templates: { type: 'array', items: { type: 'string' } },
           },
         },
@@ -64,7 +78,7 @@ export const extractorsRoutes = (app: Application) => {
       const updated = await Extractors.update({
         _id: req.body._id,
         name: req.body.name,
-        source: req.body.property,
+        source: req.body.source,
         property: req.body.property,
         templates: req.body.templates,
       });

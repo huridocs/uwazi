@@ -2,7 +2,7 @@ import * as translate from 'app/I18N/translateFunction';
 import { formatOptions } from '../ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
 import { getAvailableSources } from '../helpers';
-import { templates, templatesWithCommonProperties } from './fixtures';
+import { extractors, templates, templatesWithCommonProperties } from './fixtures';
 
 describe('helpers', () => {
   describe('formatOptions', () => {
@@ -240,21 +240,6 @@ describe('helpers', () => {
   });
 
   describe('formatExtractors', () => {
-    const extractors = [
-      {
-        _id: 'exractor1',
-        name: 'Titles',
-        property: 'title',
-        templates: ['1', '2', '3', '5'],
-      },
-      {
-        _id: 'exractor2',
-        name: 'Fechas',
-        property: 'fecha',
-        templates: ['2'],
-      },
-    ];
-
     it('should return the extractor formatted for the table', () => {
       const result = formatExtractors(extractors, templates);
       expect(result).toEqual([
@@ -272,6 +257,7 @@ describe('helpers', () => {
           propertyType: 'text',
           propertyLabel: 'Title',
           rowId: 'exractor1',
+          source: { pdf: true },
         },
         {
           _id: 'exractor2',
@@ -282,6 +268,7 @@ describe('helpers', () => {
           propertyType: 'date',
           propertyLabel: 'Fecha',
           rowId: 'exractor2',
+          source: { property: 'descripcion' },
         },
       ]);
     });
@@ -298,7 +285,7 @@ describe('helpers', () => {
 
     it('should return the pdf source by default', () => {
       const result = getAvailableSources(templates, []);
-      expect(result).toEqual([{ label: 'PDF', value: '__default_pdf', defaultChecked: true }]);
+      expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
       expect(translate.t).toHaveBeenCalledWith('System', 'PDF', 'PDF', false);
     });
 
@@ -308,47 +295,48 @@ describe('helpers', () => {
         '3-Informe de admisibilidad',
         '2-Ordenes de la corte',
       ]);
-      expect(result).toEqual([{ label: 'PDF', value: '__default_pdf', defaultChecked: true }]);
+      expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
     });
 
     it('should return the default if text fields have diferent names', () => {
       const result = getAvailableSources(templates, ['1-Mecanismo', '5-Ordenes del presidente']);
-      expect(result).toEqual([{ label: 'PDF', value: '__default_pdf', defaultChecked: true }]);
+      expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
     });
 
-    it('should return the common text fields amongs templates', () => {
+    it('should return the common text fields amongst templates', () => {
       const result = getAvailableSources(templates, ['1-Mecanismo', '3-Informe de admisibilidad']);
       expect(result).toEqual([
-        { label: 'PDF', value: '__default_pdf', defaultChecked: true },
-        { label: 'Descripción', value: 'descripcion' },
+        { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Descripción', value: 'descripcion', defaultChecked: false },
       ]);
       expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
       expect(translate.t).toHaveBeenNthCalledWith(2, '1', 'Descripción', 'Descripción', false);
     });
 
     it('should not repeat the common property amongs templates', () => {
-      const result = getAvailableSources(templates, [
-        '4-País',
-        '1-Mecanismo',
-        '3-Informe de admisibilidad',
-      ]);
+      const result = getAvailableSources(
+        templates,
+        ['4-País', '1-Mecanismo', '3-Informe de admisibilidad'],
+        extractors[1]
+      );
       expect(result).toEqual([
-        { label: 'PDF', value: '__default_pdf', defaultChecked: true },
-        { label: 'Descripción', value: 'descripcion' },
+        { label: 'PDF', value: '0' },
+        { label: 'Descripción', value: 'descripcion', defaultChecked: true },
       ]);
       expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
       expect(translate.t).toHaveBeenNthCalledWith(2, '1', 'Descripción', 'Descripción', false);
     });
 
     it('should return all the common properties amongs templates', () => {
-      const result = getAvailableSources(templatesWithCommonProperties, [
-        '1-Mecanismo',
-        '2-Ordenes de la corte',
-      ]);
+      const result = getAvailableSources(
+        templatesWithCommonProperties,
+        ['1-Mecanismo', '2-Ordenes de la corte'],
+        extractors[1]
+      );
       expect(result).toEqual([
-        { label: 'PDF', value: '__default_pdf', defaultChecked: true },
-        { label: 'Opinión', value: 'opini_n' },
-        { label: 'Descripción', value: 'descripcion' },
+        { label: 'PDF', value: '0' },
+        { label: 'Opinión', value: 'opini_n', defaultChecked: false },
+        { label: 'Descripción', value: 'descripcion', defaultChecked: true },
       ]);
     });
   });

@@ -325,9 +325,15 @@ function getFixturesFactory() {
       deleted,
     }),
 
-    ixExtractor: (name: string, property: string, templates: string[] = []): IXExtractorType => ({
+    ixExtractor: (
+      name: string,
+      property: string,
+      templates: string[] = [],
+      source = { pdf: true }
+    ): IXExtractorType => ({
       _id: idMapper(name),
       name,
+      source,
       property,
       templates: templates.map(idMapper),
     }),

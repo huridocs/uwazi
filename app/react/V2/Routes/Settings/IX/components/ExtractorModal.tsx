@@ -6,7 +6,7 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
@@ -20,9 +20,9 @@ type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
-  onAccept: (extractorInfo: IXExtractorInfo) => void;
+  onAccept: (extractorInfo: ClientIXExtractorType) => void;
   templates: ClientTemplateSchema[];
-  extractor?: IXExtractorInfo;
+  extractor?: ClientIXExtractorType;
 }
 
 const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
@@ -121,7 +121,7 @@ const ExtractorModal = ({
   const [step, setStep] = useState(1);
   const [name, setName] = useState(extractor?.name || '');
   const [values, setValues] = useState<string[]>(initialValues);
-  const [source, setSource] = useState('pdf');
+  const [source, setSource] = useState<string>('0');
   const [options, setOptions] = useState(formatOptions(initialValues, templates));
   const [hasNameError, setNameError] = useState(false);
 
@@ -137,13 +137,15 @@ const ExtractorModal = ({
       return;
     }
 
-    const result: null | IXExtractorInfo = values.length
+    const extractorSource = source === '0' ? { pdf: true } : { property: source };
+
+    const result: null | ClientIXExtractorType = values.length
       ? ({
           name,
-          source,
+          source: extractorSource,
           property: values[0].split('-', 2)[1],
           templates: uniq(values.map(value => value.split('-', 2)[0])),
-        } as IXExtractorInfo)
+        } as ClientIXExtractorType)
       : null;
 
     if (result && extractor) {
@@ -220,7 +222,7 @@ const ExtractorModal = ({
             <div className="flex flex-wrap p-3">
               <RadioSelect
                 name="pdf"
-                options={getAvailableSources(templates, values)}
+                options={getAvailableSources(templates, values, extractor)}
                 onChange={selected => {
                   setSource(selected.currentTarget.value);
                 }}

@@ -182,7 +182,7 @@ describe('ixextractors', () => {
       await Extractors.create({
         name: 'age_test',
         property: 'age',
-        source: '__default_pdf',
+        source: { pdf: true },
         templates: [fixtureFactory.id('personTemplate').toString()],
       });
       const [ixextractor] = await Extractors.get({ name: 'age_test' });
@@ -197,7 +197,7 @@ describe('ixextractors', () => {
       {
         case: 'a property',
         name: 'age_test',
-        source: 'rich_text_property',
+        source: { property: 'rich_text_property' },
         property: 'age',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -230,7 +230,7 @@ describe('ixextractors', () => {
       {
         case: 'title',
         name: 'title_test',
-        source: '__default_pdf',
+        source: { pdf: true },
         property: 'title',
         templates: [
           fixtureFactory.id('personTemplate').toString(),
@@ -290,7 +290,7 @@ describe('ixextractors', () => {
       {
         case: 'selects',
         name: 'occupation_test',
-        source: '__default_pdf',
+        source: { pdf: true },
         property: 'occupation',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -323,7 +323,7 @@ describe('ixextractors', () => {
       {
         case: 'multiselects',
         name: 'spoken_languages_test',
-        source: '__default_pdf',
+        source: { pdf: true },
         property: 'spoken_languages',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -356,7 +356,7 @@ describe('ixextractors', () => {
       {
         case: 'relationships',
         name: 'pets_test',
-        source: '__default_pdf',
+        source: { pdf: true },
         property: 'pets',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -403,7 +403,7 @@ describe('ixextractors', () => {
       await expect(async () =>
         Extractors.create({
           name: 'invalid extractor',
-          source: '__default_pdf',
+          source: { pdf: true },
           property: 'invalid_property',
           templates: [fixtureFactory.id('personTemplate').toString()],
         })
@@ -416,7 +416,7 @@ describe('ixextractors', () => {
       await expect(async () =>
         Extractors.create({
           name: 'invalid extractor',
-          source: '__default_pdf',
+          source: { pdf: true },
           property: 'location',
           templates: [fixtureFactory.id('personTemplate').toString()],
         })
@@ -431,7 +431,7 @@ describe('ixextractors', () => {
       await Extractors.update({
         _id: fixtureFactory.id('existingExtractor'),
         name: 'existingExtractor',
-        source: '__default_pdf',
+        source: { pdf: true },
         property: 'kind',
         templates: [fixtureFactory.id('animalTemplate').toString()],
       });
@@ -463,7 +463,7 @@ describe('ixextractors', () => {
       await Extractors.update({
         _id: fixtureFactory.id('existingExtractor'),
         name: 'existingExtractor',
-        source: '__default_pdf',
+        source: { pdf: true },
         property: 'kind',
         templates: [
           fixtureFactory.id('animalTemplate').toString(),
@@ -506,7 +506,7 @@ describe('ixextractors', () => {
       const [existing] = await Extractors.get({ name: 'existingExtractor' });
       await Extractors.update({
         _id: existing._id,
-        source: '__default_pdf',
+        source: { pdf: true },
         name: 'existingExtractor',
         property: 'title',
         templates: existing.templates.map(t => t.toString()),
@@ -549,7 +549,7 @@ describe('ixextractors', () => {
         Extractors.update({
           _id: existing._id,
           name: 'existingExtractor',
-          source: '__default_pdf',
+          source: { pdf: true },
           property: 'missing_property',
           templates: existing.templates.map(t => t.toString()),
         })
@@ -564,7 +564,7 @@ describe('ixextractors', () => {
         Extractors.update({
           _id: existing._id,
           name: 'existingExtractor',
-          source: '__default_pdf',
+          source: { pdf: true },
           property: 'location',
           templates: existing.templates.map(t => t.toString()),
         })

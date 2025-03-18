@@ -3,7 +3,8 @@ import { uniqBy } from 'lodash';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { t } from 'app/I18N';
-import { RadioProps } from 'app/V2/Components/Forms';
+import { RadioProps } from 'V2/Components/Forms';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import {
   SuggestionValue,
   TableSuggestion,
@@ -225,13 +226,13 @@ const propertyIsInAllTemplates = (
 
 const getAvailableSources = (
   templates: ClientTemplateSchema[],
-  selectedTemplates: string[]
+  selectedTemplates: string[],
+  extractor?: ClientIXExtractorType
 ): RadioProps['options'] => {
   const baseOptions: RadioProps['options'] = [
     {
       label: t('System', 'PDF', 'PDF', false),
-      value: '__default_pdf',
-      defaultChecked: true,
+      value: '0',
     },
   ];
   const templateIds = selectedTemplates.map(selected => selected.split('-', 2)[0]);
@@ -262,7 +263,11 @@ const getAvailableSources = (
     return true;
   });
 
-  return [
+  if (!extractor || extractor?.source.pdf) {
+    baseOptions[0].defaultChecked = true;
+  }
+
+  const options = [
     ...baseOptions,
     ...uniqBy(markdownProperties, 'propertyName')
       .filter(markdownProperty => propertyIsInAllTemplates(templatesIncluded, markdownProperty))
@@ -274,8 +279,26 @@ const getAvailableSources = (
           false
         ),
         value: markdownProperty.propertyName,
+        defaultChecked: false,
       })),
   ];
+
+  options.some(option => {
+    if (!extractor || extractor.source.pdf) {
+      // intentional pass by reference
+      // eslint-disable-next-line no-param-reassign
+      option.defaultChecked = true;
+      return true;
+    }
+    if (option.value === extractor.source.property) {
+      // eslint-disable-next-line no-param-reassign
+      option.defaultChecked = true;
+      return true;
+    }
+    return false;
+  });
+
+  return options;
 };
 
 export { updateSuggestions, updateSuggestionsByEntity, generateChildrenRows, getAvailableSources };
