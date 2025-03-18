@@ -17,6 +17,7 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { DBFixture } from 'api/utils/testing_db';
+import relationshipsDS from 'api/relationships';
 
 import { LegacyEntitiesDS, PXCreateParagraph, PXCreateParagraphInput } from '../PXCreateParagraph';
 
@@ -111,6 +112,7 @@ const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
     logger: createMockLogger(),
     entitiesStatusDS,
     entitiesDS,
+    relationshipsDS,
   });
 
   return { createParagraph };

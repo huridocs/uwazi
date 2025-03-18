@@ -7,6 +7,7 @@ import { Property } from 'api/templates.v2/model/Property';
 
 import { PXValidationError, PXErrorCode } from './PXValidationError';
 import { ParagraphOutput } from './PXExtractionService';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 export type PXExtractorProps = {
   id: string;
@@ -107,6 +108,20 @@ export class PXExtractor {
     return translation ?? mainTranslation;
   }
 
+  private static sortByMainLanguage(
+    a: EntitySchema,
+    b: EntitySchema,
+    mainLanguage: LanguageISO6391
+  ) {
+    if (a.language === mainLanguage && b.language !== mainLanguage) {
+      return -1;
+    }
+    if (a.language !== mainLanguage && b.language === mainLanguage) {
+      return 1;
+    }
+    return 0;
+  }
+
   canExtract(sourceEntity: Entity) {
     return this.sourceTemplate.id === sourceEntity.template;
   }
@@ -129,6 +144,12 @@ export class PXExtractor {
     sourceEntities: EntitySchema[],
     extractedParagraph: ParagraphOutput
   ): EntitySchema[] {
-    return sourceEntities.map(entity => this.createParagraph(entity, extractedParagraph));
+    const mainLanguage = extractedParagraph.translations.find(t => t.isMainLanguage)!.language;
+
+    const paragraphs = sourceEntities.map(entity =>
+      this.createParagraph(entity, extractedParagraph)
+    );
+
+    return paragraphs.sort((a, b) => PXExtractor.sortByMainLanguage(a, b, mainLanguage));
   }
 }

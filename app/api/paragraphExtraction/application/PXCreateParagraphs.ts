@@ -4,6 +4,7 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import entities from 'api/entities';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import relationshipsDS from 'api/relationships';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
@@ -27,6 +28,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     this.createParagraph = new PXCreateParagraph({
       logger: DefaultLogger(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
+      relationshipsDS,
     });
   }
 
