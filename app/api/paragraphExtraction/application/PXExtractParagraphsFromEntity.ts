@@ -14,14 +14,13 @@ import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXExtractionModel } from '../domain/PXExtraction';
-import { PXExtractionsDataSource } from '../domain/PXExtractionDataSource';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
-type Input = {
+type PXExtractParagraphsFromEntityInput = {
   userId: string;
   extractorId: string;
   entitySharedId: string;
-  extraction: PXExtractionModel;
+  extractionId: string;
 };
 
 type Output = void;
@@ -32,20 +31,22 @@ type Dependencies = {
   filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
   extractionService: PXExtractionService;
-  extractionsDS: PXExtractionsDataSource;
+  entitiesStatusDS: PXEntitiesStatusDataSource;
   fileStorage: FileStorage;
   idGenerator: IdGenerator;
   logger: Logger;
   tenantName: string;
 };
 
-export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
+export class PXExtractParagraphsFromEntity
+  implements UseCase<PXExtractParagraphsFromEntityInput, Output>
+{
   constructor(private dependencies: Dependencies) {}
 
   // eslint-disable-next-line max-statements
-  async execute(input: Input): Promise<Output> {
+  async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
     try {
-      await this.dependencies.extractionsDS.initProcess(input.extraction);
+      await this.dependencies.entitiesStatusDS.initProcess(input.extractionId);
 
       const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
@@ -57,15 +58,22 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
 
       const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
+      const extractionKey = PXExtractionKey.create({
+        tenantName: this.dependencies.tenantName,
+        userId: input.userId,
+        extractionId: input.extractionId,
+      });
+
+      const mainLanguage = PXExtractParagraphsFromEntity.getMainLanguage(
+        documents,
+        defaultLanguage
+      );
+
       await this.dependencies.extractionService.extractParagraphs({
         documents,
         segmentations,
-        mainLanguage: PXExtractParagraphsFromEntity.getMainLanguage(documents, defaultLanguage),
-        extractionKey: PXExtractionKey.create({
-          tenantName: this.dependencies.tenantName,
-          userId: input.userId,
-          extractionId: input.extraction.id,
-        }),
+        mainLanguage,
+        extractionKey,
         files,
       });
 
@@ -76,7 +84,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
         })}`
       );
     } catch (e) {
-      await this.dependencies.extractionsDS.setAsError(input.extraction.id);
+      await this.dependencies.entitiesStatusDS.setAsError(input.extractionId);
       throw e;
     }
   }
@@ -90,7 +98,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   }
 
   // eslint-disable-next-line max-statements
-  private async getInitialData(input: Input) {
+  private async getInitialData(input: PXExtractParagraphsFromEntityInput) {
     const [extractor, entities, installedLanguages] = await Promise.all([
       this.dependencies.extractorsDS.getById(input.extractorId),
       this.dependencies.entityDS.getByIds([input.entitySharedId]).all(),
@@ -172,3 +180,5 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
     return segmentations;
   }
 }
+
+export type { PXExtractParagraphsFromEntityInput };

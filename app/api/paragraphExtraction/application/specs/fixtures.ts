@@ -1,6 +1,6 @@
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
-import { ExtractionStatus } from 'api/paragraphExtraction/domain/PXExtraction';
-import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
@@ -32,14 +32,14 @@ export const extractor: MongoPXExtractorDBO = {
   paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
-export const extraction: MongoPXExtractionDBO = {
-  _id: factory.id('extraction'),
+export const entityStatus: MongoPXEntityStatus = {
+  _id: factory.id('entityStatus'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
   failedParagraphsCount: 0,
   paragraphsCount: 0,
   successfulParagraphsCount: 0,
-  status: ExtractionStatus.Queued,
+  status: EntityStatus.Queued,
 };
 
 export const file = factory.document('file', { language: 'eng', entity: entity.sharedId });

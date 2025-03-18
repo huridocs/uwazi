@@ -32,7 +32,7 @@ type GetParagraphsResultOutput = {
 };
 
 interface PXExtractionService {
-  extractParagraphs(extraction: ExtractParagraphInput): Promise<void>;
+  extractParagraphs(entityStatus: ExtractParagraphInput): Promise<void>;
   getParagraphsResult(url: string): Promise<GetParagraphsResultOutput>;
 }
 

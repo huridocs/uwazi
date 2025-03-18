@@ -8,7 +8,7 @@ import {
 import { DefaultLogger, SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { JobsRouter } from '../infrastructure/JobsRouter';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
-import { NamespacedDispatcher } from '../infrastructure/NamespacedDispatcher';
+import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
 
 export function DefaultQueueAdapter() {
   return new MongoQueueAdapter(
@@ -24,8 +24,8 @@ export function DefaultTestingQueueAdapter() {
   );
 }
 
-export async function DefaultDispatcher(tenant: string) {
+export async function DefaultDispatcher(tenant: string, queueOptions?: QueueOptions) {
   return new JobsRouter(
-    queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter())
+    queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter(), queueOptions)
   );
 }

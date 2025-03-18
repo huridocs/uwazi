@@ -1,5 +1,6 @@
+import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { ObjectId } from 'mongodb';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { Job, QueueAdapter } from './QueueAdapter';
 
 interface JobDBO {
@@ -17,6 +18,10 @@ interface JobDBO {
 
 export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueAdapter {
   protected collectionName = 'jobs';
+
+  constructor(db: Db, transactionManager: MongoTransactionManager) {
+    super(db, transactionManager, { useSyncedCollection: false });
+  }
 
   async renewJobLock(job: Job) {
     await this.getCollection().findOneAndUpdate(

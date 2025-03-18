@@ -3,18 +3,18 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
-import { MongoPXExtractionsDataSource } from './MongoPXExtractionsDataSource';
+import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
 
 export class PXCreateParagraphsFactory {
   static createDefault() {
     const db = getConnection();
     const transactionManager = DefaultTransactionManager();
     const extractorsDS = new MongoPXExtractorsDataSource(db, transactionManager);
-    const extractionsDS = new MongoPXExtractionsDataSource(db, transactionManager);
+    const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transactionManager);
 
     return new PXCreateParagraphs({
       extractorsDS,
-      extractionsDS,
+      entitiesStatusDS,
     });
   }
 }
