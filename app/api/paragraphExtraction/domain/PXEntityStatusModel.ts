@@ -3,6 +3,7 @@ enum EntityStatus {
   Error = 'error',
   Finished = 'finished',
   Queued = 'queued',
+  New = 'new',
 }
 
 type PXEntityStatusModel = {

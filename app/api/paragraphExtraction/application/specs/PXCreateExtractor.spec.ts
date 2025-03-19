@@ -7,8 +7,13 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
+import { DBFixture } from 'api/utils/testing_db';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+
 import {
   mongoPXExtractorsCollection,
   MongoPXExtractorsDataSource,
@@ -42,13 +47,16 @@ const targetTemplate = factory.template('Target Template', [
   paragraphNumberProperty,
   textProperty,
 ]);
+
 const invalidTargetTemplate = factory.template('Invalid Target');
+
+const createFixtures = (): DBFixture => ({
+  templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
+});
 
 describe('PXCreateExtractor', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp({
-      templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
-    });
+    await testingEnvironment.setUp(createFixtures());
   });
 
   afterAll(async () => {
@@ -77,6 +85,58 @@ describe('PXCreateExtractor', () => {
       },
     ]);
   });
+
+  it('should create EntityStatus for each source entity that match Extractor configuration', async () => {
+    const entityOne = factory.entity('entityOne', sourceTemplate._id.toString());
+    const entityOneEs = factory.entity(
+      'entityOneEs',
+      sourceTemplate._id.toString(),
+      {},
+      { language: 'en' }
+    );
+
+    const entityTwo = factory.entity('entityTwo', sourceTemplate._id.toString(), {});
+    const entityTwoEs = factory.entity(
+      'entityTwoEs',
+      sourceTemplate._id.toString(),
+      {},
+      { language: 'es' }
+    );
+    await testingEnvironment.setUp({
+      ...createFixtures(),
+      entities: [entityOne, entityTwo, entityOneEs, entityTwoEs],
+    });
+
+    const { createExtractor } = setUpUseCase();
+
+    const extractor = await createExtractor.execute({
+      sourceTemplateId: sourceTemplate._id.toString(),
+      targetTemplateId: targetTemplate._id.toString(),
+      paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      paragraphPropertyId: paragraphProperty._id!.toString(),
+    });
+
+    const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    )) as MongoPXEntityStatus[];
+
+    expect(mongoEntityStatuses.length).toBe(2);
+
+    expect(mongoEntityStatuses).toMatchObject([
+      {
+        status: EntityStatus.New,
+        extractorId: new ObjectId(extractor.id),
+        entitySharedId: entityOne.sharedId,
+      },
+      {
+        status: EntityStatus.New,
+        extractorId: new ObjectId(extractor.id),
+        entitySharedId: entityTwo.sharedId,
+      },
+    ]);
+  });
+
+  it.todo('should revert Extractor creation if EntityStatus creation goes wrong');
 
   it('should throw if the paragraph Property does not exist on Template', async () => {
     const { createExtractor } = setUpUseCase();

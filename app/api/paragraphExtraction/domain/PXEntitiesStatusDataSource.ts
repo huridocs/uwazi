@@ -16,6 +16,11 @@ type UpdateParagraphsCountInput = {
   count: number;
 };
 
+type CreateForEachSourceEntityInput = {
+  sourceTemplateId: string;
+  extractorId: string;
+};
+
 export interface PXEntitiesStatusDataSource {
   getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
   initProcess(extractionId: string): Promise<PXEntityStatusModel>;
@@ -24,6 +29,7 @@ export interface PXEntitiesStatusDataSource {
   create(input: CreateInput): Promise<PXEntityStatusModel>;
   setAsError(extractionId: string): Promise<PXEntityStatusModel>;
   updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel>;
+  createForEachSourceEntity(input: CreateForEachSourceEntityInput): Promise<void>;
 }
 
 export type {
@@ -32,4 +38,5 @@ export type {
   EnqueueInput,
   InitProcessInput,
   UpdateParagraphsCountInput,
+  CreateForEachSourceEntityInput,
 };

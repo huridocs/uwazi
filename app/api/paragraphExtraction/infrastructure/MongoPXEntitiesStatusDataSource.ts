@@ -1,8 +1,10 @@
 import { ObjectId } from 'mongodb';
 
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { EntitySchema } from 'shared/types/entityType';
 
 import {
+  CreateForEachSourceEntityInput,
   CreateInput,
   PXEntitiesStatusDataSource,
   UpdateParagraphsCountInput,
@@ -17,6 +19,31 @@ export class MongoPXEntitiesStatusDataSource
   implements PXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
+
+  async createForEachSourceEntity({
+    sourceTemplateId,
+    extractorId,
+  }: CreateForEachSourceEntityInput): Promise<void> {
+    const sourceEntities = await this.getCollection<EntitySchema>('entities')
+      .aggregate([
+        { $match: { template: new ObjectId(sourceTemplateId) } },
+        { $group: { _id: '$sharedId' } },
+        { $project: { _id: 0, sharedId: '$_id' } },
+      ])
+      .toArray();
+
+    const entityStatuses: MongoPXEntityStatus[] = sourceEntities.map(entity => ({
+      _id: undefined as any,
+      entitySharedId: entity.sharedId,
+      extractorId: new ObjectId(extractorId),
+      status: EntityStatus.New,
+      failedParagraphsCount: 0,
+      paragraphsCount: 0,
+      successfulParagraphsCount: 0,
+    }));
+
+    await this.getCollection().insertMany(entityStatuses);
+  }
 
   async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
