@@ -1,13 +1,15 @@
 import { z } from 'zod';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import relationshipTypeDS from 'api/relationtypes';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { UseCase } from 'api/common.v2/contracts/UseCase';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
+import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
 type Input = z.infer<typeof InputSchema>;
 type Output = PXExtractor;
@@ -24,7 +26,9 @@ const InputSchema = z.object({
 type Dependencies = {
   templatesDS: TemplatesDataSource;
   extractorDS: PXExtractorsDataSource;
+  entitiesStatusDS: PXEntitiesStatusDataSource;
   idGenerator: IdGenerator;
+  transactionManager: TransactionManager;
   relationshipTypeDS: typeof relationshipTypeDS;
 };
 
@@ -90,7 +94,13 @@ class PXCreateExtractor implements UseCase<Input, Output> {
       targetRelationshipTypeId,
     });
 
-    await this.dependencies.extractorDS.create(extractor);
+    await this.dependencies.transactionManager.run(async () => {
+      await this.dependencies.extractorDS.create(extractor);
+      await this.dependencies.entitiesStatusDS.createForSourceEntities({
+        extractorId: extractor.id,
+        sourceTemplateId: extractor.sourceTemplate.id,
+      });
+    });
 
     return extractor;
   }

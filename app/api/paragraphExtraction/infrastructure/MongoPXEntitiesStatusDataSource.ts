@@ -1,9 +1,11 @@
+/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
 
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
 import { EntitySchema } from 'shared/types/entityType';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 import {
   CreateForSourceEntitiesInput,
@@ -31,18 +33,58 @@ export class MongoPXEntitiesStatusDataSource
     super(db, transaction, options);
   }
 
+  private static filterDocumentsWithLanguageInstalled(installedLanguages: LanguagesListSchema) {
+    return {
+      $lookup: {
+        from: 'files',
+        let: { entitySharedId: '$sharedId' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$entity', '$$entitySharedId'] },
+                  { $in: ['$language', installedLanguages.map(l => l.key)] },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'files',
+      },
+    };
+  }
+
   async createForSourceEntities({
     sourceTemplateId,
     extractorId,
   }: CreateForSourceEntitiesInput): Promise<void> {
-    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
+    const installedLanguages = await this.settingsDS.getInstalledLanguages();
+    const defaultLanguage = installedLanguages.find(l => l.default)?.key!;
 
     const sourceEntities = await this.getCollection<EntitySchema>('entities')
-      .find(
-        { template: new ObjectId(sourceTemplateId), language: defaultLanguage },
-        { projection: { sharedId: 1 } }
-      )
+      .aggregate([
+        {
+          $match: {
+            template: new ObjectId(sourceTemplateId),
+            language: defaultLanguage,
+          },
+        },
+        MongoPXEntitiesStatusDataSource.filterDocumentsWithLanguageInstalled(installedLanguages),
+        {
+          $match: {
+            'files.0': { $exists: true },
+          },
+        },
+        {
+          $project: { sharedId: 1, _id: 0 },
+        },
+      ])
       .toArray();
+
+    if (!sourceEntities.length) {
+      return;
+    }
 
     const entityStatuses: MongoPXEntityStatus[] = sourceEntities.map(entity => ({
       _id: undefined as any,

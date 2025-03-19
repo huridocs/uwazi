@@ -12,12 +12,12 @@ import {
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import relationshipTypeDS from 'api/relationtypes';
-
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { TestUtils } from 'api/common.v2/utils/Test';
 
 import {
   mongoPXExtractorsCollection,
@@ -27,13 +27,19 @@ import { PXCreateExtractor } from '../PXCreateExtractor';
 
 const factory = getFixturesFactory();
 
-const setUpUseCase = () => {
-  const transaction = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(transaction);
+type SetUpUseCaseProps = {
+  entitiesStatusDS?: MongoPXEntitiesStatusDataSource;
+};
+
+const setUpUseCase = (props?: SetUpUseCaseProps) => {
   const connection = getConnection();
-  const extractorDS = new MongoPXExtractorsDataSource(connection, transaction);
-  const settingsDS = DefaultSettingsDataSource(transaction);
-  const entityStatusesDS = new MongoPXEntitiesStatusDataSource(connection, transaction, settingsDS);
+  const transactionManager = DefaultTransactionManager();
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const extractorDS = new MongoPXExtractorsDataSource(connection, transactionManager);
+  const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
+  const entitiesStatusDS =
+    props?.entitiesStatusDS ??
+    new MongoPXEntitiesStatusDataSource(connection, transactionManager, settingsDS);
 
   return {
     createExtractor: new PXCreateExtractor({
@@ -41,6 +47,8 @@ const setUpUseCase = () => {
       templatesDS,
       idGenerator: MongoIdHandler,
       relationshipTypeDS,
+      transactionManager,
+      entitiesStatusDS,
     }),
   };
 };
@@ -73,14 +81,19 @@ const targetRelationshipType = {
 const createFixtures = (): DBFixture => ({
   templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
   relationtypes: [sourceRelationshipType, targetRelationshipType],
+  settings: [
+    {
+      languages: [
+        { key: 'en', label: 'English', default: true },
+        { key: 'es', label: 'Spanish' },
+      ],
+    },
+  ],
 });
 
 describe('PXCreateExtractor', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp({
-      relationtypes: [sourceRelationshipType, targetRelationshipType],
-      templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
-    });
+    await testingEnvironment.setUp(createFixtures());
   });
 
   afterAll(async () => {
@@ -150,14 +163,6 @@ describe('PXCreateExtractor', () => {
       ...createFixtures(),
       entities: [entity1, entity2, entity1Es, entity2Es, entity3, entity3Es, entity4, entity4Es],
       files: [document1, document2, document3],
-      settings: [
-        {
-          languages: [
-            { key: 'en', label: 'English', default: true },
-            { key: 'es', label: 'Spanish' },
-          ],
-        },
-      ],
     });
 
     const { createExtractor } = setUpUseCase();
@@ -177,20 +182,45 @@ describe('PXCreateExtractor', () => {
 
     expect(mongoEntityStatuses.length).toBe(2);
 
-    expect(mongoEntityStatuses).toEqual(
-      expect.arrayContaining([
-        {
-          status: EntityStatus.New,
-          extractorId: new ObjectId(extractor.id),
-          entitySharedId: entity1.sharedId,
-        },
-        {
-          status: EntityStatus.New,
-          extractorId: new ObjectId(extractor.id),
-          entitySharedId: entity2.sharedId,
-        },
-      ])
+    TestUtils.arrayContaining(mongoEntityStatuses, [
+      {
+        status: EntityStatus.New,
+        extractorId: new ObjectId(extractor.id),
+        entitySharedId: entity1.sharedId,
+      },
+      {
+        status: EntityStatus.New,
+        extractorId: new ObjectId(extractor.id),
+        entitySharedId: entity2.sharedId,
+      },
+    ]);
+  });
+
+  it('should revert Extractor creation if EntityStatus creation goes wrong', async () => {
+    const entitiesStatusDS = {
+      createForSourceEntities: jest.fn().mockRejectedValue(new Error('any_error')),
+    } as any as MongoPXEntitiesStatusDataSource;
+
+    const { createExtractor } = setUpUseCase({ entitiesStatusDS });
+
+    const promise = createExtractor.execute({
+      sourceTemplateId: sourceTemplate._id.toString(),
+      targetTemplateId: targetTemplate._id.toString(),
+      paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
+    });
+
+    await expect(promise).rejects.toThrow();
+
+    const mongoEntityStatuses = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
     );
+    const mongoExtractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
+
+    expect(mongoEntityStatuses?.length).toBe(0);
+    expect(mongoExtractors?.length).toBe(0);
   });
 
   it('should throw if source relationship type does not exist', async () => {
@@ -209,8 +239,6 @@ describe('PXCreateExtractor', () => {
       code: PXErrorCode.SOURCE_RELATIONSHIP_TYPE_DOES_NOT_EXIST,
     });
   });
-
-  it.todo('should revert Extractor creation if EntityStatus creation goes wrong');
 
   it('should throw if target relationship type does not exist', async () => {
     const { createExtractor } = setUpUseCase();

@@ -60,7 +60,7 @@ export class MongoPXExtractorsDataSource
       targetRelationshipTypeId: new ObjectId(extractor.targetRelationshipTypeId),
     };
 
-    await this.getCollection().insertOne(mongoExtractor);
+    await this.getCollection().insertOne(mongoExtractor, { session: this.getSession() });
   }
 
   static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {
