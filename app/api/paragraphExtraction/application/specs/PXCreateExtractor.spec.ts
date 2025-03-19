@@ -7,12 +7,16 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import {
+  mongoPXEntitiesStatusCollection,
+  MongoPXEntitiesStatusDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 
 import {
   mongoPXExtractorsCollection,
@@ -25,14 +29,18 @@ const factory = getFixturesFactory();
 const setUpUseCase = () => {
   const transaction = DefaultTransactionManager();
   const templatesDS = DefaultTemplatesDataSource(transaction);
-
-  const extractorDS = new MongoPXExtractorsDataSource(getConnection(), transaction);
+  const connection = getConnection();
+  const extractorDS = new MongoPXExtractorsDataSource(connection, transaction);
+  const settingsDS = DefaultSettingsDataSource(transaction);
+  const entityStatusesDS = new MongoPXEntitiesStatusDataSource(connection, transaction, settingsDS);
 
   return {
     createExtractor: new PXCreateExtractor({
       extractorDS,
       templatesDS,
       idGenerator: MongoIdHandler,
+      transaction,
+      entityStatusesDS,
     }),
   };
 };
@@ -86,25 +94,50 @@ describe('PXCreateExtractor', () => {
     ]);
   });
 
-  it('should create EntityStatus for each source entity that match Extractor configuration', async () => {
-    const entityOne = factory.entity('entityOne', sourceTemplate._id.toString());
-    const entityOneEs = factory.entity(
-      'entityOneEs',
-      sourceTemplate._id.toString(),
-      {},
-      { language: 'en' }
+  it('should create EntityStatuses for each source entity that match Extractor configuration and have at least one Document of the UI language', async () => {
+    const [entity1, entity1Es] = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'entity1',
+      'Source Template'
     );
 
-    const entityTwo = factory.entity('entityTwo', sourceTemplate._id.toString(), {});
-    const entityTwoEs = factory.entity(
-      'entityTwoEs',
-      sourceTemplate._id.toString(),
-      {},
-      { language: 'es' }
+    const [entity2, entity2Es] = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'entity2',
+      'Source Template'
     );
+
+    const [entity3, entity3Es] = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'entity_with_document_in_another_language',
+      'Source Template'
+    );
+
+    const [entity4, entity4Es] = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'entity_without_documents',
+      'Source Template'
+    );
+
+    const document1 = factory.document('document', { entity: entity1.sharedId, language: 'en' });
+    const document2 = factory.document('document2', { entity: entity2.sharedId, language: 'es' });
+    const document3 = factory.document('document_in_another_language', {
+      entity: entity3.sharedId,
+      language: 'pt',
+    });
+
     await testingEnvironment.setUp({
       ...createFixtures(),
-      entities: [entityOne, entityTwo, entityOneEs, entityTwoEs],
+      entities: [entity1, entity2, entity1Es, entity2Es, entity3, entity3Es, entity4, entity4Es],
+      files: [document1, document2, document3],
+      settings: [
+        {
+          languages: [
+            { key: 'en', label: 'English', default: true },
+            { key: 'es', label: 'Spanish' },
+          ],
+        },
+      ],
     });
 
     const { createExtractor } = setUpUseCase();
@@ -122,18 +155,20 @@ describe('PXCreateExtractor', () => {
 
     expect(mongoEntityStatuses.length).toBe(2);
 
-    expect(mongoEntityStatuses).toMatchObject([
-      {
-        status: EntityStatus.New,
-        extractorId: new ObjectId(extractor.id),
-        entitySharedId: entityOne.sharedId,
-      },
-      {
-        status: EntityStatus.New,
-        extractorId: new ObjectId(extractor.id),
-        entitySharedId: entityTwo.sharedId,
-      },
-    ]);
+    expect(mongoEntityStatuses).toEqual(
+      expect.arrayContaining([
+        {
+          status: EntityStatus.New,
+          extractorId: new ObjectId(extractor.id),
+          entitySharedId: entity1.sharedId,
+        },
+        {
+          status: EntityStatus.New,
+          extractorId: new ObjectId(extractor.id),
+          entitySharedId: entity2.sharedId,
+        },
+      ])
+    );
   });
 
   it.todo('should revert Extractor creation if EntityStatus creation goes wrong');

@@ -1,10 +1,12 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
 import { EntitySchema } from 'shared/types/entityType';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 
 import {
-  CreateForEachSourceEntityInput,
+  CreateForSourceEntitiesInput,
   CreateInput,
   PXEntitiesStatusDataSource,
   UpdateParagraphsCountInput,
@@ -20,21 +22,31 @@ export class MongoPXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
 
-  async createForEachSourceEntity({
+  constructor(
+    db: Db,
+    transaction: MongoTransactionManager,
+    private settingsDS: SettingsDataSource,
+    options?: MongoDSOptions
+  ) {
+    super(db, transaction, options);
+  }
+
+  async createForSourceEntities({
     sourceTemplateId,
     extractorId,
-  }: CreateForEachSourceEntityInput): Promise<void> {
+  }: CreateForSourceEntitiesInput): Promise<void> {
+    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
+
     const sourceEntities = await this.getCollection<EntitySchema>('entities')
-      .aggregate([
-        { $match: { template: new ObjectId(sourceTemplateId) } },
-        { $group: { _id: '$sharedId' } },
-        { $project: { _id: 0, sharedId: '$_id' } },
-      ])
+      .find(
+        { template: new ObjectId(sourceTemplateId), language: defaultLanguage },
+        { projection: { sharedId: 1 } }
+      )
       .toArray();
 
     const entityStatuses: MongoPXEntityStatus[] = sourceEntities.map(entity => ({
       _id: undefined as any,
-      entitySharedId: entity.sharedId,
+      entitySharedId: entity.sharedId!,
       extractorId: new ObjectId(extractorId),
       status: EntityStatus.New,
       failedParagraphsCount: 0,
