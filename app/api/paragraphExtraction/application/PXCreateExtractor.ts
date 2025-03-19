@@ -31,25 +31,6 @@ type Dependencies = {
 class PXCreateExtractor implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute(input: Input): Promise<Output> {
-    const { sourceTemplate, targetTemplate, sourceRelationshipTypeId, targetRelationshipTypeId } =
-      await this.getInitialData(input);
-
-    const extractor = new PXExtractor({
-      id: this.dependencies.idGenerator.generate(),
-      targetTemplate,
-      sourceTemplate,
-      paragraphNumberPropertyId: input.paragraphNumberPropertyId,
-      paragraphPropertyId: input.paragraphPropertyId,
-      sourceRelationshipTypeId,
-      targetRelationshipTypeId,
-    });
-
-    await this.dependencies.extractorDS.create(extractor);
-
-    return extractor;
-  }
-
   private async getInitialData(input: Input) {
     const [targetTemplate, sourceTemplate, sourceRelationshipType, targetRelationshipType] =
       await Promise.all([
@@ -93,6 +74,25 @@ class PXCreateExtractor implements UseCase<Input, Output> {
       sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
       targetRelationshipTypeId: targetRelationshipType._id.toString(),
     };
+  }
+
+  async execute(input: Input): Promise<Output> {
+    const { sourceTemplate, targetTemplate, sourceRelationshipTypeId, targetRelationshipTypeId } =
+      await this.getInitialData(input);
+
+    const extractor = new PXExtractor({
+      id: this.dependencies.idGenerator.generate(),
+      targetTemplate,
+      sourceTemplate,
+      paragraphNumberPropertyId: input.paragraphNumberPropertyId,
+      paragraphPropertyId: input.paragraphPropertyId,
+      sourceRelationshipTypeId,
+      targetRelationshipTypeId,
+    });
+
+    await this.dependencies.extractorDS.create(extractor);
+
+    return extractor;
   }
 }
 
