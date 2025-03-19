@@ -4,6 +4,7 @@ import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
 import { Property } from 'api/templates.v2/model/Property';
 import { Template } from 'api/templates.v2/model/Template';
 import { Document } from 'api/files.v2/model/Document';
+import { ObjectId } from 'mongodb';
 
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
@@ -89,6 +90,18 @@ const segmentation: Segmentation = {
   status: 'ready',
 };
 
+const sourceRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 const segmentation2: Segmentation = {
   id: 'any_id2',
   fileId: document2.id,
@@ -106,6 +119,8 @@ const extractor = new PXExtractor({
   targetTemplate,
   paragraphNumberPropertyId: paragraphNumberProperty.id,
   paragraphPropertyId: paragraphProperty.id,
+  sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+  targetRelationshipTypeId: targetRelationshipType._id.toString(),
 });
 
 export {

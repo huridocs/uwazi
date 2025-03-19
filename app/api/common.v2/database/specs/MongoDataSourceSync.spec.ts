@@ -696,3 +696,76 @@ describe('collection with automatic log to updatelogs', () => {
     );
   });
 });
+
+describe('when useSyncedCollection flag set to false', () => {
+  describe('should not log creations/updates/deletions on updatelogs collection', () => {
+    beforeEach(() => {
+      jest.spyOn(Date, 'now').mockReturnValue(1);
+    });
+
+    const casesForUpdates = [
+      {
+        description: 'insertOne',
+        callback: async (ds: DataSource) =>
+          ds.collection().insertOne({ _id: id('some_data'), data: 'some data' }),
+        expectedDBState: updateLogsBlankState,
+        expectedResult: { acknowledged: true, insertedId: id('some_data') },
+      },
+      {
+        description: 'updateOne',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
+          return ds
+            .collection()
+            .updateOne({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
+        },
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 123 }, updateLogsBlankState[1]],
+        expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
+      },
+      {
+        description: 'findOneAndUpdate',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
+          return ds
+            .collection()
+            .findOneAndUpdate(
+              { _id: id('collection id 1') },
+              { $set: { data: 'updated data' } },
+              { includeResultMetadata: true }
+            );
+        },
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 123 }, updateLogsBlankState[1]],
+        expectedResult: { ok: 1, value: { _id: id('collection id 1'), data: 'some old data' } },
+      },
+      {
+        description: 'deleteOne',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
+          return ds.collection().deleteOne({ _id: id('collection id 1') });
+        },
+        expectedDBState: [
+          { ...updateLogsBlankState[0], deleted: false, timestamp: 123 },
+          updateLogsBlankState[1],
+        ],
+        expectedResult: { acknowledged: true },
+      },
+    ];
+
+    it.each(casesForUpdates)(
+      '$description should not log changes to updatelogs if any',
+      async ({ callback, expectedDBState, expectedResult }) => {
+        const transactionManager2 = createTransactionManager();
+        const dataSource2 = new DataSource(getConnection(), transactionManager2, {
+          useSyncedCollection: false,
+        });
+
+        const result = await transactionManager2.run(async () => callback(dataSource2));
+
+        expect(result).toMatchObject(expectedResult);
+        expect(await testingDB.mongodb?.collection('updatelogs').find({}).toArray()).toEqual(
+          expectedDBState
+        );
+      }
+    );
+  });
+});

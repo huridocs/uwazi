@@ -4,6 +4,10 @@ import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
 import { SyncedCollection } from './SyncedCollection';
 
+interface MongoDSOptions {
+  useSyncedCollection?: boolean;
+}
+
 export abstract class MongoDataSource<TSchema extends Document = Document> {
   private db: Db;
 
@@ -11,22 +15,31 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
   private transactionManager: MongoTransactionManager;
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  private useSyncedCollection: boolean;
+
+  constructor(db: Db, transactionManager: MongoTransactionManager, options: MongoDSOptions = {}) {
     this.db = db;
     this.transactionManager = transactionManager;
+    this.useSyncedCollection =
+      options.useSyncedCollection !== undefined ? options.useSyncedCollection : true;
   }
 
   protected getCollection<Collection extends Document = TSchema>(
     collectionName = this.collectionName
   ) {
-    return new SyncedCollection<Collection>(
-      new SessionScopedCollection<Collection>(
-        this.db.collection<Collection>(collectionName),
-        this.transactionManager
-      ),
-      this.transactionManager,
-      this.db
-    );
+    return this.useSyncedCollection
+      ? new SyncedCollection<Collection>(
+          new SessionScopedCollection<Collection>(
+            this.db.collection<Collection>(collectionName),
+            this.transactionManager
+          ),
+          this.transactionManager,
+          this.db
+        )
+      : new SessionScopedCollection<Collection>(
+          this.db.collection<Collection>(collectionName),
+          this.transactionManager
+        );
   }
 
   protected async collectionExists(): Promise<boolean> {
