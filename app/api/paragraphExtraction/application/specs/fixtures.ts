@@ -10,6 +10,18 @@ const factory = getFixturesFactory();
 const paragraphProperty = factory.property('rich_text', 'markdown');
 const paragraphNumberProperty = factory.property('paragraph_number_property', 'numeric');
 
+const sourceRelationshipType = {
+  _id: factory.id('sourceRelationshipType'),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: factory.id('targetRelationshipType'),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 export const defaultTemplate = factory.template('Default Template');
 export const sourceTemplate = factory.template('Source Template', [
   factory.property('text', 'text'),
@@ -30,6 +42,8 @@ export const extractor: MongoPXExtractorDBO = {
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
 export const entityStatus: MongoPXEntityStatus = {

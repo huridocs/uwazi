@@ -17,6 +17,7 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { DBFixture } from 'api/utils/testing_db';
+import relationshipsDS from 'api/relationships';
 
 import { LegacyEntitiesDS, PXCreateParagraph, PXCreateParagraphInput } from '../PXCreateParagraph';
 
@@ -61,12 +62,26 @@ const entityPt = factory.entity(
   { language: 'pt', title: 'Source Entity Portuguese' }
 );
 
+const sourceRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 const extractorDBO: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
 const extractor = MongoPXExtractorsDataSource.toDomain({
@@ -97,12 +112,14 @@ const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
     logger: createMockLogger(),
     entitiesStatusDS,
     entitiesDS,
+    relationshipsDS,
   });
 
   return { createParagraph };
 };
 
 const createFixtures = (): DBFixture => ({
+  relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractorDBO],
   [mongoPXEntitiesStatusCollection]: [extractionDBO],
   templates: [sourceTemplate, targetTemplate],

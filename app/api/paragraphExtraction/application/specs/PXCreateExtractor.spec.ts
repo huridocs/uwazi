@@ -11,6 +11,7 @@ import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import relationshipTypeDS from 'api/relationtypes';
 
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
@@ -39,8 +40,7 @@ const setUpUseCase = () => {
       extractorDS,
       templatesDS,
       idGenerator: MongoIdHandler,
-      transaction,
-      entityStatusesDS,
+      relationshipTypeDS,
     }),
   };
 };
@@ -58,13 +58,29 @@ const targetTemplate = factory.template('Target Template', [
 
 const invalidTargetTemplate = factory.template('Invalid Target');
 
+const sourceRelationshipType = {
+  _id: factory.id('sourceRelationshipType'),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: factory.id('targetRelationshipType'),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 const createFixtures = (): DBFixture => ({
   templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
+  relationtypes: [sourceRelationshipType, targetRelationshipType],
 });
 
 describe('PXCreateExtractor', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp(createFixtures());
+    await testingEnvironment.setUp({
+      relationtypes: [sourceRelationshipType, targetRelationshipType],
+      templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
+    });
   });
 
   afterAll(async () => {
@@ -79,6 +95,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     const dbPXExtractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
@@ -90,6 +108,8 @@ describe('PXCreateExtractor', () => {
         targetTemplateId: targetTemplate._id,
         paragraphPropertyId: paragraphProperty._id,
         paragraphNumberPropertyId: paragraphNumberProperty._id,
+        sourceRelationshipTypeId: sourceRelationshipType._id,
+        targetRelationshipTypeId: targetRelationshipType._id,
       },
     ]);
   });
@@ -147,6 +167,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
@@ -171,7 +193,41 @@ describe('PXCreateExtractor', () => {
     );
   });
 
+  it('should throw if source relationship type does not exist', async () => {
+    const { createExtractor } = setUpUseCase();
+
+    const promise = createExtractor.execute({
+      sourceTemplateId: sourceTemplate._id.toString(),
+      targetTemplateId: targetTemplate._id.toString(),
+      paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: new ObjectId().toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
+    });
+
+    await expect(promise).rejects.toMatchObject({
+      code: PXErrorCode.SOURCE_RELATIONSHIP_TYPE_DOES_NOT_EXIST,
+    });
+  });
+
   it.todo('should revert Extractor creation if EntityStatus creation goes wrong');
+
+  it('should throw if target relationship type does not exist', async () => {
+    const { createExtractor } = setUpUseCase();
+
+    const promise = createExtractor.execute({
+      sourceTemplateId: sourceTemplate._id.toString(),
+      targetTemplateId: targetTemplate._id.toString(),
+      paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      paragraphPropertyId: paragraphProperty._id!.toString(),
+      targetRelationshipTypeId: new ObjectId().toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+    });
+
+    await expect(promise).rejects.toMatchObject({
+      code: PXErrorCode.TARGET_RELATIONSHIP_TYPE_DOES_NOT_EXIST,
+    });
+  });
 
   it('should throw if the paragraph Property does not exist on Template', async () => {
     const { createExtractor } = setUpUseCase();
@@ -181,6 +237,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphPropertyId: new ObjectId().toString(),
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -196,6 +254,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphPropertyId: textProperty._id!.toString(),
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -211,6 +271,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
       paragraphNumberPropertyId: new ObjectId().toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -226,6 +288,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
       paragraphNumberPropertyId: textProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -242,6 +306,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId,
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -258,6 +324,8 @@ describe('PXCreateExtractor', () => {
       sourceTemplateId,
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({
@@ -273,6 +341,8 @@ describe('PXCreateExtractor', () => {
       targetTemplateId: targetTemplate._id.toString(),
       paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
       paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
     });
 
     await expect(promise).rejects.toMatchObject({

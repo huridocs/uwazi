@@ -41,15 +41,6 @@ export class MongoPXExtractorsDataSource
         {
           $unwind: '$targetTemplate',
         },
-        {
-          $project: {
-            _id: 1,
-            sourceTemplate: 1,
-            targetTemplate: 1,
-            paragraphNumberPropertyId: 1,
-            paragraphPropertyId: 1,
-          },
-        },
       ])
       .next();
 
@@ -65,6 +56,8 @@ export class MongoPXExtractorsDataSource
       targetTemplateId: new ObjectId(extractor.targetTemplate.id),
       paragraphNumberPropertyId: new ObjectId(extractor.paragraphNumberProperty.id),
       paragraphPropertyId: new ObjectId(extractor.paragraphProperty.id),
+      sourceRelationshipTypeId: new ObjectId(extractor.sourceRelationshipTypeId),
+      targetRelationshipTypeId: new ObjectId(extractor.targetRelationshipTypeId),
     };
 
     await this.getCollection().insertOne(mongoExtractor);
@@ -77,6 +70,8 @@ export class MongoPXExtractorsDataSource
       targetTemplate: TemplateMappers.toApp(dbo.targetTemplate),
       paragraphNumberPropertyId: dbo.paragraphNumberPropertyId.toString(),
       paragraphPropertyId: dbo.paragraphPropertyId.toString(),
+      sourceRelationshipTypeId: dbo.sourceRelationshipTypeId.toString(),
+      targetRelationshipTypeId: dbo.targetRelationshipTypeId.toString(),
     });
   }
 }
