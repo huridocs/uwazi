@@ -31,7 +31,6 @@ type Dependencies = {
 class PXCreateExtractor implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  // eslint-disable-next-line max-statements
   async execute(input: Input): Promise<Output> {
     const { sourceTemplate, targetTemplate, sourceRelationshipTypeId, targetRelationshipTypeId } =
       await this.getInitialData(input);
