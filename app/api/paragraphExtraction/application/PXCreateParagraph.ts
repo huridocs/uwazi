@@ -5,6 +5,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import entities from 'api/entities';
+import relationshipsDS from 'api/relationships';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
@@ -32,12 +33,15 @@ type PXCreateParagraphInput = {
 
 type LegacyEntitiesDS = typeof entities;
 
+type LegacyRelationshipsDS = typeof relationshipsDS;
+
 type Output = any;
 
 type Dependencies = {
   logger: Logger;
   entitiesStatusDS: PXEntitiesStatusDataSource;
   entitiesDS?: LegacyEntitiesDS;
+  relationshipsDS: LegacyRelationshipsDS;
 };
 
 class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
@@ -55,16 +59,16 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
     entityStatus,
   }: PXCreateParagraphInput): Promise<Output> {
     try {
-      const [first, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
+      const [mainParagraph, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
 
-      const firstParagraphCreated = await this.dependencies.entitiesDS.save(first, {
-        language: first.language,
+      const mainParagraphCreated = await this.dependencies.entitiesDS.save(mainParagraph, {
+        language: mainParagraph.language,
         user,
       });
 
       await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
         const existingTranslation = await this.dependencies.entitiesDS.getById(
-          firstParagraphCreated.sharedId,
+          mainParagraphCreated.sharedId,
           paragraphTranslation.language
         );
 
@@ -77,12 +81,26 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
         );
       });
 
+      await this.dependencies.relationshipsDS.save(
+        [
+          {
+            entity: sourceEntities[0].sharedId,
+            template: extractor.sourceRelationshipTypeId,
+          },
+          {
+            entity: mainParagraphCreated.sharedId,
+            template: extractor.targetRelationshipTypeId,
+          },
+        ],
+        mainParagraphCreated.language
+      );
+
       await this.dependencies.entitiesStatusDS.incrementSuccess(entityStatus.id);
 
       this.dependencies.logger.info(
         `[PX] - Paragraph Created - ${JSON.stringify({
-          entitySharedId: firstParagraphCreated.sharedId,
-          title: firstParagraphCreated.title,
+          entitySharedId: mainParagraphCreated.sharedId,
+          title: mainParagraphCreated.title,
         })}`
       );
     } catch (e) {

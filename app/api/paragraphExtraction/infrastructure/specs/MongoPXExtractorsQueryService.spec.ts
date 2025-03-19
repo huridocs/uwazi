@@ -21,12 +21,26 @@ const template = factory.template('Template');
 const paragraphProperty = factory.property('rich_text', 'markdown');
 const paragraphNumberProperty = factory.property('paragraph_number_property', 'numeric');
 
+const sourceRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: new ObjectId(),
+  name: 'Target Relationship Type',
+  properties: [],
+};
+
 const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
 const extractor2: MongoPXExtractorDBO = {
@@ -35,6 +49,8 @@ const extractor2: MongoPXExtractorDBO = {
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
 const entity = factory.entity('entity', sourceTemplate.name);
@@ -62,6 +78,7 @@ const entityThatDoesNotBelongToExtractor = factory.entity(
 );
 
 const createFixtures = (): DBFixture => ({
+  relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXEntitiesStatusCollection]: [extractionDBO],
   [mongoPXExtractorsCollection]: [extractor, extractor2],
   templates: [sourceTemplate, sourceTemplate2, targetTemplate],
