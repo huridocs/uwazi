@@ -96,7 +96,7 @@ export class MongoPXEntitiesStatusDataSource
       successfulParagraphsCount: 0,
     }));
 
-    await this.getCollection().insertMany(entityStatuses);
+    await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
   async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel> {
