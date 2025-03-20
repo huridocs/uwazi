@@ -398,7 +398,6 @@ in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
 In queue,In queue
-incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
 Information extraction training,Information extraction training
@@ -552,7 +551,6 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
-No suggestion,No suggestion
 No Table of Contents,목차 없음
 No Table of Contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음

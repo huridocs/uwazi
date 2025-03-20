@@ -34,7 +34,6 @@ import { handleError } from './api/utils/handleError.js';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
-import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
 
@@ -150,7 +149,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      await startLegacyServicesNoMultiTenant();
     });
 
     console.info(

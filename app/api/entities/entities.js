@@ -79,15 +79,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
           });
         }
 
-        if (entity.suggestedMetadata) {
-          toSave.suggestedMetadata = await denormalizeMetadata(
-            entity.suggestedMetadata,
-            entity.language,
-            template,
-            { thesauriByKey }
-          );
-        }
-
         const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
           currentDoc,
           toSave,
@@ -108,23 +99,19 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
       const toSave = { ...d };
 
-      await ['metadata', 'suggestedMetadata'].reduce(async (prev, metadataParent) => {
-        await prev;
-        if (entity[metadataParent]) {
-          toSave[metadataParent] = { ...(toSave[metadataParent] || entity[metadataParent]) };
-          toSyncProperties
-            .filter(p => entity[metadataParent][p])
-            .forEach(p => {
-              toSave[metadataParent][p] = entity[metadataParent][p];
-            });
-          toSave[metadataParent] = await denormalizeMetadata(
-            toSave[metadataParent],
-            toSave.language,
-            template,
-            { thesauriByKey }
-          );
-        }
-      }, Promise.resolve());
+      if (entity.metadata) {
+        toSave.metadata = { ...(toSave.metadata || entity.metadata) };
+
+        toSyncProperties
+          .filter(p => entity.metadata[p])
+          .forEach(p => {
+            toSave.metadata[p] = entity.metadata[p];
+          });
+
+        toSave.metadata = await denormalizeMetadata(toSave.metadata, toSave.language, template, {
+          thesauriByKey,
+        });
+      }
 
       if (typeof entity.template !== 'undefined') {
         toSave.template = entity.template;
@@ -183,13 +170,6 @@ async function createEntity(doc, [currentLanguage, languages], sharedId, docTemp
       langDoc.sharedId = sharedId;
       langDoc.metadata = await denormalizeMetadata(
         langDoc.metadata,
-        langDoc.language,
-        docTemplate,
-        { thesauriByKey }
-      );
-
-      langDoc.suggestedMetadata = await denormalizeMetadata(
-        langDoc.suggestedMetadata,
         langDoc.language,
         docTemplate,
         { thesauriByKey }
@@ -464,11 +444,7 @@ export default {
     }
     const entity = this.sanitize(doc, docTemplate);
     entity.metadata = await denormalizeMetadata(entity.metadata, entity.language, docTemplate);
-    entity.suggestedMetadata = await denormalizeMetadata(
-      entity.suggestedMetadata,
-      entity.language,
-      docTemplate
-    );
+
     return entity;
   },
 
@@ -840,11 +816,6 @@ export default {
         entity.language = language;
         entity.metadata = await this.denormalizeMetadata(
           entity.metadata,
-          language,
-          entity.template?.toString()
-        );
-        entity.suggestedMetadata = await this.denormalizeMetadata(
-          entity.suggestedMetadata,
           language,
           entity.template?.toString()
         );

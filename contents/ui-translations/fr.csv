@@ -397,7 +397,6 @@ in,dans
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,dans la file d'attente OCR
 In queue,In queue
-incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,L'indexation des entités peut prendre quelques minutes
 Info,Info
 Information extraction training,Information extraction training
@@ -551,7 +550,6 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,Aucune relation
 No Relationships description,Relationships are bonds between entities.
-No suggestion,No suggestion
 No Table of Contents,Aucune table des matières
 No Table of Contents description,Aucune description de Table des matières
 No text match,Aucune correspondance de texte
