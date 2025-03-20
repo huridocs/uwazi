@@ -398,28 +398,34 @@ const IXSuggestionsLoader =
     }
     const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
-    const suggestionsList: { suggestions: EntitySuggestionType[]; totalPages: number } =
-      await suggestionsAPI.get(
-        {
-          filter,
-          page: {
-            number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
-            size: SUGGESTIONS_PER_PAGE,
-          },
-          ...(sortingOption && { sort: JSON.parse(sortingOption) }),
+    const suggestionsList: {
+      suggestions: [
+        EntitySuggestionType & { extractorSource: { pdf?: boolean; property?: string } },
+      ];
+      totalPages: number;
+    } = await suggestionsAPI.get(
+      {
+        filter,
+        page: {
+          number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+          size: SUGGESTIONS_PER_PAGE,
         },
-        headers
-      );
-
-    const suggestions = suggestionsList.suggestions.map(suggestion => ({
-      ...suggestion,
-      rowId: suggestion._id,
-    }));
+        ...(sortingOption && { sort: JSON.parse(sortingOption) }),
+      },
+      headers
+    );
 
     const extractors = await extractorsAPI.getById(extractorId, headers);
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
+
+    const suggestions = suggestionsList.suggestions.map(suggestion => ({
+      ...suggestion,
+      rowId: suggestion._id,
+      extractorSource: extractors[0].source,
+    }));
+
     return {
       suggestions,
       totalPages: suggestionsList.totalPages,

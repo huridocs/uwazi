@@ -60,7 +60,7 @@ const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor
 const PropertyHeader = () => <Translate>Property</Translate>;
 const SourceHeader = () => <Translate>Source</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
-const TitleHeader = () => <Translate>Document FOR</Translate>;
+const TitleHeader = () => <Translate>Name</Translate>;
 const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
 );
@@ -204,7 +204,7 @@ const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>
   </Link>
 );
 
-const OpenPDFButton = ({
+const OpenSidepanelButton = ({
   cell,
   action,
 }: {
@@ -212,6 +212,7 @@ const OpenPDFButton = ({
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
+  const isPDF = cell.row.original.extractorSource.pdf === true;
 
   return (
     <Button
@@ -220,7 +221,11 @@ const OpenPDFButton = ({
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
-      <Translate className="whitespace-nowrap">Open PDF</Translate>
+      {isPDF ? (
+        <Translate className="whitespace-nowrap">Open PDF</Translate>
+      ) : (
+        <Translate>Review</Translate>
+      )}
     </Button>
   );
 };
@@ -320,7 +325,7 @@ const suggestionsTableColumnsBuilder = (
       header: ActionHeader,
       cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) =>
         row.depth === 0 ? (
-          <OpenPDFButton action={openPdfSidepanel} cell={cell} />
+          <OpenSidepanelButton action={openPdfSidepanel} cell={cell} />
         ) : (
           <AcceptButton action={acceptSuggestions} cell={cell} />
         ),

@@ -20,6 +20,7 @@ const suggestion1 = {
   error: '',
   segment: 'suggested value',
   suggestedValue: 'suggested value',
+  extractorSource: { pdf: true },
   state: {
     match: false,
     labeled: true,
@@ -57,6 +58,7 @@ const suggestion2 = {
   error: '',
   segment: 'Entity 2',
   suggestedValue: 'Entity 2',
+  extractorSource: { pdf: true },
   state: {
     match: true,
     labeled: true,
@@ -93,6 +95,7 @@ const suggestion3 = {
   propertyName: 'document_date',
   segment: 'Some value that contains a date',
   suggestedValue: 100,
+  extractorSource: { pdf: true },
   state: {
     match: true,
     labeled: true,
@@ -129,6 +132,7 @@ const suggestion4 = {
   propertyName: 'document_date',
   segment: 'Some value that contains a date',
   suggestedValue: 500,
+  extractorSource: { pdf: true },
   state: {
     match: false,
     labeled: true,
@@ -165,6 +169,7 @@ const suggestion5 = {
   propertyName: 'multiselect',
   segment: 'value1',
   suggestedValue: ['value3', 'value2'],
+  extractorSource: { pdf: true },
   state,
   currentValue: ['value1', 'value2'],
   entityTitle: 'Entity 3',
@@ -188,6 +193,7 @@ const suggestion5 = {
       date: 1,
       state,
       propertyName: 'multiselect',
+      extractorSource: { pdf: true },
       suggestedValue: 'value3',
       currentValue: '',
       entityId: 'entity3',
@@ -207,6 +213,7 @@ const suggestion5 = {
       state,
       suggestedValue: 'value2',
       currentValue: 'value2',
+      extractorSource: { pdf: true },
       propertyName: 'multiselect',
       entityId: 'entity3',
       sharedId: '3',
@@ -224,6 +231,7 @@ const suggestion5 = {
       fileId: '3',
       date: 1,
       state,
+      extractorSource: { pdf: true },
       suggestedValue: '',
       currentValue: 'value1',
       propertyName: 'multiselect',

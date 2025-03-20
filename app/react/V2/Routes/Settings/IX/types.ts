@@ -26,6 +26,7 @@ interface SingleValueSuggestion extends EntitySuggestionType {
   suggestedValue: SuggestionValue;
   currentValue?: SuggestionValue;
   isChild?: boolean;
+  extractorSource: { pdf?: boolean; property?: string };
 }
 
 interface MultiValueSuggestion extends EntitySuggestionType {
@@ -36,6 +37,7 @@ interface MultiValueSuggestion extends EntitySuggestionType {
   currentValue: SuggestionValue[];
   subRows: SingleValueSuggestion[];
   isChild?: boolean;
+  extractorSource: { pdf?: boolean; property?: string };
 }
 
 type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;

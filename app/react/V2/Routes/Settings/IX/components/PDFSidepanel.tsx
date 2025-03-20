@@ -282,7 +282,6 @@ const PDFSidepanel = ({
         []
       );
       const _thesaurus = { values: combinedTheasaurus };
-      console.log(_thesaurus);
       setThesaurus(_thesaurus);
     }
 
