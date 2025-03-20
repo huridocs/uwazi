@@ -109,7 +109,6 @@ interface MetadataObjectSchema {
   value: PropertyValueSchema;
   attachment?: number;
   label?: string;
-  suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
   inheritedValue?: {
@@ -150,7 +149,6 @@ interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   obsoleteMetadata?: string[];
-  suggestedMetadata?: MetadataSchema;
   permissions?: PermissionSchema[];
   [k: string]: unknown | undefined;
 }

@@ -38,7 +38,6 @@ export interface CsvExportBody {
   unpublished?: boolean;
   select?: string[];
   geolocation?: boolean;
-  includeReviewAggregations?: boolean;
   ids?: string[];
 }
 
@@ -85,7 +84,6 @@ export interface SearchParams {
     unpublished?: boolean;
     select?: string[];
     geolocation?: boolean;
-    includeReviewAggregations?: boolean;
   };
   [k: string]: unknown | undefined;
 }

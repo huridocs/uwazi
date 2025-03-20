@@ -4,7 +4,6 @@ import { DB } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { IndexError } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
@@ -115,8 +114,7 @@ const prepareIndex = async () => {
 
   process.stdout.write(' - Custom templates mapping\r\n');
   const templates = await templatesModel.get();
-  const dictionaries = await dictionariesModel.get({ enable_classification: true });
-  const templatesMapping = await elasticMapFactory.mapping(templates, !!dictionaries.length);
+  const templatesMapping = await elasticMapFactory.mapping(templates);
   await fetch(`${getIndexUrl()}/_mapping`, {
     headers,
     method: 'PUT',

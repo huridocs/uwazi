@@ -9,7 +9,6 @@ function baseQuery(templateID: string, includeUnpublished: boolean, unpublishedO
     unpublished: unpublishedOnly,
     allAggregations: true,
     types: [templateID],
-    includeReviewAggregations: true,
   };
   return query;
 }

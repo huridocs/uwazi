@@ -84,7 +84,7 @@ function wrapEntityMetadata(entity, template) {
         : [metadataValue || { value: entity.metadata[key]?.data || entity.metadata[key] }],
     };
   }, {});
-  // suggestedMetadata is always in metadata-object form.
+
   return { ...entity, metadata };
 }
 
