@@ -44,6 +44,7 @@ const fixtures: DBFixture = {
         content: fixtureFactory.idString('animalTemplate'),
         relationType: fixtureFactory.idString('owns'),
       }),
+      fixtureFactory.property('biography', 'markdown'),
     ]),
     fixtureFactory.template('animalTemplate', [fixtureFactory.property('kind', 'text')]),
     fixtureFactory.template('plantTemplate', [fixtureFactory.property('kind', 'text')]),
@@ -197,7 +198,7 @@ describe('ixextractors', () => {
       {
         case: 'a property',
         name: 'age_test',
-        source: { property: 'rich_text_property' },
+        source: { pdf: true },
         property: 'age',
         templates: [fixtureFactory.id('personTemplate').toString()],
         expectedSuggestions: [
@@ -386,6 +387,37 @@ describe('ixextractors', () => {
           },
         ],
       },
+      {
+        case: 'a property as source',
+        name: 'from_property',
+        source: { property: 'biography' },
+        property: 'age',
+        templates: [fixtureFactory.id('personTemplate').toString()],
+        expectedSuggestions: [
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'en',
+            propertyName: 'age',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: emptyState,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'es',
+            propertyName: 'age',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: emptyState,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+        ],
+      },
     ])(
       'should create empty suggestions for $case',
       async ({ name, property, source, templates, expectedSuggestions }) => {
@@ -395,6 +427,7 @@ describe('ixextractors', () => {
           'entityId',
           'language',
         ]);
+        expect(suggestions.length).toBe(expectedSuggestions.length);
         expect(suggestions).toMatchObject(expectedSuggestions);
       }
     );
