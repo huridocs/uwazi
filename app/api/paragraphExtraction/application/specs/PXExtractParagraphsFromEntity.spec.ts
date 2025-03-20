@@ -14,10 +14,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
 import { tenants } from 'api/tenants';
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 
@@ -41,6 +38,7 @@ import {
   entityStatus,
 } from './fixtures';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -72,13 +70,16 @@ const setUpUseCase = () => {
     list: jest.fn(),
   };
 
-  const db = getConnection();
-  const transaction = DefaultTransactionManager();
-  const entityDS = DefaultEntitiesDataSource(transaction);
-  const settingsDS = DefaultSettingsDataSource(transaction);
-  const filesDS = DefaultFilesDataSource(transaction);
-  const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transaction);
+  const connection = getConnection();
+  const mongoTransactionManager = DefaultTransactionManager();
+  const entityDS = DefaultEntitiesDataSource(mongoTransactionManager);
+  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+  const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+  const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
   const idGenerator = MongoIdHandler;
   const tenantName = tenants.current().name;
 

@@ -3,14 +3,17 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities';
-import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
 export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(tenantName: string) {
-    const db = getConnection();
-    const transactionManager = DefaultTransactionManager();
+    const connection = getConnection();
+    const mongoTransactionManager = DefaultTransactionManager();
 
-    const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transactionManager);
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
 
     const dispatcher = await DefaultDispatcher(tenantName, { lockWindow: 1000 * 60 });
 

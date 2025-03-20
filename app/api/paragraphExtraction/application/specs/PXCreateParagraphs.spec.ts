@@ -17,12 +17,9 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
 
@@ -135,10 +132,13 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const db = getConnection();
-  const transaction = DefaultTransactionManager();
-  const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transaction);
+  const connection = getConnection();
+  const mongoTransactionManager = DefaultTransactionManager();
+  const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,

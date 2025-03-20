@@ -6,15 +6,17 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { CreateInput } from 'api/paragraphExtraction/domain/PXEntitiesStatusDataSource';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from '../MongoPXEntitiesStatusDataSource';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
+import { PXEntitiesStatusDataSourceFactory } from '../PXEntityStatusDataSourceFactory';
 
 const createSut = () => {
-  const transaction = DefaultTransactionManager();
+  const mongoTransactionManager = DefaultTransactionManager();
   const connection = getConnection();
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
 
   return { entitiesStatusDS };
 };

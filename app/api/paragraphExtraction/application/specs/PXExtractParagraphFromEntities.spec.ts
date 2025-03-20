@@ -2,14 +2,12 @@ import { ObjectId } from 'mongodb';
 
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 
 import { entity, entity2, extractor } from './fixtures';
@@ -18,10 +16,13 @@ import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFro
 const createFixtures = (): DBFixture => ({});
 
 const setUpUseCase = () => {
-  const transaction = DefaultTransactionManager();
+  const mongoTransactionManager = DefaultTransactionManager();
   const connection = getConnection();
 
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
   };

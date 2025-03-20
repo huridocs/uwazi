@@ -20,6 +20,7 @@ import { DBFixture } from 'api/utils/testing_db';
 import relationshipsDS from 'api/relationships';
 
 import { LegacyEntitiesDS, PXCreateParagraph, PXCreateParagraphInput } from '../PXCreateParagraph';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 const factory = getFixturesFactory();
 
@@ -104,9 +105,12 @@ const entityStatus = MongoPXEntitiesStatusDataSource.toDomain(extractionDBO);
 
 const setUpUseCase = (entitiesDS?: LegacyEntitiesDS) => {
   const connection = getConnection();
-  const transaction = DefaultTransactionManager();
+  const mongoTransactionManager = DefaultTransactionManager();
 
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
 
   const createParagraph = new PXCreateParagraph({
     logger: createMockLogger(),
