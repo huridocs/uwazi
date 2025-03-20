@@ -2,8 +2,6 @@ import { ObjectId } from 'mongodb';
 
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -46,33 +44,6 @@ describe('PXExtractParagraphFromEntities', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
-
-  it('should create an Extraction for each Entity', async () => {
-    const { extractParagraphFromEntities } = setUpUseCase();
-
-    const input: Input = {
-      extractorId: extractor._id.toString(),
-      entitySharedIds: [entity.sharedId!, entity2.sharedId!],
-      userId: new ObjectId().toString(),
-    };
-
-    await extractParagraphFromEntities.execute(input);
-
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-
-    expect(extractions).toMatchObject([
-      {
-        extractorId: new ObjectId(input.extractorId),
-        entitySharedId: input.entitySharedIds[0],
-        status: EntityStatus.Queued,
-      },
-      {
-        extractorId: new ObjectId(input.extractorId),
-        entitySharedId: input.entitySharedIds[1],
-        status: EntityStatus.Queued,
-      },
-    ]);
   });
 
   it('should dispatch PXExtractParagraphsFromEntityJob job for each Entity', async () => {

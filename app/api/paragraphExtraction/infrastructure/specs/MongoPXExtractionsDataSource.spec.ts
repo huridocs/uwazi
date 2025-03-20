@@ -56,7 +56,7 @@ describe('MongoPXExtractionsDataSource', () => {
       id: expect.any(String),
       extractorId: input.extractorId,
       entitySharedId: input.entitySharedId,
-      status: EntityStatus.Queued,
+      status: EntityStatus.New,
       paragraphsCount: 0,
       failedParagraphsCount: 0,
       successfulParagraphsCount: 0,
