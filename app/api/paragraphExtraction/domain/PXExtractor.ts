@@ -4,10 +4,10 @@ import { Entity } from 'api/entities.v2/model/Entity';
 import { Template } from 'api/templates.v2/model/Template';
 import { EntitySchema } from 'shared/types/entityType';
 import { Property } from 'api/templates.v2/model/Property';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 import { PXValidationError, PXErrorCode } from './PXValidationError';
 import { ParagraphOutput } from './PXExtractionService';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 export type PXExtractorProps = {
   id: string;
@@ -56,6 +56,7 @@ export class PXExtractor {
         `Target Template does not have a Property with the id ${this.props.paragraphPropertyId}`
       );
     }
+
     if (!this.paragraphProperty) {
       throw new PXValidationError(
         PXValidationError.codes.PARAGRAPH_PROPERTY_DOES_NOT_EXIST,

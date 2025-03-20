@@ -13,6 +13,20 @@ export class MongoPXExtractorsDataSource
 {
   protected collectionName = mongoPXExtractorsCollection;
 
+  async getBySourceTemplate(sourceTemplateId: string): Promise<PXExtractor | undefined> {
+    const extractor = await this.getCollection()
+      .find({
+        sourceTemplateId: new ObjectId(sourceTemplateId),
+      })
+      .next();
+
+    if (!extractor) {
+      return undefined;
+    }
+
+    return this.getById(extractor._id.toString());
+  }
+
   async getById(extractorId: string): Promise<PXExtractor | undefined> {
     const extractor = await this.getCollection()
       .aggregate([

@@ -227,7 +227,7 @@ export class MongoPXEntitiesStatusDataSource
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
 
-      status: EntityStatus.Queued,
+      status: EntityStatus.New,
       failedParagraphsCount: 0,
       paragraphsCount: 0,
       successfulParagraphsCount: 0,

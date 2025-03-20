@@ -1,6 +1,8 @@
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
 
+import { PXCreateEntityStatusFactory } from './PXCreateEntityStatusFactory';
+
 export class PXEntityCreationListener {
   private eventBus: EventsBus;
 
@@ -8,12 +10,17 @@ export class PXEntityCreationListener {
     this.eventBus = eventBus;
   }
 
-  private async afterEntityCreation(data: EntityCreatedEvent['data']) {
-    // call use case
-    console.log(data);
+  private static async afterEntityCreation(data: EntityCreatedEvent['data']) {
+    const useCase = PXCreateEntityStatusFactory.createDefault();
+    const [sourceEntity] = data.entities;
+
+    await useCase.execute({
+      entitySharedId: sourceEntity.sharedId!,
+      sourceTemplateId: sourceEntity.template!.toString(),
+    });
   }
 
   start() {
-    this.eventBus.on(EntityCreatedEvent, this.afterEntityCreation.bind(this));
+    this.eventBus.on(EntityCreatedEvent, PXEntityCreationListener.afterEntityCreation.bind(this));
   }
 }

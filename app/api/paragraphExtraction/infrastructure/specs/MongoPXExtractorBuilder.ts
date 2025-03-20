@@ -13,34 +13,49 @@ type Props = {
   sourceRelationship: any;
 };
 
-const factory = getFixturesFactory();
-
 export class MongoExtractorBuilder {
+  static factory: ReturnType<typeof getFixturesFactory>;
+
   private constructor(private props: Props) {}
 
   static create() {
-    const sourceTemplate = factory.template('Source Template', [factory.property('text', 'text')]);
+    MongoExtractorBuilder.factory = getFixturesFactory();
+
+    const sourceTemplate = MongoExtractorBuilder.factory.template('Source Template', [
+      MongoExtractorBuilder.factory.property('text', 'text'),
+    ]);
+
     const sourceRelationship = {
-      _id: factory.id('source_relationship_type'),
+      _id: MongoExtractorBuilder.factory.id('source_relationship_type'),
       name: 'Source Relationship Type',
       properties: [],
     };
 
-    const paragraphProperty = factory.property('target_paragraph_property', 'markdown');
-    const paragraphNumberProperty = factory.property('target_paragraph_number_property', 'numeric');
-    const relationshipProperty = factory.property('paragraph_to_source_entity', 'relationship', {
-      content: sourceTemplate._id.toString(),
-      relationType: sourceRelationship._id.toString(),
-    });
+    const paragraphProperty = MongoExtractorBuilder.factory.property(
+      'target_paragraph_property',
+      'markdown'
+    );
+    const paragraphNumberProperty = MongoExtractorBuilder.factory.property(
+      'target_paragraph_number_property',
+      'numeric'
+    );
+    const relationshipProperty = MongoExtractorBuilder.factory.property(
+      'paragraph_to_source_entity',
+      'relationship',
+      {
+        content: sourceTemplate._id.toString(),
+        relationType: sourceRelationship._id.toString(),
+      }
+    );
 
-    const targetTemplate = factory.template('target_template', [
+    const targetTemplate = MongoExtractorBuilder.factory.template('target_template', [
       paragraphProperty,
       paragraphNumberProperty,
       relationshipProperty,
     ]);
 
     const targetRelationship = {
-      _id: factory.id('target_relationship_type'),
+      _id: MongoExtractorBuilder.factory.id('target_relationship_type'),
       name: 'Target Relationship Type',
       properties: [],
     };
