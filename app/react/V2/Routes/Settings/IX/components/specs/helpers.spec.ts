@@ -274,6 +274,22 @@ describe('helpers', () => {
           rowId: 'exractor2',
           source: 'Descripción',
         },
+        {
+          _id: 'exractor3',
+          name: 'Dates from titles',
+          property: 'fecha',
+          templates: ['1', '2', '3', '5'],
+          namedTemplates: [
+            'Mecanismo',
+            'Ordenes de la corte',
+            'Informe de admisibilidad',
+            'Ordenes del presidente',
+          ],
+          propertyType: 'date',
+          propertyLabel: 'Fecha',
+          rowId: 'exractor3',
+          source: 'Title',
+        },
       ]);
     });
   });
@@ -288,58 +304,68 @@ describe('helpers', () => {
       jest.clearAllMocks();
     });
 
-    it('should return the pdf source by default', () => {
+    it('should return the pdf source by default and include title as an option', () => {
       const result = getAvailableSources(templates, []);
-      expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
+      expect(result).toEqual([
+        { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Title', value: 'title', defaultChecked: false },
+      ]);
       expect(translate.t).toHaveBeenCalledWith('System', 'PDF', 'PDF', false);
+      expect(translate.t).toHaveBeenCalledWith('System', 'Title', 'Title', false);
     });
 
     it('should return the default if there is no common text field between templates', () => {
-      const result = getAvailableSources(templates, [
-        '1-Mecanismo',
-        '3-Informe de admisibilidad',
-        '2-Ordenes de la corte',
+      const result = getAvailableSources(templates, ['1-fecha', '3-fecha', '2-fecha']);
+      expect(result).toEqual([
+        { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Title', value: 'title', defaultChecked: false },
       ]);
+    });
+
+    it('should exclude a source if it is the target property', () => {
+      const result = getAvailableSources(templates, ['1-title', '3-title', '2-title']);
       expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
     });
 
     it('should return the default if text fields have diferent names', () => {
-      const result = getAvailableSources(templates, ['1-Mecanismo', '5-Ordenes del presidente']);
+      const result = getAvailableSources(templates, ['1-title', '5-title']);
       expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
     });
 
     it('should return the common text fields amongst templates', () => {
-      const result = getAvailableSources(templates, ['1-Mecanismo', '3-Informe de admisibilidad']);
+      const result = getAvailableSources(templates, ['1-fecha', '3-fecha']);
       expect(result).toEqual([
         { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Title', value: 'title', defaultChecked: false },
+        { label: 'Resumen', value: 'resumen', defaultChecked: false },
         { label: 'Descripción', value: 'descripcion', defaultChecked: false },
       ]);
-      expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
-      expect(translate.t).toHaveBeenNthCalledWith(2, '1', 'Descripción', 'Descripción', false);
+      expect(translate.t).toHaveBeenNthCalledWith(3, '1', 'Resumen', 'Resumen', false);
+      expect(translate.t).toHaveBeenNthCalledWith(4, '1', 'Descripción', 'Descripción', false);
     });
 
     it('should not repeat the common property amongs templates', () => {
       const result = getAvailableSources(
         templates,
-        ['4-País', '1-Mecanismo', '3-Informe de admisibilidad'],
+        ['4-title', '1-title', '3-title'],
         extractors[1]
       );
       expect(result).toEqual([
         { label: 'PDF', value: '0' },
         { label: 'Descripción', value: 'descripcion', defaultChecked: true },
       ]);
-      expect(translate.t).toHaveBeenNthCalledWith(1, 'System', 'PDF', 'PDF', false);
-      expect(translate.t).toHaveBeenNthCalledWith(2, '1', 'Descripción', 'Descripción', false);
+      expect(translate.t).toHaveBeenNthCalledWith(3, '1', 'Descripción', 'Descripción', false);
     });
 
     it('should return all the common properties amongs templates', () => {
       const result = getAvailableSources(
         templatesWithCommonProperties,
-        ['1-Mecanismo', '2-Ordenes de la corte'],
+        ['1-fecha', '2-fecha'],
         extractors[1]
       );
       expect(result).toEqual([
         { label: 'PDF', value: '0' },
+        { label: 'Title', value: 'title', defaultChecked: false },
         { label: 'Opinión', value: 'opini_n', defaultChecked: false },
         { label: 'Descripción', value: 'descripcion', defaultChecked: true },
       ]);

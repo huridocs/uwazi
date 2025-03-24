@@ -313,6 +313,12 @@ const templates: ClientTemplateSchema[] = [
         type: 'markdown',
         name: 'descripcion',
       },
+      {
+        _id: '15',
+        label: 'Fecha',
+        type: 'date',
+        name: 'fecha',
+      },
     ],
     commonProperties: [
       {
@@ -586,6 +592,13 @@ const extractors = [
     property: 'fecha',
     source: { property: 'descripcion' },
     templates: ['2'],
+  },
+  {
+    _id: 'exractor3',
+    name: 'Dates from titles',
+    property: 'fecha',
+    source: { property: 'title' },
+    templates: ['1', '2', '3', '5'],
   },
 ];
 

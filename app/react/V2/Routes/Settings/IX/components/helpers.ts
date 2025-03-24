@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { uniqBy } from 'lodash';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { t } from 'app/I18N';
 import { RadioProps } from 'V2/Components/Forms';
 import { ClientIXExtractorType } from 'V2/shared/types';
@@ -215,7 +215,9 @@ const propertyIsInAllTemplates = (
 ) =>
   templates.every(template =>
     template.properties
-      .filter(templateProperty => templateProperty.type === 'markdown')
+      .filter(
+        templateProperty => templateProperty.type === 'markdown' || templateProperty.type === 'text'
+      )
       .some(templateProperty => {
         if (templateProperty.name === property.propertyName) {
           return true;
@@ -224,9 +226,10 @@ const propertyIsInAllTemplates = (
       })
   );
 
+// eslint-disable-next-line max-statements
 const getAvailableSources = (
   templates: ClientTemplateSchema[],
-  selectedTemplates: string[],
+  selectedTemplatesIdsAndProperties: string[],
   extractor?: ClientIXExtractorType
 ): RadioProps['options'] => {
   const baseOptions: RadioProps['options'] = [
@@ -235,7 +238,20 @@ const getAvailableSources = (
       value: '0',
     },
   ];
-  const templateIds = selectedTemplates.map(selected => selected.split('-', 2)[0]);
+
+  if (!extractor || extractor?.source.pdf) {
+    baseOptions[0].defaultChecked = true;
+  }
+
+  if (!window.__featureFlags__?.ixExtraSources) {
+    return baseOptions;
+  }
+
+  const commonProperty = selectedTemplatesIdsAndProperties[0]
+    ? selectedTemplatesIdsAndProperties[0].split('-', 2)[1]
+    : '';
+  const templateIds = selectedTemplatesIdsAndProperties.map(selected => selected.split('-', 2)[0]);
+
   const templatesIncluded = templates.filter(template =>
     templateIds.includes(template._id.toString())
   );
@@ -244,7 +260,7 @@ const getAvailableSources = (
 
   templatesIncluded.every(template => {
     const templateMarkdownProperties = template.properties?.filter(
-      property => property.type === 'markdown'
+      property => property.type === 'markdown' || property.type === 'text'
     );
 
     if (!templateMarkdownProperties.length) {
@@ -263,12 +279,13 @@ const getAvailableSources = (
     return true;
   });
 
-  if (!extractor || extractor?.source.pdf) {
-    baseOptions[0].defaultChecked = true;
-  }
-
   const options = [
     ...baseOptions,
+    {
+      label: t('System', 'Title', 'Title', false),
+      value: 'title',
+      defaultChecked: false,
+    },
     ...uniqBy(markdownProperties, 'propertyName')
       .filter(markdownProperty => propertyIsInAllTemplates(templatesIncluded, markdownProperty))
       .map(markdownProperty => ({
@@ -298,7 +315,32 @@ const getAvailableSources = (
     return false;
   });
 
-  return options;
+  return options.filter(option => option.value !== commonProperty);
 };
 
-export { updateSuggestions, updateSuggestionsByEntity, generateChildrenRows, getAvailableSources };
+const getMetadataFromProperty = (
+  entity?: ClientEntitySchema,
+  propertyName?: string
+): MetadataObjectSchema | undefined => {
+  if (!propertyName) {
+    return { value: '' };
+  }
+
+  if (entity?.metadata && entity.metadata[propertyName]) {
+    const metadataEntry = entity.metadata[propertyName];
+    if (metadataEntry.length) {
+      const [entry] = metadataEntry;
+      return entry;
+    }
+  }
+
+  return { value: '' };
+};
+
+export {
+  updateSuggestions,
+  updateSuggestionsByEntity,
+  generateChildrenRows,
+  getAvailableSources,
+  getMetadataFromProperty,
+};
