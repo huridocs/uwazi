@@ -8,32 +8,32 @@ import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FetchResponseError } from 'shared/JSONRequest';
-import {
-  ExtractedMetadataSchema,
-  PropertyValueSchema,
-  MetadataObjectSchema,
-} from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
-import * as filesAPI from 'V2/api/files';
-import * as entitiesAPI from 'V2/api/entities';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
-import { Highlights } from '../types';
-import { lookup } from 'app/V2/api/search';
+import { lookup } from 'V2/api/search';
+import * as filesAPI from 'V2/api/files';
 import { preloadOptionsLimit } from 'shared/config';
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { Highlights, TableSuggestion } from '../types';
+import {
+  coerceValue,
+  getFormValue,
+  handleEntitySave,
+  loadSidepanelData,
+  loadValuesAndSuggestions,
+  SELECT_TYPES,
+} from './sidepanelFunctions';
 
-const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
-
-interface PDFSidepanelProps {
+interface SuggestionSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  suggestion?: EntitySuggestionType;
+  suggestion?: TableSuggestion;
   onEntitySave: (entity: ClientEntitySchema) => any;
   property?: ClientPropertySchema;
 }
@@ -42,69 +42,6 @@ enum HighlightColors {
   CURRENT = '#B1F7A3',
   NEW = '#F27DA5',
 }
-
-const getFormValue = (
-  suggestion?: EntitySuggestionType,
-  entity?: ClientEntitySchema,
-  type?: string
-) => {
-  let value;
-
-  if (!suggestion || !entity) {
-    return value;
-  }
-
-  if (suggestion.propertyName === 'title' && entity.title) {
-    value = entity.title;
-  }
-
-  if (suggestion.propertyName !== 'title' && entity.metadata) {
-    const entityMetadata = entity.metadata[suggestion.propertyName];
-    value = entityMetadata?.length ? entityMetadata[0].value : '';
-
-    if (type === 'date' && value) {
-      const dateString = secondsToISODate(value as number);
-      value = dateString;
-    }
-
-    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value);
-    }
-  }
-
-  return value;
-};
-
-const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestionType) => {
-  const [file, entity] = await Promise.all([
-    filesAPI.getById(fileId),
-    entitiesAPI.getById({ _id: entityId, language }),
-  ]);
-
-  return { file: file[0], entity: entity[0] };
-};
-
-const loadValuesAndSuggestions = async (
-  value: string[],
-  suggestions: string[],
-  language: string
-) => {
-  const entities = await Promise.all(
-    value.map(async sharedId => {
-      const [entity] = await entitiesAPI.getBySharedId({ sharedId, language });
-      return entity;
-    })
-  );
-
-  const suggestionsEntities = await Promise.all(
-    suggestions.map(async sharedId => {
-      const [entity] = await entitiesAPI.getBySharedId({ sharedId, language });
-      return entity;
-    })
-  );
-
-  return [...entities, ...suggestionsEntities].filter(entity => entity);
-};
 
 const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadataSchema[]) => {
   if (file && newSelections) {
@@ -116,53 +53,14 @@ const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadata
   return undefined;
 };
 
-const handleEntitySave = async (
-  entity?: ClientEntitySchema,
-  propertyName?: string,
-  metadata?: PropertyValueSchema | PropertyValueSchema[] | undefined,
-  fieldHasChanged?: boolean
-) => {
-  if (!fieldHasChanged || !entity || !propertyName) {
-    return undefined;
-  }
-
-  let data;
-
-  if (propertyName === 'title' && typeof metadata === 'string') {
-    data = { title: metadata };
-  } else {
-    data = { properties: [{ [propertyName]: metadata }] };
-  }
-
-  const entityToSave = entitiesAPI.formatter.update(entity, data);
-
-  return entitiesAPI.save(entityToSave);
-};
-
-const coerceValue = async (
-  propertyType: 'date' | 'numeric',
-  text: string | Date | undefined,
-  documentLanguage: string = 'en'
-) => {
-  if (propertyType === 'date' && !Number.isNaN(text?.valueOf())) {
-    return entitiesAPI.coerceValue(text!, 'date', documentLanguage);
-  }
-
-  if (propertyType === 'numeric' && typeof text === 'string') {
-    return entitiesAPI.coerceValue(text.trim(), 'numeric', documentLanguage);
-  }
-
-  return undefined;
-};
-
-const PDFSidepanel = ({
+const SuggestionSidepanel = ({
   showSidepanel,
   setShowSidepanel,
   suggestion,
   onEntitySave,
   property,
-}: PDFSidepanelProps) => {
-  const [pdf, setPdf] = useState<FileType>();
+}: SuggestionSidepanelProps) => {
+  const [pdf, setPdf] = useState<FileType | undefined>();
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [selectionError, setSelectionError] = useState<string>();
   const [highlights, setHighlights] = useState<Highlights>();
@@ -294,7 +192,7 @@ const PDFSidepanel = ({
     if (suggestion) {
       loadSidepanelData(suggestion)
         .then(({ file, entity: suggestionEntity }) => {
-          setPdf(file);
+          setPdf(file || undefined);
           setEntity(suggestionEntity);
         })
         .catch(e => {
@@ -558,7 +456,7 @@ const PDFSidepanel = ({
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="grow">
-            {pdf && (
+            {suggestion?.extractorSource.pdf && pdf && (
               <PDF
                 fileUrl={`/api/files/${pdf.filename}`}
                 highlights={highlights}
@@ -578,8 +476,9 @@ const PDFSidepanel = ({
                 scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
               />
             )}
+            {suggestion?.extractorSource.property && <>PLACEHOLDER</>}
           </div>
-        </form>{' '}
+        </form>
       </div>
       <Sidepanel.Footer
         className={`max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
@@ -632,4 +531,4 @@ const PDFSidepanel = ({
   );
 };
 
-export { PDFSidepanel };
+export { SuggestionSidepanel };

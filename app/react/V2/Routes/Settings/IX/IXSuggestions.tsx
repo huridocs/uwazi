@@ -20,13 +20,13 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientIXExtractorType } from 'app/V2/shared/types';
-import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { PDFSidepanel } from './components/PDFSidepanel';
+import { SuggestionSidepanel } from './components/SuggestionSidepanel';
 import {
   updateSuggestions,
   updateSuggestionsByEntity,
@@ -108,7 +108,7 @@ const IXSuggestions = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
+  const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -174,6 +174,11 @@ const IXSuggestions = () => {
     setAggregations(newAggregations);
   };
 
+  const onEntitySave = async (updatedEntity: ClientEntitySchema) => {
+    setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity, property));
+    await fetchAgregations();
+  };
+
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
     try {
       const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
@@ -232,9 +237,10 @@ const IXSuggestions = () => {
     } catch (error) {}
   };
 
-  const openPDFSidepanel = (selectedSuggestion: TableSuggestion) => {
+  const openSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
-    setSidepanel('pdf');
+    const type = selectedSuggestion.extractorSource.pdf ? 'pdf' : 'property';
+    setSidepanel(type);
   };
 
   const closeSidepanel = () => {
@@ -260,7 +266,7 @@ const IXSuggestions = () => {
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
-              openPDFSidepanel
+              openSidepanel
             )}
             sortingFn={sortingState => {
               setSorting(sortingState);
@@ -369,17 +375,12 @@ const IXSuggestions = () => {
         aggregation={aggregations}
       />
 
-      <PDFSidepanel
-        showSidepanel={sidepanel === 'pdf'}
+      <SuggestionSidepanel
+        showSidepanel={sidepanel === 'pdf' || sidepanel === 'property'}
         property={property}
         setShowSidepanel={closeSidepanel}
-        suggestion={sidepanelSuggestion as EntitySuggestionType}
-        onEntitySave={async updatedEntity => {
-          setCurrentSuggestions(
-            updateSuggestionsByEntity(currentSuggestions, updatedEntity, property)
-          );
-          await fetchAgregations();
-        }}
+        suggestion={sidepanelSuggestion}
+        onEntitySave={onEntitySave}
       />
     </div>
   );
