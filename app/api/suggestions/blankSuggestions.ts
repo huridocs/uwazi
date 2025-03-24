@@ -10,6 +10,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import templates from 'api/templates';
 import { LanguageUtils } from 'shared/language';
 import { Suggestions } from './suggestions';
+import { tenants } from 'api/tenants';
 
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
   entitiesModel.db
@@ -143,7 +144,7 @@ const createBlankSuggestionsForPartialExtractor = async (
               })
             )
         );
-      } else {
+      } else if (tenants.current().featureFlags?.ixExtraSources) {
         const entityData = await fetchEntitiesData(template, undefined, batchSize);
 
         suggestionsToSave.push(
@@ -159,6 +160,7 @@ const createBlankSuggestionsForPartialExtractor = async (
           )
         );
       }
+
       await Suggestions.saveMultiple(suggestionsToSave);
     });
 

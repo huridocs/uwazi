@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as translate from 'app/I18N/translateFunction';
 import { formatOptions } from '../ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
@@ -276,6 +280,7 @@ describe('helpers', () => {
 
   describe('getAvailableSources', () => {
     beforeAll(() => {
+      window.__featureFlags__ = { ixExtraSources: true };
       jest.spyOn(translate, 't');
     });
 

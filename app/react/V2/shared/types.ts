@@ -1,3 +1,4 @@
+import { Tenant } from 'api/tenants/tenantContext';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { SettingsLinkSchema } from 'shared/types/settingsType';
 
@@ -55,6 +56,10 @@ enum ItemTypes {
   ROW = 'row',
 }
 
+type FeatureFlags = Tenant['featureFlags'] & {};
+
+type ClientFeatureFlags = Pick<FeatureFlags, 'ixExtraSources'>;
+
 export { ItemTypes };
 export type {
   ClientIXExtractorType,
@@ -64,4 +69,5 @@ export type {
   DraggableValue,
   Page,
   TranslationValue,
+  ClientFeatureFlags,
 };
