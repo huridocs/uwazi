@@ -2,12 +2,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
+import { useLoaderData } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
@@ -17,7 +18,6 @@ import { InputField, MultiselectList, MultiselectListOption } from 'V2/Component
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
 import { lookup } from 'V2/api/search';
-import * as filesAPI from 'V2/api/files';
 import { preloadOptionsLimit } from 'shared/config';
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
 import { Highlights, TableSuggestion } from '../types';
@@ -25,10 +25,12 @@ import {
   coerceValue,
   getFormValue,
   handleEntitySave,
+  handleFileSave,
   loadSidepanelData,
   loadValuesAndSuggestions,
   SELECT_TYPES,
 } from './sidepanelFunctions';
+import { TextProperty } from './TextProperty';
 
 interface SuggestionSidepanelProps {
   showSidepanel: boolean;
@@ -42,16 +44,6 @@ enum HighlightColors {
   CURRENT = '#B1F7A3',
   NEW = '#F27DA5',
 }
-
-const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadataSchema[]) => {
-  if (file && newSelections) {
-    const fileToSave = { ...file };
-    fileToSave.extractedMetadata = newSelections;
-    return filesAPI.update(fileToSave);
-  }
-
-  return undefined;
-};
 
 const SuggestionSidepanel = ({
   showSidepanel,
@@ -77,6 +69,7 @@ const SuggestionSidepanel = ({
   const [options, setOptions] = useState<MultiselectListOption[]>([]);
   const [currentValueOptions, setCurrentValueOptions] = useState<MultiselectListOption[]>([]);
   const pdfScalingValue = useAtomValue(pdfScaleAtom);
+  const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
 
   useEffect(() => {
     if (suggestion) {
@@ -291,29 +284,27 @@ const SuggestionSidepanel = ({
     }
 
     if (selectedText) {
-      const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
-        selectedText,
-        pdfScalingValue,
-        true
-      );
+      if (selectedText.selectionRectangles) {
+        const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
+          selectedText,
+          pdfScalingValue,
+          true
+        );
 
-      setHighlights(
-        selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
-      );
-      setSelections(
-        selectionHandlers.updateFileSelection(
-          { name: suggestion?.propertyName || '', id: property._id as string },
-          pdf?.extractedMetadata,
-          normalizedSelections
-        )
-      );
+        setHighlights(
+          selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
+        );
+        setSelections(
+          selectionHandlers.updateFileSelection(
+            { name: suggestion?.propertyName || '', id: property._id as string },
+            pdf?.extractedMetadata,
+            normalizedSelections
+          )
+        );
+      }
 
       if (property.type === 'date' || property.type === 'numeric') {
-        const coercedValue = await coerceValue(
-          property.type,
-          normalizedSelections.text,
-          pdf?.language
-        );
+        const coercedValue = await coerceValue(property.type, selectedText.text, pdf?.language);
 
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
@@ -324,7 +315,7 @@ const SuggestionSidepanel = ({
           setSelectionError(undefined);
         }
       } else {
-        setValue('field', normalizedSelections.text, { shouldDirty: true });
+        setValue('field', selectedText.text, { shouldDirty: true });
       }
     }
   };
@@ -357,7 +348,7 @@ const SuggestionSidepanel = ({
             type="button"
             styling="outline"
             onClick={async () => handleClickToFill()}
-            disabled={!selectedText?.selectionRectangles.length || isSubmitting}
+            disabled={isSubmitting}
           >
             <Translate className="">Click to fill</Translate>
           </Button>
@@ -476,7 +467,21 @@ const SuggestionSidepanel = ({
                 scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
               />
             )}
-            {suggestion?.extractorSource.property && <>PLACEHOLDER</>}
+            {suggestion?.extractorSource.property && (
+              <Sidepanel.Body>
+                <TextProperty
+                  propertyName={suggestion.extractorSource.property}
+                  entity={entity}
+                  template={templates.find(template => template._id.toString() === templateId)}
+                  onSelect={selection => {
+                    setSelectedText(selection);
+                  }}
+                  onDeselect={() => {
+                    setSelectedText(undefined);
+                  }}
+                />
+              </Sidepanel.Body>
+            )}
           </div>
         </form>
       </div>

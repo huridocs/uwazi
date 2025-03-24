@@ -23,7 +23,8 @@ const formatExtractors = (
   extractors.map(extractor => {
     let propertyType: TableExtractor['propertyType'] = 'text';
     let propertyLabel = '';
-    let sourceLabel: string | undefined;
+    let sourceLabel: string | undefined =
+      extractor.source.property === 'title' ? t('System', 'Title', 'Title', false) : undefined;
 
     const namedTemplates = extractor.templates.map(
       extractorTemplate =>
@@ -58,9 +59,7 @@ const formatExtractors = (
       namedTemplates,
       propertyType,
       propertyLabel,
-      source: sourceLabel
-        ? t(templates[0]._id, sourceLabel, sourceLabel, false)
-        : t('System', 'PDF', 'PDF', false),
+      source: sourceLabel || t('System', 'PDF', 'PDF', false),
     };
   });
 
