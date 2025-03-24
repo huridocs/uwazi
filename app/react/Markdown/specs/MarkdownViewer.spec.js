@@ -4,8 +4,11 @@ import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';
 
+import { atomStore, userAtom } from 'app/V2/atoms';
+import { store } from 'app/store';
 import CustomHookComponents from '../CustomHooks';
 import MarkdownViewer from '../MarkdownViewer';
+import { errorCollector } from '../utils';
 
 describe('MarkdownViewer', () => {
   let component;
@@ -16,6 +19,7 @@ describe('MarkdownViewer', () => {
       markdown: '## MarkdownContent',
       sanitized: false,
     };
+    jest.clearAllMocks();
   });
 
   const render = () => {
@@ -250,6 +254,61 @@ describe('MarkdownViewer', () => {
       render();
 
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should log errors to the console and notify logged-in users', () => {
+      const mockErrors = 'errors';
+      const mockUser = { _id: '123' };
+      props = {
+        markdown: '<EntityData value-of="non-existent-property" />',
+        html: true,
+        sanitized: true,
+      };
+
+      jest.spyOn(errorCollector, 'hasErrors').mockReturnValue(true);
+      jest.spyOn(errorCollector, 'report').mockImplementation();
+      jest.spyOn(errorCollector, 'display').mockReturnValue(mockErrors);
+      jest.spyOn(errorCollector, 'clear').mockImplementation();
+
+      jest.spyOn(atomStore, 'get').mockReturnValue(mockUser);
+
+      const dispatchSpy = jest.spyOn(store, 'dispatch');
+
+      render();
+      component.instance().componentDidMount();
+
+      expect(errorCollector.report).toHaveBeenCalledTimes(2);
+      expect(atomStore.get).toHaveBeenCalledWith(userAtom);
+      expect(dispatchSpy).toHaveBeenCalledTimes(2);
+      expect(errorCollector.clear).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not notify if user is not logged in', () => {
+      const mockUser = {}; // No _id means not logged in
+
+      jest.spyOn(errorCollector, 'hasErrors').mockReturnValue(true);
+      jest.spyOn(errorCollector, 'report').mockImplementation();
+      jest.spyOn(atomStore, 'get').mockReturnValue(mockUser);
+
+      const dispatchSpy = jest.spyOn(store, 'dispatch');
+
+      render();
+      component.instance().componentDidMount();
+
+      expect(errorCollector.report).toHaveBeenCalled();
+      expect(dispatchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not report if there are no errors', () => {
+      jest.spyOn(errorCollector, 'hasErrors').mockReturnValue(false);
+      jest.spyOn(errorCollector, 'report').mockImplementation();
+
+      render();
+      component.instance().componentDidMount();
+
+      expect(errorCollector.report).not.toHaveBeenCalled();
     });
   });
 });
