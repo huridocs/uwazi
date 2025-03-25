@@ -115,7 +115,7 @@ const createBlankSuggestionsForPartialExtractor = async (
 ) => {
   const defaultLanguage = (await settings.getDefaultLanguage()).key;
   const extractorTemplates = new Set(extractor.templates.map(t => t.toString()));
-  const exampleProperty = await templates.getPropertyByName(extractor.property);
+  const sampleProperty = await templates.getPropertyByName(extractor.property);
 
   const templatesPromises = selectedTemplates
     .filter(template => extractorTemplates.has(template.toString()))
@@ -139,7 +139,7 @@ const createBlankSuggestionsForPartialExtractor = async (
                 extractorId: extractor._id,
                 template,
                 propertyName: extractor.property,
-                propertyType: exampleProperty.type,
+                propertyType: sampleProperty.type,
                 defaultLanguage,
               })
             )
@@ -154,7 +154,7 @@ const createBlankSuggestionsForPartialExtractor = async (
               extractorId: extractor._id,
               template,
               propertyName: extractor.property,
-              propertyType: exampleProperty.type,
+              propertyType: sampleProperty.type,
               language: entity.language,
             })
           )
