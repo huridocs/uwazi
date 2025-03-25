@@ -30,6 +30,8 @@ export interface PXEntitiesStatusDataSource {
   setAsError(extractionId: string): Promise<PXEntityStatusModel>;
   updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel>;
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
+  getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
+  markAsObsolete(entityStatusId: string): Promise<void>;
 }
 
 export type {

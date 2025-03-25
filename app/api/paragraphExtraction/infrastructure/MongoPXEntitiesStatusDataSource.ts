@@ -10,6 +10,7 @@ import { LanguagesListSchema } from 'shared/types/commonTypes';
 import {
   CreateForSourceEntitiesInput,
   CreateInput,
+  GetExistingInput,
   PXEntitiesStatusDataSource,
   UpdateParagraphsCountInput,
 } from '../domain/PXEntitiesStatusDataSource';
@@ -261,5 +262,38 @@ export class MongoPXEntitiesStatusDataSource
       failedParagraphsCount: dbo.failedParagraphsCount,
       successfulParagraphsCount: dbo.successfulParagraphsCount,
     };
+  }
+
+  async getExisting({
+    extractorId,
+    entitySharedId,
+  }: GetExistingInput): Promise<PXEntityStatusModel | undefined> {
+    const mongoEntityStatus = await this.getCollection().findOne({
+      entitySharedId,
+      extractorId: new ObjectId(extractorId),
+    });
+
+    if (!mongoEntityStatus) {
+      return undefined;
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
+  }
+
+  async markAsObsolete(entityStatusId: string): Promise<void> {
+    const currentStatus = await this.getCollection().findOne(
+      { _id: new ObjectId(entityStatusId) },
+      { projection: { status: 1 } }
+    );
+
+    if (currentStatus?.status === EntityStatus.New) {
+      return;
+    }
+
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(entityStatusId) },
+      { $set: { status: EntityStatus.Obsolete } },
+      { upsert: false }
+    );
   }
 }
