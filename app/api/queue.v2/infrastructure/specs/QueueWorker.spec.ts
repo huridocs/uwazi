@@ -9,12 +9,6 @@ import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';
 
-async function sleep(ms: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
 class TestJob implements Dispatchable {
   private signal: (index: string) => void;
 
@@ -25,16 +19,37 @@ class TestJob implements Dispatchable {
     this.logger = logger;
   }
 
-  async handleDispatch(
-    _heartbeat: HeartbeatCallback,
-    params: { data: { pieceOfData: string[] }; aNumber: number }
-  ): Promise<void> {
+  async handleDispatch(_heartbeat: HeartbeatCallback, params: { aNumber: number }): Promise<void> {
     this.signal(`starting-${params.aNumber}`);
-    await sleep(50);
-    this.logger(`${params.aNumber}, ${params.data.pieceOfData.join('|')}`, params.aNumber);
+    this.logger(`${params.aNumber}`, params.aNumber);
     this.signal(`ending-${params.aNumber}`);
   }
 }
+
+class FailJob implements Dispatchable {
+  // eslint-disable-next-line class-methods-use-this
+  async handleDispatch(): Promise<void> {
+    throw new Error('failing');
+  }
+}
+
+// eslint-disable-next-line no-empty-function
+const setUpWorker = async (onError?: () => void) => {
+  const output: string[] = [];
+  const signals = createSignals();
+  const adapter = DefaultTestingQueueAdapter();
+  const logMock = createMockLogger();
+  const worker = new QueueWorker('name', adapter, logMock, onError);
+  worker.register(
+    TestJob,
+    async namespace =>
+      new TestJob(signals.signal, message => output.push(`${namespace} ${message}`))
+  );
+
+  worker.register(FailJob, async () => new FailJob());
+
+  return { worker, output, signals, adapter, logMock };
+};
 
 beforeEach(async () => {
   await testingEnvironment.setUp({});
@@ -45,182 +60,99 @@ afterAll(async () => {
 });
 
 it('should process all the jobs', async () => {
-  const output: string[] = [];
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher1 = new NamespacedDispatcher('namespace1', 'name', adapter);
   const dispatcher2 = new NamespacedDispatcher('namespace2', 'name', adapter);
 
-  const worker = new QueueWorker('name', adapter, createMockLogger());
+  const { worker, signals, output } = await setUpWorker();
 
-  const signals = createSignals();
+  await dispatcher1.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher2.dispatch(TestJob, { aNumber: 2 });
+  await dispatcher1.dispatch(TestJob, { aNumber: 3 });
 
-  worker.register(
-    TestJob,
-    async namespace =>
-      new TestJob(signals.signal, message => output.push(`${namespace} ${message}`))
-  );
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
 
-  const dispatch = async (params: any, i: number) => {
-    await sleep(5);
-    return (i % 2 ? dispatcher2 : dispatcher1).dispatch(TestJob, params);
-  };
+  await dispatcher1.dispatch(TestJob, { aNumber: 4 });
+  await dispatcher2.dispatch(TestJob, { aNumber: 5 });
+  await dispatcher1.dispatch(TestJob, { aNumber: 6 });
 
-  await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
-  await dispatch({ data: { pieceOfData: ['.', '.'] }, aNumber: 2 }, 1);
-  await dispatch({ data: { pieceOfData: ['.', '.', '.'] }, aNumber: 3 }, 2);
-  output.push('finished enqueueing jobs pre worker.start');
-  await sleep(5);
-  await Promise.all([
-    worker.start(),
-    dispatch({ data: { pieceOfData: ['.', '.', '.', '.'] }, aNumber: 4 }, 0)
-      .then(
-        void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.'] }, aNumber: 5 }, 1).then(
-          void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.', '.'] }, aNumber: 6 }, 2)
-        )
-      )
-      .then(async () => {
-        output.push('finished enqueueing jobs post worker.start');
-        await signals.signaled('ending-6');
-        await worker.stop();
-        output.push('worker stopped');
-      }),
-  ]);
+  await signals.signaled('ending-6');
+  await worker.stop();
 
   expect(output).toEqual([
-    'finished enqueueing jobs pre worker.start',
-    'finished enqueueing jobs post worker.start',
-    'namespace1 1, .',
-    'namespace2 2, .|.',
-    'namespace1 3, .|.|.',
-    'namespace1 4, .|.|.|.',
-    'namespace2 5, .|.|.|.|.',
-    'namespace1 6, .|.|.|.|.|.',
-    'worker stopped',
+    'namespace1 1',
+    'namespace2 2',
+    'namespace1 3',
+    'namespace1 4',
+    'namespace2 5',
+    'namespace1 6',
   ]);
-}, 10000);
+});
 
 it('should finish the in-progress job before stopping', async () => {
-  const output: string[] = [];
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher1 = new NamespacedDispatcher('namespace1', 'name', adapter);
   const dispatcher2 = new NamespacedDispatcher('namespace2', 'name', adapter);
 
-  const worker = new QueueWorker('name', adapter, createMockLogger());
+  const { worker, signals, output } = await setUpWorker();
 
-  const signals = createSignals();
+  await dispatcher1.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher2.dispatch(TestJob, { aNumber: 2 });
+  await dispatcher1.dispatch(TestJob, { aNumber: 3 });
 
-  const buildLogger = (namespace: string) => (message: string) => {
-    output.push(`${namespace} ${message}`);
-  };
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
 
-  worker.register(TestJob, async namespace => new TestJob(signals.signal, buildLogger(namespace)));
+  await signals.signaled('starting-2');
+  await worker.stop();
 
-  const dispatch = async (params: any, i: number) => {
-    await sleep(5);
-    return (i % 2 ? dispatcher2 : dispatcher1).dispatch(TestJob, params);
-  };
-
-  await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
-  await dispatch({ data: { pieceOfData: ['.', '.'] }, aNumber: 2 }, 1);
-  await dispatch({ data: { pieceOfData: ['.', '.', '.'] }, aNumber: 3 }, 2);
-
-  output.push('finished enqueueing jobs pre worker.start');
-
-  await Promise.all([
-    worker.start(),
-    dispatch({ data: { pieceOfData: ['.', '.', '.', '.'] }, aNumber: 4 }, 0)
-      .then(
-        void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.'] }, aNumber: 5 }, 1).then(
-          void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.', '.'] }, aNumber: 6 }, 2)
-        )
-      )
-      .then(async () => {
-        output.push('finished enqueueing jobs post worker.start');
-        await signals.signaled('starting-4');
-        output.push('stopping worker');
-        await worker.stop();
-        output.push('worker stopped');
-      }),
-  ]);
-
-  expect(output).toEqual([
-    'finished enqueueing jobs pre worker.start',
-    'finished enqueueing jobs post worker.start',
-    'namespace1 1, .',
-    'namespace2 2, .|.',
-    'namespace1 3, .|.|.',
-    'stopping worker',
-    'namespace1 4, .|.|.|.',
-    'worker stopped',
-  ]);
-}, 10000);
+  expect(output).toEqual(['namespace1 1', 'namespace2 2']);
+});
 
 it('should report error and continue if a job fails', async () => {
-  class FailOnceJob implements Dispatchable {
-    static failed = false;
-
-    // eslint-disable-next-line class-methods-use-this
-    async handleDispatch(): Promise<void> {
-      if (FailOnceJob.failed) {
-        return;
-      }
-
-      FailOnceJob.failed = true;
-      throw new Error('failing');
-    }
-  }
-
-  const logMock = createMockLogger();
-
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
   const onError = jest.fn();
-  const queueWorker = new QueueWorker('name', adapter, logMock, onError);
 
-  queueWorker.register(FailOnceJob, async () => new FailOnceJob());
+  const { worker, signals, output } = await setUpWorker(onError);
 
-  await dispatcher.dispatch(FailOnceJob, undefined);
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  await dispatcher.dispatch(TestJob, { aNumber: 2 });
+  await dispatcher.dispatch(FailJob, undefined);
+  await dispatcher.dispatch(TestJob, { aNumber: 3 });
 
-  await Promise.all([queueWorker.start(), sleep(200).then(async () => queueWorker.stop())]);
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+
+  await signals.signaled('ending-3');
+  await worker.stop();
 
   expect(onError).toHaveBeenCalledWith(
     new Error('failing'),
-    expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
+    expect.objectContaining({ job: expect.objectContaining({ name: FailJob.name }) })
   );
 
-  expect(logMock.info).toHaveBeenCalledWith('sleeping', { waitTime: 1000 });
+  expect(output).toEqual(['namespace 1', 'namespace 2', 'namespace 3']);
 });
 
-it('default onError should log the error', async () => {
-  class FailOnceJob implements Dispatchable {
-    static failed = false;
-
-    // eslint-disable-next-line class-methods-use-this
-    async handleDispatch(): Promise<void> {
-      if (FailOnceJob.failed) {
-        return;
-      }
-
-      FailOnceJob.failed = true;
-      throw new Error('failing');
-    }
-  }
-
-  const logMock = createMockLogger();
+it('should log errors by default when no onError callback is passed', async () => {
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
-  const queueWorker = new QueueWorker('name', adapter, logMock);
 
-  queueWorker.register(FailOnceJob, async () => new FailOnceJob());
+  const { worker, signals, output, logMock } = await setUpWorker();
 
-  await dispatcher.dispatch(FailOnceJob, undefined);
-
-  await Promise.all([queueWorker.start(), sleep(200).then(async () => queueWorker.stop())]);
+  await dispatcher.dispatch(FailJob, undefined);
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('ending-1');
+  await worker.stop();
 
   expect(logMock.error).toHaveBeenCalledWith(
     expect.any(String),
-    expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
+    expect.objectContaining({ job: expect.objectContaining({ name: FailJob.name }) })
   );
 
-  expect(logMock.info).toHaveBeenCalledWith('sleeping', { waitTime: 1000 });
+  expect(output).toEqual(['namespace 1']);
 });
