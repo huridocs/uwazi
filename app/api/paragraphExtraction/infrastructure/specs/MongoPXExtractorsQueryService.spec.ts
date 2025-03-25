@@ -66,9 +66,6 @@ const extractionDBO: MongoPXEntityStatus = {
   _id: factory.id('extractionDBO'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
-  failedParagraphsCount: 0,
-  paragraphsCount: 10,
-  successfulParagraphsCount: 10,
   status: EntityStatus.Finished,
 };
 

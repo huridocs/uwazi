@@ -50,9 +50,6 @@ export const entityStatus: MongoPXEntityStatus = {
   _id: factory.id('entityStatus'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
-  failedParagraphsCount: 0,
-  paragraphsCount: 0,
-  successfulParagraphsCount: 0,
   status: EntityStatus.Queued,
 };
 

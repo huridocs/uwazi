@@ -92,9 +92,6 @@ export class MongoPXEntitiesStatusDataSource
       entitySharedId: entity.sharedId!,
       extractorId: new ObjectId(extractorId),
       status: EntityStatus.New,
-      failedParagraphsCount: 0,
-      paragraphsCount: 0,
-      successfulParagraphsCount: 0,
     }));
 
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
@@ -140,9 +137,6 @@ export class MongoPXEntitiesStatusDataSource
       entitySharedId: input.entitySharedId,
 
       status: EntityStatus.New,
-      failedParagraphsCount: 0,
-      paragraphsCount: 0,
-      successfulParagraphsCount: 0,
     };
 
     await this.getCollection().insertOne(dbo);

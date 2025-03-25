@@ -21,9 +21,6 @@ const mongoEntityStatus1: MongoPXEntityStatus = {
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
   status: EntityStatus.New,
-  failedParagraphsCount: 0,
-  paragraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const mongoEntityStatus2: MongoPXEntityStatus = {
@@ -31,9 +28,6 @@ const mongoEntityStatus2: MongoPXEntityStatus = {
   entitySharedId: entity2.sharedId!,
   extractorId: extractor._id,
   status: EntityStatus.New,
-  failedParagraphsCount: 0,
-  paragraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const createFixtures = (): DBFixture => ({

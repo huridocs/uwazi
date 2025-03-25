@@ -107,9 +107,6 @@ describe('PXEntityStatusManager', () => {
       entitySharedId: entity.sharedId!,
       extractorId: extractor._id,
       status: EntityStatus.Finished,
-      failedParagraphsCount: 0,
-      paragraphsCount: 0,
-      successfulParagraphsCount: 0,
     };
 
     await testingEnvironment.setFixtures({
@@ -152,9 +149,6 @@ describe('PXEntityStatusManager', () => {
       entitySharedId: entity.sharedId!,
       extractorId: extractor._id,
       status: EntityStatus.New,
-      failedParagraphsCount: 0,
-      paragraphsCount: 0,
-      successfulParagraphsCount: 0,
     };
 
     await testingEnvironment.setFixtures({
