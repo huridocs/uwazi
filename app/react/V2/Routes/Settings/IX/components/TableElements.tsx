@@ -212,8 +212,6 @@ const OpenSidepanelButton = ({
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
-  const isPDF = cell.row.original.extractorSource.pdf === true;
-
   return (
     <Button
       className="leading-4"
@@ -221,11 +219,7 @@ const OpenSidepanelButton = ({
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
-      {isPDF ? (
-        <Translate className="whitespace-nowrap">Open PDF</Translate>
-      ) : (
-        <Translate>Review</Translate>
-      )}
+      <Translate className="whitespace-nowrap">Open</Translate>
     </Button>
   );
 };

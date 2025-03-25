@@ -32,6 +32,7 @@ import {
   SELECT_TYPES,
 } from './sidepanelFunctions';
 
+//This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
 
 interface SuggestionSidepanelProps {
