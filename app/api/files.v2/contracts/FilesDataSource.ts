@@ -8,6 +8,5 @@ interface FilesDataSource {
   getAll(): ResultSet<UwaziFile>;
   getSegmentations(fileId: string[]): ResultSet<Segmentation>;
   getDocumentsForEntity(entitySharedId: string): ResultSet<Document>;
-  getDocumentsForEntityInUILanguages(entitySharedId: string): Promise<Document[]>;
 }
 export type { FilesDataSource };
