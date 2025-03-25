@@ -45,7 +45,7 @@ export class MongoPXEntitiesStatusDataSource
         else: {
           $cond: {
             if: { $gte: ['$successfulParagraphsCount', 1] },
-            then: EntityStatus.Finished,
+            then: EntityStatus.Processed,
             else: EntityStatus.Error,
           },
         },
@@ -132,7 +132,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!dbo) {
       throw new Error(
-        `Can not init processing of an Entity Status that does not exist. 
+        `Can not init processing of an Entity Status that does not exist.
         id: ${extractionId}`
       );
     }
@@ -145,11 +145,7 @@ export class MongoPXEntitiesStatusDataSource
       _id: new ObjectId(),
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
-
-      status: EntityStatus.Queued,
-      failedParagraphsCount: 0,
-      paragraphsCount: 0,
-      successfulParagraphsCount: 0,
+      status: EntityStatus.Processing,
     };
 
     await this.getCollection().insertOne(dbo);
@@ -174,11 +170,7 @@ export class MongoPXEntitiesStatusDataSource
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),
       entitySharedId: dbo.entitySharedId,
-
       status: dbo.status,
-      paragraphsCount: dbo.paragraphsCount,
-      failedParagraphsCount: dbo.failedParagraphsCount,
-      successfulParagraphsCount: dbo.successfulParagraphsCount,
     };
   }
 }

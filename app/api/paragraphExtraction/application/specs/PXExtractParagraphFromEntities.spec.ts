@@ -64,12 +64,12 @@ describe('PXExtractParagraphFromEntities', () => {
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedIds[0],
-        status: EntityStatus.Queued,
+        status: EntityStatus.Processing,
       },
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedIds[1],
-        status: EntityStatus.Queued,
+        status: EntityStatus.Processing,
       },
     ]);
   });

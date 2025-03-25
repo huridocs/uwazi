@@ -12,17 +12,6 @@ import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 
-/**
- * Notes
- * 1. We need to save Paragraph number as a Property
- *  1.1 How to select the "correct" Property ? Maybe the user needs to select which one he wants to store that information
- *
- * 2. We need to know which "rich text" Property to store the extracted paragraph
- *  2.1 This can happen in the case where the target Template has more than one "rich text" Property
- *
- * 3. We need to inherit Properties from target Template
- */
-
 type PXCreateParagraphInput = {
   sourceEntities: EntitySchema[];
   extractor: PXExtractor;

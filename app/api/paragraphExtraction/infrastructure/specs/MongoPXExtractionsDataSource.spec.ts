@@ -23,7 +23,7 @@ const createExtractionDBO = () => ({
   _id: new ObjectId(),
   extractorId: new ObjectId(),
   entitySharedId: new ObjectId().toString(),
-  status: EntityStatus.Queued,
+  status: EntityStatus.Processing,
   failedParagraphsCount: 2,
   paragraphsCount: 10,
   successfulParagraphsCount: 0,
@@ -54,7 +54,7 @@ describe('MongoPXExtractionsDataSource', () => {
       id: expect.any(String),
       extractorId: input.extractorId,
       entitySharedId: input.entitySharedId,
-      status: EntityStatus.Queued,
+      status: EntityStatus.Processing,
       paragraphsCount: 0,
       failedParagraphsCount: 0,
       successfulParagraphsCount: 0,
@@ -154,7 +154,7 @@ describe('MongoPXExtractionsDataSource', () => {
     const entityStatus = await entitiesStatusDS.incrementSuccess(extractionCreated._id.toString());
 
     expect(entityStatus).toMatchObject({
-      status: EntityStatus.Finished,
+      status: EntityStatus.Processed,
     });
   });
 
@@ -204,7 +204,7 @@ describe('MongoPXExtractionsDataSource', () => {
       failedParagraphsCount: 0,
       successfulParagraphsCount: 100,
       paragraphsCount: 100,
-      status: EntityStatus.Finished,
+      status: EntityStatus.Processed,
     });
   });
 

@@ -112,9 +112,6 @@ const extractionDBO: MongoPXEntityStatus = {
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,
   status: EntityStatus.Processing,
-  failedParagraphsCount: 0,
-  paragraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const createFixtures = (): DBFixture => ({

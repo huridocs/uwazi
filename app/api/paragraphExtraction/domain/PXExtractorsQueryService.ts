@@ -4,9 +4,12 @@ type GetExtractorsOutput = {
   _id: string;
   sourceTemplateId: string;
   targetTemplateId: string;
-  count: {
-    generatedEntities: number;
+  statusCount: {
     new: number;
+    processing: number;
+    obsolete: number;
+    error: number;
+    processed: number;
   };
 };
 

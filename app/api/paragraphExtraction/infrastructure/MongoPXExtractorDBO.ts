@@ -4,10 +4,10 @@ import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 
 export type MongoPXExtractorDBO = {
   _id: ObjectId;
-  targetTemplateId: ObjectId;
   sourceTemplateId: ObjectId;
-  paragraphPropertyId: ObjectId;
+  targetTemplateId: ObjectId;
   paragraphNumberPropertyId: ObjectId;
+  paragraphPropertyId: ObjectId;
   sourceRelationshipTypeId: ObjectId;
   targetRelationshipTypeId: ObjectId;
 };

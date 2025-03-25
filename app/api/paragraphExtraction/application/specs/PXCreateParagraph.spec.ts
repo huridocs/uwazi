@@ -95,9 +95,6 @@ const extractionDBO: MongoPXEntityStatus = {
   extractorId: extractorDBO._id,
   entitySharedId: entityEn.sharedId!,
   status: EntityStatus.Processing,
-  paragraphsCount: 2,
-  failedParagraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const entityStatus = MongoPXEntitiesStatusDataSource.toDomain(extractionDBO);
