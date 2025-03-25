@@ -8,10 +8,37 @@ import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatche
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+
 import { entity, entity2, extractor } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 
-const createFixtures = (): DBFixture => ({});
+const mongoEntityStatus1: MongoPXEntityStatus = {
+  _id: new ObjectId(),
+  entitySharedId: entity.sharedId!,
+  extractorId: extractor._id,
+  status: EntityStatus.New,
+  failedParagraphsCount: 0,
+  paragraphsCount: 0,
+  successfulParagraphsCount: 0,
+};
+
+const mongoEntityStatus2: MongoPXEntityStatus = {
+  _id: new ObjectId(),
+  entitySharedId: entity2.sharedId!,
+  extractorId: extractor._id,
+  status: EntityStatus.New,
+  failedParagraphsCount: 0,
+  paragraphsCount: 0,
+  successfulParagraphsCount: 0,
+};
+
+const createFixtures = (): DBFixture => ({
+  [mongoPXEntitiesStatusCollection]: [mongoEntityStatus1, mongoEntityStatus2],
+});
 
 const setUpUseCase = () => {
   const mongoTransactionManager = DefaultTransactionManager();
@@ -72,5 +99,36 @@ describe('PXExtractParagraphFromEntities', () => {
       tenantName: 'any_tenant',
       extractionId: expect.any(String),
     });
+  });
+
+  it('should mark each EntityStatus as Queued', async () => {
+    const { extractParagraphFromEntities } = setUpUseCase();
+
+    const input: Input = {
+      extractorId: extractor._id.toString(),
+      entitySharedIds: [entity.sharedId!, entity2.sharedId!],
+      userId: new ObjectId().toString(),
+    };
+
+    await extractParagraphFromEntities.execute(input);
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    TestUtils.arrayContaining(mongoEntitiesStatus, [
+      {
+        _id: expect.any(ObjectId),
+        entitySharedId: entity.sharedId,
+        extractorId: extractor._id,
+        status: EntityStatus.Queued,
+      },
+      {
+        _id: expect.any(ObjectId),
+        entitySharedId: entity2.sharedId,
+        extractorId: extractor._id,
+        status: EntityStatus.Queued,
+      },
+    ]);
   });
 });

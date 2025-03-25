@@ -21,6 +21,11 @@ type CreateForSourceEntitiesInput = {
   extractorId: string;
 };
 
+type MarkAsQueuedInput = {
+  entitySharedId: string;
+  extractorId: string;
+};
+
 export interface PXEntitiesStatusDataSource {
   getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
   initProcess(extractionId: string): Promise<PXEntityStatusModel>;
@@ -32,6 +37,7 @@ export interface PXEntitiesStatusDataSource {
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
   markAsObsolete(entityStatusId: string): Promise<void>;
+  markAsQueued(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
 }
 
 export type {
@@ -41,4 +47,5 @@ export type {
   InitProcessInput,
   UpdateParagraphsCountInput,
   CreateForSourceEntitiesInput,
+  MarkAsQueuedInput,
 };

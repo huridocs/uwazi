@@ -24,7 +24,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
 
   async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     await ArrayUtils.sequentialFor(entitySharedIds, async entitySharedId => {
-      const entityStatus = await this.dependencies.entitiesStatusDS.create({
+      const entityStatus = await this.dependencies.entitiesStatusDS.markAsQueued({
         entitySharedId,
         extractorId,
       });

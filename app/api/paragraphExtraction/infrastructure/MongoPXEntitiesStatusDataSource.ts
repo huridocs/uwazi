@@ -11,6 +11,7 @@ import {
   CreateForSourceEntitiesInput,
   CreateInput,
   GetExistingInput,
+  MarkAsQueuedInput,
   PXEntitiesStatusDataSource,
   UpdateParagraphsCountInput,
 } from '../domain/PXEntitiesStatusDataSource';
@@ -295,5 +296,24 @@ export class MongoPXEntitiesStatusDataSource
       { $set: { status: EntityStatus.Obsolete } },
       { upsert: false }
     );
+  }
+
+  async markAsQueued(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
+    const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
+      {
+        extractorId: new ObjectId(input.extractorId),
+        entitySharedId: input.entitySharedId,
+      },
+      { $set: { status: EntityStatus.Queued } },
+      { upsert: false, returnDocument: 'after' }
+    );
+
+    if (!mongoEntityStatus) {
+      throw new Error(
+        `Cannot change status to queued of a EntityStatus that does not exist. ${JSON.stringify(input)}`
+      );
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
   }
 }
