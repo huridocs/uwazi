@@ -8,14 +8,6 @@ import { applyMiddleware, createStore, Store } from 'redux';
 import reducer from './reducer';
 import { IStore } from './istore';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-declare global {
-  interface Window {
-    __reduxData__: any;
-    store: Store<IStore>;
-  }
-}
-
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store: Store<IStore> | undefined;
 
