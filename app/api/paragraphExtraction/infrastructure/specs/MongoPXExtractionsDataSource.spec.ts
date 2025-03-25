@@ -105,7 +105,7 @@ describe('MongoPXExtractionsDataSource', () => {
     });
     const { entitiesStatusDS } = createSut();
 
-    const entityStatus = await entitiesStatusDS.initProcess(extractionCreated._id.toString());
+    const entityStatus = await entitiesStatusDS.markAsProcessing(extractionCreated._id.toString());
 
     expect(entityStatus).toMatchObject({
       status: EntityStatus.Processing,

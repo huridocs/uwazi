@@ -20,7 +20,7 @@ type PXExtractParagraphsFromEntityInput = {
   userId: string;
   extractorId: string;
   entitySharedId: string;
-  extractionId: string;
+  entityStatusId: string;
 };
 
 type Output = void;
@@ -46,7 +46,7 @@ export class PXExtractParagraphsFromEntity
   // eslint-disable-next-line max-statements
   async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
     try {
-      await this.dependencies.entitiesStatusDS.initProcess(input.extractionId);
+      await this.dependencies.entitiesStatusDS.markAsProcessing(input.entityStatusId);
 
       const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
@@ -61,7 +61,7 @@ export class PXExtractParagraphsFromEntity
       const extractionKey = PXExtractionKey.create({
         tenantName: this.dependencies.tenantName,
         userId: input.userId,
-        extractionId: input.extractionId,
+        extractionId: input.entityStatusId,
       });
 
       const mainLanguage = PXExtractParagraphsFromEntity.getMainLanguage(
@@ -84,7 +84,7 @@ export class PXExtractParagraphsFromEntity
         })}`
       );
     } catch (e) {
-      await this.dependencies.entitiesStatusDS.setAsError(input.extractionId);
+      await this.dependencies.entitiesStatusDS.setAsError(input.entityStatusId);
       throw e;
     }
   }

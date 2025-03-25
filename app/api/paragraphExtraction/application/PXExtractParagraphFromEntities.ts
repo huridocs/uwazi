@@ -33,7 +33,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         entitySharedId,
         extractorId,
         userId,
-        extractionId: entityStatus.id,
+        entityStatusId: entityStatus.id,
         tenantName: this.dependencies.tenantName,
       });
     });

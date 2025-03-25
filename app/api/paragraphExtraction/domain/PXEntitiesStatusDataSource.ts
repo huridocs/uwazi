@@ -28,7 +28,7 @@ type MarkAsQueuedInput = {
 
 export interface PXEntitiesStatusDataSource {
   getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
-  initProcess(extractionId: string): Promise<PXEntityStatusModel>;
+  markAsProcessing(extractionId: string): Promise<PXEntityStatusModel>;
   incrementSuccess(extractionId: string): Promise<PXEntityStatusModel>;
   incrementFail(extractionId: string): Promise<PXEntityStatusModel>;
   create(input: CreateInput): Promise<PXEntityStatusModel>;
