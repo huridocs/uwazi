@@ -259,7 +259,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,စာရွက်စာတမ်း
 Document and entity types,စာရွက်စာတမ်းနှင့် ဖြည့်သွင်းချက် အမျိုးအစားများ
 Document contents,စာရွက်စာတမ်း မာတိကာ
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,စာရွက်စာတမ်း ခေါင်းစဉ်
 Documentation,စာရွက်စာတမ်း
@@ -580,8 +579,8 @@ Ok,အိုကေ
 OK,အိုကေ
 Ooops... please go,အို... အဆင်ပြေပါစေ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,အို။ သင်တည်းဖြတ်ရန် ကြိုးစားနေသော ဝေါဟာရပဒေသာကျမ်းကို ကျွန်ုပ်တို့ ရှာမတွေ့ပါ။ ဆက်တင်များမှတစ်ဆင့် ဤစာမျက်နှာသို့ ပြန်သွားကြည့်ပါ။
+Open,Open
 Open group,Open group
-Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
 or,သို့မဟုတ်
 or drop your files here.,သို့မဟုတ် သင့်ဖိုင်များကို ဒီမှာ ချပါ။
@@ -790,6 +789,7 @@ Sort ascending,Sort ascending
 Sort by,ဤသို့ အမျိုးအစားခွဲရန်
 Sort descending,Sort descending
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
+Source,Source
 Source template,Source template
 Source Template,Source Template
 State,State

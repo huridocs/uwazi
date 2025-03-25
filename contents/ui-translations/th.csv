@@ -259,7 +259,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,เอกสาร
 Document and entity types,ประเภทเอกสารและรายการ
 Document contents,เนื้อหาของเอกสาร
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,ชื่อเอกสาร
 Documentation,เอกสาร
@@ -580,8 +579,8 @@ Ok,ตกลง
 OK,ตกลง
 Ooops... please go,กรุณาดำเนินการต่อ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,เราไม่พบคำอธิบายกลุ่มคำที่คุณต้องการแก้ไข กรุณากลับมาที่หน้านี้ใหม่โดยเลือกการตั้งค่า
+Open,Open
 Open group,Open group
-Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
 or,หรือ
 or drop your files here.,หรือวางไฟล์ของคุณที่นี่
@@ -790,6 +789,7 @@ Sort ascending,Sort ascending
 Sort by,เรียงลำดับ
 Sort descending,Sort descending
 sorted by,เรียงลำดับโดย
+Source,Source
 Source template,Source template
 Source Template,Source Template
 State,State
