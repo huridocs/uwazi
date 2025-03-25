@@ -2,8 +2,8 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { risonDecodeOrIgnore } from 'app/utils';
-import { useLocation, useSearchParams } from 'react-router';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import { useLocation, Location } from 'react-router';
 import { Icon } from 'UI';
 import { I18NLink, t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
@@ -11,6 +11,7 @@ import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { encodeSearch } from '../actions/libraryActions';
+
 import {
   getCurrentSortOption,
   getPropertySortType,
@@ -24,8 +25,8 @@ interface SortDropdownOwnProps {
   selectedTemplates: IImmutable<string[]>;
 }
 
-const getOptionUrl = (option: SortType, path: string, query: string | null) => {
-  const currentQuery = risonDecodeOrIgnore(decodeURIComponent(query || '()'));
+const getOptionUrl = (option: SortType, path: string, location: Location) => {
+  const currentQuery: SearchOptions = searchParamsFromLocationSearch(location);
   const type = getPropertySortType(option);
   return `${path}${encodeSearch(
     { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value, from: 0 },
@@ -58,10 +59,8 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const currentQuery: SearchOptions = risonDecodeOrIgnore(
-    decodeURIComponent(searchParams.get('q') || '()')
-  );
+
+  const currentQuery: SearchOptions = searchParamsFromLocationSearch(location);
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const sortButtonLink = `${path}${encodeSearch(
     { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc', from: 0 },
@@ -95,7 +94,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
 
         <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>
           {sortOptions.map(option => {
-            const url = getOptionUrl(option, path, searchParams.get('q'));
+            const url = getOptionUrl(option, path, location);
             return (
               <li key={option.value}>
                 <I18NLink to={url} href={url}>
