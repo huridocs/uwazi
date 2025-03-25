@@ -59,7 +59,7 @@ export class PXParagraphsResultListener {
           mongoTransactionManager: DefaultTransactionManager(),
         });
 
-        await entitiesStatusDS.setAsError(extractionKey.extractionId);
+        await entitiesStatusDS.setAsError(extractionKey.entityStatusId);
 
         throw e;
       }

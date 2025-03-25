@@ -20,7 +20,7 @@ const extractionDBO: MongoPXEntityStatus = {
 };
 
 const extractionKey = PXExtractionKey.create({
-  extractionId: extractionDBO._id.toString(),
+  entityStatusId: extractionDBO._id.toString(),
   tenantName: 'any_tenant_name',
   userId: 'any_user_id',
 });

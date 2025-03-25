@@ -187,7 +187,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionKey = PXExtractionKey.create({
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -285,7 +285,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionKey = PXExtractionKey.create({
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -422,7 +422,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionKey = PXExtractionKey.create({
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -481,7 +481,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const extractionKey = PXExtractionKey.create({
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -545,7 +545,7 @@ describe('PXCreateParagraphs', () => {
     const extractionKey = PXExtractionKey.create({
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
     });
 
     const input: PXCreateParagraphsInput = {
@@ -612,7 +612,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionKey = PXExtractionKey.create({
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });
@@ -698,7 +698,7 @@ describe('PXCreateParagraphs', () => {
     const extractionKey = PXExtractionKey.create({
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
     });
 
     const input: PXCreateParagraphsInput = {
@@ -724,7 +724,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const extractionKey = PXExtractionKey.create({
-      extractionId: mongoEntityStatus._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       tenantName: tenants.current().name,
       userId: new ObjectId().toString(),
     });

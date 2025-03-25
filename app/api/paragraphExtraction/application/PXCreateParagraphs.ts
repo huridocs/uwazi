@@ -36,7 +36,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
   async execute({ extractionKey, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(extractionKey.userId) };
     const entityStatus = await this.dependencies.entitiesStatusDS.getById(
-      extractionKey.extractionId
+      extractionKey.entityStatusId
     );
     if (!entityStatus) {
       throw new Error('Entity Status not found');
@@ -65,7 +65,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
     );
 
-    await this.dependencies.entitiesStatusDS.markAsFinished(extractionKey.extractionId);
+    await this.dependencies.entitiesStatusDS.markAsFinished(extractionKey.entityStatusId);
   }
 }
 

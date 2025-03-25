@@ -61,7 +61,7 @@ export class PXExtractParagraphsFromEntity
       const extractionKey = PXExtractionKey.create({
         tenantName: this.dependencies.tenantName,
         userId: input.userId,
-        extractionId: input.entityStatusId,
+        entityStatusId: input.entityStatusId,
       });
 
       const mainLanguage = PXExtractParagraphsFromEntity.getMainLanguage(

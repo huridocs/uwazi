@@ -5,14 +5,14 @@ describe('PXExtractionKey', () => {
     const extractionId = PXExtractionKey.create({
       tenantName: 'any_tenant_name',
       userId: 'any_user_id',
-      extractionId: 'any_extraction_id',
+      entityStatusId: 'any_extraction_id',
     });
 
     expect(extractionId.key).toBe(
       `any_tenant_name${PXExtractionKey.separator}any_extraction_id${PXExtractionKey.separator}any_user_id`
     );
     expect(extractionId.tenantName).toBe('any_tenant_name');
-    expect(extractionId.extractionId).toBe('any_extraction_id');
+    expect(extractionId.entityStatusId).toBe('any_extraction_id');
     expect(extractionId.userId).toBe('any_user_id');
   });
 
@@ -26,7 +26,7 @@ describe('PXExtractionKey', () => {
       `any_tenant_name${PXExtractionKey.separator}any_extraction_id${PXExtractionKey.separator}any_user_id`
     );
     expect(extractionId.userId).toBe('any_user_id');
-    expect(extractionId.extractionId).toBe('any_extraction_id');
+    expect(extractionId.entityStatusId).toBe('any_extraction_id');
     expect(extractionId.tenantName).toBe('any_tenant_name');
   });
 
