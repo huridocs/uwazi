@@ -32,17 +32,14 @@ if (window.SENTRY_APP_DSN) {
     environment: window.UWAZI_ENVIRONMENT,
     dsn: window.SENTRY_APP_DSN,
     integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
+      Sentry.reactRouterV7BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
       }),
-      new Sentry.Replay(),
-      Sentry.captureConsoleIntegration({ levels: ['error'] }),
+      Sentry.replayIntegration(),
     ],
 
     tracesSampleRate: 0.1,

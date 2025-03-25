@@ -322,8 +322,8 @@ export default function () {
 
     filterMetadata(filters = []) {
       filters.forEach(filter => {
-        const match = filterToMatch(filter, filter.suggested ? 'suggestedMetadata' : 'metadata');
-        if (match) {
+        const match = filterToMatch(filter, 'metadata');
+        if (match && !filter.suggested) {
           addFilter(match);
         }
       });
@@ -352,23 +352,14 @@ export default function () {
       );
     },
 
-    aggregations(properties, includeReviewAggregations) {
+    aggregations(properties) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
           baseQuery
         );
       });
-      if (includeReviewAggregations) {
-        // suggested has an implied '__' as a prefix
-        properties.forEach(property => {
-          baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
-            property,
-            baseQuery,
-            true
-          );
-        });
-      }
+
       return this;
     },
 

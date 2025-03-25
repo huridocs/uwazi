@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import date from 'api/utils/date';
@@ -702,7 +703,8 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 }
 
-const buildQuery = async (query, language, user, resources, includeReviewAggregations) => {
+// eslint-disable-next-line max-statements
+const buildQuery = async (query, language, user, resources) => {
   const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const searchTextType = query.searchTerm
@@ -766,24 +768,18 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   query.performAggregations = query.performAggregations || true;
   if (query.performAggregations) {
     const aggregations = await aggregationProperties(properties, allProps);
-    queryBuilder.aggregations(aggregations, includeReviewAggregations);
+    queryBuilder.aggregations(aggregations);
   }
 
   return queryBuilder;
 };
 
 const search = {
+  // eslint-disable-next-line max-statements
   async search(query, language, user) {
     const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
-    const includeReviewAggregations = query.includeReviewAggregations || false;
-    const queryBuilder = await buildQuery(
-      query,
-      language,
-      user,
-      resources,
-      includeReviewAggregations
-    );
+    const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
     }

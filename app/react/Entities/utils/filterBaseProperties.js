@@ -5,7 +5,6 @@ export default {
       '__v',
       'language',
       'metadata',
-      'suggestedMetadata',
       'sharedId',
       'template',
       'title',

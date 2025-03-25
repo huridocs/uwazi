@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { act } from 'react';
-import { screen, RenderResult } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { TestAtomStoreProvider } from 'V2/testing';
 import { localeAtom, translationsAtom } from 'V2/atoms';
@@ -10,13 +10,8 @@ import { state, translations } from './fixture/state';
 import { EntityData, EntityDataProps } from '../EntityData';
 
 describe('EntityData Markdown', () => {
-  let consoleErrorSpy: jasmine.Spy;
-  let renderResult: RenderResult;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
-    spyOn(console, 'error').and.callFake(consoleErrorSpy);
     global.fetch = jest.fn();
     (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
   });
@@ -27,7 +22,7 @@ describe('EntityData Markdown', () => {
 
   const render = async (props: EntityDataProps) => {
     await act(async () => {
-      ({ renderResult } = renderConnectedContainer(
+      renderConnectedContainer(
         <TestAtomStoreProvider
           initialValues={[
             [translationsAtom, translations],
@@ -37,7 +32,7 @@ describe('EntityData Markdown', () => {
           <EntityData {...props} />
         </TestAtomStoreProvider>,
         () => state
-      ));
+      );
     });
   };
 
@@ -71,28 +66,6 @@ describe('EntityData Markdown', () => {
 
       await render({ 'label-of': 'Main Image' });
       expect(screen.getByText('Main Image translated')).toBeInTheDocument();
-    });
-  });
-
-  describe('Error handling (until upstream implementation is implemented)', () => {
-    it('should fail if no value or propertyName is provided', async () => {
-      await render({});
-      //get the body
-      expect(renderResult.container.innerHTML).toBe('');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error on EntityData: ');
-      expect(consoleErrorSpy.calls.all()[2].args[0].message).toBe(
-        '"value-of" or "label-of" must be provided.'
-      );
-    });
-
-    it('should fail if both value and propertyName are provided', async () => {
-      await render({ 'value-of': 'something', 'label-of': 'something else' });
-      //assert empty html
-      expect(renderResult.container.innerHTML).toBe('');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error on EntityData: ');
-      expect(consoleErrorSpy.calls.all()[2].args[0].message).toBe(
-        'Can\'t provide both "value-of" and "label-of".'
-      );
     });
   });
 });

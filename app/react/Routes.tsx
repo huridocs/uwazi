@@ -264,7 +264,11 @@ const getRoutes = (
   const layout = getRoutesLayout(settings, element, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
-    <Route path="/" element={<App customParams={parameters} />}>
+    <Route
+      path="/"
+      element={<App customParams={parameters} />}
+      errorElement={<RouteErrorBoundary />}
+    >
       {layout}
       {languageKeys.map(langKey => languageLayout(langKey, layout))}
       <Route path="*" element={<GeneralError />} />

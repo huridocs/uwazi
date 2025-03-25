@@ -10,7 +10,7 @@ export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
   const showRequestId = currentError.status === 500 && currentError.requestId;
   return (
     <div className="tw-content">
-      <section className="bg-white">
+      <section className="h-full bg-white">
         <div className="max-w-screen-xl px-4 py-8 mx-auto lg:py-16 lg:px-6">
           <div className="max-w-screen-sm mx-auto text-center">
             {currentError.status && (
@@ -35,6 +35,11 @@ export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
                   </span>
                 )}
               </p>
+            )}
+            {currentError.stack && (
+              <pre className="mb-4 font-mono text-sm text-left text-gray-500 dark:text-gray-400">
+                {currentError.stack}
+              </pre>
             )}
           </div>
         </div>

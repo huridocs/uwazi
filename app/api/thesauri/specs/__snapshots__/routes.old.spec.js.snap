@@ -76,9 +76,6 @@ Object {
             "_id": Object {
               "type": "string",
             },
-            "enable_classification": Object {
-              "type": "boolean",
-            },
             "name": Object {
               "type": "string",
             },
