@@ -64,6 +64,8 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     await ArrayUtils.parallelFor(paragraphs, async paragraph =>
       this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
     );
+
+    await this.dependencies.entitiesStatusDS.markAsFinished(extractionKey.extractionId);
   }
 }
 

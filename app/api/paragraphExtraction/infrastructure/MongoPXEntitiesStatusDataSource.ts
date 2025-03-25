@@ -217,4 +217,14 @@ export class MongoPXEntitiesStatusDataSource
 
     return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
   }
+
+  async markAsFinished(entityStatusId: string): Promise<void> {
+    await this.getCollection().updateOne(
+      {
+        _id: new ObjectId(entityStatusId),
+      },
+      { $set: { status: EntityStatus.Finished } },
+      { upsert: false }
+    );
+  }
 }

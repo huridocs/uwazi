@@ -30,6 +30,7 @@ export interface PXEntitiesStatusDataSource {
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
   markAsObsolete(entityStatusId: string): Promise<void>;
   markAsQueued(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
+  markAsFinished(entityStatusId: string): Promise<void>;
 }
 
 export type {
