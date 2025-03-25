@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import loadable from '@loadable/component';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -30,7 +31,8 @@ import {
   loadValuesAndSuggestions,
   SELECT_TYPES,
 } from './sidepanelFunctions';
-import { TextProperty } from './TextProperty';
+
+const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
 
 interface SuggestionSidepanelProps {
   showSidepanel: boolean;

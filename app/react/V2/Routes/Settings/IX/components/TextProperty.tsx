@@ -1,5 +1,5 @@
 import React from 'react';
-import { HandleTextSelection } from '@huridocs/react-text-selection-handler';
+import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
