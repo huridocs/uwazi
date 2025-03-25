@@ -56,57 +56,49 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
     extractor,
     sourceEntities,
     user,
-    entityStatus,
   }: PXCreateParagraphInput): Promise<Output> {
-    try {
-      const [mainParagraph, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
+    const [mainParagraph, ...paragraphs] = extractor.createParagraphs(sourceEntities, paragraph);
 
-      const mainParagraphCreated = await this.dependencies.entitiesDS.save(mainParagraph, {
-        language: mainParagraph.language,
-        user,
-      });
+    const mainParagraphCreated = await this.dependencies.entitiesDS.save(mainParagraph, {
+      language: mainParagraph.language,
+      user,
+    });
 
-      await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
-        const existingTranslation = await this.dependencies.entitiesDS.getById(
-          mainParagraphCreated.sharedId,
-          paragraphTranslation.language
-        );
-
-        await this.dependencies.entitiesDS.save(
-          { ...existingTranslation, ...paragraphTranslation },
-          {
-            language: paragraphTranslation.language,
-            user,
-          }
-        );
-      });
-
-      await this.dependencies.relationshipsDS.save(
-        [
-          {
-            entity: sourceEntities[0].sharedId,
-            template: extractor.sourceRelationshipTypeId,
-          },
-          {
-            entity: mainParagraphCreated.sharedId,
-            template: extractor.targetRelationshipTypeId,
-          },
-        ],
-        mainParagraphCreated.language
+    await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
+      const existingTranslation = await this.dependencies.entitiesDS.getById(
+        mainParagraphCreated.sharedId,
+        paragraphTranslation.language
       );
 
-      await this.dependencies.entitiesStatusDS.incrementSuccess(entityStatus.id);
-
-      this.dependencies.logger.info(
-        `[PX] - Paragraph Created - ${JSON.stringify({
-          entitySharedId: mainParagraphCreated.sharedId,
-          title: mainParagraphCreated.title,
-        })}`
+      await this.dependencies.entitiesDS.save(
+        { ...existingTranslation, ...paragraphTranslation },
+        {
+          language: paragraphTranslation.language,
+          user,
+        }
       );
-    } catch (e) {
-      await this.dependencies.entitiesStatusDS.incrementFail(entityStatus.id);
-      throw e;
-    }
+    });
+
+    await this.dependencies.relationshipsDS.save(
+      [
+        {
+          entity: sourceEntities[0].sharedId,
+          template: extractor.sourceRelationshipTypeId,
+        },
+        {
+          entity: mainParagraphCreated.sharedId,
+          template: extractor.targetRelationshipTypeId,
+        },
+      ],
+      mainParagraphCreated.language
+    );
+
+    this.dependencies.logger.info(
+      `[PX] - Paragraph Created - ${JSON.stringify({
+        entitySharedId: mainParagraphCreated.sharedId,
+        title: mainParagraphCreated.title,
+      })}`
+    );
   }
 }
 

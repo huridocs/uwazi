@@ -89,7 +89,7 @@ describe('PXExtractParagraphFromEntities', () => {
       userId: input.userId,
       extractorId: input.extractorId,
       tenantName: 'any_tenant',
-      extractionId: expect.any(String),
+      entityStatusId: expect.any(String),
     });
 
     expect(dispatcher.dispatch).toHaveBeenNthCalledWith(2, PXExtractParagraphsFromEntityJob, {
@@ -97,7 +97,7 @@ describe('PXExtractParagraphFromEntities', () => {
       userId: input.userId,
       extractorId: input.extractorId,
       tenantName: 'any_tenant',
-      extractionId: expect.any(String),
+      entityStatusId: expect.any(String),
     });
   });
 

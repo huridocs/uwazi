@@ -11,11 +11,6 @@ type EnqueueInput = GetExistingInput;
 
 type InitProcessInput = GetExistingInput;
 
-type UpdateParagraphsCountInput = {
-  id: string;
-  count: number;
-};
-
 type CreateForSourceEntitiesInput = {
   sourceTemplateId: string;
   extractorId: string;
@@ -29,11 +24,8 @@ type MarkAsQueuedInput = {
 export interface PXEntitiesStatusDataSource {
   getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
   markAsProcessing(extractionId: string): Promise<PXEntityStatusModel>;
-  incrementSuccess(extractionId: string): Promise<PXEntityStatusModel>;
-  incrementFail(extractionId: string): Promise<PXEntityStatusModel>;
   create(input: CreateInput): Promise<PXEntityStatusModel>;
   setAsError(extractionId: string): Promise<PXEntityStatusModel>;
-  updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel>;
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
   markAsObsolete(entityStatusId: string): Promise<void>;
@@ -45,7 +37,6 @@ export type {
   CreateInput,
   EnqueueInput,
   InitProcessInput,
-  UpdateParagraphsCountInput,
   CreateForSourceEntitiesInput,
   MarkAsQueuedInput,
 };

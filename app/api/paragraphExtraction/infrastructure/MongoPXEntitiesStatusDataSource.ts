@@ -13,7 +13,6 @@ import {
   GetExistingInput,
   MarkAsQueuedInput,
   PXEntitiesStatusDataSource,
-  UpdateParagraphsCountInput,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
@@ -101,20 +100,6 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(input.id) },
-      { $set: { paragraphsCount: input.count } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(`Can not update an Entity Status that does not exist. Id : ${input.id}`);
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
   private static computeStatus() {
     return {
       $cond: {
@@ -146,60 +131,6 @@ export class MongoPXEntitiesStatusDataSource
     if (!dbo) {
       throw new Error(
         `Can not set an error of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async incrementFail(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      [
-        {
-          $set: {
-            failedParagraphsCount: { $add: ['$failedParagraphsCount', 1] },
-          },
-        },
-        {
-          $set: {
-            status: MongoPXEntitiesStatusDataSource.computeStatus(),
-          },
-        },
-      ],
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not increment failing paragraphs of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async incrementSuccess(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      [
-        {
-          $set: {
-            successfulParagraphsCount: { $add: ['$successfulParagraphsCount', 1] },
-          },
-        },
-        {
-          $set: {
-            status: MongoPXEntitiesStatusDataSource.computeStatus(),
-          },
-        },
-      ],
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not increment successful paragraphs of an Entity Status that does not exist. Id : ${extractionId}`
       );
     }
 

@@ -186,10 +186,6 @@ describe('PXCreateParagraphs', () => {
     await testingEnvironment.tearDown();
   });
 
-  it.todo('should throw if the source Entity does not belong to the Extractor');
-
-  it.todo('should change Extraction status to "error" on fail');
-
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
 
@@ -285,81 +281,6 @@ describe('PXCreateParagraphs', () => {
     expect(extractedSpanish).toMatchObject([
       createExpectedParagraph('Source Entity Spanish.01', 'es', 'Paragraph 1 in spanish', userId),
       createExpectedParagraph('Source Entity Spanish.02', 'es', 'Paragraph 2 in spanish', userId),
-    ]);
-  });
-
-  it('should update Paragraphs count', async () => {
-    const { createParagraphs } = setUpUseCase();
-
-    const extractionKey = PXExtractionKey.create({
-      extractionId: extractionDBO._id.toString(),
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-    });
-
-    const input: PXCreateParagraphsInput = {
-      availableLanguages: ['es', 'en', 'pt'],
-      extractionKey,
-      mainLanguage: 'es',
-      paragraphs: [
-        {
-          paragraphNumber: 1,
-          translations: [
-            {
-              isMainLanguage: false,
-              language: 'en',
-              needsUserReview: false,
-              text: 'Paragraph 1 in english',
-            },
-            {
-              isMainLanguage: true,
-              language: 'es',
-              needsUserReview: false,
-              text: 'Paragraph 1 in spanish',
-            },
-            {
-              isMainLanguage: false,
-              language: 'pt',
-              needsUserReview: false,
-              text: 'Paragraph 1 in portuguese',
-            },
-          ],
-        },
-        {
-          paragraphNumber: 2,
-          translations: [
-            {
-              isMainLanguage: false,
-              language: 'en',
-              needsUserReview: false,
-              text: 'Paragraph 2 in english',
-            },
-            {
-              isMainLanguage: true,
-              language: 'es',
-              needsUserReview: false,
-              text: 'Paragraph 2 in spanish',
-            },
-            {
-              isMainLanguage: false,
-              language: 'pt',
-              needsUserReview: false,
-              text: 'Paragraph 2 in portuguese',
-            },
-          ],
-        },
-      ],
-    };
-
-    await createParagraphs.execute(input);
-
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-
-    expect(extractions).toMatchObject([
-      {
-        _id: extractionDBO._id,
-        paragraphsCount: 2,
-      },
     ]);
   });
 
