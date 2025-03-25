@@ -100,27 +100,6 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  private static computeStatus() {
-    return {
-      $cond: {
-        if: {
-          $lt: [
-            { $add: ['$failedParagraphsCount', '$successfulParagraphsCount'] },
-            '$paragraphsCount',
-          ],
-        },
-        then: '$status',
-        else: {
-          $cond: {
-            if: { $gte: ['$successfulParagraphsCount', 1] },
-            then: EntityStatus.Finished,
-            else: EntityStatus.Error,
-          },
-        },
-      },
-    };
-  }
-
   async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
     const dbo = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(extractionId) },
@@ -190,9 +169,6 @@ export class MongoPXEntitiesStatusDataSource
       entitySharedId: dbo.entitySharedId,
 
       status: dbo.status,
-      paragraphsCount: dbo.paragraphsCount,
-      failedParagraphsCount: dbo.failedParagraphsCount,
-      successfulParagraphsCount: dbo.successfulParagraphsCount,
     };
   }
 

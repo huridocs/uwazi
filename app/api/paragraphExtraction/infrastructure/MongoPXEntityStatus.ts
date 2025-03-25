@@ -7,7 +7,4 @@ export type MongoPXEntityStatus = {
   extractorId: ObjectId;
 
   status: EntityStatus;
-  paragraphsCount: number;
-  failedParagraphsCount: number;
-  successfulParagraphsCount: number;
 };

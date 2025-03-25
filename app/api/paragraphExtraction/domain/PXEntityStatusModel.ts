@@ -12,9 +12,6 @@ type PXEntityStatusModel = {
   entitySharedId: string;
   extractorId: string;
   status: EntityStatus;
-  paragraphsCount: number;
-  failedParagraphsCount: number;
-  successfulParagraphsCount: number;
 };
 
 export { EntityStatus };
