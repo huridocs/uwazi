@@ -144,7 +144,7 @@ const createBlankSuggestionsForPartialExtractor = async (
               })
             )
         );
-      } else if (tenants.current().featureFlags?.ixExtraSources) {
+      } else if (tenants.current().featureFlags?.ixExtraSources && extractor.source.property) {
         const entityData = await fetchEntitiesData(template, undefined, batchSize);
 
         suggestionsToSave.push(
