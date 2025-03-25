@@ -6,6 +6,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { IXSuggestionStateType } from 'shared/types/suggestionType';
 import { Extractors } from '../ixextractors';
+import { tenants } from 'api/tenants';
+import { testingTenants } from 'api/utils/testingTenants';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -172,6 +174,10 @@ const expectedStates: Record<string, IXSuggestionStateType> = {
 describe('ixextractors', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
+    testingTenants.changeCurrentTenant({
+      name: 'ixTenant',
+      featureFlags: { ixExtraSources: true },
+    });
   });
 
   afterAll(async () => {

@@ -2,6 +2,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
+import { tenants } from 'api/tenants';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/getFiles';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -10,7 +11,6 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import templates from 'api/templates';
 import { LanguageUtils } from 'shared/language';
 import { Suggestions } from './suggestions';
-import { tenants } from 'api/tenants';
 
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
   entitiesModel.db
