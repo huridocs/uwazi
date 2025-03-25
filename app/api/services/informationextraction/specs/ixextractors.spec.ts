@@ -4,10 +4,9 @@ import { Suggestions } from 'api/suggestions/suggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { DBFixture, testingDB } from 'api/utils/testing_db';
+import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionStateType } from 'shared/types/suggestionType';
 import { Extractors } from '../ixextractors';
-import { tenants } from 'api/tenants';
-import { testingTenants } from 'api/utils/testingTenants';
 
 const fixtureFactory = getFixturesFactory();
 
