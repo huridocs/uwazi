@@ -34,13 +34,9 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
 
   // eslint-disable-next-line max-statements
   async execute({ extractionKey, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
-    await this.dependencies.entitiesStatusDS.updateParagraphsCount({
-      id: extractionKey.extractionId,
-      count: paragraphs.length,
-    });
     const user = { _id: new ObjectId(extractionKey.userId) };
     const entityStatus = await this.dependencies.entitiesStatusDS.getById(
-      extractionKey.extractionId
+      extractionKey.entityStatusId
     );
     if (!entityStatus) {
       throw new Error('Entity Status not found');
@@ -68,6 +64,8 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     await ArrayUtils.parallelFor(paragraphs, async paragraph =>
       this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
     );
+
+    await this.dependencies.entitiesStatusDS.markAsFinished(extractionKey.entityStatusId);
   }
 }
 

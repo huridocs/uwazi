@@ -1,8 +1,10 @@
+import { ObjectId } from 'mongodb';
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { SegmentationType } from 'shared/types/segmentationType';
-import { ObjectId } from 'mongodb';
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+
 import { FilesDataSource } from '../contracts/FilesDataSource';
 import { FileMappers } from './FilesMappers';
 import { FileDBOType } from './schemas/filesTypes';

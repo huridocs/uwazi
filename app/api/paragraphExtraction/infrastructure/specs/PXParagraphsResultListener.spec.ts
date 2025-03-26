@@ -17,13 +17,10 @@ const extractionDBO: MongoPXEntityStatus = {
   entitySharedId: 'any_entity_shared_id',
   extractorId: new ObjectId(),
   status: EntityStatus.Processing,
-  paragraphsCount: 1,
-  failedParagraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const extractionKey = PXExtractionKey.create({
-  extractionId: extractionDBO._id.toString(),
+  entityStatusId: extractionDBO._id.toString(),
   tenantName: 'any_tenant_name',
   userId: 'any_user_id',
 });

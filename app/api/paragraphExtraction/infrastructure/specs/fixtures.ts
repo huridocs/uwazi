@@ -12,7 +12,7 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
   key: PXExtractionKey.create({
     tenantName: 'tenantName',
     userId: 'userId',
-    extractionId: 'any_extraction_id',
+    entityStatusId: 'any_extraction_id',
   }).key,
   main_language: 'en',
   available_languages: ['en', 'es', 'fr'],
