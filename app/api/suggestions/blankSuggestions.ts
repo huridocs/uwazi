@@ -68,7 +68,7 @@ const getBlankSuggestionForProperty = ({
 }) => ({
   language,
   entityId,
-  entityTemplate: typeof template === 'string' ? template : template.toString(),
+  entityTemplate: template.toString(),
   extractorId,
   propertyName,
   status: 'ready' as 'ready',
@@ -98,7 +98,7 @@ const getBlankSuggestionForPdf = ({
     : defaultLanguage,
   fileId: file._id,
   entityId: file.entity!,
-  entityTemplate: typeof template === 'string' ? template : template.toString(),
+  entityTemplate: template.toString(),
   extractorId,
   propertyName,
   status: 'ready' as 'ready',
