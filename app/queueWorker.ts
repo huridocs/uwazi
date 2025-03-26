@@ -1,6 +1,4 @@
 import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import * as Tracing from '@sentry/tracing';
 import { config } from 'api/config';
 import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
 import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';
