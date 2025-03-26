@@ -8,8 +8,11 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';
+import { sleep } from 'shared/tsUtils';
 
 class TestJob implements Dispatchable {
+  static shouldFail = false;
+
   private signal: (index: string) => void;
 
   private logger: (message: string, index: number) => void;
@@ -21,6 +24,9 @@ class TestJob implements Dispatchable {
 
   async handleDispatch(_heartbeat: HeartbeatCallback, params: { aNumber: number }): Promise<void> {
     this.signal(`starting-${params.aNumber}`);
+    if (TestJob.shouldFail) {
+      throw new Error('Job failed');
+    }
     this.logger(`${params.aNumber}`, params.aNumber);
     this.signal(`ending-${params.aNumber}`);
   }
@@ -108,6 +114,52 @@ it('should finish the in-progress job before stopping', async () => {
   await worker.stop();
 
   expect(output).toEqual(['namespace1 1', 'namespace2 2']);
+});
+
+it('should retry job when it fails', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, { lockWindow: 1 });
+  const onError = jest.fn();
+
+  const { worker, signals, output } = await setUpWorker(onError);
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await dispatcher.dispatch(TestJob, { aNumber: 2 });
+  await dispatcher.dispatch(TestJob, { aNumber: 3 });
+
+  await signals.signaled('ending-2');
+  TestJob.shouldFail = true;
+  await signals.signaled('starting-3');
+  TestJob.shouldFail = false;
+  await signals.signaled('ending-3');
+  await worker.stop();
+
+  expect(output).toEqual(['namespace 1', 'namespace 2', 'namespace 3']);
+});
+
+it('should have a maximum number of retries', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, {
+    lockWindow: 0,
+    maxRetries: 2,
+  });
+
+  const { worker, signals } = await setUpWorker();
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await dispatcher.dispatch(TestJob, { aNumber: 2 });
+
+  await signals.signaled('ending-1');
+  TestJob.shouldFail = true;
+  await signals.signaled('starting-2', 2);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(await adapter.pickJob('name')).toBeNull();
 });
 
 it('should report error and continue if a job fails', async () => {
