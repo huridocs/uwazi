@@ -113,24 +113,7 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async markAsProcessing(entityStatusId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(entityStatusId) },
-      { $set: { status: EntityStatus.Processing } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not init processing of an Entity Status that does not exist. 
-        id: ${entityStatusId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async create(input: CreateInput): Promise<PXEntityStatusModel> {
+  async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatus = {
       _id: new ObjectId(),
       extractorId: new ObjectId(input.extractorId),
@@ -198,7 +181,7 @@ export class MongoPXEntitiesStatusDataSource
     );
   }
 
-  async markAsQueued(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
+  async markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
     const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
       {
         extractorId: new ObjectId(input.extractorId),

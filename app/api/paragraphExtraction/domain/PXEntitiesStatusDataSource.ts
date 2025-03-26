@@ -7,10 +7,6 @@ type CreateInput = {
 
 type GetExistingInput = CreateInput;
 
-type EnqueueInput = GetExistingInput;
-
-type InitProcessInput = GetExistingInput;
-
 type CreateForSourceEntitiesInput = {
   sourceTemplateId: string;
   extractorId: string;
@@ -23,21 +19,13 @@ type MarkAsQueuedInput = {
 
 export interface PXEntitiesStatusDataSource {
   getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
-  markAsProcessing(extractionId: string): Promise<PXEntityStatusModel>;
-  create(input: CreateInput): Promise<PXEntityStatusModel>;
+  createAsNew(input: CreateInput): Promise<PXEntityStatusModel>;
   setAsError(extractionId: string): Promise<PXEntityStatusModel>;
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
   markAsObsolete(entityStatusId: string): Promise<void>;
-  markAsQueued(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
+  markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
   markAsFinished(entityStatusId: string): Promise<void>;
 }
 
-export type {
-  GetExistingInput,
-  CreateInput,
-  EnqueueInput,
-  InitProcessInput,
-  CreateForSourceEntitiesInput,
-  MarkAsQueuedInput,
-};
+export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput, MarkAsQueuedInput };

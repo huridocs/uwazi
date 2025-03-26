@@ -46,8 +46,6 @@ export class PXExtractParagraphsFromEntity
   // eslint-disable-next-line max-statements
   async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
     try {
-      await this.dependencies.entitiesStatusDS.markAsProcessing(input.entityStatusId);
-
       const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
       const documents = await this.getDocuments(entity, installedLanguages);

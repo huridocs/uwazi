@@ -94,7 +94,7 @@ export class PXEntityStatusManager {
     if (entityStatus) {
       await this.dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
     } else {
-      await this.dependencies.entitiesStatusDS.create({
+      await this.dependencies.entitiesStatusDS.createAsNew({
         extractorId: extractor.id,
         entitySharedId: entity.sharedId!,
       });

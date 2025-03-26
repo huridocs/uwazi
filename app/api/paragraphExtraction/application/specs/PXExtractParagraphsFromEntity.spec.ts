@@ -113,26 +113,6 @@ describe('PXExtractParagraphsFromEntity', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should change Extraction status to "processing" on success', async () => {
-    const { extractParagraphs } = setUpUseCase();
-
-    await extractParagraphs.execute({
-      entitySharedId: entity.sharedId!.toString()!,
-      extractorId: extractor._id.toString(),
-      userId: userId.toString(),
-      entityStatusId: entityStatus._id.toString(),
-    });
-
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-
-    expect(extractions).toMatchObject([
-      {
-        _id: entityStatus._id,
-        status: EntityStatus.Processing,
-      },
-    ]);
-  });
-
   it('should change Extraction status to "error" on fail', async () => {
     const { extractParagraphs } = setUpUseCase();
 
