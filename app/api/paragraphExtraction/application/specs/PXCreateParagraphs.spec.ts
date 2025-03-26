@@ -608,7 +608,7 @@ describe('PXCreateParagraphs', () => {
     ]);
   });
 
-  it('should mark EntityStatus as finished after all Paragraphs created', async () => {
+  it('should mark EntityStatus as processed after all Paragraphs created', async () => {
     const { createParagraphs } = setUpUseCase();
 
     const extractionKey = PXExtractionKey.create({
@@ -682,7 +682,7 @@ describe('PXCreateParagraphs', () => {
         _id: expect.any(ObjectId),
         entitySharedId: mongoEntityStatus.entitySharedId,
         extractorId: mongoEntityStatus.extractorId,
-        status: EntityStatus.Finished,
+        status: EntityStatus.Processed,
       },
     ]);
   });

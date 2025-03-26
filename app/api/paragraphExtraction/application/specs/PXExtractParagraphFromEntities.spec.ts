@@ -95,7 +95,7 @@ describe('PXExtractParagraphFromEntities', () => {
     });
   });
 
-  it('should mark each EntityStatus as Queued', async () => {
+  it('should mark each EntityStatus as Processing', async () => {
     const { extractParagraphFromEntities } = setUpUseCase();
 
     const input: Input = {
@@ -115,13 +115,13 @@ describe('PXExtractParagraphFromEntities', () => {
         _id: expect.any(ObjectId),
         entitySharedId: entity.sharedId,
         extractorId: extractor._id,
-        status: EntityStatus.Queued,
+        status: EntityStatus.Processing,
       },
       {
         _id: expect.any(ObjectId),
         entitySharedId: entity2.sharedId,
         extractorId: extractor._id,
-        status: EntityStatus.Queued,
+        status: EntityStatus.Processing,
       },
     ]);
   });

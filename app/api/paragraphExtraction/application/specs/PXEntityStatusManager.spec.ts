@@ -106,7 +106,7 @@ describe('PXEntityStatusManager', () => {
       _id: factory.id('entity_status'),
       entitySharedId: entity.sharedId!,
       extractorId: extractor._id,
-      status: EntityStatus.Finished,
+      status: EntityStatus.Processed,
     };
 
     await testingEnvironment.setFixtures({
