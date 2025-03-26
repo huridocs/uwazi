@@ -11,7 +11,6 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
 
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -34,6 +33,7 @@ import { handleError } from './api/utils/handleError.js';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
+import { initSentry } from './initSentry';
 
 mongoose.Promise = Promise;
 
@@ -51,24 +51,7 @@ const metricsMiddleware = promBundle({
 });
 
 app.use(metricsMiddleware);
-if (config.sentry.dsn) {
-  Sentry.init({
-    release: config.VERSION,
-    dsn: config.sentry.dsn,
-    environment: config.ENVIRONMENT,
-    integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Tracing.Integrations.Express({ app }),
-      new Tracing.Integrations.Mongo({
-        useMongoose: true,
-      }),
-    ],
-    tracesSampleRate: config.sentry.tracesSampleRate,
-  });
-  app.use(Sentry.Handlers.requestHandler());
-  app.use(Sentry.Handlers.tracingHandler());
-}
-
+initSentry();
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
@@ -141,6 +124,8 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         process.exit(1);
       }
     });
+    // eslint-disable-next-line global-require
+    require('./queueWorker');
   }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];

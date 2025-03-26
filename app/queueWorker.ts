@@ -14,20 +14,9 @@ import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructur
 import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
 import { registerJobs } from './queueRegistry';
+import { initSentry } from './initSentry';
 
-if (config.sentry.dsn) {
-  Sentry.init({
-    release: config.VERSION,
-    dsn: config.sentry.dsn,
-    environment: config.ENVIRONMENT,
-    integrations: [
-      Sentry.httpIntegration({ tracing: true }),
-      new Tracing.Integrations.Mongo({ useMongoose: true }),
-      nodeProfilingIntegration(),
-    ],
-    tracesSampleRate: config.sentry.tracesSampleRate,
-  });
-}
+initSentry();
 
 let dbAuth = {};
 
