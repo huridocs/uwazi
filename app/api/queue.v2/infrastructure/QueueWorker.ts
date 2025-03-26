@@ -4,7 +4,7 @@ import { performance } from 'perf_hooks';
 import { inspect } from 'util';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { UnregisteredJobError } from './errors';
+import { NonRetryableJobError, UnregisteredJobError } from './errors';
 import { Job, QueueAdapter } from './QueueAdapter';
 
 interface WorkerOptions {
@@ -135,6 +135,9 @@ export class QueueWorker {
       this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
+      if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
+        await this.adapter.markJobAsFailed(job);
+      }
       this.onError(e, { job });
     } finally {
       this.logProcess(start);
