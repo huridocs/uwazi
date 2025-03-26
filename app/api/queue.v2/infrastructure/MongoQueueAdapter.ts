@@ -43,7 +43,11 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
 
   async pickJob(queueName: string): Promise<Job | null> {
     const result = await this.getCollection().findOneAndUpdate(
-      { queue: queueName, lockedUntil: { $lt: Date.now() }, failed: false },
+      {
+        queue: queueName,
+        lockedUntil: { $lt: Date.now() },
+        $or: [{ failed: false }, { failed: { $exists: false } }],
+      },
       [
         {
           $set: {
