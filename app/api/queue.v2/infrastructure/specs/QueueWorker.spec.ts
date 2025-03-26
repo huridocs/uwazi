@@ -8,10 +8,12 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';
-import { sleep } from 'shared/tsUtils';
+import { NonRetryableJobError } from '../errors';
 
 class TestJob implements Dispatchable {
   static shouldFail = false;
+
+  static shouldFailNonRetryable = false;
 
   private signal: (index: string) => void;
 
@@ -26,6 +28,9 @@ class TestJob implements Dispatchable {
     this.signal(`starting-${params.aNumber}`);
     if (TestJob.shouldFail) {
       throw new Error('Job failed');
+    }
+    if (TestJob.shouldFailNonRetryable) {
+      throw new NonRetryableJobError(new Error('Non retryable error'));
     }
     this.logger(`${params.aNumber}`, params.aNumber);
     this.signal(`ending-${params.aNumber}`);
@@ -158,6 +163,26 @@ it('should have a maximum number of retries', async () => {
   await signals.signaled('starting-2', 2);
   await worker.stop();
   TestJob.shouldFail = false;
+
+  expect(await adapter.pickJob('name')).toBeNull();
+});
+
+it('should not retry jobs that throw a NonRetryableJobError', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, { lockWindow: 0 });
+
+  const { worker, signals } = await setUpWorker();
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await dispatcher.dispatch(TestJob, { aNumber: 2 });
+
+  await signals.signaled('ending-1');
+  TestJob.shouldFailNonRetryable = true;
+  await signals.signaled('starting-2');
+  await worker.stop();
+  TestJob.shouldFailNonRetryable = false;
 
   expect(await adapter.pickJob('name')).toBeNull();
 });
