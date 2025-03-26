@@ -1,7 +1,6 @@
 import path from 'path';
 
 import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
-import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
@@ -12,7 +11,7 @@ const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
 
   if (!readStream) {
-    throw createError(`${fileName} file not found`);
+    throw new Error(`CSV import,  ${fileName} file not found on the zip file`);
   }
 
   return readStream;

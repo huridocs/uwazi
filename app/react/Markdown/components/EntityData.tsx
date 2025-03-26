@@ -9,11 +9,7 @@ import { showByType } from 'app/Metadata/components/Metadata';
 import { Translate } from 'app/I18N';
 import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
-import { logError } from '../utils';
-export interface EntityDataProps {
-  'value-of'?: string;
-  'label-of'?: string;
-}
+import { errorCollector } from '../utils';
 
 interface Options {
   formattedEntity: any;
@@ -56,6 +52,9 @@ const extractMetadataProperty = ({ formattedEntity, propertyName, newNameGenerat
   const propertyData = formattedEntity.metadata.find(
     (p: any) => p.name === safeName(propertyName, newNameGeneration)
   );
+  if (!propertyData) {
+    throw new Error(`"value-of": ${propertyName} is invalid.`);
+  }
   return showByType({ prop: propertyData, compact: false });
 };
 
@@ -73,6 +72,9 @@ const extractRootLabel = ({ propertyName, template: _template }: Options) => {
 
 const extractMetadataLabel = ({ formattedEntity, propertyName, newNameGeneration }: Options) => {
   const propertyData = getPropertyData({ formattedEntity, propertyName, newNameGeneration });
+  if (!propertyData) {
+    throw new Error(`"label-of": ${propertyName} is invalid.`);
+  }
   return <Translate context={propertyData.translateContext}>{propertyData.label}</Translate>;
 };
 
@@ -122,7 +124,7 @@ const EntityData = ({
     const renderMethod = getMethod(propValueOf, propertyName);
     output = <>{renderMethod({ formattedEntity, propertyName, newNameGeneration, template })}</>;
   } catch (err) {
-    logError(err, propValueOf, propLabelOf);
+    errorCollector.add(err, 'EntityData', { valueOf: propValueOf, labelOf: propLabelOf });
   }
 
   return output;
@@ -130,3 +132,8 @@ const EntityData = ({
 
 const container = connector(EntityData);
 export { container as EntityData };
+
+export interface EntityDataProps {
+  'value-of'?: string;
+  'label-of'?: string;
+}

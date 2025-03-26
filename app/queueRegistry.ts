@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { denormalizeMetadata } from 'api/entities/denormalize';
@@ -58,7 +59,8 @@ export class DenormalizeEntityInMemoryTestJob implements Dispatchable {
         permissionsContext.setCommandContext();
         const entityInAllLanguages = await entities.getAllLanguages(params.sharedId);
         if (!entityInAllLanguages.length) {
-          throw new ValidationError([{ path: '/', message: 'Random validation error occurred' }]);
+          // throw new ValidationError([{ path: '/', message: 'Random validation error occurred' }]);
+          return;
         }
         const template = await templates.getById(entityInAllLanguages[0].template!);
         await entityInAllLanguages.reduce(async (prev, entity) => {

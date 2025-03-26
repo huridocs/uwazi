@@ -50,7 +50,7 @@ export const entityStatus: MongoPXEntityStatus = {
   _id: factory.id('entityStatus'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
-  status: EntityStatus.Queued,
+  status: EntityStatus.Processing,
 };
 
 export const file = factory.document('file', { language: 'eng', entity: entity.sharedId });

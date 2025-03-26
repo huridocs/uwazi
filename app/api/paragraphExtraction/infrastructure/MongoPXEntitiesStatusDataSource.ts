@@ -161,7 +161,6 @@ export class MongoPXEntitiesStatusDataSource
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),
       entitySharedId: dbo.entitySharedId,
-
       status: dbo.status,
     };
   }
@@ -205,7 +204,7 @@ export class MongoPXEntitiesStatusDataSource
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedId,
       },
-      { $set: { status: EntityStatus.Queued } },
+      { $set: { status: EntityStatus.Processing } },
       { upsert: false, returnDocument: 'after' }
     );
 
@@ -223,7 +222,7 @@ export class MongoPXEntitiesStatusDataSource
       {
         _id: new ObjectId(entityStatusId),
       },
-      { $set: { status: EntityStatus.Finished } },
+      { $set: { status: EntityStatus.Processed } },
       { upsert: false }
     );
   }

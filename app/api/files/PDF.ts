@@ -2,7 +2,6 @@
 import { createReadStream } from 'fs';
 import * as os from 'os';
 import { legacyLogger } from 'api/log';
-import { createError } from 'api/utils';
 import { spawn } from 'child-process-promise';
 import EventEmitter from 'events';
 import path from 'path';
@@ -46,9 +45,9 @@ class PDF extends EventEmitter {
       };
     } catch (e) {
       if (e.name === 'ChildProcessError') {
-        throw createError(`${e.message}\nstderr output:\n${e.stderr}`);
+        throw new Error(`${e.message}\nstderr output:\n${e.stderr}`);
       }
-      throw createError(e.message);
+      throw e;
     }
   }
 

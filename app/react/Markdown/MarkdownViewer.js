@@ -1,14 +1,17 @@
+/* eslint-disable max-statements */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from 'app/utils';
 import { Translate } from 'app/I18N';
+import { atomStore, userAtom } from 'app/V2/atoms';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { store } from 'app/store';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
 import CustomHookComponents from './CustomHooks';
-
 import markdownToReact from './markdownToReact';
 import { ValidatedElement } from './ValidatedElement';
-import { visualizationHtmlTags } from './utils';
+import { errorCollector, visualizationHtmlTags } from './utils';
 
 class MarkdownViewer extends Component {
   static errorHtml(index, message) {
@@ -36,6 +39,20 @@ class MarkdownViewer extends Component {
     }
     const Element = CustomHookComponents[props.component];
     return <Element {...props} key={index} />;
+  }
+
+  componentDidMount() {
+    if (errorCollector.hasErrors()) {
+      errorCollector.report();
+
+      const user = atomStore.get(userAtom);
+      if (user._id) {
+        // prepare the error message to be shown to the logged in user
+        store.dispatch(notify(errorCollector.display(), 'warning', 20000));
+      }
+
+      errorCollector.clear();
+    }
   }
 
   inlineComponent(type, config, index) {
