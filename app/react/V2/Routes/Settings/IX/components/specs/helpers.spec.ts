@@ -1,6 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import * as translate from 'app/I18N/translateFunction';
 import { formatOptions } from '../ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
-import { templates } from './fixtures';
+import { getAvailableSources } from '../helpers';
+import { extractors, templates, templatesWithCommonProperties } from './fixtures';
 
 describe('helpers', () => {
   describe('formatOptions', () => {
@@ -238,21 +244,6 @@ describe('helpers', () => {
   });
 
   describe('formatExtractors', () => {
-    const extractors = [
-      {
-        _id: 'exractor1',
-        name: 'Titles',
-        property: 'title',
-        templates: ['1', '2', '3', '5'],
-      },
-      {
-        _id: 'exractor2',
-        name: 'Fechas',
-        property: 'fecha',
-        templates: ['2'],
-      },
-    ];
-
     it('should return the extractor formatted for the table', () => {
       const result = formatExtractors(extractors, templates);
       expect(result).toEqual([
@@ -270,6 +261,7 @@ describe('helpers', () => {
           propertyType: 'text',
           propertyLabel: 'Title',
           rowId: 'exractor1',
+          source: 'PDF',
         },
         {
           _id: 'exractor2',
@@ -280,7 +272,102 @@ describe('helpers', () => {
           propertyType: 'date',
           propertyLabel: 'Fecha',
           rowId: 'exractor2',
+          source: 'Descripción',
         },
+        {
+          _id: 'exractor3',
+          name: 'Dates from titles',
+          property: 'fecha',
+          templates: ['1', '2', '3', '5'],
+          namedTemplates: [
+            'Mecanismo',
+            'Ordenes de la corte',
+            'Informe de admisibilidad',
+            'Ordenes del presidente',
+          ],
+          propertyType: 'date',
+          propertyLabel: 'Fecha',
+          rowId: 'exractor3',
+          source: 'Title',
+        },
+      ]);
+    });
+  });
+
+  describe('getAvailableSources', () => {
+    beforeAll(() => {
+      window.__featureFlags__ = { ixExtraSources: true };
+      jest.spyOn(translate, 't');
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return the pdf source by default and include title as an option', () => {
+      const result = getAvailableSources(templates, []);
+      expect(result).toEqual([
+        { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Title', value: 'title', defaultChecked: false },
+      ]);
+      expect(translate.t).toHaveBeenCalledWith('System', 'PDF', 'PDF', false);
+      expect(translate.t).toHaveBeenCalledWith('System', 'Title', 'Title', false);
+    });
+
+    it('should return the default if there is no common text field between templates', () => {
+      const result = getAvailableSources(templates, ['1-fecha', '3-fecha', '2-fecha']);
+      expect(result).toEqual([
+        { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Title', value: 'title', defaultChecked: false },
+      ]);
+    });
+
+    it('should exclude a source if it is the target property', () => {
+      const result = getAvailableSources(templates, ['1-title', '3-title', '2-title']);
+      expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
+    });
+
+    it('should return the default if text fields have diferent names', () => {
+      const result = getAvailableSources(templates, ['1-title', '5-title']);
+      expect(result).toEqual([{ label: 'PDF', value: '0', defaultChecked: true }]);
+    });
+
+    it('should return the common text fields amongst templates', () => {
+      const result = getAvailableSources(templates, ['1-fecha', '3-fecha']);
+      expect(result).toEqual([
+        { label: 'PDF', value: '0', defaultChecked: true },
+        { label: 'Title', value: 'title', defaultChecked: false },
+        { label: 'Resumen', value: 'resumen', defaultChecked: false },
+        { label: 'Descripción', value: 'descripcion', defaultChecked: false },
+      ]);
+      expect(translate.t).toHaveBeenNthCalledWith(3, '1', 'Resumen', 'Resumen', false);
+      expect(translate.t).toHaveBeenNthCalledWith(4, '1', 'Descripción', 'Descripción', false);
+    });
+
+    it('should not repeat the common property amongs templates', () => {
+      const result = getAvailableSources(
+        templates,
+        ['4-title', '1-title', '3-title'],
+        extractors[1]
+      );
+      expect(result).toEqual([
+        { label: 'PDF', value: '0' },
+        { label: 'Descripción', value: 'descripcion', defaultChecked: true },
+      ]);
+      expect(translate.t).toHaveBeenNthCalledWith(3, '1', 'Descripción', 'Descripción', false);
+    });
+
+    it('should return all the common properties amongs templates', () => {
+      const result = getAvailableSources(
+        templatesWithCommonProperties,
+        ['1-fecha', '2-fecha'],
+        extractors[1]
+      );
+      expect(result).toEqual([
+        { label: 'PDF', value: '0' },
+        { label: 'Title', value: 'title', defaultChecked: false },
+        { label: 'Opinión', value: 'opini_n', defaultChecked: false },
+        { label: 'Descripción', value: 'descripcion', defaultChecked: true },
       ]);
     });
   });

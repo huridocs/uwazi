@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 
 const get = async (headers?: IncomingHttpHeaders) => {
   try {
@@ -13,9 +13,9 @@ const get = async (headers?: IncomingHttpHeaders) => {
   }
 };
 
-const save = async (extractor: IXExtractorInfo) => {
+const save = async (extractor: ClientIXExtractorType) => {
   const requestParams = new RequestParams(extractor);
-  let response: IXExtractorInfo[];
+  let response: ClientIXExtractorType[];
 
   if (extractor._id) {
     response = await api.put('ixextractors', requestParams);

@@ -58,8 +58,9 @@ const getIcon = (color: Color) => {
 
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
+const SourceHeader = () => <Translate>Source</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
-const TitleHeader = () => <Translate>Document FOR</Translate>;
+const TitleHeader = () => <Translate>Name</Translate>;
 const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
 );
@@ -203,7 +204,7 @@ const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>
   </Link>
 );
 
-const OpenPDFButton = ({
+const OpenSidepanelButton = ({
   cell,
   action,
 }: {
@@ -211,7 +212,6 @@ const OpenPDFButton = ({
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
-
   return (
     <Button
       className="leading-4"
@@ -219,7 +219,7 @@ const OpenPDFButton = ({
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
-      <Translate className="whitespace-nowrap">Open PDF</Translate>
+      <Translate className="whitespace-nowrap">Open</Translate>
     </Button>
   );
 };
@@ -255,6 +255,10 @@ const extractorsTableColumns = [
   extractorColumnHelper.accessor('propertyType', {
     header: PropertyHeader,
     cell: PropertyCell,
+    meta: { headerClassName: 'w-1/6' },
+  }),
+  extractorColumnHelper.accessor('source', {
+    header: SourceHeader,
     meta: { headerClassName: 'w-1/6' },
   }),
   extractorColumnHelper.accessor('namedTemplates', {
@@ -315,7 +319,7 @@ const suggestionsTableColumnsBuilder = (
       header: ActionHeader,
       cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) =>
         row.depth === 0 ? (
-          <OpenPDFButton action={openPdfSidepanel} cell={cell} />
+          <OpenSidepanelButton action={openPdfSidepanel} cell={cell} />
         ) : (
           <AcceptButton action={acceptSuggestions} cell={cell} />
         ),

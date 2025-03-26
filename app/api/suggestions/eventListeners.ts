@@ -22,7 +22,7 @@ import { EnforcedWithId } from 'api/odm';
 import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
-import { getBlankSuggestion } from './blankSuggestions';
+import { getBlankSuggestionForPdf } from './blankSuggestions';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();
@@ -78,7 +78,14 @@ const createDefaultSuggestionsForFiles = async (
       const propertyType = involvedPropertiesByName[extractor.property]?.type;
       if (file.entity) {
         blankSuggestions.push(
-          getBlankSuggestion(file, extractor, entityTemplateId, propertyType, defaultLanguage)
+          getBlankSuggestionForPdf({
+            file,
+            extractorId: extractor._id,
+            propertyName: extractor.property,
+            template: entityTemplateId,
+            propertyType,
+            defaultLanguage,
+          })
         );
       }
     });

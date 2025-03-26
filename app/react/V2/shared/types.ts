@@ -1,11 +1,12 @@
+import { Tenant } from 'api/tenants/tenantContext';
+import { IXExtractorType } from 'shared/types/extractorType';
 import { SettingsLinkSchema } from 'shared/types/settingsType';
 
-interface IXExtractorInfo {
-  _id: string;
-  name: string;
-  property: string;
+interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
+  _id?: string;
   templates: string[];
 }
+
 type DraggableValue<T> = T & {
   items?: IDraggable<T>[];
 };
@@ -55,13 +56,18 @@ enum ItemTypes {
   ROW = 'row',
 }
 
+type FeatureFlags = Tenant['featureFlags'] & {};
+
+type ClientFeatureFlags = Pick<FeatureFlags, 'ixExtraSources'>;
+
 export { ItemTypes };
 export type {
-  IXExtractorInfo,
+  ClientIXExtractorType,
   ISublink,
   ILink,
   IDraggable,
   DraggableValue,
   Page,
   TranslationValue,
+  ClientFeatureFlags,
 };
