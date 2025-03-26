@@ -7,5 +7,7 @@ mongodump -h $HOST --db $DB -o blank_state
 
 echo "Copying uploaded files...";
 rm ./uploaded_documents/*.pdf
-cp ../uploaded_documents/*.pdf ./uploaded_documents
+rm ./uploaded_documents/*.jpg
+cp ../uploaded_documents/*.pdf ./uploaded_documents/
+cp ../uploaded_documents/*.jpg ./uploaded_documents/
 echo "DONE !";
