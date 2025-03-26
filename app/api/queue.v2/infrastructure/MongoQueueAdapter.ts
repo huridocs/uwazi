@@ -11,8 +11,11 @@ interface JobDBO {
   namespace: string;
   lockedUntil: number;
   createdAt: number;
+  retryCount: number;
+  failed: boolean;
   options: {
     lockWindow: number;
+    maxRetries: number;
   };
 }
 
@@ -40,8 +43,19 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
 
   async pickJob(queueName: string): Promise<Job | null> {
     const result = await this.getCollection().findOneAndUpdate(
-      { queue: queueName, lockedUntil: { $lt: Date.now() } },
-      [{ $set: { lockedUntil: { $sum: [Date.now(), '$options.lockWindow'] } } }],
+      {
+        queue: queueName,
+        lockedUntil: { $lt: Date.now() },
+        $or: [{ failed: false }, { failed: { $exists: false } }],
+      },
+      [
+        {
+          $set: {
+            lockedUntil: { $sum: [Date.now(), '$options.lockWindow'] },
+            retryCount: { $add: ['$retryCount', 1] },
+          },
+        },
+      ],
       { sort: { createdAt: 1 }, returnDocument: 'after' }
     );
 
@@ -56,11 +70,24 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     return null;
   }
 
-  async pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt'>): Promise<string> {
+  async markJobAsFailed(job: Job) {
+    await this.getCollection().findOneAndUpdate(
+      {
+        _id: new ObjectId(job.id),
+      },
+      { $set: { failed: true } }
+    );
+  }
+
+  async pushJob(
+    job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>
+  ): Promise<string> {
     const result = await this.getCollection().insertOne({
       _id: new ObjectId(),
       lockedUntil: 0,
       createdAt: Date.now(),
+      retryCount: 0,
+      failed: false,
       ...job,
     });
 

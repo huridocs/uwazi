@@ -31,6 +31,7 @@ it('should create a job in the given queue with the given message', async () => 
     params: {},
     namespace: 'namespace',
     options: {
+      maxRetries: 3,
       lockWindow: 500,
     },
   });
@@ -42,11 +43,14 @@ it('should create a job in the given queue with the given message', async () => 
       _id: new ObjectId(result),
       queue: 'queue name',
       name: 'a simple message',
+      failed: false,
       params: {},
       lockedUntil: 0,
       createdAt: NOW_VALUE,
       namespace: 'namespace',
+      retryCount: 0,
       options: {
+        maxRetries: 3,
         lockWindow: 500,
       },
     },
@@ -72,6 +76,7 @@ it('should only return non-locked jobs', async () => {
     params: {},
     namespace: 'namespace',
     lockedUntil: 10,
+    retryCount: 0,
     options: {
       lockWindow: 1000,
     },
@@ -96,6 +101,7 @@ it('should only return non-locked jobs', async () => {
     params: {},
     namespace: 'namespace',
     lockedUntil: 1000 + NOW_VALUE,
+    retryCount: 1,
     options: {
       lockWindow: 1000,
     },
@@ -104,12 +110,13 @@ it('should only return non-locked jobs', async () => {
     OTHER_QUEUE_JOB,
     {
       ...job,
+      retryCount: 1,
       lockedUntil: NOW_VALUE + 1000,
     },
   ]);
 });
 
-it('should atomically get a job and lock it for 1000ms', async () => {
+it('should atomically get a job, lock it for 1000ms and increase retryCount by 1', async () => {
   const adapter = DefaultTestingQueueAdapter();
   const NOW_VALUE = 11;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
@@ -120,6 +127,7 @@ it('should atomically get a job and lock it for 1000ms', async () => {
     params: {},
     namespace: 'namespace',
     lockedUntil: 10,
+    retryCount: 0,
     options: {
       lockWindow: 1000,
     },
@@ -135,6 +143,7 @@ it('should atomically get a job and lock it for 1000ms', async () => {
     params: {},
     namespace: 'namespace',
     lockedUntil: 1000 + NOW_VALUE,
+    retryCount: 1,
     options: {
       lockWindow: 1000,
     },
@@ -184,8 +193,10 @@ it('should increment the lock of a job the amount of miliseconds given by lockWi
     lockedUntil: 0,
     createdAt: NOW_VALUE,
     namespace: 'namespace',
+    retryCount: 0,
     options: {
       lockWindow: 2000,
+      maxRetries: 5,
     },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
@@ -213,8 +224,10 @@ it('should delete a job', async () => {
     lockedUntil: 0,
     createdAt: NOW_VALUE,
     namespace: 'namespace',
+    retryCount: 0,
     options: {
       lockWindow: 2000,
+      maxRetries: 5,
     },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
