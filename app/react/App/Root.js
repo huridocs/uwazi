@@ -66,18 +66,18 @@ class Root extends Component {
     if (this.props.reduxData) {
       innerHtml += `window.__reduxData__ = ${serialize(this.props.reduxData, { isJSON: true })};`;
     }
-
     if (this.props.user) {
       innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
     }
-
     if (this.props.loadingError) {
       innerHtml += `window.__loadingError__ = ${serialize(this.props.loadingError, { isJSON: true })};`;
     }
     if (this.props.atomStoreData) {
       innerHtml += `window.__atomStoreData__ = ${serialize(this.props.atomStoreData, { isJSON: true })};`;
     }
-
+    if (this.props.featureFlags) {
+      innerHtml += `window.__featureFlags__ = ${serialize(this.props.featureFlags, { isJSON: true })};`;
+    }
     return (
       <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
     );
@@ -134,6 +134,7 @@ Root.propTypes = {
   assets: PropTypes.object,
   loadingError: PropTypes.object,
   atomStoreData: PropTypes.object,
+  featureFlags: PropTypes.object,
 };
 
 export { headTag };

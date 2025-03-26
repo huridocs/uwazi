@@ -19,14 +19,14 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { IXExtractorInfo } from 'app/V2/shared/types';
-import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientIXExtractorType } from 'app/V2/shared/types';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { PDFSidepanel } from './components/PDFSidepanel';
+import { SuggestionSidepanel } from './components/SuggestionSidepanel';
 import {
   updateSuggestions,
   updateSuggestionsByEntity,
@@ -71,7 +71,7 @@ const IXSuggestions = () => {
   } = useLoaderData() as {
     totalPages: number;
     suggestions: TableSuggestion[];
-    extractor: IXExtractorInfo;
+    extractor: ClientIXExtractorType;
     templates: ClientTemplateSchema[];
     aggregation: any;
     currentStatus: ixStatus;
@@ -108,7 +108,7 @@ const IXSuggestions = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
+  const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -170,8 +170,13 @@ const IXSuggestions = () => {
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
   const fetchAgregations = async () => {
-    const newAggregations = await suggestionsAPI.aggregation(extractor._id);
+    const newAggregations = await suggestionsAPI.aggregation(extractor._id!);
     setAggregations(newAggregations);
+  };
+
+  const onEntitySave = async (updatedEntity: ClientEntitySchema) => {
+    setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity, property));
+    await fetchAgregations();
   };
 
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
@@ -218,10 +223,10 @@ const IXSuggestions = () => {
     try {
       if (status.status === 'ready') {
         setStatus({ status: 'sending_labeled_data' });
-        const response = await suggestionsAPI.findSuggestions(extractor._id);
+        const response = await suggestionsAPI.findSuggestions(extractor._id!);
         setStatus(response);
       } else {
-        await suggestionsAPI.cancel(extractor._id);
+        await suggestionsAPI.cancel(extractor._id!);
         if (status.status === 'error') {
           setStatus({ status: 'ready' });
         } else {
@@ -232,9 +237,10 @@ const IXSuggestions = () => {
     } catch (error) {}
   };
 
-  const openPDFSidepanel = (selectedSuggestion: TableSuggestion) => {
+  const openSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
-    setSidepanel('pdf');
+    const type = selectedSuggestion.extractorSource.pdf ? 'pdf' : 'property';
+    setSidepanel(type);
   };
 
   const closeSidepanel = () => {
@@ -260,7 +266,7 @@ const IXSuggestions = () => {
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
-              openPDFSidepanel
+              openSidepanel
             )}
             sortingFn={sortingState => {
               setSorting(sortingState);
@@ -369,17 +375,12 @@ const IXSuggestions = () => {
         aggregation={aggregations}
       />
 
-      <PDFSidepanel
-        showSidepanel={sidepanel === 'pdf'}
+      <SuggestionSidepanel
+        showSidepanel={sidepanel === 'pdf' || sidepanel === 'property'}
         property={property}
         setShowSidepanel={closeSidepanel}
-        suggestion={sidepanelSuggestion as EntitySuggestionType}
-        onEntitySave={async updatedEntity => {
-          setCurrentSuggestions(
-            updateSuggestionsByEntity(currentSuggestions, updatedEntity, property)
-          );
-          await fetchAgregations();
-        }}
+        suggestion={sidepanelSuggestion}
+        onEntitySave={onEntitySave}
       />
     </div>
   );
@@ -398,28 +399,34 @@ const IXSuggestionsLoader =
     }
     const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
-    const suggestionsList: { suggestions: EntitySuggestionType[]; totalPages: number } =
-      await suggestionsAPI.get(
-        {
-          filter,
-          page: {
-            number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
-            size: SUGGESTIONS_PER_PAGE,
-          },
-          ...(sortingOption && { sort: JSON.parse(sortingOption) }),
+    const suggestionsList: {
+      suggestions: [
+        EntitySuggestionType & { extractorSource: { pdf?: boolean; property?: string } },
+      ];
+      totalPages: number;
+    } = await suggestionsAPI.get(
+      {
+        filter,
+        page: {
+          number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+          size: SUGGESTIONS_PER_PAGE,
         },
-        headers
-      );
-
-    const suggestions = suggestionsList.suggestions.map(suggestion => ({
-      ...suggestion,
-      rowId: suggestion._id,
-    }));
+        ...(sortingOption && { sort: JSON.parse(sortingOption) }),
+      },
+      headers
+    );
 
     const extractors = await extractorsAPI.getById(extractorId, headers);
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
+
+    const suggestions = suggestionsList.suggestions.map(suggestion => ({
+      ...suggestion,
+      rowId: suggestion._id,
+      extractorSource: extractors[0].source,
+    }));
+
     return {
       suggestions,
       totalPages: suggestionsList.totalPages,

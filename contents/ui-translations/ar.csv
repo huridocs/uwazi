@@ -258,7 +258,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,مستند
 Document and entity types,انواع الوثائق والكيانات
 Document contents,محتويات المستند
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,عنوان المستند
 Documentation,توثيق
@@ -579,8 +578,8 @@ Ok,موافق
 OK,موافق
 Ooops... please go,بئساً...اذهب من فضلك
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,بئساً! لم نستطع إيجاد قائمة المفردات التي تحاول تحريرها. حاول العودة إلى هذه الصفحة من خلال الإعدادات.
+Open,Open
 Open group,Open group
-Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,افتح تطبيق المصادقة الثنائية في جهازك
 or,أو
 or drop your files here.,أو أفلت ملفاتك هنا
@@ -789,6 +788,7 @@ Sort ascending,Sort ascending
 Sort by,ترتيب حسب
 Sort descending,Sort descending
 sorted by,مرتبة حسب
+Source,Source
 Source template,Source template
 Source Template,Source Template
 State,State

@@ -261,7 +261,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Document
 Document and entity types,Document and entity types
 Document contents,Document contents
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,Document Title
 Documentation,Documentation
@@ -582,8 +581,8 @@ Ok,Ok
 OK,OK
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
+Open,Open
 Open group,Open group
-Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
 or,or
 or drop your files here.,or drop your files here.
@@ -792,6 +791,7 @@ Sort ascending,Sort ascending
 Sort by,Sort by
 Sort descending,Sort descending
 sorted by,sorted by
+Source,Source
 Source template,Source template
 Source Template,Source Template
 State,State
