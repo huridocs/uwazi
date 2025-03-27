@@ -6,6 +6,7 @@ import { appContext } from 'api/utils/AppContext';
 
 import { DB } from './DB';
 import { FileTypes } from 'api/files/storage';
+import { AbstractEvent } from 'api/eventsbus';
 
 export const dbSessionContext = {
   getSession() {
@@ -17,6 +18,10 @@ export const dbSessionContext = {
       (appContext.get('reindexOperations') as [query?: any, select?: string, limit?: number][]) ||
       []
     );
+  },
+
+  getEventsOperations() {
+    return (appContext.get('eventsEmitted') as AbstractEvent<unknown>[]) || [];
   },
 
   getFileOperations() {
@@ -50,6 +55,12 @@ export const dbSessionContext = {
     const reindexOperations = dbSessionContext.getReindexOperations();
     reindexOperations.push(args);
     appContext.set('reindexOperations', reindexOperations);
+  },
+
+  registerEvents(event: AbstractEvent<unknown>) {
+    const eventsOperations = dbSessionContext.getEventsOperations();
+    eventsOperations.push(event);
+    appContext.set('eventsEmitted', eventsOperations);
   },
 
   registerFileOperation(args: { filename: string; file: Readable; type: FileTypes }) {
