@@ -27,6 +27,7 @@ export interface PXEntitiesStatusDataSource {
   markAsFinished(entityStatusId: string): Promise<void>;
   markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
   delete(entityStatusId: string): Promise<void>;
+  deleteBySourceEntity(entitySharedId: string): Promise<void>;
 }
 
 export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput, MarkAsQueuedInput };

@@ -220,4 +220,8 @@ export class MongoPXEntitiesStatusDataSource
   async delete(entityStatusId: string): Promise<void> {
     await this.getCollection().deleteOne({ _id: new ObjectId(entityStatusId) });
   }
+
+  async deleteBySourceEntity(entitySharedId: string): Promise<void> {
+    await this.getCollection().deleteOne({ entitySharedId });
+  }
 }
