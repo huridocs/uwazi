@@ -14,7 +14,7 @@ import {
 import relationshipTypeDS from 'api/relationtypes';
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { TestUtils } from 'api/common.v2/utils/Test';
@@ -178,7 +178,7 @@ describe('PXCreateExtractor', () => {
 
     const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
-    )) as MongoPXEntityStatus[];
+    )) as MongoPXEntityStatusDBO[];
 
     expect(mongoEntityStatuses.length).toBe(2);
 

@@ -18,7 +18,7 @@ import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationEr
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
@@ -104,7 +104,7 @@ const extractor: MongoPXExtractorDBO = {
   targetRelationshipTypeId: targetRelationshipType._id,
 };
 
-const mongoEntityStatus: MongoPXEntityStatus = {
+const mongoEntityStatus: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status'),
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,

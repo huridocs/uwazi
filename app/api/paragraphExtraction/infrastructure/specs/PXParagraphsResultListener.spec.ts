@@ -6,13 +6,13 @@ import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel
 
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 
 jest.mock('api/services/tasksmanager/TaskManager');
 
 jest.spyOn(tenants, 'run');
 
-const extractionDBO: MongoPXEntityStatus = {
+const extractionDBO: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),
   entitySharedId: 'any_entity_shared_id',
   extractorId: new ObjectId(),

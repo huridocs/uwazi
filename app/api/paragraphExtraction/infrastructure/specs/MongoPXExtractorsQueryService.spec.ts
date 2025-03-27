@@ -9,9 +9,10 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 
 const f = getFixturesFactory();
 const sourceTemplate1 = f.template('Source Template');
@@ -81,114 +82,120 @@ const [entityWithoutExtractorEn] = f.entityInMultipleLanguages(
   templateWithoutExtractor.name
 );
 
-const pxEntityStatus1: MongoPXEntityStatus = {
+const pxEntityStatus1: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus1'),
   entitySharedId: entity1En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.Processed,
 };
 
-const pxEntityStatus2: MongoPXEntityStatus = {
+const pxEntityStatus2: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus2'),
   entitySharedId: entity2En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.New,
 };
 
-const pxEntityStatus3: MongoPXEntityStatus = {
+const pxEntityStatus3: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus3'),
   entitySharedId: entity3En.sharedId!,
   extractorId: extractor2._id,
   status: EntityStatus.New,
 };
 
-const pxEntityStatus4: MongoPXEntityStatus = {
+const pxEntityStatus4: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus4'),
   entitySharedId: entity4En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.New,
 };
 
-const pxEntityStatus5: MongoPXEntityStatus = {
+const pxEntityStatus5: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus5'),
   entitySharedId: entity5En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.Processing,
 };
 
-const pxEntityStatus6: MongoPXEntityStatus = {
+const pxEntityStatus6: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus6'),
   entitySharedId: entity6En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.Obsolete,
 };
 
-const pxEntityStatus7: MongoPXEntityStatus = {
+const pxEntityStatus7: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus7'),
   entitySharedId: entity7En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.Obsolete,
 };
 
-const pxEntityStatus8: MongoPXEntityStatus = {
+const pxEntityStatus8: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus8'),
   entitySharedId: entity8En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.Error,
 };
 
-const pxEntityStatus9: MongoPXEntityStatus = {
+const pxEntityStatus9: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus9'),
   entitySharedId: entity9En.sharedId!,
   extractorId: extractor1._id,
   status: EntityStatus.New,
 };
 
-const createFixtures = (): DBFixture => ({
+const entityFixtures = {
+  entity1En,
+  entity1Pt,
+  entity2En,
+  entity2Pt,
+  entity3En,
+  entity3Pt,
+  entity4En,
+  entity4Pt,
+  entity5En,
+  entity5Pt,
+  entity6En,
+  entity6Pt,
+  entity7En,
+  entity7Pt,
+  entity8En,
+  entity8Pt,
+  entity9En,
+  entity9Pt,
+  entityWithoutExtractorEn,
+};
+
+const entityStatusFixtures = {
+  pxEntityStatus1,
+  pxEntityStatus2,
+  pxEntityStatus3,
+  pxEntityStatus4,
+  pxEntityStatus5,
+  pxEntityStatus6,
+  pxEntityStatus7,
+  pxEntityStatus8,
+  pxEntityStatus9,
+};
+
+const fixtures = {
   relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractor1, extractor2, extractorWithoutEntities],
-  [mongoPXEntitiesStatusCollection]: [
-    pxEntityStatus1,
-    pxEntityStatus2,
-    pxEntityStatus3,
-    pxEntityStatus4,
-    pxEntityStatus5,
-    pxEntityStatus6,
-    pxEntityStatus7,
-    pxEntityStatus8,
-    pxEntityStatus9,
-  ],
+  [mongoPXEntitiesStatusCollection]: Object.values(entityStatusFixtures).map(value => value),
   templates: [sourceTemplate1, sourceTemplate2, targetTemplate1],
-  entities: [
-    entity1En,
-    entity1Pt,
-    entity2En,
-    entity2Pt,
-    entity3En,
-    entity3Pt,
-    entity4En,
-    entity4Pt,
-    entity5En,
-    entity5Pt,
-    entity6En,
-    entity6Pt,
-    entity7En,
-    entity7Pt,
-    entity8En,
-    entity8Pt,
-    entity9En,
-    entity9Pt,
-    entityWithoutExtractorEn,
-  ],
+  entities: Object.values(entityFixtures).map(value => value),
   settings: [
     {
       languages: [
-        { label: 'English', key: 'en', default: true },
-        { label: 'Portuguese', key: 'pt' },
+        { label: 'English', key: 'en' as LanguageISO6391, default: true },
+        { label: 'Portuguese', key: 'pt' as LanguageISO6391 },
       ],
     },
   ],
-});
+};
+
+const createFixtures = (): DBFixture => fixtures;
 
 const setUpSut = () => {
   const db = getConnection();
@@ -210,30 +217,125 @@ describe('MongoPXExtractorsQueryService', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should return a list of extractors with status count per state', async () => {
-    const { extractorsQueryService } = setUpSut();
+  describe('getExtractors', () => {
+    it('should return a list of extractors with status count per state', async () => {
+      const { extractorsQueryService } = setUpSut();
 
-    const extractors = await extractorsQueryService.getExtractors().all();
+      const extractors = await extractorsQueryService.getExtractors().all();
 
-    expect(extractors).toMatchObject([
-      {
-        _id: extractor1._id.toString(),
-        sourceTemplateId: sourceTemplate1._id.toString(),
-        targetTemplateId: targetTemplate1._id.toString(),
-        statusCount: { new: 3, processing: 1, obsolete: 2, error: 1, processed: 1, total: 8 },
+      expect(extractors).toMatchObject([
+        {
+          _id: extractor1._id.toString(),
+          sourceTemplateId: sourceTemplate1._id.toString(),
+          targetTemplateId: targetTemplate1._id.toString(),
+          statusCount: { new: 3, processing: 1, obsolete: 2, error: 1, processed: 1, total: 8 },
+        },
+        {
+          _id: extractor2._id.toString(),
+          sourceTemplateId: sourceTemplate2._id.toString(),
+          targetTemplateId: targetTemplate1._id.toString(),
+          statusCount: { new: 1, processing: 0, obsolete: 0, error: 0, processed: 0, total: 1 },
+        },
+        {
+          _id: extractorWithoutEntities._id.toString(),
+          sourceTemplateId: sourceTemplate3._id.toString(),
+          targetTemplateId: targetTemplate1._id.toString(),
+          statusCount: { new: 0, processing: 0, obsolete: 0, error: 0, processed: 0, total: 0 },
+        },
+      ]);
+    });
+  });
+
+  describe('getExtractorStatuses', () => {
+    const expectedRow = (entityNumber: number, status: EntityStatus) => ({
+      entity: {
+        _id: entityFixtures[
+          `entity${entityNumber}Pt` as keyof typeof entityFixtures
+        ]._id?.toString(),
+        language: 'pt',
+        sharedId: `entity${entityNumber}`,
+        title: `entity${entityNumber}`,
       },
-      {
-        _id: extractor2._id.toString(),
-        sourceTemplateId: sourceTemplate2._id.toString(),
-        targetTemplateId: targetTemplate1._id.toString(),
-        statusCount: { new: 1, processing: 0, obsolete: 0, error: 0, processed: 0, total: 1 },
+      status: {
+        _id: entityStatusFixtures[
+          `pxEntityStatus${entityNumber}` as keyof typeof entityStatusFixtures
+        ]._id.toString(),
+        status,
       },
-      {
-        _id: extractorWithoutEntities._id.toString(),
-        sourceTemplateId: sourceTemplate3._id.toString(),
-        targetTemplateId: targetTemplate1._id.toString(),
-        statusCount: { new: 0, processing: 0, obsolete: 0, error: 0, processed: 0, total: 0 },
-      },
-    ]);
+    });
+
+    it('should return a list of extraction statuses for the requested extractor with default pagination', async () => {
+      const { extractorsQueryService } = setUpSut();
+
+      const extractorStatuses = await extractorsQueryService
+        .getExtractorStatuses({ id: extractor1._id.toString(), language: 'pt' })
+        .all();
+
+      expect(extractorStatuses).toMatchObject([
+        {
+          rows: [
+            expectedRow(1, EntityStatus.Processed),
+            expectedRow(2, EntityStatus.New),
+            expectedRow(4, EntityStatus.New),
+            expectedRow(5, EntityStatus.Processing),
+            expectedRow(6, EntityStatus.Obsolete),
+            expectedRow(7, EntityStatus.Obsolete),
+            expectedRow(8, EntityStatus.Error),
+            expectedRow(9, EntityStatus.New),
+          ],
+          page: { number: 1, size: 10 },
+          totalRows: 8,
+        },
+      ]);
+    });
+
+    it('should return a paginated list of extraction statuses', async () => {
+      const { extractorsQueryService } = setUpSut();
+
+      const extractorStatuses = await extractorsQueryService
+        .getExtractorStatuses({
+          id: extractor1._id.toString(),
+          language: 'pt',
+          page: { number: 2, size: 3 },
+        })
+        .all();
+
+      expect(extractorStatuses).toMatchObject([
+        {
+          rows: [
+            expectedRow(5, EntityStatus.Processing),
+            expectedRow(6, EntityStatus.Obsolete),
+            expectedRow(7, EntityStatus.Obsolete),
+          ],
+          page: { number: 2, size: 3 },
+          totalRows: 8,
+        },
+      ]);
+    });
+
+    it('should return a filtered list of extraction statuses', async () => {
+      const { extractorsQueryService } = setUpSut();
+
+      const extractorStatuses = await extractorsQueryService
+        .getExtractorStatuses({
+          id: extractor1._id.toString(),
+          language: 'pt',
+          filter: { status: [EntityStatus.New, EntityStatus.Error] },
+        })
+        .all();
+
+      expect(extractorStatuses).toMatchObject([
+        {
+          rows: [
+            expectedRow(2, EntityStatus.New),
+            expectedRow(4, EntityStatus.New),
+            expectedRow(8, EntityStatus.Error),
+            expectedRow(9, EntityStatus.New),
+          ],
+          page: { number: 1, size: 10 },
+          totalRows: 4,
+        },
+      ]);
+    });
   });
 });
