@@ -77,6 +77,30 @@ export class MongoExtractorBuilder {
     });
   }
 
+  withSourceTemplate(sourceTemplate: TemplateSchema) {
+    this.props.sourceTemplate = sourceTemplate;
+
+    return this;
+  }
+
+  withTargetTemplate(targetTemplate: TemplateSchema) {
+    this.props.targetTemplate = targetTemplate;
+
+    return this;
+  }
+
+  withTargetRelationship(targetRelationship: any) {
+    this.props.targetRelationship = targetRelationship;
+
+    return this;
+  }
+
+  withSourceRelationship(sourceRelationship: any) {
+    this.props.sourceRelationship = sourceRelationship;
+
+    return this;
+  }
+
   build(): Props {
     return { ...this.props };
   }
