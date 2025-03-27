@@ -1,18 +1,22 @@
 import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import entities from 'api/entities';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import relationshipsDS from 'api/relationships';
 
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
-import { PXCreateParagraph } from './PXCreateParagraph';
-import { PXValidationError } from '../domain/PXValidationError';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { ParagraphOutput } from '../domain/PXExtractionService';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import { PXValidationError } from '../domain/PXValidationError';
+import { PXCreateParagraph } from './PXCreateParagraph';
 
-type PXCreateParagraphsInput = GetParagraphsResultOutput;
+type PXCreateParagraphsInput = {
+  userId: string;
+  extractionId: string;
+  paragraphs: ParagraphOutput[];
+};
 
 type Output = any;
 
@@ -33,15 +37,13 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
   }
 
   // eslint-disable-next-line max-statements
-  async execute({ extractionKey, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
+  async execute({ extractionId, paragraphs, userId }: PXCreateParagraphsInput): Promise<Output> {
     await this.dependencies.entitiesStatusDS.updateParagraphsCount({
-      id: extractionKey.extractionId,
+      id: extractionId,
       count: paragraphs.length,
     });
-    const user = { _id: new ObjectId(extractionKey.userId) };
-    const entityStatus = await this.dependencies.entitiesStatusDS.getById(
-      extractionKey.extractionId
-    );
+    const user = { _id: new ObjectId(userId) };
+    const entityStatus = await this.dependencies.entitiesStatusDS.getById(extractionId);
     if (!entityStatus) {
       throw new Error('Entity Status not found');
     }
