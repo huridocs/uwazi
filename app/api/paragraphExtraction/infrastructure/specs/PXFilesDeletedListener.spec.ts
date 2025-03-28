@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { FileType } from 'shared/types/fileType';
@@ -179,6 +181,21 @@ describe('PXFilesDeletedListener', () => {
       documentEs,
       { ...documentEn, language: documentPt.language },
     ];
+
+    await eventBus.emit(new FilesDeletedEvent({ files }));
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+  });
+
+  it('should do nothing if the source Entity was not the one used to be extracted', async () => {
+    const eventBus = new EventsBus();
+    new PXFilesDeletedListener(eventBus).start();
+
+    const files: FileType[] = [{ ...documentEn, entity: new ObjectId().toString() }];
 
     await eventBus.emit(new FilesDeletedEvent({ files }));
 

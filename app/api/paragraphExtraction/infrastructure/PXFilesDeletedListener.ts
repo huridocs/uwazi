@@ -42,8 +42,11 @@ export class PXFilesDeletedListener {
     }
   }
 
-  // eslint-disable-next-line max-statements
-  private async onDocumentsDeleted(deletedDocuments: Document[]) {
+  private async getInitialData(deletedDocuments: Document[]) {
+    const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
+      entitySharedId: deletedDocuments[0].entity,
+    });
+
     const languagesInstalled = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
       l => l.key
     );
@@ -51,6 +54,18 @@ export class PXFilesDeletedListener {
     const documentsInInstalledLanguages = (
       await this.dependencies.filesDS.getDocumentsForEntity(deletedDocuments[0].entity).all()
     ).filter(d => languagesInstalled.includes(d.language));
+
+    return { entityStatus, languagesInstalled, documentsInInstalledLanguages };
+  }
+
+  // eslint-disable-next-line max-statements
+  private async onDocumentsDeleted(deletedDocuments: Document[]) {
+    const { entityStatus, documentsInInstalledLanguages, languagesInstalled } =
+      await this.getInitialData(deletedDocuments);
+
+    if (!entityStatus) {
+      return;
+    }
 
     const deletedDocumentsInInstalledLanguage = deletedDocuments.filter(d =>
       languagesInstalled.includes(d.language)
@@ -79,14 +94,6 @@ export class PXFilesDeletedListener {
     );
 
     if (!deletedDocumentsUsedOnParagraphsExtraction.length) {
-      return;
-    }
-
-    const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
-      entitySharedId: deletedDocumentsUsedOnParagraphsExtraction[0].entity,
-    });
-
-    if (!entityStatus) {
       return;
     }
 
