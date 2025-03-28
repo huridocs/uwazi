@@ -1,5 +1,3 @@
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { applicationEventsBus } from 'api/eventsbus';
 import { storage } from 'api/files/storage';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { dbSessionContext } from 'api/odm/sessionsContext';
@@ -17,14 +15,6 @@ search.indexEntities = async (query, select, limit) => {
     return dbSessionContext.registerESIndexOperation([query, select, limit]);
   }
   return originalIndexEntities(query, select, limit);
-};
-
-const originalEmitFunction = applicationEventsBus.emit.bind(applicationEventsBus);
-applicationEventsBus.emit = async event => {
-  if (dbSessionContext.getSession()) {
-    return dbSessionContext.registerEvents(event);
-  }
-  return originalEmitFunction(event);
 };
 
 const originalStoreFile = storage.storeFile.bind(storage);
@@ -83,9 +73,6 @@ const withTransaction = async <T>(
       dbSessionContext.clearSession();
       await performDelayedFileStores();
       await session.commitTransaction();
-      await ArrayUtils.sequentialFor(dbSessionContext.getEventsOperations(), async event =>
-        originalEmitFunction(event)
-      );
       await performDelayedReindexes();
     }
     return result;
