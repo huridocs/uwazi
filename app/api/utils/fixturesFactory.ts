@@ -24,9 +24,14 @@ import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFact
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
+import { LanguageUtils } from 'shared/language';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
+};
+
+type FileLanguage = {
+  language?: string;
 };
 
 function getIdMapper() {
@@ -179,12 +184,28 @@ function getFixturesFactory() {
       return this.file(id, { ...extra, type: 'custom' });
     },
 
-    file: (id: string, extra: Partial<FileType> = {}): WithId<FileType> => ({
-      filename: id,
-      originalname: id,
-      ...extra,
-      _id: idMapper(`${id}`),
-    }),
+    file: (id: string, extra: Partial<FileType> = {}): WithId<FileType> => {
+      const fileLanguage: FileLanguage = {};
+
+      if (extra.language) {
+        const languageISO3 = LanguageUtils.fromISO639_1(extra.language)?.ISO639_3;
+        if (languageISO3) {
+          fileLanguage.language = languageISO3;
+        } else {
+          throw new Error(
+            'Please pass a valid ISO639_1 Language to Factory.file, the factory will replace with the appropriate DB ISO639_3'
+          );
+        }
+      }
+
+      return {
+        filename: id,
+        originalname: id,
+        ...extra,
+        ...fileLanguage,
+        _id: idMapper(`${id}`),
+      };
+    },
 
     /**
      * @deprecated too many parameters and dificult to read/use

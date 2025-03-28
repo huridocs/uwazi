@@ -1,17 +1,26 @@
 import { ObjectId } from 'mongodb';
 
+import { LanguageUtils } from 'shared/language';
+import { SegmentationType } from 'shared/types/segmentationType';
+
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { SegmentationType } from 'shared/types/segmentationType';
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 
-import { FilesDataSource } from '../contracts/FilesDataSource';
-import { FileMappers } from './FilesMappers';
-import { FileDBOType } from './schemas/filesTypes';
+import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
 import { UwaziFile } from '../model/UwaziFile';
 import { Segmentation } from '../model/Segmentation';
 import { Document } from '../model/Document';
+
+import { FileMappers } from './FilesMappers';
+import { FileDBOType } from './schemas/filesTypes';
 import { SegmentationMapper } from './SegmentationMapper';
+
+type GetDocumentsForEntityQuery = {
+  entity: string;
+  type: 'document';
+  language?: { $in: string[] };
+};
 
 export type SegmentationDBO = SegmentationType & {
   _id: ObjectId;
@@ -31,12 +40,28 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
     return new MongoResultSet(cursor, SegmentationMapper.toDomain);
   }
 
-  getDocumentsForEntity(entitySharedId: string): ResultSet<Document> {
+  getDocumentsForEntity(
+    entitySharedId: string,
+    options?: GetDocumentsForEntityOptions
+  ): ResultSet<Document> {
+    const query: GetDocumentsForEntityQuery = { entity: entitySharedId, type: 'document' };
+
+    if (options?.languages) {
+      const inLanguages = options.languages.reduce((langauges, l) => {
+        const language = LanguageUtils.fromISO639_1(l)?.ISO639_3;
+        if (language) {
+          langauges.push(language);
+        }
+        return langauges;
+      }, [] as string[]);
+
+      if (inLanguages.length) {
+        query.language = { $in: inLanguages };
+      }
+    }
+
     return new MongoResultSet<FileDBOType, Document>(
-      this.getCollection().find(
-        { entity: entitySharedId, type: 'document' },
-        { projection: { fullText: 0 } }
-      ),
+      this.getCollection().find(query, { projection: { fullText: 0 } }),
       FileMappers.toDocumentModel
     );
   }
