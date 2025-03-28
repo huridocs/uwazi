@@ -2,19 +2,20 @@ import { EventsBus } from 'api/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { Document } from 'api/files.v2/model/Document';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { files as filesDS } from 'api/files';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
+type LegacyFilesDS = typeof filesDS;
+
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  filesDS: FilesDataSource;
+  filesDS: LegacyFilesDS;
   settingsDS: SettingsDataSource;
 };
 
@@ -35,11 +36,21 @@ export class PXFilesDeletedListener {
         connection,
         mongoTransactionManager,
       });
-      const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+
       const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
 
       this.dependencies = { entitiesStatusDS, filesDS, settingsDS };
     }
+  }
+
+  private async getDocumentsInInstalledLanguages(sharedId: string, iso3Languages: string[]) {
+    const documentsInInstalledLanguages = await this.dependencies.filesDS.get({
+      entity: sharedId,
+      type: 'document',
+      language: { $in: iso3Languages },
+    });
+
+    return documentsInInstalledLanguages.map(d => FileMappers.toDocumentModel(d as any));
   }
 
   private async getInitialData(deletedDocuments: Document[]) {
@@ -47,20 +58,23 @@ export class PXFilesDeletedListener {
       entitySharedId: deletedDocuments[0].entity,
     });
 
-    const languagesInstalled = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
-      l => l.key
+    const installedLanguages = await this.dependencies.settingsDS.getInstalledLanguages();
+
+    const documentsInInstalledLanguages = await this.getDocumentsInInstalledLanguages(
+      deletedDocuments[0].entity,
+      installedLanguages.map(l => l.ISO639_3!)
     );
 
-    const documentsInInstalledLanguages = (
-      await this.dependencies.filesDS.getDocumentsForEntity(deletedDocuments[0].entity).all()
-    ).filter(d => languagesInstalled.includes(d.language));
-
-    return { entityStatus, languagesInstalled, documentsInInstalledLanguages };
+    return {
+      entityStatus,
+      installedLanguages: installedLanguages.map(l => l.key),
+      documentsInInstalledLanguages,
+    };
   }
 
   // eslint-disable-next-line max-statements
   private async onDocumentsDeleted(deletedDocuments: Document[]) {
-    const { entityStatus, documentsInInstalledLanguages, languagesInstalled } =
+    const { entityStatus, documentsInInstalledLanguages, installedLanguages } =
       await this.getInitialData(deletedDocuments);
 
     if (!entityStatus) {
@@ -68,7 +82,7 @@ export class PXFilesDeletedListener {
     }
 
     const deletedDocumentsInInstalledLanguage = deletedDocuments.filter(d =>
-      languagesInstalled.includes(d.language)
+      installedLanguages.includes(d.language)
     );
 
     if (!deletedDocumentsInInstalledLanguage.length) {
@@ -107,15 +121,15 @@ export class PXFilesDeletedListener {
   private async afterFilesDeleted({ files }: FilesDeletedEvent['data']) {
     this.setupDependencies();
 
-    const documents = files
+    const deletedDocuments = files
       .filter(f => f.type === 'document')
       .map(d => FileMappers.toDocumentModel(d as any));
 
-    if (!documents.length) {
+    if (!deletedDocuments.length) {
       return;
     }
 
-    await this.onDocumentsDeleted(documents);
+    await this.onDocumentsDeleted(deletedDocuments);
   }
 
   start() {
