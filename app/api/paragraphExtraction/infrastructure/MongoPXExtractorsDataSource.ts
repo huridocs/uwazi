@@ -81,9 +81,10 @@ export class MongoPXExtractorsDataSource
 
   async delete(extractorId: string): Promise<void> {
     const session = this.getSession();
+    const mongoExtractorId = new ObjectId(extractorId);
 
     const deleteResult = await this.getCollection().deleteOne(
-      { _id: new ObjectId(extractorId) },
+      { _id: mongoExtractorId },
       { session }
     );
 
@@ -95,7 +96,7 @@ export class MongoPXExtractorsDataSource
     }
 
     await this.getCollection(mongoPXEntitiesStatusCollection).deleteMany(
-      { extractorId: new ObjectId(extractorId) },
+      { extractorId: mongoExtractorId },
       { session }
     );
   }
