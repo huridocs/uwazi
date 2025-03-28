@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
@@ -83,6 +84,76 @@ const fileEntity1It = f.document('fileEntity1It', { language: 'it', entity: enti
 const fileEntity2It = f.document('fileEntity2En', { language: 'it', entity: entity2En.sharedId });
 const fileEntity4En = f.document('fileEntity4En', { language: 'en', entity: entity5En.sharedId });
 
+const [paragraph1Entity1En, paragraph1Entity1Pt] = f.entityInMultipleLanguages(
+  lang,
+  'paragraph1En1',
+  targetTemplate1.name
+);
+const [paragraph2Entity1En, paragraph2Entity1Pt] = f.entityInMultipleLanguages(
+  lang,
+  'paragraph2En1',
+  targetTemplate1.name
+);
+const [paragraph3Entity1En, paragraph3Entity1Pt] = f.entityInMultipleLanguages(
+  lang,
+  'paragraph3En1',
+  targetTemplate1.name
+);
+const [paragraph1Entity5En, paragraph1Entity5Pt] = f.entityInMultipleLanguages(
+  lang,
+  'paragraph1En5',
+  targetTemplate1.name
+);
+
+const relationshipE1Hub1 = {
+  _id: f.id('relationshipE1Hub1'),
+  entity: entity1En.sharedId,
+  hub: f.id('hub1'),
+  template: ObjectId.createFromHexString(sourceRelationshipType._id.toString()),
+};
+
+const relationshipP1Hub1 = {
+  _id: f.id('relationshipP1Hub1'),
+  entity: paragraph1Entity1En.sharedId,
+  hub: f.id('hub1'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
+};
+
+const relationshipP2Hub1 = {
+  _id: f.id('relationshipP2Hub1'),
+  entity: paragraph2Entity1En.sharedId,
+  hub: f.id('hub1'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
+};
+
+const relationshipE1Hub2 = {
+  _id: f.id('relationshipE1Hub2'),
+  entity: entity1En.sharedId,
+  hub: f.id('hub2'),
+  template: ObjectId.createFromHexString(sourceRelationshipType._id.toString()),
+};
+
+const relationshipP3Hub2 = {
+  _id: f.id('relationshipP3Hub2'),
+  entity: paragraph3Entity1En.sharedId,
+  hub: f.id('hub2'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
+};
+
+const relationshipE5Hub3 = {
+  _id: f.id('relationshipE5Hub3'),
+  entity: entity5En.sharedId,
+  hub: f.id('hub3'),
+  template: ObjectId.createFromHexString(sourceRelationshipType._id.toString()),
+};
+
+const relationshipP1Hub3 = {
+  _id: f.id('relationshipP1Hub3'),
+  entity: paragraph3Entity1En.sharedId,
+  hub: f.id('hub3'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
+};
+
 const pxEntityStatus1: MongoPXEntityStatusDBO = {
   _id: f.id('pxEntityStatus1'),
   entitySharedId: entity1En.sharedId!,
@@ -166,6 +237,14 @@ const entityFixtures = {
   entity9En,
   entity9Pt,
   entityWithoutExtractorEn,
+  paragraph1Entity1En,
+  paragraph1Entity1Pt,
+  paragraph2Entity1En,
+  paragraph2Entity1Pt,
+  paragraph3Entity1En,
+  paragraph3Entity1Pt,
+  paragraph1Entity5En,
+  paragraph1Entity5Pt,
 };
 
 const entityStatusFixtures = {
@@ -187,6 +266,15 @@ const fixtures = {
   templates: [sourceTemplate1, sourceTemplate2, targetTemplate1],
   entities: Object.values(entityFixtures).map(value => value),
   files: [fileEntity1En, fileEntity1Pt, fileEntity1It, fileEntity2It, fileEntity4En],
+  connections: [
+    relationshipE1Hub1,
+    relationshipP1Hub1,
+    relationshipP2Hub1,
+    relationshipE1Hub2,
+    relationshipP3Hub2,
+    relationshipE5Hub3,
+    relationshipP1Hub3,
+  ],
   settings: [
     {
       languages: [

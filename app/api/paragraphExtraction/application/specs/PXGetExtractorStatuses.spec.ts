@@ -56,18 +56,21 @@ describe('PXGetExtractorStatuses', () => {
     expect(results.page).toMatchObject({ number: 1, size: 10 });
     expect(results.totalRows).toBe(8);
     expect(results.rows[0]).toMatchObject({
-      availableFileLanguages: ['en', 'pt'],
       entity: { title: 'entity1', language: 'pt' },
+      availableFileLanguages: ['en', 'pt'],
+      pagraphsCount: 3,
       status: { status: EntityStatus.Processed },
     });
     expect(results.rows[1]).toMatchObject({
-      availableFileLanguages: [],
       entity: { title: 'entity2', language: 'pt' },
+      availableFileLanguages: [],
+      pagraphsCount: 0,
       status: { status: EntityStatus.New },
     });
     expect(results.rows[3]).toMatchObject({
-      availableFileLanguages: ['en'],
       entity: { title: 'entity5', language: 'pt' },
+      availableFileLanguages: ['en'],
+      pagraphsCount: 1,
       status: { status: EntityStatus.Processing },
     });
   });
