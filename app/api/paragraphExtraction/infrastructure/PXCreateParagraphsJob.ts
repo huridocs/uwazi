@@ -14,7 +14,7 @@ type PXCreateParagraphsJobParams = UserAwareDispatchableParams & {
     data_url: string | undefined;
     error_message: string | undefined;
   };
-  extractionId: string;
+  entityStatusId: string;
 };
 
 type Dependencies = {
@@ -43,11 +43,11 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
       );
       await this.dependencies.useCase.execute({
         userId: this.params.userId,
-        extractionId: this.params.extractionId,
+        entityStatusId: this.params.entityStatusId,
         paragraphs: paragraphsResult.paragraphs,
       });
     } catch (e) {
-      await this.dependencies.pxEntitiesStatusDS.setAsError(this.params.extractionId);
+      await this.dependencies.pxEntitiesStatusDS.setAsError(this.params.entityStatusId);
       throw e;
     }
   }

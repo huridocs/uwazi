@@ -1,8 +1,9 @@
 enum EntityStatus {
+  New = 'new',
   Processing = 'processing',
+  Obsolete = 'obsolete',
   Error = 'error',
-  Finished = 'finished',
-  Queued = 'queued',
+  Processed = 'processed',
 }
 
 type PXEntityStatusModel = {
@@ -10,9 +11,6 @@ type PXEntityStatusModel = {
   entitySharedId: string;
   extractorId: string;
   status: EntityStatus;
-  paragraphsCount: number;
-  failedParagraphsCount: number;
-  successfulParagraphsCount: number;
 };
 
 export { EntityStatus };

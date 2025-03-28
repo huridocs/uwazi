@@ -1,11 +1,18 @@
-import { ObjectId } from 'mongodb';
+/* eslint-disable max-lines */
+import { Db, ObjectId } from 'mongodb';
 
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
+import { EntitySchema } from 'shared/types/entityType';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 import {
+  CreateForSourceEntitiesInput,
   CreateInput,
+  GetExistingInput,
+  MarkAsQueuedInput,
   PXEntitiesStatusDataSource,
-  UpdateParagraphsCountInput,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatus } from './MongoPXEntityStatus';
@@ -18,39 +25,76 @@ export class MongoPXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
 
-  async updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(input.id) },
-      { $set: { paragraphsCount: input.count } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(`Can not update an Entity Status that does not exist. Id : ${input.id}`);
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
+  constructor(
+    db: Db,
+    transaction: MongoTransactionManager,
+    private settingsDS: SettingsDataSource,
+    options?: MongoDSOptions
+  ) {
+    super(db, transaction, options);
   }
 
-  private static computeStatus() {
+  private static filterDocumentsWithLanguageInstalled(installedLanguages: LanguagesListSchema) {
     return {
-      $cond: {
-        if: {
-          $lt: [
-            { $add: ['$failedParagraphsCount', '$successfulParagraphsCount'] },
-            '$paragraphsCount',
-          ],
-        },
-        then: '$status',
-        else: {
-          $cond: {
-            if: { $gte: ['$successfulParagraphsCount', 1] },
-            then: EntityStatus.Finished,
-            else: EntityStatus.Error,
+      $lookup: {
+        from: 'files',
+        let: { entitySharedId: '$sharedId' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$entity', '$$entitySharedId'] },
+                  { $in: ['$language', installedLanguages.map(l => l.key)] },
+                ],
+              },
+            },
           },
-        },
+        ],
+        as: 'files',
       },
     };
+  }
+
+  async createForSourceEntities({
+    sourceTemplateId,
+    extractorId,
+  }: CreateForSourceEntitiesInput): Promise<void> {
+    const installedLanguages = await this.settingsDS.getInstalledLanguages();
+    const defaultLanguage = installedLanguages.find(l => l.default)?.key!;
+
+    const sourceEntities = await this.getCollection<EntitySchema>('entities')
+      .aggregate([
+        {
+          $match: {
+            template: new ObjectId(sourceTemplateId),
+            language: defaultLanguage,
+          },
+        },
+        MongoPXEntitiesStatusDataSource.filterDocumentsWithLanguageInstalled(installedLanguages),
+        {
+          $match: {
+            'files.0': { $exists: true },
+          },
+        },
+        {
+          $project: { sharedId: 1, _id: 0 },
+        },
+      ])
+      .toArray();
+
+    if (!sourceEntities.length) {
+      return;
+    }
+
+    const entityStatuses: MongoPXEntityStatus[] = sourceEntities.map(entity => ({
+      _id: undefined as any,
+      entitySharedId: entity.sharedId!,
+      extractorId: new ObjectId(extractorId),
+      status: EntityStatus.New,
+    }));
+
+    await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
   async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
@@ -69,87 +113,13 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  async incrementFail(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      [
-        {
-          $set: {
-            failedParagraphsCount: { $add: ['$failedParagraphsCount', 1] },
-          },
-        },
-        {
-          $set: {
-            status: MongoPXEntitiesStatusDataSource.computeStatus(),
-          },
-        },
-      ],
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not increment failing paragraphs of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async incrementSuccess(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      [
-        {
-          $set: {
-            successfulParagraphsCount: { $add: ['$successfulParagraphsCount', 1] },
-          },
-        },
-        {
-          $set: {
-            status: MongoPXEntitiesStatusDataSource.computeStatus(),
-          },
-        },
-      ],
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not increment successful paragraphs of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async initProcess(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      { $set: { status: EntityStatus.Processing } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not init processing of an Entity Status that does not exist. 
-        id: ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
-  async create(input: CreateInput): Promise<PXEntityStatusModel> {
+  async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatus = {
       _id: new ObjectId(),
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
 
-      status: EntityStatus.Queued,
-      failedParagraphsCount: 0,
-      paragraphsCount: 0,
-      successfulParagraphsCount: 0,
+      status: EntityStatus.New,
     };
 
     await this.getCollection().insertOne(dbo);
@@ -174,11 +144,69 @@ export class MongoPXEntitiesStatusDataSource
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),
       entitySharedId: dbo.entitySharedId,
-
       status: dbo.status,
-      paragraphsCount: dbo.paragraphsCount,
-      failedParagraphsCount: dbo.failedParagraphsCount,
-      successfulParagraphsCount: dbo.successfulParagraphsCount,
     };
+  }
+
+  async getExisting({
+    extractorId,
+    entitySharedId,
+  }: GetExistingInput): Promise<PXEntityStatusModel | undefined> {
+    const mongoEntityStatus = await this.getCollection().findOne({
+      entitySharedId,
+      extractorId: new ObjectId(extractorId),
+    });
+
+    if (!mongoEntityStatus) {
+      return undefined;
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
+  }
+
+  async markAsObsolete(entityStatusId: string): Promise<void> {
+    const currentStatus = await this.getCollection().findOne(
+      { _id: new ObjectId(entityStatusId) },
+      { projection: { status: 1 } }
+    );
+
+    if (currentStatus?.status === EntityStatus.New) {
+      return;
+    }
+
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(entityStatusId) },
+      { $set: { status: EntityStatus.Obsolete } },
+      { upsert: false }
+    );
+  }
+
+  async markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
+    const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
+      {
+        extractorId: new ObjectId(input.extractorId),
+        entitySharedId: input.entitySharedId,
+      },
+      { $set: { status: EntityStatus.Processing } },
+      { upsert: false, returnDocument: 'after' }
+    );
+
+    if (!mongoEntityStatus) {
+      throw new Error(
+        `Cannot change status to queued of a EntityStatus that does not exist. ${JSON.stringify(input)}`
+      );
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
+  }
+
+  async markAsFinished(entityStatusId: string): Promise<void> {
+    await this.getCollection().updateOne(
+      {
+        _id: new ObjectId(entityStatusId),
+      },
+      { $set: { status: EntityStatus.Processed } },
+      { upsert: false }
+    );
   }
 }

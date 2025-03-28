@@ -14,7 +14,7 @@ import { PXCreateParagraph } from './PXCreateParagraph';
 
 type PXCreateParagraphsInput = {
   userId: string;
-  extractionId: string;
+  entityStatusId: string;
   paragraphs: ParagraphOutput[];
 };
 
@@ -36,17 +36,9 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     });
   }
 
-  // eslint-disable-next-line max-statements
-  async execute({ extractionId, paragraphs, userId }: PXCreateParagraphsInput): Promise<Output> {
-    await this.dependencies.entitiesStatusDS.updateParagraphsCount({
-      id: extractionId,
-      count: paragraphs.length,
-    });
+  async execute({ entityStatusId, paragraphs, userId }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(userId) };
-    const entityStatus = await this.dependencies.entitiesStatusDS.getById(extractionId);
-    if (!entityStatus) {
-      throw new Error('Entity Status not found');
-    }
+    const entityStatus = await this.getEntityStatus(entityStatusId);
 
     const [extractor, sourceEntities] = await Promise.all([
       this.dependencies.extractorsDS.getById(entityStatus.extractorId),
@@ -70,6 +62,16 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     await ArrayUtils.parallelFor(paragraphs, async paragraph =>
       this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
     );
+
+    await this.dependencies.entitiesStatusDS.markAsFinished(entityStatusId);
+  }
+
+  private async getEntityStatus(entityStatusId: string) {
+    const entityStatus = await this.dependencies.entitiesStatusDS.getById(entityStatusId);
+    if (!entityStatus) {
+      throw new Error('Entity Status not found');
+    }
+    return entityStatus;
   }
 }
 

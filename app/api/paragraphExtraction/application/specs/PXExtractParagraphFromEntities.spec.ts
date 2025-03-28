@@ -2,26 +2,46 @@ import { ObjectId } from 'mongodb';
 
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
+
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { TestUtils } from 'api/common.v2/utils/Test';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
 
 import { entity, entity2, extractor } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 
-const createFixtures = (): DBFixture => ({});
+const mongoEntityStatus1: MongoPXEntityStatus = {
+  _id: new ObjectId(),
+  entitySharedId: entity.sharedId!,
+  extractorId: extractor._id,
+  status: EntityStatus.New,
+};
+
+const mongoEntityStatus2: MongoPXEntityStatus = {
+  _id: new ObjectId(),
+  entitySharedId: entity2.sharedId!,
+  extractorId: extractor._id,
+  status: EntityStatus.New,
+};
+
+const createFixtures = (): DBFixture => ({
+  [mongoPXEntitiesStatusCollection]: [mongoEntityStatus1, mongoEntityStatus2],
+});
 
 const setUpUseCase = () => {
-  const transaction = DefaultTransactionManager();
+  const mongoTransactionManager = DefaultTransactionManager();
   const connection = getConnection();
 
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(connection, transaction);
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
   const dispatcher: JobsDispatcher = {
     dispatch: jest.fn(),
   };
@@ -47,33 +67,6 @@ describe('PXExtractParagraphFromEntities', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create an Extraction for each Entity', async () => {
-    const { extractParagraphFromEntities } = setUpUseCase();
-
-    const input: Input = {
-      extractorId: extractor._id.toString(),
-      entitySharedIds: [entity.sharedId!, entity2.sharedId!],
-      userId: new ObjectId().toString(),
-    };
-
-    await extractParagraphFromEntities.execute(input);
-
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-
-    expect(extractions).toMatchObject([
-      {
-        extractorId: new ObjectId(input.extractorId),
-        entitySharedId: input.entitySharedIds[0],
-        status: EntityStatus.Queued,
-      },
-      {
-        extractorId: new ObjectId(input.extractorId),
-        entitySharedId: input.entitySharedIds[1],
-        status: EntityStatus.Queued,
-      },
-    ]);
-  });
-
   it('should dispatch PXExtractParagraphsFromEntityJob job for each Entity', async () => {
     const { extractParagraphFromEntities, dispatcher } = setUpUseCase();
 
@@ -90,7 +83,7 @@ describe('PXExtractParagraphFromEntities', () => {
       userId: input.userId,
       extractorId: input.extractorId,
       tenantName: 'any_tenant',
-      extractionId: expect.any(String),
+      entityStatusId: expect.any(String),
     });
 
     expect(dispatcher.dispatch).toHaveBeenNthCalledWith(2, PXExtractParagraphsFromEntityJob, {
@@ -98,7 +91,38 @@ describe('PXExtractParagraphFromEntities', () => {
       userId: input.userId,
       extractorId: input.extractorId,
       tenantName: 'any_tenant',
-      extractionId: expect.any(String),
+      entityStatusId: expect.any(String),
     });
+  });
+
+  it('should mark each EntityStatus as Processing', async () => {
+    const { extractParagraphFromEntities } = setUpUseCase();
+
+    const input: Input = {
+      extractorId: extractor._id.toString(),
+      entitySharedIds: [entity.sharedId!, entity2.sharedId!],
+      userId: new ObjectId().toString(),
+    };
+
+    await extractParagraphFromEntities.execute(input);
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    TestUtils.arrayContaining(mongoEntitiesStatus, [
+      {
+        _id: expect.any(ObjectId),
+        entitySharedId: entity.sharedId,
+        extractorId: extractor._id,
+        status: EntityStatus.Processing,
+      },
+      {
+        _id: expect.any(ObjectId),
+        entitySharedId: entity2.sharedId,
+        extractorId: extractor._id,
+        status: EntityStatus.Processing,
+      },
+    ]);
   });
 });

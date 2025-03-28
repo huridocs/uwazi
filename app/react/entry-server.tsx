@@ -15,7 +15,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
-import { omit, isEmpty, sortBy } from 'lodash';
+import { omit, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -224,10 +224,6 @@ const setReduxState = async (
       { ...req.query, ...omit(routeParams, 'lang') },
       headers
     );
-
-    if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
-      requestParams.data.q = decodeURI(requestParams.data.q);
-    }
 
     try {
       await Promise.all(

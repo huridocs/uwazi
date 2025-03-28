@@ -49,7 +49,7 @@ export class PXParagraphsResultListener {
         data_url: results.data_url,
         error_message: results.error_message,
       },
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     });

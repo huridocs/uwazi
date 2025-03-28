@@ -31,7 +31,7 @@ extractorId=$(curl -X POST \
 # TRIGGER EXTRACTION
 extraction_data="{
     \"extractorId\": \"$extractorId\",
-    \"entitySharedIds\": [\"or350o92t8\"]
+    \"entitySharedIds\": [\"pmk2e1dig09\"]
 }"
 
 echo "Triggering extraction..."

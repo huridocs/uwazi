@@ -5,6 +5,7 @@ import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { PXExtractionService } from 'api/paragraphExtraction/domain/PXExtractionService';
 import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import {
@@ -19,13 +20,10 @@ const extractionDBO: MongoPXEntityStatus = {
   entitySharedId: 'any_entity_shared_id',
   extractorId: new ObjectId(),
   status: EntityStatus.Processing,
-  paragraphsCount: 1,
-  failedParagraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const extractionKey = PXExtractionKey.create({
-  extractionId: extractionDBO._id.toString(),
+  entityStatusId: extractionDBO._id.toString(),
   tenantName: 'tenant_name',
   userId: new ObjectId().toString(),
 });
@@ -68,7 +66,8 @@ describe('ExtractionUseCase', () => {
       useCase,
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
         getConnection(),
-        DefaultTransactionManager()
+        DefaultTransactionManager(),
+        DefaultSettingsDataSource(DefaultTransactionManager())
       ),
     });
   });
@@ -84,14 +83,14 @@ describe('ExtractionUseCase', () => {
         data_url: 'any_url',
         error_message: undefined,
       },
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     });
 
     expect(useCase.execute).toHaveBeenCalledWith({
       userId: extractionKey.userId,
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       paragraphs: getParagraphsResultOutput.paragraphs,
     });
   });
@@ -99,7 +98,7 @@ describe('ExtractionUseCase', () => {
   it('should throw a non retryable error when success is false', async () => {
     const params = {
       results: { success: false, data_url: 'any_url', error_message: 'error message' },
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     };
@@ -112,7 +111,7 @@ describe('ExtractionUseCase', () => {
   it('should throw a non retryable error when data_url is undefined', async () => {
     const params = {
       results: { success: true, data_url: undefined, error_message: undefined },
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     };
@@ -125,7 +124,7 @@ describe('ExtractionUseCase', () => {
   it('should set Extraction status to "error" when the operation failed', async () => {
     const params = {
       results: { success: false, data_url: 'url', error_message: undefined },
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     };

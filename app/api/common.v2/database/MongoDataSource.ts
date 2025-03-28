@@ -4,7 +4,7 @@ import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
 import { SyncedCollection } from './SyncedCollection';
 
-interface MongoDSOptions {
+export interface MongoDSOptions {
   useSyncedCollection?: boolean;
 }
 

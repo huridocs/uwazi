@@ -12,6 +12,7 @@ import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infras
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 // import {
 //   UpdateTemplateRelationshipPropertiesJob as createUpdateTemplateRelationshipPropertiesJob,
 //   UpdateRelationshipPropertiesJob as createUpdateRelationshipPropertiesJob,
@@ -98,16 +99,16 @@ export function registerJobs(
   register(TestJob, async () => new TestJob());
 
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
-  register(
-    PXCreateParagraphsJob,
-    async () =>
-      new PXCreateParagraphsJob({
-        extractionService: PXExtractionServiceFactory.createDefault(),
-        useCase: PXCreateParagraphsFactory.createDefault(),
-        pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
-          getConnection(),
-          DefaultTransactionManager()
-        ),
-      })
-  );
+  register(PXCreateParagraphsJob, async () => {
+    const transactionManager = DefaultTransactionManager();
+    return new PXCreateParagraphsJob({
+      extractionService: PXExtractionServiceFactory.createDefault(),
+      useCase: PXCreateParagraphsFactory.createDefault(),
+      pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
+        getConnection(),
+        transactionManager,
+        DefaultSettingsDataSource(transactionManager)
+      ),
+    });
+  });
 }

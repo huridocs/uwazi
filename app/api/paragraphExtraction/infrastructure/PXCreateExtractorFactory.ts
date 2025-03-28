@@ -6,17 +6,23 @@ import relationshipTypeDS from 'api/relationtypes';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
 export class PXCreateExtractorFactory {
   static createDefault() {
-    const db = getConnection();
-    const transactionManager = DefaultTransactionManager();
+    const connection = getConnection();
+    const mongoTransactionManager = DefaultTransactionManager();
 
     return new PXCreateExtractor({
       relationshipTypeDS,
-      extractorDS: new MongoPXExtractorsDataSource(db, transactionManager),
+      extractorDS: new MongoPXExtractorsDataSource(connection, mongoTransactionManager),
       idGenerator: MongoIdHandler,
-      templatesDS: DefaultTemplatesDataSource(transactionManager),
+      templatesDS: DefaultTemplatesDataSource(mongoTransactionManager),
+      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
+        connection,
+        mongoTransactionManager,
+      }),
+      transactionManager: mongoTransactionManager,
     });
   }
 }

@@ -9,7 +9,7 @@ import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResult
 jest.mock('api/services/tasksmanager/TaskManager');
 
 const extractionKey = PXExtractionKey.create({
-  extractionId: new ObjectId().toString(),
+  entityStatusId: new ObjectId().toHexString(),
   tenantName: 'any_tenant_name',
   userId: 'any_user_id',
 });
@@ -56,7 +56,7 @@ describe('PXParagraphsResultListener', () => {
         data_url: resultMessage.data_url,
         error_message: resultMessage.error_message,
       },
-      extractionId: extractionKey.extractionId,
+      entityStatusId: extractionKey.entityStatusId,
       tenantName: extractionKey.tenantName,
       userId: extractionKey.userId,
     });

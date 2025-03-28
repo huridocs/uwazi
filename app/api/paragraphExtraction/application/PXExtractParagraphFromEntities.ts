@@ -24,7 +24,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
 
   async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     await ArrayUtils.sequentialFor(entitySharedIds, async entitySharedId => {
-      const entityStatus = await this.dependencies.entitiesStatusDS.create({
+      const entityStatus = await this.dependencies.entitiesStatusDS.markAsProcessing({
         entitySharedId,
         extractorId,
       });
@@ -33,7 +33,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         entitySharedId,
         extractorId,
         userId,
-        extractionId: entityStatus.id,
+        entityStatusId: entityStatus.id,
         tenantName: this.dependencies.tenantName,
       });
     });

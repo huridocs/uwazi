@@ -2,6 +2,7 @@ import { DenormalizeEntityInMemoryTestJob } from '../queueRegistry';
 import { EntityCreatedEvent } from './entities/events/EntityCreatedEvent';
 import { EventsBus } from './eventsbus';
 import { AutomaticTranslationFactory } from './externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
+import { PXFileUpdatedListener } from './paragraphExtraction/infrastructure/PXFileUpdatedListener';
 import { DefaultDispatcher } from './queue.v2/configuration/factories';
 import { registerEventListeners as registerSegmentationListeners } from './services/pdfsegmentation/eventListeners';
 import { Suggestions } from './suggestions/suggestions';
@@ -11,6 +12,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   Suggestions.registerEventListeners(eventsBus);
   registerSegmentationListeners(eventsBus);
   AutomaticTranslationFactory.defaultATEntityCreationListener(eventsBus).start();
+  new PXFileUpdatedListener(eventsBus).start();
 
   eventsBus.on(EntityCreatedEvent, async event => {
     if (!tenants.current().featureFlags?.deactivateTestJob && event.entities[0]) {
