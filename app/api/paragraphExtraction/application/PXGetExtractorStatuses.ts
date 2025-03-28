@@ -1,5 +1,4 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { LanguageUtils } from 'shared/language/languageUtils';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
@@ -13,7 +12,7 @@ import {
 
 type PXGetExtractorStatusesOutput = Omit<GetExtractorStatusesOutput, 'rows'> & {
   rows: (GetExtractorStatusesOutput['rows'][0] & {
-    availableLanguages: LanguageISO6391[];
+    availableFileLanguages: LanguageISO6391[];
     paragraphsCount: number;
   })[];
 };
@@ -36,25 +35,17 @@ class PXGetExtractorStatuses
       .getExtractorStatuses(input)
       .first()) as PXGetExtractorStatusesOutput;
 
-    const installedLanguages = await settingsDS.getInstalledLanguages();
-    const installedDocumentLangauges = installedLanguages.map(l => l.ISO639_3);
+    const installedLanguages = (await settingsDS.getInstalledLanguages()).map(l => l.key);
 
     await results?.rows.reduce(async (prev, _row) => {
       const row = _row;
       await prev;
 
-      const entityFiles = await filesDS.getDocumentsForEntity(row.entity.sharedId).all();
-      const availableLanguages = entityFiles.reduce((availableLenguagesResult, f) => {
-        if (installedDocumentLangauges.includes(f.language)) {
-          const languageKey = LanguageUtils.fromISO639_3(f.language).ISO639_1;
-          if (languageKey) {
-            availableLenguagesResult.add(languageKey);
-          }
-        }
-        return availableLenguagesResult;
-      }, new Set<LanguageISO6391>());
+      const entityValidFiles = await filesDS
+        .getDocumentsForEntity(row.entity.sharedId, { languages: installedLanguages })
+        .all();
 
-      row.availableLanguages = Array.from(availableLanguages);
+      row.availableFileLanguages = entityValidFiles.map(f => f.language);
     }, Promise.resolve());
 
     return results;
