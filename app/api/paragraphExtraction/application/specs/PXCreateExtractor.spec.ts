@@ -18,6 +18,7 @@ import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/Mong
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 
 import {
   mongoPXExtractorsCollection,
@@ -379,5 +380,39 @@ describe('PXCreateExtractor', () => {
 
     const dbPXExtractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
     expect(dbPXExtractors).toEqual([]);
+  });
+
+  it('should throw if source template is used by another Extractor', async () => {
+    const extractor: MongoPXExtractorDBO = {
+      _id: factory.id('extractor'),
+      sourceTemplateId: sourceTemplate._id,
+      targetTemplateId: new ObjectId(),
+      paragraphPropertyId: new ObjectId(),
+      paragraphNumberPropertyId: new ObjectId(),
+      sourceRelationshipTypeId: new ObjectId(),
+      targetRelationshipTypeId: new ObjectId(),
+    };
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXExtractorsCollection]: [extractor],
+    });
+
+    const { createExtractor } = setUpUseCase();
+
+    const promise = createExtractor.execute({
+      sourceTemplateId: sourceTemplate._id.toString(),
+      targetTemplateId: targetTemplate._id.toString(),
+      paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
+    });
+
+    await expect(promise).rejects.toMatchObject({
+      code: PXErrorCode.EXTRACTOR_ALREADY_EXISTS,
+    });
+
+    const dbPXExtractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
+    expect(dbPXExtractors).toEqual([extractor]);
   });
 });
