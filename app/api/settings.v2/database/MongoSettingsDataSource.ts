@@ -18,7 +18,10 @@ export class MongoSettingsDataSource
       return [];
     }
 
-    return settings.languages.map(l => LanguageUtils.fromISO639_1(l.key)!);
+    return settings.languages.map(l => ({
+      ...LanguageUtils.fromISO639_1(l.key)!,
+      default: !!l.default,
+    }));
   }
 
   protected async readSettings(): Promise<SettingsType | null> {
