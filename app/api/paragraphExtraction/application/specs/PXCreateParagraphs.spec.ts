@@ -560,7 +560,7 @@ describe('PXCreateParagraphs', () => {
               isMainLanguage: false,
               language: 'en',
               needsUserReview: false,
-              text: 'Paragraph 1 in English',
+              text: '',
             },
             {
               isMainLanguage: true,
@@ -584,7 +584,7 @@ describe('PXCreateParagraphs', () => {
       createExpectedParagraph(
         'Source Entity English.01',
         'en',
-        'Paragraph 1 in English',
+        'Paragraph 1 in Portuguese',
         extractionKey.userId
       ),
     ]);

@@ -104,9 +104,14 @@ export class PXExtractor {
     const translation = extractedParagraph.translations.find(
       t => t.language === sourceEntity.language
     );
+
     const mainTranslation = extractedParagraph.translations.find(t => t.isMainLanguage)!;
 
-    return translation ?? mainTranslation;
+    if (translation?.text.length) {
+      return translation;
+    }
+
+    return mainTranslation;
   }
 
   private static sortByMainLanguage(
