@@ -153,14 +153,35 @@ export class PXExtractParagraphsFromEntity
       installedLanguages.some(language => language.key === document.language)
     );
 
-    if (!filteredDocuments.length) {
+    const uniqueByLanguage = Object.values(
+      filteredDocuments.reduce(
+        (prev, document) => {
+          const existingDocument = prev[document.language];
+          if (!existingDocument) {
+            return { ...prev, [document.language]: document };
+          }
+
+          const existingDocumentCreationDate = existingDocument.creationDate!;
+          const documentCreationDate = document.creationDate!;
+
+          return {
+            ...prev,
+            [document.language]:
+              existingDocumentCreationDate < documentCreationDate ? existingDocument : document,
+          };
+        },
+        {} as Record<string, Document>
+      )
+    );
+
+    if (!uniqueByLanguage.length) {
       throw new PXValidationError(
         PXErrorCode.DOCUMENTS_NOT_FOUND,
         `There is no valid Documents for the Entity ${entity.title}`
       );
     }
 
-    return filteredDocuments;
+    return uniqueByLanguage;
   }
 
   private async getSegmentations(documents: Document[], entity: Entity) {

@@ -53,8 +53,16 @@ export const entityStatus: MongoPXEntityStatus = {
   status: EntityStatus.Processing,
 };
 
-export const file = factory.document('file', { language: 'eng', entity: entity.sharedId });
-export const file2 = factory.document('file2', { language: 'spa', entity: entity.sharedId });
+export const file = factory.document('file', {
+  language: 'eng',
+  entity: entity.sharedId,
+  creationDate: 1,
+});
+export const file2 = factory.document('file2', {
+  language: 'spa',
+  entity: entity.sharedId,
+  creationDate: 2,
+});
 export const file3 = factory.document('file3', { language: 'spa', entity: entity2.sharedId });
 export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
   language: 'por',
