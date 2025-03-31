@@ -11,8 +11,8 @@ const RequestSchema = z.object({
   id: z.string({ message: 'You should provide the id of the extractor' }),
   page: z
     .object({
-      number: z.number().int().optional(),
-      size: z.number().int().optional(),
+      number: z.coerce.number().int().optional(),
+      size: z.coerce.number().int().optional(),
     })
     .optional(),
   filter: z.object({ status: z.array(z.nativeEnum(EntityStatus)).optional() }).optional(),
