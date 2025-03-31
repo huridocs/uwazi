@@ -3,9 +3,9 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-statements */
 import React, { useEffect, useState, useRef } from 'react';
-import { Translate } from 'app/I18N';
-
 import { isString } from 'lodash';
+import { Translate } from 'app/I18N';
+import { debounce } from 'app/utils/debounce';
 import { InputField, RadioSelect } from '..';
 import { Label } from '../Label';
 import { Checkbox } from '../Checkbox';
@@ -43,14 +43,6 @@ interface MultiselectListProps {
 
 const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
-
-const debounce = (func: (...args: any[]) => void, wait: number) => {
-  let timeout: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
 
 const MultiselectList = ({
   items,
