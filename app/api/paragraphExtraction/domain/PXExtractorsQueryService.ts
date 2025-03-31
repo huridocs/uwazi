@@ -33,9 +33,24 @@ type GetExtractorStatusesOutput = {
   totalRows: number;
 };
 
+type GetEntityParagrphRelationshipsInput = {
+  id: string;
+  extractorId: string;
+};
+
+type GetEntityParagraphRelationshipsOutput = {
+  id: string;
+  entitySharedId: string;
+  hubId: string;
+  relationshipTypeId: string;
+};
+
 interface PXExtractorsQueryService {
   getExtractors(): ResultSet<GetExtractorsOutput>;
   getExtractorStatuses(input: GetExtractorStatusesInput): ResultSet<GetExtractorStatusesOutput>;
+  getEntityParagraphRelationships(
+    input: GetEntityParagrphRelationshipsInput
+  ): ResultSet<GetEntityParagraphRelationshipsOutput>;
 }
 
 export type {
@@ -43,4 +58,6 @@ export type {
   GetExtractorsOutput,
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
+  GetEntityParagrphRelationshipsInput,
+  GetEntityParagraphRelationshipsOutput,
 };

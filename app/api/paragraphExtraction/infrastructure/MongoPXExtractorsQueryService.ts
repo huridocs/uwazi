@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
@@ -5,6 +6,8 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 
 import {
+  GetEntityParagraphRelationshipsOutput,
+  GetEntityParagrphRelationshipsInput,
   GetExtractorsOutput,
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
@@ -179,6 +182,78 @@ class MongoPXExtractorsQueryService
           })),
         }) as GetExtractorStatusesOutput
     );
+  }
+
+  getEntityParagraphRelationships(
+    input: GetEntityParagrphRelationshipsInput
+  ): ResultSet<GetEntityParagraphRelationshipsOutput> {
+    const cursor = this.getCollection().aggregate([
+      { $match: { _id: ObjectId.createFromHexString(input.extractorId) } },
+      {
+        $lookup: {
+          from: mongoPXEntitiesStatusCollection,
+          let: { extractorId: '$_id', entitySharedId: input.id },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$extractorId', '$$extractorId'] },
+                    { $eq: ['$entitySharedId', '$$entitySharedId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'entityStatuses',
+        },
+      },
+      {
+        $unwind: '$entityStatuses',
+      },
+      {
+        $lookup: {
+          from: 'connections',
+          localField: 'entityStatuses.entitySharedId',
+          foreignField: 'entity',
+          as: 'sourceConnections',
+        },
+      },
+      {
+        $unwind: '$sourceConnections',
+      },
+      {
+        $match: { $expr: { $eq: ['$sourceConnections.template', '$sourceRelationshipTypeId'] } },
+      },
+      {
+        $lookup: {
+          from: 'connections',
+          let: { hubValue: '$sourceConnections.hub', targetTemplate: '$targetRelationshipTypeId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$hub', '$$hubValue'] },
+                    { $eq: ['$template', '$$targetTemplate'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'targetConnections',
+        },
+      },
+      { $unwind: '$targetConnections' },
+      { $replaceRoot: { newRoot: '$targetConnections' } },
+    ]);
+
+    return new MongoResultSet(cursor, item => ({
+      id: item._id.toString(),
+      entitySharedId: item.entity,
+      hubId: item.hub.toString(),
+      relationshipTypeId: item.template.toString(),
+    }));
   }
 }
 

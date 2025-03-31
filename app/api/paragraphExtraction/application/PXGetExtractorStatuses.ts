@@ -46,6 +46,12 @@ class PXGetExtractorStatuses
         .all();
 
       row.availableFileLanguages = entityValidFiles.map(f => f.language);
+
+      const entityParagraphRelationships = await extractorsQueryService
+        .getEntityParagraphRelationships({ id: row.entity.sharedId, extractorId: input.id })
+        .all();
+
+      row.paragraphsCount = entityParagraphRelationships.length;
     }, Promise.resolve());
 
     return results;

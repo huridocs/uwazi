@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
@@ -58,24 +59,23 @@ describe('PXGetExtractorStatuses', () => {
     expect(results.rows[0]).toMatchObject({
       entity: { title: 'entity1', language: 'pt' },
       availableFileLanguages: ['en', 'pt'],
-      pagraphsCount: 3,
+      paragraphsCount: 3,
       status: { status: EntityStatus.Processed },
     });
     expect(results.rows[1]).toMatchObject({
       entity: { title: 'entity2', language: 'pt' },
       availableFileLanguages: [],
-      pagraphsCount: 0,
+      paragraphsCount: 0,
       status: { status: EntityStatus.New },
     });
     expect(results.rows[3]).toMatchObject({
       entity: { title: 'entity5', language: 'pt' },
       availableFileLanguages: ['en'],
-      pagraphsCount: 1,
+      paragraphsCount: 1,
       status: { status: EntityStatus.Processing },
     });
   });
 
-  // eslint-disable-next-line max-statements
   it('should allow filtering and paginating the results', async () => {
     const getExtractorStatuses = setupUseCase();
 
