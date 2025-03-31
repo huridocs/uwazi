@@ -259,6 +259,16 @@ const entityStatusFixtures = {
   pxEntityStatus9,
 };
 
+const relationshipFixtures = {
+  relationshipE1Hub1,
+  relationshipP1Hub1,
+  relationshipP2Hub1,
+  relationshipE1Hub2,
+  relationshipP3Hub2,
+  relationshipE5Hub3,
+  relationshipP1Hub3,
+};
+
 const fixtures = {
   relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractor1, extractor2, extractorWithoutEntities],
@@ -266,15 +276,7 @@ const fixtures = {
   templates: [sourceTemplate1, sourceTemplate2, targetTemplate1],
   entities: Object.values(entityFixtures).map(value => value),
   files: [fileEntity1En, fileEntity1Pt, fileEntity1It, fileEntity2It, fileEntity4En],
-  connections: [
-    relationshipE1Hub1,
-    relationshipP1Hub1,
-    relationshipP2Hub1,
-    relationshipE1Hub2,
-    relationshipP3Hub2,
-    relationshipE5Hub3,
-    relationshipP1Hub3,
-  ],
+  connections: Object.values(relationshipFixtures).map(value => value),
   settings: [
     {
       languages: [
@@ -289,6 +291,7 @@ export {
   fixtures as extractorsQueryFixtures,
   entityFixtures,
   entityStatusFixtures,
+  relationshipFixtures,
   extractor1,
   extractor2,
   extractorWithoutEntities,

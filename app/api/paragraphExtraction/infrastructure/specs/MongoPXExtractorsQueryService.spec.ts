@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -15,6 +16,7 @@ import {
   sourceTemplate2,
   sourceTemplate3,
   targetTemplate1,
+  relationshipFixtures,
 } from '../../application/specs/shared/extractorsQueryFixtures';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
@@ -159,6 +161,48 @@ describe('MongoPXExtractorsQueryService', () => {
           page: { number: 1, size: 10 },
           totalRows: 4,
         },
+      ]);
+    });
+  });
+
+  describe('getEntityParagraphRelationships', () => {
+    const mappedRelationship = (relationship: {
+      _id: ObjectId;
+      entity: string | undefined;
+      hub: ObjectId;
+      template: ObjectId;
+    }) => ({
+      id: relationship._id.toString(),
+      hubId: relationship.hub.toString(),
+      entitySharedId: relationship.entity,
+      relationshipTypeId: relationship.template.toString(),
+    });
+
+    it('should return a list of relationships for the particular entity that match the extractor parameters', async () => {
+      const { extractorsQueryService } = setUpSut();
+
+      const entity1Paragraphs = await extractorsQueryService
+        .getEntityParagraphRelationships({
+          id: entityFixtures.entity1En.sharedId!,
+          extractorId: extractor1._id.toString(),
+        })
+        .all();
+
+      expect(entity1Paragraphs).toMatchObject([
+        mappedRelationship(relationshipFixtures.relationshipP1Hub1),
+        mappedRelationship(relationshipFixtures.relationshipP2Hub1),
+        mappedRelationship(relationshipFixtures.relationshipP3Hub2),
+      ]);
+
+      const entity5Paragraphs = await extractorsQueryService
+        .getEntityParagraphRelationships({
+          id: entityFixtures.entity5En.sharedId!,
+          extractorId: extractor1._id.toString(),
+        })
+        .all();
+
+      expect(entity5Paragraphs).toMatchObject([
+        mappedRelationship(relationshipFixtures.relationshipP1Hub3),
       ]);
     });
   });
