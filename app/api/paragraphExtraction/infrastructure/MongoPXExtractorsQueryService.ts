@@ -176,6 +176,7 @@ class MongoPXExtractorsQueryService
       item =>
         ({
           ...item,
+          totalRows: item.totalRows || 0,
           rows: item.rows.map((r: GetExtractorStatusesOutput['rows'][0]) => ({
             entity: { ...r.entity, _id: r.entity._id.toString() },
             status: { ...r.status, _id: r.status._id.toString() },
