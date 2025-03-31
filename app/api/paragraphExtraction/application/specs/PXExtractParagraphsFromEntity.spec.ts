@@ -203,12 +203,17 @@ describe('PXExtractParagraphsFromEntity', () => {
   });
 
   it('should use oldest Document if there are Documents with repeated languages', async () => {
+    const getNextObjectId = (prevId: ObjectId, offsetSeconds: number = 10): ObjectId => {
+      const prevTimestamp = prevId.getTimestamp().getTime() / 1000; // Convert to seconds
+      const newTimestamp = prevTimestamp + offsetSeconds; // Add offset
+      return new ObjectId(`${Math.floor(newTimestamp).toString(16)}0000000000000000`);
+    };
+
     const file3 = {
       ...file2,
-      _id: new ObjectId(),
+      _id: getNextObjectId(file2._id),
       filename: 'file_with_repeated_language',
       language: file2.language,
-      creationDate: file2.creationDate! + 10,
     };
 
     await testingEnvironment.setFixtures({
