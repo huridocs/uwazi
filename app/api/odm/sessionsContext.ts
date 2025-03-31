@@ -2,7 +2,6 @@ import { ClientSession } from 'mongoose';
 import { Readable } from 'stream';
 
 import { appContext } from 'api/utils/AppContext';
-
 import { FileTypes } from 'api/files/storage';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 

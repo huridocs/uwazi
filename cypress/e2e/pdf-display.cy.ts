@@ -172,7 +172,7 @@ describe('PDF display', () => {
       });
 
       it('should check that the pdf renders and scrolls to the selection', () => {
-        cy.contains('button', 'Open PDF').realClick();
+        cy.contains('button', 'Open').realClick();
         cy.contains('Loading').should('not.exist');
         cy.get('#pdf-container').within(() => {
           cy.contains(
@@ -254,8 +254,8 @@ describe('PDF display', () => {
       });
 
       it('should open the pdf sidepanel and show the correct page', () => {
-        cy.contains('button', 'Open PDF').scrollIntoView();
-        cy.contains('button', 'Open PDF').realTouch();
+        cy.contains('button', 'Open').scrollIntoView();
+        cy.contains('button', 'Open').realTouch();
         cy.contains('Loading').should('not.exist');
         cy.get('#pdf-container').within(() => {
           cy.contains(

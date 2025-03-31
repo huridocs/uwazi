@@ -20,6 +20,7 @@ const suggestion1 = {
   error: '',
   segment: 'suggested value',
   suggestedValue: 'suggested value',
+  extractorSource: { pdf: true },
   state: {
     match: false,
     labeled: true,
@@ -57,6 +58,7 @@ const suggestion2 = {
   error: '',
   segment: 'Entity 2',
   suggestedValue: 'Entity 2',
+  extractorSource: { pdf: true },
   state: {
     match: true,
     labeled: true,
@@ -93,6 +95,7 @@ const suggestion3 = {
   propertyName: 'document_date',
   segment: 'Some value that contains a date',
   suggestedValue: 100,
+  extractorSource: { pdf: true },
   state: {
     match: true,
     labeled: true,
@@ -129,6 +132,7 @@ const suggestion4 = {
   propertyName: 'document_date',
   segment: 'Some value that contains a date',
   suggestedValue: 500,
+  extractorSource: { pdf: true },
   state: {
     match: false,
     labeled: true,
@@ -165,6 +169,7 @@ const suggestion5 = {
   propertyName: 'multiselect',
   segment: 'value1',
   suggestedValue: ['value3', 'value2'],
+  extractorSource: { pdf: true },
   state,
   currentValue: ['value1', 'value2'],
   entityTitle: 'Entity 3',
@@ -188,6 +193,7 @@ const suggestion5 = {
       date: 1,
       state,
       propertyName: 'multiselect',
+      extractorSource: { pdf: true },
       suggestedValue: 'value3',
       currentValue: '',
       entityId: 'entity3',
@@ -207,6 +213,7 @@ const suggestion5 = {
       state,
       suggestedValue: 'value2',
       currentValue: 'value2',
+      extractorSource: { pdf: true },
       propertyName: 'multiselect',
       entityId: 'entity3',
       sharedId: '3',
@@ -224,6 +231,7 @@ const suggestion5 = {
       fileId: '3',
       date: 1,
       state,
+      extractorSource: { pdf: true },
       suggestedValue: '',
       currentValue: 'value1',
       propertyName: 'multiselect',
@@ -298,6 +306,18 @@ const templates: ClientTemplateSchema[] = [
         label: 'Resumen',
         type: 'text',
         name: 'resumen',
+      },
+      {
+        _id: '14',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
+      {
+        _id: '15',
+        label: 'Fecha',
+        type: 'date',
+        name: 'fecha',
       },
     ],
     commonProperties: [
@@ -375,6 +395,12 @@ const templates: ClientTemplateSchema[] = [
         type: 'text',
         name: 'resumen',
       },
+      {
+        _id: '35',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
     ],
     commonProperties: [
       {
@@ -413,6 +439,12 @@ const templates: ClientTemplateSchema[] = [
         content: 'thesaurus2',
         name: 'categor_a',
       },
+      {
+        _id: '45',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
     ],
     commonProperties: [
       {
@@ -442,6 +474,12 @@ const templates: ClientTemplateSchema[] = [
         content: 'thesaurus2',
         name: 'categor_a',
       },
+      {
+        _id: '53',
+        label: 'Resumen de la order',
+        type: 'markdown',
+        name: 'resumen_de_la_orden',
+      },
     ],
     commonProperties: [
       {
@@ -462,6 +500,108 @@ const templates: ClientTemplateSchema[] = [
   },
 ];
 
+const templatesWithCommonProperties: ClientTemplateSchema[] = [
+  {
+    _id: '1',
+    name: 'Mecanismo',
+    default: true,
+    properties: [
+      {
+        _id: '13',
+        label: 'Opinión',
+        type: 'markdown',
+        name: 'opini_n',
+      },
+      {
+        _id: '14',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
+    ],
+    commonProperties: [
+      {
+        _id: '11',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+      {
+        _id: '12',
+        label: 'Date added',
+        name: 'creationDate',
+        type: 'date',
+        isCommonProperty: true,
+      },
+    ],
+  },
+  {
+    _id: '2',
+    name: 'Ordenes de la corte',
+    properties: [
+      {
+        _id: '23',
+        label: 'Fecha',
+        type: 'date',
+        name: 'fecha',
+      },
+      {
+        _id: '24',
+        label: 'Opinión',
+        type: 'markdown',
+        name: 'opini_n',
+      },
+      {
+        _id: '25',
+        label: 'Descripción',
+        type: 'markdown',
+        name: 'descripcion',
+      },
+    ],
+    commonProperties: [
+      {
+        _id: '21',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+      {
+        _id: '22',
+        label: 'Date added',
+        name: 'creationDate',
+        type: 'date',
+        isCommonProperty: true,
+      },
+    ],
+  },
+];
+
+const extractors = [
+  {
+    _id: 'exractor1',
+    name: 'Titles',
+    property: 'title',
+    source: { pdf: true },
+    templates: ['1', '2', '3', '5'],
+  },
+  {
+    _id: 'exractor2',
+    name: 'Fechas',
+    property: 'fecha',
+    source: { property: 'descripcion' },
+    templates: ['2'],
+  },
+  {
+    _id: 'exractor3',
+    name: 'Dates from titles',
+    property: 'fecha',
+    source: { property: 'title' },
+    templates: ['1', '2', '3', '5'],
+  },
+];
+
 export {
   suggestion1,
   suggestion2,
@@ -475,4 +615,6 @@ export {
   propertyDocumentDate,
   propertyMultiselect,
   templates,
+  templatesWithCommonProperties,
+  extractors,
 };

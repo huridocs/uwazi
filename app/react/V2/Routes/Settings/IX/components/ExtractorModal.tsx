@@ -6,10 +6,11 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
+import { getAvailableSources } from './helpers';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
 type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
@@ -19,9 +20,9 @@ type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
-  onAccept: (extractorInfo: IXExtractorInfo) => void;
+  onAccept: (extractorInfo: ClientIXExtractorType) => void;
   templates: ClientTemplateSchema[];
-  extractor?: IXExtractorInfo;
+  extractor?: ClientIXExtractorType;
 }
 
 const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
@@ -120,6 +121,7 @@ const ExtractorModal = ({
   const [step, setStep] = useState(1);
   const [name, setName] = useState(extractor?.name || '');
   const [values, setValues] = useState<string[]>(initialValues);
+  const [source, setSource] = useState<string>('0');
   const [options, setOptions] = useState(formatOptions(initialValues, templates));
   const [hasNameError, setNameError] = useState(false);
 
@@ -129,18 +131,21 @@ const ExtractorModal = ({
     onClose();
   };
 
-  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
-    if (!submittedName.length) {
+  const handleSubmit = () => {
+    if (!name.length) {
       setNameError(true);
       return;
     }
 
-    const result: null | IXExtractorInfo = submitedValues.length
+    const extractorSource = source === '0' ? { pdf: true } : { property: source };
+
+    const result: null | ClientIXExtractorType = values.length
       ? ({
-          name: submittedName,
-          property: submitedValues[0].split('-', 2)[1],
-          templates: uniq(submitedValues.map(value => value.split('-', 2)[0])),
-        } as IXExtractorInfo)
+          name,
+          source: extractorSource,
+          property: values[0].split('-', 2)[1],
+          templates: uniq(values.map(value => value.split('-', 2)[0])),
+        } as ClientIXExtractorType)
       : null;
 
     if (result && extractor) {
@@ -167,7 +172,6 @@ const ExtractorModal = ({
       <Modal.Body className="pt-0">
         <InputField
           className="mt-6"
-          clearFieldAction={() => {}}
           id="extractor-name"
           placeholder="Extractor name"
           hasErrors={hasNameError}
@@ -218,13 +222,10 @@ const ExtractorModal = ({
             <div className="flex flex-wrap p-3">
               <RadioSelect
                 name="pdf"
-                options={[
-                  {
-                    label: <Translate>PDF</Translate>,
-                    value: 'true',
-                    defaultChecked: true,
-                  },
-                ]}
+                options={getAvailableSources(templates, values, extractor)}
+                onChange={selected => {
+                  setSource(selected.currentTarget.value);
+                }}
               />
             </div>
           </div>
@@ -256,7 +257,7 @@ const ExtractorModal = ({
                 <Button styling="light" onClick={() => setStep(1)} className="grow">
                   <Translate>Back</Translate>
                 </Button>
-                <Button className="grow" onClick={() => handleSubmit(name, values)} color="success">
+                <Button className="grow" onClick={() => handleSubmit()} color="success">
                   {extractor ? <Translate>Update</Translate> : <Translate>Create</Translate>}
                 </Button>
               </>

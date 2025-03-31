@@ -152,10 +152,17 @@ export class MongoPXEntitiesStatusDataSource
     extractorId,
     entitySharedId,
   }: GetExistingInput): Promise<PXEntityStatusModel | undefined> {
-    const mongoEntityStatus = await this.getCollection().findOne({
-      entitySharedId,
-      extractorId: new ObjectId(extractorId),
-    });
+    const query: Record<string, any> = {};
+
+    if (entitySharedId !== undefined) {
+      query.entitySharedId = entitySharedId;
+    }
+
+    if (extractorId !== undefined) {
+      query.extractorId = new ObjectId(extractorId);
+    }
+
+    const mongoEntityStatus = await this.getCollection().findOne(query);
 
     if (!mongoEntityStatus) {
       return undefined;
@@ -208,5 +215,13 @@ export class MongoPXEntitiesStatusDataSource
       { $set: { status: EntityStatus.Processed } },
       { upsert: false }
     );
+  }
+
+  async delete(entityStatusId: string): Promise<void> {
+    await this.getCollection().deleteOne({ _id: new ObjectId(entityStatusId) });
+  }
+
+  async deleteBySourceEntity(entitySharedId: string): Promise<void> {
+    await this.getCollection().deleteOne({ entitySharedId });
   }
 }
