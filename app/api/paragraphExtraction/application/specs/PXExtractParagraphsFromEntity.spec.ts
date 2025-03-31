@@ -17,6 +17,8 @@ import { tenants } from 'api/tenants';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
@@ -26,19 +28,17 @@ import {
   defaultTemplate,
   entity,
   invalidEntity,
-  file2,
-  fileWithLanguageNotInstalled,
   segmentation,
   segmentation2,
   failedSegmentation,
   processingSegmentation,
   file,
+  file2,
   files,
+  fileWithLanguageNotInstalled,
   userId,
   entityStatus,
 } from './fixtures';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
