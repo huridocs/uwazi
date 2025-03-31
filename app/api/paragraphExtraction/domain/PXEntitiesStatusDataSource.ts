@@ -5,7 +5,7 @@ type CreateInput = {
   entitySharedId: string;
 };
 
-type GetExistingInput = CreateInput;
+type GetExistingInput = Partial<CreateInput>;
 
 type CreateForSourceEntitiesInput = {
   sourceTemplateId: string;
@@ -18,14 +18,16 @@ type MarkAsQueuedInput = {
 };
 
 export interface PXEntitiesStatusDataSource {
-  getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
+  getById(entityStatusId: string): Promise<PXEntityStatusModel | undefined>;
   createAsNew(input: CreateInput): Promise<PXEntityStatusModel>;
-  setAsError(extractionId: string): Promise<PXEntityStatusModel>;
+  setAsError(entityStatusId: string): Promise<PXEntityStatusModel>;
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
   markAsObsolete(entityStatusId: string): Promise<void>;
-  markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
   markAsFinished(entityStatusId: string): Promise<void>;
+  markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
+  delete(entityStatusId: string): Promise<void>;
+  deleteBySourceEntity(entitySharedId: string): Promise<void>;
 }
 
 export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput, MarkAsQueuedInput };
