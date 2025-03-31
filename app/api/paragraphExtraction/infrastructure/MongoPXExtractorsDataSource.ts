@@ -2,7 +2,7 @@ import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
 import { PXExtractor } from '../domain/PXExtractor';
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import { ExistsInput, PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
@@ -77,6 +77,15 @@ export class MongoPXExtractorsDataSource
     };
 
     await this.getCollection().insertOne(mongoExtractor, { session: this.getSession() });
+  }
+
+  async exists(input: ExistsInput): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      { sourceTemplateId: new ObjectId(input.sourceTemplateId) },
+      { limit: 1 }
+    );
+
+    return !!count;
   }
 
   async delete(extractorId: string): Promise<void> {
