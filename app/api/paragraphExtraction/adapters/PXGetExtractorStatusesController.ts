@@ -4,9 +4,8 @@ import {
   Dependencies as AbstractControllerDependencies,
 } from 'api/common.v2/infrastructure/AbstractController';
 
-import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
-import { PXExtractorsQueryServiceFactory } from '../infrastructure/PXExtractorsQueryServiceFactory';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
+import { PXExtractorsStatusesFactory } from '../infrastructure/PXExtractorsStatusesFactory';
 
 const RequestSchema = z.object({
   id: z.string({ message: 'You should provide the id of the extractor' }),
@@ -24,17 +23,16 @@ type Request = z.infer<typeof RequestSchema>;
 type PXExtractorStatusesControllersProps = AbstractControllerDependencies<Request>;
 
 class PXGetExtractorStatusesController extends AbstractController {
-  queryService: PXExtractorsQueryService;
-
   constructor(dependencies: PXExtractorStatusesControllersProps) {
     super(dependencies);
-    this.queryService = PXExtractorsQueryServiceFactory.createDefault();
   }
 
   async handle(): Promise<void> {
     const dto = RequestSchema.parse(this.request.query);
     const { language } = this;
-    const output = await this.queryService.getExtractorStatuses({ ...dto, language });
+
+    const useCase = await PXExtractorsStatusesFactory.createDefault();
+    const output = await useCase.execute({ ...dto, language });
     this.jsonResponse(output);
   }
 }
