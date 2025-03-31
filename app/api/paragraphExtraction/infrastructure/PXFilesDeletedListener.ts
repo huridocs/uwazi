@@ -6,16 +6,16 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { Document } from 'api/files.v2/model/Document';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { files as filesDS } from 'api/files';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
-type LegacyFilesDS = typeof filesDS;
-
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  filesDS: LegacyFilesDS;
+  filesDS: FilesDataSource;
   settingsDS: SettingsDataSource;
 };
 
@@ -29,28 +29,28 @@ export class PXFilesDeletedListener {
   }
 
   private setupDependencies() {
-    if (!this.dependencies) {
-      const connection = getConnection();
-      const mongoTransactionManager = DefaultTransactionManager();
-      const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-        connection,
-        mongoTransactionManager,
-      });
-
-      const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
-
-      this.dependencies = { entitiesStatusDS, filesDS, settingsDS };
-    }
-  }
-
-  private async getDocumentsInInstalledLanguages(sharedId: string, iso3Languages: string[]) {
-    const documentsInInstalledLanguages = await this.dependencies.filesDS.get({
-      entity: sharedId,
-      type: 'document',
-      language: { $in: iso3Languages },
+    const connection = getConnection();
+    const mongoTransactionManager = DefaultTransactionManager();
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
     });
 
-    return documentsInInstalledLanguages.map(d => FileMappers.toDocumentModel(d as any));
+    const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+
+    this.dependencies = { entitiesStatusDS, filesDS, settingsDS };
+  }
+
+  private async getDocumentsInInstalledLanguages(
+    sharedId: string,
+    installedLanguages: LanguageISO6391[]
+  ) {
+    const documentsInInstalledLanguages = await this.dependencies.filesDS
+      .getDocumentsForEntity(sharedId)
+      .all();
+
+    return documentsInInstalledLanguages.filter(d => installedLanguages.includes(d.language));
   }
 
   private async getInitialData(deletedDocuments: Document[]) {
@@ -58,16 +58,18 @@ export class PXFilesDeletedListener {
       entitySharedId: deletedDocuments[0].entity,
     });
 
-    const installedLanguages = await this.dependencies.settingsDS.getInstalledLanguages();
+    const installedLanguages = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
+      l => l.key
+    );
 
     const documentsInInstalledLanguages = await this.getDocumentsInInstalledLanguages(
       deletedDocuments[0].entity,
-      installedLanguages.map(l => l.ISO639_3!)
+      installedLanguages
     );
 
     return {
       entityStatus,
-      installedLanguages: installedLanguages.map(l => l.key),
+      installedLanguages,
       documentsInInstalledLanguages,
     };
   }
