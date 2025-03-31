@@ -153,11 +153,11 @@ describe('PXCreateExtractor', () => {
       'Source Template'
     );
 
-    const document1 = factory.document('document', { entity: entity1.sharedId, language: 'eng' });
-    const document2 = factory.document('document2', { entity: entity2.sharedId, language: 'spa' });
+    const document1 = factory.document('document', { entity: entity1.sharedId, language: 'en' });
+    const document2 = factory.document('document2', { entity: entity2.sharedId, language: 'es' });
     const document3 = factory.document('document_in_another_language', {
       entity: entity3.sharedId,
-      language: 'por',
+      language: 'pt',
     });
 
     await testingEnvironment.setUp({
