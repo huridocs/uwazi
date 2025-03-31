@@ -12,6 +12,7 @@ import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaul
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { ObjectId } from 'mongodb';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -102,10 +103,14 @@ export class PXFilesDeletedListener {
         }
 
         const oldestDocument = sameLanguageDocuments.reduce((oldest, current) =>
-          new Date(oldest.creationDate!) < new Date(current.creationDate!) ? oldest : current
+          new ObjectId(oldest.id).getTimestamp() < new ObjectId(current.id).getTimestamp()
+            ? oldest
+            : current
         );
 
-        return document.creationDate! < oldestDocument.creationDate!;
+        return (
+          new ObjectId(document.id).getTimestamp() < new ObjectId(oldestDocument.id).getTimestamp()
+        );
       }
     );
 
