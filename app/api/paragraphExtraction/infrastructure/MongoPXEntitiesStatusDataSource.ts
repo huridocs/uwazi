@@ -45,7 +45,7 @@ export class MongoPXEntitiesStatusDataSource
               $expr: {
                 $and: [
                   { $eq: ['$entity', '$$entitySharedId'] },
-                  { $in: ['$language', installedLanguages.map(l => l.key)] },
+                  { $in: ['$language', installedLanguages.map(l => l.ISO639_3)] },
                 ],
               },
             },

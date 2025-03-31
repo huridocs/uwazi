@@ -1,11 +1,10 @@
 import { ClientSession } from 'mongoose';
 import { Readable } from 'stream';
 
-import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
 
-import { DB } from './DB';
 import { FileTypes } from 'api/files/storage';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 
 export const dbSessionContext = {
   getSession() {
@@ -30,6 +29,7 @@ export const dbSessionContext = {
   },
 
   clearSession() {
+    appContext.set('transactionManager', undefined);
     appContext.set('mongoSession', undefined);
   },
 
@@ -37,13 +37,20 @@ export const dbSessionContext = {
     appContext.set('mongoSession', undefined);
     appContext.set('reindexOperations', undefined);
     appContext.set('fileOperations', undefined);
+    appContext.set('transactionManager', undefined);
   },
 
-  async startSession() {
-    const currentTenant = tenants.current();
-    const session = DB.connectionForDB(currentTenant.dbName).getClient().startSession();
+  getTransactionManager() {
+    return appContext.get('transactionManager') as MongoTransactionManager | undefined;
+  },
+
+  setTransactionManager(transactionManager: MongoTransactionManager) {
+    appContext.set('mongoSession', transactionManager.getSession());
+    appContext.set('transactionManager', transactionManager);
+  },
+
+  setSession(session: ClientSession) {
     appContext.set('mongoSession', session);
-    return session;
   },
 
   registerESIndexOperation(args: [query?: any, select?: string, limit?: number]) {

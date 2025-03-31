@@ -1,15 +1,9 @@
-import users from 'api/users/users';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { tenants } from 'api/tenants';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 
-import { PXExtractionService } from '../domain/PXExtractionService';
-import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
-import { PXCreateParagraphsFactory } from './PXCreateParagraphsFactory';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { QueueOptions } from 'api/queue.v2/infrastructure/NamespacedDispatcher';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXCreateParagraphsJob } from './PXCreateParagraphsJob';
 
 type ResultMessage = {
   key: string;
@@ -30,10 +24,12 @@ export class PXParagraphsResultListener {
 
   private taskManager: TaskManager;
 
-  private extractionService: PXExtractionService;
+  private buildDispatcher: (tenant: string, queueOptions?: QueueOptions) => Promise<JobsDispatcher>;
 
-  constructor() {
-    this.extractionService = PXExtractionServiceFactory.createDefault();
+  constructor(
+    buildDispatcher: (tenant: string, queueOptions?: QueueOptions) => Promise<JobsDispatcher>
+  ) {
+    this.buildDispatcher = buildDispatcher;
     this.taskManager = new TaskManager({
       serviceName: PXParagraphsResultListener.SERVICE_NAME,
       processResults: this.processResults.bind(this) as any,
@@ -43,38 +39,20 @@ export class PXParagraphsResultListener {
   private async processResults(results: ResultMessage) {
     const extractionKey = new PXExtractionKey(results.key);
 
-    await tenants.run(async () => {
-      try {
-        if (!results.success || !results.data_url) {
-          throw new Error(`Paragraph Extraction failed - ${JSON.stringify(extractionKey)}`);
-        }
+    const dispatcher = await this.buildDispatcher(extractionKey.tenantName, {
+      lockWindow: 1000 * 60,
+    });
 
-        const result = await this.extractionService.getParagraphsResult(results.data_url);
-
-        await this.setCurrentUser(extractionKey.userId);
-        await this.getUseCase().execute(result);
-      } catch (e) {
-        const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-          connection: getConnection(),
-          mongoTransactionManager: DefaultTransactionManager(),
-        });
-
-        await entitiesStatusDS.setAsError(extractionKey.entityStatusId);
-
-        throw e;
-      }
-    }, extractionKey.tenantName);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private getUseCase() {
-    return PXCreateParagraphsFactory.createDefault();
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private async setCurrentUser(userId: string) {
-    const user = await users.getById(userId, '-password', true);
-    permissionsContext.setUserInContext(user);
+    await dispatcher.dispatch(PXCreateParagraphsJob, {
+      results: {
+        success: results.success,
+        data_url: results.data_url,
+        error_message: results.error_message,
+      },
+      entityStatusId: extractionKey.entityStatusId,
+      tenantName: extractionKey.tenantName,
+      userId: extractionKey.userId,
+    });
   }
 
   start(interval = 500) {
