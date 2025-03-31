@@ -10,8 +10,16 @@ export const IXExtractorSchema = {
   properties: {
     _id: objectIdSchema,
     name: { type: 'string' },
+    source: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        pdf: { type: 'boolean' },
+        property: { type: 'string' },
+      },
+    },
     property: { type: 'string' },
     templates: { type: 'array', items: objectIdSchema },
   },
-  required: ['_id', 'name', 'property', 'templates'],
+  required: ['_id', 'name', 'source', 'property', 'templates'],
 };

@@ -259,7 +259,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Belge
 Document and entity types,Belge ve varlık türü
 Document contents,Belge içeriği
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,Belge Başlığı
 Documentation,Dokümantasyon
@@ -580,8 +579,8 @@ Ok,Tamam
 OK,TAMAM
 Ooops... please go,Ooops... lütfen şuraya gidin
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! Düzenlemeye çalıştığınız Thesaurus'u bulamadık. Ayarlar aracılığıyla bu sayfaya geri dönmeyi deneyin.
+Open,Open
 Open group,Open group
-Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Cihazınızda iki faktörlü Kimlik Doğrulayıcı uygulamasını açın
 or,ya da
 or drop your files here.,veya dosyalarınızı buraya bırakın.
@@ -790,6 +789,7 @@ Sort ascending,Sort ascending
 Sort by,Sırala
 Sort descending,Sort descending
 sorted by,şuna göre sıralandı:
+Source,Source
 Source template,Source template
 Source Template,Source Template
 State,State

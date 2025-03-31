@@ -1,6 +1,10 @@
-/* eslint-disable max-statements */
-import { ClientEntitySchema } from 'app/istore';
-import { PropertySchema } from 'shared/types/commonTypes';
+/* eslint-disable max-lines */
+import { uniqBy } from 'lodash';
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import { t } from 'app/I18N';
+import { RadioProps } from 'V2/Components/Forms';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import {
   SuggestionValue,
   TableSuggestion,
@@ -205,4 +209,138 @@ const updateSuggestions = (
   return merged;
 };
 
-export { updateSuggestions, updateSuggestionsByEntity, generateChildrenRows };
+const propertyIsInAllTemplates = (
+  templates: ClientTemplateSchema[],
+  property: { templateId: string; propertyName: string; propertyLabel: string }
+) =>
+  templates.every(template =>
+    template.properties
+      .filter(
+        templateProperty => templateProperty.type === 'markdown' || templateProperty.type === 'text'
+      )
+      .some(templateProperty => {
+        if (templateProperty.name === property.propertyName) {
+          return true;
+        }
+        return false;
+      })
+  );
+
+// eslint-disable-next-line max-statements
+const getAvailableSources = (
+  templates: ClientTemplateSchema[],
+  selectedTemplatesIdsAndProperties: string[],
+  extractor?: ClientIXExtractorType
+): RadioProps['options'] => {
+  const baseOptions: RadioProps['options'] = [
+    {
+      label: t('System', 'PDF', 'PDF', false),
+      value: '0',
+    },
+  ];
+
+  if (!extractor || extractor?.source.pdf) {
+    baseOptions[0].defaultChecked = true;
+  }
+
+  if (!window.__featureFlags__?.ixExtraSources) {
+    return baseOptions;
+  }
+
+  const commonProperty = selectedTemplatesIdsAndProperties[0]
+    ? selectedTemplatesIdsAndProperties[0].split('-', 2)[1]
+    : '';
+  const templateIds = selectedTemplatesIdsAndProperties.map(selected => selected.split('-', 2)[0]);
+
+  const templatesIncluded = templates.filter(template =>
+    templateIds.includes(template._id.toString())
+  );
+  let markdownProperties: { templateId: string; propertyName: string; propertyLabel: string }[] =
+    [];
+
+  templatesIncluded.every(template => {
+    const templateMarkdownProperties = template.properties?.filter(
+      property => property.type === 'markdown' || property.type === 'text'
+    );
+
+    if (!templateMarkdownProperties.length) {
+      markdownProperties = [];
+      return false;
+    }
+
+    markdownProperties.push(
+      ...templateMarkdownProperties.map(templateMarkdownProperty => ({
+        templateId: template._id.toString(),
+        propertyName: templateMarkdownProperty.name,
+        propertyLabel: templateMarkdownProperty.label,
+      }))
+    );
+
+    return true;
+  });
+
+  const options = [
+    ...baseOptions,
+    {
+      label: t('System', 'Title', 'Title', false),
+      value: 'title',
+      defaultChecked: false,
+    },
+    ...uniqBy(markdownProperties, 'propertyName')
+      .filter(markdownProperty => propertyIsInAllTemplates(templatesIncluded, markdownProperty))
+      .map(markdownProperty => ({
+        label: t(
+          markdownProperty.templateId,
+          markdownProperty.propertyLabel,
+          markdownProperty.propertyLabel,
+          false
+        ),
+        value: markdownProperty.propertyName,
+        defaultChecked: false,
+      })),
+  ];
+
+  options.some(option => {
+    if (!extractor || extractor.source.pdf) {
+      // intentional pass by reference
+      // eslint-disable-next-line no-param-reassign
+      option.defaultChecked = true;
+      return true;
+    }
+    if (option.value === extractor.source.property) {
+      // eslint-disable-next-line no-param-reassign
+      option.defaultChecked = true;
+      return true;
+    }
+    return false;
+  });
+
+  return options.filter(option => option.value !== commonProperty);
+};
+
+const getMetadataFromProperty = (
+  entity?: ClientEntitySchema,
+  propertyName?: string
+): MetadataObjectSchema | undefined => {
+  if (!propertyName) {
+    return { value: '' };
+  }
+
+  if (entity?.metadata && entity.metadata[propertyName]) {
+    const metadataEntry = entity.metadata[propertyName];
+    if (metadataEntry.length) {
+      const [entry] = metadataEntry;
+      return entry;
+    }
+  }
+
+  return { value: '' };
+};
+
+export {
+  updateSuggestions,
+  updateSuggestionsByEntity,
+  generateChildrenRows,
+  getAvailableSources,
+  getMetadataFromProperty,
+};

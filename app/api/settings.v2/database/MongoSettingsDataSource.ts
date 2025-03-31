@@ -13,6 +13,9 @@ export class MongoSettingsDataSource
 
   async getInstalledLanguages(): Promise<LanguagesListSchema> {
     const settings = await this.readSettings();
+    if (!settings?.languages) {
+      return [];
+    }
 
     if (!settings?.languages) {
       throw new Error('Settings not found or settings do not have languages configured');

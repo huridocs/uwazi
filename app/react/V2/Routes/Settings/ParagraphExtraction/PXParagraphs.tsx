@@ -139,7 +139,7 @@ const PXParagraphDashboard = () => {
                           styling="light"
                           className="leading-4 flex gap-2 items-center text-gray-800"
                         >
-                          <Translate>Open PDF</Translate>
+                          <Translate>Open</Translate>
                         </Button>
                       </div>
                     )

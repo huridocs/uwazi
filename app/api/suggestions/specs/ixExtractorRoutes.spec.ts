@@ -26,6 +26,7 @@ const extractorToUpdate = {
   _id: fixturesFactory.id('extractor1'),
   name: 'ext1',
   property: 'text_property',
+  source: { pdf: true },
   templates: [fixturesFactory.id('template1')],
 };
 
@@ -35,12 +36,14 @@ const existingExtractors = [
     _id: fixturesFactory.id('extractor2'),
     name: 'ext2',
     property: 'text_property',
+    source: { pdf: true },
     templates: [fixturesFactory.id('template1')],
   },
   {
     _id: fixturesFactory.id('extractor3'),
     name: 'ext3',
     property: 'text_property',
+    source: { pdf: true },
     templates: [fixturesFactory.id('template1')],
   },
 ];
@@ -106,6 +109,7 @@ describe('extractor routes', () => {
         input: {
           name: 'extr1',
           property: 'text_property',
+          source: { pdf: true },
           templates: [
             fixturesFactory.id('template1').toString(),
             fixturesFactory.id('non_existing_template').toString(),
@@ -118,6 +122,7 @@ describe('extractor routes', () => {
         input: {
           name: 'extr1',
           property: 'other_text_property',
+          source: { pdf: true },
           templates: [
             fixturesFactory.id('template1').toString(),
             fixturesFactory.id('template2').toString(),
@@ -136,6 +141,7 @@ describe('extractor routes', () => {
         input: {
           name: 'extr1',
           property: 'text_property',
+          source: { property: 'rich_text' },
           templates: [
             fixturesFactory.id('template1').toString(),
             fixturesFactory.id('template2').toString(),
@@ -144,6 +150,7 @@ describe('extractor routes', () => {
         expectedInDb: {
           name: 'extr1',
           property: 'text_property',
+          source: { property: 'rich_text' },
           templates: [fixturesFactory.id('template1'), fixturesFactory.id('template2')],
         },
       },
@@ -151,11 +158,13 @@ describe('extractor routes', () => {
         input: {
           name: 'extr2',
           property: 'number_property',
+          source: { pdf: true },
           templates: [fixturesFactory.id('template2').toString()],
         },
         expectedInDb: {
           name: 'extr2',
           property: 'number_property',
+          source: { pdf: true },
           templates: [fixturesFactory.id('template2')],
         },
       },

@@ -28,6 +28,7 @@ import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
+import { ClientFeatureFlags } from './V2/shared/types';
 import { atomStore, hydrateAtomStore } from './V2/atoms';
 import { I18NUtils } from './I18N';
 import { IStore } from './istore';
@@ -296,7 +297,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
     await getSSRProperties(req, routes, settings, language);
 
-  const { globalMatomo, ciMatomoActive } = tenants.current();
+  const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
+  const clientFeatureFlags: ClientFeatureFlags = {
+    ixExtraSources: featureFlags?.ixExtraSources,
+  };
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
@@ -331,6 +335,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       reduxData={initialState}
       assets={assets}
       loadingError={loadingError || ssrError}
+      featureFlags={clientFeatureFlags}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );

@@ -9,4 +9,5 @@ export interface PXExtractorsDataSource {
   getById(extractorId: string): Promise<PXExtractor | undefined>;
   getBySourceTemplate(sourceTemplateId: string): Promise<PXExtractor | undefined>;
   exists(input: ExistsInput): Promise<boolean>;
+  delete(extractorId: string): Promise<void>;
 }

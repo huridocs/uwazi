@@ -257,7 +257,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Documento
 Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
-Document FOR,Document FOR
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
 Documentation,Documentación
@@ -578,8 +577,8 @@ Ok,De acuerdo
 OK,OK
 Ooops... please go,¡Cuidado! Adelante por favor
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
+Open,Open
 Open group,Open group
-Open PDF,Abrir PDF
 Open the two-factor Authenticator app on your device,Abre la app Authenticator de tu dispositivo móvil
 or,o
 or drop your files here.,o deposita tus archivos aquí
@@ -788,6 +787,7 @@ Sort ascending,Orden ascendente
 Sort by,Ordenar por
 Sort descending,Orden descendiente
 sorted by,ordenado por
+Source,Source
 Source template,Source template
 Source Template,Source Template
 State,Estado
