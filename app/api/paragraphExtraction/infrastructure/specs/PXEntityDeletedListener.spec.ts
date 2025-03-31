@@ -7,7 +7,7 @@ import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { PXEntityDeletedListener } from '../PXEntityDeletedListener';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
@@ -21,7 +21,7 @@ const entities = factory.entityInMultipleLanguages(
   sourceTemplate.name
 );
 
-const mongoEntityStatus: MongoPXEntityStatus = {
+const mongoEntityStatus: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status'),
   entitySharedId: entities[0].sharedId!,
   extractorId: extractor._id,
