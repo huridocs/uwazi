@@ -12,9 +12,9 @@ type Props = {
 };
 
 export class PXExtractorsQueryServiceFactory {
-  static createDefault(props: Props) {
-    const db = props.connection || getConnection();
-    const transactionManager = props.mongoTransactionManager || DefaultTransactionManager();
+  static createDefault(props?: Props) {
+    const db = props?.connection || getConnection();
+    const transactionManager = props?.mongoTransactionManager || DefaultTransactionManager();
 
     return new MongoPXExtractorsQueryService(db, transactionManager);
   }
