@@ -15,6 +15,7 @@ import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { ObjectId } from 'mongodb';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -161,8 +162,8 @@ export class PXExtractParagraphsFromEntity
             return { ...prev, [document.language]: document };
           }
 
-          const existingDocumentCreationDate = existingDocument.creationDate!;
-          const documentCreationDate = document.creationDate!;
+          const existingDocumentCreationDate = new ObjectId(existingDocument.id).getTimestamp();
+          const documentCreationDate = new ObjectId(document.id).getTimestamp();
 
           return {
             ...prev,
