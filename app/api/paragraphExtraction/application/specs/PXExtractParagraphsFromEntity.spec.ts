@@ -17,6 +17,8 @@ import { tenants } from 'api/tenants';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
@@ -37,8 +39,7 @@ import {
   userId,
   entityStatus,
 } from './fixtures';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
+import { TestUtils } from 'api/common.v2/utils/Test';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -198,6 +199,48 @@ describe('PXExtractParagraphsFromEntity', () => {
         fileId: segmentation.fileID?.toString(),
         status: 'ready',
       },
+    ]);
+  });
+
+  it('should use oldest Document if there are Documents with repeated languages', async () => {
+    const getNextObjectId = (prevId: ObjectId, offsetSeconds: number = 10): ObjectId => {
+      const prevTimestamp = prevId.getTimestamp().getTime() / 1000; // Convert to seconds
+      const newTimestamp = prevTimestamp + offsetSeconds; // Add offset
+      return new ObjectId(`${Math.floor(newTimestamp).toString(16)}0000000000000000`);
+    };
+
+    const file3 = {
+      ...file2,
+      _id: getNextObjectId(file2._id),
+      filename: 'file_with_repeated_language',
+      language: file2.language,
+    };
+
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      files: [file, file2, file3],
+      segmentations: [
+        segmentation,
+        segmentation2,
+        { ...segmentation2, _id: new ObjectId(), fileID: file3._id },
+      ],
+    });
+
+    const { extractParagraphs, extractionService } = setUpUseCase();
+
+    await extractParagraphs.execute({
+      entitySharedId: entity.sharedId!.toString()!,
+      extractorId: extractor._id.toString(),
+      userId: new ObjectId().toString(),
+      entityStatusId: entityStatus._id.toString(),
+    });
+
+    const [payload] = extractionService.extractParagraphs.mock.lastCall;
+
+    expect(payload.documents.length).toBe(2);
+    TestUtils.arrayContaining(payload.documents, [
+      { id: file._id.toString() },
+      { id: file2._id.toString() },
     ]);
   });
 

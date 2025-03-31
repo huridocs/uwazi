@@ -18,6 +18,7 @@ type Tenant = {
     esReplicas?: number;
     sync?: boolean;
     deactivateTestJob?: boolean;
+    ixExtraSources?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

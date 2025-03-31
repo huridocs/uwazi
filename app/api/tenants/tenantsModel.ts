@@ -33,6 +33,7 @@ const mongoSchema = new mongoose.Schema({
     esReplicas: Number,
     sync: Boolean,
     deactivateTestJob: Boolean,
+    ixExtraSources: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

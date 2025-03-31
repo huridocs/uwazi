@@ -6,12 +6,12 @@ export { ConfirmNavigationModal } from './ConfirmNavigationModal';
 export { Label } from './Label';
 export { Geolocation } from './Geolocation';
 export { FileDropzone } from './FileDropzone';
-
-export type { MultiSelectProps } from './MultiSelect';
-export type { SelectProps, OptionSchema } from './Select';
 export { Checkbox } from './Checkbox';
 export { EnableButtonCheckbox } from './EnableButtonCheckbox';
 export { ColorPicker } from './ColorPicker';
 export { DatePicker, DateRangePicker } from './DatePicker/DatePicker';
 export { MultiselectList } from './MultiselectList/MultiselectList';
+export type { RadioProps } from './RadioSelect';
+export type { MultiSelectProps } from './MultiSelect';
+export type { SelectProps, OptionSchema } from './Select';
 export type { MultiselectListOption } from './MultiselectList/MultiselectList';

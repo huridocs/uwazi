@@ -1,11 +1,18 @@
 /* eslint-disable max-classes-per-file */
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { denormalizeMetadata } from 'api/entities/denormalize';
+import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
+import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
+import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 // import {
 //   UpdateTemplateRelationshipPropertiesJob as createUpdateTemplateRelationshipPropertiesJob,
 //   UpdateRelationshipPropertiesJob as createUpdateRelationshipPropertiesJob,
@@ -87,7 +94,21 @@ export function registerJobs(
 ) {
   // register(UpdateRelationshipPropertiesJob, async () => createUpdateRelationshipPropertiesJob());
   // register(UpdateTemplateRelationshipPropertiesJob, createUpdateTemplateRelationshipPropertiesJob);
+
   register(DenormalizeEntityInMemoryTestJob, async () => new DenormalizeEntityInMemoryTestJob());
   register(TestJob, async () => new TestJob());
+
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
+  register(PXCreateParagraphsJob, async () => {
+    const transactionManager = DefaultTransactionManager();
+    return new PXCreateParagraphsJob({
+      extractionService: PXExtractionServiceFactory.createDefault(),
+      useCase: PXCreateParagraphsFactory.createDefault(),
+      pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
+        getConnection(),
+        transactionManager,
+        DefaultSettingsDataSource(transactionManager)
+      ),
+    });
+  });
 }

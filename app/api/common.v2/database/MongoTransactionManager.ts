@@ -35,8 +35,10 @@ export class MongoTransactionManager implements TransactionManager {
 
   private async commitWithRetry() {
     try {
-      await this.session!.commitTransaction();
-      this.finished = true;
+      if (!this.finished) {
+        await this.session!.commitTransaction();
+        this.finished = true;
+      }
     } catch (error) {
       if (error.hasErrorLabel && error.hasErrorLabel('UnknownTransactionCommitResult')) {
         this.logger.debug(error);
@@ -81,6 +83,14 @@ export class MongoTransactionManager implements TransactionManager {
 
       throw error;
     }
+  }
+
+  // for v1 compatibility
+  async abort() {
+    if (this.session?.inTransaction()) {
+      await this.session.abortTransaction();
+    }
+    this.finished = true;
   }
 
   async run<T>(callback: () => Promise<T>) {

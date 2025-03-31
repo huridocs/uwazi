@@ -84,6 +84,16 @@ class PXCreateExtractor implements UseCase<Input, Output> {
     const { sourceTemplate, targetTemplate, sourceRelationshipTypeId, targetRelationshipTypeId } =
       await this.getInitialData(input);
 
+    const extractorWithSameSourceTemplateExists = await this.dependencies.extractorDS.exists({
+      sourceTemplateId: input.sourceTemplateId,
+    });
+
+    if (extractorWithSameSourceTemplateExists) {
+      throw new PXValidationError(
+        PXErrorCode.EXTRACTOR_ALREADY_EXISTS,
+        `Cannot create an Extractor with a source template that already has an Extractor. sourceTemplateId: ${input.sourceTemplateId}`
+      );
+    }
     const extractor = new PXExtractor({
       id: this.dependencies.idGenerator.generate(),
       targetTemplate,

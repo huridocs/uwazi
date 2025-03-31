@@ -53,21 +53,6 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
       user,
     });
 
-    await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
-      const existingTranslation = await this.dependencies.entitiesDS.getById(
-        mainParagraphCreated.sharedId,
-        paragraphTranslation.language
-      );
-
-      await this.dependencies.entitiesDS.save(
-        { ...existingTranslation, ...paragraphTranslation },
-        {
-          language: paragraphTranslation.language,
-          user,
-        }
-      );
-    });
-
     await this.dependencies.relationshipsDS.save(
       [
         {
@@ -81,6 +66,31 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
       ],
       mainParagraphCreated.language
     );
+
+    await ArrayUtils.sequentialFor(paragraphs, async paragraphTranslation => {
+      const existingTranslation = await this.dependencies.entitiesDS.getById(
+        mainParagraphCreated.sharedId,
+        paragraphTranslation.language
+      );
+
+      await this.dependencies.entitiesDS.save(
+        {
+          ...existingTranslation,
+          title: paragraphTranslation.title,
+          metadata: {
+            ...existingTranslation?.metadata,
+            [extractor.paragraphProperty.name]:
+              paragraphTranslation.metadata![extractor.paragraphProperty.name],
+            [extractor.paragraphNumberProperty.name]:
+              paragraphTranslation.metadata![extractor.paragraphNumberProperty.name],
+          },
+        },
+        {
+          language: paragraphTranslation.language,
+          user,
+        }
+      );
+    });
 
     this.dependencies.logger.info(
       `[PX] - Paragraph Created - ${JSON.stringify({

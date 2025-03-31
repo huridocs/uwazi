@@ -1,22 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Table, Button } from 'V2/Components/UI';
-import { Sidepanel } from 'V2/Components/UI/Sidepanel';
 import { templatesAtom } from 'V2/atoms';
-import { useLoaderData, useSearchParams } from 'react-router';
+import { useLoaderData } from 'react-router';
 import { Settings } from 'shared/types/settingsType';
-import { Icon } from 'app/UI';
-import { tableBuilder } from './components/PXParagraphTableElements';
-import { TableTitle } from './components/TableTitle';
 import { PXParagraphTable, PXParagraphApiResponse, PXEntityApiResponse } from './types';
-import { ViewParagraph } from './components/ViewParagraph';
 import { formatParagraphData } from './utils/formatters';
-import { PXTableFooter } from './components/PXTableFooter';
 import { getLanguageName } from './utils/getLanguageName';
-import { EntityFilterSidePanel } from './components/EntityFilterSidePanel';
+import { ParagraphsTable } from './components/paragraphs/Table';
+import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
 
 const PXParagraphDashboard = () => {
   const {
@@ -43,9 +36,7 @@ const PXParagraphDashboard = () => {
     [paragraphs, templates, settings]
   );
 
-  const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState<any[]>([]);
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (pxParagraphData.length > 0) {
@@ -114,82 +105,22 @@ const PXParagraphDashboard = () => {
           }
         />
         <SettingsContent.Body>
-          <Table
-            data={pxParagraphData}
-            columns={tableBuilder({ onViewAction: openSidePanel })}
-            header={
-              paragraphInfo && (
-                <TableTitle
-                  items={[
-                    { ...paragraphInfo.template },
-                    ...entityLanguages.map(language => ({ name: language })),
-                  ]}
-                  Buttons={
-                    filters.length > 0 && (
-                      <div className="flex gap-3">
-                        <Button
-                          className="leading-4 flex gap-2 items-center text-gray-800"
-                          styling="light"
-                          onClick={() => setShowFilter(true)}
-                        >
-                          <Icon icon="filter" />
-                          <Translate>Filters</Translate>
-                        </Button>
-                        <Button
-                          styling="light"
-                          className="leading-4 flex gap-2 items-center text-gray-800"
-                        >
-                          <Translate>Open PDF</Translate>
-                        </Button>
-                      </div>
-                    )
-                  }
-                />
-              )
-            }
-            defaultSorting={[{ id: '_id', desc: false }]}
-            footer={
-              <PXTableFooter
-                totalPages={10}
-                currentDataLength={10}
-                total={100}
-                searchParams={searchParams}
-              />
-            }
-            groupColumnPosition={3}
-          />
+          {paragraphInfo && (
+            <ParagraphsTable
+              pxParagraphData={pxParagraphData}
+              paragraphInfo={paragraphInfo}
+              entityLanguages={entityLanguages}
+              filters={filters}
+              viewParagraph={openSidePanel}
+            />
+          )}
         </SettingsContent.Body>
       </SettingsContent>
-      {filters.length > 0 && (
-        <EntityFilterSidePanel
-          availableFilters={filters}
-          show={showFilter}
-          setShow={setShowFilter}
-        />
-      )}
-      <Sidepanel
-        withOverlay
-        isOpen={sidePanel}
-        closeSidepanelFunction={() => {
-          setSidePanel(false);
-        }}
-        title={
-          <span className="text-base font-semibold text-gray-500 leading-6 uppercase">
-            <Translate>Entity</Translate>
-          </span>
-        }
-      >
-        <Sidepanel.Body>
-          {paragraphOnView && <ViewParagraph paragraphData={paragraphOnView} />}
-        </Sidepanel.Body>
-        <Sidepanel.Footer className="px-4 py-3 border-t">
-          <div className="flex gap-2 justify-end">
-            <Button size="small" styling="outline">
-              <Translate>View entity</Translate>
-            </Button>
-          </div>
-        </Sidepanel.Footer>
-      </Sidepanel>
+      <ViewParagraphSidePanel
+        isSidePanelOpen={sidePanel}
+        setIsSidePanelOpen={setSidePanel}
+        paragraphOnView={paragraphOnView}
+      />
     </div>
   );
 };
