@@ -116,7 +116,7 @@ export const paragraph5 = factory.entity('paragraph5', targetTemplate.name);
 export const relationshipE1Hub1 = {
   _id: factory.id('relationshipE1Hub1'),
   entity: entity1.sharedId,
-  hub: factory.id('hub1'),
+  hub: factory.id('E1Hub1'),
   template: ObjectId.createFromHexString(sourceRelationshipType._id.toString()),
 };
 
@@ -137,7 +137,7 @@ export const relationshipE1Hub2 = {
 export const relationshipP2Hub2 = {
   _id: factory.id('relationshipP2Hub2'),
   entity: paragraph2.sharedId,
-  hub: factory.id('E1Hub1'),
+  hub: factory.id('E1Hub2'),
   template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
 };
 
