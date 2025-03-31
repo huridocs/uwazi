@@ -24,7 +24,7 @@ const columns = [
       headerClassName: 'w-1/4',
     },
   }),
-  extractorColumnHelper.accessor('count', {
+  extractorColumnHelper.accessor('statusCount', {
     header: generateTableHeader('Entities'),
     enableSorting: true,
     cell: EntityCountCell,

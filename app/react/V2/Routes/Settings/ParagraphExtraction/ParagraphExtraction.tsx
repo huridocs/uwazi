@@ -4,7 +4,8 @@ import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Translate } from 'app/I18N';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
-import { PXTable, ParagraphExtractorApiResponse } from './types';
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
+import { PXTable } from './types';
 import { formatExtractors } from './utils/formatters';
 import { CreateDialog } from './components/extractors/CreateDialog';
 import { ExtractorsTable } from './components/extractors/Table';
@@ -12,7 +13,7 @@ import { DeleteDialog } from './components/extractors/DeleteDialog';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
-    extractors: ParagraphExtractorApiResponse[];
+    extractors: Extractor[];
   };
 
   const templates = useAtomValue(templatesAtom);
