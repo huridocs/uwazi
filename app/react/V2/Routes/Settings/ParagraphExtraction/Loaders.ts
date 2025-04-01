@@ -37,12 +37,18 @@ const buildEntityQuery = (searchParams: URLSearchParams, extractorId: string) =>
     number: Number(searchParams.get('page')) || defaultEntityQuery.page.number,
     size: defaultEntityQuery.page.size,
   },
-  sort: {
-    property: searchParams.get('sort') || defaultEntityQuery.sort.property,
-    order: (searchParams.get('order') as 'asc' | 'desc') || defaultEntityQuery.sort.order,
-  },
 });
 
+// const RequestSchema = z.object({
+//   id: z.string({ message: 'You should provide the id of the extractor' }),
+//   page: z
+//     .object({
+//       number: z.coerce.number().int().optional(),
+//       size: z.coerce.number().int().optional(),
+//     })
+//     .optional(),
+//   filter: z.object({ status: z.array(z.nativeEnum(EntityStatus)).optional() }).optional(),
+// });
 const PXEntityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId = '' }, request }) => {
