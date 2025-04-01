@@ -1,4 +1,4 @@
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
+import { Extractor, EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 
 type PXTemplate = {
   _id: string;
@@ -20,8 +20,6 @@ type PXTable = Extractor & {
   targetTemplate: PXTemplate;
   sourceTemplate: PXTemplate;
 };
-
-type EntityStatus = 'NEW' | 'IN_QUEUE' | 'PROCESSING' | 'DONE' | 'HAS_ERROR';
 
 type PXEntityApiResponse = {
   _id: string;
@@ -50,23 +48,6 @@ type PXParagraphApiResponse = {
   };
 };
 
-type PXEntityQuery = {
-  filter: {
-    extractorId: string;
-    status?: string[];
-    languages?: string[];
-  };
-  page?: {
-    number: number;
-    size: number;
-  };
-  sort?: {
-    property: string;
-    order?: 'asc' | 'desc';
-  };
-  [k: string]: unknown | undefined;
-};
-
 type PXParagraphTable = PXParagraphApiResponse & {
   rowId: string;
   template: PXTemplate;
@@ -82,6 +63,5 @@ export type {
   PXTable,
   PXEntityTable,
   PXParagraphApiResponse,
-  PXEntityQuery,
   PXParagraphTable,
 };
