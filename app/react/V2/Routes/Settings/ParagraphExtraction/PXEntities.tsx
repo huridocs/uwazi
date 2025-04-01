@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLoaderData } from 'react-router';
+import React, { useMemo, useState } from 'react';
+import { useLoaderData, useRouteLoaderData } from 'react-router';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button } from 'V2/Components/UI';
 import { templatesAtom } from 'V2/atoms';
 import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
-import { PXEntityTable, PXEntityApiResponse, PXTemplate } from './types';
-import { formatEntityData } from './utils/formatters';
+import { Extractor, PXEntityLoaderResponse } from 'V2/shared/ParagraphExtractionTypes';
+import { PXEntityTable, PXTemplate } from './types';
 import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
@@ -18,29 +18,13 @@ const DisplayPill = generateDisplayPill({
 });
 
 const PXEntityDashboard = () => {
-  const [sourceTemplate, setSourceTemplate] = useState<PXTemplate>();
-  const { entities = [], filters = [] } = useLoaderData() as {
-    entities: PXEntityApiResponse[];
-    filters: any[];
-  };
-
   const templates = useAtomValue(templatesAtom);
-  const pxEntitiesData = useMemo(
-    () => formatEntityData(entities, templates),
-    [entities, templates]
-  );
+  const { rows, filters, page, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
+  const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
+  const newEntitiesCount = rows.filter(row => row.status.status === 'NEW').length;
 
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXEntityTable[]>([]);
-
-  useEffect(() => {
-    const [entityDatum] = pxEntitiesData;
-    setSourceTemplate(entityDatum.template);
-  }, [pxEntitiesData]);
-
-  const [newEntitiesCount] = useState(
-    pxEntitiesData.filter(entity => entity.status === 'NEW').length
-  );
 
   return (
     <div
@@ -50,15 +34,16 @@ const PXEntityDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={sourceTemplate?.name || ''}
+          title={sourceTemplate?.name}
+          contextId={sourceTemplate?._id}
           path={new Map([['Paragraph extraction', '/settings/paragraph-extraction']])}
         />
         <SettingsContent.Body>
           <EntitiesTable
-            pxEntitiesData={pxEntitiesData}
+            pxEntitiesData={rows}
             onSelectionChange={setSelected}
             sourceTemplate={sourceTemplate}
-            filters={filters}
+            // filters={filters}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
@@ -97,7 +82,7 @@ const PXEntityDashboard = () => {
                 <Translate>Selected</Translate>{' '}
                 <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
                 <Translate>of</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{pxEntitiesData.length}</span>
+                <span className="text-gray-900 font-semibold">{totalRows}</span>
               </div>
             </div>
           )}
