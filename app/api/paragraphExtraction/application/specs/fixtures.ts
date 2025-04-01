@@ -62,18 +62,18 @@ export const entityStatus2: MongoPXEntityStatusDBO = {
 };
 
 export const file = factory.document('file', {
-  language: 'eng',
+  language: 'en',
   entity: entity1.sharedId,
 });
 
 export const file2 = factory.document('file2', {
-  language: 'spa',
+  language: 'es',
   entity: entity1.sharedId,
 });
 
-export const file3 = factory.document('file3', { language: 'spa', entity: entity2.sharedId });
+export const file3 = factory.document('file3', { language: 'es', entity: entity2.sharedId });
 export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
-  language: 'por',
+  language: 'pt',
   entity: entity1.sharedId,
 });
 
