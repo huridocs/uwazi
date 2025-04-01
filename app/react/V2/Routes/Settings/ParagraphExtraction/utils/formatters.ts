@@ -35,24 +35,6 @@ const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTab
     };
   });
 
-const formatEntityData = (
-  entities: PXEntityApiResponse[],
-  templates: Template[]
-): PXEntityTable[] =>
-  entities.map(entity => {
-    const template = getTemplateProperties(
-      templates,
-      entity.templateId,
-      requiredTemplateProperties
-    ) as PXTemplate;
-
-    return {
-      ...entity,
-      rowId: entity._id || '',
-      template,
-    };
-  });
-
 const formatParagraphData = (
   paragraphs: PXParagraphApiResponse[],
   templates: Template[],
@@ -109,4 +91,4 @@ const formatTemplatesToOptions = (templates: Template[]) =>
     return option;
   });
 
-export { formatEntityData, formatExtractors, formatParagraphData, formatTemplatesToOptions };
+export { formatExtractors, formatParagraphData, formatTemplatesToOptions };
