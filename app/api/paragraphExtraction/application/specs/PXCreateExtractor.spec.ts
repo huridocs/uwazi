@@ -14,10 +14,11 @@ import {
 import relationshipTypeDS from 'api/relationtypes';
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 
 import {
   mongoPXExtractorsCollection,
@@ -152,11 +153,11 @@ describe('PXCreateExtractor', () => {
       'Source Template'
     );
 
-    const document1 = factory.document('document', { entity: entity1.sharedId, language: 'eng' });
-    const document2 = factory.document('document2', { entity: entity2.sharedId, language: 'spa' });
+    const document1 = factory.document('document', { entity: entity1.sharedId, language: 'en' });
+    const document2 = factory.document('document2', { entity: entity2.sharedId, language: 'es' });
     const document3 = factory.document('document_in_another_language', {
       entity: entity3.sharedId,
-      language: 'por',
+      language: 'pt',
     });
 
     await testingEnvironment.setUp({
@@ -178,7 +179,7 @@ describe('PXCreateExtractor', () => {
 
     const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
-    )) as MongoPXEntityStatus[];
+    )) as MongoPXEntityStatusDBO[];
 
     expect(mongoEntityStatuses.length).toBe(2);
 
@@ -379,5 +380,39 @@ describe('PXCreateExtractor', () => {
 
     const dbPXExtractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
     expect(dbPXExtractors).toEqual([]);
+  });
+
+  it('should throw if source template is used by another Extractor', async () => {
+    const extractor: MongoPXExtractorDBO = {
+      _id: factory.id('extractor'),
+      sourceTemplateId: sourceTemplate._id,
+      targetTemplateId: new ObjectId(),
+      paragraphPropertyId: new ObjectId(),
+      paragraphNumberPropertyId: new ObjectId(),
+      sourceRelationshipTypeId: new ObjectId(),
+      targetRelationshipTypeId: new ObjectId(),
+    };
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXExtractorsCollection]: [extractor],
+    });
+
+    const { createExtractor } = setUpUseCase();
+
+    const promise = createExtractor.execute({
+      sourceTemplateId: sourceTemplate._id.toString(),
+      targetTemplateId: targetTemplate._id.toString(),
+      paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+      paragraphPropertyId: paragraphProperty._id!.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
+      targetRelationshipTypeId: targetRelationshipType._id.toString(),
+    });
+
+    await expect(promise).rejects.toMatchObject({
+      code: PXErrorCode.EXTRACTOR_ALREADY_EXISTS,
+    });
+
+    const dbPXExtractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
+    expect(dbPXExtractors).toEqual([extractor]);
   });
 });

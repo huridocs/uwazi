@@ -12,10 +12,10 @@ import {
   mongoPXEntitiesStatusCollection,
   MongoPXEntitiesStatusDataSource,
 } from '../MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
 
-const extractionDBO: MongoPXEntityStatus = {
+const extractionDBO: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),
   entitySharedId: 'any_entity_shared_id',
   extractorId: new ObjectId(),

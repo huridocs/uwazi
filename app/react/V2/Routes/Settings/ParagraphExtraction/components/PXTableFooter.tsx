@@ -1,27 +1,27 @@
 import React from 'react';
 import { PaginationState, Paginator } from 'V2/Components/UI';
-import { useLocation } from 'react-router';
-import { PX_EXTRACTORS_PER_PAGE } from '../pxConfig';
+import { useLocation, useSearchParams } from 'react-router';
 
 const PXTableFooter = ({
   totalPages = 0,
   total = 0,
   currentDataLength = 0,
-  searchParams,
 }: {
   totalPages: number;
   total: number;
   currentDataLength: number;
-  searchParams: URLSearchParams;
 }) => {
   const location = useLocation();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [searchParams, setSearchParams] = useSearchParams();
 
   return (
     <div className="flex justify-between h-6 items-center">
       <PaginationState
         page={Number(searchParams.get('page') || 1)}
-        size={PX_EXTRACTORS_PER_PAGE}
-        total={total || totalPages * PX_EXTRACTORS_PER_PAGE}
+        size={10}
+        total={total || totalPages * 10}
         currentLength={currentDataLength}
       />
       <div>

@@ -2,7 +2,9 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
+
 import {
   mongoPXExtractorsCollection,
   MongoPXExtractorsDataSource,
@@ -12,7 +14,6 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { PXDeleteExtractor } from '../PXDeleteExtractor';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();
@@ -28,21 +29,21 @@ const { extractor: extractor2 } = MongoExtractorBuilder.create()
   .withTargetRelationship(targetRelationship)
   .build();
 
-const mongoEntityStatus1: MongoPXEntityStatus = {
+const mongoEntityStatus1: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status_1'),
   entitySharedId: new ObjectId().toString(),
   extractorId: extractor._id,
   status: EntityStatus.Processed,
 };
 
-const mongoEntityStatus2: MongoPXEntityStatus = {
+const mongoEntityStatus2: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status_2'),
   entitySharedId: new ObjectId().toString(),
   extractorId: extractor._id,
   status: EntityStatus.Processed,
 };
 
-const mongoEntityStatus3: MongoPXEntityStatus = {
+const mongoEntityStatus3: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status_with_different_extractor'),
   entitySharedId: new ObjectId().toString(),
   extractorId: extractor2._id,

@@ -15,12 +15,12 @@ import {
   PXEntitiesStatusDataSource,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
-import { MongoPXEntityStatus } from './MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
 export class MongoPXEntitiesStatusDataSource
-  extends MongoDataSource<MongoPXEntityStatus>
+  extends MongoDataSource<MongoPXEntityStatusDBO>
   implements PXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
@@ -87,7 +87,7 @@ export class MongoPXEntitiesStatusDataSource
       return;
     }
 
-    const entityStatuses: MongoPXEntityStatus[] = sourceEntities.map(entity => ({
+    const entityStatuses: MongoPXEntityStatusDBO[] = sourceEntities.map(entity => ({
       _id: undefined as any,
       entitySharedId: entity.sharedId!,
       extractorId: new ObjectId(extractorId),
@@ -114,7 +114,7 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
-    const dbo: MongoPXEntityStatus = {
+    const dbo: MongoPXEntityStatusDBO = {
       _id: new ObjectId(),
       extractorId: new ObjectId(input.extractorId),
       entitySharedId: input.entitySharedId,
@@ -139,7 +139,7 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
-  static toDomain(dbo: MongoPXEntityStatus): PXEntityStatusModel {
+  static toDomain(dbo: MongoPXEntityStatusDBO): PXEntityStatusModel {
     return {
       id: dbo._id.toString(),
       extractorId: dbo.extractorId.toString(),

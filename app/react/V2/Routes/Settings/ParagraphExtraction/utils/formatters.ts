@@ -1,8 +1,8 @@
 import { Template } from 'app/apiResponseTypes';
 import { Settings } from 'shared/types/settingsType';
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import {
   PXEntityApiResponse,
-  ParagraphExtractorApiResponse,
   PXEntityTable,
   PXTemplate,
   PXTable,
@@ -13,10 +13,7 @@ import { getTemplateProperties } from './getTemplateProperties';
 
 const requiredTemplateProperties = ['_id', 'name', 'color'];
 
-const formatExtractors = (
-  extractors: ParagraphExtractorApiResponse[],
-  templates: Template[]
-): PXTable[] =>
+const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTable[] =>
   extractors.map(extractor => {
     const targetTemplate = getTemplateProperties(
       templates,
@@ -32,7 +29,7 @@ const formatExtractors = (
 
     return {
       ...extractor,
-      rowId: extractor._id || '',
+      rowId: extractor._id,
       sourceTemplate,
       targetTemplate,
     };

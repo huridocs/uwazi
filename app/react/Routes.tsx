@@ -52,7 +52,7 @@ import {
   ParagraphExtractorLoader,
   PXEntityLoader,
   PXParagraphLoader,
-} from 'app/V2/Routes/Settings/ParagraphExtraction/PXLoaders';
+} from 'app/V2/Routes/Settings/ParagraphExtraction/Loaders';
 import { ParagraphExtractorDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
 import { PXEntityDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXEntities';
 import { PXParagraphDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXParagraphs';

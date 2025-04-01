@@ -10,7 +10,7 @@ import { DBFixture } from 'api/utils/testing_db';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
-import { MongoPXEntityStatus } from '../MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { PXFilesDeletedListener } from '../PXFilesDeletedListener';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
@@ -20,7 +20,7 @@ const { factory } = MongoExtractorBuilder;
 
 const entity = factory.entity('entity', sourceTemplate.name);
 
-const mongoEntityStatus: MongoPXEntityStatus = {
+const mongoEntityStatus: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
@@ -28,19 +28,19 @@ const mongoEntityStatus: MongoPXEntityStatus = {
 };
 
 const documentPt = factory.document('document_1', {
-  language: 'por',
+  language: 'pt',
   entity: entity.sharedId,
   creationDate: 1,
 });
 
 const documentEn = factory.document('document_2', {
-  language: 'eng',
+  language: 'en',
   entity: entity.sharedId,
   creationDate: 2,
 });
 
 const documentEs = factory.document('invalid_document', {
-  language: 'spa',
+  language: 'es',
   entity: entity.sharedId,
   creationDate: 3,
 });
