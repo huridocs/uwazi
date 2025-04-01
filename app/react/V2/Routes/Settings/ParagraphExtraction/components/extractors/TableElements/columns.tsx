@@ -33,7 +33,7 @@ const columns = [
     },
   }),
   extractorColumnHelper.accessor('_id', {
-    header: generateTableHeader(''),
+    header: generateTableHeader('Action', { className: 'sr-only' }),
     enableSorting: false,
     cell: ActionCell,
   }),
