@@ -45,9 +45,10 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should list the new extractor', () => {
-      cy.get('thead th td:nth-child(2)').contains('SOURCE TEMPLATE');
-      cy.get('thead th td:nth-child(3)').contains('TARGET TEMPLATE');
-      cy.get('thead th td:nth-child(4)').contains('ENTITIES');
+      cy.contains('Paragraph Extractor added');
+      cy.get('thead tr th:nth-child(2)').contains('Source Template');
+      cy.get('thead tr th:nth-child(3)').contains('Target Template');
+      cy.get('thead tr th:nth-child(4)').contains('Entities');
 
       cy.get('tbody tr td:nth-child(2)').contains('País');
       cy.get('tbody tr td:nth-child(3)').contains('Causa');
@@ -56,7 +57,7 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should view the details of the extractor', () => {
-      cy.get('tbody tr').contains('País').contains('View').realClick();
+      cy.contains('tbody tr', 'País').contains('button', 'View').realClick();
     });
   });
 });
