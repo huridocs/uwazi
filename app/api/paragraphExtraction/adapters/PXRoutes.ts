@@ -6,6 +6,7 @@ import { PXCreateExtractorController } from './PXCreateExtractorController';
 import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController';
 import { PXGetExtractorsController } from './PXGetExtractorsController';
 import { PXGetExtractorStatusesController } from './PXGetExtractorStatusesController';
+import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsController';
 
 const paragraphExtractionRoutes = (app: Application) => {
   app.post(
@@ -30,6 +31,12 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractorStatuses',
     needsAuthorization(['admin', 'editor']),
     PXGetExtractorStatusesController.adapt(PXGetExtractorStatusesController)
+  );
+
+  app.get(
+    '/api/paragraphExtraction/entityParagraphs',
+    needsAuthorization(['admin', 'editor']),
+    PXGetEntityParagraphsController.adapt(PXGetEntityParagraphsController)
   );
 };
 
