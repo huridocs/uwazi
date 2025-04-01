@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
@@ -15,7 +17,6 @@ import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { ObjectId } from 'mongodb';
 
 type PXExtractParagraphsFromEntityInput = {
   userId: string;
@@ -67,6 +68,11 @@ export class PXExtractParagraphsFromEntity
         documents,
         defaultLanguage
       );
+
+      await this.dependencies.extractorsDS.deleteParagraphs({
+        extractorId: extractor.id,
+        entitySharedId: input.entitySharedId,
+      });
 
       await this.dependencies.extractionService.extractParagraphs({
         documents,
@@ -126,6 +132,7 @@ export class PXExtractParagraphsFromEntity
         `The Entity "${entity.title}" does not have valid template configured by this Extractor`
       );
     }
+
     return { extractor, entity, installedLanguages };
   }
 

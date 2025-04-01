@@ -1,15 +1,14 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
+import { ApiResponse } from '@elastic/elasticsearch';
 
+import { search } from 'api/search';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import {
-  mongoPXExtractorsCollection,
-  MongoPXExtractorsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
@@ -20,6 +19,7 @@ import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { TestUtils } from 'api/common.v2/utils/Test';
+import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
@@ -44,7 +44,7 @@ import {
   paragraph3,
   relationshipE1Hub1,
   relationshipP1Hub1,
-  relationshipP2Hub2,
+  relationshipP2Hub1,
   relationshipP3Hub3,
   entity2,
   paragraph4,
@@ -53,9 +53,9 @@ import {
   relationshipP4Hub1,
   relationshipP5Hub2,
   entity3,
-  relationshipE1Hub2,
   relationshipE1Hub3,
   relationshipE2Hub2,
+  relationshipP1Hub1Repeated,
 } from './fixtures';
 
 const createFixtures = (): DBFixture => ({
@@ -93,7 +93,12 @@ const setUpUseCase = () => {
   const entityDS = DefaultEntitiesDataSource(mongoTransactionManager);
   const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
   const filesDS = DefaultFilesDataSource(mongoTransactionManager);
-  const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
+
+  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
+
   const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,
@@ -124,6 +129,11 @@ const setUpUseCase = () => {
 
 describe('PXExtractParagraphsFromEntity', () => {
   beforeEach(async () => {
+    jest
+      .spyOn(search, 'delete')
+      .mockImplementation(
+        async () => Promise.resolve() as any as ApiResponse<Record<string, any>, unknown>
+      );
     await testingEnvironment.setUp(createFixtures());
   });
 
@@ -276,11 +286,11 @@ describe('PXExtractParagraphsFromEntity', () => {
       ],
       connections: [
         relationshipE1Hub1,
-        relationshipE1Hub2,
         relationshipE1Hub3,
 
         relationshipP1Hub1,
-        relationshipP2Hub2,
+        relationshipP1Hub1Repeated,
+        relationshipP2Hub1,
         relationshipP3Hub3,
 
         relationshipE2Hub1,

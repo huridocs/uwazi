@@ -7,10 +7,7 @@ import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import {
-  mongoPXExtractorsCollection,
-  MongoPXExtractorsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -19,6 +16,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
 import { PXCreateParagraphs, PXCreateParagraphsInput } from '../PXCreateParagraphs';
 
@@ -130,7 +128,10 @@ const createFixtures = (): DBFixture => ({
 const setUpUseCase = () => {
   const connection = getConnection();
   const mongoTransactionManager = DefaultTransactionManager();
-  const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
+  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
   const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,

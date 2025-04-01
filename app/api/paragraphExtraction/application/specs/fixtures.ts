@@ -127,17 +127,17 @@ export const relationshipP1Hub1 = {
   template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
 };
 
-export const relationshipE1Hub2 = {
-  _id: factory.id('relationshipE1Hub2'),
-  entity: entity1.sharedId,
-  hub: factory.id('E1Hub2'),
-  template: ObjectId.createFromHexString(sourceRelationshipType._id.toString()),
+export const relationshipP1Hub1Repeated = {
+  _id: factory.id('relationshipP1Hub1Repeated'),
+  entity: paragraph1.sharedId,
+  hub: factory.id('E1Hub1'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
 };
 
-export const relationshipP2Hub2 = {
-  _id: factory.id('relationshipP2Hub2'),
+export const relationshipP2Hub1 = {
+  _id: factory.id('relationshipP2Hub1'),
   entity: paragraph2.sharedId,
-  hub: factory.id('E1Hub2'),
+  hub: factory.id('E1Hub1'),
   template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
 };
 
