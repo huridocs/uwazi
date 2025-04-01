@@ -9,7 +9,7 @@ import {
   MongoPXExtractorsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -102,7 +102,7 @@ describe('PXEntityStatusManager', () => {
   });
 
   it('should change EntityStatus to obsolete', async () => {
-    const mongoEntityStatus: MongoPXEntityStatus = {
+    const mongoEntityStatus: MongoPXEntityStatusDBO = {
       _id: factory.id('entity_status'),
       entitySharedId: entity.sharedId!,
       extractorId: extractor._id,
@@ -144,7 +144,7 @@ describe('PXEntityStatusManager', () => {
   });
 
   it('should keep EntityStatus to New', async () => {
-    const mongoEntityStatus: MongoPXEntityStatus = {
+    const mongoEntityStatus: MongoPXEntityStatusDBO = {
       _id: factory.id('entity_status'),
       entitySharedId: entity.sharedId!,
       extractorId: extractor._id,

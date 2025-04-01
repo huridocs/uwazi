@@ -11,19 +11,19 @@ import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infras
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 
 import { entity, entity2, extractor } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 
-const mongoEntityStatus1: MongoPXEntityStatus = {
+const mongoEntityStatus1: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
   status: EntityStatus.New,
 };
 
-const mongoEntityStatus2: MongoPXEntityStatus = {
+const mongoEntityStatus2: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),
   entitySharedId: entity2.sharedId!,
   extractorId: extractor._id,

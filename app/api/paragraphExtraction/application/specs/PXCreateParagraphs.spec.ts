@@ -17,7 +17,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntitySchema } from 'shared/types/entityType';
 
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
 
 import { PXCreateParagraphs, PXCreateParagraphsInput } from '../PXCreateParagraphs';
@@ -103,7 +103,7 @@ const extractor: MongoPXExtractorDBO = {
   targetRelationshipTypeId: targetRelationshipType._id,
 };
 
-const extractionDBO: MongoPXEntityStatus = {
+const mongoEntityStatus: MongoPXEntityStatusDBO = {
   _id: factory.id('entity_status'),
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,
@@ -113,7 +113,7 @@ const extractionDBO: MongoPXEntityStatus = {
 const createFixtures = (): DBFixture => ({
   relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractor],
-  [mongoPXEntitiesStatusCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [mongoEntityStatus],
   templates: [sourceTemplate, targetTemplate, template],
   entities: [entityEn, entityEs, entityPt, sourceEntityThatDoesNotBelongToExtractor],
   settings: [
@@ -186,7 +186,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [
         {
@@ -277,7 +277,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [
         {
@@ -407,7 +407,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [
         {
@@ -459,7 +459,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [
         {
@@ -514,7 +514,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [
         {
@@ -576,7 +576,7 @@ describe('PXCreateParagraphs', () => {
     const { createParagraphs } = setUpUseCase();
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [
         {
@@ -637,8 +637,8 @@ describe('PXCreateParagraphs', () => {
     expect(mongoEntitiesStatus).toMatchObject([
       {
         _id: expect.any(ObjectId),
-        entitySharedId: extractionDBO.entitySharedId,
-        extractorId: extractionDBO.extractorId,
+        entitySharedId: mongoEntityStatus.entitySharedId,
+        extractorId: mongoEntityStatus.extractorId,
         status: EntityStatus.Processed,
       },
     ]);
@@ -653,7 +653,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [],
     };
@@ -674,7 +674,7 @@ describe('PXCreateParagraphs', () => {
     });
 
     const input: PXCreateParagraphsInput = {
-      entityStatusId: extractionDBO._id.toString(),
+      entityStatusId: mongoEntityStatus._id.toString(),
       userId: new ObjectId().toString(),
       paragraphs: [],
     };

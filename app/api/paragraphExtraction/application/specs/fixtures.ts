@@ -1,6 +1,6 @@
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
@@ -46,26 +46,18 @@ export const extractor: MongoPXExtractorDBO = {
   targetRelationshipTypeId: targetRelationshipType._id,
 };
 
-export const entityStatus: MongoPXEntityStatus = {
+export const entityStatus: MongoPXEntityStatusDBO = {
   _id: factory.id('entityStatus'),
   entitySharedId: entity.sharedId!,
   extractorId: extractor._id,
   status: EntityStatus.Processing,
 };
 
-export const file = factory.document('file', {
-  language: 'eng',
-  entity: entity.sharedId,
-});
-
-export const file2 = factory.document('file2', {
-  language: 'spa',
-  entity: entity.sharedId,
-});
-
-export const file3 = factory.document('file3', { language: 'spa', entity: entity2.sharedId });
+export const file = factory.document('file', { language: 'en', entity: entity.sharedId });
+export const file2 = factory.document('file2', { language: 'es', entity: entity.sharedId });
+export const file3 = factory.document('file3', { language: 'es', entity: entity2.sharedId });
 export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
-  language: 'por',
+  language: 'pt',
   entity: entity.sharedId,
 });
 
