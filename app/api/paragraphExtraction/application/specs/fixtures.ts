@@ -1,6 +1,6 @@
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
@@ -47,14 +47,14 @@ export const extractor: MongoPXExtractorDBO = {
   targetRelationshipTypeId: targetRelationshipType._id,
 };
 
-export const entityStatus1: MongoPXEntityStatus = {
+export const entityStatus1: MongoPXEntityStatusDBO = {
   _id: factory.id('entityStatus'),
   entitySharedId: entity1.sharedId!,
   extractorId: extractor._id,
   status: EntityStatus.Processing,
 };
 
-export const entityStatus2: MongoPXEntityStatus = {
+export const entityStatus2: MongoPXEntityStatusDBO = {
   _id: factory.id('entityStatus2'),
   entitySharedId: entity2.sharedId!,
   extractorId: extractor._id,

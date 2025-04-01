@@ -2,28 +2,19 @@
 import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import {
-  ParagraphExtractorApiResponse,
   ParagraphExtractorApiPayload,
   PXTable,
-} from 'app/V2/Routes/Settings/ParagraphExtraction/types';
+} from 'V2/Routes/Settings/ParagraphExtraction/types';
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import api from 'app/utils/api';
 
-const API_BASE = 'paragraphExtraction';
-const ENDPOINTS = {
-  CREATE_EXTRACTOR: `${API_BASE}/extractor`,
-  GET_EXTRACTORS: `${API_BASE}/extractors`,
-  DELETE_EXTRACTOR: `${API_BASE}/extractor`, // TODO: adjust this once available
-};
-
-const get = async (headers?: IncomingHttpHeaders): Promise<ParagraphExtractorApiResponse[]> => {
+const get = async (headers?: IncomingHttpHeaders): Promise<Extractor[]> => {
   const requestParams = new RequestParams({}, headers);
-  const response = await api.get(ENDPOINTS.GET_EXTRACTORS, requestParams);
+  const response = await api.get('paragraphExtraction/extractors', requestParams);
   return response.json;
 };
 
-const save = async (
-  extractorValues: ParagraphExtractorApiPayload
-): Promise<ParagraphExtractorApiResponse> => {
+const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extractor> => {
   //model values to be sent to backend, adjust this to satisfy backend requirements
   const modelPayload = {
     sourceTemplateId: extractorValues.sourceTemplateId,
@@ -38,7 +29,7 @@ const save = async (
   const requestParams = new RequestParams(modelPayload);
   // this returns an id of the created extractor,
   // probably should be used if ever we want to redirect to created extractor page with entities
-  return api.post(ENDPOINTS.CREATE_EXTRACTOR, requestParams);
+  return api.post('paragraphExtraction/extractor', requestParams);
 };
 
 const remove = async (ids: PXTable[]) => {
@@ -50,7 +41,7 @@ const remove = async (ids: PXTable[]) => {
   const requestParams = new RequestParams(modeledPayload);
   return Promise.resolve();
   // uncomment this once backend is ready
-  // return api.delete(ENDPOINTS.DELETE_EXTRACTOR, requestParams);
+  // return api.delete('paragraphExtraction/extractor', requestParams);
 };
 
 export { get, save, remove };

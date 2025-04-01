@@ -1,10 +1,12 @@
-export type PXTemplate = {
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
+
+type PXTemplate = {
   _id: string;
   name: string;
   color?: string;
 };
 
-export type ParagraphExtractorApiPayload = {
+type ParagraphExtractorApiPayload = {
   _id?: string;
   sourceTemplateId: string;
   targetTemplateId: string;
@@ -13,23 +15,15 @@ export type ParagraphExtractorApiPayload = {
   relationshipId: string;
 };
 
-export type ParagraphExtractorApiResponse = ParagraphExtractorApiPayload & {
-  documents: number;
-  count: {
-    generatedEntities: number;
-    new: number;
-  };
-};
-
-export type PXTable = ParagraphExtractorApiResponse & {
+type PXTable = Extractor & {
   rowId: string;
   targetTemplate: PXTemplate;
   sourceTemplate: PXTemplate;
 };
 
-export type EntityStatus = 'NEW' | 'IN_QUEUE' | 'PROCESSING' | 'DONE' | 'HAS_ERROR';
+type EntityStatus = 'NEW' | 'IN_QUEUE' | 'PROCESSING' | 'DONE' | 'HAS_ERROR';
 
-export type PXEntityApiResponse = {
+type PXEntityApiResponse = {
   _id: string;
   title: string;
   templateId: string;
@@ -39,12 +33,12 @@ export type PXEntityApiResponse = {
   status: EntityStatus;
 };
 
-export type PXEntityTable = PXEntityApiResponse & {
+type PXEntityTable = PXEntityApiResponse & {
   rowId: string;
   template: PXTemplate;
 };
 
-export type PXParagraphApiResponse = {
+type PXParagraphApiResponse = {
   _id: string;
   title: string;
   templateId: string;
@@ -56,7 +50,7 @@ export type PXParagraphApiResponse = {
   };
 };
 
-export type PXEntityQuery = {
+type PXEntityQuery = {
   filter: {
     extractorId: string;
     status?: string[];
@@ -73,9 +67,21 @@ export type PXEntityQuery = {
   [k: string]: unknown | undefined;
 };
 
-export type PXParagraphTable = PXParagraphApiResponse & {
+type PXParagraphTable = PXParagraphApiResponse & {
   rowId: string;
   template: PXTemplate;
   text: string;
   subRows?: any[];
+};
+
+export type {
+  PXTemplate,
+  EntityStatus,
+  ParagraphExtractorApiPayload,
+  PXEntityApiResponse,
+  PXTable,
+  PXEntityTable,
+  PXParagraphApiResponse,
+  PXEntityQuery,
+  PXParagraphTable,
 };

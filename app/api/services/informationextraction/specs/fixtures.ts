@@ -202,7 +202,7 @@ const fixtures: DBFixture = {
     factory.fileDeprecated('F22', 'A22', 'document', fixturesPdfNameL, 'eng'),
     factory.fileDeprecated('F23', 'A23', 'document', fixturesPdfNameM, 'eng'),
     factory.document('FileWithoutSegmentations', {
-      language: 'eng',
+      language: 'en',
       filename: pdfWithouTSegmentations,
       entity: 'entityWithoutSegmentation',
       extractedMetadata: [

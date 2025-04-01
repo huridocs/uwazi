@@ -24,7 +24,7 @@ const columns = [
       headerClassName: 'w-1/4',
     },
   }),
-  extractorColumnHelper.accessor('count', {
+  extractorColumnHelper.accessor('statusCount', {
     header: generateTableHeader('Entities'),
     enableSorting: true,
     cell: EntityCountCell,
@@ -33,7 +33,7 @@ const columns = [
     },
   }),
   extractorColumnHelper.accessor('_id', {
-    header: generateTableHeader(''),
+    header: generateTableHeader('Action', { className: 'sr-only' }),
     enableSorting: false,
     cell: ActionCell,
   }),
