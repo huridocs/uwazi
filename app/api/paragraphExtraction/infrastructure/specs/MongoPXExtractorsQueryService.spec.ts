@@ -208,7 +208,7 @@ describe('MongoPXExtractorsQueryService', () => {
   });
 
   describe('getExtractedParagraphs', () => {
-    it('should return paragraphs belonging to an entity, correctly paginated, grupped by sharedId and ordered by paragraph number and main language', async () => {
+    it('should return paragraphs, correctly paginated, grupped by sharedId and ordered by paragraph number and main language', async () => {
       const { extractorsQueryService } = setUpSut();
 
       const entity1ParagraphsPg1 = await extractorsQueryService
