@@ -1,18 +1,17 @@
+import { ObjectId } from 'mongodb';
+
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-
-import {
-  mongoPXExtractorsCollection,
-  MongoPXExtractorsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { MongoExtractorBuilder } from 'api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder';
+import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ObjectId } from 'mongodb';
+
 import { PXDeleteExtractor } from '../PXDeleteExtractor';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
@@ -66,9 +65,12 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const db = getConnection();
-  const transaction = DefaultTransactionManager();
-  const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
+  const connection = getConnection();
+  const mongoTransactionManager = DefaultTransactionManager();
+  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
 
   const deleteExtractor = new PXDeleteExtractor({
     extractorsDS,

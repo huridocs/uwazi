@@ -13,12 +13,12 @@ import { TestUtils } from 'api/common.v2/utils/Test';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 
-import { entity, entity2, extractor } from './fixtures';
+import { entity1, entity2, extractor } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 
 const mongoEntityStatus1: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),
-  entitySharedId: entity.sharedId!,
+  entitySharedId: entity1.sharedId!,
   extractorId: extractor._id,
   status: EntityStatus.New,
 };
@@ -72,7 +72,7 @@ describe('PXExtractParagraphFromEntities', () => {
 
     const input: Input = {
       extractorId: extractor._id.toString(),
-      entitySharedIds: [entity.sharedId!, entity2.sharedId!],
+      entitySharedIds: [entity1.sharedId!, entity2.sharedId!],
       userId: new ObjectId().toString(),
     };
 
@@ -100,7 +100,7 @@ describe('PXExtractParagraphFromEntities', () => {
 
     const input: Input = {
       extractorId: extractor._id.toString(),
-      entitySharedIds: [entity.sharedId!, entity2.sharedId!],
+      entitySharedIds: [entity1.sharedId!, entity2.sharedId!],
       userId: new ObjectId().toString(),
     };
 
@@ -113,7 +113,7 @@ describe('PXExtractParagraphFromEntities', () => {
     TestUtils.arrayContaining(mongoEntitiesStatus, [
       {
         _id: expect.any(ObjectId),
-        entitySharedId: entity.sharedId,
+        entitySharedId: entity1.sharedId,
         extractorId: extractor._id,
         status: EntityStatus.Processing,
       },
