@@ -9,6 +9,7 @@ import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 type PXGetEntityParagraphsInput = {
   id: string;
   extractorId: string;
+  page?: { number?: number; size?: number };
 };
 
 type Dependencies = {
@@ -26,7 +27,7 @@ class PXGetEntityParagraphs
     const { extractorsQueryService, settingsDS, extractorsDS } = this.dependencies;
 
     const entityParagraphRelationships = await extractorsQueryService
-      .getEntityParagraphRelationships(input)
+      .getEntityParagraphRelationships({ id: input.id, extractorId: input.extractorId })
       .all();
 
     const mainLanguage = await settingsDS.getDefaultLanguageKey();
@@ -41,6 +42,7 @@ class PXGetEntityParagraphs
           ids: entityParagraphRelationships.map(r => r.entitySharedId),
           mainLanguage,
           paragraphNumberProperty,
+          page: input.page,
         })
         .first()) as GetExtractedParagraphsOutput;
 

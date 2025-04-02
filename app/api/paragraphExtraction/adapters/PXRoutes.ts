@@ -11,19 +11,19 @@ import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsControll
 const paragraphExtractionRoutes = (app: Application) => {
   app.post(
     '/api/paragraphExtraction/extractor',
-    needsAuthorization(),
+    needsAuthorization(['admin', 'editor']),
     PXCreateExtractorController.adapt(PXCreateExtractorController)
   );
 
   app.post(
     '/api/paragraphExtraction/extract',
-    needsAuthorization(),
+    needsAuthorization(['admin', 'editor']),
     PXExtractParagraphFromEntitiesController.adapt(PXExtractParagraphFromEntitiesController)
   );
 
   app.get(
     '/api/paragraphExtraction/extractors',
-    needsAuthorization(),
+    needsAuthorization(['admin', 'editor']),
     PXGetExtractorsController.adapt(PXGetExtractorsController)
   );
 
