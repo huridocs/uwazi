@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { EventsBus } from 'api/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -12,7 +14,6 @@ import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaul
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { ObjectId } from 'mongodb';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;

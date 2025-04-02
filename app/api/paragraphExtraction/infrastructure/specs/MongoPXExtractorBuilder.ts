@@ -3,10 +3,7 @@ import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { TemplateSchema } from 'shared/types/templateType';
 
-import { MongoPXExtractorDBO } from '../MongoPXExtractorDBO';
-
 type Props = {
-  extractor: MongoPXExtractorDBO;
   targetTemplate: TemplateSchema;
   sourceTemplate: TemplateSchema;
   targetRelationship: any;
@@ -61,15 +58,6 @@ export class MongoExtractorBuilder {
     };
 
     return new MongoExtractorBuilder({
-      extractor: {
-        _id: new ObjectId(),
-        paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
-        paragraphPropertyId: paragraphProperty._id as ObjectId,
-        sourceRelationshipTypeId: sourceRelationship._id,
-        sourceTemplateId: sourceTemplate._id,
-        targetRelationshipTypeId: targetRelationship._id,
-        targetTemplateId: targetTemplate._id,
-      },
       sourceRelationship,
       sourceTemplate,
       targetRelationship,
@@ -101,7 +89,20 @@ export class MongoExtractorBuilder {
     return this;
   }
 
-  build(): Props {
-    return { ...this.props };
+  build() {
+    const [paragraphProperty, paragraphNumberProperty] = this.props.targetTemplate.properties!;
+
+    return {
+      ...this.props,
+      extractor: {
+        _id: new ObjectId(),
+        paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
+        paragraphPropertyId: paragraphProperty._id as ObjectId,
+        sourceRelationshipTypeId: this.props.sourceRelationship._id,
+        sourceTemplateId: this.props.sourceTemplate._id,
+        targetRelationshipTypeId: this.props.targetRelationship._id,
+        targetTemplateId: this.props.targetTemplate._id,
+      },
+    };
   }
 }
