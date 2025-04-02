@@ -11,7 +11,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;
@@ -38,7 +38,10 @@ export class PXEntityUpdatedListener {
     const connection = getConnection();
     const mongoTransactionManager = DefaultTransactionManager();
 
-    const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
 
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
