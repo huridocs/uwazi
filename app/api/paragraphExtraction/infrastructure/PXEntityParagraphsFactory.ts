@@ -7,7 +7,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 
 import { PXGetEntityParagraphs } from '../application/PXGetEntityParagraphs';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 type Props = {
   connection?: Db;
@@ -16,16 +16,20 @@ type Props = {
 
 export class PXEntityParagraphsFactory {
   static createDefault(props?: Props) {
-    const db = props?.connection || getConnection();
-    const transactionManager = props?.mongoTransactionManager || DefaultTransactionManager();
+    const connection = props?.connection || getConnection();
+    const mongoTransactionManager = props?.mongoTransactionManager || DefaultTransactionManager();
 
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-      connection: db,
-      mongoTransactionManager: transactionManager,
+      connection,
+      mongoTransactionManager,
     });
 
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
-    const extractorsDS = new MongoPXExtractorsDataSource(db, transactionManager);
+    const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+      extractorsQueryService,
+    });
 
     return new PXGetEntityParagraphs({ extractorsQueryService, settingsDS, extractorsDS });
   }

@@ -1,36 +1,16 @@
-/* eslint-disable max-statements */
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
-import { MongoPXExtractorsDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { PXEntityParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXEntityParagraphsFactory';
 import {
   extractorsQueryFixtures,
   entityFixtures,
   extractor1,
 } from './shared/extractorsQueryFixtures';
-import { PXGetEntityParagraphs } from '../PXGetEntityParagraphs';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
 const setupUseCase = () => {
-  const mongoTransactionManager = DefaultTransactionManager();
-  const connection = getConnection();
-
-  const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
-  const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
-
-  const getEntityParagraphs = new PXGetEntityParagraphs({
-    extractorsQueryService,
-    settingsDS,
-    extractorsDS,
-  });
+  const getEntityParagraphs = PXEntityParagraphsFactory.createDefault();
 
   return getEntityParagraphs;
 };
