@@ -334,7 +334,16 @@ class MongoPXExtractorsQueryService
       },
       {
         $project: {
-          rows: 1,
+          rows: {
+            $map: {
+              input: '$rows',
+              as: 'row',
+              in: {
+                sharedId: '$$row._id',
+                entities: '$$row.entities',
+              },
+            },
+          },
           totalRows: 1,
           page: 1,
         },

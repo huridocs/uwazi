@@ -54,7 +54,7 @@ type GetExtractedParagraphsInput = {
 };
 
 type GetExtractedParagraphsOutput = {
-  rows: EntityDBO[];
+  rows: { sharedId: string; entities: EntityDBO[] }[];
   page: { number: number; size: number };
   totalRows: number;
 };
