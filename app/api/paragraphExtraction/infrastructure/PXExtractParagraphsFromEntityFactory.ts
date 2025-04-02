@@ -7,10 +7,10 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
@@ -24,7 +24,10 @@ export class PXExtractParagraphsFromEntityFactory {
         mongoTransactionManager,
       }),
       extractionService: PXExtractionServiceFactory.createDefault(),
-      extractorsDS: new MongoPXExtractorsDataSource(connection, mongoTransactionManager),
+      extractorsDS: PXExtractorsDataSourceFactory.createDefault({
+        connection,
+        mongoTransactionManager,
+      }),
       filesDS: DefaultFilesDataSource(mongoTransactionManager),
       fileStorage: FileStorageStrategyFactory.createDefault(),
       idGenerator: MongoIdHandler,

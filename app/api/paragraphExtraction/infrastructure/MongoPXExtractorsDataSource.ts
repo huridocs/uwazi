@@ -1,11 +1,20 @@
+import { Db, ObjectId } from 'mongodb';
 import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { ObjectId } from 'mongodb';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+
 import { PXExtractor } from '../domain/PXExtractor';
-import { ExistsInput, PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import {
+  DeleteParagraphsInput,
+  ExistsInput,
+  PXExtractorsDataSource,
+} from '../domain/PXExtractorDataSource';
 import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import entities from 'api/entities';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -13,6 +22,17 @@ export class MongoPXExtractorsDataSource
   extends MongoDataSource<MongoPXExtractorDBO>
   implements PXExtractorsDataSource
 {
+  private extractorsQueryService: PXExtractorsQueryService;
+
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager,
+    extractorsQueryService: PXExtractorsQueryService
+  ) {
+    super(db, transactionManager);
+    this.extractorsQueryService = extractorsQueryService;
+  }
+
   protected collectionName = mongoPXExtractorsCollection;
 
   async getBySourceTemplate(sourceTemplateId: string): Promise<PXExtractor | undefined> {
@@ -108,6 +128,17 @@ export class MongoPXExtractorsDataSource
       { extractorId: mongoExtractorId },
       { session }
     );
+  }
+
+  async deleteParagraphs({ entitySharedId, extractorId }: DeleteParagraphsInput): Promise<void> {
+    const paragraphs = await this.extractorsQueryService
+      .getEntityParagraphRelationships({
+        extractorId,
+        id: entitySharedId,
+      })
+      .all();
+
+    await ArrayUtils.sequentialFor(paragraphs, async p => entities.delete(p.entitySharedId));
   }
 
   static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {
