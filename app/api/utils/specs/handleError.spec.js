@@ -6,6 +6,7 @@ import { S3Error } from 'api/files/S3Storage';
 import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
 import { handleError, prettifyError } from '../handleError';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 
 const contextRequestId = '1234';
 
@@ -20,6 +21,25 @@ describe('handleError', () => {
   });
 
   describe('errors by type', () => {
+    describe('and is instance of PXValidationError with missing segmentation', () => {
+      it('should be a 422 debug logLevel', () => {
+        let errorInstance = new PXValidationError(
+          PXValidationError.codes.SEGMENTATION_FILES_NOT_FOUND,
+          'segmentation files not found'
+        );
+        let error = handleError(errorInstance);
+        expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('segmentation files not found');
+
+        errorInstance = new PXValidationError(
+          PXValidationError.codes.SEGMENTATIONS_UNAVAILABLE,
+          'segmentations unavailable'
+        );
+        error = handleError(errorInstance);
+        expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+        expect(legacyLogger.debug.mock.calls[1][0]).toContain('segmentations unavailable');
+      });
+    });
     describe('and is instance of S3Error', () => {
       it('should be a debug logLevel and use the error httpStatusCode', () => {
         const originalError = new Error('original error');

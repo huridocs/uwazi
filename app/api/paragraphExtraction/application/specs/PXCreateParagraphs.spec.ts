@@ -686,4 +686,66 @@ describe('PXCreateParagraphs', () => {
       code: PXValidationError.codes.EXTRACTOR_NOT_FOUND,
     });
   });
+
+  it('should execute onParagraphCreated callback on each paragraph creation', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 1 in portuguese',
+            },
+          ],
+        },
+        {
+          paragraphNumber: 2,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 2 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 2 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 2 in portuguese',
+            },
+          ],
+        },
+      ],
+      onParagraphCreated: jest.fn(),
+    };
+
+    await createParagraphs.execute(input);
+
+    expect(input.onParagraphCreated).toHaveBeenCalledTimes(input.paragraphs.length);
+  });
 });
