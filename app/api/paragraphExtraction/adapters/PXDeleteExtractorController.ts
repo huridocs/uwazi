@@ -4,19 +4,17 @@ import { InputSchema } from '../application/PXDeleteExtractor';
 import { PXDeleteExtractorFactory } from '../infrastructure/PXDeleteExtractorFactory';
 
 type Response = {
-  extractorId: string;
+  success: boolean;
 };
 
 class PXDeleteExtractorController extends AbstractController {
   protected async handle(): Promise<void> {
     const useCase = PXDeleteExtractorFactory.createDefault();
-    const dto = InputSchema.parse(this.request.body);
+    const dto = InputSchema.parse(this.request.query);
 
-    const output = await useCase.execute(dto);
+    await useCase.execute(dto);
 
-    const response: Response = {
-      extractorId: output.id,
-    };
+    const response: Response = { success: true };
 
     this.jsonResponse(response);
   }
