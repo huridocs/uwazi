@@ -1,3 +1,4 @@
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { PXEntityStatusModel } from './PXEntityStatusModel';
 
 type CreateInput = {
@@ -17,6 +18,8 @@ type MarkAsQueuedInput = {
   extractorId: string;
 };
 
+type GetAllInput = Partial<PXEntityStatusModel>;
+
 export interface PXEntitiesStatusDataSource {
   getById(entityStatusId: string): Promise<PXEntityStatusModel | undefined>;
   createAsNew(input: CreateInput): Promise<PXEntityStatusModel>;
@@ -28,6 +31,7 @@ export interface PXEntitiesStatusDataSource {
   markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel>;
   delete(entityStatusId: string): Promise<void>;
   deleteBySourceEntity(entitySharedId: string): Promise<void>;
+  getAll(input: GetAllInput): ResultSet<PXEntityStatusModel>;
 }
 
 export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput, MarkAsQueuedInput };

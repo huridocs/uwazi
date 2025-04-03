@@ -23,7 +23,9 @@ class PXExtractParagraphFromEntitiesController extends AbstractController<Reques
   async handle(): Promise<void> {
     this.ensureUser();
 
-    const useCase = await PXExtractParagraphsFromEntitiesFactory.createDefault(this.tenantName);
+    const useCase = await PXExtractParagraphsFromEntitiesFactory.createDefault({
+      tenantName: this.tenantName,
+    });
 
     const dto = RequestSchema.parse(this.request.body);
 
