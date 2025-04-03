@@ -70,7 +70,7 @@ const Body = () => {
           id="rich-text-property"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Paragraph text extraction property (rich text):
+              Paragraph text extraction property (rich text)
             </Translate>
           }
           value={paragraphPropertyId}
@@ -85,7 +85,7 @@ const Body = () => {
           id="numeric-text-property"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Paragraph text extraction property (numeric text):
+              Paragraph text extraction property (numeric text)
             </Translate>
           }
           value={paragraphNumberPropertyId}
@@ -101,7 +101,7 @@ const Body = () => {
           id="relationship-type"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Target relationship type:
+              Target relationship type
             </Translate>
           }
           value={targetRelationshipId}
@@ -116,7 +116,7 @@ const Body = () => {
           id="relationship-type"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Source relationship type:
+              Source relationship type
             </Translate>
           }
           value={sourceRelationshipId}
