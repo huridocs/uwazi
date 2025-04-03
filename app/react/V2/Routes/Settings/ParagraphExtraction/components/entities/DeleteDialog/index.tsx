@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Button, ConfirmationModal } from 'app/V2/Components/UI';
+import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { useRevalidator } from 'react-router';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetAtom } from 'jotai';
 import { dialogConfig } from './config';
-import { PXEntityTable } from '../../../types';
 
 const {
   service,
@@ -24,7 +24,7 @@ const DeleteDialog = ({
   disabled,
 }: {
   setIsProcessing: (value: boolean) => void;
-  selected: PXEntityTable[];
+  selected: TablePXEntityRow[];
   onSuccess: () => void;
   disabled: boolean;
 }) => {

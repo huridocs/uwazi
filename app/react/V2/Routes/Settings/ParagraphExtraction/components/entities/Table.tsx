@@ -7,30 +7,30 @@ import { PXTableFooter } from '../PXTableFooter';
 import { PXTemplate } from '../../types';
 import { columns } from './TableElements';
 import { FilterSidePanel } from '../FilterSidePanel';
+import { isEmpty } from 'lodash';
 
 interface EntitiesTableProps {
   pxEntitiesData: TablePXEntityRow[];
-  // onSelectionChange: (selected: PXEntityTable[]) => void;
+  onSelectionChange: (selected: TablePXEntityRow[]) => void;
   sourceTemplate?: Template;
-  // filters: any[];
+  filters: { [key: string]: number };
 }
 
 const EntitiesTable = ({
   pxEntitiesData,
   onSelectionChange,
   sourceTemplate,
-  // filters,
+  filters,
 }: EntitiesTableProps) => (
   <Table
     data={pxEntitiesData}
     columns={columns}
     enableSelections
     header={
-      // <TableTitle
-      //   items={sourceTemplate ? [sourceTemplate] : []}
-      //   Buttons={filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
-      // />
-      <TableTitle items={sourceTemplate ? [sourceTemplate] : []} />
+      <TableTitle
+        items={sourceTemplate ? [sourceTemplate] : []}
+        Buttons={!isEmpty(filters) && <FilterSidePanel availableFilters={filters} />}
+      />
     }
     onChange={({ selectedRows }) => {
       onSelectionChange(pxEntitiesData.filter(ex => ex.rowId in selectedRows));

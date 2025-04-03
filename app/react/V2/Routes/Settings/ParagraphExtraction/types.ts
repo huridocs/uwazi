@@ -21,30 +21,11 @@ type PXTable = Extractor & {
   sourceTemplate: PXTemplate;
 };
 
-type PXParagraphApiResponse = {
-  _id: string;
-  title: string;
-  templateId: string;
-  document: string;
-  languages: string[];
-  paragraphCount: number;
-  versions: {
-    [key: string]: string;
-  };
-};
 
-type PXParagraphTable = PXParagraphApiResponse & {
-  rowId: string;
-  template: PXTemplate;
-  text: string;
-  subRows?: any[];
-};
 
 export type {
   PXTemplate,
   EntityStatus,
   ParagraphExtractorApiPayload,
   PXTable,
-  PXParagraphApiResponse,
-  PXParagraphTable,
 };
