@@ -55,8 +55,11 @@ const PXEntityLoader =
 
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params: { extractorId = '' } }) => {
-      const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(extractorId);
+    async ({ params: { id = '', extractorId = '' } }) => {
+      const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
+        id,
+        extractorId
+      );
 
       const result: PXParagraphsLoaderResponse = {
         rows: [],
