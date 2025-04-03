@@ -74,6 +74,7 @@ const setUpUseCase = () => {
 
   const deleteExtractor = new PXDeleteExtractor({
     extractorsDS,
+    transactionManager: mongoTransactionManager,
   });
 
   return {
