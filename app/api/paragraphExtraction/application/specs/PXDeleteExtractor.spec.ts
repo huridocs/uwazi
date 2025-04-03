@@ -74,6 +74,7 @@ const setUpUseCase = () => {
 
   const deleteExtractor = new PXDeleteExtractor({
     extractorsDS,
+    transactionManager: mongoTransactionManager,
   });
 
   return {
@@ -93,7 +94,7 @@ describe('PXDeleteExtractor', () => {
   it('should delete an Extractor along with its EntityStatus', async () => {
     const { deleteExtractor } = setUpUseCase();
 
-    await deleteExtractor.execute({ extractorId: extractor._id.toString() });
+    await deleteExtractor.execute({ id: extractor._id.toString() });
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection
@@ -111,7 +112,7 @@ describe('PXDeleteExtractor', () => {
   it('should throw if the Extractor does not exist', async () => {
     const { deleteExtractor } = setUpUseCase();
 
-    const promise = deleteExtractor.execute({ extractorId: new ObjectId().toString() });
+    const promise = deleteExtractor.execute({ id: new ObjectId().toString() });
 
     await expect(promise).rejects.toMatchObject({
       code: PXValidationError.codes.CANNOT_DELETE_EXTRACTOR_THAT_DOES_NOT_EXIST,

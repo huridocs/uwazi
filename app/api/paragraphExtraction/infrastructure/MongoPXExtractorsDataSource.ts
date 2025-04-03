@@ -2,6 +2,8 @@ import { Db, ObjectId } from 'mongodb';
 import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import entities from 'api/entities';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import {
@@ -13,8 +15,6 @@ import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXE
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
-import entities from 'api/entities';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -96,7 +96,7 @@ export class MongoPXExtractorsDataSource
       targetRelationshipTypeId: new ObjectId(extractor.targetRelationshipTypeId),
     };
 
-    await this.getCollection().insertOne(mongoExtractor, { session: this.getSession() });
+    await this.getCollection().insertOne(mongoExtractor);
   }
 
   async exists(input: ExistsInput): Promise<boolean> {
@@ -109,13 +109,9 @@ export class MongoPXExtractorsDataSource
   }
 
   async delete(extractorId: string): Promise<void> {
-    const session = this.getSession();
     const mongoExtractorId = new ObjectId(extractorId);
 
-    const deleteResult = await this.getCollection().deleteOne(
-      { _id: mongoExtractorId },
-      { session }
-    );
+    const deleteResult = await this.getCollection().deleteOne({ _id: mongoExtractorId });
 
     if (deleteResult.deletedCount === 0) {
       throw new PXValidationError(
@@ -124,10 +120,9 @@ export class MongoPXExtractorsDataSource
       );
     }
 
-    await this.getCollection(mongoPXEntitiesStatusCollection).deleteMany(
-      { extractorId: mongoExtractorId },
-      { session }
-    );
+    await this.getCollection(mongoPXEntitiesStatusCollection).deleteMany({
+      extractorId: mongoExtractorId,
+    });
   }
 
   async deleteParagraphs({ entitySharedId, extractorId }: DeleteParagraphsInput): Promise<void> {

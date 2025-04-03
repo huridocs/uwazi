@@ -8,12 +8,19 @@ import { PXGetExtractorsController } from './PXGetExtractorsController';
 import { PXGetExtractorStatusesController } from './PXGetExtractorStatusesController';
 import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsController';
 import { PXExtractParagraphsByEntityStatusController } from './PXExtractParagraphsByEntityStatusController';
+import { PXDeleteExtractorController } from './PXDeleteExtractorController';
 
 const paragraphExtractionRoutes = (app: Application) => {
   app.post(
     '/api/paragraphExtraction/extractor',
     needsAuthorization(['admin', 'editor']),
     PXCreateExtractorController.adapt(PXCreateExtractorController)
+  );
+
+  app.delete(
+    '/api/paragraphExtraction/extractor',
+    needsAuthorization(['admin', 'editor']),
+    PXDeleteExtractorController.adapt(PXDeleteExtractorController)
   );
 
   app.post(
