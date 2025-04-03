@@ -11,7 +11,7 @@ export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispat
 {
   protected params!: CustomParams;
 
-  protected abstract handle(): Promise<void>;
+  protected abstract handle(heartBeatCallBack: HeartbeatCallback): Promise<void>;
 
   protected get tenantName() {
     if (!this.params.tenantName) {
@@ -34,12 +34,12 @@ export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispat
     permissionsContext.setUserInContext(user);
   }
 
-  async handleDispatch(_: HeartbeatCallback, params: CustomParams): Promise<void> {
+  async handleDispatch(heartBeatCallBack: HeartbeatCallback, params: CustomParams): Promise<void> {
     this.params = params;
 
     await tenants.run(async () => {
       await this.setCurrentUser();
-      await this.handle();
+      await this.handle(heartBeatCallBack);
     }, this.tenantName);
   }
 }

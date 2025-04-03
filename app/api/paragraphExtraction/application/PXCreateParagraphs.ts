@@ -16,6 +16,7 @@ type PXCreateParagraphsInput = {
   userId: string;
   entityStatusId: string;
   paragraphs: ParagraphOutput[];
+  onParagraphCreated?: () => Promise<void>;
 };
 
 type Output = any;
@@ -36,7 +37,12 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     });
   }
 
-  async execute({ entityStatusId, paragraphs, userId }: PXCreateParagraphsInput): Promise<Output> {
+  async execute({
+    entityStatusId,
+    paragraphs,
+    userId,
+    onParagraphCreated,
+  }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(userId) };
     const entityStatus = await this.getEntityStatus(entityStatusId);
 
@@ -59,9 +65,18 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
-    await ArrayUtils.parallelFor(paragraphs, async paragraph =>
-      this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
-    );
+    await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
+      await this.createParagraph.execute({
+        paragraph,
+        extractor,
+        sourceEntities,
+        user,
+        entityStatus,
+      });
+      if (onParagraphCreated) {
+        await onParagraphCreated();
+      }
+    });
 
     await this.dependencies.entitiesStatusDS.markAsFinished(entityStatusId);
   }

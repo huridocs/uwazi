@@ -6,6 +6,7 @@ import { config } from 'api/config';
 import { FileNotFound } from 'api/files/FileNotFound';
 import { S3Error } from 'api/files/S3Storage';
 import { legacyLogger } from 'api/log';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { appContext } from 'api/utils/AppContext';
 import { createError } from 'api/utils/index';
 import util from 'node:util';
@@ -64,6 +65,13 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Error) {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
+  }
+
+  if (
+    error.code === PXValidationError.codes.SEGMENTATIONS_UNAVAILABLE ||
+    error.code === PXValidationError.codes.SEGMENTATION_FILES_NOT_FOUND
+  ) {
+    result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof S3Error) {
