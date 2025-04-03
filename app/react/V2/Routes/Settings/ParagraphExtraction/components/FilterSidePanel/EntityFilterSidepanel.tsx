@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, useLoaderData, useLocation, useNavigate } from 'react-router';
+import { Form, useLoaderData, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Button, Sidepanel } from 'V2/Components/UI';
@@ -28,7 +28,7 @@ const getFilterStatus = (filters, availableFilters?: Extractor['statusCount']): 
 const EntityFilterSidepanel = () => {
   const { search } = useLocation();
   const { extractor } = useLoaderData() as PXEntityLoaderResponse;
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useAtom(filterSidepanelAtom);
   const urlFilters = searchParamsFromSearchParams(new URLSearchParams(search));
   const [appliedFilters, setAppliedFilters] = useState<Filters>(() =>
@@ -38,11 +38,11 @@ const EntityFilterSidepanel = () => {
   const handleSubmit = async () => {
     const searchParams = new URLSearchParams();
     Object.entries(appliedFilters).forEach(([key, value]) => {
-      if (value) {
-        searchParams.append(key, value.status.toString());
+      if (value.status) {
+        searchParams.append("status", key);
       }
     });
-    await navigate(searchParams.toString());
+    setSearchParams(searchParams);
   };
 
   return (

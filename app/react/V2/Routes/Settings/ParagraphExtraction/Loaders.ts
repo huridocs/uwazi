@@ -31,7 +31,7 @@ const PXEntityLoader =
       const query: PXEntityQuery = {
         id: extractorId,
         page: { number: 1, size: 100 },
-        filter: { status: searchParams },
+        filter: searchParams,
       };
 
       const extractors = await extractorsAPI.get(headers);
