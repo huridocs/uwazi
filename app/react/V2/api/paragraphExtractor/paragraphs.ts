@@ -10,14 +10,19 @@ const johnSmith = {
   // document: 'doc_name.pdf',
   language: 'en',
   templateId: '66fbe4f28542cc5545e05a46',
-  metadata: [{
-    label: 'paragraphCount',
-    value: '1',
-  }, {
-    label: 'text',
-    value: 'The quick brown fox jumps over the lazy dog. This sentence is often used as a typing exercise because it contains every letter of the alphabet. However, it lacks the depth and complexity of real-world text samples. To address this limitation, we can expand on the concept by discussing the importance of diverse and representative text samples in natural language processing. Researchers in linguistics and computer science often require large corpora of text data to train and evaluate language models. These datasets must encompass a wide range of topics, writing styles, and linguistic features to ensure that the resulting models can handle the nuances and complexities of human communication effectively.',
-  }]
-}
+  //THIS IS AN OBJECT WITH KEY VALUES
+  metadata: [
+    {
+      label: 'paragraphCount',
+      value: '1',
+    },
+    {
+      label: 'text',
+      value:
+        'The quick brown fox jumps over the lazy dog. This sentence is often used as a typing exercise because it contains every letter of the alphabet. However, it lacks the depth and complexity of real-world text samples. To address this limitation, we can expand on the concept by discussing the importance of diverse and representative text samples in natural language processing. Researchers in linguistics and computer science often require large corpora of text data to train and evaluate language models. These datasets must encompass a wide range of topics, writing styles, and linguistic features to ensure that the resulting models can handle the nuances and complexities of human communication effectively.',
+    },
+  ],
+};
 
 const mariaGarcia = {
   _id: '2',

@@ -13,6 +13,8 @@ const get = async (
 ): Promise<PXEntityRows> => {
   try {
     const requestParams = new RequestParams(qs.stringify(parameters), headers);
+    const { json: test } = await api.get('paragraphExtraction/extractorStatuses', requestParams);
+    console.log(test);
     const response = {
       rows: [
         {
@@ -59,46 +61,8 @@ const get = async (
       totalRows: 4,
     };
     return response;
-    // const { json: response } = await api.get(
-    //   'paragraphExtraction/extractorStatuses',
-    //   requestParams
-    // );
+
     // return response;
-  } catch (e) {
-    return e;
-  }
-};
-
-const getFilters = async (headers?: IncomingHttpHeaders) => {
-  try {
-    // const { data } = new RequestParams({  }, headers);
-    const response = [
-      {
-        _id: '1',
-        label: 'Languages',
-        key: 'languages',
-        options: [
-          { key: 'en', label: 'English', count: 12 },
-          { key: 'fr', label: 'Français', count: 26 },
-          { key: 'es', label: 'Español', count: 3 },
-          { key: 'pt', label: 'Portuguese', count: 9 },
-        ],
-      },
-      {
-        _id: '2',
-        label: 'Status',
-        key: 'status',
-        options: [
-          { key: 'DONE', label: 'Done', count: 12 },
-          { key: 'NEW', label: 'New', count: 14 },
-          { key: 'PROCESSING', label: 'Processing', count: 24 },
-          { key: 'IN_QUEUE', label: 'In queue', count: 0 },
-          { key: 'HAS_ERROR', label: 'Error', count: 0 },
-        ],
-      },
-    ];
-
-    return response;
   } catch (e) {
     return e;
   }
@@ -139,4 +103,4 @@ const remove = async (ids: PXTable[]) => {
   // return api.delete(ENDPOINTS.DELETE_EXTRACTOR, requestParams);
 };
 
-export { get, getFilters, extractParagraphs, extractNewParagraphs, remove };
+export { get, extractParagraphs, extractNewParagraphs, remove };

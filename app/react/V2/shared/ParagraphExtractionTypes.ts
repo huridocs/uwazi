@@ -66,7 +66,6 @@ type TablePXEntityRow = PXEntityRow & { rowId: string };
 
 type PXEntityLoaderResponse = {
   rows: TablePXEntityRow[];
-  filters: { [key: string]: number };
   page: PXEntityRows['page'];
   totalRows: number;
   extractor?: Extractor;

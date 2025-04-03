@@ -49,13 +49,14 @@ import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUpl
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
 import {
+  FilterEntitiesAction,
   ParagraphExtractorLoader,
   PXEntityLoader,
   PXParagraphLoader,
 } from 'app/V2/Routes/Settings/ParagraphExtraction/Loaders';
-import { ParagraphExtractorDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
-import { PXEntityDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXEntities';
-import { PXParagraphDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
+import { ParagraphExtractorDashboard } from 'V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
+import { PXEntityDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXEntities';
+import { PXParagraphDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
