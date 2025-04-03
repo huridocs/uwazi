@@ -8,64 +8,64 @@ import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const extractors = await extractorsAPI.get(headers);
-      return { extractors };
-    };
+  async () => {
+    const extractors = await extractorsAPI.get(headers);
+    return { extractors };
+  };
 
 const PXEntityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    // eslint-disable-next-line max-statements
-    async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
-      const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-      const searchParams = searchParamsFromSearchParams(urlSearchParams);
+  // eslint-disable-next-line max-statements
+  async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
+    const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
+    const searchParams = searchParamsFromSearchParams(urlSearchParams);
 
-      const result: PXEntityLoaderResponse = {
-        rows: [],
-        page: { number: 1, size: 100 },
-        totalRows: 0,
-      };
-
-      if (!extractorId) return result;
-
-      const query: PXEntityQuery = {
-        id: extractorId,
-        page: { number: 1, size: 100 },
-        filter: searchParams,
-      };
-
-      const extractors = await extractorsAPI.get(headers);
-      const response = await pxEntitiesApi.get(query, headers);
-
-      response.rows.forEach(row => {
-        result.rows.push({ ...row, rowId: row.entity._id });
-      });
-
-      result.page = response.page;
-      result.totalRows = response.totalRows;
-      result.extractor = extractors.find(ext => ext._id === extractorId);
-
-      return result;
+    const result: PXEntityLoaderResponse = {
+      rows: [],
+      page: { number: 1, size: 100 },
+      totalRows: 0,
     };
+
+    if (!extractorId) return result;
+
+    const query: PXEntityQuery = {
+      id: extractorId,
+      page: { number: 1, size: 100 },
+      filter: searchParams,
+    };
+
+    const extractors = await extractorsAPI.get(headers);
+    const response = await pxEntitiesApi.get(query, headers);
+
+    response.rows.forEach(row => {
+      result.rows.push({ ...row, rowId: row.entity._id });
+    });
+
+    result.page = response.page;
+    result.totalRows = response.totalRows;
+    result.extractor = extractors.find(ext => ext._id === extractorId);
+
+    return result;
+  };
 
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params: { id = '', extractorId = '' } }) => {
-      const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
-        id,
-        extractorId
-      );
+  async ({ params: { id = '', extractorId = '' } }) => {
+    const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
+      id,
+      extractorId
+    );
 
-      const result: PXParagraphsLoaderResponse = {
-        rows: [],
-        page: { number: 1, size: 100 },
-        totalRows: 0,
-      };
-
-      paragraphs.rows.forEach((row: PXEntityParagraphRow) => {
-        result.rows.push({ ...row, rowId: row.sharedId });
-      });
-      return result;
+    const result: PXParagraphsLoaderResponse = {
+      rows: [],
+      page: { number: 1, size: 100 },
+      totalRows: 0,
     };
+
+    paragraphs.rows.forEach((row: PXEntityParagraphRow) => {
+      result.rows.push({ ...row, rowId: row.sharedId });
+    });
+    return result;
+  };
 
 export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };

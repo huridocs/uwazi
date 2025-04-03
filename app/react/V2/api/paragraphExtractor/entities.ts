@@ -14,7 +14,6 @@ const get = async (
   try {
     const requestParams = new RequestParams(qs.stringify(parameters), headers);
     const { json: test } = await api.get('paragraphExtraction/extractorStatuses', requestParams);
-    console.log(test);
     const response = {
       rows: [
         {

@@ -35,14 +35,19 @@ const EntityFilterSidepanel = () => {
     getFilterStatus(urlFilters, extractor?.statusCount)
   );
 
-  const handleSubmit = async () => {
-    const searchParams = new URLSearchParams();
+  const handleSubmit = () => {
+    const statusFilters: string[] = [];
     Object.entries(appliedFilters).forEach(([key, value]) => {
       if (value.status) {
-        searchParams.append("status", key);
+        statusFilters.push(key);
       }
     });
-    setSearchParams(searchParams);
+
+    setSearchParams((prev: URLSearchParams) => {
+      prev.set('page', '1');
+      prev.set('status', JSON.stringify(statusFilters));
+      return prev;
+    });
   };
 
   return (
@@ -63,7 +68,7 @@ const EntityFilterSidepanel = () => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <div className="flex gap-2 justify-end">
-          <Form method="get" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <Button size="small" styling="outline" onClick={() => console.log('clear all filters')}>
               <Translate>Clear All</Translate>
             </Button>
@@ -71,7 +76,7 @@ const EntityFilterSidepanel = () => {
             <Button size="small" type="submit" color="success">
               <Translate>Apply</Translate>
             </Button>
-          </Form>
+          </form>
         </div>
       </Sidepanel.Footer>
     </Sidepanel>
