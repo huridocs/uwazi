@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
 
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
@@ -99,20 +98,12 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
+  async setAsError(extractionId: string): Promise<void> {
+    await this.getCollection().updateOne(
       { _id: new ObjectId(extractionId) },
       { $set: { status: EntityStatus.Error } },
-      { upsert: false, returnDocument: 'after' }
+      { upsert: false }
     );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not set an error of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
@@ -190,26 +181,18 @@ export class MongoPXEntitiesStatusDataSource
     );
   }
 
-  async markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
-    const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
+  async markAsProcessing(input: MarkAsQueuedInput): Promise<void> {
+    await this.getCollection().updateOne(
       {
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedId,
       },
       { $set: { status: EntityStatus.Processing } },
-      { upsert: false, returnDocument: 'after' }
+      { upsert: false }
     );
-
-    if (!mongoEntityStatus) {
-      throw new Error(
-        `Cannot change status to queued of a EntityStatus that does not exist. ${JSON.stringify(input)}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
   }
 
-  async markAsFinished(entityStatusId: string): Promise<void> {
+  async markAsProcessed(entityStatusId: string): Promise<void> {
     await this.getCollection().updateOne(
       {
         _id: new ObjectId(entityStatusId),
