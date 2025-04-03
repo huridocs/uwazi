@@ -17,13 +17,13 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
   pxColumnHelper.accessor('entities.language', {
     header: generateTableHeader('Language'),
     cell: LanguagesCell,
-    enableSorting: true,
+    enableSorting: false
   }),
   pxColumnHelper.accessor('entities.title', {
     header: generateTableHeader('Text'),
     cell: TextCell,
     meta: { headerClassName: 'w-5/6' },
-    enableSorting: true,
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('entities.title', {
     header: generateTableHeader(''),
