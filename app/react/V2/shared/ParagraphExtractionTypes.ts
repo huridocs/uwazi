@@ -51,12 +51,12 @@ type PXEntityRow = {
 };
 
 type PXEntityRows = {
-  rows: PXEntityRow[];
   page: {
     number: number;
     size: number;
   };
   totalRows: number;
+  rows?: PXEntityRow[];
 };
 
 type TablePXEntityRow = PXEntityRow & { rowId: string };
