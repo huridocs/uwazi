@@ -5,21 +5,18 @@ import { Template } from 'app/apiResponseTypes';
 import { TableTitle } from '../TableTitle';
 import { PXTableFooter } from '../PXTableFooter';
 import { columns } from './TableElements';
-import { FilterSidePanel } from '../FilterSidePanel';
-import { isEmpty } from 'lodash';
+import { FilterSidepanelButton } from '../FilterSidePanel/FilterSidepanelButton';
 
 interface EntitiesTableProps {
   pxEntitiesData: TablePXEntityRow[];
   onSelectionChange: (selected: TablePXEntityRow[]) => void;
   sourceTemplate?: Template;
-  filters: { [key: string]: number };
 }
 
 const EntitiesTable = ({
   pxEntitiesData,
   onSelectionChange,
   sourceTemplate,
-  filters,
 }: EntitiesTableProps) => (
   <Table
     data={pxEntitiesData}
@@ -28,7 +25,7 @@ const EntitiesTable = ({
     header={
       <TableTitle
         items={sourceTemplate ? [sourceTemplate] : []}
-        Buttons={!isEmpty(filters) && <FilterSidePanel availableFilters={filters} />}
+        Buttons={<FilterSidepanelButton />}
       />
     }
     onChange={({ selectedRows }) => {

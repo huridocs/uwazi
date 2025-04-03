@@ -10,6 +10,7 @@ const johnSmith = {
   // document: 'doc_name.pdf',
   language: 'en',
   templateId: '66fbe4f28542cc5545e05a46',
+  //THIS IS AN OBJECT WITH KEY VALUES
   metadata: [
     {
       label: 'paragraphCount',

@@ -11,7 +11,7 @@ import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
 import { DeleteDialog } from './components/entities/DeleteDialog';
-import { FilterSidePanel } from './components/FilterSidePanel';
+import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',
@@ -19,7 +19,7 @@ const DisplayPill = generateDisplayPill({
 
 const PXEntityDashboard = () => {
   const templates = useAtomValue(templatesAtom);
-  const { rows, filters, page, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
+  const { rows, page, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
 
@@ -43,7 +43,6 @@ const PXEntityDashboard = () => {
             pxEntitiesData={rows}
             onSelectionChange={setSelected}
             sourceTemplate={sourceTemplate}
-            filters={filters}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
@@ -88,7 +87,7 @@ const PXEntityDashboard = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      {filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
+      <EntityFilterSidepanel />
     </div>
   );
 };

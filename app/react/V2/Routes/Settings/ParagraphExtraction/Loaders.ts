@@ -3,12 +3,7 @@ import { LoaderFunction } from 'react-router';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
-import {
-  PXEntityLoaderResponse,
-  PXEntityParagraphRow,
-  PXEntityQuery,
-  PXParagraphsLoaderResponse,
-} from 'V2/shared/ParagraphExtractionTypes';
+import { PXEntityLoaderResponse, PXEntityQuery } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 
 const ParagraphExtractorLoader =
@@ -20,13 +15,13 @@ const ParagraphExtractorLoader =
 
 const PXEntityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
+  // eslint-disable-next-line max-statements
   async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXEntityLoaderResponse = {
       rows: [],
-      filters: searchParams,
       page: { number: 1, size: 100 },
       totalRows: 0,
     };
@@ -36,7 +31,7 @@ const PXEntityLoader =
     const query: PXEntityQuery = {
       id: extractorId,
       page: { number: 1, size: 100 },
-      filter: { status: [] },
+      filter: { status: searchParams },
     };
 
     const extractors = await extractorsAPI.get(headers);
@@ -44,8 +39,6 @@ const PXEntityLoader =
 
     response.rows.forEach(row => {
       result.rows.push({ ...row, rowId: row.entity._id });
-      //TODO: should come from the API
-      result.filters[row.status.status] = (result.filters[row.status.status] || 0) + 1;
     });
 
     result.page = response.page;
