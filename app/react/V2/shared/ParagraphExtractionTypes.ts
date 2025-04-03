@@ -6,7 +6,6 @@ enum EntityStatus {
   Processed = 'processed',
 }
 
-
 type Extractor = {
   _id: string;
   sourceTemplateId: string;
@@ -32,16 +31,14 @@ type PXEntityQuery = {
   };
 };
 
-
-type PXEntity =
-  {
-    _id: string;
-    sharedId: string;
-    title: string;
-    language: string;
-    templateId?: string;
-    metadata?: { value: string; label: string }[]
-  }
+type PXEntity = {
+  _id: string;
+  sharedId: string;
+  title: string;
+  language: string;
+  templateId?: string;
+  metadata?: { value: string; label: string }[];
+};
 
 type PXEntityRow = {
   entity: PXEntity;
@@ -92,7 +89,7 @@ export type {
   TablePXEntityRow,
   PXEntityParagraphRow,
   PXParagraphsLoaderResponse,
-  TablePXEntityParagraphRow
+  TablePXEntityParagraphRow,
 };
 
 export { EntityStatus };

@@ -14,13 +14,12 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
         {/* <DisplayPill color={paragraphData.template.color}>
           {paragraphData.template.name}
         </DisplayPill> */}
-        <DisplayPill color={'blue'}>
-          {paragraphData.sharedId}
-        </DisplayPill>
+        <DisplayPill color={'blue'}>{paragraphData.sharedId}</DisplayPill>
       </div>
     </div>
     <div className="px-4 py-3 rounded-md leading-tight text-sm font-bold border border-gray-100">
-      <Translate>Language</Translate>: <DisplayPill>{paragraphData.entities[0].language}</DisplayPill>
+      <Translate>Language</Translate>:{' '}
+      <DisplayPill>{paragraphData.entities[0].language}</DisplayPill>
     </div>
     <div className="px-4 py-3 rounded-md leading-tight text-sm font-bold border border-gray-100">
       <Translate>ID</Translate>:{' '}

@@ -17,7 +17,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
   pxColumnHelper.accessor('entities.language', {
     header: generateTableHeader('Language'),
     cell: LanguagesCell,
-    enableSorting: false
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('entities.title', {
     header: generateTableHeader('Text'),
@@ -29,7 +29,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
     header: generateTableHeader(''),
     cell: props =>
       ActionCell(() => {
-        const paragraphId = props.cell.getValue();
+        // const paragraphId = props.cell.getValue();
         console.log('view clicked');
         // if (paragraphId) {
         // onViewAction(paragraphId);

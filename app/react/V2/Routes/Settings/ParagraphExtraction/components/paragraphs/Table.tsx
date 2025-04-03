@@ -11,7 +11,6 @@ import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionType
 interface ParagraphsTableProps {
   pxParagraphData: TablePXEntityParagraphRow[];
   paragraphInfo: TablePXEntityParagraphRow;
-  entityLanguages: string[];
   filters: { [key: string]: number };
   viewParagraph: (params: any) => void;
 }
@@ -19,11 +18,9 @@ interface ParagraphsTableProps {
 const ParagraphsTable = ({
   pxParagraphData,
   paragraphInfo,
-  entityLanguages,
   filters,
   viewParagraph,
 }: ParagraphsTableProps) => {
-  debugger;
   return (
     <Table
       data={pxParagraphData}
@@ -32,7 +29,7 @@ const ParagraphsTable = ({
         paragraphInfo && (
           <TableTitle
             items={[
-              { _id: paragraphInfo.entities[0].sharedId, name: paragraphInfo.entities[0].title }
+              { _id: paragraphInfo.entities[0].sharedId, name: paragraphInfo.entities[0].title },
               // { ...paragraphInfo.entity.template },
               // ...entityLanguages.map(language => ({ name: language })),
             ]}
@@ -57,7 +54,7 @@ const ParagraphsTable = ({
       footer={<PXTableFooter totalPages={10} currentDataLength={10} total={100} />}
       groupColumnPosition={3}
     />
-  )
+  );
 };
 
 export { ParagraphsTable };

@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import React, { useState } from 'react';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import type { PXParagraphsLoaderResponse, TablePXEntityParagraphRow } from 'V2/shared/ParagraphExtractionTypes';
-import { templatesAtom } from 'V2/atoms';
+import type {
+  PXParagraphsLoaderResponse,
+  TablePXEntityParagraphRow,
+} from 'V2/shared/ParagraphExtractionTypes';
 import { useLoaderData } from 'react-router';
-import { Settings } from 'shared/types/settingsType';
-// import { formatParagraphData } from './utils/formatters';
-import { getLanguageName } from './utils/getLanguageName';
 import { ParagraphsTable } from './components/paragraphs/Table';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
 
@@ -14,16 +12,14 @@ const PXParagraphDashboard = () => {
   const { rows, page, totalRows } = useLoaderData() as PXParagraphsLoaderResponse;
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView, setParagraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
-  const [paragraphInfo, setParagraphInfo] = useState<undefined | TablePXEntityParagraphRow>(undefined);
-  const [entityLanguages, setEntityLanguages] = useState<string[]>([]);
-  const templates = useAtomValue(templatesAtom);
+  const [paragraphOnView, setParagraphOnView] = useState<undefined | TablePXEntityParagraphRow>(
+    undefined
+  );
 
   // const pxParagraphData = useMemo(
   //   () => formatParagraphData(paragraphs, templates, settings),
   //   [paragraphs, templates, settings]
   // );
-
 
   // useEffect(() => {
   //   if (pxParagraphData.length > 0) {
@@ -76,7 +72,7 @@ const PXParagraphDashboard = () => {
               [
                 'TODO: Template Name',
                 // `/settings/paragraph-extraction/${extractorId}/entities`,
-                `/settings/paragraph-extraction/extractorId/entities`,
+                '/settings/paragraph-extraction/extractorId/entities',
               ],
             ])
           }
@@ -85,7 +81,6 @@ const PXParagraphDashboard = () => {
           <ParagraphsTable
             pxParagraphData={rows}
             paragraphInfo={rows[0]}
-            entityLanguages={[]}
             filters={{}}
             // viewParagraph={openSidePanel
             viewParagraph={() => {

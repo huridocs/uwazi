@@ -3,10 +3,12 @@ import { LoaderFunction } from 'react-router';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
-import { PXEntityLoaderResponse, PXEntityParagraphRow, PXEntityQuery, PXParagraphsLoaderResponse } from 'V2/shared/ParagraphExtractionTypes';
-import * as settingsAPI from 'V2/api/settings';
-import { RequestParams } from 'app/utils/RequestParams';
-import { I18NApi } from 'app/I18N';
+import {
+  PXEntityLoaderResponse,
+  PXEntityParagraphRow,
+  PXEntityQuery,
+  PXParagraphsLoaderResponse,
+} from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 
 const ParagraphExtractorLoader =
@@ -55,8 +57,9 @@ const PXEntityLoader =
 
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async ({ params: { extractorId = '' } }) => {
-      const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(extractorId);
+    async ({ params: { id = '', extractorId = '' } }) => {
+      const paragraphs: PXParagraphsLoaderResponse =
+        await pxParagraphApi.getByParagraphExtractorId(id, extractorId);
 
       const result: PXParagraphsLoaderResponse = {
         rows: [],

@@ -16,7 +16,9 @@ const FilterSidePanel = ({ availableFilters }: FilterSidePanelProps) => {
   const params = useParams();
   const [open, setOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState<{ [key: string]: boolean }>(
-    (typeof params.filters === 'object' && !Array.isArray(params.filters) ? params.filters : {}) as { [key: string]: boolean }
+    (typeof params.filters === 'object' && !Array.isArray(params.filters)
+      ? params.filters
+      : {}) as { [key: string]: boolean }
   );
 
   return (
@@ -45,8 +47,8 @@ const FilterSidePanel = ({ availableFilters }: FilterSidePanelProps) => {
           <EntityFilter
             filterGroups={availableFilters}
             loadedFilters={appliedFilters}
-            setFilters={(updatedFilters) => {
-              setAppliedFilters((prevFilters) => ({
+            setFilters={updatedFilters => {
+              setAppliedFilters(prevFilters => ({
                 ...prevFilters,
                 ...updatedFilters,
               }));
@@ -59,15 +61,19 @@ const FilterSidePanel = ({ availableFilters }: FilterSidePanelProps) => {
               <Translate>Clear All</Translate>
             </Button>
 
-            <Button size="small" color="success" onClick={() => {
-              const searchParams = new URLSearchParams();
-              Object.entries(appliedFilters).forEach(([key, value]) => {
-                if (value) {
-                  searchParams.append(key, value.toString());
-                }
-              });
-              window.location.search = searchParams.toString();
-            }}>
+            <Button
+              size="small"
+              color="success"
+              onClick={() => {
+                const searchParams = new URLSearchParams();
+                Object.entries(appliedFilters).forEach(([key, value]) => {
+                  if (value) {
+                    searchParams.append(key, value.toString());
+                  }
+                });
+                window.location.search = searchParams.toString();
+              }}
+            >
               <Translate>Apply</Translate>
             </Button>
           </div>

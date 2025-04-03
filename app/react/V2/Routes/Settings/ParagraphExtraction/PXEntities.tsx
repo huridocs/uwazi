@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { useLoaderData, useRouteLoaderData } from 'react-router';
+import React, { useState } from 'react';
+import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -22,7 +22,6 @@ const PXEntityDashboard = () => {
   const { rows, filters, page, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
-
 
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
@@ -89,11 +88,7 @@ const PXEntityDashboard = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      {filters.length > 0 && (
-        <FilterSidePanel
-          availableFilters={filters}
-        />
-      )}
+      {filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
     </div>
   );
 };

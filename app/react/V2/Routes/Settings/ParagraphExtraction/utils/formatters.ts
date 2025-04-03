@@ -1,10 +1,7 @@
 import { Template } from 'app/apiResponseTypes';
 // import { Settings } from 'shared/types/settingsType';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import {
-  PXTemplate,
-  PXTable,
-} from '../types';
+import { PXTemplate, PXTable } from '../types';
 import { getTemplateProperties } from './getTemplateProperties';
 
 const requiredTemplateProperties = ['_id', 'name', 'color'];

@@ -13,31 +13,31 @@ const columns = [
     header: generateTableHeader('Entity'),
     cell: DisplayCell,
     meta: { headerClassName: 'w-4/12' },
-    enableSorting: false
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('availableFileLanguages', {
     header: generateTableHeader('Language(s)'),
     cell: LanguagesCell,
     meta: { headerClassName: 'w-3/12' },
-    enableSorting: false
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('paragraphsCount', {
     header: generateTableHeader('Paragraphs'),
     cell: DisplayCell,
     meta: { headerClassName: 'w-2/12' },
-    enableSorting: false
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('status', {
     header: generateTableHeader('Status'),
     cell: StatusCell,
     meta: { headerClassName: 'w-2/12' },
-    enableSorting: false
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('entity._id', {
     header: generateTableHeader(''),
     cell: ActionCell,
     meta: { headerClassName: 'w-1/12' },
-    enableSorting: false
+    enableSorting: false,
   }),
 ];
 

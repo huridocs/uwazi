@@ -5,7 +5,12 @@ import api from 'app/utils/api';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 import { PXTable } from 'V2/Routes/Settings/ParagraphExtraction/types';
-import { TablePXEntityRow, PXEntityQuery, PXEntityRows, EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
+import {
+  TablePXEntityRow,
+  PXEntityQuery,
+  PXEntityRows,
+  EntityStatus,
+} from 'V2/shared/ParagraphExtractionTypes';
 
 const get = async (
   parameters: PXEntityQuery,
@@ -54,7 +59,7 @@ const get = async (
       ],
       page: {
         number: 1,
-        size: 4
+        size: 4,
       },
       totalRows: 4,
     };
