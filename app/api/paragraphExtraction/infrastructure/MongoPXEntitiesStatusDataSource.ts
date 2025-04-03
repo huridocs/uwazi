@@ -7,6 +7,8 @@ import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import {
   CreateForSourceEntitiesInput,
   CreateInput,
@@ -223,5 +225,21 @@ export class MongoPXEntitiesStatusDataSource
 
   async deleteBySourceEntity(entitySharedId: string): Promise<void> {
     await this.getCollection().deleteOne({ entitySharedId });
+  }
+
+  getAll(input: Partial<PXEntityStatusModel>): ResultSet<PXEntityStatusModel> {
+    const query = {
+      entitySharedId: input.entitySharedId,
+      extractorId: input.extractorId && new ObjectId(input.extractorId),
+      status: input.status,
+    };
+
+    const sanitized = Object.fromEntries(
+      Object.entries(query).filter(([_, value]) => Boolean(value))
+    );
+
+    const cursor = this.getCollection().find(sanitized);
+
+    return new MongoResultSet(cursor, MongoPXEntitiesStatusDataSource.toDomain.bind(this));
   }
 }
