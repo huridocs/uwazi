@@ -5,6 +5,7 @@ import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
 import { PXEntityLoaderResponse, PXEntityQuery } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import qs from 'qs';
 
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -18,7 +19,7 @@ const PXEntityLoader =
   // eslint-disable-next-line max-statements
   async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const searchParams = searchParamsFromSearchParams(urlSearchParams);
+    const { page, filters } = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXEntityLoaderResponse = {
       rows: [],
@@ -30,14 +31,14 @@ const PXEntityLoader =
 
     const query: PXEntityQuery = {
       id: extractorId,
-      page: { number: 1, size: 100 },
-      filter: searchParams,
+      page: { number: page ? Number(page) : 1, size: 100 },
+      ...(filters && { filters: qs.parse(filters) }),
     };
 
     const extractors = await extractorsAPI.get(headers);
     const response = await pxEntitiesApi.get(query, headers);
 
-    response.rows.forEach(row => {
+    response.rows?.forEach(row => {
       result.rows.push({ ...row, rowId: row.entity._id });
     });
 

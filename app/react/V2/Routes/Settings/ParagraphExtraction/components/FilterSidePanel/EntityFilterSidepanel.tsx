@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, useLoaderData, useLocation, useNavigate, useSearchParams } from 'react-router';
+import qs from 'qs';
+import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { useAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Button, Sidepanel } from 'V2/Components/UI';
@@ -37,6 +38,7 @@ const EntityFilterSidepanel = () => {
 
   const handleSubmit = () => {
     const statusFilters: string[] = [];
+
     Object.entries(appliedFilters).forEach(([key, value]) => {
       if (value.status) {
         statusFilters.push(key);
@@ -45,7 +47,7 @@ const EntityFilterSidepanel = () => {
 
     setSearchParams((prev: URLSearchParams) => {
       prev.set('page', '1');
-      prev.set('status', JSON.stringify(statusFilters));
+      prev.set('filters', qs.stringify({ status: [...statusFilters] }));
       return prev;
     });
   };
@@ -68,15 +70,13 @@ const EntityFilterSidepanel = () => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <div className="flex gap-2 justify-end">
-          <form onSubmit={handleSubmit}>
-            <Button size="small" styling="outline" onClick={() => console.log('clear all filters')}>
-              <Translate>Clear All</Translate>
-            </Button>
+          <Button size="small" styling="outline" onClick={() => console.log('clear all filters')}>
+            <Translate>Clear All</Translate>
+          </Button>
 
-            <Button size="small" type="submit" color="success">
-              <Translate>Apply</Translate>
-            </Button>
-          </form>
+          <Button size="small" color="success" onClick={handleSubmit}>
+            <Translate>Apply</Translate>
+          </Button>
         </div>
       </Sidepanel.Footer>
     </Sidepanel>
