@@ -29,7 +29,7 @@ const getFilterStatus = (filters, availableFilters?: Extractor['statusCount']): 
 const EntityFilterSidepanel = () => {
   const { search } = useLocation();
   const { extractor } = useLoaderData() as PXEntityLoaderResponse;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const [open, setOpen] = useAtom(filterSidepanelAtom);
   const urlFilters = searchParamsFromSearchParams(new URLSearchParams(search));
   const [appliedFilters, setAppliedFilters] = useState<Filters>(() =>
@@ -50,6 +50,8 @@ const EntityFilterSidepanel = () => {
       prev.set('filters', qs.stringify({ status: [...statusFilters] }));
       return prev;
     });
+
+    setOpen(false);
   };
 
   return (
@@ -70,13 +72,19 @@ const EntityFilterSidepanel = () => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <div className="flex gap-2 justify-end">
-          <Button size="small" styling="outline" onClick={() => console.log('clear all filters')}>
-            <Translate>Clear All</Translate>
-          </Button>
-
-          <Button size="small" color="success" onClick={handleSubmit}>
-            <Translate>Apply</Translate>
-          </Button>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
+            <Button size="small" styling="outline" onClick={() => console.log('clear all filters')}>
+              <Translate>Clear All</Translate>
+            </Button>
+            <Button size="small" type="submit" color="success">
+              <Translate>Apply</Translate>
+            </Button>
+          </form>
         </div>
       </Sidepanel.Footer>
     </Sidepanel>
