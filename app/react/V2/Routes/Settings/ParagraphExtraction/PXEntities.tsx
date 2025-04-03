@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { useLoaderData, useRouteLoaderData } from 'react-router';
+import { useAtomValue } from 'jotai';
+import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button } from 'V2/Components/UI';
 import { templatesAtom } from 'V2/atoms';
-import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
-import { Extractor, PXEntityLoaderResponse } from 'V2/shared/ParagraphExtractionTypes';
-import { PXEntityTable, PXTemplate } from './types';
+import type { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
+import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
@@ -21,10 +21,11 @@ const PXEntityDashboard = () => {
   const templates = useAtomValue(templatesAtom);
   const { rows, filters, page, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
-  const newEntitiesCount = rows.filter(row => row.status.status === 'NEW').length;
+  const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
+
 
   const [isSaving, setIsSaving] = useState(false);
-  const [selected, setSelected] = useState<PXEntityTable[]>([]);
+  const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
 
   return (
     <div
@@ -43,7 +44,7 @@ const PXEntityDashboard = () => {
             pxEntitiesData={rows}
             onSelectionChange={setSelected}
             sourceTemplate={sourceTemplate}
-            // filters={filters}
+            filters={filters}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
@@ -88,7 +89,11 @@ const PXEntityDashboard = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      {filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
+      {filters.length > 0 && (
+        <FilterSidePanel
+          availableFilters={filters}
+        />
+      )}
     </div>
   );
 };

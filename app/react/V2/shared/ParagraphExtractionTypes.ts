@@ -1,4 +1,11 @@
-type EntityStatus = 'NEW' | 'IN_QUEUE' | 'PROCESSING' | 'DONE' | 'HAS_ERROR';
+enum EntityStatus {
+  New = 'new',
+  Processing = 'processing',
+  Obsolete = 'obsolete',
+  Error = 'error',
+  Processed = 'processed',
+}
+
 
 type Extractor = {
   _id: string;
@@ -25,13 +32,19 @@ type PXEntityQuery = {
   };
 };
 
-type PXEntityRow = {
-  entity: {
+
+type PXEntity =
+  {
     _id: string;
     sharedId: string;
     title: string;
     language: string;
-  };
+    templateId?: string;
+    metadata?: { value: string; label: string }[]
+  }
+
+type PXEntityRow = {
+  entity: PXEntity;
   status: {
     _id: string;
     status: EntityStatus;
@@ -59,11 +72,27 @@ type PXEntityLoaderResponse = {
   extractor?: Extractor;
 };
 
+type PXEntityParagraphRow = { sharedId: string; entities: PXEntity[] };
+type TablePXEntityParagraphRow = PXEntityParagraphRow & { rowId: string };
+
+type PXParagraphsLoaderResponse = {
+  rows: TablePXEntityParagraphRow[];
+  page: {
+    number: number;
+    size: number;
+  };
+  totalRows: number;
+};
+
 export type {
   Extractor,
   PXEntityQuery,
   PXEntityRows,
-  EntityStatus,
   PXEntityLoaderResponse,
   TablePXEntityRow,
+  PXEntityParagraphRow,
+  PXParagraphsLoaderResponse,
+  TablePXEntityParagraphRow
 };
+
+export { EntityStatus };

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useRevalidator, useParams } from 'react-router';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Button, ConfirmationModal } from 'app/V2/Components/UI';
-import { useRevalidator, useParams } from 'react-router';
 import { notificationAtom } from 'app/V2/atoms';
-import { useSetAtom } from 'jotai';
+import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { dialogConfig } from './config';
-import { PXEntityTable } from '../../../types';
 
 const {
   service,
@@ -26,7 +26,7 @@ const ExtractEntitiesDialog = ({
   setIsProcessing: (value: boolean) => void;
   disabled: boolean;
   onSuccess: () => void;
-  selected: PXEntityTable[];
+  selected: TablePXEntityRow[];
 }) => {
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);

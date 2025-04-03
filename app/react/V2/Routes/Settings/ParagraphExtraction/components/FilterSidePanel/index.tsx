@@ -3,16 +3,21 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Button } from 'app/V2/Components/UI';
+import { useParams } from 'react-router';
 import { Sidepanel } from 'app/V2/Components/UI/Sidepanel';
 import { Icon } from 'app/UI';
 import { EntityFilter } from './Filters';
 
 type FilterSidePanelProps = {
-  availableFilters: any[];
+  availableFilters: { [key: string]: number };
 };
 
 const FilterSidePanel = ({ availableFilters }: FilterSidePanelProps) => {
+  const params = useParams();
   const [open, setOpen] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<{ [key: string]: boolean }>(
+    (typeof params.filters === 'object' && !Array.isArray(params.filters) ? params.filters : {}) as { [key: string]: boolean }
+  );
 
   return (
     <>
@@ -37,7 +42,16 @@ const FilterSidePanel = ({ availableFilters }: FilterSidePanelProps) => {
         }
       >
         <Sidepanel.Body>
-          <EntityFilter filterGroups={availableFilters} setFilters={() => {}} />
+          <EntityFilter
+            filterGroups={availableFilters}
+            loadedFilters={appliedFilters}
+            setFilters={(updatedFilters) => {
+              setAppliedFilters((prevFilters) => ({
+                ...prevFilters,
+                ...updatedFilters,
+              }));
+            }}
+          />
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3 border-t">
           <div className="flex gap-2 justify-end">
@@ -45,7 +59,15 @@ const FilterSidePanel = ({ availableFilters }: FilterSidePanelProps) => {
               <Translate>Clear All</Translate>
             </Button>
 
-            <Button size="small" color="success" onClick={() => console.log('apply filter')}>
+            <Button size="small" color="success" onClick={() => {
+              const searchParams = new URLSearchParams();
+              Object.entries(appliedFilters).forEach(([key, value]) => {
+                if (value) {
+                  searchParams.append(key, value.toString());
+                }
+              });
+              window.location.search = searchParams.toString();
+            }}>
               <Translate>Apply</Translate>
             </Button>
           </div>
