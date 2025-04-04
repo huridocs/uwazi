@@ -1,9 +1,9 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { PXTable } from '../../../types';
-import { generateTableHeader } from '../../../utils/generateTableHeader';
 import { TemplateCell } from './TemplateCell';
 import { EntityCountCell } from './EntityCountCell';
 import { ActionCell } from './ActionCell';
+import { generateTableHeader } from '../../../utils/generateTableHeader';
+import { PXTable } from '../../../types';
 
 const extractorColumnHelper = createColumnHelper<PXTable>();
 

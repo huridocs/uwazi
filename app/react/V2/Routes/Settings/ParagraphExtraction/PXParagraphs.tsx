@@ -1,89 +1,59 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import React, { useState } from 'react';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { templatesAtom } from 'V2/atoms';
+import type {
+  PXParagraphsLoaderResponse,
+  TablePXEntityParagraphRow,
+} from 'V2/shared/ParagraphExtractionTypes';
 import { useLoaderData } from 'react-router';
-import { Settings } from 'shared/types/settingsType';
-import { PXParagraphTable, PXParagraphApiResponse, PXEntityApiResponse } from './types';
-import { formatParagraphData } from './utils/formatters';
-import { getLanguageName } from './utils/getLanguageName';
 import { ParagraphsTable } from './components/paragraphs/Table';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
 
 const PXParagraphDashboard = () => {
-  const {
-    paragraphs = [],
-    extractorId,
-    languages = [],
-    settings,
-  } = useLoaderData() as {
-    extractorId: string;
-    entity: PXEntityApiResponse;
-    paragraphs: PXParagraphApiResponse[];
-    languages: LanguageSchema[];
-    settings: Settings;
-  };
+  const { rows, totalRows } = useLoaderData() as PXParagraphsLoaderResponse;
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphTable>(undefined);
-  const [paragraphInfo, setParagraphInfo] = useState<undefined | PXParagraphTable>(undefined);
-  const [entityLanguages, setEntityLanguages] = useState<string[]>([]);
-  const templates = useAtomValue(templatesAtom);
+  const [paragraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
 
-  const pxParagraphData = useMemo(
-    () => formatParagraphData(paragraphs, templates, settings),
-    [paragraphs, templates, settings]
-  );
+  // const pxParagraphData = useMemo(
+  //   () => formatParagraphData(paragraphs, templates, settings),
+  //   [paragraphs, templates, settings]
+  // );
 
-  const [filters, setFilters] = useState<any[]>([]);
+  // useEffect(() => {
+  //   if (pxParagraphData.length > 0) {
+  //     const [pxParagraphDatum] = pxParagraphData;
+  //     setParagraphInfo(pxParagraphDatum);
 
-  useEffect(() => {
-    if (pxParagraphData.length > 0) {
-      const [pxParagraphDatum] = pxParagraphData;
-      setParagraphInfo(pxParagraphDatum);
+  //     const availableLanguages = [
+  //       ...pxParagraphDatum.languages.map(lang => getLanguageName(languages, lang)),
+  //       ...pxParagraphData
+  //         .filter(datum => datum.paragraphCount === pxParagraphDatum.paragraphCount)
+  //         .reduce((subRowLanguages: string[], curr) => {
+  //           if (curr.subRows) {
+  //             curr.subRows.forEach(subRow => {
+  //               subRow.languages.forEach((lang: string) => {
+  //                 const languageName = getLanguageName(languages, lang);
+  //                 subRowLanguages.push(languageName);
+  //               });
+  //             });
+  //           }
+  //           return subRowLanguages;
+  //         }, []),
+  //     ];
+  //     setEntityLanguages(availableLanguages);
+  //   }
+  // }, [pxParagraphData, languages]);
 
-      const availableLanguages = [
-        ...pxParagraphDatum.languages.map(lang => getLanguageName(languages, lang)),
-        ...pxParagraphData
-          .filter(datum => datum.paragraphCount === pxParagraphDatum.paragraphCount)
-          .reduce((subRowLanguages: string[], curr) => {
-            if (curr.subRows) {
-              curr.subRows.forEach(subRow => {
-                subRow.languages.forEach((lang: string) => {
-                  const languageName = getLanguageName(languages, lang);
-                  subRowLanguages.push(languageName);
-                });
-              });
-            }
-            return subRowLanguages;
-          }, []),
-      ];
-      setEntityLanguages(availableLanguages);
-      setFilters([
-        {
-          label: 'Languages',
-          key: 'languages',
-          options: availableLanguages.map(lang => ({
-            key: lang,
-            label: getLanguageName(languages, lang),
-            count: 1,
-          })),
-        },
-      ]);
-    }
-  }, [pxParagraphData, languages]);
-
-  const openSidePanel = (id: string): void => {
-    setSidePanel(true);
-    const targetParagraph = pxParagraphData.find(paragraph => paragraph._id === id);
-    if (targetParagraph) {
-      setParagraphOnView({
-        ...targetParagraph,
-        languages: [getLanguageName(languages, targetParagraph.languages[0])],
-      });
-    }
-  };
+  // const openSidePanel = (id: string): void => {
+  //   setSidePanel(true);
+  //   const targetParagraph = pxParagraphData.find(paragraph => paragraph._id === id);
+  //   if (targetParagraph) {
+  //     setParagraphOnView({
+  //       ...targetParagraph,
+  //       languages: [getLanguageName(languages, targetParagraph.languages[0])],
+  //     });
+  //   }
+  // };
 
   return (
     <div
@@ -93,27 +63,29 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={paragraphInfo?.title || ''}
+          title={'TODO: Property Name'}
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],
               [
-                paragraphInfo?.template?.name || '',
-                `/settings/paragraph-extraction/${extractorId}/entities`,
+                'TODO: Template Name',
+                // `/settings/paragraph-extraction/${extractorId}/entities`,
+                '/settings/paragraph-extraction/extractorId/entities',
               ],
             ])
           }
         />
         <SettingsContent.Body>
-          {paragraphInfo && (
-            <ParagraphsTable
-              pxParagraphData={pxParagraphData}
-              paragraphInfo={paragraphInfo}
-              entityLanguages={entityLanguages}
-              filters={filters}
-              viewParagraph={openSidePanel}
-            />
-          )}
+          <ParagraphsTable
+            pxParagraphData={rows}
+            paragraphInfo={rows[0]}
+            filters={{}}
+            // viewParagraph={openSidePanel
+            viewParagraph={() => {
+              //TODO: Update openSidePanel
+            }}
+            totalRows={totalRows}
+          />
         </SettingsContent.Body>
       </SettingsContent>
       <ViewParagraphSidePanel

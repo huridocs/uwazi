@@ -1,21 +1,11 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
-import { ConfirmationModal } from 'app/V2/Components/UI';
 import { useRevalidator } from 'react-router';
-import { notificationAtom } from 'app/V2/atoms';
 import { useSetAtom } from 'jotai';
-import { dialogConfig } from './config';
+import { Translate } from 'app/I18N';
+import { ConfirmationModal } from 'V2/Components/UI';
+import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
+import { notificationAtom } from 'V2/atoms';
 import { PXTable } from '../../../types';
-
-const {
-  service,
-  headerText,
-  warningText,
-  acceptButtonText,
-  cancelButtonText,
-  successText,
-  errorText,
-} = dialogConfig;
 
 const DeleteDialog = ({
   setIsProcessing,
@@ -37,18 +27,18 @@ const DeleteDialog = ({
     setIsProcessing(true);
 
     try {
-      await service(selected);
+      await extractorsAPI.remove(selected);
       await revalidator.revalidate();
       setIsOpen(false);
       setNotifications({
         type: 'success',
-        text: <Translate>{successText}</Translate>,
+        text: <Translate>Extractor/s deleted</Translate>,
       });
       onSuccess();
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>{errorText}</Translate>,
+        text: <Translate>An error occurred</Translate>,
       });
     }
 
@@ -60,10 +50,14 @@ const DeleteDialog = ({
     <>
       {isOpen && (
         <ConfirmationModal
-          header={<Translate>{headerText}</Translate>}
-          warningText={<Translate>{warningText}</Translate>}
-          acceptButton={<Translate>{acceptButtonText}</Translate>}
-          cancelButton={<Translate>{cancelButtonText}</Translate>}
+          header={<Translate>Are you sure?</Translate>}
+          warningText={
+            <Translate>
+              Only the extractor will be deleted, all created entities will remain on the library.
+            </Translate>
+          }
+          acceptButton={<Translate>Delete</Translate>}
+          cancelButton={<Translate>No, cancel</Translate>}
           onAcceptClick={handleDelete}
           onCancelClick={() => setIsOpen(false)}
         />

@@ -70,6 +70,8 @@ Admins,Admins
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Permitir la omisión de captcha
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -113,6 +115,7 @@ Can view,Puede visualizar
 Cancel,Cancelar
 Canceling...,Cancelando
 Cannot delete template:,No se puede eliminar la plantilla:
+Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
@@ -171,6 +174,7 @@ Contact email description,Aquí puedes configurar el correo electrónico de cont
 Contact Form,Formulario de contacto
 Content translations,Traducciones de contenido
 Context,Contexto
+Continue,Continue
 Conversion failed,La conversión ha fallado
 Copied to clipboard,Copiado al clipboard
 Copy From,Copiar desde
@@ -395,7 +399,6 @@ Importing data in progress,Importación de datos en curso
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
-In queue,In queue
 Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
 Info,Información
 Information extraction training,Entrenamiento de extracción de información
@@ -584,6 +587,7 @@ OK,OK
 "Only templates with at least one rich text property and one numeric property are
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,¡Cuidado! Adelante por favor
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
 Open,Open
@@ -606,6 +610,8 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
