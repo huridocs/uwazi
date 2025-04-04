@@ -60,9 +60,9 @@ const ParagraphExtractorDashboard = () => {
                 <Translate>Delete</Translate>
               </Button>
               <div className="text-gray-500">
-                <Translate>Selected</Translate>{' '}
-                <span className="font-semibold text-gray-900">{selected.length}</span>{' '}
-                <Translate>of</Translate>{' '}
+                <Translate>Selected</Translate>
+                <span className="font-semibold text-gray-900">{selected.length}</span>
+                <Translate>of</Translate>
                 <span className="font-semibold text-gray-900">{paragraphExtractorData.length}</span>
               </div>
             </div>

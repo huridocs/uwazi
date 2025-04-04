@@ -70,6 +70,8 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -113,6 +115,7 @@ Can view,Görüntüleyebilir
 Cancel,İptal et
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,Güvenlik kodu
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -173,6 +176,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,Contact Form
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,Dönüştürülemedi
 Copied to clipboard,Copied to clipboard
 Copy From,Formu Kopyala
@@ -397,7 +401,6 @@ Importing data in progress,İçeri veri aktarma devam etmekte
 in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR kuyruğunda
-In queue,In queue
 Indexing entities may take a few minutes,Varlıkların diznlenmesi birkaç dakika sürebilir
 Info,Bilgi
 Information extraction training,Information extraction training
@@ -580,6 +583,7 @@ OCR PDF,OKT PDF
 of,nın-nin
 Ok,Tamam
 OK,TAMAM
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -608,6 +612,8 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,Parola
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success

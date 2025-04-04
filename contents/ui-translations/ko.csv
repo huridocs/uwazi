@@ -70,6 +70,8 @@ Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -113,6 +115,7 @@ Can view,열람 가능
 Cancel,취소
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,보안 문자
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -173,6 +176,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,연락처
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,변환 실패
 Copied to clipboard,Copied to clipboard
 Copy From,외부 복사
@@ -397,7 +401,6 @@ Importing data in progress,데이터 업로드 중
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
-In queue,In queue
 Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
 Information extraction training,Information extraction training
@@ -580,6 +583,7 @@ OCR PDF,PDF OCR 읽기
 of,의
 Ok,확인
 OK,확인
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -608,6 +612,8 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
