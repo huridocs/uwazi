@@ -58,6 +58,13 @@ const PXEntityLoader =
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ request, params: { sharedId, extractorId } }): Promise<PXParagraphsLoaderResponse> => {
+    if (!sharedId || !extractorId) {
+      return {
+        paragraphs: { rows: [], totalRows: 0, page: { number: 1, size: PAGE_SIZE } },
+        sourceTemplateId: '',
+      };
+    }
+
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const { page = '1' } = searchParamsFromSearchParams(urlSearchParams);
     const query: PXParagraphQuery = {
