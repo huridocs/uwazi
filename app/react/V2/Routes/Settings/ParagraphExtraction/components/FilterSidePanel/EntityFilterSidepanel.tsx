@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
-import qs from 'qs';
-import { useLoaderData, useLocation, useSearchParams } from 'react-router';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { useAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Button, Sidepanel } from 'V2/Components/UI';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { Extractor, PXEntityLoaderResponse } from 'V2/shared/ParagraphExtractionTypes';
 import { EntityFilter, Filters } from './Filters';
 import { filterSidepanelAtom } from './filterSidepanelAtom';
 
-const getFilterStatus = (filters, availableFilters?: Extractor['statusCount']): Filters => {
+const getFilterStatus = (
+  searchParams: object,
+  availableFilters?: Extractor['statusCount']
+): Filters => {
   const result: Filters = {};
 
   if (availableFilters) {
     Object.entries(availableFilters).forEach(([key, value]) => {
       result[key] = { count: value, status: false };
 
-      if (Object.hasOwn(filters, key)) {
+      if (Object.hasOwn(searchParams, key)) {
         result[key].status = true;
       }
     });
@@ -27,27 +28,27 @@ const getFilterStatus = (filters, availableFilters?: Extractor['statusCount']): 
 };
 
 const EntityFilterSidepanel = () => {
-  const { search } = useLocation();
   const { extractor } = useLoaderData() as PXEntityLoaderResponse;
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useAtom(filterSidepanelAtom);
-  const urlFilters = searchParamsFromSearchParams(new URLSearchParams(search));
   const [appliedFilters, setAppliedFilters] = useState<Filters>(() =>
-    getFilterStatus(urlFilters, extractor?.statusCount)
+    getFilterStatus(searchParams, extractor?.statusCount)
   );
 
   const handleSubmit = () => {
-    const statusFilters: string[] = [];
-
-    Object.entries(appliedFilters).forEach(([key, value]) => {
-      if (value.status) {
-        statusFilters.push(key);
-      }
-    });
-
     setSearchParams((prev: URLSearchParams) => {
       prev.set('page', '1');
-      prev.set('filters', qs.stringify({ status: [...statusFilters] }));
+      prev.set('size', '20');
+      Object.entries(appliedFilters).forEach(([key, value]) => {
+        if (value.status) {
+          if (prev.get('status') === null) {
+            prev.set('status', key);
+          } else {
+            prev.append('status', key);
+          }
+        }
+      });
+
       return prev;
     });
 

@@ -30,10 +30,9 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
     cell: props =>
       ActionCell(() => {
         const paragraphId = props.cell.getValue();
-        console.log('view clicked');
-        // if (paragraphId) {
-        // onViewAction(paragraphId);
-        // }
+        if (paragraphId) {
+          onViewAction('1');
+        }
       }),
     enableSorting: false,
   }),

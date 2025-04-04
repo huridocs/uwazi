@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
 // import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+// import { RequestParams } from 'app/utils/RequestParams';
 import { PXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
 
 const johnSmith = {
@@ -158,13 +158,13 @@ const dummyData: PXEntityParagraphRow[] = [
 
 const getByParagraphExtractorId = async (
   _id: string,
-  extractorId: string,
-  headers?: IncomingHttpHeaders
+  _extractorId: string,
+  _headers?: IncomingHttpHeaders
 ) => {
   try {
-    const requestParams = new RequestParams({ id: extractorId }, headers);
+    // const requestParams = new RequestParams({ id: extractorId }, headers);
     // const { json: response } = await api.get('paragraphExtraction/entityParagraphs', requestParams);
-    const id = requestParams.data?.id;
+    // const id = requestParams.data?.id;
     return {
       rows: dummyData,
       page: { number: 1, size: 10 },

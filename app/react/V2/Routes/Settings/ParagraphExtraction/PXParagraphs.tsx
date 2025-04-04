@@ -9,12 +9,10 @@ import { ParagraphsTable } from './components/paragraphs/Table';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
 
 const PXParagraphDashboard = () => {
-  const { rows, page, totalRows } = useLoaderData() as PXParagraphsLoaderResponse;
+  const { rows } = useLoaderData() as PXParagraphsLoaderResponse;
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView, setParagraphOnView] = useState<undefined | TablePXEntityParagraphRow>(
-    undefined
-  );
+  const [paragraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
 
   // const pxParagraphData = useMemo(
   //   () => formatParagraphData(paragraphs, templates, settings),
@@ -81,7 +79,6 @@ const PXParagraphDashboard = () => {
           <ParagraphsTable
             pxParagraphData={rows}
             paragraphInfo={rows[0]}
-            entityLanguages={[]}
             filters={{}}
             // viewParagraph={openSidePanel
             viewParagraph={() => {

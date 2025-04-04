@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { useLoaderData, useRouteLoaderData } from 'react-router';
+import React, { useState } from 'react';
+import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -19,7 +19,7 @@ const DisplayPill = generateDisplayPill({
 
 const PXEntityDashboard = () => {
   const templates = useAtomValue(templatesAtom);
-  const { rows, page, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
+  const { rows, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
 

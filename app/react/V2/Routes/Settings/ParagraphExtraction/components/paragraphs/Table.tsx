@@ -10,7 +10,6 @@ import { tableBuilder } from './TableElements';
 interface ParagraphsTableProps {
   pxParagraphData: TablePXEntityParagraphRow[];
   paragraphInfo: TablePXEntityParagraphRow;
-  entityLanguages: string[];
   filters: { [key: string]: number };
   viewParagraph: (params: any) => void;
 }
@@ -18,7 +17,6 @@ interface ParagraphsTableProps {
 const ParagraphsTable = ({
   pxParagraphData,
   paragraphInfo,
-  entityLanguages,
   filters,
   viewParagraph,
 }: ParagraphsTableProps) => (

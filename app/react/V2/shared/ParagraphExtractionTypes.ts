@@ -22,7 +22,7 @@ type Extractor = {
 
 type PXEntityQuery = {
   id: string;
-  filter: {
+  filter?: {
     status?: string[];
   };
   page?: {
