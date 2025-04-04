@@ -33,7 +33,7 @@ const columns = [
     meta: { headerClassName: 'w-2/12' },
     enableSorting: false,
   }),
-  pxColumnHelper.accessor('entity._id', {
+  pxColumnHelper.accessor('entity.sharedId', {
     header: generateTableHeader(''),
     cell: ActionCell,
     meta: { headerClassName: 'w-1/12' },

@@ -57,15 +57,14 @@ const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({
     request,
-    params: { id = '', extractorId = '' },
+    params: { entityId: id = '', extractorId = '' },
   }): Promise<PXParagraphsLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1', size = '10', status } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1', size = '10' } = searchParamsFromSearchParams(urlSearchParams);
     const query: PXParagraphQuery = {
       id,
       extractorId,
       page: { number: Number(page), size: Number(size) },
-      ...(status ? { filter: { status: [status].flat() } } : {}),
     };
 
     const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
