@@ -79,7 +79,12 @@ type PXParagraphQuery = {
   };
 };
 
-type PXEntityParagraphRow = { sharedId: string; entities: ClientEntitySchema[] };
+type ClientEntity = ClientEntitySchema & {
+  title: string;
+  language: string;
+  _id: string;
+};
+type PXEntityParagraphRow = { sharedId: string; entities: ClientEntity[] };
 type TablePXEntityParagraphRow = PXEntityParagraphRow & { rowId: string };
 
 type PXParagraphApiResponse = {

@@ -62,8 +62,10 @@ const PXParagraphLoader =
   async ({ request, params: { sharedId, extractorId } }): Promise<PXParagraphsLoaderResponse> => {
     if (!sharedId || !extractorId) {
       return {
-        paragraphs: { rows: [], totalRows: 0, page: { number: 1, size: PAGE_SIZE } },
+        paragraphs: [],
         sourceTemplateId: '',
+        page: { number: 1, size: PAGE_SIZE },
+        totalRows: 0,
       };
     }
 
@@ -84,13 +86,21 @@ const PXParagraphLoader =
     const extractor = extractors.find(ext => ext._id === extractorId);
     const templateId = extractor?.sourceTemplateId || '';
 
-    paragraphs.rows.forEach((row, index) => {
-      // eslint-disable-next-line no-param-reassign
-      row.rowId = index.toString();
-      row.subRows = row.entities.map(entity => ({ ...entity, rowId: entity._id }));
+    const formattedParagraphs = paragraphs.rows.map(row => {
+      const subRows = row.entities.map(entity => ({ ...entity, rowId: entity._id }));
+      const rowId = row.sharedId;
+      //api returns default language entity first always
+      const { title = '', language = '' } = row.entities[0];
+
+      return { ...row, subRows, rowId, title, language };
     });
 
-    return { paragraphs, sourceTemplateId: templateId };
+    return {
+      paragraphs: formattedParagraphs,
+      sourceTemplateId: templateId,
+      page: paragraphs.page,
+      totalRows: paragraphs.totalRows,
+    };
   };
 
 export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };
