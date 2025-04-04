@@ -70,6 +70,8 @@ Admins,Admins
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -113,6 +115,7 @@ Can view,ကြည့်နိုင်သည်
 Cancel,ပယ်ဖျက်ရန်
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,ကက်ပ်ချာ
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -173,6 +176,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,Contact Form
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,ပြောင်းလဲခြင်း မအောင်မြင်ပါ
 Copied to clipboard,Copied to clipboard
 Copy From,ဤမှ ကူးပါ
@@ -397,7 +401,6 @@ Importing data in progress,ဒေတာ ထည့်သွင်းဆဲ
 in,၌
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
-In queue,In queue
 Indexing entities may take a few minutes,ဖြည့်သွင်းချက်များကို အညွှန်းတပ်ခြင်းသည် မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်
 Info,အချက်အလက်
 Information extraction training,Information extraction training
@@ -580,6 +583,7 @@ OCR PDF,OCR PDF
 of,၏
 Ok,အိုကေ
 OK,အိုကေ
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -608,6 +612,8 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,စကားဝှက်
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success

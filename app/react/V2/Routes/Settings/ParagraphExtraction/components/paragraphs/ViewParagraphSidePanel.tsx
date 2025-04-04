@@ -2,13 +2,13 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { Button } from 'app/V2/Components/UI';
 import { Sidepanel } from 'app/V2/Components/UI/Sidepanel';
+import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
 import { ViewParagraph } from './ViewParagraph';
-import { PXParagraphTable } from '../../types';
 
 type ViewParagraphSidePanelProps = {
   isSidePanelOpen: boolean;
   setIsSidePanelOpen: (isSidePanelOpen: boolean) => void;
-  paragraphOnView: PXParagraphTable | undefined;
+  paragraphOnView: TablePXEntityParagraphRow | undefined;
 };
 
 const ViewParagraphSidePanel = ({

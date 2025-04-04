@@ -1,43 +1,43 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { PXEntityTable } from '../../../types';
+import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { DisplayCell } from './DisplayCell';
 import { LanguagesCell } from './LanguagesCell';
 import { StatusCell } from './StatusCell';
 import { generateTableHeader } from '../../../utils/generateTableHeader';
 import { ActionCell } from './ActionCell';
 
-const pxColumnHelper = createColumnHelper<PXEntityTable>();
+const pxColumnHelper = createColumnHelper<TablePXEntityRow>();
 
 const columns = [
-  pxColumnHelper.accessor('title', {
+  pxColumnHelper.accessor('entity.title', {
     header: generateTableHeader('Entity'),
-    enableSorting: true,
     cell: DisplayCell,
     meta: { headerClassName: 'w-4/12' },
+    enableSorting: false,
   }),
-  pxColumnHelper.accessor('languages', {
+  pxColumnHelper.accessor('availableFileLanguages', {
     header: generateTableHeader('Language(s)'),
-    enableSorting: true,
     cell: LanguagesCell,
     meta: { headerClassName: 'w-3/12' },
+    enableSorting: false,
   }),
-  pxColumnHelper.accessor('paragraphCount', {
+  pxColumnHelper.accessor('paragraphsCount', {
     header: generateTableHeader('Paragraphs'),
-    enableSorting: true,
     cell: DisplayCell,
     meta: { headerClassName: 'w-2/12' },
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('status', {
     header: generateTableHeader('Status'),
-    enableSorting: true,
     cell: StatusCell,
     meta: { headerClassName: 'w-2/12' },
-  }),
-  pxColumnHelper.accessor('_id', {
-    header: generateTableHeader(''),
     enableSorting: false,
+  }),
+  pxColumnHelper.accessor('entity.sharedId', {
+    header: generateTableHeader(''),
     cell: ActionCell,
     meta: { headerClassName: 'w-1/12' },
+    enableSorting: false,
   }),
 ];
 

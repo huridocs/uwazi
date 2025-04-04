@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
-import { useRevalidator, useParams } from 'react-router';
-import { notificationAtom } from 'app/V2/atoms';
+import { useRevalidator, useLoaderData } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { dialogConfig } from './config';
-import { PXEntityTable } from '../../../types';
-
-const {
-  service,
-  headerText,
-  warningText,
-  acceptButtonText,
-  cancelButtonText,
-  successText,
-  errorText,
-} = dialogConfig;
+import { Translate } from 'app/I18N';
+import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
+import { Button, ConfirmationModal } from 'V2/Components/UI';
+import { notificationAtom } from 'V2/atoms';
+import { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 
 const ExtractEntitiesDialog = ({
   setIsProcessing,
@@ -26,29 +16,38 @@ const ExtractEntitiesDialog = ({
   setIsProcessing: (value: boolean) => void;
   disabled: boolean;
   onSuccess: () => void;
-  selected: PXEntityTable[];
+  selected: TablePXEntityRow[];
 }) => {
+  const { extractor } = useLoaderData() as PXEntityLoaderResponse;
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
-  const { extractorId = '' } = useParams();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleDelete = async () => {
+  // eslint-disable-next-line max-statements
+  const handleExtract = async () => {
     setIsProcessing(true);
 
     try {
-      await service(extractorId, selected);
-      await revalidator.revalidate();
-      setIsOpen(false);
-      setNotifications({
-        type: 'success',
-        text: <Translate>{successText}</Translate>,
-      });
-      onSuccess();
+      if (!extractor) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: <Translate>Cannot find extractor</Translate>,
+        });
+      } else {
+        await entitiesAPI.extractSelected(extractor?._id, selected);
+        await revalidator.revalidate();
+        setIsOpen(false);
+        setNotifications({
+          type: 'success',
+          text: <Translate>Paragraphs extracted</Translate>,
+        });
+        onSuccess();
+      }
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>{errorText}</Translate>,
+        text: <Translate>An error occurred</Translate>,
       });
     }
 
@@ -68,11 +67,16 @@ const ExtractEntitiesDialog = ({
       </Button>
       {isOpen && (
         <ConfirmationModal
-          header={<Translate>{headerText}</Translate>}
-          warningText={<Translate>{warningText}</Translate>}
-          acceptButton={<Translate>{acceptButtonText}</Translate>}
-          cancelButton={<Translate>{cancelButtonText}</Translate>}
-          onAcceptClick={handleDelete}
+          header={<Translate>Are you sure?</Translate>}
+          warningText={
+            <Translate>
+              All of the previously created paragraphs will be deleted and recreated after the
+              process.
+            </Translate>
+          }
+          acceptButton={<Translate>Continue</Translate>}
+          cancelButton={<Translate>No, cancel</Translate>}
+          onAcceptClick={handleExtract}
           onCancelClick={() => setIsOpen(false)}
         />
       )}
