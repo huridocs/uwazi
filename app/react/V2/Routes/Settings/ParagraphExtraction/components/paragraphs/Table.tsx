@@ -50,7 +50,6 @@ const ParagraphsTable = ({
         />
       )
     }
-    defaultSorting={[{ id: '_id', desc: false }]}
     footer={<PXTableFooter total={totalRows} currentDataLength={pxParagraphData.length} />}
     groupColumnPosition={3}
   />

@@ -41,15 +41,17 @@ const PXEntityLoader =
       ...(status ? { filter: { status: [status].flat() } } : {}),
     };
 
-    const extractors = await extractorsAPI.get(headers);
-    const response = await pxEntitiesApi.get(query, headers);
+    const [extractors, pxEntityRows] = await Promise.all([
+      extractorsAPI.get(headers),
+      pxEntitiesApi.get(query, headers),
+    ]);
 
-    response.rows?.forEach(row => {
+    pxEntityRows.rows?.forEach(row => {
       result.rows.push({ ...row, rowId: row.entity._id });
     });
 
-    result.page = response.page;
-    result.totalRows = response.totalRows;
+    result.page = pxEntityRows.page;
+    result.totalRows = pxEntityRows.totalRows;
     result.extractor = extractors.find(ext => ext._id === extractorId);
 
     return result;
@@ -67,17 +69,26 @@ const PXParagraphLoader =
 
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const { page = '1' } = searchParamsFromSearchParams(urlSearchParams);
+
     const query: PXParagraphQuery = {
       id: sharedId,
       extractorId,
       page: { number: Number(page), size: PAGE_SIZE },
     };
 
-    const extractors = await extractorsAPI.get(headers);
-    const paragraphs = await pxParagraphApi.getByParagraphExtractorId(query, headers);
+    const [extractors, paragraphs] = await Promise.all([
+      extractorsAPI.get(headers),
+      pxParagraphApi.getByParagraphExtractorId(query, headers),
+    ]);
 
     const extractor = extractors.find(ext => ext._id === extractorId);
     const templateId = extractor?.sourceTemplateId || '';
+
+    paragraphs.rows.forEach((row, index) => {
+      // eslint-disable-next-line no-param-reassign
+      row.rowId = index.toString();
+      row.subRows = row.entities.map(entity => ({ ...entity, rowId: entity._id }));
+    });
 
     return { paragraphs, sourceTemplateId: templateId };
   };
