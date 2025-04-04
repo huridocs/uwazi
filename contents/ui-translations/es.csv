@@ -70,9 +70,7 @@ ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
-"All of the previously created paragraphs will be deleted and recreated after the
-              process.","All of the previously created paragraphs will be deleted and recreated after the
-              process."
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Permitir la omisión de captcha
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:

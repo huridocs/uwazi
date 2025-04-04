@@ -70,9 +70,7 @@ ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
-"All of the previously created paragraphs will be deleted and recreated after the
-              process.","All of the previously created paragraphs will be deleted and recreated after the
-              process."
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
