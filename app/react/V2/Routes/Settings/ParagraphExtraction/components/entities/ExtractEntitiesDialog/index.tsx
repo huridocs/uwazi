@@ -2,21 +2,10 @@ import React, { useState } from 'react';
 import { useRevalidator, useLoaderData } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
+import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
 import { Button, ConfirmationModal } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { dialogConfig } from './config';
-
-const {
-  service,
-  headerText,
-  warningText,
-  acceptButtonText,
-  cancelButtonText,
-  successText,
-  errorText,
-  details,
-} = dialogConfig;
 
 const ExtractEntitiesDialog = ({
   setIsProcessing,
@@ -42,23 +31,23 @@ const ExtractEntitiesDialog = ({
       if (!extractor) {
         setNotifications({
           type: 'error',
-          text: <Translate>{errorText}</Translate>,
-          details: <Translate>{details}</Translate>,
+          text: <Translate>An error occurred</Translate>,
+          details: <Translate>Cannot find extractor</Translate>,
         });
       } else {
-        await service(extractor?._id, selected);
+        await entitiesAPI.extractNewParagraphs(extractor?._id, selected);
         await revalidator.revalidate();
         setIsOpen(false);
         setNotifications({
           type: 'success',
-          text: <Translate>{successText}</Translate>,
+          text: <Translate>Paragraphs extracted</Translate>,
         });
         onSuccess();
       }
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>{errorText}</Translate>,
+        text: <Translate>An error occurred</Translate>,
       });
     }
 
@@ -78,10 +67,15 @@ const ExtractEntitiesDialog = ({
       </Button>
       {isOpen && (
         <ConfirmationModal
-          header={<Translate>{headerText}</Translate>}
-          warningText={<Translate>{warningText}</Translate>}
-          acceptButton={<Translate>{acceptButtonText}</Translate>}
-          cancelButton={<Translate>{cancelButtonText}</Translate>}
+          header={<Translate>Are you sure?</Translate>}
+          warningText={
+            <Translate>
+              All of the previously created paragraphs will be deleted and recreated after the
+              process.
+            </Translate>
+          }
+          acceptButton={<Translate>Continue</Translate>}
+          cancelButton={<Translate>No, cancel</Translate>}
           onAcceptClick={handleExtract}
           onCancelClick={() => setIsOpen(false)}
         />

@@ -69,6 +69,10 @@ Admins,Admins
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+"All of the previously created paragraphs will be deleted and recreated after the
+              process.","All of the previously created paragraphs will be deleted and recreated after the
+              process."
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +116,7 @@ Can view,Может просматривать
 Cancel,Отмена
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,Обход Captcha
 Cards,Карточки
@@ -169,6 +174,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,Форма обратной связи
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,Ошибка преобразования
 Copied to clipboard,Copied to clipboard
 Copy From,Копировать из
@@ -393,7 +399,6 @@ Importing data in progress,Импорт данных в ходе выполне�
 in,в
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,В очереди на оптическое распознавание символов
-In queue,In queue
 Indexing entities may take a few minutes,Индексация объектов может занять несколько минут
 Info,Информация
 Information extraction training,Information extraction training
@@ -574,6 +579,7 @@ OCR PDF,Оптическое распознавание символов PDF
 of,из
 Ok,Окей
 OK,Окей
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Упс... Просим вас уйти
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,"Упс! Мы не смогли найти предметный указатель, который вы пытаетесь отредактировать. Попробуйте обратную навигацию вплоть до этой страницы через Настройки."
 Open,Open
@@ -596,6 +602,8 @@ Paragraph Extractor added,Paragraph Extractor added
 Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
 Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,Пароль
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success

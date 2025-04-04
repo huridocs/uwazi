@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
-import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { useRevalidator } from 'react-router';
-import { notificationAtom } from 'app/V2/atoms';
 import { useSetAtom } from 'jotai';
-import { dialogConfig } from './config';
-
-const {
-  service,
-  headerText,
-  warningText,
-  acceptButtonText,
-  cancelButtonText,
-  successText,
-  errorText,
-} = dialogConfig;
+import { useRevalidator } from 'react-router';
+import { Translate } from 'app/I18N';
+import { Button, ConfirmationModal } from 'V2/Components/UI';
+import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
+import { notificationAtom } from 'V2/atoms';
+import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
 
 const DeleteDialog = ({
   setIsProcessing,
@@ -36,18 +26,18 @@ const DeleteDialog = ({
     setIsProcessing(true);
 
     try {
-      await service(selected);
+      await entitiesAPI.remove(selected);
       await revalidator.revalidate();
       setIsOpen(false);
       setNotifications({
         type: 'success',
-        text: <Translate>{successText}</Translate>,
+        text: <Translate>Paragraphs deleted</Translate>,
       });
       onSuccess();
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>{errorText}</Translate>,
+        text: <Translate>An error occurred</Translate>,
       });
     }
 
@@ -62,10 +52,10 @@ const DeleteDialog = ({
       </Button>
       {isOpen && (
         <ConfirmationModal
-          header={<Translate>{headerText}</Translate>}
-          warningText={<Translate>{warningText}</Translate>}
-          acceptButton={<Translate>{acceptButtonText}</Translate>}
-          cancelButton={<Translate>{cancelButtonText}</Translate>}
+          header={<Translate>Are you sure?</Translate>}
+          warningText={<Translate>All of the paragraphs will be deleted</Translate>}
+          acceptButton={<Translate>Delete</Translate>}
+          cancelButton={<Translate>No, cancel</Translate>}
           onAcceptClick={handleDelete}
           onCancelClick={() => setIsOpen(false)}
         />
