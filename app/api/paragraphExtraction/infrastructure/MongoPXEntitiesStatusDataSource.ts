@@ -99,22 +99,6 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      { $set: { status: EntityStatus.Error } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not set an error of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatusDBO = {
       _id: new ObjectId(),
@@ -171,6 +155,22 @@ export class MongoPXEntitiesStatusDataSource
     }
 
     return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
+  }
+
+  async markAsError(extractionId: string): Promise<PXEntityStatusModel> {
+    const dbo = await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(extractionId) },
+      { $set: { status: EntityStatus.Error } },
+      { upsert: false, returnDocument: 'after' }
+    );
+
+    if (!dbo) {
+      throw new Error(
+        `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
+      );
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
   }
 
   async markAsObsolete(entityStatusId: string): Promise<void> {

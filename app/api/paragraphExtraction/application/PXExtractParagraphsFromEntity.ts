@@ -89,7 +89,7 @@ export class PXExtractParagraphsFromEntity
         })}`
       );
     } catch (e) {
-      await this.dependencies.entitiesStatusDS.setAsError(input.entityStatusId);
+      await this.dependencies.entitiesStatusDS.markAsError(input.entityStatusId);
       throw e;
     }
   }

@@ -48,7 +48,7 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
         onParagraphCreated: heartBeatCallBack,
       });
     } catch (e) {
-      await this.dependencies.pxEntitiesStatusDS.setAsError(this.params.entityStatusId);
+      await this.dependencies.pxEntitiesStatusDS.markAsError(this.params.entityStatusId);
       throw e;
     }
   }

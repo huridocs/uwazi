@@ -23,9 +23,9 @@ type GetAllInput = Partial<PXEntityStatusModel>;
 export interface PXEntitiesStatusDataSource {
   getById(entityStatusId: string): Promise<PXEntityStatusModel | undefined>;
   createAsNew(input: CreateInput): Promise<PXEntityStatusModel>;
-  setAsError(entityStatusId: string): Promise<PXEntityStatusModel>;
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
+  markAsError(entityStatusId: string): Promise<PXEntityStatusModel>;
   markAsObsolete(entityStatusId: string): Promise<void>;
   markAsFinished(entityStatusId: string): Promise<void>;
   markAsProcessing(input: MarkAsProcessingInput): Promise<PXEntityStatusModel>;
