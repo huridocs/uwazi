@@ -145,13 +145,16 @@ const findMissingTranslations = async (files, translations) => {
 
   allTexts.filter(t => t);
 
-  return allTexts.filter(
-    text =>
-      !translations.find(
-        translation =>
-          translation.key.trim().replace(/\n\s*/g, ' ') === text.key.trim().replace(/\n\s*/g, ' ')
-      )
-  );
+  return allTexts.filter(text => {
+    const notFound = !translations.find(
+      translation =>
+        translation.key.trim().replace(/\n\s*/g, ' ') === text.key.trim().replace(/\n\s*/g, ' ')
+    );
+    if (notFound) {
+      console.log('text', text);
+    }
+    return notFound;
+  });
 };
 
 const logger = new console.Console(process.stdout, process.stderr);
@@ -210,7 +213,7 @@ async function updateLanguageTranslations(locale, obsoleteTranslations, missingT
     const addedTranslations = cleanedTranslations.concat(missingTranslations);
     const orderedTranslations = _.orderBy(addedTranslations, entry => entry.key.toLowerCase());
     orderedTranslations.forEach(row => {
-      csvStream.write([row.key, row.value || row.key]);
+      csvStream.write([row.key, row.text || row.key]);
     });
 
     csvStream.end();

@@ -28,7 +28,7 @@ const Dialog = () => {
           />
           {step === 1 && (
             <span className="mt-5 text-xs font-light text-gray-500">
-              <Translate>
+              <Translate translationKey="PX source template hint">
                 Only templates with at least one rich text property and one numeric property are
                 available for selection.
               </Translate>
@@ -36,12 +36,12 @@ const Dialog = () => {
           )}
           {step === 3 && (
             <span className="mt-5 text-xs font-light text-gray-500">
-              <Translate>
+              <Translate translationKey="PX target template hint">
                 Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.
               </Translate>
             </span>
-          )}{' '}
+          )}
         </div>
       </Modal.Body>
       <Modal.Footer>
