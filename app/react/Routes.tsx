@@ -179,7 +179,7 @@ const getRoutesLayout = (
         />
         <Route
           loader={PXParagraphLoader(headers)}
-          path=":extractorId/entities/:entityId/paragraphs"
+          path=":extractorId/entities/:sharedId/paragraphs"
           element={adminsOnlyRoute(<PXParagraphDashboard />)}
         />
       </Route>

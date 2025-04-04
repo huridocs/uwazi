@@ -11,6 +11,8 @@ import {
 } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 
+const PAGE_SIZE = 10;
+
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
@@ -23,11 +25,11 @@ const PXEntityLoader =
   // eslint-disable-next-line max-statements
   async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1', size = '10', status } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1', status } = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXEntityLoaderResponse = {
       rows: [],
-      page: { number: page, size },
+      page: { number: page, size: PAGE_SIZE },
       totalRows: 0,
     };
 
@@ -35,7 +37,7 @@ const PXEntityLoader =
 
     const query: PXEntityQuery = {
       id: extractorId,
-      page: { number: Number(page), size: Number(size) },
+      page: { number: Number(page), size: PAGE_SIZE },
       ...(status ? { filter: { status: [status].flat() } } : {}),
     };
 
@@ -55,16 +57,17 @@ const PXEntityLoader =
 
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({
-    request,
-    params: { entityId: id = '', extractorId = '' },
-  }): Promise<PXParagraphsLoaderResponse> => {
+  async ({ request, params: { sharedId, extractorId } }): Promise<PXParagraphsLoaderResponse> => {
+    if (!sharedId || !extractorId) {
+      return { rows: [], page: { number: 1, size: PAGE_SIZE }, totalRows: 0 };
+    }
+
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1', size = '10' } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1' } = searchParamsFromSearchParams(urlSearchParams);
     const query: PXParagraphQuery = {
-      id,
+      id: sharedId,
       extractorId,
-      page: { number: Number(page), size: Number(size) },
+      page: { number: Number(page), size: PAGE_SIZE },
     };
 
     const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
