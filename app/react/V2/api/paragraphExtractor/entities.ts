@@ -2,9 +2,7 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
 import api from 'app/utils/api';
-import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
-import { PXTable } from 'V2/Routes/Settings/ParagraphExtraction/types';
 import {
   TablePXEntityRow,
   PXEntityQuery,
@@ -43,7 +41,6 @@ const extractNewParagraphs = async (
 ) => {
   const modeledPayload = {
     extractorId,
-    // TODO: check if this is correct
     entitySharedIds: entityIds.map(entity => entity.entity._id),
   };
   const requestParams = new RequestParams(modeledPayload, headers);
@@ -51,10 +48,10 @@ const extractNewParagraphs = async (
   return response;
 };
 
-const remove = async (ids: PXTable[]) => {
+const remove = async (entries: TablePXEntityRow[]) => {
   //model values to be sent to backend, adjust this to satisfy backend requirements
   const modeledPayload = {
-    ids: ids.map(id => id._id),
+    ids: entries.map(entry => entry.entity._id),
   };
 
   const requestParams = new RequestParams(modeledPayload);

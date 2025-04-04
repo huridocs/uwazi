@@ -9,6 +9,7 @@ const dialogConfig = {
     'All of the previously created paragraphs will be deleted and recreated after the process.',
   successText: 'Paragraphs extracted',
   errorText: 'An error occurred',
+  details: 'Cannot find extractor',
 };
 
 export { dialogConfig };

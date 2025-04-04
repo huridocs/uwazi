@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useRevalidator, useParams } from 'react-router';
+import { useRevalidator, useLoaderData } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
-import { notificationAtom } from 'app/V2/atoms';
-import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
+import { Button, ConfirmationModal } from 'V2/Components/UI';
+import { notificationAtom } from 'V2/atoms';
+import { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { dialogConfig } from './config';
 
 const {
@@ -15,6 +15,7 @@ const {
   cancelButtonText,
   successText,
   errorText,
+  details,
 } = dialogConfig;
 
 const ExtractEntitiesDialog = ({
@@ -28,23 +29,32 @@ const ExtractEntitiesDialog = ({
   onSuccess: () => void;
   selected: TablePXEntityRow[];
 }) => {
+  const { extractor } = useLoaderData() as PXEntityLoaderResponse;
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
-  const { extractorId = '' } = useParams();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleDelete = async () => {
+  // eslint-disable-next-line max-statements
+  const handleExtract = async () => {
     setIsProcessing(true);
 
     try {
-      await service(extractorId, selected);
-      await revalidator.revalidate();
-      setIsOpen(false);
-      setNotifications({
-        type: 'success',
-        text: <Translate>{successText}</Translate>,
-      });
-      onSuccess();
+      if (!extractor) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>{errorText}</Translate>,
+          details: <Translate>{details}</Translate>,
+        });
+      } else {
+        await service(extractor?._id, selected);
+        await revalidator.revalidate();
+        setIsOpen(false);
+        setNotifications({
+          type: 'success',
+          text: <Translate>{successText}</Translate>,
+        });
+        onSuccess();
+      }
     } catch (error) {
       setNotifications({
         type: 'error',
@@ -72,7 +82,7 @@ const ExtractEntitiesDialog = ({
           warningText={<Translate>{warningText}</Translate>}
           acceptButton={<Translate>{acceptButtonText}</Translate>}
           cancelButton={<Translate>{cancelButtonText}</Translate>}
-          onAcceptClick={handleDelete}
+          onAcceptClick={handleExtract}
           onCancelClick={() => setIsOpen(false)}
         />
       )}

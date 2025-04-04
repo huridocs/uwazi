@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
 import { useRevalidator } from 'react-router';
-import { notificationAtom } from 'app/V2/atoms';
 import { useSetAtom } from 'jotai';
+import { Translate } from 'app/I18N';
+import { Button, ConfirmationModal } from 'V2/Components/UI';
+import { notificationAtom } from 'V2/atoms';
 import { dialogConfig } from './config';
 import { PXTable } from '../../../types';
 

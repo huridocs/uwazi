@@ -10,11 +10,6 @@ const entityStatusMap: Record<EntityStatus, React.ReactNode> = {
       <Translate>New</Translate>
     </Pill>
   ),
-  // [EntityStatus.IN_QUEUE]: (
-  //   <Pill color="gray">
-  //     <Translate>In queue</Translate>
-  //   </Pill>
-  // ),
   [EntityStatus.Processing]: (
     <Pill color="gray">
       <Translate>Processing</Translate>...

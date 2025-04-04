@@ -5,7 +5,7 @@ const dialogConfig = {
   warningText: 'All of the paragraphs will be deleted!',
   cancelButtonText: 'No, Cancel',
   acceptButtonText: 'Delete',
-  service: entitiesAPI.remove as unknown as (params: any) => Promise<void>,
+  service: entitiesAPI.remove,
   successText: 'Paragraphs deleted',
   errorText: 'An error occurred',
 };
