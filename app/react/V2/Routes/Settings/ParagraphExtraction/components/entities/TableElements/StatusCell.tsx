@@ -5,7 +5,7 @@ import { PXEntityStatus } from '../PXEntityStatus';
 
 const StatusCell = ({ cell }: CellContext<TablePXEntityRow, TablePXEntityRow['status']>) => (
   <div className="flex items-center gap-2">
-    <PXEntityStatus status={cell.getValue()['status']} />
+    <PXEntityStatus status={cell.getValue().status} />
   </div>
 );
 

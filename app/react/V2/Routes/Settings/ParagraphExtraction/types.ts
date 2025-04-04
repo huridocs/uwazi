@@ -21,11 +21,4 @@ type PXTable = Extractor & {
   sourceTemplate: PXTemplate;
 };
 
-
-
-export type {
-  PXTemplate,
-  EntityStatus,
-  ParagraphExtractorApiPayload,
-  PXTable,
-};
+export type { PXTemplate, EntityStatus, ParagraphExtractorApiPayload, PXTable };

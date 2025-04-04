@@ -23,7 +23,6 @@ const PXEntityDashboard = () => {
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
 
-
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
 

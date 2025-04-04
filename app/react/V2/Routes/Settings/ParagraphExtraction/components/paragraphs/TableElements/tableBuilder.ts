@@ -17,7 +17,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
   pxColumnHelper.accessor('entities.language', {
     header: generateTableHeader('Language'),
     cell: LanguagesCell,
-    enableSorting: false
+    enableSorting: false,
   }),
   pxColumnHelper.accessor('entities.title', {
     header: generateTableHeader('Text'),

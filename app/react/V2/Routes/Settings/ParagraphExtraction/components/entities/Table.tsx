@@ -4,7 +4,6 @@ import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { Template } from 'app/apiResponseTypes';
 import { TableTitle } from '../TableTitle';
 import { PXTableFooter } from '../PXTableFooter';
-import { PXTemplate } from '../../types';
 import { columns } from './TableElements';
 import { FilterSidepanelButton } from '../FilterSidePanel/FilterSidepanelButton';
 

@@ -3,7 +3,12 @@ import { LoaderFunction } from 'react-router';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
-import { PXEntityLoaderResponse, PXEntityQuery } from 'V2/shared/ParagraphExtractionTypes';
+import {
+  PXEntityLoaderResponse,
+  PXEntityParagraphRow,
+  PXEntityQuery,
+  PXParagraphsLoaderResponse,
+} from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import qs from 'qs';
 
