@@ -122,6 +122,7 @@ export class QueueWorker {
     return this.adapter.deleteJob(job);
   }
 
+  // eslint-disable-next-line max-statements
   private async processJob(job: Job) {
     const start = performance.now();
     const dispatchable = await this.createDispatchable(job);
@@ -131,7 +132,10 @@ export class QueueWorker {
       this.logger.info('Processing job', { job });
 
       const startTime = performance.now();
-      await dispatchable.handleDispatch(heartbeatCallback, job.params);
+      await dispatchable.handleDispatch(heartbeatCallback, job.params, {
+        retryCount: job.retryCount,
+        maxRetries: job.options.maxRetries,
+      });
       this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
