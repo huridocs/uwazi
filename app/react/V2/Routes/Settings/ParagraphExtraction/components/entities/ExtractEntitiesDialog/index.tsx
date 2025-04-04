@@ -35,7 +35,7 @@ const ExtractEntitiesDialog = ({
           details: <Translate>Cannot find extractor</Translate>,
         });
       } else {
-        await entitiesAPI.extractNewParagraphs(extractor?._id, selected);
+        await entitiesAPI.extractSelected(extractor?._id, selected);
         await revalidator.revalidate();
         setIsOpen(false);
         setNotifications({

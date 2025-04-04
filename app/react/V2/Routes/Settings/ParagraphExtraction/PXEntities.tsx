@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useLoaderData } from 'react-router';
-import { useAtomValue } from 'jotai';
+import { useLoaderData, useRevalidator } from 'react-router';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button } from 'V2/Components/UI';
-import { templatesAtom } from 'V2/atoms';
+import { notificationAtom, templatesAtom } from 'V2/atoms';
 import type { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
+import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
 import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
@@ -18,13 +19,42 @@ const DisplayPill = generateDisplayPill({
 });
 
 const PXEntityDashboard = () => {
+  const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
   const { rows, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
-
+  const setNotifications = useSetAtom(notificationAtom);
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
+
+  const handleExtract = async () => {
+    setIsSaving(true);
+
+    try {
+      if (!extractor) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: <Translate>Cannot find extractor</Translate>,
+        });
+      } else {
+        await entitiesAPI.extractParagraphs(extractor?._id);
+        await revalidator.revalidate();
+        setNotifications({
+          type: 'success',
+          text: <Translate>Paragraphs extracted</Translate>,
+        });
+      }
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+      });
+    }
+
+    setIsSaving(false);
+  };
 
   return (
     <div
@@ -52,8 +82,8 @@ const PXEntityDashboard = () => {
               <Button
                 type="button"
                 className="disabled:opacity-50"
-                onClick={() => console.log('extract new paragraphs')}
-                disabled={isSaving || newEntitiesCount === 0}
+                onClick={handleExtract}
+                disabled={isSaving}
               >
                 <Translate>Extract new paragraphs</Translate>
               </Button>

@@ -26,26 +26,36 @@ const get = async (
   }
 };
 
-const extractParagraphs = async (entityIds: TablePXEntityRow[], headers?: IncomingHttpHeaders) => {
-  const modeledPayload = {
-    entityIds,
-  };
-  // TODO: implement this once backend is ready
-  return Promise.resolve(modeledPayload);
+const extractParagraphs = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  try {
+    const modeledPayload = {
+      extractorId,
+      status: EntityStatus.New,
+    };
+    const requestParams = new RequestParams(modeledPayload, headers);
+    const response = await api.post('paragraphExtraction/extractByStatus', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
 };
 
-const extractNewParagraphs = async (
+const extractSelected = async (
   extractorId: string,
   entityIds: TablePXEntityRow[],
   headers?: IncomingHttpHeaders
 ) => {
-  const modeledPayload = {
-    extractorId,
-    entitySharedIds: entityIds.map(entity => entity.entity._id),
-  };
-  const requestParams = new RequestParams(modeledPayload, headers);
-  const response = await api.post('paragraphExtraction/extract', requestParams);
-  return response;
+  try {
+    const modeledPayload = {
+      extractorId,
+      entitySharedIds: entityIds.map(entity => entity.entity.sharedId),
+    };
+    const requestParams = new RequestParams(modeledPayload, headers);
+    const response = await api.post('paragraphExtraction/extract', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
 };
 
 const remove = async (entries: TablePXEntityRow[]) => {
@@ -60,4 +70,4 @@ const remove = async (entries: TablePXEntityRow[]) => {
   // return api.delete(ENDPOINTS.DELETE_EXTRACTOR, requestParams);
 };
 
-export { get, extractParagraphs, extractNewParagraphs, remove };
+export { get, extractParagraphs, extractSelected, remove };
