@@ -31,7 +31,7 @@ const Body = () => {
         }}
         allowSelelectAll={false}
         singleSelect
-        className="min-h-[500px]"
+        className="min-h-[400px]"
         hideFilters
         itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
       />

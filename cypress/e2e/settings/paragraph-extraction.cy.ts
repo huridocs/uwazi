@@ -33,7 +33,8 @@ describe('Paragraph Extraction', () => {
       cy.contains('button', 'Next').should('be.disabled');
       cy.get('#rich-text-property').select('Resumen');
       cy.get('#numeric-text-property').select('Número del expediente');
-      cy.get('#relationship-type').select('País');
+      cy.get('#target-relationship-type').select('País');
+      cy.get('#source-relationship-type').select('País');
       cy.contains('button', 'Next').realClick();
 
       cy.contains('h1', 'Source template');

@@ -64,7 +64,7 @@ const Body = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 min-h-[500px] my-4">
+    <div className="flex flex-col gap-4 min-h-[400px] my-4">
       <div>
         <Select
           id="rich-text-property"
@@ -98,7 +98,7 @@ const Body = () => {
       <hr className="self-center w-5 my-4 border-t-2 border-gray-200" />
       <div>
         <Select
-          id="relationship-type"
+          id="target-relationship-type"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
               Target relationship type
@@ -113,7 +113,7 @@ const Body = () => {
       </div>
       <div>
         <Select
-          id="relationship-type"
+          id="source-relationship-type"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
               Source relationship type
