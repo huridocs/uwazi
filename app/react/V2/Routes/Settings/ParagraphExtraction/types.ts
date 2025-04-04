@@ -12,7 +12,8 @@ type ParagraphExtractorApiPayload = {
   targetTemplateId: string;
   paragraphPropertyId: string;
   paragraphNumberPropertyId: string;
-  relationshipId: string;
+  targetRelationshipId: string;
+  sourceRelationshipId: string;
 };
 
 type PXTable = Extractor & {

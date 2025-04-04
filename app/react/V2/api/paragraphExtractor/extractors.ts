@@ -22,8 +22,8 @@ const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extr
     paragraphPropertyId: extractorValues.paragraphPropertyId,
     paragraphNumberPropertyId: extractorValues.paragraphNumberPropertyId,
     // api requires these two fields, but only one field is on the design
-    sourceRelationshipTypeId: extractorValues.relationshipId,
-    targetRelationshipTypeId: extractorValues.relationshipId,
+    sourceRelationshipTypeId: extractorValues.sourceRelationshipId,
+    targetRelationshipTypeId: extractorValues.targetRelationshipId,
   };
 
   const requestParams = new RequestParams(modelPayload);
@@ -32,16 +32,13 @@ const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extr
   return api.post('paragraphExtraction/extractor', requestParams);
 };
 
-const remove = async (ids: PXTable[]) => {
-  //model values to be sent to backend, adjust this to satisfy backend requirements
-  const modeledPayload = {
-    ids: ids.map(id => id._id),
-  };
-
-  const requestParams = new RequestParams(modeledPayload);
-  return Promise.resolve();
-  // uncomment this once backend is ready
-  // return api.delete('paragraphExtraction/extractor', requestParams);
-};
+const remove = async (extractors: PXTable[]) =>
+  Promise.all(
+    extractors.map(extractor => {
+      const id = extractor._id;
+      const requestParams = new RequestParams({ id });
+      return api.delete('paragraphExtraction/extractor', requestParams);
+    })
+  );
 
 export { get, save, remove };

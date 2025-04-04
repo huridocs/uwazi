@@ -2,7 +2,6 @@ import React from 'react';
 import { MultiselectList } from 'V2/Components/UI';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
-import { NoQualifiedTemplatesMessage } from './NoQualifiedTemplate';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates';
 import { formatTemplatesToOptions } from '../../../../../utils/formatters';
@@ -22,10 +21,9 @@ const Body = () => {
           setTargetTemplateId(selected[0]);
         }}
         singleSelect
-        className="min-h-[500px]"
+        className="min-h-[400px]"
         hideFilters
         itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
-        blankState={<NoQualifiedTemplatesMessage />}
       />
     </div>
   );

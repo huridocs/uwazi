@@ -1,13 +1,9 @@
 import React from 'react';
 import { Modal } from 'V2/Components/UI';
-import { Link } from 'react-router';
 import { Translate } from 'app/I18N';
 import { AddExtractorSteps } from './steps';
 import { useCreateExtractorContext } from './CreateExtractorContext';
 import { Steppers } from './Steppers';
-
-const TEMPLATE_CRITERIA_LINK =
-  'https://uwazi.readthedocs.io/en/latest/admin-docs/paragraph-extraction.html';
 
 const Dialog = () => {
   const { step, setShowModal, targetTemplateOptions } = useCreateExtractorContext();
@@ -30,14 +26,20 @@ const Dialog = () => {
             steps={Object.keys(AddExtractorSteps).length}
             isDisabled={targetTemplateOptions.length === 0}
           />
-          {step !== 3 && (
-            <span
-              className={`mt-5 text-gray-500 font-light text-sm ${targetTemplateOptions.length === 0 ? 'invisible' : ''}`}
-            >
-              <Translate>Templates meeting</Translate>{' '}
-              <Link to={TEMPLATE_CRITERIA_LINK} target="_blank" className="underline">
-                <Translate>required criteria</Translate>
-              </Link>
+          {step === 1 && (
+            <span className="mt-5 text-xs font-light text-gray-500">
+              <Translate>
+                Only templates with at least one rich text property and one numeric property are
+                available for selection.
+              </Translate>
+            </span>
+          )}
+          {step === 3 && (
+            <span className="mt-5 text-xs font-light text-gray-500">
+              <Translate>
+                Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.
+              </Translate>
             </span>
           )}
         </div>

@@ -17,7 +17,8 @@ const Footer = () => {
     setShowModal,
     paragraphPropertyId,
     paragraphNumberPropertyId,
-    relationshipId,
+    targetRelationshipId,
+    sourceRelationshipId,
   } = useCreateExtractorContext();
 
   // TODO: should be moved to context?
@@ -28,7 +29,8 @@ const Footer = () => {
         targetTemplateId,
         paragraphPropertyId,
         paragraphNumberPropertyId,
-        relationshipId,
+        targetRelationshipId,
+        sourceRelationshipId,
       };
       await extractorsAPI.save(values);
       setShowModal(false);
