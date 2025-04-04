@@ -7,6 +7,7 @@ Key,Spanish
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
+A source template must,A source template must
 A target template needs at least,A target template needs at least
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
@@ -559,6 +560,8 @@ No Value,Sin valor
 "No, cancel","No, cancelar"
 Non-labeled,Non-labeled
 Normal view,Vista normal
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,No encontrado
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
@@ -575,6 +578,12 @@ OCR PDF,ROC PDF
 of,de
 Ok,De acuerdo
 OK,OK
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,¡Cuidado! Adelante por favor
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
 Open,Open
@@ -594,8 +603,8 @@ Pages,Páginas
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Password,Contraseña
 Password + 2fa,Password + 2fa
@@ -672,7 +681,6 @@ Reject,Rechazar
 Relationship,Relación
 relationship consistency warning,"No se puede utilizar ""cualquier entidad o documento"" si otra relación del mismo tipo está establecida con una entidad específica. "
 Relationship Type,Tipo de relación
-Relationship type:,Relationship type:
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,relaciones
@@ -688,7 +696,6 @@ Renamed attachment,Archivo adjunto eliminado
 Repeat Password,Repite la contraseña
 Request id #,Solicitar id #
 Request token,Solicitud de token
-required criteria,required criteria
 Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
@@ -789,6 +796,7 @@ Sort by,Ordenar por
 Sort descending,Orden descendiente
 sorted by,ordenado por
 Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 State,Estado
@@ -818,6 +826,7 @@ Table,Tabla
 Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
 Table view,Vista de Tabla
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Template,Plantilla
@@ -826,7 +835,6 @@ Template name,Nombre de plantilla
 Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
 Template(s),Template(s)
 Templates,Plantillas
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.

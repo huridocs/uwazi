@@ -7,6 +7,7 @@ Key,Arabic
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,سيكون معرف تم إنشاؤه العنوان.
+A source template must,A source template must
 A target template needs at least,A target template needs at least
 A valid email is required,البريد الإلكتروني مطلوب
 Accept,قبول
@@ -560,6 +561,8 @@ No Value,لا قيمة
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,معاينة عادية
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,لايوجد شيء لرؤيته هنا! المستندات المختارة لا تستخدم قائمة المفردات المختارة
@@ -576,6 +579,12 @@ OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
 Ok,موافق
 OK,موافق
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,بئساً...اذهب من فضلك
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,بئساً! لم نستطع إيجاد قائمة المفردات التي تحاول تحريرها. حاول العودة إلى هذه الصفحة من خلال الإعدادات.
 Open,Open
@@ -595,8 +604,8 @@ Pages,الصفحات
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
@@ -673,7 +682,6 @@ Reject,رفض
 Relationship,صلة
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
@@ -689,7 +697,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,إعادة كلمة المرور
 Request id #,طلب المعرف #
 Request token,Request token
-required criteria,required criteria
 Required property,الخاصية المطلوبة
 Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
@@ -790,6 +797,7 @@ Sort by,ترتيب حسب
 Sort descending,Sort descending
 sorted by,مرتبة حسب
 Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 State,State
@@ -819,6 +827,7 @@ Table,جدول
 Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table view,معاينة الجدول
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Template,قالب
@@ -828,7 +837,6 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,قوالب
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

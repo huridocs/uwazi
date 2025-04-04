@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
+import { ConfirmationModal } from 'app/V2/Components/UI';
 import { useRevalidator } from 'react-router';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetAtom } from 'jotai';
@@ -21,14 +21,17 @@ const DeleteDialog = ({
   setIsProcessing,
   onSuccess,
   selected,
+  isOpen = false,
+  setIsOpen = () => {},
 }: {
   setIsProcessing: (value: boolean) => void;
   selected: PXTable[];
   onSuccess: () => void;
+  isOpen?: boolean;
+  setIsOpen?: (value: boolean) => void;
 }) => {
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsProcessing(true);
@@ -55,9 +58,6 @@ const DeleteDialog = ({
 
   return (
     <>
-      <Button color="error" type="button" onClick={() => setIsOpen(true)}>
-        <Translate>Delete</Translate>
-      </Button>
       {isOpen && (
         <ConfirmationModal
           header={<Translate>{headerText}</Translate>}

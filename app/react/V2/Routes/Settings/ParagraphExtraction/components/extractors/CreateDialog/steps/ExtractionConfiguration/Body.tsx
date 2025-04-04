@@ -34,10 +34,12 @@ const Body = () => {
     targetTemplateId,
     paragraphPropertyId,
     paragraphNumberPropertyId,
-    relationshipId,
+    targetRelationshipId,
+    sourceRelationshipId,
     setParagraphPropertyId,
     setParagraphNumberPropertyId,
-    setRelationshipId,
+    setTargetRelationshipId,
+    setSourceRelationshipId,
   } = useCreateExtractorContext();
   const templates = useAtomValue(templatesAtom);
   const relationTypes = useAtomValue(relationshipTypesAtom);
@@ -62,13 +64,13 @@ const Body = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 min-h-[500px] my-4">
+    <div className="flex flex-col gap-4 min-h-[400px] my-4">
       <div>
         <Select
           id="rich-text-property"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Paragraph text extraction property (rich text):
+              Paragraph text extraction property (rich text)
             </Translate>
           }
           value={paragraphPropertyId}
@@ -83,7 +85,7 @@ const Body = () => {
           id="numeric-text-property"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Paragraph text extraction property (numeric text):
+              Paragraph text extraction property (numeric text)
             </Translate>
           }
           value={paragraphNumberPropertyId}
@@ -93,19 +95,34 @@ const Body = () => {
           }}
         />
       </div>
-      <hr className="w-5 self-center my-4 border-t-2 border-gray-200" />
+      <hr className="self-center w-5 my-4 border-t-2 border-gray-200" />
       <div>
         <Select
-          id="relationship-type"
+          id="target-relationship-type"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Relationship type:
+              Target relationship type
             </Translate>
           }
-          value={relationshipId}
+          value={targetRelationshipId}
           options={getOptions(relationships)}
           onChange={evt => {
-            setRelationshipId(evt.target.value);
+            setTargetRelationshipId(evt.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <Select
+          id="source-relationship-type"
+          label={
+            <Translate className="text-sm font-semibold text-gray-900">
+              Source relationship type
+            </Translate>
+          }
+          value={sourceRelationshipId}
+          options={getOptions(relationships)}
+          onChange={evt => {
+            setSourceRelationshipId(evt.target.value);
           }}
         />
       </div>
