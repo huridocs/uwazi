@@ -28,8 +28,7 @@ type PXTable = Extractor & {
 
 type PXParagraphsLoaderResponse = {
   paragraphs: PXParagraphApiResponse;
-  templateId: string;
-  propertyId: string;
+  sourceTemplateId: string;
 };
 
 export type {

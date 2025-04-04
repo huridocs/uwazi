@@ -70,10 +70,9 @@ const PXParagraphLoader =
     const paragraphs = await pxParagraphApi.getByParagraphExtractorId(query, headers);
 
     const extractor = extractors.find(ext => ext._id === extractorId);
+    const templateId = extractor?.sourceTemplateId || '';
 
-    const templateId = paragraphs.rows[0].entities[0].template?.toString() || '';
-
-    return { paragraphs, templateId, propertyId: extractor?.sourceTemplateId || '' };
+    return { paragraphs, sourceTemplateId: templateId };
   };
 
 export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };

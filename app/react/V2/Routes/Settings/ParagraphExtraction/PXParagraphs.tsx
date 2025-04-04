@@ -10,15 +10,12 @@ import { PXParagraphsLoaderResponse } from './types';
 
 const PXParagraphDashboard = () => {
   const { extractorId } = useParams();
-  const { paragraphs, templateId, propertyId } = useLoaderData() as PXParagraphsLoaderResponse;
+  const { paragraphs, sourceTemplateId } = useLoaderData() as PXParagraphsLoaderResponse;
   const templates = useAtomValue(templatesAtom);
   const [sidePanel, setSidePanel] = useState<boolean>(false);
   const [paragraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
 
-  const template = templates.find(temp => temp._id === templateId);
-  const propertyLabel = template?.properties?.find(
-    metedataProperties => metedataProperties._id === propertyId
-  )?.label;
+  const template = templates.find(temp => temp._id === sourceTemplateId);
 
   // const pxParagraphData = useMemo(
   //   () => formatParagraphData(paragraphs, templates, settings),
@@ -69,8 +66,7 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={propertyLabel}
-          contextId={template?._id}
+          title="Paragraphs"
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],
