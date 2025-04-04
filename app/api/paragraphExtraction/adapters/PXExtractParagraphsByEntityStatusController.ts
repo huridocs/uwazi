@@ -13,7 +13,7 @@ type Dependencies = AbstractControllerDependencies<Request>;
 
 const RequestSchema = z.object({
   extractorId: z.string({ message: 'You should provide an Extractor' }),
-  status: z.nativeEnum(EntityStatus).optional(),
+  status: z.nativeEnum(EntityStatus),
 });
 
 class PXExtractParagraphsByEntityStatusController extends AbstractController<Request> {

@@ -30,7 +30,7 @@ const paragraphExtractionRoutes = (app: Application) => {
   );
 
   app.post(
-    '/api/paragraphExtraction/extractNew',
+    '/api/paragraphExtraction/extractByStatus',
     needsAuthorization(['admin', 'editor']),
     PXExtractParagraphsByEntityStatusController.adapt(PXExtractParagraphsByEntityStatusController)
   );
