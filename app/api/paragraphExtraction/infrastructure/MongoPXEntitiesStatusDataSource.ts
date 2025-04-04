@@ -13,7 +13,7 @@ import {
   CreateForSourceEntitiesInput,
   CreateInput,
   GetExistingInput,
-  MarkAsQueuedInput,
+  MarkAsProcessingInput,
   PXEntitiesStatusDataSource,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
@@ -190,7 +190,7 @@ export class MongoPXEntitiesStatusDataSource
     );
   }
 
-  async markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
+  async markAsProcessing(input: MarkAsProcessingInput): Promise<PXEntityStatusModel> {
     const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
       {
         extractorId: new ObjectId(input.extractorId),
@@ -202,7 +202,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!mongoEntityStatus) {
       throw new Error(
-        `Cannot change status to queued of a EntityStatus that does not exist. ${JSON.stringify(input)}`
+        `Cannot change status to '${EntityStatus.Processing}' of a EntityStatus that does not exist. ${JSON.stringify(input)}`
       );
     }
 
