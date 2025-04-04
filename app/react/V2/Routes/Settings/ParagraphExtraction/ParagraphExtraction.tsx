@@ -16,7 +16,6 @@ const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
     extractors: Extractor[];
   };
-
   const templates = useAtomValue(templatesAtom);
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);

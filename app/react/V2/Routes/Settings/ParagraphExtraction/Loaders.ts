@@ -7,9 +7,9 @@ import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
-  PXParagraphsLoaderResponse,
 } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { PXParagraphsLoaderResponse } from './types';
 
 const PAGE_SIZE = 10;
 
@@ -58,10 +58,6 @@ const PXEntityLoader =
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ request, params: { sharedId, extractorId } }): Promise<PXParagraphsLoaderResponse> => {
-    if (!sharedId || !extractorId) {
-      return { rows: [], page: { number: 1, size: PAGE_SIZE }, totalRows: 0 };
-    }
-
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const { page = '1' } = searchParamsFromSearchParams(urlSearchParams);
     const query: PXParagraphQuery = {
@@ -70,12 +66,14 @@ const PXParagraphLoader =
       page: { number: Number(page), size: PAGE_SIZE },
     };
 
-    const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
-      query,
-      headers
-    );
+    const extractors = await extractorsAPI.get(headers);
+    const paragraphs = await pxParagraphApi.getByParagraphExtractorId(query, headers);
 
-    return paragraphs;
+    const extractor = extractors.find(ext => ext._id === extractorId);
+
+    const templateId = paragraphs.rows[0].entities[0].template;
+
+    return { paragraphs, templateId, propertyId: extractor?.sourceTemplateId || '' };
   };
 
 export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };

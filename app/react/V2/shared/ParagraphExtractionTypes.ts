@@ -1,3 +1,5 @@
+import { ClientEntitySchema } from 'app/istore';
+
 enum EntityStatus {
   New = 'new',
   Processing = 'processing',
@@ -77,10 +79,10 @@ type PXParagraphQuery = {
   };
 };
 
-type PXEntityParagraphRow = { sharedId: string; entities: PXEntity[] };
+type PXEntityParagraphRow = { sharedId: string; entities: ClientEntitySchema[] };
 type TablePXEntityParagraphRow = PXEntityParagraphRow & { rowId: string };
 
-type PXParagraphsLoaderResponse = {
+type PXParagraphApiResponse = {
   rows: TablePXEntityParagraphRow[];
   page: {
     number: number;
@@ -97,8 +99,8 @@ export type {
   TablePXEntityRow,
   PXParagraphQuery,
   PXEntityParagraphRow,
-  PXParagraphsLoaderResponse,
   TablePXEntityParagraphRow,
+  PXParagraphApiResponse,
 };
 
 export { EntityStatus };

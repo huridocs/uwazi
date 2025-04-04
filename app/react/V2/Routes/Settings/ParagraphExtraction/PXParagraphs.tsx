@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
+import { useLoaderData, useParams } from 'react-router';
+import { useAtomValue } from 'jotai';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import type {
-  PXParagraphsLoaderResponse,
-  TablePXEntityParagraphRow,
-} from 'V2/shared/ParagraphExtractionTypes';
-import { useLoaderData } from 'react-router';
+import type { TablePXEntityParagraphRow } from 'V2/shared/ParagraphExtractionTypes';
+import { templatesAtom } from 'V2/atoms';
 import { ParagraphsTable } from './components/paragraphs/Table';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
+import { PXParagraphsLoaderResponse } from './types';
 
 const PXParagraphDashboard = () => {
-  const { rows, totalRows } = useLoaderData() as PXParagraphsLoaderResponse;
-
+  const { extractorId } = useParams();
+  const { paragraphs, templateId, propertyId } = useLoaderData() as PXParagraphsLoaderResponse;
+  const templates = useAtomValue(templatesAtom);
   const [sidePanel, setSidePanel] = useState<boolean>(false);
   const [paragraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
+
+  const template = templates.find(temp => temp._id === templateId);
+  const propertyLabel = template?.properties?.find(
+    metedataProperties => metedataProperties._id === propertyId
+  )?.label;
 
   // const pxParagraphData = useMemo(
   //   () => formatParagraphData(paragraphs, templates, settings),
@@ -63,28 +69,25 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={'TODO: Property Name'}
+          title={propertyLabel}
+          contextId={template?._id}
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],
-              [
-                'TODO: Template Name',
-                // `/settings/paragraph-extraction/${extractorId}/entities`,
-                '/settings/paragraph-extraction/extractorId/entities',
-              ],
+              [`${template?.name}`, `/settings/paragraph-extraction/${extractorId}/entities`],
             ])
           }
         />
         <SettingsContent.Body>
           <ParagraphsTable
-            pxParagraphData={rows}
-            paragraphInfo={rows[0]}
+            pxParagraphData={paragraphs.rows}
+            paragraphInfo={paragraphs.rows[0]}
             filters={{}}
             // viewParagraph={openSidePanel
             viewParagraph={() => {
               //TODO: Update openSidePanel
             }}
-            totalRows={totalRows}
+            totalRows={paragraphs.totalRows}
           />
         </SettingsContent.Body>
       </SettingsContent>
