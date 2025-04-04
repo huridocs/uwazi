@@ -578,6 +578,12 @@ OCR PDF,ROC PDF
 of,de
 Ok,De acuerdo
 OK,OK
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,¡Cuidado! Adelante por favor
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
 Open,Open
@@ -662,8 +668,6 @@ Public form URL description,"Si has configurado un formulario público y deseas 
 Public form whitelist description,"Si deseas incluir formularios públicos en tus páginas, debes incluir en la lista blanca los identificadores de las plantillas para los que se esperan formularios públicos"
 Publish,Publicar
 Published,Publicado
-PX source template hint,PX source template hint
-PX target template hint,PX target template hint
 QR Code,QR Code
 Query,Consulta
 Quick labeling for,Etiquetado rápido para

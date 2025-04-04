@@ -577,6 +577,12 @@ OCR PDF,Оптическое распознавание символов PDF
 of,из
 Ok,Окей
 OK,Окей
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,Упс... Просим вас уйти
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,"Упс! Мы не смогли найти предметный указатель, который вы пытаетесь отредактировать. Попробуйте обратную навигацию вплоть до этой страницы через Настройки."
 Open,Open
@@ -661,8 +667,6 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,Опубликовать
 Published,В открытом доступе
-PX source template hint,PX source template hint
-PX target template hint,PX target template hint
 QR Code,QR Code
 Query,Запрос
 Quick labeling for,Быстрая маркировка для

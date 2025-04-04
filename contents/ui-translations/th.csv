@@ -580,6 +580,12 @@ OCR PDF,OCR PDF
 of,ของ
 Ok,ตกลง
 OK,ตกลง
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,กรุณาดำเนินการต่อ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,เราไม่พบคำอธิบายกลุ่มคำที่คุณต้องการแก้ไข กรุณากลับมาที่หน้านี้ใหม่โดยเลือกการตั้งค่า
 Open,Open
@@ -664,8 +670,6 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,เผยแพร่
 Published,ตีพิมพ์แล้ว
-PX source template hint,PX source template hint
-PX target template hint,PX target template hint
 QR Code,QR Code
 Query,สืบค้น
 Quick labeling for,จัดประเภททันที
