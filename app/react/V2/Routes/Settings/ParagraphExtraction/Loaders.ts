@@ -5,8 +5,8 @@ import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
 import {
   PXEntityLoaderResponse,
-  PXEntityParagraphRow,
   PXEntityQuery,
+  PXParagraphQuery,
   PXParagraphsLoaderResponse,
 } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
@@ -55,23 +55,25 @@ const PXEntityLoader =
 
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { id = '', extractorId = '' } }) => {
-    const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
+  async ({
+    request,
+    params: { id = '', extractorId = '' },
+  }): Promise<PXParagraphsLoaderResponse> => {
+    const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
+    const { page = '1', size = '10', status } = searchParamsFromSearchParams(urlSearchParams);
+    const query: PXParagraphQuery = {
       id,
       extractorId,
+      page: { number: Number(page), size: Number(size) },
+      ...(status ? { filter: { status: [status].flat() } } : {}),
+    };
+
+    const paragraphs: PXParagraphsLoaderResponse = await pxParagraphApi.getByParagraphExtractorId(
+      query,
       headers
     );
 
-    const result: PXParagraphsLoaderResponse = {
-      rows: [],
-      page: { number: 1, size: 100 },
-      totalRows: 0,
-    };
-
-    paragraphs.rows.forEach((row: PXEntityParagraphRow) => {
-      result.rows.push({ ...row, rowId: row.sharedId });
-    });
-    return result;
+    return paragraphs;
   };
 
 export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };

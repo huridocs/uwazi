@@ -68,6 +68,15 @@ type PXEntityLoaderResponse = {
   extractor?: Extractor;
 };
 
+type PXParagraphQuery = {
+  id: string;
+  extractorId: string;
+  page?: {
+    number: number;
+    size: number;
+  };
+};
+
 type PXEntityParagraphRow = { sharedId: string; entities: PXEntity[] };
 type TablePXEntityParagraphRow = PXEntityParagraphRow & { rowId: string };
 
@@ -86,6 +95,7 @@ export type {
   PXEntityRows,
   PXEntityLoaderResponse,
   TablePXEntityRow,
+  PXParagraphQuery,
   PXEntityParagraphRow,
   PXParagraphsLoaderResponse,
   TablePXEntityParagraphRow,
