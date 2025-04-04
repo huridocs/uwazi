@@ -1,4 +1,5 @@
 import { ClientEntitySchema } from 'app/istore';
+import { EntitySchema } from 'shared/types/entityType';
 
 enum EntityStatus {
   New = 'new',
@@ -12,6 +13,8 @@ type Extractor = {
   _id: string;
   sourceTemplateId: string;
   targetTemplateId: string;
+  paragraphNumberPropertyId: string;
+  paragraphPropertyId: string;
   statusCount: {
     new: number;
     processing: number;
@@ -33,17 +36,8 @@ type PXEntityQuery = {
   };
 };
 
-type PXEntity = {
-  _id: string;
-  sharedId: string;
-  title: string;
-  language: string;
-  templateId?: string;
-  metadata?: { value: string; label: string }[];
-};
-
 type PXEntityRow = {
-  entity: PXEntity;
+  entity: ClientEntitySchema;
   status: {
     _id: string;
     status: EntityStatus;
@@ -79,21 +73,36 @@ type PXParagraphQuery = {
   };
 };
 
-type ClientEntity = ClientEntitySchema & {
+type PXEntityParagraphAPIRow = { sharedId: string; entities: ClientEntitySchema[] };
+type PXParagraphAPIResponse = {
+  rows: PXEntityParagraphAPIRow[];
+  page: {
+    number: number;
+    size: number;
+  };
+  totalRows: number;
+};
+
+type TablePXEntityParagraphRow = {
+  sharedId: string;
+  rowId: string;
   title: string;
   language: string;
-  _id: string;
+  template: string;
+  paragraphNumber: number;
+  paragraphText: string;
+  subRows?: Omit<TablePXEntityParagraphRow, 'entities'>[];
 };
-type PXEntityParagraphRow = { sharedId: string; entities: ClientEntity[] };
-type TablePXEntityParagraphRow = PXEntityParagraphRow & { rowId: string };
 
-type PXParagraphApiResponse = {
+type PXParagraphLoaderResponse = {
   rows: TablePXEntityParagraphRow[];
   page: {
     number: number;
     size: number;
   };
   totalRows: number;
+  extractor?: Extractor;
+  sourceEntity: EntitySchema[];
 };
 
 export type {
@@ -103,9 +112,10 @@ export type {
   PXEntityLoaderResponse,
   TablePXEntityRow,
   PXParagraphQuery,
-  PXEntityParagraphRow,
+  PXEntityParagraphAPIRow,
   TablePXEntityParagraphRow,
-  PXParagraphApiResponse,
+  PXParagraphAPIResponse,
+  PXParagraphLoaderResponse,
 };
 
 export { EntityStatus };

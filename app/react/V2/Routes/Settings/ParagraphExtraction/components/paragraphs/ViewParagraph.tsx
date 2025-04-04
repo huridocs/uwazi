@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Translate } from 'app/I18N';
-import { DisplayPill } from '../DisplayPills';
 import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
+import { DisplayPill } from '../DisplayPills';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagraphRow }) => (
   <div className="mb-6 flex flex-col gap-3">
@@ -18,8 +18,7 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
       </div>
     </div>
     <div className="px-4 py-3 rounded-md leading-tight text-sm font-bold border border-gray-100">
-      <Translate>Language</Translate>:{' '}
-      <DisplayPill>{paragraphData.entities[0].language}</DisplayPill>
+      <Translate>Language</Translate>: <DisplayPill>{paragraphData.language}</DisplayPill>
     </div>
     <div className="px-4 py-3 rounded-md leading-tight text-sm font-bold border border-gray-100">
       <Translate>ID</Translate>:{' '}

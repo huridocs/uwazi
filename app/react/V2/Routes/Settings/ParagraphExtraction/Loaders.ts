@@ -7,9 +7,12 @@ import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
+  PXParagraphLoaderResponse,
+  TablePXEntityParagraphRow,
+  PXParagraphAPIResponse,
 } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
-import { PXParagraphsLoaderResponse } from './types';
+import { ClientEntitySchema } from 'app/istore';
 
 const PAGE_SIZE = 10;
 
@@ -25,11 +28,11 @@ const PXEntityLoader =
   // eslint-disable-next-line max-statements
   async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1', status } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1', size = PAGE_SIZE, status } = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXEntityLoaderResponse = {
       rows: [],
-      page: { number: page, size: PAGE_SIZE },
+      page: { number: page, size },
       totalRows: 0,
     };
 
@@ -37,7 +40,7 @@ const PXEntityLoader =
 
     const query: PXEntityQuery = {
       id: extractorId,
-      page: { number: Number(page), size: PAGE_SIZE },
+      page: { number: Number(page), size: Number(size) },
       ...(status ? { filter: { status: [status].flat() } } : {}),
     };
 
@@ -47,7 +50,7 @@ const PXEntityLoader =
     ]);
 
     pxEntityRows.rows?.forEach(row => {
-      result.rows.push({ ...row, rowId: row.entity._id });
+      result.rows.push({ ...row, rowId: row.entity._id!.toString() });
     });
 
     result.page = pxEntityRows.page;
@@ -57,49 +60,72 @@ const PXEntityLoader =
     return result;
   };
 
+const getPXProperties = (
+  entity: ClientEntitySchema,
+  //TODO: Extractor doesn't contain these properties
+  textProperty: string = 'rich_text',
+  paragraphNumberProperty: string = 'numeric'
+) => {
+  const extractedParagraph: TablePXEntityParagraphRow = {
+    sharedId: entity.sharedId!,
+    title: entity.title!,
+    language: entity.language!,
+    template: entity.template?.toString()!,
+    rowId: entity._id!.toString(),
+    paragraphText: entity.metadata?.[textProperty]?.[0].value?.toString() || '',
+    paragraphNumber: Number(entity.metadata?.[paragraphNumberProperty]?.[0].value) || 0,
+  };
+  return extractedParagraph;
+};
+
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ request, params: { sharedId, extractorId } }): Promise<PXParagraphsLoaderResponse> => {
-    if (!sharedId || !extractorId) {
-      return {
-        paragraphs: [],
-        sourceTemplateId: '',
-        page: { number: 1, size: PAGE_SIZE },
-        totalRows: 0,
-      };
-    }
-
+  // eslint-disable-next-line max-statements
+  async ({
+    request,
+    params: { sharedId = '', extractorId = '' },
+  }): Promise<PXParagraphLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1' } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1', size = PAGE_SIZE } = searchParamsFromSearchParams(urlSearchParams);
+
+    const result: PXParagraphLoaderResponse = {
+      rows: [],
+      page: { number: page, size },
+      totalRows: 0,
+      sourceEntity: [],
+    };
+
+    const extractors = await extractorsAPI.get(headers);
+    const extractor = extractors.find(ext => ext._id === extractorId);
+    if (!extractorId || !sharedId || !extractor) return result;
 
     const query: PXParagraphQuery = {
       id: sharedId,
       extractorId,
-      page: { number: Number(page), size: PAGE_SIZE },
+      page: { number: Number(page), size: Number(size) },
     };
 
-    const [extractors, paragraphs] = await Promise.all([
-      extractorsAPI.get(headers),
-      pxParagraphApi.getByParagraphExtractorId(query, headers),
-    ]);
+    const response: PXParagraphAPIResponse = await pxParagraphApi.getByParagraphExtractorId(
+      query,
+      headers
+    );
 
-    const extractor = extractors.find(ext => ext._id === extractorId);
-    const templateId = extractor?.sourceTemplateId || '';
+    const [{ entities }, ...extractedEntities] = response.rows;
+    const paragraphsRows: TablePXEntityParagraphRow[] = extractedEntities.map(row => {
+      const [defaultLanguageEntity, ...otherLanguagesEntities] = row.entities.map(entity =>
+        getPXProperties(entity, extractor.paragraphNumberPropertyId, extractor.paragraphPropertyId)
+      );
 
-    const formattedParagraphs = paragraphs.rows.map(row => {
-      const subRows = row.entities.map(entity => ({ ...entity, rowId: entity._id }));
-      const rowId = row.sharedId;
-      //api returns default language entity first always
-      const { title = '', language = '' } = row.entities[0];
-
-      return { ...row, subRows, rowId, title, language };
+      return { ...defaultLanguageEntity, subRows: otherLanguagesEntities };
     });
 
     return {
-      paragraphs: formattedParagraphs,
-      sourceTemplateId: templateId,
-      page: paragraphs.page,
-      totalRows: paragraphs.totalRows,
+      rows: paragraphsRows,
+      page: response.page,
+      //TODO: Given the first record is the source entity, the pagination behaves wronly when extracting it
+      totalRows: response.totalRows,
+      extractor,
+      sourceEntity: entities,
     };
   };
 

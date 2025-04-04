@@ -1,9 +1,4 @@
-import { ClientEntitySchema } from 'app/istore';
-import {
-  Extractor,
-  EntityStatus,
-  PXParagraphApiResponse,
-} from 'V2/shared/ParagraphExtractionTypes';
+import { Extractor, EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 
 type PXTemplate = {
   _id: string;
@@ -27,30 +22,4 @@ type PXTable = Extractor & {
   sourceTemplate: PXTemplate;
 };
 
-type TableEntity = ClientEntitySchema & {
-  rowId: string;
-  title: string;
-  language: string;
-  _id: string;
-};
-
-type PXParagraphsLoaderResponse = {
-  paragraphs: {
-    sharedId: string;
-    subRows: TableEntity[];
-    title: string;
-    language: string;
-    rowId: string;
-  }[];
-  sourceTemplateId: string;
-  page: PXParagraphApiResponse['page'];
-  totalRows: PXParagraphApiResponse['totalRows'];
-};
-
-export type {
-  PXTemplate,
-  EntityStatus,
-  ParagraphExtractorApiPayload,
-  PXTable,
-  PXParagraphsLoaderResponse,
-};
+export type { PXTemplate, EntityStatus, ParagraphExtractorApiPayload, PXTable };

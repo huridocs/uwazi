@@ -5,7 +5,7 @@ import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionType
 
 const LanguagesCell = ({
   cell,
-}: CellContext<TablePXEntityParagraphRow, TablePXEntityParagraphRow['sharedId']>) => (
+}: CellContext<TablePXEntityParagraphRow, TablePXEntityParagraphRow['language']>) => (
   <div className="flex flex-wrap gap-2">
     {[cell.getValue()].map(value => (
       <div key={value} className="whitespace-nowrap uppercase text-xs font-medium">
