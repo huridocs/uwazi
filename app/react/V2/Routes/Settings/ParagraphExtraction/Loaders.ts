@@ -71,7 +71,7 @@ const PXParagraphLoader =
 
     const extractor = extractors.find(ext => ext._id === extractorId);
 
-    const templateId = paragraphs.rows[0].entities[0].template;
+    const templateId = paragraphs.rows[0].entities[0].template?.toString() || '';
 
     return { paragraphs, templateId, propertyId: extractor?.sourceTemplateId || '' };
   };
