@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { useAtom } from 'jotai';
+import { mapValues } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { Extractor, PXEntityLoaderResponse } from 'V2/shared/ParagraphExtractionTypes';
@@ -37,8 +38,7 @@ const EntityFilterSidepanel = () => {
 
   const handleSubmit = () => {
     setSearchParams((prev: URLSearchParams) => {
-      prev.set('page', '1');
-      prev.set('size', '20');
+      prev.delete('status');
       Object.entries(appliedFilters).forEach(([key, value]) => {
         if (value.status) {
           if (prev.get('status') === null) {
@@ -48,7 +48,6 @@ const EntityFilterSidepanel = () => {
           }
         }
       });
-
       return prev;
     });
 
@@ -72,21 +71,28 @@ const EntityFilterSidepanel = () => {
         <EntityFilter filters={appliedFilters} setFilters={setAppliedFilters} />
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3 border-t">
-        <div className="flex gap-2 justify-end">
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              handleSubmit();
-            }}
+        <form
+          className="flex gap-2 justify-end"
+          onSubmit={e => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <Button
+            size="small"
+            styling="outline"
+            onClick={() =>
+              setAppliedFilters(prevFilters =>
+                mapValues(prevFilters, filter => ({ ...filter, status: false }))
+              )
+            }
           >
-            <Button size="small" styling="outline" onClick={() => console.log('clear all filters')}>
-              <Translate>Clear All</Translate>
-            </Button>
-            <Button size="small" type="submit" color="success">
-              <Translate>Apply</Translate>
-            </Button>
-          </form>
-        </div>
+            <Translate>Clear All</Translate>
+          </Button>
+          <Button size="small" type="submit" color="success">
+            <Translate>Apply</Translate>
+          </Button>
+        </form>
       </Sidepanel.Footer>
     </Sidepanel>
   );

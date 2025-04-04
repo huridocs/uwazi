@@ -9,7 +9,7 @@ import { ParagraphsTable } from './components/paragraphs/Table';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
 
 const PXParagraphDashboard = () => {
-  const { rows } = useLoaderData() as PXParagraphsLoaderResponse;
+  const { rows, totalRows } = useLoaderData() as PXParagraphsLoaderResponse;
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
   const [paragraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
@@ -84,6 +84,7 @@ const PXParagraphDashboard = () => {
             viewParagraph={() => {
               //TODO: Update openSidePanel
             }}
+            totalRows={totalRows}
           />
         </SettingsContent.Body>
       </SettingsContent>

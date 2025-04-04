@@ -12,6 +12,7 @@ interface ParagraphsTableProps {
   paragraphInfo: TablePXEntityParagraphRow;
   filters: { [key: string]: number };
   viewParagraph: (params: any) => void;
+  totalRows: number;
 }
 
 const ParagraphsTable = ({
@@ -19,6 +20,7 @@ const ParagraphsTable = ({
   paragraphInfo,
   filters,
   viewParagraph,
+  totalRows,
 }: ParagraphsTableProps) => (
   <Table
     data={pxParagraphData}
@@ -49,7 +51,7 @@ const ParagraphsTable = ({
       )
     }
     defaultSorting={[{ id: '_id', desc: false }]}
-    footer={<PXTableFooter totalPages={10} currentDataLength={10} total={100} />}
+    footer={<PXTableFooter total={totalRows} currentDataLength={pxParagraphData.length} />}
     groupColumnPosition={3}
   />
 );

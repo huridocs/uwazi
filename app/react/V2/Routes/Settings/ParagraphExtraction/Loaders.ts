@@ -23,11 +23,11 @@ const PXEntityLoader =
   // eslint-disable-next-line max-statements
   async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page, status } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1', size = '10', status } = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXEntityLoaderResponse = {
       rows: [],
-      page: { number: 1, size: 100 },
+      page: { number: page, size },
       totalRows: 0,
     };
 
@@ -35,7 +35,7 @@ const PXEntityLoader =
 
     const query: PXEntityQuery = {
       id: extractorId,
-      page: { number: page ? Number(page) : 1, size: 100 },
+      page: { number: Number(page), size: Number(size) },
       ...(status ? { filter: { status: [status].flat() } } : {}),
     };
 

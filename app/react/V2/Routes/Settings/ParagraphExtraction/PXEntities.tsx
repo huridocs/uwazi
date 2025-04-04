@@ -43,6 +43,7 @@ const PXEntityDashboard = () => {
             pxEntitiesData={rows}
             onSelectionChange={setSelected}
             sourceTemplate={sourceTemplate}
+            totalRows={totalRows}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>

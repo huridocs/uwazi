@@ -11,12 +11,14 @@ interface EntitiesTableProps {
   pxEntitiesData: TablePXEntityRow[];
   onSelectionChange: (selected: TablePXEntityRow[]) => void;
   sourceTemplate?: Template;
+  totalRows: number;
 }
 
 const EntitiesTable = ({
   pxEntitiesData,
   onSelectionChange,
   sourceTemplate,
+  totalRows,
 }: EntitiesTableProps) => (
   <Table
     data={pxEntitiesData}
@@ -31,7 +33,7 @@ const EntitiesTable = ({
     onChange={({ selectedRows }) => {
       onSelectionChange(pxEntitiesData.filter(ex => ex.rowId in selectedRows));
     }}
-    footer={<PXTableFooter totalPages={10} total={100} currentDataLength={10} />}
+    footer={<PXTableFooter total={totalRows} currentDataLength={pxEntitiesData.length} />}
   />
 );
 
