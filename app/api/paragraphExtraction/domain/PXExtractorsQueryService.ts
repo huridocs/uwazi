@@ -7,6 +7,8 @@ type GetExtractorsOutput = {
   _id: string;
   sourceTemplateId: string;
   targetTemplateId: string;
+  paragraphNumberPropertyId: string;
+  paragraphPropertyId: string;
   statusCount: {
     new: number;
     processing: number;

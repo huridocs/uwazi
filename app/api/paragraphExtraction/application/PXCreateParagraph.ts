@@ -73,6 +73,14 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
         paragraphTranslation.language
       );
 
+      if (
+        existingTranslation?.title === paragraphTranslation.title &&
+        existingTranslation?.metadata?.[extractor.paragraphProperty.name] ===
+          paragraphTranslation?.metadata?.[extractor.paragraphProperty.name]
+      ) {
+        return;
+      }
+
       await this.dependencies.entitiesDS.save(
         {
           ...existingTranslation,

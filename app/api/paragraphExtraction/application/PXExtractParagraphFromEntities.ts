@@ -4,6 +4,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntitiesJob';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Input = {
   userId: string;
@@ -24,10 +25,16 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
 
   async execute({ entitySharedIds, extractorId, userId }: Input): Promise<Output> {
     await ArrayUtils.sequentialFor(entitySharedIds, async entitySharedId => {
-      const entityStatus = await this.dependencies.entitiesStatusDS.markAsProcessing({
+      const entityStatus = await this.dependencies.entitiesStatusDS.getExisting({
         entitySharedId,
         extractorId,
       });
+
+      if (!entityStatus || entityStatus?.status === EntityStatus.Processing) {
+        return;
+      }
+
+      await this.dependencies.entitiesStatusDS.markAsProcessing(entityStatus.id);
 
       await this.dependencies.dispatcher.dispatch(PXExtractParagraphsFromEntityJob, {
         entitySharedId,

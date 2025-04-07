@@ -309,7 +309,6 @@ Entity,Объект
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,Типы объектов
 Entity updated,Entity updated
 Error,Ошибка
@@ -580,13 +579,13 @@ OCR PDF,Оптическое распознавание символов PDF
 of,из
 Ok,Окей
 OK,Окей
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
 "Only templates with at least one rich text property and one numeric property are
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Упс... Просим вас уйти
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,"Упс! Мы не смогли найти предметный указатель, который вы пытаетесь отредактировать. Попробуйте обратную навигацию вплоть до этой страницы через Настройки."
 Open,Open

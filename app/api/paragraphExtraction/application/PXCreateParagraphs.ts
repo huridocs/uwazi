@@ -79,7 +79,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       }
     });
 
-    await this.dependencies.entitiesStatusDS.markAsFinished(entityStatusId);
+    await this.dependencies.entitiesStatusDS.markAsProcessed(entityStatusId);
   }
 
   private async getEntityStatus(entityStatusId: string) {

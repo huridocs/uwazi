@@ -13,11 +13,6 @@ type CreateForSourceEntitiesInput = {
   extractorId: string;
 };
 
-type MarkAsProcessingInput = {
-  entitySharedId: string;
-  extractorId: string;
-};
-
 type GetAllInput = Partial<PXEntityStatusModel>;
 
 export interface PXEntitiesStatusDataSource {
@@ -25,13 +20,13 @@ export interface PXEntitiesStatusDataSource {
   createAsNew(input: CreateInput): Promise<PXEntityStatusModel>;
   createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
-  markAsError(entityStatusId: string): Promise<PXEntityStatusModel>;
+  markAsError(entityStatusId: string): Promise<void>;
   markAsObsolete(entityStatusId: string): Promise<void>;
-  markAsFinished(entityStatusId: string): Promise<void>;
-  markAsProcessing(input: MarkAsProcessingInput): Promise<PXEntityStatusModel>;
+  markAsProcessed(entityStatusId: string): Promise<void>;
+  markAsProcessing(entityStatusId: string): Promise<void>;
   delete(entityStatusId: string): Promise<void>;
   deleteBySourceEntity(entitySharedId: string): Promise<void>;
   getAll(input: GetAllInput): ResultSet<PXEntityStatusModel>;
 }
 
-export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput, MarkAsProcessingInput };
+export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput };
