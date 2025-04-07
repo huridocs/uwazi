@@ -125,23 +125,27 @@ export class QueueWorker {
   private async processJob(job: Job) {
     const start = performance.now();
     const dispatchable = await this.createDispatchable(job);
-    const heartbeatCallback = async () => this.adapter.renewJobLock(job);
 
     try {
       this.logger.info('Processing job', { job });
-
       const startTime = performance.now();
-      await dispatchable.handleDispatch(heartbeatCallback, job.params);
+      await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params);
       this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
-      if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
-        await this.adapter.markJobAsFailed(job);
-      }
-      this.onError(e, { job });
+      await this.catchFailedJob(job, e);
     } finally {
       this.logProcess(start);
     }
+  }
+
+  private async catchFailedJob(job: Job, e: any) {
+    let jobToReport = job;
+    if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
+      jobToReport = await this.adapter.markJobAsFailed(job);
+    }
+    jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
+    this.onError(e, { job: jobToReport });
   }
 
   async start() {

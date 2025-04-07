@@ -170,8 +170,9 @@ it('should have a maximum number of retries', async () => {
 it('should not retry jobs that throw a NonRetryableJobError', async () => {
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, { lockWindow: 0 });
+  const onError = jest.fn();
 
-  const { worker, signals } = await setUpWorker();
+  const { worker, signals } = await setUpWorker(onError);
 
   await dispatcher.dispatch(TestJob, { aNumber: 1 });
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -183,6 +184,11 @@ it('should not retry jobs that throw a NonRetryableJobError', async () => {
   await signals.signaled('starting-2');
   await worker.stop();
   TestJob.shouldFailNonRetryable = false;
+
+  expect(onError).toHaveBeenCalledWith(
+    new NonRetryableJobError(new Error('Non retryable error')),
+    expect.objectContaining({ job: expect.objectContaining({ name: TestJob.name, failed: true }) })
+  );
 
   expect(await adapter.pickJob('name')).toBeNull();
 });
@@ -232,4 +238,36 @@ it('should log errors by default when no onError callback is passed', async () =
   );
 
   expect(output).toEqual(['namespace 1']);
+});
+
+it('should double the lockWindow time on every retry', async () => {
+  const initialLockWindow = 1;
+  const maxRetries = 3;
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', DefaultTestingQueueAdapter(), {
+    lockWindow: initialLockWindow,
+    maxRetries,
+  });
+
+  const { adapter, worker, signals } = await setUpWorker();
+  const lockWindows: number[] = [];
+
+  const originalPickJob = adapter.pickJob.bind(adapter);
+  adapter.pickJob = async queueName => {
+    const job = await originalPickJob(queueName);
+    if (job) {
+      lockWindows.push(job.options.lockWindow);
+    }
+    return job;
+  };
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  TestJob.shouldFail = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1', maxRetries);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
 });
