@@ -21,7 +21,6 @@ const Footer = () => {
     sourceRelationshipId,
   } = useCreateExtractorContext();
 
-  // TODO: should be moved to context?
   const handleSubmit = async () => {
     try {
       const values = {
