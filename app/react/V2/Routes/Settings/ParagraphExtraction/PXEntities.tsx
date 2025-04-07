@@ -99,16 +99,6 @@ const PXEntityDashboard = () => {
                 selected={selected}
                 disabled={isSaving}
               />
-              {/*
-              //TODO: Temporary commented until have a definition
-              <DeleteDialog
-                setIsProcessing={setIsSaving}
-                disabled={isSaving}
-                onSuccess={() => {
-                  setSelected([]);
-                }}
-                selected={selected}
-              /> */}
               <div className="text-gray-500">
                 <Translate>Selected</Translate>{' '}
                 <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
