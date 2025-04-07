@@ -13,7 +13,7 @@ import {
   CreateForSourceEntitiesInput,
   CreateInput,
   GetExistingInput,
-  MarkAsQueuedInput,
+  MarkAsProcessingInput,
   PXEntitiesStatusDataSource,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
@@ -99,22 +99,6 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      { $set: { status: EntityStatus.Error } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not set an error of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatusDBO = {
       _id: new ObjectId(),
@@ -173,6 +157,22 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
   }
 
+  async markAsError(extractionId: string): Promise<PXEntityStatusModel> {
+    const dbo = await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(extractionId) },
+      { $set: { status: EntityStatus.Error } },
+      { upsert: false, returnDocument: 'after' }
+    );
+
+    if (!dbo) {
+      throw new Error(
+        `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
+      );
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
+  }
+
   async markAsObsolete(entityStatusId: string): Promise<void> {
     const currentStatus = await this.getCollection().findOne(
       { _id: new ObjectId(entityStatusId) },
@@ -190,7 +190,7 @@ export class MongoPXEntitiesStatusDataSource
     );
   }
 
-  async markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
+  async markAsProcessing(input: MarkAsProcessingInput): Promise<PXEntityStatusModel> {
     const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
       {
         extractorId: new ObjectId(input.extractorId),
@@ -202,7 +202,7 @@ export class MongoPXEntitiesStatusDataSource
 
     if (!mongoEntityStatus) {
       throw new Error(
-        `Cannot change status to queued of a EntityStatus that does not exist. ${JSON.stringify(input)}`
+        `Cannot change status to '${EntityStatus.Processing}' of a EntityStatus that does not exist. ${JSON.stringify(input)}`
       );
     }
 
