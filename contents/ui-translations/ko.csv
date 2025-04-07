@@ -312,7 +312,6 @@ Entity,엔티티
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
@@ -583,13 +582,13 @@ OCR PDF,PDF OCR 읽기
 of,의
 Ok,확인
 OK,확인
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
 "Only templates with at least one rich text property and one numeric property are
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Ooops...
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,편집하려는 시소러스를 찾을 수 없습니다. 설정으로 돌아가 페이지를 다시 탐색하십시오.
 Open,Open

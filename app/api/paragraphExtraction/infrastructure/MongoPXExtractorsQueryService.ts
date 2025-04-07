@@ -101,6 +101,8 @@ class MongoPXExtractorsQueryService
           sourceTemplateId: 1,
           targetTemplateId: 1,
           statusCount: 1,
+          paragraphNumberPropertyId: 1,
+          paragraphPropertyId: 1,
         },
       },
     ]);
@@ -112,6 +114,8 @@ class MongoPXExtractorsQueryService
           _id: item._id.toString(),
           sourceTemplateId: item.sourceTemplateId.toString(),
           targetTemplateId: item.targetTemplateId.toString(),
+          paragraphNumberPropertyId: item.paragraphNumberPropertyId.toString(),
+          paragraphPropertyId: item.paragraphPropertyId.toString(),
           statusCount: item.statusCount,
         }) as GetExtractorsOutput
     );

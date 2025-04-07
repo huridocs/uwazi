@@ -15,20 +15,16 @@ const get = async (headers?: IncomingHttpHeaders): Promise<Extractor[]> => {
 };
 
 const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extractor> => {
-  //model values to be sent to backend, adjust this to satisfy backend requirements
   const modelPayload = {
     sourceTemplateId: extractorValues.sourceTemplateId,
     targetTemplateId: extractorValues.targetTemplateId,
     paragraphPropertyId: extractorValues.paragraphPropertyId,
     paragraphNumberPropertyId: extractorValues.paragraphNumberPropertyId,
-    // api requires these two fields, but only one field is on the design
     sourceRelationshipTypeId: extractorValues.sourceRelationshipId,
     targetRelationshipTypeId: extractorValues.targetRelationshipId,
   };
 
   const requestParams = new RequestParams(modelPayload);
-  // this returns an id of the created extractor,
-  // probably should be used if ever we want to redirect to created extractor page with entities
   return api.post('paragraphExtraction/extractor', requestParams);
 };
 

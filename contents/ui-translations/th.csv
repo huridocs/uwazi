@@ -312,7 +312,6 @@ Entity,รายการ
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,ประเภทรายการ
 Entity updated,Entity updated
 Error,ข้อผิดพลาด
@@ -583,13 +582,13 @@ OCR PDF,OCR PDF
 of,ของ
 Ok,ตกลง
 OK,ตกลง
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
 "Only templates with at least one rich text property and one numeric property are
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,กรุณาดำเนินการต่อ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,เราไม่พบคำอธิบายกลุ่มคำที่คุณต้องการแก้ไข กรุณากลับมาที่หน้านี้ใหม่โดยเลือกการตั้งค่า
 Open,Open

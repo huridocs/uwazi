@@ -5,7 +5,7 @@ import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionType
 
 const TextCell = ({
   cell,
-}: CellContext<TablePXEntityParagraphRow, TablePXEntityParagraphRow['sharedId']>) => (
+}: CellContext<TablePXEntityParagraphRow, TablePXEntityParagraphRow['paragraphText']>) => (
   <Tooltip
     content={cell.getValue()}
     arrow
