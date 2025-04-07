@@ -1,4 +1,5 @@
 import api from 'app/utils/api';
+import { IncomingHttpHeaders } from 'http';
 import { EntitySchema } from 'shared/types/entityType';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -33,19 +34,25 @@ const getById = async ({
   }
 };
 
-const getBySharedId = async ({
-  sharedId,
-  language,
-  omitRelationships = true,
-}: EntityApiParams & {
-  sharedId: string;
-  language: string;
-}): Promise<EntitySchema[]> => {
+const getBySharedId = async (
+  {
+    sharedId,
+    language,
+    omitRelationships = true,
+  }: EntityApiParams & {
+    sharedId: string;
+    language: string;
+  },
+  headers?: IncomingHttpHeaders
+): Promise<EntitySchema[]> => {
   try {
-    const requestParams = new RequestParams({
-      sharedId,
-      omitRelationships,
-    });
+    const requestParams = new RequestParams(
+      {
+        sharedId,
+        omitRelationships,
+      },
+      headers
+    );
 
     api.locale(language);
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
@@ -41,7 +40,8 @@ const ParagraphsTable = ({
           },
           ...(pxParagraphData[0].subRows || []).map(subRow => ({
             _id: subRow._id,
-            name: availableLanguages.find(lang => lang.key === subRow.language)?.label || '',
+            name:
+              availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
           })),
         ]
       : [];
