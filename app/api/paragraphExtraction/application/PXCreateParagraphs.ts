@@ -11,6 +11,7 @@ import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXCreateParagraph } from './PXCreateParagraph';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 type PXCreateParagraphsInput = {
   userId: string;
@@ -84,7 +85,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
   private async getEntityStatus(entityStatusId: string) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getById(entityStatusId);
     if (!entityStatus) {
-      throw new Error('Entity Status not found');
+      throw new OperationalError('Entity Status not found');
     }
     return entityStatus;
   }

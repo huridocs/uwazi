@@ -18,6 +18,7 @@ import {
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
@@ -165,7 +166,7 @@ export class MongoPXEntitiesStatusDataSource
     );
 
     if (!dbo) {
-      throw new Error(
+      throw new OperationalError(
         `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
       );
     }
@@ -201,7 +202,7 @@ export class MongoPXEntitiesStatusDataSource
     );
 
     if (!mongoEntityStatus) {
-      throw new Error(
+      throw new OperationalError(
         `Cannot change status to '${EntityStatus.Processing}' of a EntityStatus that does not exist. ${JSON.stringify(input)}`
       );
     }

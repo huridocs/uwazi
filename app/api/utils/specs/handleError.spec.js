@@ -2,6 +2,7 @@ import { legacyLogger } from 'api/log';
 import { createError } from 'api/utils';
 
 import { errors as elasticErrors } from '@elastic/elasticsearch';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { S3Error } from 'api/files/S3Storage';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { appContext } from 'api/utils/AppContext';
@@ -21,6 +22,14 @@ describe('handleError', () => {
   });
 
   describe('errors by type', () => {
+    describe('and is instance of OperationalError', () => {
+      it('should be a 422 debug logLevel', () => {
+        const errorInstance = new OperationalError('operational error');
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({ code: 400, logLevel: 'debug' });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('operational error');
+      });
+    });
     describe('and is instance of PXValidationError', () => {
       it('should be a 422 debug logLevel', () => {
         const errorInstance = new PXValidationError('code', 'segmentation files not found');
