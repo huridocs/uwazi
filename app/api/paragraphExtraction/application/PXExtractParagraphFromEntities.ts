@@ -34,10 +34,7 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         return;
       }
 
-      await this.dependencies.entitiesStatusDS.markAsProcessing({
-        entitySharedId,
-        extractorId,
-      });
+      await this.dependencies.entitiesStatusDS.markAsProcessing(entityStatus.id);
 
       await this.dependencies.dispatcher.dispatch(PXExtractParagraphsFromEntityJob, {
         entitySharedId,
