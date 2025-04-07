@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
