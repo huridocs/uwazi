@@ -71,12 +71,41 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   async markJobAsFailed(job: Job) {
-    await this.getCollection().findOneAndUpdate(
+    const result = await this.getCollection().findOneAndUpdate(
       {
         _id: new ObjectId(job.id),
       },
-      { $set: { failed: true } }
+      { $set: { failed: true } },
+      { returnDocument: 'after' }
     );
+
+    if (!result) {
+      throw new Error(`Failed to mark job as failed: ${job.id}`);
+    }
+
+    return {
+      id: result._id.toHexString(),
+      ...result,
+    };
+  }
+
+  async updateLockWindow(job: Job, newLockWindow: number) {
+    const result = await this.getCollection().findOneAndUpdate(
+      {
+        _id: new ObjectId(job.id),
+      },
+      { $set: { 'options.lockWindow': newLockWindow } },
+      { returnDocument: 'after' }
+    );
+
+    if (!result) {
+      throw new Error(`Failed to update lock window for job: ${job.id}`);
+    }
+
+    return {
+      id: result._id.toHexString(),
+      ...result,
+    };
   }
 
   async pushJob(
