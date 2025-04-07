@@ -3,13 +3,14 @@ import { LoaderFunction } from 'react-router';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
+import * as entitiesApi from 'V2/api/entities';
+import * as settingsApi from 'V2/api/settings';
 import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-  PXParagraphAPIResponse,
 } from 'V2/shared/ParagraphExtractionTypes';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { ClientEntitySchema } from 'app/istore';
@@ -74,6 +75,7 @@ const getPXProperties = (
     rowId: entity._id!.toString(),
     paragraphText: entity.metadata?.[textProperty]?.[0].value?.toString() || '',
     paragraphNumber: Number(entity.metadata?.[paragraphNumberProperty]?.[0].value) || 0,
+    _id: entity._id?.toString() || '',
   };
   return extractedParagraph;
 };
@@ -92,8 +94,9 @@ const PXParagraphLoader =
       rows: [],
       page: { number: page, size },
       totalRows: 0,
-      sourceEntity: [],
     };
+
+    const defaultLanguage = (await settingsApi.get()).languages?.find(lang => lang.default);
 
     const extractors = await extractorsAPI.get(headers);
     const extractor = extractors.find(ext => ext._id === extractorId);
@@ -105,13 +108,12 @@ const PXParagraphLoader =
       page: { number: Number(page), size: Number(size) },
     };
 
-    const response: PXParagraphAPIResponse = await pxParagraphApi.getByParagraphExtractorId(
-      query,
-      headers
-    );
+    const [paragraphs, [sourceEntity]] = await Promise.all([
+      pxParagraphApi.getByParagraphExtractorId(query, headers),
+      entitiesApi.getBySharedId({ sharedId, language: defaultLanguage?.key || '' }),
+    ]);
 
-    const [{ entities }, ...extractedEntities] = response.rows;
-    const paragraphsRows: TablePXEntityParagraphRow[] = extractedEntities.map(row => {
+    const paragraphsRows = paragraphs.rows?.map(row => {
       const [defaultLanguageEntity, ...otherLanguagesEntities] = row.entities.map(entity =>
         getPXProperties(entity, extractor.paragraphNumberPropertyId, extractor.paragraphPropertyId)
       );
@@ -121,11 +123,11 @@ const PXParagraphLoader =
 
     return {
       rows: paragraphsRows,
-      page: response.page,
+      page: paragraphs.page,
       //TODO: Given the first record is the source entity, the pagination behaves wronly when extracting it
-      totalRows: response.totalRows,
+      totalRows: paragraphs.totalRows,
       extractor,
-      sourceEntity: entities,
+      sourceEntity,
     };
   };
 

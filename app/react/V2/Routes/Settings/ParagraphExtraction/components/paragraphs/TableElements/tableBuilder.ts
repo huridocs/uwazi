@@ -33,7 +33,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
       ActionCell(() => {
         const paragraphId = props.cell.getValue();
         if (paragraphId) {
-          onViewAction('1');
+          onViewAction(paragraphId);
         }
       }),
     enableSorting: false,

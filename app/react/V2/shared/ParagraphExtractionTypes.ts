@@ -1,5 +1,4 @@
 import { ClientEntitySchema } from 'app/istore';
-import { EntitySchema } from 'shared/types/entityType';
 
 enum EntityStatus {
   New = 'new',
@@ -75,12 +74,12 @@ type PXParagraphQuery = {
 
 type PXEntityParagraphAPIRow = { sharedId: string; entities: ClientEntitySchema[] };
 type PXParagraphAPIResponse = {
-  rows: PXEntityParagraphAPIRow[];
   page: {
     number: number;
     size: number;
   };
   totalRows: number;
+  rows?: PXEntityParagraphAPIRow[];
 };
 
 type TablePXEntityParagraphRow = {
@@ -92,17 +91,18 @@ type TablePXEntityParagraphRow = {
   paragraphNumber: number;
   paragraphText: string;
   subRows?: Omit<TablePXEntityParagraphRow, 'entities'>[];
+  _id: string;
 };
 
 type PXParagraphLoaderResponse = {
-  rows: TablePXEntityParagraphRow[];
   page: {
     number: number;
     size: number;
   };
   totalRows: number;
+  rows?: TablePXEntityParagraphRow[];
   extractor?: Extractor;
-  sourceEntity: EntitySchema[];
+  sourceEntity?: ClientEntitySchema;
 };
 
 export type {

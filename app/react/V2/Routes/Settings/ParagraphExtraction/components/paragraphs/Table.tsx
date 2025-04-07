@@ -8,32 +8,32 @@ import {
   TablePXEntityParagraphRow,
 } from 'V2/shared/ParagraphExtractionTypes';
 import { Translate } from 'app/I18N';
-import { templatesAtom } from 'app/V2/atoms';
+import { templatesAtom } from 'V2/atoms';
 import { TableTitle } from '../TableTitle';
 import { PXTableFooter } from '../PXTableFooter';
 import { tableBuilder } from './TableElements';
 
 interface ParagraphsTableProps {
   pxParagraphData: TablePXEntityParagraphRow[];
-  filters: { [key: string]: number };
-  viewParagraph: (params: any) => void;
+  viewParagraph: (entityId: string) => void;
   totalRows: number;
+  openPDFSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ParagraphsTable = ({
   pxParagraphData,
-  filters,
   viewParagraph,
   totalRows,
+  openPDFSidepanel,
 }: ParagraphsTableProps) => {
   const templates = useAtomValue(templatesAtom);
-  const { sourceEntity, extractor } = useLoaderData() as PXParagraphLoaderResponse;
+  const { extractor, sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
 
-  const languageNames = new Intl.DisplayNames([sourceEntity[0].language || 'en'], {
+  const languageNames = new Intl.DisplayNames([pxParagraphData[0].language || 'en'], {
     type: 'language',
   });
 
-  const entityLanguages = sourceEntity
+  const entityLanguages = pxParagraphData
     .filter(entity => entity.language !== undefined)
     .map(entity => ({
       _id: entity.language!,
@@ -49,23 +49,20 @@ const ParagraphsTable = ({
       header={
         <TableTitle
           items={[
-            { _id: sourceEntity[0].sharedId, name: sourceEntity[0].title! },
+            { _id: sourceEntity?._id?.toString() || '', name: sourceEntity?.title || '' },
             template,
             ...entityLanguages,
           ]}
           Buttons={
-            filters.length > 0 && (
-              <div className="flex gap-3">
-                {/* {filters.length > 0 && <FilterSidePanel availableFilters={filters} />} */}
-                <Button
-                  onClick={() => console.log('open pdf')}
-                  styling="light"
-                  className="leading-4 flex gap-2 items-center text-gray-800"
-                >
-                  <Translate>Open PDF</Translate>
-                </Button>
-              </div>
-            )
+            <div className="flex gap-3">
+              <Button
+                onClick={() => openPDFSidepanel(true)}
+                styling="light"
+                className="leading-4 flex gap-2 items-center text-gray-800"
+              >
+                <Translate>Open PDF</Translate>
+              </Button>
+            </div>
           }
         />
       }

@@ -9,26 +9,29 @@ import type {
 import { templatesAtom } from 'V2/atoms';
 import { ParagraphsTable } from './components/paragraphs/Table';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
+import { PDFSidepanel } from './components/paragraphs/PDFSidepanel';
 
 const PXParagraphDashboard = () => {
   const { extractorId } = useParams();
   const { rows, totalRows, extractor, sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
   const templates = useAtomValue(templatesAtom);
-  const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView] = useState<undefined | TablePXEntityParagraphRow>(undefined);
+  const [sidePanel, setSidePanel] = useState(false);
+  const [pdfSidepanel, setPdfSidepanel] = useState(false);
+  const [paragraphOnView, setParagraphOnView] = useState<undefined | TablePXEntityParagraphRow>(
+    undefined
+  );
 
   const template = templates.find(temp => temp._id === extractor?.sourceTemplateId);
+  const paragraphEntities = rows?.flatMap(row => [
+    row,
+    ...(row.subRows || []).map(subrow => subrow),
+  ]);
 
-  // const openSidePanel = (id: string): void => {
-  //   setSidePanel(true);
-  //   const targetParagraph = pxParagraphData.find(paragraph => paragraph._id === id);
-  //   if (targetParagraph) {
-  //     setParagraphOnView({
-  //       ...targetParagraph,
-  //       languages: [getLanguageName(languages, targetParagraph.languages[0])],
-  //     });
-  //   }
-  // };
+  const onViewEntity = (entityId: string) => {
+    const selectedParagraph = paragraphEntities?.find(paragraph => paragraph._id === entityId);
+    setParagraphOnView(selectedParagraph);
+    setSidePanel(true);
+  };
 
   return (
     <div
@@ -38,7 +41,7 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={sourceEntity[0].title}
+          title="Paragraphs"
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],
@@ -48,13 +51,10 @@ const PXParagraphDashboard = () => {
         />
         <SettingsContent.Body>
           <ParagraphsTable
-            pxParagraphData={rows}
-            filters={{}}
-            // viewParagraph={openSidePanel
-            viewParagraph={() => {
-              //TODO: Update openSidePanel
-            }}
+            pxParagraphData={rows || []}
+            viewParagraph={onViewEntity}
             totalRows={totalRows}
+            openPDFSidepanel={setPdfSidepanel}
           />
         </SettingsContent.Body>
       </SettingsContent>
@@ -62,6 +62,11 @@ const PXParagraphDashboard = () => {
         isSidePanelOpen={sidePanel}
         setIsSidePanelOpen={setSidePanel}
         paragraphOnView={paragraphOnView}
+      />
+      <PDFSidepanel
+        entity={sourceEntity}
+        setShowSidepanel={setPdfSidepanel}
+        showSidepanel={pdfSidepanel}
       />
     </div>
   );
