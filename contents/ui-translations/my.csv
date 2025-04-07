@@ -312,7 +312,6 @@ Entity,ဖြည့်သွင်းချက်
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,ဖြည့်သွင်းချက် အမျိုးအစားများ
 Entity updated,Entity updated
 Error,ချွတ်ယွင်းချက်
@@ -583,13 +582,13 @@ OCR PDF,OCR PDF
 of,၏
 Ok,အိုကေ
 OK,အိုကေ
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
 "Only templates with at least one rich text property and one numeric property are
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,အို... အဆင်ပြေပါစေ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,အို။ သင်တည်းဖြတ်ရန် ကြိုးစားနေသော ဝေါဟာရပဒေသာကျမ်းကို ကျွန်ုပ်တို့ ရှာမတွေ့ပါ။ ဆက်တင်များမှတစ်ဆင့် ဤစာမျက်နှာသို့ ပြန်သွားကြည့်ပါ။
 Open,Open

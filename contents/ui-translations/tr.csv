@@ -312,7 +312,6 @@ Entity,Varlık
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,Varlık türü
 Entity updated,Entity updated
 Error,Hata
@@ -583,13 +582,13 @@ OCR PDF,OKT PDF
 of,nın-nin
 Ok,Tamam
 OK,TAMAM
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
 "Only templates with at least one rich text property and one numeric property are
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Ooops... lütfen şuraya gidin
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! Düzenlemeye çalıştığınız Thesaurus'u bulamadık. Ayarlar aracılığıyla bu sayfaya geri dönmeyi deneyin.
 Open,Open
