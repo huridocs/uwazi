@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { isClient } from 'app/utils';
-import { captureException, errr } from '@sentry/react';
+import { captureException } from '@sentry/react';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import { notificationAtom } from 'V2/atoms';
 import { useRevalidator } from 'react-router';
