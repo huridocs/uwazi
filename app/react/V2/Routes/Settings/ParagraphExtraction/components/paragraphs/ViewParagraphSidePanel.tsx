@@ -36,7 +36,7 @@ const ViewParagraphSidePanel = ({
       <div className="flex gap-2 justify-end">
         <Link
           to={`/${paragraphOnView?.language}/entity/${paragraphOnView?.sharedId}`}
-          target="blank"
+          target="_blank"
         >
           <Button size="small" styling="outline">
             <Translate>View entity</Translate>
