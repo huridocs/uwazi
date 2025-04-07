@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { config } from 'api/config';
 import { FileNotFound } from 'api/files/FileNotFound';
@@ -65,6 +66,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Error) {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
+  }
+
+  if (error instanceof OperationalError) {
+    result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof PXValidationError) {
