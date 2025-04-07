@@ -67,10 +67,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
   }
 
-  if (
-    error.code === PXValidationError.codes.SEGMENTATIONS_UNAVAILABLE ||
-    error.code === PXValidationError.codes.SEGMENTATION_FILES_NOT_FOUND
-  ) {
+  if (error instanceof PXValidationError) {
     result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
   }
 

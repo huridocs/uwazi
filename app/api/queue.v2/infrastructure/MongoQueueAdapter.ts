@@ -99,7 +99,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     );
 
     if (!result) {
-      throw new Error(`Failed to mark job as failed: ${job.id}`);
+      throw new Error(`Failed to update lock window for job: ${job.id}`);
     }
 
     return {
