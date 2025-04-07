@@ -144,7 +144,7 @@ const checkSystemKeys = async (allTexts, translations) => {
   const textsNotInTranslations = allTexts.filter(text => {
     let key = text.key || text.text;
     key = key.trim().replace(/\n\s*/g, ' ');
-    return !translations.find(t => t.key === key);
+    return !translations.find(t => t.key.trim().replace(/\n\s*/g, ' ') === key);
   });
 
   return textsNotInTranslations;

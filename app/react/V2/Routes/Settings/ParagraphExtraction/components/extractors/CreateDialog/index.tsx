@@ -1,24 +1,21 @@
-import React, { useState } from 'react';
-import { Button } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
+import React from 'react';
 import { CreateExtractorProvider } from './CreateExtractorContext';
 import { Dialog } from './Dialog';
 
-const CreateDialog = ({ disabled }: { disabled: boolean }) => {
-  const [showModal, setShowModal] = useState(false);
-
-  return (
-    <>
-      {showModal && (
-        <CreateExtractorProvider setShowModal={setShowModal}>
-          <Dialog />
-        </CreateExtractorProvider>
-      )}
-      <Button type="button" onClick={() => setShowModal(true)} disabled={disabled}>
-        <Translate>Add extractor</Translate>
-      </Button>
-    </>
-  );
-};
+const CreateDialog = ({
+  isOpen = false,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+}) => (
+  <>
+    {isOpen && (
+      <CreateExtractorProvider setShowModal={setIsOpen}>
+        <Dialog />
+      </CreateExtractorProvider>
+    )}
+  </>
+);
 
 export { CreateDialog };

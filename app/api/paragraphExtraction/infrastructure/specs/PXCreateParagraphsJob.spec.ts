@@ -77,7 +77,8 @@ describe('ExtractionUseCase', () => {
   });
 
   it('should call useCase execute with extracted data', async () => {
-    await job.handleDispatch(jest.fn(), {
+    const heartBeatCallBack = jest.fn();
+    await job.handleDispatch(heartBeatCallBack, {
       results: {
         success: true,
         data_url: 'any_url',
@@ -92,6 +93,7 @@ describe('ExtractionUseCase', () => {
       userId: extractionKey.userId,
       entityStatusId: extractionKey.entityStatusId,
       paragraphs: getParagraphsResultOutput.paragraphs,
+      onParagraphCreated: heartBeatCallBack,
     });
   });
 

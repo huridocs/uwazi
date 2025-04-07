@@ -2,8 +2,8 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from 'api/queue.v2/application/contracts/UserAwareDispatchable';
-
 import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
+import { HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
@@ -28,7 +28,7 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
     super();
   }
 
-  async handle() {
+  async handle(heartBeatCallBack: HeartbeatCallback) {
     try {
       if (!this.params.results.success) {
         throw new NonRetryableJobError(
@@ -45,9 +45,10 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
         userId: this.params.userId,
         entityStatusId: this.params.entityStatusId,
         paragraphs: paragraphsResult.paragraphs,
+        onParagraphCreated: heartBeatCallBack,
       });
     } catch (e) {
-      await this.dependencies.pxEntitiesStatusDS.setAsError(this.params.entityStatusId);
+      await this.dependencies.pxEntitiesStatusDS.markAsError(this.params.entityStatusId);
       throw e;
     }
   }

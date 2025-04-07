@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { templatesAtom } from 'V2/atoms';
 import { useAtomValue } from 'jotai';
@@ -15,8 +16,10 @@ interface CreateExtractorContextType {
   setParagraphPropertyId: (id: string) => void;
   paragraphNumberPropertyId: string;
   setParagraphNumberPropertyId: (id: string) => void;
-  relationshipId: string;
-  setRelationshipId: (id: string) => void;
+  targetRelationshipId: string;
+  setTargetRelationshipId: (id: string) => void;
+  sourceRelationshipId: string;
+  setSourceRelationshipId: (id: string) => void;
   targetTemplateOptions: MultiselectListOption[];
   step: keyof typeof AddExtractorSteps;
   setStep: (step: number) => void;
@@ -38,7 +41,8 @@ export const CreateExtractorProvider: React.FC<{
   const [sourceTemplateId, setSourceTemplateId] = useState<string>('');
   const [paragraphPropertyId, setParagraphPropertyId] = useState<string>('');
   const [paragraphNumberPropertyId, setParagraphNumberPropertyId] = useState<string>('');
-  const [relationshipId, setRelationshipId] = useState<string>('');
+  const [targetRelationshipId, setTargetRelationshipId] = useState<string>('');
+  const [sourceRelationshipId, setSourceRelationshipId] = useState<string>('');
 
   const targetTemplateOptions = formatTemplatesToOptions(
     templates.filter(filterPXQualifiedTemplates)
@@ -54,8 +58,10 @@ export const CreateExtractorProvider: React.FC<{
       setParagraphPropertyId,
       paragraphNumberPropertyId,
       setParagraphNumberPropertyId,
-      relationshipId,
-      setRelationshipId,
+      targetRelationshipId,
+      setTargetRelationshipId,
+      sourceRelationshipId,
+      setSourceRelationshipId,
       targetTemplateOptions,
       step,
       setStep,
@@ -66,7 +72,8 @@ export const CreateExtractorProvider: React.FC<{
       sourceTemplateId,
       paragraphPropertyId,
       paragraphNumberPropertyId,
-      relationshipId,
+      targetRelationshipId,
+      sourceRelationshipId,
       targetTemplateOptions,
       step,
       setShowModal,

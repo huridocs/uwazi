@@ -3,9 +3,9 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import entitiesDS from 'api/entities';
 
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXEntityStatusManager } from '../application/PXEntityStatusManager';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXEntityStatusManagerFactory {
   static createDefault() {
@@ -17,7 +17,11 @@ export class PXEntityStatusManagerFactory {
       mongoTransactionManager,
     });
 
-    const extractorsDS = new MongoPXExtractorsDataSource(connection, mongoTransactionManager);
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+
     const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
 
     return new PXEntityStatusManager({

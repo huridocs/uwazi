@@ -22,16 +22,7 @@ const ExtractorsTable = ({ paragraphExtractorData, onSelectionChange }: Extracto
     onChange={({ selectedRows }) => {
       onSelectionChange(paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
     }}
-    defaultSorting={[{ id: '_id', desc: false }]}
     noDataMessage={<NoDataCell />}
-    // footer={
-    //   <PXTableFooter
-    //     totalPages={10}
-    //     currentDataLength={10}
-    //     total={100}
-    //     searchParams={searchParams}
-    //   />
-    // }
   />
 );
 

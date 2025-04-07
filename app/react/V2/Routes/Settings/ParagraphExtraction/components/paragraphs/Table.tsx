@@ -1,27 +1,26 @@
 /* eslint-disable no-console */
 import React from 'react';
 import { Table, Button } from 'V2/Components/UI';
+import { TablePXEntityParagraphRow } from 'V2/shared/ParagraphExtractionTypes';
 import { Translate } from 'app/I18N';
 import { TableTitle } from '../TableTitle';
 import { PXTableFooter } from '../PXTableFooter';
-import { PXParagraphTable } from '../../types';
-import { FilterSidePanel } from '../FilterSidePanel';
 import { tableBuilder } from './TableElements';
 
 interface ParagraphsTableProps {
-  pxParagraphData: PXParagraphTable[];
-  paragraphInfo: PXParagraphTable;
-  entityLanguages: string[];
-  filters: any[];
+  pxParagraphData: TablePXEntityParagraphRow[];
+  paragraphInfo: TablePXEntityParagraphRow;
+  filters: { [key: string]: number };
   viewParagraph: (params: any) => void;
+  totalRows: number;
 }
 
 const ParagraphsTable = ({
   pxParagraphData,
   paragraphInfo,
-  entityLanguages,
   filters,
   viewParagraph,
+  totalRows,
 }: ParagraphsTableProps) => (
   <Table
     data={pxParagraphData}
@@ -30,13 +29,14 @@ const ParagraphsTable = ({
       paragraphInfo && (
         <TableTitle
           items={[
-            { ...paragraphInfo.template },
-            ...entityLanguages.map(language => ({ name: language })),
+            { _id: paragraphInfo.entities[0].sharedId, name: paragraphInfo.entities[0].title },
+            // { ...paragraphInfo.entity.template },
+            // ...entityLanguages.map(language => ({ name: language })),
           ]}
           Buttons={
             filters.length > 0 && (
               <div className="flex gap-3">
-                {filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
+                {/* {filters.length > 0 && <FilterSidePanel availableFilters={filters} />} */}
                 <Button
                   onClick={() => console.log('open pdf')}
                   styling="light"
@@ -51,7 +51,7 @@ const ParagraphsTable = ({
       )
     }
     defaultSorting={[{ id: '_id', desc: false }]}
-    footer={<PXTableFooter totalPages={10} currentDataLength={10} total={100} />}
+    footer={<PXTableFooter total={totalRows} currentDataLength={pxParagraphData.length} />}
     groupColumnPosition={3}
   />
 );

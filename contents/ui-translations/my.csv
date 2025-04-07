@@ -7,6 +7,7 @@ Key,Burmese
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,ထုတ်ပေးသည့် ID သည် ပုံသေမူလ ခေါင်းစဉ် ဖြစ်ပါမည်။
+A source template must,A source template must
 A target template needs at least,A target template needs at least
 A valid email is required,အီးမေးလ် လိုအပ်သည်
 Accept,လက်ခံမည်
@@ -69,6 +70,8 @@ Admins,Admins
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,ကြည့်နိုင်သည်
 Cancel,ပယ်ဖျက်ရန်
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,ကက်ပ်ချာ
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -172,6 +176,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,Contact Form
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,ပြောင်းလဲခြင်း မအောင်မြင်ပါ
 Copied to clipboard,Copied to clipboard
 Copy From,ဤမှ ကူးပါ
@@ -396,7 +401,6 @@ Importing data in progress,ဒေတာ ထည့်သွင်းဆဲ
 in,၌
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
-In queue,In queue
 Indexing entities may take a few minutes,ဖြည့်သွင်းချက်များကို အညွှန်းတပ်ခြင်းသည် မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်
 Info,အချက်အလက်
 Information extraction training,Information extraction training
@@ -561,6 +565,8 @@ No Value,တန်ဖိုးမရှိပါ
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,ပုံမှန် မြင်ကွင်း
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,ဤနေရာတွင် ကြည့်စရာ မရှိပါ။ ရွေးချယ်ထားသော စာရွက်စာတမ်းများသည် ရွေးချယ်ထားသည့် ဝေါဟာရပဒေသာကျမ်းကို အသုံးမပြုထားပါ
@@ -577,6 +583,13 @@ OCR PDF,OCR PDF
 of,၏
 Ok,အိုကေ
 OK,အိုကေ
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,အို... အဆင်ပြေပါစေ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,အို။ သင်တည်းဖြတ်ရန် ကြိုးစားနေသော ဝေါဟာရပဒေသာကျမ်းကို ကျွန်ုပ်တို့ ရှာမတွေ့ပါ။ ဆက်တင်များမှတစ်ဆင့် ဤစာမျက်နှာသို့ ပြန်သွားကြည့်ပါ။
 Open,Open
@@ -596,9 +609,11 @@ Pages,စာမျက်နှာများ
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,စကားဝှက်
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -674,7 +689,6 @@ Reject,ငြင်းပယ်ရန်
 Relationship,ဆက်နွှယ်မှု
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,ဆက်နွှယ်မှု အမျိုးအစားများ
 relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
@@ -690,7 +704,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,စကားဝှက် ပြန်ရေးရန်
 Request id #,ငြင်းပယ်ရန်
 Request token,Request token
-required criteria,required criteria
 Required property,လိုအပ်သော ထူးခြားချက်
 Reset,ပြန်လည်သတ်မှတ်ရန်
 Reset 2FA,2FA ကို ပြန်လည်သတ်မှတ်ရန်
@@ -791,6 +804,7 @@ Sort by,ဤသို့ အမျိုးအစားခွဲရန်
 Sort descending,Sort descending
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
 Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 State,State
@@ -820,6 +834,7 @@ Table,ဇယား
 Table of Contents,မာတိကာ
 Table of contents,မာတိကာ
 Table view,ဇယားမြင်ကွင်း
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Template,ပုံစံပြား
@@ -829,7 +844,6 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,ပုံစံပြားများ
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,စာသား
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

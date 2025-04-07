@@ -2,7 +2,11 @@
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
-import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+  JobInfo,
+} from 'api/queue.v2/application/contracts/Dispatchable';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
@@ -24,7 +28,11 @@ class TestJob implements Dispatchable {
     this.logger = logger;
   }
 
-  async handleDispatch(_heartbeat: HeartbeatCallback, params: { aNumber: number }): Promise<void> {
+  async handleDispatch(
+    _heartbeat: HeartbeatCallback,
+    params: { aNumber: number },
+    jobInfo: JobInfo
+  ): Promise<void> {
     this.signal(`starting-${params.aNumber}`);
     if (TestJob.shouldFail) {
       throw new Error('Job failed');
@@ -32,7 +40,10 @@ class TestJob implements Dispatchable {
     if (TestJob.shouldFailNonRetryable) {
       throw new NonRetryableJobError(new Error('Non retryable error'));
     }
-    this.logger(`${params.aNumber}`, params.aNumber);
+    this.logger(
+      `${params.aNumber}, Retry: ${jobInfo.retryCount}, MaxRetries: ${jobInfo.maxRetries}`,
+      params.aNumber
+    );
     this.signal(`ending-${params.aNumber}`);
   }
 }
@@ -92,12 +103,12 @@ it('should process all the jobs', async () => {
   await worker.stop();
 
   expect(output).toEqual([
-    'namespace1 1',
-    'namespace2 2',
-    'namespace1 3',
-    'namespace1 4',
-    'namespace2 5',
-    'namespace1 6',
+    'namespace1 1, Retry: 1, MaxRetries: 5',
+    'namespace2 2, Retry: 1, MaxRetries: 5',
+    'namespace1 3, Retry: 1, MaxRetries: 5',
+    'namespace1 4, Retry: 1, MaxRetries: 5',
+    'namespace2 5, Retry: 1, MaxRetries: 5',
+    'namespace1 6, Retry: 1, MaxRetries: 5',
   ]);
 });
 
@@ -118,7 +129,10 @@ it('should finish the in-progress job before stopping', async () => {
   await signals.signaled('starting-2');
   await worker.stop();
 
-  expect(output).toEqual(['namespace1 1', 'namespace2 2']);
+  expect(output).toEqual([
+    'namespace1 1, Retry: 1, MaxRetries: 5',
+    'namespace2 2, Retry: 1, MaxRetries: 5',
+  ]);
 });
 
 it('should retry job when it fails', async () => {
@@ -141,7 +155,11 @@ it('should retry job when it fails', async () => {
   await signals.signaled('ending-3');
   await worker.stop();
 
-  expect(output).toEqual(['namespace 1', 'namespace 2', 'namespace 3']);
+  expect(output).toEqual([
+    'namespace 1, Retry: 1, MaxRetries: 5',
+    'namespace 2, Retry: 1, MaxRetries: 5',
+    'namespace 3, Retry: 2, MaxRetries: 5',
+  ]);
 });
 
 it('should have a maximum number of retries', async () => {
@@ -170,8 +188,9 @@ it('should have a maximum number of retries', async () => {
 it('should not retry jobs that throw a NonRetryableJobError', async () => {
   const adapter = DefaultTestingQueueAdapter();
   const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter, { lockWindow: 0 });
+  const onError = jest.fn();
 
-  const { worker, signals } = await setUpWorker();
+  const { worker, signals } = await setUpWorker(onError);
 
   await dispatcher.dispatch(TestJob, { aNumber: 1 });
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -183,6 +202,11 @@ it('should not retry jobs that throw a NonRetryableJobError', async () => {
   await signals.signaled('starting-2');
   await worker.stop();
   TestJob.shouldFailNonRetryable = false;
+
+  expect(onError).toHaveBeenCalledWith(
+    new NonRetryableJobError(new Error('Non retryable error')),
+    expect.objectContaining({ job: expect.objectContaining({ name: TestJob.name, failed: true }) })
+  );
 
   expect(await adapter.pickJob('name')).toBeNull();
 });
@@ -210,7 +234,11 @@ it('should report error and continue if a job fails', async () => {
     expect.objectContaining({ job: expect.objectContaining({ name: FailJob.name }) })
   );
 
-  expect(output).toEqual(['namespace 1', 'namespace 2', 'namespace 3']);
+  expect(output).toEqual([
+    'namespace 1, Retry: 1, MaxRetries: 5',
+    'namespace 2, Retry: 1, MaxRetries: 5',
+    'namespace 3, Retry: 1, MaxRetries: 5',
+  ]);
 });
 
 it('should log errors by default when no onError callback is passed', async () => {
@@ -231,5 +259,101 @@ it('should log errors by default when no onError callback is passed', async () =
     expect.objectContaining({ job: expect.objectContaining({ name: FailJob.name }) })
   );
 
-  expect(output).toEqual(['namespace 1']);
+  expect(output).toEqual(['namespace 1, Retry: 1, MaxRetries: 5']);
+});
+
+it('should double the lockWindow time on every retry', async () => {
+  const initialLockWindow = 1;
+  const maxRetries = 3;
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', DefaultTestingQueueAdapter(), {
+    lockWindow: initialLockWindow,
+    maxRetries,
+  });
+
+  const { adapter, worker, signals } = await setUpWorker();
+  const lockWindows: number[] = [];
+
+  const originalPickJob = adapter.pickJob.bind(adapter);
+  adapter.pickJob = async queueName => {
+    const job = await originalPickJob(queueName);
+    if (job) {
+      lockWindows.push(job.options.lockWindow);
+    }
+    return job;
+  };
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  TestJob.shouldFail = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1', maxRetries);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
+});
+
+it('should double the lockWindow time on every retry', async () => {
+  const initialLockWindow = 1;
+  const maxRetries = 3;
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', DefaultTestingQueueAdapter(), {
+    lockWindow: initialLockWindow,
+    maxRetries,
+  });
+
+  const { adapter, worker, signals } = await setUpWorker();
+  const lockWindows: number[] = [];
+
+  const originalPickJob = adapter.pickJob.bind(adapter);
+  adapter.pickJob = async queueName => {
+    const job = await originalPickJob(queueName);
+    if (job) {
+      lockWindows.push(job.options.lockWindow);
+    }
+    return job;
+  };
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  TestJob.shouldFail = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1', maxRetries);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
+});
+
+it('should double the lockWindow time on every retry', async () => {
+  const initialLockWindow = 1;
+  const maxRetries = 3;
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', DefaultTestingQueueAdapter(), {
+    lockWindow: initialLockWindow,
+    maxRetries,
+  });
+
+  const { adapter, worker, signals } = await setUpWorker();
+  const lockWindows: number[] = [];
+
+  const originalPickJob = adapter.pickJob.bind(adapter);
+  adapter.pickJob = async queueName => {
+    const job = await originalPickJob(queueName);
+    if (job) {
+      lockWindows.push(job.options.lockWindow);
+    }
+    return job;
+  };
+
+  await dispatcher.dispatch(TestJob, { aNumber: 1 });
+  TestJob.shouldFail = true;
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  worker.start();
+  await signals.signaled('starting-1', maxRetries);
+  await worker.stop();
+  TestJob.shouldFail = false;
+
+  expect(lockWindows).toEqual([initialLockWindow, initialLockWindow * 2, initialLockWindow * 4]);
 });

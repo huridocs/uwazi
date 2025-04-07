@@ -7,7 +7,9 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 
 import {
   GetEntityParagraphRelationshipsOutput,
-  GetEntityParagrphRelationshipsInput,
+  GetEntityParagraphRelationshipsInput,
+  GetExtractedParagraphsOutput,
+  GetExtractedParagraphsInput,
   GetExtractorsOutput,
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
@@ -17,6 +19,13 @@ import { EntityStatus } from '../domain/PXEntityStatusModel';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
+
+const getDefaultPagination = (inputNumber?: number, inputSize?: number) => {
+  const number = inputNumber || 1;
+  const size = inputSize || 10;
+  const skip = (number - 1) * size;
+  return { number, size, skip };
+};
 
 class MongoPXExtractorsQueryService
   extends MongoDataSource<MongoPXExtractorDBO>
@@ -109,9 +118,7 @@ class MongoPXExtractorsQueryService
   }
 
   getExtractorStatuses(input: GetExtractorStatusesInput): ResultSet<GetExtractorStatusesOutput> {
-    const number = input.page?.number || 1;
-    const size = input.page?.size || 10;
-    const skip = (number - 1) * size;
+    const { number, size, skip } = getDefaultPagination(input.page?.number, input.page?.size);
 
     const cursor = this.getCollection().aggregate([
       { $match: { _id: ObjectId.createFromHexString(input.id) } },
@@ -186,7 +193,7 @@ class MongoPXExtractorsQueryService
   }
 
   getEntityParagraphRelationships(
-    input: GetEntityParagrphRelationshipsInput
+    input: GetEntityParagraphRelationshipsInput
   ): ResultSet<GetEntityParagraphRelationshipsOutput> {
     const cursor = this.getCollection().aggregate([
       { $match: { _id: ObjectId.createFromHexString(input.extractorId) } },
@@ -255,6 +262,95 @@ class MongoPXExtractorsQueryService
       hubId: item.hub.toString(),
       relationshipTypeId: item.template.toString(),
     }));
+  }
+
+  getExtractedParagraphs(
+    input: GetExtractedParagraphsInput
+  ): ResultSet<GetExtractedParagraphsOutput> {
+    const { number, size, skip } = getDefaultPagination(input.page?.number, input.page?.size);
+    const cursor = this.getCollection('entities').aggregate([
+      {
+        $match: {
+          sharedId: { $in: input.ids },
+        },
+      },
+      {
+        $addFields: {
+          languageSortOrder: {
+            $cond: {
+              if: { $eq: ['$language', input.mainLanguage] },
+              then: 0,
+              else: 1,
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          sharedId: 1,
+          languageSortOrder: 1,
+          language: 1,
+        },
+      },
+      {
+        $group: {
+          _id: '$sharedId',
+          entities: { $push: '$$ROOT' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'entities',
+          let: { sharedId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$sharedId', '$$sharedId'] } } },
+            { $sort: { [`metadata.${input.paragraphNumberProperty}.value`]: 1 } },
+            { $limit: 1 },
+          ],
+          as: 'sortedMetadata',
+        },
+      },
+      {
+        $addFields: {
+          sortValue: {
+            $arrayElemAt: [`$sortedMetadata.metadata.${input.paragraphNumberProperty}.value`, 0],
+          },
+        },
+      },
+      {
+        $sort: { sortValue: 1 },
+      },
+      {
+        $facet: {
+          totalCount: [{ $count: 'count' }],
+          rows: [{ $skip: skip }, { $limit: size }],
+        },
+      },
+      {
+        $addFields: {
+          totalRows: { $ifNull: [{ $arrayElemAt: ['$totalCount.count', 0] }, 0] },
+          page: { number, size },
+        },
+      },
+      {
+        $project: {
+          rows: {
+            $map: {
+              input: '$rows',
+              as: 'row',
+              in: {
+                sharedId: '$$row._id',
+                entities: '$$row.entities',
+              },
+            },
+          },
+          totalRows: 1,
+          page: 1,
+        },
+      },
+    ]);
+
+    return new MongoResultSet(cursor, item => item as GetExtractedParagraphsOutput);
   }
 }
 

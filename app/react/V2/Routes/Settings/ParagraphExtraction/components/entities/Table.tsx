@@ -1,23 +1,24 @@
 import React from 'react';
 import { Table } from 'V2/Components/UI';
+import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
+import { Template } from 'app/apiResponseTypes';
 import { TableTitle } from '../TableTitle';
 import { PXTableFooter } from '../PXTableFooter';
-import { PXEntityTable, PXTemplate } from '../../types';
 import { columns } from './TableElements';
-import { FilterSidePanel } from '../FilterSidePanel';
+import { FilterSidepanelButton } from '../FilterSidePanel/FilterSidepanelButton';
 
 interface EntitiesTableProps {
-  pxEntitiesData: PXEntityTable[];
-  onSelectionChange: (selected: PXEntityTable[]) => void;
-  sourceTemplate?: PXTemplate;
-  filters: any[];
+  pxEntitiesData: TablePXEntityRow[];
+  onSelectionChange: (selected: TablePXEntityRow[]) => void;
+  sourceTemplate?: Template;
+  totalRows: number;
 }
 
 const EntitiesTable = ({
   pxEntitiesData,
   onSelectionChange,
   sourceTemplate,
-  filters,
+  totalRows,
 }: EntitiesTableProps) => (
   <Table
     data={pxEntitiesData}
@@ -26,14 +27,13 @@ const EntitiesTable = ({
     header={
       <TableTitle
         items={sourceTemplate ? [sourceTemplate] : []}
-        Buttons={filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
+        Buttons={<FilterSidepanelButton />}
       />
     }
     onChange={({ selectedRows }) => {
       onSelectionChange(pxEntitiesData.filter(ex => ex.rowId in selectedRows));
     }}
-    defaultSorting={[{ id: '_id', desc: false }]}
-    footer={<PXTableFooter totalPages={10} total={100} currentDataLength={10} />}
+    footer={<PXTableFooter total={totalRows} currentDataLength={pxEntitiesData.length} />}
   />
 );
 

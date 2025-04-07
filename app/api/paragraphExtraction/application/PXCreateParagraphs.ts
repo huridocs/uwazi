@@ -11,11 +11,13 @@ import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXCreateParagraph } from './PXCreateParagraph';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 type PXCreateParagraphsInput = {
   userId: string;
   entityStatusId: string;
   paragraphs: ParagraphOutput[];
+  onParagraphCreated?: () => Promise<void>;
 };
 
 type Output = any;
@@ -36,7 +38,12 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     });
   }
 
-  async execute({ entityStatusId, paragraphs, userId }: PXCreateParagraphsInput): Promise<Output> {
+  async execute({
+    entityStatusId,
+    paragraphs,
+    userId,
+    onParagraphCreated,
+  }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(userId) };
     const entityStatus = await this.getEntityStatus(entityStatusId);
 
@@ -59,9 +66,18 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
-    await ArrayUtils.parallelFor(paragraphs, async paragraph =>
-      this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
-    );
+    await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
+      await this.createParagraph.execute({
+        paragraph,
+        extractor,
+        sourceEntities,
+        user,
+        entityStatus,
+      });
+      if (onParagraphCreated) {
+        await onParagraphCreated();
+      }
+    });
 
     await this.dependencies.entitiesStatusDS.markAsFinished(entityStatusId);
   }
@@ -69,7 +85,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
   private async getEntityStatus(entityStatusId: string) {
     const entityStatus = await this.dependencies.entitiesStatusDS.getById(entityStatusId);
     if (!entityStatus) {
-      throw new Error('Entity Status not found');
+      throw new OperationalError('Entity Status not found');
     }
     return entityStatus;
   }

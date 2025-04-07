@@ -8,6 +8,11 @@ export interface HeartbeatCallback {
   (): Promise<void>;
 }
 
+export interface JobInfo {
+  retryCount: number;
+  maxRetries: number;
+}
+
 export interface Dispatchable {
-  handleDispatch(heartbeat: HeartbeatCallback, params: Params): Promise<void>;
+  handleDispatch(heartbeat: HeartbeatCallback, params: Params, jobInfo?: JobInfo): Promise<void>;
 }

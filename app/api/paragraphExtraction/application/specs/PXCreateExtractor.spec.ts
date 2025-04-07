@@ -19,11 +19,9 @@ import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { TestUtils } from 'api/common.v2/utils/Test';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
+import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
-import {
-  mongoPXExtractorsCollection,
-  MongoPXExtractorsDataSource,
-} from '../../infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource';
 import { PXCreateExtractor } from '../PXCreateExtractor';
 
 const factory = getFixturesFactory();
@@ -34,13 +32,16 @@ type SetUpUseCaseProps = {
 
 const setUpUseCase = (props?: SetUpUseCaseProps) => {
   const connection = getConnection();
-  const transactionManager = DefaultTransactionManager();
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
-  const extractorDS = new MongoPXExtractorsDataSource(connection, transactionManager);
-  const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
+  const mongoTransactionManager = DefaultTransactionManager();
+  const templatesDS = DefaultTemplatesDataSource(mongoTransactionManager);
+  const extractorDS = PXExtractorsDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
+  const settingsDS = new MongoSettingsDataSource(connection, mongoTransactionManager);
   const entitiesStatusDS =
     props?.entitiesStatusDS ??
-    new MongoPXEntitiesStatusDataSource(connection, transactionManager, settingsDS);
+    new MongoPXEntitiesStatusDataSource(connection, mongoTransactionManager, settingsDS);
 
   return {
     createExtractor: new PXCreateExtractor({
@@ -48,7 +49,7 @@ const setUpUseCase = (props?: SetUpUseCaseProps) => {
       templatesDS,
       idGenerator: MongoIdHandler,
       relationshipTypeDS,
-      transactionManager,
+      transactionManager: mongoTransactionManager,
       entitiesStatusDS,
     }),
   };

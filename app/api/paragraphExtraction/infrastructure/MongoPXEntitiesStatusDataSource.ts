@@ -7,15 +7,18 @@ import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import {
   CreateForSourceEntitiesInput,
   CreateInput,
   GetExistingInput,
-  MarkAsQueuedInput,
+  MarkAsProcessingInput,
   PXEntitiesStatusDataSource,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
@@ -97,22 +100,6 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  async setAsError(extractionId: string): Promise<PXEntityStatusModel> {
-    const dbo = await this.getCollection().findOneAndUpdate(
-      { _id: new ObjectId(extractionId) },
-      { $set: { status: EntityStatus.Error } },
-      { upsert: false, returnDocument: 'after' }
-    );
-
-    if (!dbo) {
-      throw new Error(
-        `Can not set an error of an Entity Status that does not exist. Id : ${extractionId}`
-      );
-    }
-
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
-  }
-
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatusDBO = {
       _id: new ObjectId(),
@@ -171,6 +158,22 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
   }
 
+  async markAsError(extractionId: string): Promise<PXEntityStatusModel> {
+    const dbo = await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(extractionId) },
+      { $set: { status: EntityStatus.Error } },
+      { upsert: false, returnDocument: 'after' }
+    );
+
+    if (!dbo) {
+      throw new OperationalError(
+        `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
+      );
+    }
+
+    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
+  }
+
   async markAsObsolete(entityStatusId: string): Promise<void> {
     const currentStatus = await this.getCollection().findOne(
       { _id: new ObjectId(entityStatusId) },
@@ -188,7 +191,7 @@ export class MongoPXEntitiesStatusDataSource
     );
   }
 
-  async markAsProcessing(input: MarkAsQueuedInput): Promise<PXEntityStatusModel> {
+  async markAsProcessing(input: MarkAsProcessingInput): Promise<PXEntityStatusModel> {
     const mongoEntityStatus = await this.getCollection().findOneAndUpdate(
       {
         extractorId: new ObjectId(input.extractorId),
@@ -199,8 +202,8 @@ export class MongoPXEntitiesStatusDataSource
     );
 
     if (!mongoEntityStatus) {
-      throw new Error(
-        `Cannot change status to queued of a EntityStatus that does not exist. ${JSON.stringify(input)}`
+      throw new OperationalError(
+        `Cannot change status to '${EntityStatus.Processing}' of a EntityStatus that does not exist. ${JSON.stringify(input)}`
       );
     }
 
@@ -223,5 +226,21 @@ export class MongoPXEntitiesStatusDataSource
 
   async deleteBySourceEntity(entitySharedId: string): Promise<void> {
     await this.getCollection().deleteOne({ entitySharedId });
+  }
+
+  getAll(input: Partial<PXEntityStatusModel>): ResultSet<PXEntityStatusModel> {
+    const query = {
+      entitySharedId: input.entitySharedId,
+      extractorId: input.extractorId && new ObjectId(input.extractorId),
+      status: input.status,
+    };
+
+    const sanitized = Object.fromEntries(
+      Object.entries(query).filter(([_, value]) => Boolean(value))
+    );
+
+    const cursor = this.getCollection().find(sanitized);
+
+    return new MongoResultSet(cursor, MongoPXEntitiesStatusDataSource.toDomain.bind(this));
   }
 }

@@ -7,6 +7,7 @@ Key,Korean
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
+A source template must,A source template must
 A target template needs at least,A target template needs at least
 A valid email is required,이메일이 필요합니다.
 Accept,수락
@@ -69,6 +70,8 @@ Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,열람 가능
 Cancel,취소
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,보안 문자
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -172,6 +176,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,연락처
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,변환 실패
 Copied to clipboard,Copied to clipboard
 Copy From,외부 복사
@@ -396,7 +401,6 @@ Importing data in progress,데이터 업로드 중
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
-In queue,In queue
 Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
 Information extraction training,Information extraction training
@@ -561,6 +565,8 @@ No Value,값 없음
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,일반 뷰
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,검색 결과 없음. 해당 문서는 선택한 시소러스를 사용하지 않습니다.
@@ -577,6 +583,13 @@ OCR PDF,PDF OCR 읽기
 of,의
 Ok,확인
 OK,확인
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,Ooops...
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,편집하려는 시소러스를 찾을 수 없습니다. 설정으로 돌아가 페이지를 다시 탐색하십시오.
 Open,Open
@@ -596,9 +609,11 @@ Pages,페이지
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -674,7 +689,6 @@ Reject,거부
 Relationship,연결
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,연결 유형
 relationships,연결
 Relationships,연결
@@ -690,7 +704,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,암호를 재입력하십시오.
 Request id #,아이디 요청 #
 Request token,Request token
-required criteria,required criteria
 Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
@@ -791,6 +804,7 @@ Sort by,정렬 기준
 Sort descending,Sort descending
 sorted by,정렬 기준
 Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 State,State
@@ -820,6 +834,7 @@ Table,테이블
 Table of Contents,목차
 Table of contents,목차
 Table view,테이블 뷰
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Template,템플릿
@@ -829,7 +844,6 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,템플릿
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

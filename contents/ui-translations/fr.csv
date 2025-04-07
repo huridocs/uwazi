@@ -7,6 +7,7 @@ Key,French
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,Un identifiant généré sera le titre par défaut.
+A source template must,A source template must
 A target template needs at least,A target template needs at least
 A valid email is required,L'email est obligatoire
 Accept,Accepter
@@ -69,6 +70,8 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,Peut voir
 Cancel,Annuler
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,Contournement du captcha
 Cards,Cartes
@@ -171,6 +175,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,Formulaire de contact
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,Échec de la conversion
 Copied to clipboard,Copied to clipboard
 Copy From,Copier de
@@ -395,7 +400,6 @@ Importing data in progress,Importation de données en cours
 in,dans
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,dans la file d'attente OCR
-In queue,In queue
 Indexing entities may take a few minutes,L'indexation des entités peut prendre quelques minutes
 Info,Info
 Information extraction training,Information extraction training
@@ -560,6 +564,8 @@ No Value,Aucune valeur
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,Normal view
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Nothing to see here! The selected documents are not using the selected thesaurus
@@ -576,6 +582,13 @@ OCR PDF,OCR PDF
 of,de
 Ok,Ok
 OK,OK
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
 Open,Open
@@ -595,9 +608,11 @@ Pages,Pages
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,Mot de passe
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -673,7 +688,6 @@ Reject,Rejeter
 Relationship,Relation
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,Types de relations
 relationships,Relations
 Relationships,Relations
@@ -689,7 +703,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,Répéter Mot de passe
 Request id #,Numéro d'identification de la demande
 Request token,Request token
-required criteria,required criteria
 Required property,Propriété requise
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
@@ -790,6 +803,7 @@ Sort by,Trier par
 Sort descending,Sort descending
 sorted by,Trié par
 Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 State,State
@@ -819,6 +833,7 @@ Table,Tableau
 Table of Contents,Table des matières
 Table of contents,Table des matières
 Table view,Vue tabulaire
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Template,Modèle
@@ -828,7 +843,6 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,Modèles
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

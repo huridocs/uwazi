@@ -11,13 +11,16 @@ import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPX
 import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO';
 
 const f = getFixturesFactory();
+
 const sourceTemplate1 = f.template('Source Template');
 const sourceTemplate2 = f.template('Source Template 2');
 const sourceTemplate3 = f.template('Source Template 3');
-const targetTemplate1 = f.template('Target Template');
-const templateWithoutExtractor = f.template('Template');
+
 const paragraphProperty = f.property('rich_text', 'markdown');
 const paragraphNumberProperty = f.property('paragraph_number_property', 'numeric');
+const targetTemplate1 = f.template('Target Template', [paragraphProperty, paragraphNumberProperty]);
+
+const templateWithoutExtractor = f.template('Template');
 
 const sourceRelationshipType = {
   _id: new ObjectId(),
@@ -87,17 +90,65 @@ const fileEntity4En = f.document('fileEntity4En', { language: 'en', entity: enti
 const [paragraph1Entity1En, paragraph1Entity1Pt] = f.entityInMultipleLanguages(
   lang,
   'paragraph1En1',
-  targetTemplate1.name
+  targetTemplate1.name,
+  {},
+  {},
+  {
+    en: {
+      metadata: {
+        [paragraphProperty.name]: [{ value: 'Entity 1 Paragraph 1 EN, number 2' }],
+        [paragraphNumberProperty.name]: [{ value: 2 }],
+      },
+    },
+    pt: {
+      metadata: {
+        [paragraphProperty.name]: [{ value: 'Entity 1 Paragraph 1 PT, number 2' }],
+        [paragraphNumberProperty.name]: [{ value: 2 }],
+      },
+    },
+  }
 );
 const [paragraph2Entity1En, paragraph2Entity1Pt] = f.entityInMultipleLanguages(
   lang,
   'paragraph2En1',
-  targetTemplate1.name
+  targetTemplate1.name,
+  {},
+  {},
+  {
+    en: {
+      metadata: {
+        [paragraphProperty.name]: [{ value: 'Entity 1 Paragraph 2 EN, number 1' }],
+        [paragraphNumberProperty.name]: [{ value: 1 }],
+      },
+    },
+    pt: {
+      metadata: {
+        [paragraphProperty.name]: [{ value: 'Entity 1 Paragraph 2 PT, number 1' }],
+        [paragraphNumberProperty.name]: [{ value: 1 }],
+      },
+    },
+  }
 );
 const [paragraph3Entity1En, paragraph3Entity1Pt] = f.entityInMultipleLanguages(
   lang,
   'paragraph3En1',
-  targetTemplate1.name
+  targetTemplate1.name,
+  {},
+  {},
+  {
+    en: {
+      metadata: {
+        [paragraphProperty.name]: [{ value: 'Entity 1 Paragraph 3 EN, number 3' }],
+        [paragraphNumberProperty.name]: [{ value: 3 }],
+      },
+    },
+    pt: {
+      metadata: {
+        [paragraphProperty.name]: [{ value: 'Entity 1 Paragraph 3 PT, number 3' }],
+        [paragraphNumberProperty.name]: [{ value: 3 }],
+      },
+    },
+  }
 );
 const [paragraph1Entity5En, paragraph1Entity5Pt] = f.entityInMultipleLanguages(
   lang,
@@ -299,4 +350,6 @@ export {
   sourceTemplate2,
   sourceTemplate3,
   targetTemplate1,
+  paragraphProperty,
+  paragraphNumberProperty,
 };

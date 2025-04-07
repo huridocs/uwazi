@@ -1,11 +1,20 @@
+import { Db, ObjectId } from 'mongodb';
 import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { ObjectId } from 'mongodb';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import entities from 'api/entities';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+
 import { PXExtractor } from '../domain/PXExtractor';
-import { ExistsInput, PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import {
+  DeleteParagraphsInput,
+  ExistsInput,
+  PXExtractorsDataSource,
+} from '../domain/PXExtractorDataSource';
 import { MongoPXDenormalizedExtractorDBO, MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 
 export const mongoPXExtractorsCollection = 'px_extractors';
 
@@ -13,6 +22,17 @@ export class MongoPXExtractorsDataSource
   extends MongoDataSource<MongoPXExtractorDBO>
   implements PXExtractorsDataSource
 {
+  private extractorsQueryService: PXExtractorsQueryService;
+
+  constructor(
+    db: Db,
+    transactionManager: MongoTransactionManager,
+    extractorsQueryService: PXExtractorsQueryService
+  ) {
+    super(db, transactionManager);
+    this.extractorsQueryService = extractorsQueryService;
+  }
+
   protected collectionName = mongoPXExtractorsCollection;
 
   async getBySourceTemplate(sourceTemplateId: string): Promise<PXExtractor | undefined> {
@@ -76,7 +96,7 @@ export class MongoPXExtractorsDataSource
       targetRelationshipTypeId: new ObjectId(extractor.targetRelationshipTypeId),
     };
 
-    await this.getCollection().insertOne(mongoExtractor, { session: this.getSession() });
+    await this.getCollection().insertOne(mongoExtractor);
   }
 
   async exists(input: ExistsInput): Promise<boolean> {
@@ -89,13 +109,9 @@ export class MongoPXExtractorsDataSource
   }
 
   async delete(extractorId: string): Promise<void> {
-    const session = this.getSession();
     const mongoExtractorId = new ObjectId(extractorId);
 
-    const deleteResult = await this.getCollection().deleteOne(
-      { _id: mongoExtractorId },
-      { session }
-    );
+    const deleteResult = await this.getCollection().deleteOne({ _id: mongoExtractorId });
 
     if (deleteResult.deletedCount === 0) {
       throw new PXValidationError(
@@ -104,10 +120,20 @@ export class MongoPXExtractorsDataSource
       );
     }
 
-    await this.getCollection(mongoPXEntitiesStatusCollection).deleteMany(
-      { extractorId: mongoExtractorId },
-      { session }
-    );
+    await this.getCollection(mongoPXEntitiesStatusCollection).deleteMany({
+      extractorId: mongoExtractorId,
+    });
+  }
+
+  async deleteParagraphs({ entitySharedId, extractorId }: DeleteParagraphsInput): Promise<void> {
+    const paragraphs = await this.extractorsQueryService
+      .getEntityParagraphRelationships({
+        extractorId,
+        id: entitySharedId,
+      })
+      .all();
+
+    await ArrayUtils.sequentialFor(paragraphs, async p => entities.delete(p.entitySharedId));
   }
 
   static toDomain(dbo: MongoPXDenormalizedExtractorDBO): PXExtractor {

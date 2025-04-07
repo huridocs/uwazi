@@ -1,46 +1,59 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLoaderData } from 'react-router';
+import React, { useState } from 'react';
+import { useLoaderData, useRevalidator } from 'react-router';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button } from 'V2/Components/UI';
-import { templatesAtom } from 'V2/atoms';
-import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
-import { PXEntityTable, PXEntityApiResponse, PXTemplate } from './types';
-import { formatEntityData } from './utils/formatters';
+import { notificationAtom, templatesAtom } from 'V2/atoms';
+import type { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
+import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
+import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
 import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
-import { DeleteDialog } from './components/entities/DeleteDialog';
-import { FilterSidePanel } from './components/FilterSidePanel';
+import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',
 });
 
 const PXEntityDashboard = () => {
-  const [sourceTemplate, setSourceTemplate] = useState<PXTemplate>();
-  const { entities = [], filters = [] } = useLoaderData() as {
-    entities: PXEntityApiResponse[];
-    filters: any[];
-  };
-
+  const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
-  const pxEntitiesData = useMemo(
-    () => formatEntityData(entities, templates),
-    [entities, templates]
-  );
-
+  const { rows, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
+  const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
+  const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
+  const setNotifications = useSetAtom(notificationAtom);
   const [isSaving, setIsSaving] = useState(false);
-  const [selected, setSelected] = useState<PXEntityTable[]>([]);
+  const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
 
-  useEffect(() => {
-    const [entityDatum] = pxEntitiesData;
-    setSourceTemplate(entityDatum.template);
-  }, [pxEntitiesData]);
+  const handleExtract = async () => {
+    setIsSaving(true);
 
-  const [newEntitiesCount] = useState(
-    pxEntitiesData.filter(entity => entity.status === 'NEW').length
-  );
+    try {
+      if (!extractor) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: <Translate>Cannot find extractor</Translate>,
+        });
+      } else {
+        await entitiesAPI.extractParagraphs(extractor?._id);
+        await revalidator.revalidate();
+        setNotifications({
+          type: 'success',
+          text: <Translate>Paragraphs extracted</Translate>,
+        });
+      }
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+      });
+    }
+
+    setIsSaving(false);
+  };
 
   return (
     <div
@@ -50,15 +63,16 @@ const PXEntityDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={sourceTemplate?.name || ''}
+          title={sourceTemplate?.name}
+          contextId={sourceTemplate?._id}
           path={new Map([['Paragraph extraction', '/settings/paragraph-extraction']])}
         />
         <SettingsContent.Body>
           <EntitiesTable
-            pxEntitiesData={pxEntitiesData}
+            pxEntitiesData={rows}
             onSelectionChange={setSelected}
             sourceTemplate={sourceTemplate}
-            filters={filters}
+            totalRows={totalRows}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
@@ -67,8 +81,8 @@ const PXEntityDashboard = () => {
               <Button
                 type="button"
                 className="disabled:opacity-50"
-                onClick={() => console.log('extract new paragraphs')}
-                disabled={isSaving || newEntitiesCount === 0}
+                onClick={handleExtract}
+                disabled={isSaving}
               >
                 <Translate>Extract new paragraphs</Translate>
               </Button>
@@ -85,6 +99,8 @@ const PXEntityDashboard = () => {
                 selected={selected}
                 disabled={isSaving}
               />
+              {/*
+              //TODO: Temporary commented until have a definition
               <DeleteDialog
                 setIsProcessing={setIsSaving}
                 disabled={isSaving}
@@ -92,18 +108,18 @@ const PXEntityDashboard = () => {
                   setSelected([]);
                 }}
                 selected={selected}
-              />
+              /> */}
               <div className="text-gray-500">
                 <Translate>Selected</Translate>{' '}
                 <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
                 <Translate>of</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{pxEntitiesData.length}</span>
+                <span className="text-gray-900 font-semibold">{totalRows}</span>
               </div>
             </div>
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      {filters.length > 0 && <FilterSidePanel availableFilters={filters} />}
+      <EntityFilterSidepanel />
     </div>
   );
 };

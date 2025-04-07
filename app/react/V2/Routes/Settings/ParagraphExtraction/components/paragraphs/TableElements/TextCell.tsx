@@ -1,9 +1,11 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
-import { PXParagraphTable } from '../../../types';
+import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
 
-const TextCell = ({ cell }: CellContext<PXParagraphTable, PXParagraphTable['text']>) => (
+const TextCell = ({
+  cell,
+}: CellContext<TablePXEntityParagraphRow, TablePXEntityParagraphRow['sharedId']>) => (
   <Tooltip
     content={cell.getValue()}
     arrow

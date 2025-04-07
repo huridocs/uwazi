@@ -1,51 +1,44 @@
-import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal } from 'app/V2/Components/UI';
+import React from 'react';
 import { useRevalidator } from 'react-router';
-import { notificationAtom } from 'app/V2/atoms';
 import { useSetAtom } from 'jotai';
-import { dialogConfig } from './config';
+import { Translate } from 'app/I18N';
+import { ConfirmationModal } from 'V2/Components/UI';
+import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
+import { notificationAtom } from 'V2/atoms';
 import { PXTable } from '../../../types';
-
-const {
-  service,
-  headerText,
-  warningText,
-  acceptButtonText,
-  cancelButtonText,
-  successText,
-  errorText,
-} = dialogConfig;
 
 const DeleteDialog = ({
   setIsProcessing,
   onSuccess,
   selected,
+  isOpen = false,
+  setIsOpen = () => {},
 }: {
   setIsProcessing: (value: boolean) => void;
   selected: PXTable[];
   onSuccess: () => void;
+  isOpen?: boolean;
+  setIsOpen?: (value: boolean) => void;
 }) => {
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsProcessing(true);
 
     try {
-      await service(selected);
+      await extractorsAPI.remove(selected);
       await revalidator.revalidate();
       setIsOpen(false);
       setNotifications({
         type: 'success',
-        text: <Translate>{successText}</Translate>,
+        text: <Translate>Extractor/s deleted</Translate>,
       });
       onSuccess();
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>{errorText}</Translate>,
+        text: <Translate>An error occurred</Translate>,
       });
     }
 
@@ -55,15 +48,16 @@ const DeleteDialog = ({
 
   return (
     <>
-      <Button color="error" type="button" onClick={() => setIsOpen(true)}>
-        <Translate>Delete</Translate>
-      </Button>
       {isOpen && (
         <ConfirmationModal
-          header={<Translate>{headerText}</Translate>}
-          warningText={<Translate>{warningText}</Translate>}
-          acceptButton={<Translate>{acceptButtonText}</Translate>}
-          cancelButton={<Translate>{cancelButtonText}</Translate>}
+          header={<Translate>Are you sure?</Translate>}
+          warningText={
+            <Translate>
+              Only the extractor will be deleted, all created entities will remain on the library.
+            </Translate>
+          }
+          acceptButton={<Translate>Delete</Translate>}
+          cancelButton={<Translate>No, cancel</Translate>}
           onAcceptClick={handleDelete}
           onCancelClick={() => setIsOpen(false)}
         />

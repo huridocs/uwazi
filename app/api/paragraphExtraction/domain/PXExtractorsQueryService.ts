@@ -1,5 +1,6 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
 import { EntityStatus } from './PXEntityStatusModel';
 
 type GetExtractorsOutput = {
@@ -33,7 +34,7 @@ type GetExtractorStatusesOutput = {
   totalRows: number;
 };
 
-type GetEntityParagrphRelationshipsInput = {
+type GetEntityParagraphRelationshipsInput = {
   id: string;
   extractorId: string;
 };
@@ -45,12 +46,28 @@ type GetEntityParagraphRelationshipsOutput = {
   relationshipTypeId: string;
 };
 
+type GetExtractedParagraphsInput = {
+  ids: string[];
+  paragraphNumberProperty: string;
+  mainLanguage: LanguageISO6391;
+  page?: { number?: number; size?: number };
+};
+
+type GetExtractedParagraphsOutput = {
+  rows: { sharedId: string; entities: EntityDBO[] }[];
+  page: { number: number; size: number };
+  totalRows: number;
+};
+
 interface PXExtractorsQueryService {
   getExtractors(): ResultSet<GetExtractorsOutput>;
   getExtractorStatuses(input: GetExtractorStatusesInput): ResultSet<GetExtractorStatusesOutput>;
   getEntityParagraphRelationships(
-    input: GetEntityParagrphRelationshipsInput
+    input: GetEntityParagraphRelationshipsInput
   ): ResultSet<GetEntityParagraphRelationshipsOutput>;
+  getExtractedParagraphs(
+    input: GetExtractedParagraphsInput
+  ): ResultSet<GetExtractedParagraphsOutput>;
 }
 
 export type {
@@ -58,6 +75,8 @@ export type {
   GetExtractorsOutput,
   GetExtractorStatusesInput,
   GetExtractorStatusesOutput,
-  GetEntityParagrphRelationshipsInput,
+  GetEntityParagraphRelationshipsInput,
   GetEntityParagraphRelationshipsOutput,
+  GetExtractedParagraphsInput,
+  GetExtractedParagraphsOutput,
 };

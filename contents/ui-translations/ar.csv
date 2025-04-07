@@ -7,6 +7,7 @@ Key,Arabic
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,سيكون معرف تم إنشاؤه العنوان.
+A source template must,A source template must
 A target template needs at least,A target template needs at least
 A valid email is required,البريد الإلكتروني مطلوب
 Accept,قبول
@@ -69,6 +70,8 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,إمكانية المعاينة
 Cancel,الغاء
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,حروف التحقق
 Captcha bypass,تخطى كلمة التحقق (Captcha)
 Cards,بطاقات
@@ -171,6 +175,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,استمارة اتصال
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,فشل التحويل
 Copied to clipboard,Copied to clipboard
 Copy From,النسخ من
@@ -395,7 +400,6 @@ Importing data in progress,جاري استيراد البيانات
 in,في
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,جاري التعرف الضوئي علي الحروف
-In queue,In queue
 Indexing entities may take a few minutes,قد تستغرق فهرسة الكيانات (الإدخالات) بضع دقائق
 Info,معلومات
 Information extraction training,Information extraction training
@@ -560,6 +564,8 @@ No Value,لا قيمة
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,معاينة عادية
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,لايوجد شيء لرؤيته هنا! المستندات المختارة لا تستخدم قائمة المفردات المختارة
@@ -576,6 +582,13 @@ OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
 Ok,موافق
 OK,موافق
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
 Ooops... please go,بئساً...اذهب من فضلك
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,بئساً! لم نستطع إيجاد قائمة المفردات التي تحاول تحريرها. حاول العودة إلى هذه الصفحة من خلال الإعدادات.
 Open,Open
@@ -595,9 +608,11 @@ Pages,الصفحات
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (numeric text),Paragraph text extraction property (numeric text)
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
+Paragraphs extracted,Paragraphs extracted
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -673,7 +688,6 @@ Reject,رفض
 Relationship,صلة
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
@@ -689,7 +703,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,إعادة كلمة المرور
 Request id #,طلب المعرف #
 Request token,Request token
-required criteria,required criteria
 Required property,الخاصية المطلوبة
 Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
@@ -790,6 +803,7 @@ Sort by,ترتيب حسب
 Sort descending,Sort descending
 sorted by,مرتبة حسب
 Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
 State,State
@@ -819,6 +833,7 @@ Table,جدول
 Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table view,معاينة الجدول
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
 Template,قالب
@@ -828,7 +843,6 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,قوالب
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

@@ -2,7 +2,7 @@ import { tenants } from 'api/tenants';
 import users from 'api/users/users';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 
-import { Dispatchable, HeartbeatCallback } from './Dispatchable';
+import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';
 
 export type UserAwareDispatchableParams = { tenantName: string; userId: string };
 
@@ -11,7 +11,7 @@ export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispat
 {
   protected params!: CustomParams;
 
-  protected abstract handle(): Promise<void>;
+  protected abstract handle(heartBeatCallBack: HeartbeatCallback, jobInfo?: JobInfo): Promise<void>;
 
   protected get tenantName() {
     if (!this.params.tenantName) {
@@ -34,12 +34,16 @@ export abstract class UserAwareDispatchable<CustomParams extends UserAwareDispat
     permissionsContext.setUserInContext(user);
   }
 
-  async handleDispatch(_: HeartbeatCallback, params: CustomParams): Promise<void> {
+  async handleDispatch(
+    heartBeatCallBack: HeartbeatCallback,
+    params: CustomParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
     this.params = params;
 
     await tenants.run(async () => {
       await this.setCurrentUser();
-      await this.handle();
+      await this.handle(heartBeatCallBack, jobInfo);
     }, this.tenantName);
   }
 }

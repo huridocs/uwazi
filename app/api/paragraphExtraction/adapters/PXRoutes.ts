@@ -6,23 +6,38 @@ import { PXCreateExtractorController } from './PXCreateExtractorController';
 import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController';
 import { PXGetExtractorsController } from './PXGetExtractorsController';
 import { PXGetExtractorStatusesController } from './PXGetExtractorStatusesController';
+import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsController';
+import { PXExtractParagraphsByEntityStatusController } from './PXExtractParagraphsByEntityStatusController';
+import { PXDeleteExtractorController } from './PXDeleteExtractorController';
 
 const paragraphExtractionRoutes = (app: Application) => {
   app.post(
     '/api/paragraphExtraction/extractor',
-    needsAuthorization(),
+    needsAuthorization(['admin', 'editor']),
     PXCreateExtractorController.adapt(PXCreateExtractorController)
+  );
+
+  app.delete(
+    '/api/paragraphExtraction/extractor',
+    needsAuthorization(['admin', 'editor']),
+    PXDeleteExtractorController.adapt(PXDeleteExtractorController)
   );
 
   app.post(
     '/api/paragraphExtraction/extract',
-    needsAuthorization(),
+    needsAuthorization(['admin', 'editor']),
     PXExtractParagraphFromEntitiesController.adapt(PXExtractParagraphFromEntitiesController)
+  );
+
+  app.post(
+    '/api/paragraphExtraction/extractNew',
+    needsAuthorization(['admin', 'editor']),
+    PXExtractParagraphsByEntityStatusController.adapt(PXExtractParagraphsByEntityStatusController)
   );
 
   app.get(
     '/api/paragraphExtraction/extractors',
-    needsAuthorization(),
+    needsAuthorization(['admin', 'editor']),
     PXGetExtractorsController.adapt(PXGetExtractorsController)
   );
 
@@ -30,6 +45,12 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractorStatuses',
     needsAuthorization(['admin', 'editor']),
     PXGetExtractorStatusesController.adapt(PXGetExtractorStatusesController)
+  );
+
+  app.get(
+    '/api/paragraphExtraction/entityParagraphs',
+    needsAuthorization(['admin', 'editor']),
+    PXGetEntityParagraphsController.adapt(PXGetEntityParagraphsController)
   );
 };
 

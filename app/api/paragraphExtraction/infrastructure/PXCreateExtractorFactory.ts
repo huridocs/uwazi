@@ -5,8 +5,8 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import relationshipTypeDS from 'api/relationtypes';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor';
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXCreateExtractorFactory {
   static createDefault() {
@@ -15,7 +15,10 @@ export class PXCreateExtractorFactory {
 
     return new PXCreateExtractor({
       relationshipTypeDS,
-      extractorDS: new MongoPXExtractorsDataSource(connection, mongoTransactionManager),
+      extractorDS: PXExtractorsDataSourceFactory.createDefault({
+        connection,
+        mongoTransactionManager,
+      }),
       idGenerator: MongoIdHandler,
       templatesDS: DefaultTemplatesDataSource(mongoTransactionManager),
       entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({

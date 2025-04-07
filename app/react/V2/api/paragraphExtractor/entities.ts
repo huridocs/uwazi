@@ -1,136 +1,67 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
+import qs from 'qs';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import {
-  PXEntityApiResponse,
+  TablePXEntityRow,
   PXEntityQuery,
-  PXEntityTable,
-  PXTable,
-} from 'app/V2/Routes/Settings/ParagraphExtraction/types';
+  PXEntityRows,
+  EntityStatus,
+} from 'V2/shared/ParagraphExtractionTypes';
 
-const dummyData = [
-  {
-    _id: '1',
-    title: 'John Smith',
-    document: 'doc_name.pdf',
-    languages: ['uk', 'es'],
-    templateId: '66fbe4f28542cc5545e05a46',
-    paragraphCount: 3,
-    status: 'NEW',
-  },
-  {
-    _id: '2',
-    title: 'Maria Garcia',
-    document: 'another doc.pdf',
-    languages: ['en', 'es'],
-    templateId: '66fbe4f28542cc5545e05a46',
-    paragraphCount: 5,
-    status: 'DONE',
-  },
-  {
-    _id: '3',
-    title: 'Pierre Dubois',
-    document: 'third_doc.pdf',
-    languages: ['fr'],
-    templateId: '66fbe4f28542cc5545e05a46',
-    paragraphCount: 2,
-    status: 'IN_QUEUE',
-  },
-  {
-    _id: '4',
-    title: 'Hans Mueller',
-    document: 'fourth_doc.pdf',
-    languages: ['en', 'fr'],
-    templateId: '66fbe4f28542cc5545e05a46',
-    paragraphCount: 4,
-    status: 'HAS_ERROR',
-  },
-  {
-    _id: '5',
-    title: 'Giulia Rossi',
-    document: 'fifth_doc.pdf',
-    languages: ['en', 'es'],
-    templateId: '66fbe4f28542cc5545e05a46',
-    paragraphCount: 6,
-    status: 'PROCESSING',
-  },
-] as PXEntityApiResponse[];
-
-const get = async (parameters: PXEntityQuery, headers?: IncomingHttpHeaders) => {
+const get = async (
+  parameters: PXEntityQuery,
+  headers?: IncomingHttpHeaders
+): Promise<PXEntityRows> => {
   try {
-    const requestParams = new RequestParams(parameters, headers);
-    // const { json: response } = await api.get(apiEndpoint, requestParams);
-    const id = requestParams.data?.filter?.extractorId;
-    return dummyData || id;
-    // return response;
-  } catch (e) {
-    return e;
-  }
-};
-
-const getFilters = async (headers?: IncomingHttpHeaders) => {
-  try {
-    // const { data } = new RequestParams({  }, headers);
-    const response = [
-      {
-        _id: '1',
-        label: 'Languages',
-        key: 'languages',
-        options: [
-          { key: 'en', label: 'English', count: 12 },
-          { key: 'fr', label: 'Français', count: 26 },
-          { key: 'es', label: 'Español', count: 3 },
-          { key: 'pt', label: 'Portuguese', count: 9 },
-        ],
-      },
-      {
-        _id: '2',
-        label: 'Status',
-        key: 'status',
-        options: [
-          { key: 'DONE', label: 'Done', count: 12 },
-          { key: 'NEW', label: 'New', count: 14 },
-          { key: 'PROCESSING', label: 'Processing', count: 24 },
-          { key: 'IN_QUEUE', label: 'In queue', count: 0 },
-          { key: 'HAS_ERROR', label: 'Error', count: 0 },
-        ],
-      },
-    ];
-
+    const requestParams = new RequestParams(qs.stringify(parameters), headers);
+    const { json: response } = await api.get(
+      'paragraphExtraction/extractorStatuses',
+      requestParams
+    );
     return response;
   } catch (e) {
     return e;
   }
 };
 
-const extractParagraphs = async (entityIds: PXEntityTable[], headers?: IncomingHttpHeaders) => {
-  const modeledPayload = {
-    entityIds,
-  };
-  // TODO: implement this once backend is ready
-  return Promise.resolve(modeledPayload);
+const extractParagraphs = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  try {
+    const modeledPayload = {
+      extractorId,
+      status: EntityStatus.New,
+    };
+    const requestParams = new RequestParams(modeledPayload, headers);
+    const response = await api.post('paragraphExtraction/extractByStatus', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
 };
 
-const extractNewParagraphs = async (
+const extractSelected = async (
   extractorId: string,
-  entityIds: PXEntityTable[],
+  entityIds: TablePXEntityRow[],
   headers?: IncomingHttpHeaders
 ) => {
-  const modeledPayload = {
-    extractorId,
-    // TODO: check if this is correct
-    entitySharedIds: entityIds.map(entity => entity._id),
-  };
-  const requestParams = new RequestParams(modeledPayload, headers);
-  const response = await api.post('paragraphExtraction/extract', requestParams);
-  return response;
+  try {
+    const modeledPayload = {
+      extractorId,
+      entitySharedIds: entityIds.map(entity => entity.entity.sharedId),
+    };
+    const requestParams = new RequestParams(modeledPayload, headers);
+    const response = await api.post('paragraphExtraction/extract', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
 };
 
-const remove = async (ids: PXTable[]) => {
+const remove = async (entries: TablePXEntityRow[]) => {
   //model values to be sent to backend, adjust this to satisfy backend requirements
   const modeledPayload = {
-    ids: ids.map(id => id._id),
+    ids: entries.map(entry => entry.entity._id),
   };
 
   const requestParams = new RequestParams(modeledPayload);
@@ -139,4 +70,4 @@ const remove = async (ids: PXTable[]) => {
   // return api.delete(ENDPOINTS.DELETE_EXTRACTOR, requestParams);
 };
 
-export { get, getFilters, extractParagraphs, extractNewParagraphs, remove };
+export { get, extractParagraphs, extractSelected, remove };

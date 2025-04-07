@@ -7,7 +7,7 @@ import { PXTable } from '../../../types';
 
 const ActionCell = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
   <div className="flex gap-2 justify-end">
-    <Link to={`${cell.getValue()}/entities`}>
+    <Link to={`${cell.getValue()}/entities/?page=1`}>
       <Button className="leading-4" styling="outline">
         <Translate>View</Translate>
       </Button>
