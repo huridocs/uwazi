@@ -96,7 +96,7 @@ const PXParagraphLoader =
       totalRows: 0,
     };
 
-    const defaultLanguage = (await settingsApi.get()).languages?.find(lang => lang.default);
+    const defaultLanguage = (await settingsApi.get(headers)).languages?.find(lang => lang.default);
 
     const extractors = await extractorsAPI.get(headers);
     const extractor = extractors.find(ext => ext._id === extractorId);
@@ -111,7 +111,7 @@ const PXParagraphLoader =
 
     const [paragraphs, [sourceEntity], templates] = await Promise.all([
       pxParagraphApi.getByParagraphExtractorId(query, headers),
-      entitiesApi.getBySharedId({ sharedId, language: defaultLanguage?.key || '' }),
+      entitiesApi.getBySharedId({ sharedId, language: defaultLanguage?.key || '' }, headers),
       templatesApi.get(headers),
     ]);
 
