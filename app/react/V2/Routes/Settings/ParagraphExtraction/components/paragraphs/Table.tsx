@@ -40,7 +40,8 @@ const ParagraphsTable = ({
           },
           ...(pxParagraphData[0].subRows || []).map(subRow => ({
             _id: subRow._id,
-            name: availableLanguages.find(lang => lang.key === subRow.language)?.label || '',
+            name:
+              availableLanguages.find(lang => lang.key === subRow.language)?.localized_label || '',
           })),
         ]
       : [];

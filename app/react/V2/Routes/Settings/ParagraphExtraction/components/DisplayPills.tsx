@@ -26,7 +26,7 @@ const DisplayPill = ({
   const style = { backgroundColor: bgColor, color };
   return (
     <span
-      className={`${className ?? 'px-2.5 py-1 rounded-md text-xs'}`}
+      className={`${className ?? 'px-2.5 rounded-md text-xs block'}`}
       style={style}
       data-testid="pill-comp"
     >
