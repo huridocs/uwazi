@@ -5,6 +5,7 @@ import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
 import * as entitiesApi from 'V2/api/entities';
 import * as settingsApi from 'V2/api/settings';
+import * as templatesApi from 'V2/api/templates';
 import {
   PXEntityLoaderResponse,
   PXEntityQuery,
@@ -29,11 +30,11 @@ const PXEntityLoader =
   // eslint-disable-next-line max-statements
   async ({ request, params: { extractorId } }): Promise<PXEntityLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1', size = PAGE_SIZE, status } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1', status } = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXEntityLoaderResponse = {
       rows: [],
-      page: { number: page, size },
+      page: { number: page, size: PAGE_SIZE },
       totalRows: 0,
     };
 
@@ -41,7 +42,7 @@ const PXEntityLoader =
 
     const query: PXEntityQuery = {
       id: extractorId,
-      page: { number: Number(page), size: Number(size) },
+      page: { number: Number(page), size: PAGE_SIZE },
       ...(status ? { filter: { status: [status].flat() } } : {}),
     };
 
@@ -63,9 +64,8 @@ const PXEntityLoader =
 
 const getPXProperties = (
   entity: ClientEntitySchema,
-  //TODO: Extractor doesn't contain these properties
-  textProperty: string = 'rich_text',
-  paragraphNumberProperty: string = 'numeric'
+  textProperty: string,
+  paragraphNumberProperty: string
 ) => {
   const extractedParagraph: TablePXEntityParagraphRow = {
     sharedId: entity.sharedId!,
@@ -88,11 +88,11 @@ const PXParagraphLoader =
     params: { sharedId = '', extractorId = '' },
   }): Promise<PXParagraphLoaderResponse> => {
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const { page = '1', size = PAGE_SIZE } = searchParamsFromSearchParams(urlSearchParams);
+    const { page = '1' } = searchParamsFromSearchParams(urlSearchParams);
 
     const result: PXParagraphLoaderResponse = {
       rows: [],
-      page: { number: page, size },
+      page: { number: page, size: PAGE_SIZE },
       totalRows: 0,
     };
 
@@ -100,22 +100,32 @@ const PXParagraphLoader =
 
     const extractors = await extractorsAPI.get(headers);
     const extractor = extractors.find(ext => ext._id === extractorId);
+
     if (!extractorId || !sharedId || !extractor) return result;
 
     const query: PXParagraphQuery = {
       id: sharedId,
       extractorId,
-      page: { number: Number(page), size: Number(size) },
+      page: { number: Number(page), size: PAGE_SIZE },
     };
 
-    const [paragraphs, [sourceEntity]] = await Promise.all([
+    const [paragraphs, [sourceEntity], templates] = await Promise.all([
       pxParagraphApi.getByParagraphExtractorId(query, headers),
       entitiesApi.getBySharedId({ sharedId, language: defaultLanguage?.key || '' }),
+      templatesApi.get(headers),
     ]);
+
+    const template = templates.find(temp => temp._id === extractor.targetTemplateId);
+    const textProperty = template?.properties.find(
+      property => property._id === extractor.paragraphPropertyId
+    );
+    const numberProperty = template?.properties.find(
+      property => property._id === extractor.paragraphNumberPropertyId
+    );
 
     const paragraphsRows = paragraphs.rows?.map(row => {
       const [defaultLanguageEntity, ...otherLanguagesEntities] = row.entities.map(entity =>
-        getPXProperties(entity, extractor.paragraphNumberPropertyId, extractor.paragraphPropertyId)
+        getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );
 
       return { ...defaultLanguageEntity, subRows: otherLanguagesEntities };
@@ -124,7 +134,6 @@ const PXParagraphLoader =
     return {
       rows: paragraphsRows,
       page: paragraphs.page,
-      //TODO: Given the first record is the source entity, the pagination behaves wronly when extracting it
       totalRows: paragraphs.totalRows,
       extractor,
       sourceEntity,

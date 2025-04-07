@@ -2,6 +2,7 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
+import { availableLanguages } from 'shared/language';
 import { Table, Button } from 'V2/Components/UI';
 import {
   PXParagraphLoaderResponse,
@@ -29,16 +30,16 @@ const ParagraphsTable = ({
   const templates = useAtomValue(templatesAtom);
   const { extractor, sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
 
-  const languageNames = new Intl.DisplayNames([pxParagraphData[0].language || 'en'], {
-    type: 'language',
-  });
-
-  const entityLanguages = pxParagraphData
-    .filter(entity => entity.language !== undefined)
-    .map(entity => ({
-      _id: entity.language!,
-      name: languageNames.of(entity.language!) || entity.language!,
-    }));
+  const languages = [
+    {
+      _id: pxParagraphData[0]._id,
+      name: availableLanguages.find(lang => lang.key === pxParagraphData[0].language)?.label || '',
+    },
+    ...(pxParagraphData[0].subRows || []).map(subRow => ({
+      _id: subRow._id,
+      name: availableLanguages.find(lang => lang.key === subRow.language)?.label || '',
+    })),
+  ];
 
   const template = templates.find(temp => temp._id === extractor?.sourceTemplateId)!;
 
@@ -51,7 +52,7 @@ const ParagraphsTable = ({
           items={[
             { _id: sourceEntity?._id?.toString() || '', name: sourceEntity?.title || '' },
             template,
-            ...entityLanguages,
+            ...languages,
           ]}
           Buttons={
             <div className="flex gap-3">
