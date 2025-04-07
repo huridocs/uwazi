@@ -89,6 +89,25 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     };
   }
 
+  async updateLockWindow(job: Job, newLockWindow: number) {
+    const result = await this.getCollection().findOneAndUpdate(
+      {
+        _id: new ObjectId(job.id),
+      },
+      { $set: { 'options.lockWindow': newLockWindow } },
+      { returnDocument: 'after' }
+    );
+
+    if (!result) {
+      throw new Error(`Failed to mark job as failed: ${job.id}`);
+    }
+
+    return {
+      id: result._id.toHexString(),
+      ...result,
+    };
+  }
+
   async pushJob(
     job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>
   ): Promise<string> {

@@ -18,5 +18,6 @@ export interface QueueAdapter {
   pickJob(queueName: string): Promise<Job | null>;
   renewJobLock(job: Job): Promise<void>;
   markJobAsFailed(job: Job): Promise<Job>;
+  updateLockWindow(job: Job, newLockWindow: number): Promise<Job>;
   deleteJob(job: Job): Promise<void>;
 }
