@@ -4,7 +4,6 @@ import {
 } from 'api/queue.v2/application/contracts/UserAwareDispatchable';
 
 import { HeartbeatCallback, JobInfo } from 'api/queue.v2/application/contracts/Dispatchable';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
 import { PXExtractParagraphsFromEntityInput } from '../application/PXExtractParagraphsFromEntity';
 import { PXExtractParagraphsFromEntityFactory } from './PXExtractParagraphsFromEntityFactory';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
@@ -25,7 +24,7 @@ class PXExtractParagraphsFromEntityJob extends UserAwareDispatchable<Params> {
     try {
       await useCase.execute(this.params);
     } catch (e) {
-      if (jobInfo.retryCount !== jobInfo.maxRetries && !(e instanceof NonRetryableJobError)) {
+      if (jobInfo.retryCount !== jobInfo.maxRetries) {
         await this.dependencies.pxEntitiesStatusDS.markAsProcessing({
           entitySharedId: this.params.entitySharedId,
           extractorId: this.params.extractorId,
