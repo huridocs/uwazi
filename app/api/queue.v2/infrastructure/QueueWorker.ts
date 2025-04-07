@@ -135,10 +135,11 @@ export class QueueWorker {
       this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
+      let jobToReport = job;
       if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
-        await this.adapter.markJobAsFailed(job);
+        jobToReport = await this.adapter.markJobAsFailed(job);
       }
-      this.onError(e, { job });
+      this.onError(e, { job: jobToReport });
     } finally {
       this.logProcess(start);
     }
