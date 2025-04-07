@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-
 import { EventsBus } from 'api/eventsbus';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -11,7 +10,7 @@ import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
@@ -141,6 +140,9 @@ export class PXFilesDeletedListener {
   }
 
   start() {
-    this.eventBus.on(FilesDeletedEvent, this.afterFilesDeleted.bind(this));
+    this.eventBus.on(
+      FilesDeletedEvent,
+      featureFlaggedHandler('paragraphExtraction', this.afterFilesDeleted.bind(this))
+    );
   }
 }
