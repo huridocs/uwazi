@@ -2,7 +2,7 @@ import { tenants } from 'api/tenants';
 import { Request, Response, NextFunction } from 'express';
 import { TenantFeatureFlags } from 'api/tenants/tenantContext';
 
-export function checkFeatureFlagEnabled(flagKey: TenantFeatureFlags) {
+export function featureFlagEnabled(flagKey: TenantFeatureFlags) {
   return async (_req: Request, res: Response, next: NextFunction) => {
     const isEnabled = tenants.current().featureFlags?.[flagKey];
 

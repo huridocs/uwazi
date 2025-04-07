@@ -5,25 +5,21 @@ import { TenantFeatureFlags } from 'api/tenants/tenantContext';
 import { appContextMiddleware } from '../appContextMiddleware';
 import { multitenantMiddleware } from '../multitenantMiddleware';
 
-import { checkFeatureFlagEnabled } from '../checkFeatureFlagEnabledMiddleware';
+import { featureFlagEnabled } from '../featureFlagEnabledMiddleware';
 
 const testingRoutes = (app: Application) => {
   app.get(
     '/api/paragraphExtractionTest',
-    checkFeatureFlagEnabled('paragraphExtraction'),
+    featureFlagEnabled('paragraphExtraction'),
     (_req, res, next) => {
       res.json({ success: true });
       next();
     }
   );
-  app.get(
-    '/api/ixExtraSourcesTest',
-    checkFeatureFlagEnabled('ixExtraSources'),
-    (_req, res, next) => {
-      res.json({ success: true });
-      next();
-    }
-  );
+  app.get('/api/ixExtraSourcesTest', featureFlagEnabled('ixExtraSources'), (_req, res, next) => {
+    res.json({ success: true });
+    next();
+  });
 };
 
 const prepareScenarioForFlag = async (flagKey: TenantFeatureFlags, flagValue: boolean) => {
@@ -37,7 +33,7 @@ const prepareScenarioForFlag = async (flagKey: TenantFeatureFlags, flagValue: bo
   return request(app).get(`/api/${flagKey}Test`).set('tenant', 'test');
 };
 
-describe('Check Feature Flag Enabled middleware', () => {
+describe('Feature Flag Enabled middleware', () => {
   it('should call on next if flag enabled', async () => {
     const response = await prepareScenarioForFlag('paragraphExtraction', true);
 
