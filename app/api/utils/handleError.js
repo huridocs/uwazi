@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { config } from 'api/config';
 import { FileNotFound } from 'api/files/FileNotFound';
@@ -67,10 +68,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
   }
 
-  if (
-    error.code === PXValidationError.codes.SEGMENTATIONS_UNAVAILABLE ||
-    error.code === PXValidationError.codes.SEGMENTATION_FILES_NOT_FOUND
-  ) {
+  if (error instanceof OperationalError) {
+    result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
+  }
+
+  if (error instanceof PXValidationError) {
     result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
   }
 

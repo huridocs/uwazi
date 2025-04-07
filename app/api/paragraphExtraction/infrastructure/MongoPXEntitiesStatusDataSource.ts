@@ -8,11 +8,11 @@ import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import {
   CreateForSourceEntitiesInput,
   CreateInput,
   GetExistingInput,
-  MarkAsQueuedInput,
   PXEntitiesStatusDataSource,
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
@@ -98,14 +98,6 @@ export class MongoPXEntitiesStatusDataSource
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
 
-  async setAsError(extractionId: string): Promise<void> {
-    await this.getCollection().updateOne(
-      { _id: new ObjectId(extractionId) },
-      { $set: { status: EntityStatus.Error } },
-      { upsert: false }
-    );
-  }
-
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
     const dbo: MongoPXEntityStatusDBO = {
       _id: new ObjectId(),
@@ -164,6 +156,20 @@ export class MongoPXEntitiesStatusDataSource
     return MongoPXEntitiesStatusDataSource.toDomain(mongoEntityStatus);
   }
 
+  async markAsError(extractionId: string): Promise<void> {
+    const result = await this.getCollection().updateOne(
+      { _id: new ObjectId(extractionId) },
+      { $set: { status: EntityStatus.Error } },
+      { upsert: false }
+    );
+
+    if (!result.modifiedCount) {
+      throw new OperationalError(
+        `Can not change the status to '${EntityStatus.Error}' of an EntityStatus that does not exist. Id : ${extractionId}`
+      );
+    }
+  }
+
   async markAsObsolete(entityStatusId: string): Promise<void> {
     const currentStatus = await this.getCollection().findOne(
       { _id: new ObjectId(entityStatusId) },
@@ -181,15 +187,20 @@ export class MongoPXEntitiesStatusDataSource
     );
   }
 
-  async markAsProcessing(input: MarkAsQueuedInput): Promise<void> {
-    await this.getCollection().updateOne(
+  async markAsProcessing(entityStatusId: string): Promise<void> {
+    const mongoEntityStatus = await this.getCollection().updateOne(
       {
-        extractorId: new ObjectId(input.extractorId),
-        entitySharedId: input.entitySharedId,
+        _id: new ObjectId(entityStatusId),
       },
       { $set: { status: EntityStatus.Processing } },
       { upsert: false }
     );
+
+    if (!mongoEntityStatus.modifiedCount) {
+      throw new OperationalError(
+        `Cannot change status to '${EntityStatus.Processing}' of a EntityStatus that does not exist. entityStatusId: ${entityStatusId}`
+      );
+    }
   }
 
   async markAsProcessed(entityStatusId: string): Promise<void> {
