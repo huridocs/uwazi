@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
@@ -17,9 +17,19 @@ const DisplayPill = generateDisplayPill({
   label: 'New',
 });
 
+const UpdatePollIntervalSeconds = 25000;
 const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await revalidator.revalidate();
+    }, UpdatePollIntervalSeconds);
+
+    return () => clearInterval(interval);
+  }, [revalidator]);
+
   const { rows, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
