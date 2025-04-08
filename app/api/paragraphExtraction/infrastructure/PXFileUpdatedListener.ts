@@ -1,7 +1,7 @@
 import { EventsBus } from 'api/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { LanguageUtils } from 'shared/language';
-
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory';
 import { PXValidationError } from '../domain/PXValidationError';
 
@@ -39,6 +39,12 @@ export class PXFileUpdatedListener {
   }
 
   start() {
-    this.eventBus.on(FileUpdatedEvent, PXFileUpdatedListener.afterFileUpdated.bind(this));
+    this.eventBus.on(
+      FileUpdatedEvent,
+      featureFlaggedHandler(
+        'paragraphExtraction',
+        PXFileUpdatedListener.afterFileUpdated.bind(this)
+      )
+    );
   }
 }

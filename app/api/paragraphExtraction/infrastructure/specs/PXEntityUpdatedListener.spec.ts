@@ -5,6 +5,7 @@ import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
 import { ObjectId } from 'mongodb';
+import { tenants } from 'api/tenants';
 import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener';
 import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
@@ -88,13 +89,40 @@ const createSut = () => {
 describe('PXEntityUpdatedListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(createFixtures());
+    tenants.current().featureFlags!.paragraphExtraction = true;
   });
 
   afterAll(async () => {
+    tenants.current().featureFlags!.paragraphExtraction = false;
     await testingEnvironment.tearDown();
   });
 
   describe('given templated was updated', () => {
+    it('should do nothing if feature flag not enabled', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        files: [document1En],
+      });
+
+      tenants.current().featureFlags!.paragraphExtraction = false;
+
+      const { eventsBus } = createSut();
+
+      await eventsBus.emit(
+        new EntityUpdatedEvent({
+          before: entity1.map(e => ({ ...e, template: template._id })),
+          after: entity1,
+          targetLanguageKey: 'en',
+        })
+      );
+
+      const entitiesStatus = await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      );
+
+      expect(entitiesStatus).toMatchObject([]);
+    });
+
     it('should create EntityStatus as new if source Entity can be used for extraction', async () => {
       await testingEnvironment.setFixtures({
         ...createFixtures(),
