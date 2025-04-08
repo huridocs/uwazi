@@ -72,6 +72,7 @@ export const config = {
       s3Storage: false,
       esReplicas: 0,
       deactivateTestJob: false,
+      paragraphExtraction: false,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,

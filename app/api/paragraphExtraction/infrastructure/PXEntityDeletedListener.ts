@@ -2,7 +2,7 @@ import { EventsBus } from 'api/eventsbus';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 
@@ -38,6 +38,9 @@ export class PXEntityDeletedListener {
   }
 
   start() {
-    this.eventBus.on(EntityDeletedEvent, this.afterEntityDeleted.bind(this));
+    this.eventBus.on(
+      EntityDeletedEvent,
+      featureFlaggedHandler('paragraphExtraction', this.afterEntityDeleted.bind(this))
+    );
   }
 }

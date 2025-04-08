@@ -9,29 +9,31 @@ import { TextCell } from './TextCell';
 const pxColumnHelper = createColumnHelper<TablePXEntityParagraphRow>();
 
 const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) => void }) => [
-  pxColumnHelper.accessor('entities.title', {
+  pxColumnHelper.accessor('paragraphNumber', {
     header: generateTableHeader('Paragraph #'),
     cell: ParagraphCountCell,
     enableSorting: false,
+    meta: { headerClassName: 'w-1/6' },
   }),
-  pxColumnHelper.accessor('entities.language', {
+  pxColumnHelper.accessor('language', {
     header: generateTableHeader('Language'),
     cell: LanguagesCell,
     enableSorting: false,
+    meta: { headerClassName: 'w-1/6' },
   }),
-  pxColumnHelper.accessor('entities.title', {
+  pxColumnHelper.accessor('paragraphText', {
     header: generateTableHeader('Text'),
     cell: TextCell,
-    meta: { headerClassName: 'w-5/6' },
     enableSorting: false,
+    meta: { headerClassName: 'w-4/6' },
   }),
-  pxColumnHelper.accessor('entities.title', {
+  pxColumnHelper.accessor('rowId', {
     header: generateTableHeader(''),
     cell: props =>
       ActionCell(() => {
         const paragraphId = props.cell.getValue();
         if (paragraphId) {
-          onViewAction('1');
+          onViewAction(paragraphId);
         }
       }),
     enableSorting: false,

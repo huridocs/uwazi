@@ -1,6 +1,6 @@
-import { Translate } from 'app/I18N';
 import React, { Dispatch, SetStateAction } from 'react';
-import { EntityStatus } from '../../types';
+import { Translate } from 'app/I18N';
+import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 
 type Filters = { [key: string]: { count: number; status: boolean } };
 

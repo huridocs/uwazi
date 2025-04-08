@@ -1,12 +1,11 @@
 import { ObjectId } from 'mongodb';
-
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { FileType } from 'shared/types/fileType';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { DBFixture } from 'api/utils/testing_db';
-
+import { tenants } from 'api/tenants';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
@@ -69,9 +68,11 @@ const createFixtures = (): DBFixture => ({
 describe('PXFilesDeletedListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(createFixtures());
+    tenants.current().featureFlags!.paragraphExtraction = true;
   });
 
   afterAll(async () => {
+    tenants.current().featureFlags!.paragraphExtraction = false;
     await testingEnvironment.tearDown();
   });
 
@@ -91,6 +92,27 @@ describe('PXFilesDeletedListener', () => {
     expect(mongoEntitiesStatus).toMatchObject([
       {
         status: EntityStatus.Obsolete,
+      },
+    ]);
+  });
+
+  it('should do nothing if feature flag not enabled', async () => {
+    await testingEnvironment.setFixtures({ ...createFixtures(), files: [documentEn] });
+    tenants.current().featureFlags!.paragraphExtraction = false;
+    const eventBus = new EventsBus();
+    new PXFilesDeletedListener(eventBus).start();
+
+    const files: FileType[] = [documentPt];
+
+    await eventBus.emit(new FilesDeletedEvent({ files }));
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    expect(mongoEntitiesStatus).toMatchObject([
+      {
+        status: EntityStatus.Processed,
       },
     ]);
   });

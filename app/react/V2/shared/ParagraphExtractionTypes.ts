@@ -1,3 +1,5 @@
+import { ClientEntitySchema } from 'app/istore';
+
 enum EntityStatus {
   New = 'new',
   Processing = 'processing',
@@ -10,6 +12,8 @@ type Extractor = {
   _id: string;
   sourceTemplateId: string;
   targetTemplateId: string;
+  paragraphNumberPropertyId: string;
+  paragraphPropertyId: string;
   statusCount: {
     new: number;
     processing: number;
@@ -31,17 +35,8 @@ type PXEntityQuery = {
   };
 };
 
-type PXEntity = {
-  _id: string;
-  sharedId: string;
-  title: string;
-  language: string;
-  templateId?: string;
-  metadata?: { value: string; label: string }[];
-};
-
 type PXEntityRow = {
-  entity: PXEntity;
+  entity: ClientEntitySchema;
   status: {
     _id: string;
     status: EntityStatus;
@@ -77,16 +72,37 @@ type PXParagraphQuery = {
   };
 };
 
-type PXEntityParagraphRow = { sharedId: string; entities: PXEntity[] };
-type TablePXEntityParagraphRow = PXEntityParagraphRow & { rowId: string };
-
-type PXParagraphsLoaderResponse = {
-  rows: TablePXEntityParagraphRow[];
+type PXEntityParagraphAPIRow = { sharedId: string; entities: ClientEntitySchema[] };
+type PXParagraphAPIResponse = {
   page: {
     number: number;
     size: number;
   };
   totalRows: number;
+  rows?: PXEntityParagraphAPIRow[];
+};
+
+type TablePXEntityParagraphRow = {
+  sharedId: string;
+  rowId: string;
+  title: string;
+  language: string;
+  template: string;
+  paragraphNumber: number;
+  paragraphText: string;
+  subRows?: Omit<TablePXEntityParagraphRow, 'entities'>[];
+  _id: string;
+};
+
+type PXParagraphLoaderResponse = {
+  page: {
+    number: number;
+    size: number;
+  };
+  totalRows: number;
+  rows?: TablePXEntityParagraphRow[];
+  extractor?: Extractor;
+  sourceEntity?: ClientEntitySchema;
 };
 
 export type {
@@ -96,9 +112,10 @@ export type {
   PXEntityLoaderResponse,
   TablePXEntityRow,
   PXParagraphQuery,
-  PXEntityParagraphRow,
-  PXParagraphsLoaderResponse,
+  PXEntityParagraphAPIRow,
   TablePXEntityParagraphRow,
+  PXParagraphAPIResponse,
+  PXParagraphLoaderResponse,
 };
 
 export { EntityStatus };

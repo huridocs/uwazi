@@ -25,10 +25,7 @@ class PXExtractParagraphsFromEntityJob extends UserAwareDispatchable<Params> {
       await useCase.execute(this.params);
     } catch (e) {
       if (jobInfo.retryCount !== jobInfo.maxRetries) {
-        await this.dependencies.pxEntitiesStatusDS.markAsProcessing({
-          entitySharedId: this.params.entitySharedId,
-          extractorId: this.params.extractorId,
-        });
+        await this.dependencies.pxEntitiesStatusDS.markAsProcessing(this.params.entityStatusId);
       }
       throw e;
     }

@@ -33,7 +33,7 @@ const extractParagraphs = async (extractorId: string, headers?: IncomingHttpHead
       status: EntityStatus.New,
     };
     const requestParams = new RequestParams(modeledPayload, headers);
-    const response = await api.post('paragraphExtraction/extractByStatus', requestParams);
+    const response = await api.post('paragraphExtraction/extractNew', requestParams);
     return response;
   } catch (e) {
     return e;

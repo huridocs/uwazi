@@ -9,7 +9,6 @@ import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infra
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { TestUtils } from 'api/common.v2/utils/Test';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 
@@ -110,7 +109,7 @@ describe('PXExtractParagraphFromEntities', () => {
       mongoPXEntitiesStatusCollection
     );
 
-    TestUtils.arrayContaining(mongoEntitiesStatus, [
+    expect(mongoEntitiesStatus).toMatchObject([
       {
         _id: expect.any(ObjectId),
         entitySharedId: entity1.sharedId,
@@ -124,5 +123,34 @@ describe('PXExtractParagraphFromEntities', () => {
         status: EntityStatus.Processing,
       },
     ]);
+  });
+
+  it('should skip source entity while processing', async () => {
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXEntitiesStatusCollection]: [
+        mongoEntityStatus1,
+        { ...mongoEntityStatus2, status: EntityStatus.Processing },
+      ],
+    });
+    const { extractParagraphFromEntities, dispatcher } = setUpUseCase();
+
+    const input: Input = {
+      extractorId: extractor._id.toString(),
+      entitySharedIds: [entity1.sharedId!, entity2.sharedId!],
+      userId: new ObjectId().toString(),
+    };
+
+    await extractParagraphFromEntities.execute(input);
+
+    expect(dispatcher.dispatch).toHaveBeenCalledTimes(1);
+
+    expect(dispatcher.dispatch).toHaveBeenNthCalledWith(1, PXExtractParagraphsFromEntityJob, {
+      entitySharedId: input.entitySharedIds[0],
+      userId: input.userId,
+      extractorId: input.extractorId,
+      tenantName: 'any_tenant',
+      entityStatusId: expect.any(String),
+    });
   });
 });

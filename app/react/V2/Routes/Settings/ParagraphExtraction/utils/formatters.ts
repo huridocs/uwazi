@@ -1,5 +1,4 @@
 import { Template } from 'app/apiResponseTypes';
-// import { Settings } from 'shared/types/settingsType';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import { PXTemplate, PXTable } from '../types';
 import { getTemplateProperties } from './getTemplateProperties';
@@ -27,50 +26,6 @@ const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTab
       targetTemplate,
     };
   });
-
-// const formatParagraphData = (
-//   paragraphs: PXParagraphApiResponse[],
-//   templates: Template[],
-//   settings: Settings
-// ): PXParagraphTable[] => {
-//   const defaultLanguage = settings?.languages?.find(language => language.default === true);
-//   const defaultLanguageKey = defaultLanguage?.key;
-
-//   return paragraphs.map(paragraph => {
-//     const template = getTemplateProperties(
-//       templates,
-//       paragraph.templateId,
-//       requiredTemplateProperties
-//     ) as PXTemplate;
-
-//     const updatedParagraph = { ...paragraph } as PXParagraphTable;
-
-//     const paragraphLanguage = defaultLanguageKey || updatedParagraph.languages[0];
-//     const subRows: any[] = [];
-//     Object.keys(updatedParagraph.versions).forEach(lang => {
-//       if (lang !== paragraphLanguage) {
-//         subRows.push({
-//           text: paragraph.versions[lang],
-//           ...paragraph,
-//           languages: [lang],
-//         });
-//       } else {
-//         updatedParagraph.text = paragraph.versions[lang];
-//         updatedParagraph.languages = [paragraphLanguage];
-//       }
-//     });
-
-//     if (subRows.length > 0) {
-//       updatedParagraph.subRows = subRows;
-//     }
-
-//     return {
-//       ...updatedParagraph,
-//       rowId: updatedParagraph._id || '',
-//       template,
-//     };
-//   });
-// };
 
 const formatTemplatesToOptions = (templates: Template[]) =>
   templates.map(template => {

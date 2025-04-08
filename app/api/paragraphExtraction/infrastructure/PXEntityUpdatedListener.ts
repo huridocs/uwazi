@@ -1,5 +1,4 @@
 import { EventsBus } from 'api/eventsbus';
-
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EntitySchema } from 'shared/types/entityType';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -8,6 +7,7 @@ import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
@@ -97,6 +97,9 @@ export class PXEntityUpdatedListener {
   }
 
   start() {
-    this.eventBus.on(EntityUpdatedEvent, this.afterEntityUpdated.bind(this));
+    this.eventBus.on(
+      EntityUpdatedEvent,
+      featureFlaggedHandler('paragraphExtraction', this.afterEntityUpdated.bind(this))
+    );
   }
 }

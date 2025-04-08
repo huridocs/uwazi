@@ -3,7 +3,7 @@ import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel
 import { DBFixture } from 'api/utils/testing_db';
 import { EventsBus } from 'api/eventsbus';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-
+import { tenants } from 'api/tenants';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
@@ -46,9 +46,11 @@ const createFixtures = (): DBFixture => ({
 describe('PXEntityDeletedListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(createFixtures());
+    tenants.current().featureFlags!.paragraphExtraction = true;
   });
 
   afterAll(async () => {
+    tenants.current().featureFlags!.paragraphExtraction = false;
     await testingEnvironment.tearDown();
   });
 
@@ -74,6 +76,20 @@ describe('PXEntityDeletedListener', () => {
         entity: factory.entityInMultipleLanguages(['en', 'pt'], 'entity_not_processed'),
       })
     );
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    expect(mongoEntitiesStatus).toEqual([mongoEntityStatus]);
+  });
+
+  it('should do nothing if feature flag not enabled', async () => {
+    const eventBus = new EventsBus();
+    tenants.current().featureFlags!.paragraphExtraction = false;
+    new PXEntityDeletedListener(eventBus).start();
+
+    await eventBus.emit(new EntityDeletedEvent({ entity: entities }));
 
     const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
       mongoPXEntitiesStatusCollection

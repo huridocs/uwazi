@@ -19,6 +19,7 @@ import {
   targetTemplate1,
   relationshipFixtures,
   paragraphNumberProperty,
+  paragraphProperty,
 } from '../../application/specs/shared/extractorsQueryFixtures';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
@@ -54,18 +55,24 @@ describe('MongoPXExtractorsQueryService', () => {
           _id: extractor1._id.toString(),
           sourceTemplateId: sourceTemplate1._id.toString(),
           targetTemplateId: targetTemplate1._id.toString(),
+          paragraphNumberPropertyId: paragraphNumberProperty._id?.toString(),
+          paragraphPropertyId: paragraphProperty._id?.toString(),
           statusCount: { new: 3, processing: 1, obsolete: 2, error: 1, processed: 1, total: 8 },
         },
         {
           _id: extractor2._id.toString(),
           sourceTemplateId: sourceTemplate2._id.toString(),
           targetTemplateId: targetTemplate1._id.toString(),
+          paragraphNumberPropertyId: paragraphNumberProperty._id?.toString(),
+          paragraphPropertyId: paragraphProperty._id?.toString(),
           statusCount: { new: 1, processing: 0, obsolete: 0, error: 0, processed: 0, total: 1 },
         },
         {
           _id: extractorWithoutEntities._id.toString(),
           sourceTemplateId: sourceTemplate3._id.toString(),
           targetTemplateId: targetTemplate1._id.toString(),
+          paragraphNumberPropertyId: paragraphNumberProperty._id?.toString(),
+          paragraphPropertyId: paragraphProperty._id?.toString(),
           statusCount: { new: 0, processing: 0, obsolete: 0, error: 0, processed: 0, total: 0 },
         },
       ]);
