@@ -82,6 +82,10 @@ const [entityWithoutExtractorEn] = f.entityInMultipleLanguages(
 );
 
 const fileEntity1En = f.document('fileEntity1En', { language: 'en', entity: entity1En.sharedId });
+const secondFileEntity1En = f.document('secondFileEntity1En', {
+  language: 'en',
+  entity: entity1En.sharedId,
+});
 const fileEntity1Pt = f.document('fileEntity1Pt', { language: 'pt', entity: entity1En.sharedId });
 const fileEntity1It = f.document('fileEntity1It', { language: 'it', entity: entity1En.sharedId });
 const fileEntity2It = f.document('fileEntity2En', { language: 'it', entity: entity2En.sharedId });
@@ -173,6 +177,13 @@ const relationshipP1Hub1 = {
 const relationshipP2Hub1 = {
   _id: f.id('relationshipP2Hub1'),
   entity: paragraph2Entity1En.sharedId,
+  hub: f.id('hub1'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
+};
+
+const relationshipNotParagraphHub1 = {
+  _id: f.id('relationshipNotParagraphHub1'),
+  entity: entityWithoutExtractorEn.sharedId,
   hub: f.id('hub1'),
   template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
 };
@@ -314,6 +325,7 @@ const relationshipFixtures = {
   relationshipE1Hub1,
   relationshipP1Hub1,
   relationshipP2Hub1,
+  relationshipNotParagraphHub1,
   relationshipE1Hub2,
   relationshipP3Hub2,
   relationshipE5Hub3,
@@ -326,7 +338,14 @@ const fixtures = {
   [mongoPXEntitiesStatusCollection]: Object.values(entityStatusFixtures).map(value => value),
   templates: [sourceTemplate1, sourceTemplate2, targetTemplate1],
   entities: Object.values(entityFixtures).map(value => value),
-  files: [fileEntity1En, fileEntity1Pt, fileEntity1It, fileEntity2It, fileEntity4En],
+  files: [
+    fileEntity1En,
+    secondFileEntity1En,
+    fileEntity1Pt,
+    fileEntity1It,
+    fileEntity2It,
+    fileEntity4En,
+  ],
   connections: Object.values(relationshipFixtures).map(value => value),
   settings: [
     {
