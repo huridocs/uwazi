@@ -228,19 +228,22 @@ class MongoPXExtractorsQueryService
           from: 'connections',
           localField: 'entityStatuses.entitySharedId',
           foreignField: 'entity',
-          as: 'sourceConnections',
+          as: 'sourceRelationships',
         },
       },
       {
-        $unwind: '$sourceConnections',
+        $unwind: '$sourceRelationships',
       },
       {
-        $match: { $expr: { $eq: ['$sourceConnections.template', '$sourceRelationshipTypeId'] } },
+        $match: { $expr: { $eq: ['$sourceRelationships.template', '$sourceRelationshipTypeId'] } },
       },
       {
         $lookup: {
           from: 'connections',
-          let: { hubValue: '$sourceConnections.hub', targetTemplate: '$targetRelationshipTypeId' },
+          let: {
+            hubValue: '$sourceRelationships.hub',
+            targetTemplate: '$targetRelationshipTypeId',
+          },
           pipeline: [
             {
               $match: {
@@ -253,11 +256,38 @@ class MongoPXExtractorsQueryService
               },
             },
           ],
-          as: 'targetConnections',
+          as: 'targetRelationships',
         },
       },
-      { $unwind: '$targetConnections' },
-      { $replaceRoot: { newRoot: '$targetConnections' } },
+      { $unwind: '$targetRelationships' },
+      {
+        $lookup: {
+          from: 'entities',
+          let: {
+            targetEntityId: '$targetRelationships.entity',
+            expectedTemplateId: '$targetTemplateId',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$sharedId', '$$targetEntityId'] },
+                    { $eq: ['$template', '$$expectedTemplateId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'matchingEntities',
+        },
+      },
+      {
+        $match: {
+          matchingEntities: { $ne: [] },
+        },
+      },
+      { $replaceRoot: { newRoot: '$targetRelationships' } },
     ]);
 
     return new MongoResultSet(cursor, item => ({

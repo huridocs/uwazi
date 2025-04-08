@@ -177,6 +177,13 @@ const relationshipP2Hub1 = {
   template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
 };
 
+const relationshipNotParagraphHub1 = {
+  _id: f.id('relationshipNotParagraphHub1'),
+  entity: entityWithoutExtractorEn.sharedId,
+  hub: f.id('hub1'),
+  template: ObjectId.createFromHexString(targetRelationshipType._id.toString()),
+};
+
 const relationshipE1Hub2 = {
   _id: f.id('relationshipE1Hub2'),
   entity: entity1En.sharedId,
@@ -314,6 +321,7 @@ const relationshipFixtures = {
   relationshipE1Hub1,
   relationshipP1Hub1,
   relationshipP2Hub1,
+  relationshipNotParagraphHub1,
   relationshipE1Hub2,
   relationshipP3Hub2,
   relationshipE5Hub3,
