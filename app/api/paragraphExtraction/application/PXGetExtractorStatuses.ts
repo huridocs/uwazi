@@ -45,7 +45,7 @@ class PXGetExtractorStatuses
         .getDocumentsForEntity(row.entity.sharedId, { languages: installedLanguages })
         .all();
 
-      row.availableFileLanguages = entityValidFiles.map(f => f.language);
+      row.availableFileLanguages = [...new Set(entityValidFiles.map(f => f.language))];
 
       const entityParagraphRelationships = await extractorsQueryService
         .getEntityParagraphRelationships({ id: row.entity.sharedId, extractorId: input.id })
