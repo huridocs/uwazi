@@ -67,9 +67,8 @@ const MultiselectList = ({
   const [selectedValue, setSelectedValue] = useState<string[]>(value || []);
   const [selecteditems, setSelecteditems] = useState<MultiselectListOption[]>([]);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedValue.length));
-  const [searchTerm, setSearchTerm] = useState('');
-  const [externalSearch, setExternalSearch] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
+  const [searchTerm, setSearchTerm] = useState(search);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
   const [searching, setSearching] = useState(false);
   const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
@@ -105,7 +104,7 @@ const MultiselectList = ({
 
     setSelectedOrSuggestedItems(newSet);
     setSelecteditems(selected);
-  }, [items, selectedValue]);
+  }, [filteredItems, items, selectedValue]);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -117,16 +116,11 @@ const MultiselectList = ({
     }
   }, [items, value, startOnSelected]);
 
-  useEffect(() => {
-    setSearchTerm(search);
-    setExternalSearch(search);
-  }, [search]);
-
-  useEffect(() => {
-    if (externalSearch && searchTerm) {
-      optionsRef.current?.querySelector('input')?.focus();
-    }
-  }, [externalSearch, filteredItems, searchTerm]);
+  // useEffect(() => {
+  //   if (externalSearch && searchTerm) {
+  //     optionsRef.current?.querySelector('input')?.focus();
+  //   }
+  // }, [externalSearch, filteredItems, searchTerm]);
 
   useEffect(() => {
     if (value) {
@@ -170,26 +164,24 @@ const MultiselectList = ({
       return a.includes(b);
     };
 
-    filtered = items
-      .map(item => {
-        const matchesSearch = !searchTerm || labelIncludesSearch(item.searchLabel);
+    items.forEach(item => {
+      const matchesSearch = !searchTerm || labelIncludesSearch(item.searchLabel);
 
-        const containsChildrenMatchingSearch =
-          !searchTerm || item.items?.some(childItem => labelIncludesSearch(childItem.searchLabel));
+      const containsChildrenMatchingSearch =
+        !searchTerm || item.items?.some(childItem => labelIncludesSearch(childItem.searchLabel));
 
-        if (matchesSearch || containsChildrenMatchingSearch) {
-          return {
-            ...item,
-            items: item.items?.filter(childItem =>
-              childItem.searchLabel.toLowerCase().includes(searchTerm.toLowerCase())
-            ),
-          };
-        }
-      })
-      .filter(item => item) as MultiselectListOption[];
+      if (matchesSearch || containsChildrenMatchingSearch) {
+        filtered.push({
+          ...item,
+          items: item.items?.filter(childItem =>
+            childItem.searchLabel.toLowerCase().includes(searchTerm.toLowerCase())
+          ),
+        });
+      }
+    });
 
     setFilteredItems(filtered);
-  }, [items, searchTerm, lookup, selecteditems]);
+  }, [items, lookup, selecteditems, searchTerm]);
 
   const handleSelect = (_value: string) => {
     let newValues;
@@ -202,7 +194,6 @@ const MultiselectList = ({
     }
 
     setSelectedValue(newValues);
-    setExternalSearch('');
     if (onChange) onChange(newValues);
   };
 
