@@ -91,6 +91,9 @@ describe('PDF display', () => {
     });
 
     it('should show the plaintex for the page', () => {
+      cy.get('.paginator').within(() => {
+        cy.contains('3 / 22');
+      });
       cy.contains('a', 'Plain text').realClick();
       cy.get('.raw-text').should('be.visible');
       cy.get('.raw-text').within(() => {
