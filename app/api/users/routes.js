@@ -1,6 +1,7 @@
 import { parseQuery, validation } from 'api/utils';
 import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { userSchema } from 'shared/types/userSchema';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
 import users from './users';
 
@@ -11,6 +12,7 @@ export default app => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     parseBody(),
     validatePasswordMiddleWare,
+    activitylogMiddleware,
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -32,6 +34,7 @@ export default app => {
     needsAuthorization(),
     parseBody(),
     validatePasswordMiddleWare,
+    activitylogMiddleware,
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -52,6 +55,7 @@ export default app => {
     needsAuthorization(),
     parseBody(),
     validatePasswordMiddleWare,
+    activitylogMiddleware,
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -160,6 +164,7 @@ export default app => {
     needsAuthorization(),
     parseQuery,
     validatePasswordMiddleWare,
+    activitylogMiddleware,
     validation.validateRequest({
       type: 'object',
       properties: {
