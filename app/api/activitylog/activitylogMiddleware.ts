@@ -2,12 +2,12 @@ import { storage } from 'api/files';
 import date from 'api/utils/date';
 import { tenants } from 'api/tenants';
 import { Readable } from 'stream';
+import activitylog from './activitylog';
 import { NextFunction, Request, Response } from 'express';
 import { handleError } from 'api/utils';
-import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
-const IGNORED_ENDPOINTS = [
+export const IGNORED_ENDPOINTS = [
   '/api/login',
   '/api/contact',
   '/api/unlockaccount',
@@ -21,15 +21,12 @@ const IGNORED_ENDPOINTS = [
   '/api/sync/upload',
   '/api/export',
 ];
-const BODY_REQUIRED_ENDPOINTS = [
+export const BODY_REQUIRED_ENDPOINTS = [
   '/api/files/upload/document',
   '/api/files/upload/custom',
   '/api/attachments/upload',
   '/api/public',
   '/api/entities',
-  '/api/users',
-  '/api/users/new',
-  '/api/users/unlock',
 ];
 
 function mustBeLogged(baseurl: string, method: string, body: { [k: string]: any }) {
@@ -59,7 +56,6 @@ const createEntry = (req: Request, url: string) => {
   };
 };
 
-// eslint-disable-next-line import/no-default-export
 export default (req: Request, _res: Response, next: NextFunction) => {
   const { url, method, body = {} } = req;
   const baseurl = url.split('?').shift() || '';
@@ -82,5 +78,3 @@ export default (req: Request, _res: Response, next: NextFunction) => {
   }
   next();
 };
-
-export { IGNORED_ENDPOINTS, BODY_REQUIRED_ENDPOINTS };
