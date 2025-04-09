@@ -1,6 +1,7 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import entitiesDS from 'api/entities';
 
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
@@ -24,11 +25,14 @@ export class PXEntityStatusManagerFactory {
 
     const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
 
+    const filesDS = DefaultFilesDataSource(mongoTransactionManager);
+
     return new PXEntityStatusManager({
       entitiesStatusDS,
       extractorsDS,
       settingsDS,
       entitiesDS,
+      filesDS,
     });
   }
 }
