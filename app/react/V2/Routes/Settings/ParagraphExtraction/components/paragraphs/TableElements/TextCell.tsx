@@ -25,7 +25,18 @@ const TextCell = ({
           {startText}
           <span className="inline-flex align-baseline">
             <Tooltip
-              content={text}
+              content={
+                <span
+                  className="inline-block max-w-full overflow-hidden text-ellipsis line-clamp-8"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 8,
+                  }}
+                >
+                  {text}
+                </span>
+              }
               arrow
               animation="duration-100"
               // eslint-disable-next-line react/style-prop-object
