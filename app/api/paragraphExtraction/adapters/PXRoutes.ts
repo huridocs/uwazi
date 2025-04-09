@@ -3,18 +3,20 @@ import { Application } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { featureFlagEnabled } from 'api/utils/featureFlagEnabledMiddleware';
 
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { PXCreateExtractorController } from './PXCreateExtractorController';
+import { PXDeleteExtractorController } from './PXDeleteExtractorController';
 import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController';
+import { PXExtractParagraphsByEntityStatusController } from './PXExtractParagraphsByEntityStatusController';
+import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsController';
 import { PXGetExtractorsController } from './PXGetExtractorsController';
 import { PXGetExtractorStatusesController } from './PXGetExtractorStatusesController';
-import { PXGetEntityParagraphsController } from './PXGetEntityParagraphsController';
-import { PXExtractParagraphsByEntityStatusController } from './PXExtractParagraphsByEntityStatusController';
-import { PXDeleteExtractorController } from './PXDeleteExtractorController';
 
 const paragraphExtractionRoutes = (app: Application) => {
   app.post(
     '/api/paragraphExtraction/extractor',
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     featureFlagEnabled('paragraphExtraction'),
     PXCreateExtractorController.adapt(PXCreateExtractorController)
   );
@@ -28,36 +30,38 @@ const paragraphExtractionRoutes = (app: Application) => {
 
   app.post(
     '/api/paragraphExtraction/extract',
-    needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    needsAuthorization(['admin', 'editor']),
+    parseBody(),
     PXExtractParagraphFromEntitiesController.adapt(PXExtractParagraphFromEntitiesController)
   );
 
   app.post(
     '/api/paragraphExtraction/extractNew',
-    needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    needsAuthorization(['admin', 'editor']),
+    parseBody(),
     PXExtractParagraphsByEntityStatusController.adapt(PXExtractParagraphsByEntityStatusController)
   );
 
   app.get(
     '/api/paragraphExtraction/extractors',
-    needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    needsAuthorization(['admin', 'editor']),
     PXGetExtractorsController.adapt(PXGetExtractorsController)
   );
 
   app.get(
     '/api/paragraphExtraction/extractorStatuses',
-    needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    needsAuthorization(['admin', 'editor']),
     PXGetExtractorStatusesController.adapt(PXGetExtractorStatusesController)
   );
 
   app.get(
     '/api/paragraphExtraction/entityParagraphs',
-    needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    needsAuthorization(['admin', 'editor']),
     PXGetEntityParagraphsController.adapt(PXGetEntityParagraphsController)
   );
 };

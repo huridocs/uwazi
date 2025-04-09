@@ -3,14 +3,14 @@ import { performance } from 'perf_hooks';
 import { Application, NextFunction, Request, Response } from 'express';
 
 import { needsAuthorization } from 'api/auth';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { parseQuery } from 'api/utils';
 import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
-import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
-import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
 import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
 import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
+import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -23,12 +23,13 @@ import {
   UpsertRelationshipMigrationFieldService,
 } from '../services/service_factories';
 import { validateCreateRelationship } from './validators/createRelationship';
+import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
 import { validateGetRelationships } from './validators/getRelationship';
 import { validateMigration, validateTestOneHub } from './validators/migration';
-import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
 import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields';
 
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { validateGetMigrationHubRecordsRequest } from './validators/getMigrationHubRecords';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +49,7 @@ export default (app: Application) => {
     res.json(relationshipsData);
   });
 
-  app.post('/api/v2/relationships', featureRequired, async (req, res) => {
+  app.post('/api/v2/relationships', featureRequired, parseBody(), async (req, res) => {
     const relationships = validateCreateRelationship(req.body);
     const service = await CreateRelationshipService();
     const created = await service.create(relationships);
@@ -66,6 +67,7 @@ export default (app: Application) => {
     '/api/v2/relationships/migrate',
     needsAuthorization(),
     featureRequired,
+    parseBody(),
     async (req: Request, res: Response<MigrationResponse>) => {
       const timeStart = performance.now();
       const { dryRun, migrationPlan } = validateMigration(req.body);
@@ -90,6 +92,7 @@ export default (app: Application) => {
     '/api/v2/relationships/test_one_hub',
     needsAuthorization(),
     featureRequired,
+    parseBody(),
     async (req: Request, res: Response<TestOneHubResponse>) => {
       const { hubId, migrationPlan } = validateTestOneHub(req.body);
       const {
@@ -129,6 +132,7 @@ export default (app: Application) => {
     '/api/v2/relationshipMigrationFields',
     needsAuthorization(),
     featureRequired,
+    parseBody(),
     async (req: Request, res: Response<CreateRelationshipMigRationFieldResponse>) => {
       const field = validateUpsertRelationshipMigrationField(req.body);
       const service = CreateRelationshipMigrationFieldService();
@@ -146,6 +150,7 @@ export default (app: Application) => {
     '/api/v2/relationshipMigrationFields',
     needsAuthorization(),
     featureRequired,
+    parseBody(),
     async (req: Request, res: Response<CreateRelationshipMigRationFieldResponse>) => {
       const field = validateUpsertRelationshipMigrationField(req.body);
       const service = UpsertRelationshipMigrationFieldService();

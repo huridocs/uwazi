@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 
-import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
 import promBundle from 'express-prom-bundle';
@@ -77,7 +76,6 @@ if (app.get('env') === 'production') {
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(config.publicAssets));
-app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '5mb' }));
 
 app.use(appContextMiddleware);
 

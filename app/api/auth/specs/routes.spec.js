@@ -1,5 +1,4 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import bodyParser from 'body-parser';
 import express from 'express';
 import request from 'supertest';
 
@@ -28,7 +27,6 @@ describe('Auth Routes', () => {
   describe('/login', () => {
     beforeEach(() => {
       app = express();
-      app.use(bodyParser.json());
       authRoutes(app);
     });
 

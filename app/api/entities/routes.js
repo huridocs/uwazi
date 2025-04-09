@@ -9,6 +9,7 @@ import { thesauri } from '../thesauri/thesauri';
 import { parseQuery, validation } from '../utils';
 import date from '../utils/date';
 import entities from './entities';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -51,6 +52,7 @@ export default app => {
   app.post(
     '/api/entities/coerce_value',
     needsAuthorization(['admin']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -77,6 +79,7 @@ export default app => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     uploadMiddleware.multiple(),
     activitylogMiddleware,
     async (req, res, next) => {
@@ -107,18 +110,23 @@ export default app => {
     }
   );
 
-  app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    entities
-      .denormalize(req.body, { user: req.user, language: req.language })
-      .then(response => {
-        res.json(response);
-      })
-      .catch(next)
+  app.post(
+    '/api/entity_denormalize',
+    needsAuthorization(['admin', 'editor']),
+    parseBody(),
+    (req, res, next) =>
+      entities
+        .denormalize(req.body, { user: req.user, language: req.language })
+        .then(response => {
+          res.json(response);
+        })
+        .catch(next)
   );
 
   app.post(
     '/api/entities/multipleupdate',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     (req, res, next) =>
       entities
         .multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })
@@ -223,6 +231,7 @@ export default app => {
   app.post(
     '/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

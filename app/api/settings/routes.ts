@@ -1,6 +1,7 @@
 import settings from 'api/settings/settings';
 import { Application } from 'express';
 import needsAuthorization from '../auth/authMiddleware';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export default (app: Application) => {
   app.get('/api/settings', (req, res, next) => {
@@ -18,7 +19,7 @@ export default (app: Application) => {
       .catch(next);
   });
 
-  app.post('/api/settings', needsAuthorization(), (req, res, next) => {
+  app.post('/api/settings', needsAuthorization(), parseBody(), (req, res, next) => {
     settings
       .save(req.body)
       .then(response => res.json(response))
@@ -33,7 +34,7 @@ export default (app: Application) => {
       .catch(next);
   });
 
-  app.post('/api/settings/links', needsAuthorization(), (req, res, next) => {
+  app.post('/api/settings/links', needsAuthorization(), parseBody(), (req, res, next) => {
     settings
       .save({ links: req.body })
       .then(response => res.json(response))

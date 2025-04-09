@@ -5,6 +5,7 @@ import { search } from 'api/search';
 import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 const reindexAllTemplates = async () => {
   const allTemplates = await templates.get();
@@ -23,7 +24,7 @@ const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
 };
 
 export default (app: Application) => {
-  app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
+  app.post('/api/templates', needsAuthorization(), parseBody(), async (req, res, next) => {
     try {
       const { reindex: fullReindex, ...template } = req.body;
 
@@ -51,6 +52,7 @@ export default (app: Application) => {
   app.post(
     '/api/templates/setasdefault',
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

@@ -1,4 +1,5 @@
 import { parseQuery, validation } from 'api/utils';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { userSchema } from 'shared/types/userSchema';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
 import users from './users';
@@ -8,6 +9,7 @@ export default app => {
   app.post(
     '/api/users',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
@@ -28,6 +30,7 @@ export default app => {
   app.post(
     '/api/users/new',
     needsAuthorization(),
+    parseBody(),
     validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
@@ -47,6 +50,7 @@ export default app => {
   app.post(
     '/api/users/unlock',
     needsAuthorization(),
+    parseBody(),
     validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
@@ -72,6 +76,7 @@ export default app => {
 
   app.post(
     '/api/unlockaccount',
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -96,6 +101,7 @@ export default app => {
 
   app.post(
     '/api/recoverpassword',
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -119,6 +125,7 @@ export default app => {
 
   app.post(
     '/api/resetpassword',
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

@@ -1,8 +1,9 @@
 import { needsAuthorization } from 'api/auth';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { parseQuery } from 'api/utils';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { Application, Request, Response, NextFunction } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { ensure } from 'shared/tsUtils';
 import { serviceMiddleware } from './serviceMiddleware';
@@ -12,6 +13,7 @@ export const extractorsRoutes = (app: Application) => {
     '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     validateAndCoerceRequest({
       type: 'object',
       properties: {
@@ -50,6 +52,7 @@ export const extractorsRoutes = (app: Application) => {
     '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     validateAndCoerceRequest({
       type: 'object',
       properties: {

@@ -1,15 +1,20 @@
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { objectIdSchema } from 'shared/types/commonSchemas';
-import { validation } from '../utils';
-import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates';
+import { validation } from '../utils';
+import documents from './documents';
 
 export default app => {
-  app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    documents
-      .save(req.body, { user: req.user, language: req.language })
-      .then(doc => res.json(doc))
-      .catch(next)
+  app.post(
+    '/api/documents',
+    needsAuthorization(['admin', 'editor']),
+    parseBody(),
+    (req, res, next) =>
+      documents
+        .save(req.body, { user: req.user, language: req.language })
+        .then(doc => res.json(doc))
+        .catch(next)
   );
 
   app.get(

@@ -1,15 +1,16 @@
 /* eslint-disable max-lines */
-import { createError, validation } from 'api/utils';
-import settings from 'api/settings';
-import entities from 'api/entities';
-import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
+import entities from 'api/entities';
 import { uploadMiddleware } from 'api/files';
+import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
+import pages from 'api/pages';
+import settings from 'api/settings';
+import { createError, validation } from 'api/utils';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
+import { Application, Request } from 'express';
 import { sequentialPromises } from 'shared/asyncUtils';
 import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas';
 import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
-import { Application, Request } from 'express';
-import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -90,6 +91,7 @@ export default (app: Application) => {
   app.post(
     '/api/translations/import',
     needsAuthorization(),
+    parseBody(),
     uploadMiddleware(),
     validation.validateRequest({
       type: 'object',
@@ -123,6 +125,7 @@ export default (app: Application) => {
   app.post(
     '/api/translations',
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -163,6 +166,7 @@ export default (app: Application) => {
   app.post(
     '/api/translations/populate',
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -194,6 +198,7 @@ export default (app: Application) => {
   app.post(
     '/api/translations/setasdeafult',
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -218,6 +223,7 @@ export default (app: Application) => {
   app.post(
     '/api/translations/languages',
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

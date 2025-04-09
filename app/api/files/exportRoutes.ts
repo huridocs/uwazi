@@ -14,6 +14,7 @@ import { csvExportParamsSchema } from 'shared/types/searchParameterSchema';
 import { CsvExportBody } from 'shared/types/searchParameterType';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export default (app: Application) => {
   const generateExportFileName = (databaseName: string = '') =>
@@ -31,6 +32,7 @@ export default (app: Application) => {
     '/api/export',
     async (req: Request, res: Response, next: NextFunction) =>
       req.user ? next() : captchaMiddleware()(req, res, next),
+    parseBody(),
     validation.validateRequest(csvExportParamsSchema),
     // eslint-disable-next-line max-statements
     async (

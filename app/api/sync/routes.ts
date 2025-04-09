@@ -11,6 +11,7 @@ import { FileType } from 'shared/types/fileType';
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { needsAuthorization } from '../auth';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -104,7 +105,7 @@ const keepOnlyOneDefaultTemplate = async (
 };
 
 export default (app: Application) => {
-  app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
+  app.post('/api/sync', needsAuthorization(['admin']), parseBody(), async (req, res, next) => {
     try {
       if (req.body.namespace === 'settings') {
         const [settings] = await models.settings().get({});
@@ -135,6 +136,7 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload',
     needsAuthorization(['admin']),
+    parseBody(),
     uploadMiddleware.customStorage(diskStorage, 'document'),
     (_req, res) => {
       res.json('ok');
@@ -144,6 +146,7 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload/custom',
     needsAuthorization(['admin']),
+    parseBody(),
     uploadMiddleware.customStorage(diskStorage, 'custom'),
     (_req, res) => {
       res.json('ok');

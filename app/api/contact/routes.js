@@ -1,11 +1,13 @@
 import contact from './contact';
 import { captchaAuthorization } from '../auth';
 import { validation } from '../utils';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export default app => {
   app.post(
     '/api/contact',
     captchaAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

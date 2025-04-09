@@ -16,6 +16,7 @@ import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
 import { withTransaction } from 'api/utils/withTransaction';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -69,6 +70,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     uploadMiddleware('document'),
     async (req, res) => {
       if (!req.file) throw new Error('File is not available on request object');
@@ -90,6 +92,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/custom',
     needsAuthorization(['admin']),
+    parseBody(),
     uploadMiddleware('custom'),
     activitylogMiddleware,
     (req, res, next) => {
@@ -105,6 +108,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     uploadMiddleware('attachment'),
     activitylogMiddleware,
     (req, res, next) => {
@@ -124,6 +128,7 @@ export default (app: Application) => {
   app.post(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -144,6 +149,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/tocReviewed',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -311,11 +317,9 @@ export default (app: Application) => {
 
   app.post(
     '/api/import',
-
     needsAuthorization(['admin']),
-
+    parseBody(),
     uploadMiddleware(),
-
     validation.validateRequest({
       type: 'object',
       properties: {

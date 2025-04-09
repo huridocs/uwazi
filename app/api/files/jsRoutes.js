@@ -13,6 +13,7 @@ import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { createError, validation } from '../utils';
 import { storage } from './storage';
 import { uploadMiddleware } from './uploadMiddleware';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 const processEntityDocument = async (req, entitySharedId) => {
   const file = req.files.find(_file => _file.fieldname.includes('file'));
@@ -36,6 +37,7 @@ const routes = app => {
   app.post(
     '/api/public',
     cors(corsOptions),
+    parseBody(),
     uploadMiddleware.multiple(),
     publicAPIMiddleware,
     activitylogMiddleware,

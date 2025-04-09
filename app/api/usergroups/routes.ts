@@ -2,6 +2,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery, validation } from 'api/utils';
 import userGroups from './userGroups';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export default (app: Application) => {
   app.get(
@@ -20,6 +21,7 @@ export default (app: Application) => {
   app.post(
     '/api/usergroups',
     needsAuthorization(['admin']),
+    parseBody(),
     async (req: Request, res: Response) => {
       const userGroup = await userGroups.save(req.body);
       res.json(userGroup);

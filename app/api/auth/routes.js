@@ -1,18 +1,19 @@
-import cookieParser from 'cookie-parser';
-import MongoStore from 'connect-mongo';
-import passport from 'passport';
-import session from 'express-session';
-import svgCaptcha from 'svg-captcha';
-import settings from 'api/settings';
-import urljoin from 'url-join';
-import { DB } from 'api/odm';
 import { config } from 'api/config';
+import { DB } from 'api/odm';
+import settings from 'api/settings';
+import MongoStore from 'connect-mongo';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import session from 'express-session';
+import passport from 'passport';
 import request from 'shared/JSONRequest';
+import svgCaptcha from 'svg-captcha';
+import urljoin from 'url-join';
 import { CaptchaModel } from './CaptchaModel';
 
 import { validation } from '../utils';
 
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import './passport_conf.js';
 
 export default app => {
@@ -39,6 +40,8 @@ export default app => {
 
   app.post(
     '/api/login',
+
+    parseBody(),
 
     validation.validateRequest({
       type: 'object',

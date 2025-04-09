@@ -3,6 +3,7 @@
  */
 import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { Application, Request, Response } from 'express';
 import { TaskProvider } from 'shared/tasks/tasks';
 
@@ -36,6 +37,7 @@ export default (app: Application) => {
   app.post(
     tasksPrefix,
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       required: ['query', 'body'],

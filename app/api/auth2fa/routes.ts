@@ -1,14 +1,16 @@
-import { Application } from 'express';
+import { validatePasswordMiddleWare } from 'api/auth';
 import needsAuthorization from 'api/auth/authMiddleware';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { validation } from 'api/utils';
 import { ObjectIdAsString } from 'api/utils/ajvSchemas';
-import { validatePasswordMiddleWare } from 'api/auth';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
+import { Application } from 'express';
 
 export default (app: Application) => {
   app.post(
     '/api/auth2fa-secret',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
     }),
@@ -25,6 +27,7 @@ export default (app: Application) => {
   app.post(
     '/api/auth2fa-enable',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -51,6 +54,7 @@ export default (app: Application) => {
   app.post(
     '/api/auth2fa-reset',
     needsAuthorization(['admin']),
+    parseBody(),
     validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',

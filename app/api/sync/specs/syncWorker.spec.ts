@@ -1,20 +1,24 @@
 /* eslint-disable max-statements */
-import 'isomorphic-fetch';
 import { Server } from 'http';
+import 'isomorphic-fetch';
 // eslint-disable-next-line node/no-restricted-import
 import { rm, writeFile } from 'fs/promises';
 
-import bodyParser from 'body-parser';
 import _ from 'lodash';
 
 import authRoutes from 'api/auth/routes';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import { attachmentsPath, customUploadsPath, files, storage, testingUploadPaths } from 'api/files';
 import translations from 'api/i18n';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
+import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships';
 import relationtypes from 'api/relationtypes';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import syncRoutes from 'api/sync/routes';
 import templates from 'api/templates';
 import { tenants } from 'api/tenants';
@@ -25,15 +29,11 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import mailer from 'api/utils/mailer';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
-import express, { NextFunction, Request, RequestHandler, Response } from 'express';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
-import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import express, { NextFunction, Request, Response } from 'express';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
@@ -138,7 +138,7 @@ describe('syncWorker', () => {
 
     await applyFixtures();
 
-    app.use(bodyParser.json() as RequestHandler);
+    app.use(parseBody());
     app.use(appContextMiddleware);
 
     const multitenantMiddleware = (req: Request, _res: Response, next: NextFunction) => {

@@ -1,15 +1,17 @@
 import Ajv from 'ajv';
 
 import { ObjectIdAsString } from 'api/utils/ajvSchemas';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 import { LanguageISO6391Schema } from 'shared/types/commonSchemas';
-import relationships from './relationships.js';
-import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import { validation } from '../utils';
+import relationships from './relationships.js';
 
 export default app => {
   app.post(
     '/api/relationships/bulk',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     async (req, res, next) => {
       try {
         const response = await relationships.bulk(req.body, req.language);
@@ -32,6 +34,7 @@ export default app => {
   app.post(
     '/api/references',
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

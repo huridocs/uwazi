@@ -3,9 +3,10 @@ import { Application, Request } from 'express';
 import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export default (app: Application) => {
-  app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {
+  app.post('/api/pages', needsAuthorization(['admin']), parseBody(), (req, res, next) => {
     pages
       .save(req.body, req.user, req.language)
       .then(response => res.json(response))

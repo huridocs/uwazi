@@ -4,14 +4,14 @@ import { uploadMiddleware } from 'api/files';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 const routes = app => {
   app.post(
     '/api/thesauris',
     needsAuthorization(),
-
+    parseBody(),
     uploadMiddleware(),
-
     validation.validateRequest({
       type: 'object',
       properties: {

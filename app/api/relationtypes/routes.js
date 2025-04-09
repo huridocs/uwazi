@@ -2,11 +2,13 @@ import relationtypes from 'api/relationtypes/relationtypes';
 import { ObjectIdAsString } from 'api/utils/ajvSchemas';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export default app => {
   app.post(
     '/api/relationtypes',
     needsAuthorization(),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {

@@ -16,6 +16,7 @@ import {
   IXSuggestionsQuery,
 } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 const IX = new InformationExtraction();
 
@@ -133,6 +134,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/stop',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.stopModel, req, res);
@@ -143,6 +145,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/train',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.trainModel, req, res);
@@ -153,6 +156,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
@@ -163,6 +167,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/accept',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
+    parseBody(),
     validateAndCoerceRequest({
       type: 'object',
       properties: {

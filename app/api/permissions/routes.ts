@@ -4,11 +4,13 @@ import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { permissionsDataSchema } from 'shared/types/permissionSchema';
+import { parseBody } from 'api/utils/parseBodyMiddleware';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
     '/api/entities/permissions',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -30,6 +32,7 @@ export const permissionRoutes = (app: Application) => {
   app.put(
     '/api/entities/permissions/',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    parseBody(),
     validation.validateRequest({
       type: 'object',
       properties: {
