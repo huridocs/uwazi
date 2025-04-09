@@ -17,7 +17,7 @@ const DisplayPill = generateDisplayPill({
   label: 'New',
 });
 
-const UpdatePollIntervalSeconds = 25000;
+const PollIntervalSeconds = 25;
 const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
@@ -25,7 +25,7 @@ const PXEntityDashboard = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       await revalidator.revalidate();
-    }, UpdatePollIntervalSeconds);
+    }, PollIntervalSeconds * 1000);
 
     return () => clearInterval(interval);
   }, [revalidator]);
