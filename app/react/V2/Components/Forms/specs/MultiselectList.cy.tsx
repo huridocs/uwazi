@@ -371,8 +371,8 @@ describe('MultiselectList.cy.tsx', () => {
           <MultiselectList
             onChange={() => {}}
             items={[]}
-            lookup={remoteLookupFunction}
-            value={['MGT']}
+            onSearch={remoteLookupFunction}
+            selectedValues={['MGT']}
             itemContainerClassName="custom-container-class"
           />
         </div>
@@ -399,8 +399,8 @@ describe('MultiselectList.cy.tsx', () => {
           <MultiselectList
             onChange={() => {}}
             items={[]}
-            lookup={remoteLookupFunction}
-            value={['MGT']}
+            onSearch={remoteLookupFunction}
+            selectedValues={['MGT']}
           />
         </div>
       );
