@@ -3,7 +3,10 @@ import { FileType } from 'api/files.v2/model/FileType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import entities from 'api/entities';
+import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 
+import { ObjectId } from 'mongodb';
+import { Document } from 'api/files.v2/model/Document';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
@@ -15,9 +18,11 @@ type Dependencies = {
   entitiesDS: LegacyEntitiesDS;
   settingsDS: SettingsDataSource;
   extractorsDS: PXExtractorsDataSource;
+  filesDS: FilesDataSource;
 };
 
 type FileModel = {
+  id: string;
   type: FileType;
   language?: LanguageISO6391;
   entity: string;
@@ -92,6 +97,36 @@ export class PXEntityStatusManager {
     });
 
     if (entityStatus) {
+      const documentsInInstalledLanguages = (
+        await this.dependencies.filesDS
+          .getDocumentsForEntity(entity.sharedId!, { languages: installedLanguages })
+          .all()
+      ).reduce(
+        (acc, file) => {
+          const existingDocument = acc[file.language!];
+          if (!existingDocument) {
+            return { ...acc, [file.language!]: file };
+          }
+
+          const existingDocumentDate = new ObjectId(existingDocument.id).getTimestamp();
+          const newDocumentDate = new ObjectId(file.id).getTimestamp();
+
+          return {
+            ...acc,
+            [file.language!]: existingDocumentDate < newDocumentDate ? existingDocument : file,
+          };
+        },
+        {} as Record<string, Document>
+      );
+
+      const isDocumentUsedForExtraction = Object.values(documentsInInstalledLanguages).some(
+        d => d.id === after.id
+      );
+
+      if (!isDocumentUsedForExtraction) {
+        return;
+      }
+
       await this.dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
     } else {
       await this.dependencies.entitiesStatusDS.createAsNew({
