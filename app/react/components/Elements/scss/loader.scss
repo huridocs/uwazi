@@ -1,4 +1,4 @@
-@import "../../../App/scss/config/colors.scss";
+@use "../../../App/scss/config/colors.scss";
 
 .cs-loader-container {
   position: relative;
@@ -17,7 +17,7 @@
   top: 50%;
   position: absolute;
   width: 100%;
-  color: $c-type-6;
+  color: colors.$c-type-6;
   text-align: center;
 }
 

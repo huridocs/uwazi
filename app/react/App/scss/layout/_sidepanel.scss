@@ -1,12 +1,13 @@
 @use "sass:color";
 
-@import '../../scss/config/_colors.scss';
-@import '../../scss/config/_materials.scss';
-@import '../../scss/config/_typography.scss';
-@import '../../scss/elements/_tooltip.scss';
+@use '../../scss/config/_colors.scss';
+@use '../../scss/config/_materials.scss';
+@use '../../scss/config/_typography.scss';
+@use '../../scss/elements/_tooltip.scss';
+@use "../config/commonLayout";
 
-$c-sidebar: color.adjust($c-background, $lightness: -0%, $space: hsl);
-$c-sidebar: $c-white;
+$c-sidebar: color.adjust(colors.$c-background, $lightness: -0%, $space: hsl);
+$c-sidebar: colors.$c-white;
 
 .side-panel {
   z-index: 4;
@@ -14,11 +15,11 @@ $c-sidebar: $c-white;
   flex-direction: column;
   position: fixed;
   right: 0;
-  top: $header-height + 1;
+  top: materials.$header-height + 1;
   bottom: 0;
-  border-left: 1px solid $c-grey-light;
+  border-left: 1px solid colors.$c-grey-light;
   background-color: $c-sidebar;
-  width: calc(100% - #{$header-height});
+  width: calc(100% - #{materials.$header-height});
   transition: right 300ms;
 
   &.is-hidden {
@@ -57,7 +58,7 @@ $c-sidebar: $c-white;
     display: flex;
 
     > div {
-      border-left: 1px solid $c-grey-light;
+      border-left: 1px solid colors.$c-grey-light;
     }
   }
 
@@ -75,7 +76,7 @@ $c-sidebar: $c-white;
   }
 
   h1 {
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
   }
 
   .item-icon.item-icon-center {
@@ -92,26 +93,26 @@ $c-sidebar: $c-white;
   .item-info .btn-color {
     display: inline-block;
     margin-top: 8px;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
   }
 
   .closeSidepanel {
     position: absolute;
     top: 0;
     right: 0;
-    width: $header-height;
-    height: $header-height;
-    line-height: $header-height;
+    width: materials.$header-height;
+    height: materials.$header-height;
+    line-height: materials.$header-height;
     text-align: center;
-    font-size: $f-size-lg;
-    color: $c-grey;
+    font-size: typography.$f-size-lg;
+    color: colors.$c-grey;
     cursor: pointer;
     z-index: 5;
     border: 0;
     background-color: transparent;
 
     &:hover {
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
     }
   }
 
@@ -119,7 +120,7 @@ $c-sidebar: $c-white;
     margin: 0;
 
     .fa-warning {
-      color: $c-warning;
+      color: colors.$c-warning;
     }
   }
 
@@ -142,12 +143,12 @@ $c-sidebar: $c-white;
     background: 0;
     box-shadow: none;
     outline: none;
-    background: $c-grey-lighten;
+    background: colors.$c-grey-lighten;
     margin-bottom: 1px;
 
     &.is-expanded {
-      border-bottom: 1px solid $c-grey-light;
-      color: $c-primary;
+      border-bottom: 1px solid colors.$c-grey-light;
+      color: colors.$c-primary;
     }
 
     .itemGroup-title {
@@ -159,7 +160,7 @@ $c-sidebar: $c-white;
     }
 
     &:hover .multiselectItem-action {
-      border-color: $c-primary;
+      border-color: colors.$c-primary;
     }
 
     .title {
@@ -188,19 +189,19 @@ $c-sidebar: $c-white;
 
     &.relationship-hover,
     &.highlight-hover:hover {
-      box-shadow: inset 0 0 0 1px $c-grey-light;
+      box-shadow: inset 0 0 0 1px colors.$c-grey-light;
     }
 
     &.relationship-active {
       box-shadow:
-        inset 0 0 0 1px $c-primary,
-        inset 0 0 0 4px color.adjust($c-primary, $alpha: -0.7);
+        inset 0 0 0 1px colors.$c-primary,
+        inset 0 0 0 4px color.adjust(colors.$c-primary, $alpha: -0.7);
     }
   }
 
   @media (min-width: 1024px) {
     .item-metadata dt {
-      @include tooltip('top-left');
+      @include tooltip.tooltip('top-left');
     }
   }
 
@@ -211,7 +212,7 @@ $c-sidebar: $c-white;
     z-index: 1;
 
     .form-control {
-      font-size: $f-size;
+      font-size: typography.$f-size;
     }
   }
 }
@@ -221,9 +222,9 @@ $c-sidebar: $c-white;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  font-size: $f-size-sm;
-  margin-bottom: $FooterHeight;
-  padding-bottom: $FooterHeight;
+  font-size: typography.$f-size-sm;
+  margin-bottom: commonLayout.$FooterHeight;
+  padding-bottom: commonLayout.$FooterHeight;
 
   @media (min-width: 1024px) {
     padding-bottom: 0;
@@ -234,7 +235,7 @@ $c-sidebar: $c-white;
   }
 
   &.footer-extra-row {
-    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
+    margin-bottom: calc(#{commonLayout.$FooterHeight} * 2 + 2px);
   }
 
   // & > *:last-child {
@@ -245,7 +246,7 @@ $c-sidebar: $c-white;
     display: flex;
     flex-direction: column;
     height: 100%;
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
 
     .sticky {
       padding-top: 46px;
@@ -341,9 +342,9 @@ $c-sidebar: $c-white;
 .sidepanel-header {
   background: $c-sidebar;
   position: relative;
-  min-height: $header-height;
-  line-height: $header-height;
-  border-bottom: 1px solid $c-grey-light;
+  min-height: materials.$header-height;
+  line-height: materials.$header-height;
+  border-bottom: 1px solid colors.$c-grey-light;
   padding: 0 15px;
 
   .button-list > button {
@@ -376,11 +377,11 @@ $c-sidebar: $c-white;
     position: absolute;
     left: 0;
     bottom: 0;
-    right: $header-height;
+    right: materials.$header-height;
   }
 
   .fa {
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
   }
 
   .entity-sidepanel-tab-link {
@@ -400,7 +401,7 @@ $c-sidebar: $c-white;
   }
 
   .selected {
-    color: $c-primary;
+    color: colors.$c-primary;
   }
 }
 
@@ -470,7 +471,7 @@ $c-sidebar: $c-white;
 
 .add-thesauriValue-modal {
   .error {
-    color: $c-type-1;
+    color: colors.$c-type-1;
     font-size: 0.9em;
   }
 
