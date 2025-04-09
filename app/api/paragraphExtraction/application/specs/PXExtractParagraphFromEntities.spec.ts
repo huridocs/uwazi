@@ -9,7 +9,6 @@ import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infra
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { TestUtils } from 'api/common.v2/utils/Test';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 
@@ -110,7 +109,7 @@ describe('PXExtractParagraphFromEntities', () => {
       mongoPXEntitiesStatusCollection
     );
 
-    TestUtils.arrayContaining(mongoEntitiesStatus, [
+    expect(mongoEntitiesStatus).toMatchObject([
       {
         _id: expect.any(ObjectId),
         entitySharedId: entity1.sharedId,

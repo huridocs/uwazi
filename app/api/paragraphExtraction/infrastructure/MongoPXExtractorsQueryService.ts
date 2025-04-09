@@ -220,27 +220,29 @@ class MongoPXExtractorsQueryService
           as: 'entityStatuses',
         },
       },
-      {
-        $unwind: '$entityStatuses',
-      },
+      { $unwind: { path: '$entityStatuses', preserveNullAndEmptyArrays: false } },
       {
         $lookup: {
           from: 'connections',
           localField: 'entityStatuses.entitySharedId',
           foreignField: 'entity',
-          as: 'sourceConnections',
+          as: 'sourceRelationships',
         },
       },
       {
-        $unwind: '$sourceConnections',
+        $unwind: '$sourceRelationships',
       },
       {
-        $match: { $expr: { $eq: ['$sourceConnections.template', '$sourceRelationshipTypeId'] } },
+        $match: { $expr: { $eq: ['$sourceRelationships.template', '$sourceRelationshipTypeId'] } },
       },
       {
         $lookup: {
           from: 'connections',
-          let: { hubValue: '$sourceConnections.hub', targetTemplate: '$targetRelationshipTypeId' },
+          let: {
+            hubValue: '$sourceRelationships.hub',
+            targetTemplate: '$targetRelationshipTypeId',
+            expectedTemplateId: '$targetTemplateId',
+          },
           pipeline: [
             {
               $match: {
@@ -252,12 +254,46 @@ class MongoPXExtractorsQueryService
                 },
               },
             },
+            {
+              $lookup: {
+                from: 'entities',
+                let: {
+                  targetEntityId: '$entity',
+                  expectedTemplate: '$$expectedTemplateId',
+                },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: ['$sharedId', '$$targetEntityId'] },
+                          { $eq: ['$template', '$$expectedTemplate'] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: 'matchingEntities',
+              },
+            },
+            {
+              $match: {
+                matchingEntities: { $ne: [] },
+              },
+            },
           ],
-          as: 'targetConnections',
+          as: 'targetRelationships',
         },
       },
-      { $unwind: '$targetConnections' },
-      { $replaceRoot: { newRoot: '$targetConnections' } },
+      { $unwind: '$targetRelationships' },
+      {
+        $project: {
+          _id: '$targetRelationships._id',
+          entity: '$targetRelationships.entity',
+          hub: '$targetRelationships.hub',
+          template: '$targetRelationships.template',
+        },
+      },
     ]);
 
     return new MongoResultSet(cursor, item => ({

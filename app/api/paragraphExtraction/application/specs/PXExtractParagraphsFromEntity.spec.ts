@@ -18,7 +18,6 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
 import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
@@ -264,8 +263,7 @@ describe('PXExtractParagraphsFromEntity', () => {
 
     const [payload] = extractionService.extractParagraphs.mock.lastCall;
 
-    expect(payload.documents.length).toBe(2);
-    TestUtils.arrayContaining(payload.documents, [
+    expect(payload.documents).toMatchObject([
       { id: file._id.toString() },
       { id: file2._id.toString() },
     ]);
@@ -313,14 +311,10 @@ describe('PXExtractParagraphsFromEntity', () => {
     const entities = await testingEnvironment.db.getAllFrom('entities');
     const connections = await testingEnvironment.db.getAllFrom('connections');
 
-    expect(entities?.length).toBe(5);
-    TestUtils.arrayContaining(entities, [entity1, entity2, entity3, paragraph4, paragraph5]);
-
-    expect(connections?.length).toBe(4);
-    TestUtils.arrayContaining(connections, [
+    expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);
+    expect(connections).toMatchObject([
       relationshipE2Hub1,
       relationshipE2Hub2,
-
       relationshipP4Hub1,
       relationshipP5Hub2,
     ]);

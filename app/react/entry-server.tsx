@@ -292,7 +292,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const language = languageKeys.includes(pathPossibleLanguage)
     ? pathPossibleLanguage
     : req.language;
-  console.log('language', req.language);
+
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =

@@ -88,6 +88,13 @@ class PXCreateExtractor implements UseCase<Input, Output> {
       sourceTemplateId: input.sourceTemplateId,
     });
 
+    if (sourceRelationshipTypeId === targetRelationshipTypeId) {
+      throw new PXValidationError(
+        PXErrorCode.SAME_SOURCE_TARGET_RELATIONTYPE,
+        `Canon create an Extractor with the same source and target relationship type: ${sourceRelationshipTypeId}`
+      );
+    }
+
     if (extractorWithSameSourceTemplateExists) {
       throw new PXValidationError(
         PXErrorCode.EXTRACTOR_ALREADY_EXISTS,

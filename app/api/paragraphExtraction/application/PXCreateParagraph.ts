@@ -75,8 +75,8 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
 
       if (
         existingTranslation?.title === paragraphTranslation.title &&
-        existingTranslation?.metadata?.[extractor.paragraphProperty.name] ===
-          paragraphTranslation?.metadata?.[extractor.paragraphProperty.name]
+        existingTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value ===
+          paragraphTranslation?.metadata?.[extractor.paragraphProperty.name]?.[0].value
       ) {
         return;
       }
