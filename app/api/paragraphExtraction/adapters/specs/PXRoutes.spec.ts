@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import request from 'supertest';
 import { Application } from 'express';
 
@@ -6,6 +7,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
 import {
   PXCreateExtractorRequest,
+  PXDeleteExtractorRequest,
   PXExtractNewRequest,
   PXExtractRequest,
   PXGetEntityParagraphsRequest,
@@ -28,7 +30,7 @@ import {
 
 const checkFlagEnabledForRoute = async (
   app: Application,
-  method: 'get' | 'post',
+  method: 'get' | 'post' | 'delete',
   route: string
 ) => {
   tenants.current().featureFlags!.paragraphExtraction = false;
@@ -37,7 +39,11 @@ const checkFlagEnabledForRoute = async (
   tenants.current().featureFlags!.paragraphExtraction = true;
 };
 
-const checkValidationForRoute = async (app: Application, method: 'get' | 'post', route: string) => {
+const checkValidationForRoute = async (
+  app: Application,
+  method: 'get' | 'post' | 'delete',
+  route: string
+) => {
   const req = request(app)[method](route);
   if (method === 'post') {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -238,6 +244,27 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
           },
         ],
       });
+    });
+  });
+
+  describe('DELETE /api/paragraphExtraction/extractor', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'delete', '/api/paragraphExtraction/extractor');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'delete', '/api/paragraphExtraction/extractor');
+    });
+
+    it('should get the entity paragraphs', async () => {
+      const query: PXDeleteExtractorRequest = {
+        id: createdExtractorId,
+      };
+      const response = await request(app).delete('/api/paragraphExtraction/extractor').query(query);
+      const extractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
+
+      expect(response.body).toMatchObject({ success: true });
+      expect(extractors?.length).toBe(0);
     });
   });
 });
