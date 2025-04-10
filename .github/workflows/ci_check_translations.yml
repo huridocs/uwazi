@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   check_translations:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
