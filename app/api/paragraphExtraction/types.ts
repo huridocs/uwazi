@@ -6,3 +6,8 @@ export type PXCreateExtractorRequest = {
   paragraphPropertyId: string;
   paragraphNumberPropertyId: string;
 };
+
+export type PXExtractRequest = {
+  extractorId: string;
+  entitySharedIds: string[];
+};

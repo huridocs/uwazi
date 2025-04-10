@@ -2,8 +2,11 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { UserRole } from 'shared/types/userSchema';
 
 const f = getFixturesFactory();
+
+const user = f.user('admin', UserRole.ADMIN);
 
 const sourceTemplate = f.template('Source Template');
 
@@ -62,9 +65,11 @@ const fixtures = {
       ],
     },
   ],
+  users: [user],
 };
 
 export {
+  user,
   fixtures,
   templateFixtures,
   entityFixtures,
