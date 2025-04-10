@@ -24,17 +24,25 @@ import {
   paragraphNumberProperty,
 } from './fixtures';
 
-const checkFlagEnabledForRoute = async (app: Application, route: string) => {
+const checkFlagEnabledForRoute = async (
+  app: Application,
+  method: 'get' | 'post',
+  route: string
+) => {
   tenants.current().featureFlags!.paragraphExtraction = false;
-  const response = await request(app).post(route);
+  const response = await request(app)[method](route);
   expect(response.statusCode).toBe(403);
   tenants.current().featureFlags!.paragraphExtraction = true;
 };
 
-const checkValidationForRoute = async (app: Application, route: string) => {
-  const response = await request(app)
-    .post(route)
-    .send({ not_allowed_property: { key: 'value' } });
+const checkValidationForRoute = async (app: Application, method: 'get' | 'post', route: string) => {
+  const req = request(app)[method](route);
+  if (method === 'post') {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    req.send({ not_allowed_property: { key: 'value' } });
+  }
+
+  const response = await req;
 
   expect(response.statusCode).toBe(422);
   expect(response.body.error).toContain('validation failed');
@@ -56,11 +64,11 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
 
   describe('POST /api/paragraphExtraction/extractor', () => {
     it('should require the feature flag enabled', async () => {
-      await checkFlagEnabledForRoute(app, '/api/paragraphExtraction/extractor');
+      await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extractor');
     });
 
     it('should validate the input', async () => {
-      await checkValidationForRoute(app, '/api/paragraphExtraction/extractor');
+      await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extractor');
     });
 
     it('should create the extractor', async () => {
@@ -82,11 +90,11 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
 
   describe('POST /api/paragraphExtraction/extract', () => {
     it('should require the feature flag enabled', async () => {
-      await checkFlagEnabledForRoute(app, '/api/paragraphExtraction/extract');
+      await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extract');
     });
 
     it('should validate the input', async () => {
-      await checkValidationForRoute(app, '/api/paragraphExtraction/extract');
+      await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extract');
     });
 
     it('should trigger the extraction', async () => {
@@ -111,11 +119,11 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
 
   describe('POST /api/paragraphExtraction/extractNew', () => {
     it('should require the feature flag enabled', async () => {
-      await checkFlagEnabledForRoute(app, '/api/paragraphExtraction/extractNew');
+      await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extractNew');
     });
 
     it('should validate the input', async () => {
-      await checkValidationForRoute(app, '/api/paragraphExtraction/extractNew');
+      await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extractNew');
     });
 
     it('should trigger the extraction of entities in "new"', async () => {
@@ -129,6 +137,22 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
 
       expect(entity2Status?.status).toBe(EntityStatus.Processing);
+    });
+  });
+
+  describe('GET /api/paragraphExtraction/extractors', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/extractors');
+    });
+
+    it('should get the extractors', async () => {
+      const response = await request(app).get('/api/paragraphExtraction/extractors');
+
+      expect(response.body[0]._id.toString()).toBe(createdExtractorId);
+      expect(response.body[0].statusCount).toMatchObject({
+        [EntityStatus.Processing]: 2,
+        total: 2,
+      });
     });
   });
 });
