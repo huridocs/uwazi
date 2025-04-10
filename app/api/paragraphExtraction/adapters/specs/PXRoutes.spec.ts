@@ -8,10 +8,10 @@ import {
   PXCreateExtractorRequest,
   PXExtractNewRequest,
   PXExtractRequest,
+  PXGetEntityParagraphsRequest,
   PXGetExtractorStatusesRequest,
 } from 'api/paragraphExtraction/types';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { entityFixtures } from 'api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { paragraphExtractionRoutes } from '../PXRoutes';
@@ -20,6 +20,7 @@ import {
   user,
   fixtures,
   templateFixtures,
+  entityFixtures,
   relationshipTypesFixtures,
   paragraphProperty,
   paragraphNumberProperty,
@@ -192,6 +193,48 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
             entity: { sharedId: entityFixtures.entity2En.sharedId },
             paragraphsCount: 0,
             status: { status: EntityStatus.Processing },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('GET /api/paragraphExtraction/entityParagraphs', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/entityParagraphs');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'get', '/api/paragraphExtraction/entityParagraphs');
+    });
+
+    it('should get the entity paragraphs', async () => {
+      const query: PXGetEntityParagraphsRequest = {
+        id: entityFixtures.entity1En.sharedId!,
+        extractorId: createdExtractorId,
+        page: { number: 1, size: 3 },
+      };
+      const response = await request(app)
+        .get('/api/paragraphExtraction/entityParagraphs')
+        .query(query);
+
+      expect(response.body).toMatchObject({
+        totalRows: 2,
+        page: { number: 1, size: 3 },
+        rows: [
+          {
+            sharedId: entityFixtures.paragraph2En.sharedId,
+            entities: [
+              { _id: entityFixtures.paragraph2En._id?.toString() },
+              { _id: entityFixtures.paragraph2Pt._id?.toString() },
+            ],
+          },
+          {
+            sharedId: entityFixtures.paragraph1En.sharedId,
+            entities: [
+              { _id: entityFixtures.paragraph1En._id?.toString() },
+              { _id: entityFixtures.paragraph1Pt._id?.toString() },
+            ],
           },
         ],
       });

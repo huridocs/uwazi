@@ -38,3 +38,14 @@ export type PXGetExtractorStatusesRequest = {
       }
     | undefined;
 };
+
+export type PXGetEntityParagraphsRequest = {
+  extractorId: string;
+  id: string;
+  page?:
+    | {
+        number?: number | undefined;
+        size?: number | undefined;
+      }
+    | undefined;
+};
