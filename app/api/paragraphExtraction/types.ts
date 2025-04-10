@@ -15,6 +15,10 @@ export type PXCreateExtractorRequest = {
   paragraphNumberPropertyId: string;
 };
 
+export type PXDeleteExtractorRequest = {
+  id: string;
+};
+
 export type PXExtractRequest = {
   extractorId: string;
   entitySharedIds: string[];
