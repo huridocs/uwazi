@@ -1,4 +1,4 @@
-const debounce = (func: (args: any) => any, wait: number, immediate?: boolean) => {
+const debounce = <T>(func: (...args: any) => T, wait: number, immediate?: boolean) => {
   let timeoutId: undefined | ReturnType<typeof setTimeout>;
 
   return (...parameters: any) => {

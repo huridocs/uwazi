@@ -57,9 +57,9 @@ const StoryComponent = ({ args }: any) => {
             foldableGroups={args.foldableGroups}
             allowSelelectAll={args.allowSelelectAll}
             startOnSelected={args.startOnSelected}
-            value={args.value}
+            selectedValues={args.selectedValues}
             search={searchAndFocus}
-            lookup={args.lookup}
+            onSearch={args.onSearch}
           />
         </div>
       </div>
@@ -142,7 +142,7 @@ const InitialState: Story = {
   ...Primary,
   args: {
     ...Basic.args,
-    value: ['red', 'orange', 'banana'],
+    selectedValues: ['red', 'orange', 'banana'],
     startOnSelected: true,
     items: [
       {
@@ -203,7 +203,7 @@ const RemoteSearch: Story = {
     ...Basic.args,
     onChange: () => {},
     items: [],
-    lookup: remoteLookupFunction,
+    onSearch: remoteLookupFunction,
   },
 };
 

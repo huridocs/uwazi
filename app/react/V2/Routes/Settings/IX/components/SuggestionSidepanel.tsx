@@ -407,13 +407,13 @@ const SuggestionSidepanel = ({
         render={({ field: { onChange, value } }) => (
           <MultiselectList
             onChange={onChange}
-            value={value as string[]}
+            selectedValues={value as string[]}
             items={uniqueOptions}
             checkboxes
             singleSelect={type === 'select'}
             search={selectAndSearchValue}
             suggestions
-            lookup={_lookup}
+            onSearch={_lookup}
           />
         )}
       />
