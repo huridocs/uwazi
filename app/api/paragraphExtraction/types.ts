@@ -11,3 +11,7 @@ export type PXExtractRequest = {
   extractorId: string;
   entitySharedIds: string[];
 };
+
+export type PXExtractNewRequest = {
+  extractorId: string;
+};

@@ -4,7 +4,11 @@ import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
-import { PXCreateExtractorRequest, PXExtractRequest } from 'api/paragraphExtraction/types';
+import {
+  PXCreateExtractorRequest,
+  PXExtractNewRequest,
+  PXExtractRequest,
+} from 'api/paragraphExtraction/types';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { entityFixtures } from 'api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
@@ -93,16 +97,38 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
         extractorId: createdExtractorId,
         entitySharedIds: [entity1.sharedId!],
       };
-      await request(app).post('/api/paragraphExtraction/extract').send(body);
-      const extractorStatuses = await testingEnvironment.db.getAllFrom(
-        mongoPXEntitiesStatusCollection
-      );
 
-      const entity1Status = extractorStatuses?.find(s => s.entitySharedId === entity1.sharedId);
-      const entity2Status = extractorStatuses?.find(s => s.entitySharedId === entity2.sharedId);
+      await request(app).post('/api/paragraphExtraction/extract').send(body);
+
+      const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      const entity1Status = statuses?.find(s => s.entitySharedId === entity1.sharedId);
+      const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
 
       expect(entity1Status?.status).toBe(EntityStatus.Processing);
       expect(entity2Status?.status).toBe(EntityStatus.New);
+    });
+  });
+
+  describe('POST /api/paragraphExtraction/extractNew', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, '/api/paragraphExtraction/extractNew');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, '/api/paragraphExtraction/extractNew');
+    });
+
+    it('should trigger the extraction of entities in "new"', async () => {
+      const entity2 = entityFixtures.entity2En;
+
+      const body: PXExtractNewRequest = { extractorId: createdExtractorId };
+
+      await request(app).post('/api/paragraphExtraction/extractNew').send(body);
+
+      const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
+
+      expect(entity2Status?.status).toBe(EntityStatus.Processing);
     });
   });
 });
