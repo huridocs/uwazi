@@ -141,5 +141,21 @@ describe('Search routes', () => {
 
       expect(res.status).toBe(400);
     });
+
+    it('should respond 400 when property does not exists', async () => {
+      const res = await request(app)
+        .get('/api/search/lookupaggregation')
+        .query({ query: JSON.stringify({}), searchTerm: 'Bat', property: 'nonExistant' });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should not throw error when searchTerm is not present', async () => {
+      const res = await request(app)
+        .get('/api/search/lookupaggregation')
+        .query({ query: JSON.stringify({}), property: 'relationship' });
+
+      expect(res.status).toBe(200);
+    });
   });
 });
