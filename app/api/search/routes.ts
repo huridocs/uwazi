@@ -1,5 +1,6 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import { search } from 'api/search';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 export default (app: Application) => {
   app.get(
@@ -25,7 +26,12 @@ export default (app: Application) => {
       res: Response,
       next: NextFunction
     ) => {
-      const query = JSON.parse(req.query.query);
+      let query;
+      try {
+        query = JSON.parse(req.query.query);
+      } catch (e) {
+        throw new OperationalError('Invalid Query', { cause: e });
+      }
       search
         .autocompleteAggregations(
           query,
