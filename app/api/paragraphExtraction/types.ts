@@ -1,3 +1,11 @@
+enum EntityStatus {
+  New = 'new',
+  Processing = 'processing',
+  Obsolete = 'obsolete',
+  Error = 'error',
+  Processed = 'processed',
+}
+
 export type PXCreateExtractorRequest = {
   sourceRelationshipTypeId: string;
   targetRelationshipTypeId: string;
@@ -14,4 +22,19 @@ export type PXExtractRequest = {
 
 export type PXExtractNewRequest = {
   extractorId: string;
+};
+
+export type PXGetExtractorStatusesRequest = {
+  id: string;
+  filter?:
+    | {
+        status?: EntityStatus[] | undefined;
+      }
+    | undefined;
+  page?:
+    | {
+        number?: number | undefined;
+        size?: number | undefined;
+      }
+    | undefined;
 };

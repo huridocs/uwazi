@@ -8,6 +8,7 @@ import {
   PXCreateExtractorRequest,
   PXExtractNewRequest,
   PXExtractRequest,
+  PXGetExtractorStatusesRequest,
 } from 'api/paragraphExtraction/types';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { entityFixtures } from 'api/paragraphExtraction/application/specs/shared/extractorsQueryFixtures';
@@ -19,7 +20,7 @@ import {
   user,
   fixtures,
   templateFixtures,
-  relationshipFixtures,
+  relationshipTypesFixtures,
   paragraphProperty,
   paragraphNumberProperty,
 } from './fixtures';
@@ -77,8 +78,8 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
         targetTemplateId: templateFixtures.targetTemplate._id.toString(),
         paragraphPropertyId: paragraphProperty._id!.toString(),
         paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
-        sourceRelationshipTypeId: relationshipFixtures.sourceRelationshipType._id.toString(),
-        targetRelationshipTypeId: relationshipFixtures.targetRelationshipType._id.toString(),
+        sourceRelationshipTypeId: relationshipTypesFixtures.sourceRelationshipType._id.toString(),
+        targetRelationshipTypeId: relationshipTypesFixtures.targetRelationshipType._id.toString(),
       };
       const response = await request(app).post('/api/paragraphExtraction/extractor').send(body);
       const extractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
@@ -152,6 +153,47 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       expect(response.body[0].statusCount).toMatchObject({
         [EntityStatus.Processing]: 2,
         total: 2,
+      });
+    });
+  });
+
+  describe('GET /api/paragraphExtraction/extractorStatuses', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/extractorStatuses');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'get', '/api/paragraphExtraction/extractorStatuses');
+    });
+
+    it('should get the extractor statuses', async () => {
+      const query: PXGetExtractorStatusesRequest = {
+        id: createdExtractorId,
+        page: { number: 1, size: 2 },
+        filter: { status: [EntityStatus.Processing, EntityStatus.New] },
+      };
+      const response = await request(app)
+        .get('/api/paragraphExtraction/extractorStatuses')
+        .set('content-language', 'pt')
+        .query(query);
+
+      expect(response.body).toMatchObject({
+        totalRows: 2,
+        page: { number: 1, size: 2 },
+        rows: [
+          {
+            availableFileLanguages: ['en', 'pt'],
+            entity: { sharedId: entityFixtures.entity1En.sharedId, language: 'pt' },
+            paragraphsCount: 2,
+            status: { status: EntityStatus.Processing },
+          },
+          {
+            availableFileLanguages: ['en'],
+            entity: { sharedId: entityFixtures.entity2En.sharedId },
+            paragraphsCount: 0,
+            status: { status: EntityStatus.Processing },
+          },
+        ],
       });
     });
   });
