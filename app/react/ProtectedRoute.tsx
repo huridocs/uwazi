@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Navigate, Outlet } from 'react-router';
+import React, { ReactElement, useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router';
 import { store } from 'app/store';
 import { ClientSettings } from 'app/apiResponseTypes';
 
@@ -10,31 +10,29 @@ const ProtectedRoute = ({
   children: ReactElement;
   allowedRoles?: string[];
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const navigate = useNavigate();
+  const userId = store?.getState().user.get('_id');
+  const userRole = store?.getState().user.get('role') || '';
 
   useEffect(() => {
-    const userId = store?.getState().user.get('_id');
-    const userRole = store?.getState().user.get('role') || '';
-
-    if (allowedRoles && allowedRoles.includes(userRole)) {
-      setIsAuthenticated(true);
-    } else if (!allowedRoles && userId) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
+    if (allowedRoles && !allowedRoles.includes(userRole)) {
+      navigate('/login', { replace: true });
+    } else if (!allowedRoles && !userId) {
+      navigate('/login', { replace: true });
     }
-  }, [allowedRoles]);
+  }, [allowedRoles, userRole, userId, navigate]);
 
-  if (isAuthenticated === null) {
-    // Optionally, render a loading spinner or placeholder while authentication is being checked
-    return null;
-  }
-
-  if (isAuthenticated) {
+  // Render children or <Outlet> only if the user is authenticated
+  if (allowedRoles && allowedRoles.includes(userRole)) {
     return children || <Outlet />;
   }
 
-  return <Navigate to="/login" replace />;
+  if (!allowedRoles && userId) {
+    return children || <Outlet />;
+  }
+
+  // Optionally, render a fallback (e.g., a loading spinner) while redirecting
+  return null;
 };
 
 const adminsOnlyRoute = (element: ReactElement) => (
