@@ -23,34 +23,15 @@ const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
 
-  const { rows, totalRows, page, extractor, reloadData } =
-    useLoaderData() as PXEntityLoaderResponse;
+  const { rows, totalRows, extractor, page } = useLoaderData() as PXEntityLoaderResponse;
   const setFilterSidepanelStatus = useSetAtom(filterSidepanelStatusAtom);
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
-  const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
   const setNotifications = useSetAtom(notificationAtom);
   const [data, setData] = useState<TablePXEntityRow[]>(rows);
-  const [total, setTotal] = useState<number>(totalRows);
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
-
-  const updateData = async () => {
-    const result = (await reloadData?.()) || { rows, totalRows, extractor };
-    setData(prevRows => {
-      const newRows = [...prevRows];
-      newRows.forEach(row => {
-        const newStatus = result.rows.find(r => r.entity._id === row.entity._id)?.status;
-        if (newStatus && newStatus.status !== row.status.status) {
-          // eslint-disable-next-line no-param-reassign
-          row.status = { ...newStatus };
-        }
-      });
-      return newRows;
-    });
-
-    setTotal(result.totalRows);
-    setFilterSidepanelStatus(result.extractor?.statusCount || {});
-  };
+  const previousPageRef = React.useRef(page);
+  const newEntitiesCount = data.filter(row => row.status.status === EntityStatus.New).length;
 
   const handleExtract = async () => {
     setIsSaving(true);
@@ -69,7 +50,7 @@ const PXEntityDashboard = () => {
           type: 'success',
           text: <Translate>Paragraphs extracted</Translate>,
         });
-        await updateData();
+        await revalidator.revalidate();
       }
     } catch (error) {
       setNotifications({
@@ -83,13 +64,34 @@ const PXEntityDashboard = () => {
 
   useEffect(() => {
     setFilterSidepanelStatus(extractor?.statusCount || {});
+
+    if (page !== previousPageRef.current) {
+      setData(rows);
+      previousPageRef.current = page;
+    } else {
+      setData(prevRows =>
+        prevRows.map(row => {
+          const newStatus = rows.find(r => r.entity._id === row.entity._id)?.status;
+          if (newStatus && newStatus.status !== row.status.status) {
+            // Only reassign if status changed
+            // eslint-disable-next-line no-param-reassign
+            row.status = { ...newStatus };
+          }
+          return row;
+        })
+      );
+    }
+  }, [extractor?.statusCount, page, rows, setFilterSidepanelStatus]);
+
+  useEffect(() => {
     const interval = setInterval(async () => {
-      await updateData();
+      await revalidator.revalidate();
     }, PollIntervalSeconds * 1000);
 
     return () => clearInterval(interval);
+    // Only run this effect once
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page.size, rows, setFilterSidepanelStatus]);
+  }, []);
 
   return (
     <div
@@ -132,7 +134,7 @@ const PXEntityDashboard = () => {
                 setIsProcessing={setIsSaving}
                 onSuccess={async () => {
                   setSelected([]);
-                  await updateData();
+                  await revalidator.revalidate();
                 }}
                 selected={selected}
                 disabled={isSaving}
@@ -141,7 +143,7 @@ const PXEntityDashboard = () => {
                 <Translate>Selected</Translate>{' '}
                 <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
                 <Translate>of</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{total}</span>
+                <span className="text-gray-900 font-semibold">{totalRows}</span>
               </div>
             </div>
           )}

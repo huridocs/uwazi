@@ -65,20 +65,7 @@ const PXEntityLoader =
       };
     };
 
-    const result = await fetchData();
-
-    const reloadData = async () => {
-      const updatedResult = await fetchData();
-      return { ...updatedResult, reloadData };
-    };
-
-    return {
-      ...result,
-      reloadData: async () => {
-        const updatedResult = await fetchData();
-        return { ...updatedResult, reloadData };
-      },
-    };
+    return fetchData();
   };
 
 const getPXProperties = (
