@@ -22,7 +22,6 @@ const PollIntervalSeconds = 25;
 const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
-
   const { rows, totalRows, extractor, page } = useLoaderData() as PXEntityLoaderResponse;
   const setFilterSidepanelStatus = useSetAtom(filterSidepanelStatusAtom);
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);

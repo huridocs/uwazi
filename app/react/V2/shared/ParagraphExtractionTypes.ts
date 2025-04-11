@@ -61,7 +61,6 @@ type PXEntityLoaderResponse = {
   page: PXEntityRows['page'];
   totalRows: number;
   extractor?: Extractor;
-  reloadData?: () => Promise<PXEntityLoaderResponse>;
 };
 
 type PXParagraphQuery = {

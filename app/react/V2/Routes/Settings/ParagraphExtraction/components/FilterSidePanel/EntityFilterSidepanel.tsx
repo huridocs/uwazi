@@ -44,6 +44,7 @@ const EntityFilterSidepanel = () => {
     if (newFilters !== appliedFilters) {
       setAppliedFilters(newFilters);
     }
+    // avoids infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterSidepanelStatus]);
 

@@ -110,7 +110,6 @@ const Table = <T extends TableRow<T>>({
       });
     }
     return { memoizedColumns: tableColumns, groupColumnIndex: calculatedIndex };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columns, data, enableSelections, dnd]);
 
   const table = useReactTable({
@@ -137,7 +136,6 @@ const Table = <T extends TableRow<T>>({
   useEffect(() => {
     setDataState(data);
     setRowSelection(initialRowSelection);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   useEffect(() => {
