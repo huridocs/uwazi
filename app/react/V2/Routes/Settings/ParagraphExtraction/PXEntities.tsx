@@ -12,6 +12,7 @@ import { EntitiesTable } from './components/entities/Table';
 import { generateDisplayPill } from './utils/generateDisplayPill';
 import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
 import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel';
+import { filterSidepanelStatusAtom } from './components/FilterSidePanel/filterSidepanelAtom';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',
@@ -22,20 +23,34 @@ const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      await revalidator.revalidate();
-    }, PollIntervalSeconds * 1000);
-
-    return () => clearInterval(interval);
-  }, [revalidator]);
-
-  const { rows, totalRows, extractor } = useLoaderData() as PXEntityLoaderResponse;
+  const { rows, totalRows, page, extractor, reloadData } =
+    useLoaderData() as PXEntityLoaderResponse;
+  const setFilterSidepanelStatus = useSetAtom(filterSidepanelStatusAtom);
   const sourceTemplate = templates.find(template => template._id === extractor?.sourceTemplateId);
   const newEntitiesCount = rows.filter(row => row.status.status === EntityStatus.New).length;
   const setNotifications = useSetAtom(notificationAtom);
+  const [data, setData] = useState<TablePXEntityRow[]>(rows);
+  const [total, setTotal] = useState<number>(totalRows);
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<TablePXEntityRow[]>([]);
+
+  const updateData = async () => {
+    const result = (await reloadData?.()) || { rows, totalRows, extractor };
+    setData(prevRows => {
+      const newRows = [...prevRows];
+      newRows.forEach(row => {
+        const newStatus = result.rows.find(r => r.entity._id === row.entity._id)?.status;
+        if (newStatus && newStatus.status !== row.status.status) {
+          // eslint-disable-next-line no-param-reassign
+          row.status = { ...newStatus };
+        }
+      });
+      return newRows;
+    });
+
+    setTotal(result.totalRows);
+    setFilterSidepanelStatus(result.extractor?.statusCount || {});
+  };
 
   const handleExtract = async () => {
     setIsSaving(true);
@@ -54,6 +69,7 @@ const PXEntityDashboard = () => {
           type: 'success',
           text: <Translate>Paragraphs extracted</Translate>,
         });
+        await updateData();
       }
     } catch (error) {
       setNotifications({
@@ -64,6 +80,16 @@ const PXEntityDashboard = () => {
 
     setIsSaving(false);
   };
+
+  useEffect(() => {
+    setFilterSidepanelStatus(extractor?.statusCount || {});
+    const interval = setInterval(async () => {
+      await updateData();
+    }, PollIntervalSeconds * 1000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page.size, rows, setFilterSidepanelStatus]);
 
   return (
     <div
@@ -79,10 +105,11 @@ const PXEntityDashboard = () => {
         />
         <SettingsContent.Body>
           <EntitiesTable
-            pxEntitiesData={rows}
+            pxEntitiesData={data}
             onSelectionChange={setSelected}
             sourceTemplate={sourceTemplate}
             totalRows={totalRows}
+            initialSelection={selected}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
@@ -103,8 +130,9 @@ const PXEntityDashboard = () => {
             <div className="flex gap-2 items-center">
               <ExtractEntitiesDialog
                 setIsProcessing={setIsSaving}
-                onSuccess={() => {
+                onSuccess={async () => {
                   setSelected([]);
+                  await updateData();
                 }}
                 selected={selected}
                 disabled={isSaving}
@@ -113,7 +141,7 @@ const PXEntityDashboard = () => {
                 <Translate>Selected</Translate>{' '}
                 <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
                 <Translate>of</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{totalRows}</span>
+                <span className="text-gray-900 font-semibold">{total}</span>
               </div>
             </div>
           )}
