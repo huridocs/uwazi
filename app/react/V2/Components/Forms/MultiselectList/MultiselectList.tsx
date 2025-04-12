@@ -22,7 +22,7 @@ interface MultiselectListOption {
 
 interface MultiselectListProps {
   items: MultiselectListOption[];
-  onChange: (selectedValues: string[]) => void;
+  onChange?: (selectedValues: string[]) => void;
   onSearch?: (search: string, items?: MultiselectListOption[]) => Promise<MultiselectListOption[]>;
   selectedValues?: string[];
   label?: string | React.ReactNode;
