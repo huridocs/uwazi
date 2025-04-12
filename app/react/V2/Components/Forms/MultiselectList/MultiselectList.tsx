@@ -110,6 +110,7 @@ const MultiselectList = ({
   const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
     new Set(selectedValues)
   );
+  const [isDirty, setIsDirty] = useState(false);
   const optionsRef = useRef<HTMLUListElement>(null);
 
   const debouncedSearchRef = useRef(
@@ -160,9 +161,7 @@ const MultiselectList = ({
   }, [items, selections]);
 
   useEffect(() => {
-    if (searchTerm === '') {
-      setAvailableItems(items);
-    } else {
+    if (isDirty) {
       setSearching(true);
 
       debouncedSearchRef.current(searchTerm, items)?.catch(e => {
@@ -173,7 +172,9 @@ const MultiselectList = ({
 
       setSearching(false);
     }
-  }, [items, searchTerm]);
+  }, [isDirty, items, searchTerm]);
+
+  useEffect(() => () => setIsDirty(false), []);
 
   const handleSelect = (_value: string) => {
     let newValues;
@@ -314,7 +315,12 @@ const MultiselectList = ({
           id="search-multiselect"
           label="search-multiselect"
           hideLabel
-          onChange={e => setSearchTerm(e.currentTarget.value)}
+          onChange={e => {
+            if (!isDirty) {
+              setIsDirty(true);
+            }
+            setSearchTerm(e.currentTarget.value);
+          }}
           placeholder={t('System', 'Search', null, false)}
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
