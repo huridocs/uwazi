@@ -22,6 +22,15 @@ describe('handleError', () => {
   });
 
   describe('errors by type', () => {
+    describe('when error is bodyparser error parsing a json', () => {
+      it('should be a 422 debug logLevel', () => {
+        const errorInstance = new SyntaxError('parsing error');
+        errorInstance.type = 'entity.parse.failed';
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({ code: 400, logLevel: 'debug' });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('parsing error');
+      });
+    });
     describe('and is instance of OperationalError', () => {
       it('should be a 422 debug logLevel', () => {
         const errorInstance = new OperationalError('operational error');
