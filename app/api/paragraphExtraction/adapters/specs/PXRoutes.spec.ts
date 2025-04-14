@@ -1,0 +1,270 @@
+/* eslint-disable max-statements */
+import request from 'supertest';
+import { Application } from 'express';
+
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { tenants } from 'api/tenants';
+import {
+  PXCreateExtractorRequest,
+  PXDeleteExtractorRequest,
+  PXExtractNewRequest,
+  PXExtractRequest,
+  PXGetEntityParagraphsRequest,
+  PXGetExtractorStatusesRequest,
+} from 'api/paragraphExtraction/types';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { paragraphExtractionRoutes } from '../PXRoutes';
+
+import {
+  user,
+  fixtures,
+  templateFixtures,
+  entityFixtures,
+  relationshipTypesFixtures,
+  paragraphProperty,
+  paragraphNumberProperty,
+} from './fixtures';
+
+const checkFlagEnabledForRoute = async (
+  app: Application,
+  method: 'get' | 'post' | 'delete',
+  route: string
+) => {
+  tenants.current().featureFlags!.paragraphExtraction = false;
+  const response = await request(app)[method](route);
+  expect(response.statusCode).toBe(403);
+  tenants.current().featureFlags!.paragraphExtraction = true;
+};
+
+const checkValidationForRoute = async (
+  app: Application,
+  method: 'get' | 'post' | 'delete',
+  route: string
+) => {
+  const req = request(app)[method](route);
+  if (method === 'post') {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    req.send({ not_allowed_property: { key: 'value' } });
+  }
+
+  const response = await req;
+
+  expect(response.statusCode).toBe(422);
+  expect(response.body.error).toContain('validation failed');
+};
+
+describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)', () => {
+  const app: Application = setUpApp(paragraphExtractionRoutes, (req, _res, next) => {
+    (req as any).user = user;
+    next();
+  });
+
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterAll(async () => testingEnvironment.tearDown());
+
+  let createdExtractorId = '';
+
+  describe('POST /api/paragraphExtraction/extractor', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extractor');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extractor');
+    });
+
+    it('should create the extractor', async () => {
+      const body: PXCreateExtractorRequest = {
+        sourceTemplateId: templateFixtures.sourceTemplate._id.toString(),
+        targetTemplateId: templateFixtures.targetTemplate._id.toString(),
+        paragraphPropertyId: paragraphProperty._id!.toString(),
+        paragraphNumberPropertyId: paragraphNumberProperty._id!.toString(),
+        sourceRelationshipTypeId: relationshipTypesFixtures.sourceRelationshipType._id.toString(),
+        targetRelationshipTypeId: relationshipTypesFixtures.targetRelationshipType._id.toString(),
+      };
+      const response = await request(app).post('/api/paragraphExtraction/extractor').send(body);
+      const extractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
+      createdExtractorId = extractors?.[0]._id.toString() || '';
+
+      expect(response.body.extractorId).toBe(createdExtractorId);
+    });
+  });
+
+  describe('POST /api/paragraphExtraction/extract', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extract');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extract');
+    });
+
+    it('should trigger the extraction', async () => {
+      const entity1 = entityFixtures.entity1En;
+      const entity2 = entityFixtures.entity2En;
+
+      const body: PXExtractRequest = {
+        extractorId: createdExtractorId,
+        entitySharedIds: [entity1.sharedId!],
+      };
+
+      await request(app).post('/api/paragraphExtraction/extract').send(body);
+
+      const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      const entity1Status = statuses?.find(s => s.entitySharedId === entity1.sharedId);
+      const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
+
+      expect(entity1Status?.status).toBe(EntityStatus.Processing);
+      expect(entity2Status?.status).toBe(EntityStatus.New);
+    });
+  });
+
+  describe('POST /api/paragraphExtraction/extractNew', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extractNew');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extractNew');
+    });
+
+    it('should trigger the extraction of entities in "new"', async () => {
+      const entity2 = entityFixtures.entity2En;
+
+      const body: PXExtractNewRequest = { extractorId: createdExtractorId };
+
+      await request(app).post('/api/paragraphExtraction/extractNew').send(body);
+
+      const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
+
+      expect(entity2Status?.status).toBe(EntityStatus.Processing);
+    });
+  });
+
+  describe('GET /api/paragraphExtraction/extractors', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/extractors');
+    });
+
+    it('should get the extractors', async () => {
+      const response = await request(app).get('/api/paragraphExtraction/extractors');
+
+      expect(response.body[0]._id.toString()).toBe(createdExtractorId);
+      expect(response.body[0].statusCount).toMatchObject({
+        [EntityStatus.Processing]: 2,
+        total: 2,
+      });
+    });
+  });
+
+  describe('GET /api/paragraphExtraction/extractorStatuses', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/extractorStatuses');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'get', '/api/paragraphExtraction/extractorStatuses');
+    });
+
+    it('should get the extractor statuses', async () => {
+      const query: PXGetExtractorStatusesRequest = {
+        id: createdExtractorId,
+        page: { number: 1, size: 2 },
+        filter: { status: [EntityStatus.Processing, EntityStatus.New] },
+      };
+      const response = await request(app)
+        .get('/api/paragraphExtraction/extractorStatuses')
+        .set('content-language', 'pt')
+        .query(query);
+
+      expect(response.body).toMatchObject({
+        totalRows: 2,
+        page: { number: 1, size: 2 },
+        rows: [
+          {
+            availableFileLanguages: ['en', 'pt'],
+            entity: { sharedId: entityFixtures.entity1En.sharedId, language: 'pt' },
+            paragraphsCount: 2,
+            status: { status: EntityStatus.Processing },
+          },
+          {
+            availableFileLanguages: ['en'],
+            entity: { sharedId: entityFixtures.entity2En.sharedId },
+            paragraphsCount: 0,
+            status: { status: EntityStatus.Processing },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('GET /api/paragraphExtraction/entityParagraphs', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'get', '/api/paragraphExtraction/entityParagraphs');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'get', '/api/paragraphExtraction/entityParagraphs');
+    });
+
+    it('should get the entity paragraphs', async () => {
+      const query: PXGetEntityParagraphsRequest = {
+        id: entityFixtures.entity1En.sharedId!,
+        extractorId: createdExtractorId,
+        page: { number: 1, size: 3 },
+      };
+      const response = await request(app)
+        .get('/api/paragraphExtraction/entityParagraphs')
+        .query(query);
+
+      expect(response.body).toMatchObject({
+        totalRows: 2,
+        page: { number: 1, size: 3 },
+        rows: [
+          {
+            sharedId: entityFixtures.paragraph2En.sharedId,
+            entities: [
+              { _id: entityFixtures.paragraph2En._id?.toString() },
+              { _id: entityFixtures.paragraph2Pt._id?.toString() },
+            ],
+          },
+          {
+            sharedId: entityFixtures.paragraph1En.sharedId,
+            entities: [
+              { _id: entityFixtures.paragraph1En._id?.toString() },
+              { _id: entityFixtures.paragraph1Pt._id?.toString() },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
+  describe('DELETE /api/paragraphExtraction/extractor', () => {
+    it('should require the feature flag enabled', async () => {
+      await checkFlagEnabledForRoute(app, 'delete', '/api/paragraphExtraction/extractor');
+    });
+
+    it('should validate the input', async () => {
+      await checkValidationForRoute(app, 'delete', '/api/paragraphExtraction/extractor');
+    });
+
+    it('should get the entity paragraphs', async () => {
+      const query: PXDeleteExtractorRequest = {
+        id: createdExtractorId,
+      };
+      const response = await request(app).delete('/api/paragraphExtraction/extractor').query(query);
+      const extractors = await testingEnvironment.db.getAllFrom(mongoPXExtractorsCollection);
+
+      expect(response.body).toMatchObject({ success: true });
+      expect(extractors?.length).toBe(0);
+    });
+  });
+});
