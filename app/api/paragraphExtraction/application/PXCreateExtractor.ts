@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import relationshipTypeDS from 'api/relationtypes';
@@ -11,17 +9,16 @@ import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
-type Input = z.infer<typeof InputSchema>;
-type Output = PXExtractor;
+type Input = {
+  targetTemplateId: string;
+  sourceTemplateId: string;
+  paragraphPropertyId: string;
+  paragraphNumberPropertyId: string;
+  sourceRelationshipTypeId: string;
+  targetRelationshipTypeId: string;
+};
 
-const InputSchema = z.object({
-  targetTemplateId: z.string({ message: 'You should provide a target template' }),
-  sourceTemplateId: z.string({ message: 'You should provide a source template' }),
-  paragraphPropertyId: z.string(),
-  paragraphNumberPropertyId: z.string(),
-  sourceRelationshipTypeId: z.string(),
-  targetRelationshipTypeId: z.string(),
-});
+type Output = PXExtractor;
 
 type Dependencies = {
   templatesDS: TemplatesDataSource;
@@ -123,6 +120,6 @@ class PXCreateExtractor implements UseCase<Input, Output> {
   }
 }
 
-export { InputSchema, PXCreateExtractor };
+export { PXCreateExtractor };
 
 export type { Input };

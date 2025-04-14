@@ -7,14 +7,13 @@ import {
 import { PXExtractParagraphsByEntityStatusFactory } from '../infrastructure/PXExtractParagraphByEntityStatusFactory ';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 
+const RequestSchema = z.object({
+  extractorId: z.string({ message: 'You should provide an Extractor' }),
+});
+
 type Request = z.infer<typeof RequestSchema>;
 
 type Dependencies = AbstractControllerDependencies<Request>;
-
-const RequestSchema = z.object({
-  extractorId: z.string({ message: 'You should provide an Extractor' }),
-  status: z.nativeEnum(EntityStatus).optional(),
-});
 
 class PXExtractParagraphsByEntityStatusController extends AbstractController<Request> {
   constructor(dependencies: Dependencies) {
@@ -22,13 +21,13 @@ class PXExtractParagraphsByEntityStatusController extends AbstractController<Req
   }
 
   async handle(): Promise<void> {
+    const { extractorId } = RequestSchema.parse(this.request.body);
+
     this.ensureUser();
 
     const useCase = await PXExtractParagraphsByEntityStatusFactory.createDefault({
       tenantName: this.tenantName,
     });
-
-    const { extractorId } = RequestSchema.parse(this.request.body);
 
     await useCase.execute({
       userId: this.user._id.toString()!,
