@@ -21,7 +21,7 @@ export class PXEntityParagraphsFactory {
 
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
-      mongoTransactionManager,
+      transactionManager: mongoTransactionManager,
     });
 
     const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);

@@ -220,11 +220,20 @@ class MongoPXExtractorsQueryService
           as: 'entityStatuses',
         },
       },
-      { $unwind: { path: '$entityStatuses', preserveNullAndEmptyArrays: false } },
+      {
+        $unwind: { path: '$entityStatuses', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $addFields: {
+          entityIdForLookup: {
+            $ifNull: ['$entityStatuses.entitySharedId', input.id],
+          },
+        },
+      },
       {
         $lookup: {
           from: 'connections',
-          localField: 'entityStatuses.entitySharedId',
+          localField: 'entityIdForLookup',
           foreignField: 'entity',
           as: 'sourceRelationships',
         },

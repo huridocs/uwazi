@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { ObjectId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -20,10 +20,14 @@ import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsD
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import { ConnectionSchema } from 'shared/types/connectionType';
+import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource';
 import { Input, PXCreateExtractor } from '../PXCreateExtractor';
 
-const factory = getFixturesFactory();
+const f = getFixturesFactory();
 
 type SetUpUseCaseProps = {
   entitiesStatusDS?: MongoPXEntitiesStatusDataSource;
@@ -38,9 +42,18 @@ const setUpUseCase = (props?: SetUpUseCaseProps) => {
     mongoTransactionManager,
   });
   const settingsDS = new MongoSettingsDataSource(connection, mongoTransactionManager);
+  const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+    connection,
+    transactionManager: mongoTransactionManager,
+  });
   const entitiesStatusDS =
     props?.entitiesStatusDS ??
-    new MongoPXEntitiesStatusDataSource(connection, mongoTransactionManager, settingsDS);
+    new MongoPXEntitiesStatusDataSource(
+      connection,
+      mongoTransactionManager,
+      settingsDS,
+      extractorsQueryService
+    );
 
   return {
     createExtractor: new PXCreateExtractor({
@@ -54,34 +67,40 @@ const setUpUseCase = (props?: SetUpUseCaseProps) => {
   };
 };
 
-const sourceTemplate = factory.template('Source Template', [factory.property('text', 'text')]);
-const paragraphProperty = factory.property('paragraphProperty', 'markdown');
-const paragraphNumberProperty = factory.property('paragraphNumberProperty', 'numeric');
-const textProperty = factory.property('textProperty', 'text');
+const sourceTemplate = f.template('Source Template', [f.property('text', 'text')]);
+const paragraphProperty = f.property('paragraphProperty', 'markdown');
+const paragraphNumberProperty = f.property('paragraphNumberProperty', 'numeric');
+const textProperty = f.property('textProperty', 'text');
 
-const targetTemplate = factory.template('Target Template', [
+const targetTemplate = f.template('Target Template', [
   paragraphProperty,
   paragraphNumberProperty,
   textProperty,
 ]);
 
-const invalidTargetTemplate = factory.template('Invalid Target');
+const invalidTargetTemplate = f.template('Invalid Target');
 
 const sourceRelationshipType = {
-  _id: factory.id('sourceRelationshipType'),
+  _id: f.id('sourceRelationshipType'),
   name: 'Source Relationship Type',
   properties: [],
 };
 
 const targetRelationshipType = {
-  _id: factory.id('targetRelationshipType'),
+  _id: f.id('targetRelationshipType'),
   name: 'Target Relationship Type',
+  properties: [],
+};
+
+const nonRelevantRelationshipType = {
+  _id: f.id('nonRelevantRelationshipType'),
+  name: 'Other Relationship Type',
   properties: [],
 };
 
 const createFixtures = (): DBFixture => ({
   templates: [sourceTemplate, targetTemplate, invalidTargetTemplate],
-  relationtypes: [sourceRelationshipType, targetRelationshipType],
+  relationtypes: [sourceRelationshipType, targetRelationshipType, nonRelevantRelationshipType],
   settings: [
     {
       languages: [
@@ -131,64 +150,137 @@ describe('PXCreateExtractor', () => {
     ]);
   });
 
-  it('should create EntityStatuses for each source entity that match Extractor configuration and have at least one Document of the UI language', async () => {
-    const [entity1, entity1Es] = factory.entityInMultipleLanguages(
-      ['en', 'es'],
-      'entity1',
-      'Source Template'
-    );
+  describe('Entity Statuses', () => {
+    const prepareData = async () => {
+      const langs = ['en', 'es'];
+      const [entity1, entity1Es] = f.entityInMultipleLanguages(langs, 'entity1', 'Source Template');
 
-    const [entity2, entity2Es] = factory.entityInMultipleLanguages(
-      ['en', 'es'],
-      'entity2',
-      'Source Template'
-    );
+      const [entity2, entity2Es] = f.entityInMultipleLanguages(langs, 'entity2', 'Source Template');
 
-    const [entity3, entity3Es] = factory.entityInMultipleLanguages(
-      ['en', 'es'],
-      'entity_with_document_in_another_language',
-      'Source Template'
-    );
+      const [entity3, entity3Es] = f.entityInMultipleLanguages(
+        langs,
+        'entity_with_document_in_another_language',
+        'Source Template'
+      );
 
-    const [entity4, entity4Es] = factory.entityInMultipleLanguages(
-      ['en', 'es'],
-      'entity_without_documents',
-      'Source Template'
-    );
+      const [entity4, entity4Es] = f.entityInMultipleLanguages(
+        langs,
+        'entity_without_documents',
+        'Source Template'
+      );
 
-    const document1 = factory.document('document', { entity: entity1.sharedId, language: 'en' });
-    const document2 = factory.document('document2', { entity: entity2.sharedId, language: 'es' });
-    const document3 = factory.document('document_in_another_language', {
-      entity: entity3.sharedId,
-      language: 'pt',
+      const document1 = f.document('document', { entity: entity1.sharedId, language: 'en' });
+      const document2 = f.document('document2', { entity: entity2.sharedId, language: 'es' });
+      const document3 = f.document('document_in_another_language', {
+        entity: entity3.sharedId,
+        language: 'pt',
+      });
+
+      return {
+        entities: {
+          entity1,
+          entity2,
+          entity1Es,
+          entity2Es,
+          entity3,
+          entity3Es,
+          entity4,
+          entity4Es,
+        },
+        files: { document1, document2, document3 },
+      };
+    };
+
+    const prepareAdditionalData = (baseEntities: Record<string, EntitySchema>) => {
+      const [p1En, p1Es] = f.entityInMultipleLanguages(['en', 'es'], 'p1', 'Target Template');
+      const [rLeft, rRight] = f.bidirectionalHub(
+        'hub1',
+        { entity: baseEntities.entity2.sharedId!, template: 'sourceRelationshipType' },
+        [{ entity: p1En.sharedId!, template: 'targetRelationshipType' }]
+      );
+      const [anotherRelationshipL, anotherRelationshipR] = f.bidirectionalHub(
+        'hub2',
+        { entity: baseEntities.entity1.sharedId!, template: 'sourceRelationshipType' },
+        [{ entity: p1En.sharedId!, template: 'nonRelevantRelationshipType' }]
+      );
+
+      return {
+        entities: { ...baseEntities, p1En, p1Es } as Record<string, EntitySchema>,
+        relationships: { rLeft, rRight, anotherRelationshipL, anotherRelationshipR },
+      };
+    };
+
+    const insertData = async (
+      entities: Record<string, EntitySchema>,
+      files: Record<string, WithId<FileType>>,
+      relationships?: Record<string, ConnectionSchema>
+    ) => {
+      const data: any = {
+        ...createFixtures(),
+        entities: Object.values(entities),
+        files: Object.values(files),
+      };
+
+      if (relationships) {
+        data.connections = Object.values(relationships);
+      }
+
+      await testingEnvironment.setUp(data);
+    };
+
+    it('should create one for each source entity that match Extractor configuration with at least one Document of the UI language', async () => {
+      const { entities, files } = await prepareData();
+      await insertData(entities, files);
+
+      const { createExtractor } = setUpUseCase();
+
+      const extractor = await createExtractor.execute(buildExtractorInput());
+
+      const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      )) as MongoPXEntityStatusDBO[];
+
+      expect(mongoEntityStatuses).toMatchObject([
+        {
+          status: EntityStatus.New,
+          extractorId: new ObjectId(extractor.id),
+          entitySharedId: entities.entity1.sharedId,
+        },
+        {
+          status: EntityStatus.New,
+          extractorId: new ObjectId(extractor.id),
+          entitySharedId: entities.entity2.sharedId,
+        },
+      ]);
     });
 
-    await testingEnvironment.setUp({
-      ...createFixtures(),
-      entities: [entity1, entity2, entity1Es, entity2Es, entity3, entity3Es, entity4, entity4Es],
-      files: [document1, document2, document3],
+    it('should set status to "Processed" for scenarios that match previously existing data extracted and ignore non-relevant relationships', async () => {
+      const { entities: baseEntities, files } = await prepareData();
+      const { entities, relationships } = prepareAdditionalData(baseEntities);
+
+      await insertData(entities, files, relationships);
+
+      const { createExtractor } = setUpUseCase();
+
+      const extractor = await createExtractor.execute(buildExtractorInput());
+
+      const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
+        mongoPXEntitiesStatusCollection
+      )) as MongoPXEntityStatusDBO[];
+
+      expect(mongoEntityStatuses).toMatchObject([
+        {
+          status: EntityStatus.New,
+          extractorId: new ObjectId(extractor.id),
+          entitySharedId: entities.entity1.sharedId,
+        },
+        {
+          status: EntityStatus.Processed,
+          extractorId: new ObjectId(extractor.id),
+          entitySharedId: entities.entity2.sharedId,
+        },
+      ]);
     });
-
-    const { createExtractor } = setUpUseCase();
-
-    const extractor = await createExtractor.execute(buildExtractorInput());
-
-    const mongoEntityStatuses = (await testingEnvironment.db.getAllFrom(
-      mongoPXEntitiesStatusCollection
-    )) as MongoPXEntityStatusDBO[];
-
-    expect(mongoEntityStatuses).toMatchObject([
-      {
-        status: EntityStatus.New,
-        extractorId: new ObjectId(extractor.id),
-        entitySharedId: entity1.sharedId,
-      },
-      {
-        status: EntityStatus.New,
-        extractorId: new ObjectId(extractor.id),
-        entitySharedId: entity2.sharedId,
-      },
-    ]);
   });
 
   it('should revert Extractor creation if EntityStatus creation goes wrong', async () => {
@@ -279,7 +371,7 @@ describe('PXCreateExtractor', () => {
 
     it('should throw if source template is used by another Extractor', async () => {
       const extractor: MongoPXExtractorDBO = {
-        _id: factory.id('extractor'),
+        _id: f.id('extractor'),
         sourceTemplateId: sourceTemplate._id,
         targetTemplateId: new ObjectId(),
         paragraphPropertyId: new ObjectId(),

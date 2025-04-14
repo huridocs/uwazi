@@ -6,6 +6,7 @@ import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrast
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
 import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
 import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory';
+import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -60,24 +61,37 @@ export function registerJobs(
 
   register(PXExtractParagraphsFromEntityJob, async () => {
     const transactionManager = DefaultTransactionManager();
+    const connection = getConnection();
+    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+      connection,
+      transactionManager,
+    });
     return new PXExtractParagraphsFromEntityJob({
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
         getConnection(),
         transactionManager,
-        DefaultSettingsDataSource(transactionManager)
+        DefaultSettingsDataSource(transactionManager),
+        extractorsQueryService
       ),
     });
   });
 
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = DefaultTransactionManager();
+    const connection = getConnection();
+    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+      connection,
+      transactionManager,
+    });
+
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
       useCase: PXCreateParagraphsFactory.createDefault(),
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
         getConnection(),
         transactionManager,
-        DefaultSettingsDataSource(transactionManager)
+        DefaultSettingsDataSource(transactionManager),
+        extractorsQueryService
       ),
     });
   });
