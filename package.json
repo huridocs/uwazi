@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.207.11",
+  "version": "1.208.2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -39,7 +39,7 @@
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
     "tailwind-watch": "yarn run tailwind --watch",
     "tailwind": " touch ./app/react/App/styles/globals.css && npx tailwindcss -i ./app/react/App/styles/main.css -o ./app/react/App/styles/globals.css",
-    "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn tailwind-watch & yarn run dev-server & yarn run webpack-server",
+    "hot": "export HOT=true; export BABEL_ENV=debug; concurrently \"yarn run watch-types\" \"yarn tailwind-watch\" \"yarn run dev-server\" \"yarn run webpack-server\"",
     "hot-e2e": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e EXTERNAL_SERVICES=true yarn hot",
     "run-e2e": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e EXTERNAL_SERVICES=true yarn run-production",
     "hot-inspect": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn dev-server --inspect & yarn run webpack-server",
@@ -332,6 +332,7 @@
     "babel-plugin-module-resolver": "5.0.2",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "4.0.0",
+    "concurrently": "^9.1.2",
     "copy-webpack-plugin": "12.0.2",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",

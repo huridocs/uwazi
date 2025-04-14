@@ -133,5 +133,29 @@ describe('Search routes', () => {
       expect(options[0].label).toBeDefined();
       expect(options[0].results).toBeDefined();
     });
+
+    it('should manage JSON.parse errors (do not return 500)', async () => {
+      const res = await request(app)
+        .get('/api/search/lookupaggregation')
+        .query({ query: 'undefined', searchTerm: 'Bat', property: 'relationship' });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should respond 400 when property does not exists', async () => {
+      const res = await request(app)
+        .get('/api/search/lookupaggregation')
+        .query({ query: JSON.stringify({}), searchTerm: 'Bat', property: 'nonExistant' });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should not throw error when searchTerm is not present', async () => {
+      const res = await request(app)
+        .get('/api/search/lookupaggregation')
+        .query({ query: JSON.stringify({}), property: 'relationship' });
+
+      expect(res.status).toBe(200);
+    });
   });
 });

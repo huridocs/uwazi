@@ -68,6 +68,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
   }
 
+  if (error instanceof SyntaxError && error.type === 'entity.parse.failed') {
+    result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
+  }
+
   if (error instanceof OperationalError) {
     result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
   }
