@@ -233,6 +233,9 @@ describe('PDF display', () => {
         cy.contains('Los escritos de 17 de septiembre y 17 de noviembre de 2010,').should(
           'be.visible'
         );
+      });
+
+      it('should check that can edit and cancel', () => {
         cy.get('.ContextMenu-bottom .btn').realTouch();
         cy.contains('.btn', 'Edit').realTouch();
         cy.get('.highlight-rectangle').toMatchSnapshot({ name: 'responsive selection' });

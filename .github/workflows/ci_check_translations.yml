@@ -30,7 +30,7 @@ jobs:
           sudo apt-get install -y mongodb-mongosh
           sudo apt-get install -y mongodb-org-tools
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0 
+        uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
