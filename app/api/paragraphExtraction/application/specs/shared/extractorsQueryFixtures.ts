@@ -75,6 +75,11 @@ const [entity6En, entity6Pt] = f.entityInMultipleLanguages(lang, 'entity6', sour
 const [entity7En, entity7Pt] = f.entityInMultipleLanguages(lang, 'entity7', sourceTemplate1.name);
 const [entity8En, entity8Pt] = f.entityInMultipleLanguages(lang, 'entity8', sourceTemplate1.name);
 const [entity9En, entity9Pt] = f.entityInMultipleLanguages(lang, 'entity9', sourceTemplate1.name);
+const [entity10En, entity10Pt] = f.entityInMultipleLanguages(
+  lang,
+  'entity10',
+  sourceTemplate1.name
+);
 const [entityWithoutExtractorEn] = f.entityInMultipleLanguages(
   lang,
   'entityWithoutExtractor',
@@ -279,6 +284,13 @@ const pxEntityStatus9: MongoPXEntityStatusDBO = {
   status: EntityStatus.New,
 };
 
+const pxEntityStatus10: MongoPXEntityStatusDBO = {
+  _id: f.id('pxEntityStatus10'),
+  entitySharedId: entity10En.sharedId!,
+  extractorId: extractor1._id,
+  status: EntityStatus.ProcessingObsolete,
+};
+
 const entityFixtures = {
   entity1En,
   entity1Pt,
@@ -360,7 +372,10 @@ const fixtures = {
 export {
   fixtures as extractorsQueryFixtures,
   entityFixtures,
+  entity10En,
+  entity10Pt,
   entityStatusFixtures,
+  pxEntityStatus10,
   relationshipFixtures,
   extractor1,
   extractor2,

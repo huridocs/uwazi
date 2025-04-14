@@ -20,9 +20,14 @@ import {
   relationshipFixtures,
   paragraphNumberProperty,
   paragraphProperty,
+  pxEntityStatus10,
+  entity10En,
+  entity10Pt,
 } from '../../application/specs/shared/extractorsQueryFixtures';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
+import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
@@ -74,6 +79,29 @@ describe('MongoPXExtractorsQueryService', () => {
           paragraphNumberPropertyId: paragraphNumberProperty._id?.toString(),
           paragraphPropertyId: paragraphProperty._id?.toString(),
           statusCount: { new: 0, processing: 0, obsolete: 0, error: 0, processed: 0, total: 0 },
+        },
+      ]);
+    });
+
+    it('should count processing_obsolete status as processing', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        [mongoPXExtractorsCollection]: [extractor1],
+        [mongoPXEntitiesStatusCollection]: [entityStatusFixtures.pxEntityStatus5, pxEntityStatus10],
+      });
+
+      const { extractorsQueryService } = setUpSut();
+
+      const extractors = await extractorsQueryService.getExtractors().all();
+
+      expect(extractors).toMatchObject([
+        {
+          _id: extractor1._id.toString(),
+          sourceTemplateId: sourceTemplate1._id.toString(),
+          targetTemplateId: targetTemplate1._id.toString(),
+          paragraphNumberPropertyId: paragraphNumberProperty._id?.toString(),
+          paragraphPropertyId: paragraphProperty._id?.toString(),
+          statusCount: { new: 0, processing: 2, obsolete: 0, error: 0, processed: 0, total: 2 },
         },
       ]);
     });
@@ -167,6 +195,85 @@ describe('MongoPXExtractorsQueryService', () => {
           ],
           page: { number: 1, size: 10 },
           totalRows: 4,
+        },
+      ]);
+    });
+
+    it('should map processing_obsolete output to processing', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        entities: [entityFixtures.entity9En, entityFixtures.entity9Pt, entity10En, entity10Pt],
+        [mongoPXEntitiesStatusCollection]: [entityStatusFixtures.pxEntityStatus9, pxEntityStatus10],
+      });
+      const { extractorsQueryService } = setUpSut();
+
+      const extractorStatuses = await extractorsQueryService
+        .getExtractorStatuses({
+          id: extractor1._id.toString(),
+          language: 'pt',
+          page: { number: 1, size: 2 },
+        })
+        .all();
+
+      expect(extractorStatuses).toMatchObject([
+        {
+          rows: [
+            {
+              entity: {
+                _id: entity10Pt._id?.toString(),
+                language: entity10Pt.language,
+                sharedId: entity10Pt.sharedId,
+                title: entity10Pt.sharedId,
+              },
+              status: {
+                _id: pxEntityStatus10._id.toString(),
+                status: EntityStatus.Processing,
+              },
+            },
+            expectedRow(9, EntityStatus.New),
+          ],
+          page: { number: 1, size: 2 },
+          totalRows: 2,
+        },
+      ]);
+    });
+
+    it('should also include processing_obsolete if filter has processing', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        entities: [entityFixtures.entity7En, entityFixtures.entity5Pt, entity10En, entity10Pt],
+        [mongoPXEntitiesStatusCollection]: [entityStatusFixtures.pxEntityStatus5, pxEntityStatus10],
+      });
+      const { extractorsQueryService } = setUpSut();
+
+      const extractorStatuses = await extractorsQueryService
+        .getExtractorStatuses({
+          id: extractor1._id.toString(),
+          language: 'pt',
+          page: { number: 1, size: 2 },
+          filter: { status: [EntityStatus.Processing] },
+        })
+        .all();
+
+      expect(extractorStatuses).toMatchObject([
+        {
+          rows: [
+            {
+              entity: {
+                _id: entity10Pt._id?.toString(),
+                language: entity10Pt.language,
+                sharedId: entity10Pt.sharedId,
+                title: entity10Pt.sharedId,
+              },
+              status: {
+                _id: pxEntityStatus10._id.toString(),
+                status: EntityStatus.Processing,
+              },
+            },
+            expectedRow(5, EntityStatus.Processing),
+          ],
+          page: { number: 1, size: 2 },
+          totalRows: 2,
         },
       ]);
     });

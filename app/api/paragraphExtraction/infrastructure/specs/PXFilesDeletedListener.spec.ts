@@ -65,6 +65,7 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
+// eslint-disable-next-line max-statements
 describe('PXFilesDeletedListener', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(createFixtures());
@@ -92,6 +93,32 @@ describe('PXFilesDeletedListener', () => {
     expect(mongoEntitiesStatus).toMatchObject([
       {
         status: EntityStatus.Obsolete,
+      },
+    ]);
+  });
+
+  it('should mark EntityStatus as processing_obsolete if there is a processing going on', async () => {
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      files: [documentEn],
+      [mongoPXEntitiesStatusCollection]: [
+        { ...mongoEntityStatus, status: EntityStatus.Processing },
+      ],
+    });
+    const eventBus = new EventsBus();
+    new PXFilesDeletedListener(eventBus).start();
+
+    const files: FileType[] = [documentPt];
+
+    await eventBus.emit(new FilesDeletedEvent({ files }));
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    expect(mongoEntitiesStatus).toMatchObject([
+      {
+        status: EntityStatus.ProcessingObsolete,
       },
     ]);
   });

@@ -29,6 +29,13 @@ const mongoEntityStatus2: MongoPXEntityStatusDBO = {
   status: EntityStatus.New,
 };
 
+const mongoEntityStatus3: MongoPXEntityStatusDBO = {
+  _id: new ObjectId(),
+  entitySharedId: new ObjectId().toString(),
+  extractorId: extractor._id,
+  status: EntityStatus.ProcessingObsolete,
+};
+
 const createFixtures = (): DBFixture => ({
   [mongoPXEntitiesStatusCollection]: [mongoEntityStatus1, mongoEntityStatus2],
 });
@@ -131,13 +138,14 @@ describe('PXExtractParagraphFromEntities', () => {
       [mongoPXEntitiesStatusCollection]: [
         mongoEntityStatus1,
         { ...mongoEntityStatus2, status: EntityStatus.Processing },
+        mongoEntityStatus3,
       ],
     });
     const { extractParagraphFromEntities, dispatcher } = setUpUseCase();
 
     const input: Input = {
       extractorId: extractor._id.toString(),
-      entitySharedIds: [entity1.sharedId!, entity2.sharedId!],
+      entitySharedIds: [entity1.sharedId!, entity2.sharedId!, mongoEntityStatus3.entitySharedId],
       userId: new ObjectId().toString(),
     };
 
