@@ -98,8 +98,6 @@ const MultiselectList = ({
   itemContainerClassName,
   blankState = <Translate>No items available</Translate>,
 }: MultiselectListProps) => {
-  console.log('RENDERING');
-
   const [selections, setSelections] = useState<string[]>(selectedValues || []);
   const [availableItems, setAvailableItems] = useState(items);
   const [selectedItems, setSelectedItems] = useState<MultiselectListOption[] | undefined>();
@@ -161,6 +159,10 @@ const MultiselectList = ({
   }, [items, selections]);
 
   useEffect(() => {
+    if (!isDirty && searchTerm) {
+      setIsDirty(true);
+    }
+
     if (isDirty) {
       setSearching(true);
 

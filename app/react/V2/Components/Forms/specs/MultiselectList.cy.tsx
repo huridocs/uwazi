@@ -1,21 +1,12 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { MultiselectList, MultiselectListOption } from '../MultiselectList/MultiselectList';
+import { composeStories } from '@storybook/react';
+import * as stories from 'app/stories/Forms/MultiselectList.stories.tsx';
+import { MultiselectList } from '../MultiselectList/MultiselectList';
 import { specialCharacters, pizzas, salads } from './fixtures';
 
 describe('MultiselectList.cy.tsx', () => {
-  const remoteLookupFunction = async (search: string): Promise<MultiselectListOption[]> =>
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve(
-          pizzas.filter(({ searchLabel }) =>
-            searchLabel.toLowerCase().includes(search.toLowerCase())
-          )
-        );
-      }, 1000);
-    });
-
   describe('general', () => {
     beforeEach(() => {
       cy.viewport(450, 650);
@@ -337,7 +328,6 @@ describe('MultiselectList.cy.tsx', () => {
           <MultiselectList
             onChange={() => {}}
             items={[]}
-            onSearch={remoteLookupFunction}
             selectedValues={['MGT']}
             itemContainerClassName="custom-container-class"
           />
@@ -354,29 +344,6 @@ describe('MultiselectList.cy.tsx', () => {
         </div>
       );
       cy.get('ul').should('have.class', 'w-full px-2 pt-2 grow');
-    });
-  });
-
-  describe('remote lookup', () => {
-    it('should show fetched data', () => {
-      cy.viewport(450, 650);
-      mount(
-        <div className="p-2 tw-content">
-          <MultiselectList
-            onChange={() => {}}
-            items={[]}
-            onSearch={remoteLookupFunction}
-            selectedValues={['MGT']}
-          />
-        </div>
-      );
-
-      cy.get('input[type=text]').type('chicken');
-      cy.contains('BBQ Chicken').should('be.visible');
-      cy.contains('Buffalo Chicken').should('be.visible');
-      cy.contains('Chicken Bacon Ranch').should('be.visible');
-      cy.contains('Chicken Alfredo').should('be.visible');
-      cy.contains('Margherita').should('not.exist');
     });
   });
 
@@ -405,6 +372,42 @@ describe('MultiselectList.cy.tsx', () => {
         results.forEach(result => {
           cy.contains('li', result).should('have.length', 1);
         });
+      });
+    });
+  });
+
+  describe('custom search', () => {
+    const { RemoteSearch } = composeStories(stories);
+
+    beforeEach(() => {
+      const searchSpy = cy.spy(stories.remoteLookupFunction).as('searchSpy');
+      cy.viewport(450, 650);
+      mount(<RemoteSearch onSearch={searchSpy} />);
+    });
+
+    it('should not trigger the search function on mount', () => {
+      cy.clock();
+      cy.tick(2000);
+      cy.contains('No items available').then(() => {
+        cy.get('@searchSpy').should('not.have.been.called');
+      });
+    });
+
+    it('should search once after the user finishes typing', () => {
+      cy.clock();
+      cy.get('input[type=text]').type('Item');
+      cy.tick(2000);
+      cy.contains('Item A').then(() => {
+        cy.get('@searchSpy').should('have.been.calledOnce');
+      });
+    });
+
+    it('should search when filling the field via a UI action instead of typing', () => {
+      cy.clock();
+      cy.contains('button', 'Search & Focus').click();
+      cy.tick(2000);
+      cy.contains('Another').then(() => {
+        cy.get('@searchSpy').should('have.been.calledOnce');
       });
     });
   });

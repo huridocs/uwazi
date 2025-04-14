@@ -207,6 +207,14 @@ const RemoteSearch: Story = {
   },
 };
 
-export { Basic, WithError, WithGroups, InitialState, BlankState, RemoteSearch };
+export {
+  Basic,
+  WithError,
+  WithGroups,
+  InitialState,
+  BlankState,
+  RemoteSearch,
+  remoteLookupFunction,
+};
 
 export default meta;
