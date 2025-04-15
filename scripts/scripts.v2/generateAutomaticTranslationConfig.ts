@@ -19,17 +19,8 @@ import yargs from 'yargs';
       default: 'default',
     }).argv;
 
-  let dbAuth = {};
-
-  if (process.env.DBUSER) {
-    dbAuth = {
-      auth: { authSource: 'admin' },
-      user: process.env.DBUSER,
-      pass: process.env.DBPASS,
-    };
-  }
   const semanticConfig = (await import(configPath)).default;
-  await DB.connect(config.DBHOST, dbAuth);
+  await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
   await tenants.run(async () => {
     await AutomaticTranslationFactory.defaultGenerateATConfig().execute(semanticConfig);
