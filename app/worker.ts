@@ -22,16 +22,6 @@ import { handleError } from './api/utils/handleError';
 
 const systemLogger = SystemLogger();
 
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
-
 const uncaughtError = (error: Error) => {
   handleError(error, { uncaught: true });
   process.exit(1);
@@ -40,7 +30,7 @@ const uncaughtError = (error: Error) => {
 process.on('unhandledRejection', uncaughtError);
 process.on('uncaughtException', uncaughtError);
 
-DB.connect(config.DBHOST, dbAuth)
+DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     await tenants.setupTenants();
     permissionsContext.setCommandContextAsDefault();

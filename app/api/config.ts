@@ -38,6 +38,10 @@ export const config = {
   PORT: process.env.PORT || 3000,
 
   DBHOST: MONGO_URI || onlyDBHOST(),
+  DBAUTH: {
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  },
 
   mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 5,
 
