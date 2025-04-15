@@ -98,6 +98,7 @@ class PXCreateExtractor implements UseCase<Input, Output> {
         `Cannot create an Extractor with a source template that already has an Extractor. sourceTemplateId: ${input.sourceTemplateId}`
       );
     }
+
     const extractor = new PXExtractor({
       id: this.dependencies.idGenerator.generate(),
       targetTemplate,

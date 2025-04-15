@@ -25,6 +25,7 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
 import { LanguageUtils } from 'shared/language';
+import { ConnectionSchema } from 'shared/types/connectionType';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;
@@ -260,6 +261,26 @@ function getFixturesFactory() {
         },
       })),
     ],
+
+    bidirectionalHub: (
+      hub: string,
+      leftEntity: { entity: string; template: string },
+      rightEntities: { entity: string; template: string }[]
+    ) =>
+      [
+        {
+          _id: idMapper(`${hub}-1`),
+          entity: leftEntity.entity,
+          hub: idMapper(hub),
+          template: idMapper(leftEntity.template),
+        },
+        ...rightEntities.map(({ entity, template }) => ({
+          _id: idMapper(`${entity}-${hub}-2`),
+          entity,
+          hub: idMapper(hub),
+          template: idMapper(template),
+        })),
+      ] as ConnectionSchema[],
 
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {
