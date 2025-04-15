@@ -39,6 +39,7 @@ type GetExtractorStatusesOutput = {
 type GetEntityParagraphRelationshipsInput = {
   id: string;
   extractorId: string;
+  options?: { requireEntityStatus?: boolean };
 };
 
 type GetEntityParagraphRelationshipsOutput = {

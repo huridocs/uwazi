@@ -23,7 +23,7 @@ export class PXExtractorsDataSourceFactory {
       props.extractorsQueryService ??
       PXExtractorsQueryServiceFactory.createDefault({
         connection,
-        mongoTransactionManager,
+        transactionManager: mongoTransactionManager,
       });
 
     return new MongoPXExtractorsDataSource(

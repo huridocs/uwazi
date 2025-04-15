@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
 
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
@@ -17,6 +18,7 @@ import {
 } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
+import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
@@ -26,10 +28,12 @@ export class MongoPXEntitiesStatusDataSource
 {
   protected collectionName = mongoPXEntitiesStatusCollection;
 
+  // eslint-disable-next-line max-params
   constructor(
     db: Db,
     transaction: MongoTransactionManager,
     private settingsDS: SettingsDataSource,
+    private extractorsQueryService: PXExtractorsQueryService,
     options?: MongoDSOptions
   ) {
     super(db, transaction, options);
@@ -88,12 +92,29 @@ export class MongoPXEntitiesStatusDataSource
       return;
     }
 
-    const entityStatuses: MongoPXEntityStatusDBO[] = sourceEntities.map(entity => ({
-      _id: undefined as any,
-      entitySharedId: entity.sharedId!,
-      extractorId: new ObjectId(extractorId),
-      status: EntityStatus.New,
-    }));
+    const entityStatuses: MongoPXEntityStatusDBO[] = [];
+
+    await sourceEntities.reduce(async (prev, entity) => {
+      await prev;
+      const entityParagraphsRelationships = await this.extractorsQueryService
+        .getEntityParagraphRelationships({
+          id: entity.sharedId,
+          extractorId,
+          options: { requireEntityStatus: false },
+        })
+        .all();
+
+      const status = entityParagraphsRelationships.length
+        ? EntityStatus.Processed
+        : EntityStatus.New;
+
+      entityStatuses.push({
+        _id: undefined as any,
+        entitySharedId: entity.sharedId!,
+        extractorId: new ObjectId(extractorId),
+        status,
+      });
+    }, Promise.resolve());
 
     await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
   }
