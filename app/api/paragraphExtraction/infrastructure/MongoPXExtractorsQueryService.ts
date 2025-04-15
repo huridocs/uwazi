@@ -19,6 +19,7 @@ import { EntityStatus } from '../domain/PXEntityStatusModel';
 import { MongoPXExtractorDBO } from './MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from './MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
+import { PXEntityStatusMapper } from './PXEntityStatusMapper';
 
 const getDefaultPagination = (inputNumber?: number, inputSize?: number) => {
   const number = inputNumber || 1;
@@ -60,7 +61,12 @@ class MongoPXExtractorsQueryService
                 $filter: {
                   input: '$statusData',
                   as: 'status',
-                  cond: { $eq: ['$$status.status', EntityStatus.Processing] },
+                  cond: {
+                    $in: [
+                      '$$status.status',
+                      [EntityStatus.Processing, EntityStatus.ProcessingObsolete],
+                    ],
+                  },
                 },
               },
             },
@@ -123,6 +129,10 @@ class MongoPXExtractorsQueryService
 
   getExtractorStatuses(input: GetExtractorStatusesInput): ResultSet<GetExtractorStatusesOutput> {
     const { number, size, skip } = getDefaultPagination(input.page?.number, input.page?.size);
+
+    if (input.filter?.status?.includes(EntityStatus.Processing)) {
+      input.filter.status.push(EntityStatus.ProcessingObsolete);
+    }
 
     const cursor = this.getCollection().aggregate([
       { $match: { _id: ObjectId.createFromHexString(input.id) } },
@@ -190,7 +200,11 @@ class MongoPXExtractorsQueryService
           totalRows: item.totalRows || 0,
           rows: item.rows.map((r: GetExtractorStatusesOutput['rows'][0]) => ({
             entity: { ...r.entity, _id: r.entity._id.toString() },
-            status: { ...r.status, _id: r.status._id.toString() },
+            status: {
+              ...r.status,
+              _id: r.status._id.toString(),
+              status: PXEntityStatusMapper.toDTO(r.status.status as any as EntityStatus),
+            },
           })),
         }) as GetExtractorStatusesOutput
     );

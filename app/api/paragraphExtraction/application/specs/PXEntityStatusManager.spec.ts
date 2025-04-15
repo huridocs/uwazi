@@ -132,6 +132,57 @@ describe('PXEntityStatusManager', () => {
     ]);
   });
 
+  it('should change EntityStatus to processing_obsolete', async () => {
+    const mongoEntityStatus: MongoPXEntityStatusDBO = {
+      _id: factory.id('entity_status'),
+      entitySharedId: entity.sharedId!,
+      extractorId: extractor._id,
+      status: EntityStatus.Processing,
+    };
+
+    const documentEn = factory.document('document_en', {
+      _id: new ObjectId(),
+      language: 'en',
+      entity: entity.sharedId!,
+    });
+
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXEntitiesStatusCollection]: [mongoEntityStatus],
+      files: [documentEn],
+    });
+
+    const { entityStatusManager } = setUpUseCase();
+
+    await entityStatusManager.execute({
+      before: {
+        id: documentEn._id.toString(),
+        type: documentEn.type!,
+        entity: documentEn.entity!,
+        language: 'pt',
+        status: 'ready',
+      },
+      after: {
+        id: documentEn._id.toString(),
+        type: documentEn.type!,
+        entity: documentEn.entity!,
+        language: 'en',
+        status: 'ready',
+      },
+    });
+
+    const entitiesStatus = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+
+    expect(entitiesStatus).toMatchObject([
+      {
+        _id: mongoEntityStatus._id,
+        status: EntityStatus.ProcessingObsolete,
+        extractorId: mongoEntityStatus.extractorId,
+        entitySharedId: mongoEntityStatus.entitySharedId,
+      },
+    ]);
+  });
+
   it('should keep EntityStatus to New', async () => {
     const mongoEntityStatus: MongoPXEntityStatusDBO = {
       _id: factory.id('entity_status'),

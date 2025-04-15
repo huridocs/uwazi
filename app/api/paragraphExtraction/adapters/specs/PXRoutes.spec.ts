@@ -6,6 +6,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
 import {
+  EntityStatusDTO,
   PXCreateExtractorRequest,
   PXDeleteExtractorRequest,
   PXExtractNewRequest,
@@ -15,7 +16,6 @@ import {
 } from 'api/paragraphExtraction/types';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { paragraphExtractionRoutes } from '../PXRoutes';
 
 import {
@@ -120,8 +120,8 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       const entity1Status = statuses?.find(s => s.entitySharedId === entity1.sharedId);
       const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
 
-      expect(entity1Status?.status).toBe(EntityStatus.Processing);
-      expect(entity2Status?.status).toBe(EntityStatus.New);
+      expect(entity1Status?.status).toBe(EntityStatusDTO.Processing);
+      expect(entity2Status?.status).toBe(EntityStatusDTO.New);
     });
   });
 
@@ -144,7 +144,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
       const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
 
-      expect(entity2Status?.status).toBe(EntityStatus.Processing);
+      expect(entity2Status?.status).toBe(EntityStatusDTO.Processing);
     });
   });
 
@@ -158,7 +158,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
 
       expect(response.body[0]._id.toString()).toBe(createdExtractorId);
       expect(response.body[0].statusCount).toMatchObject({
-        [EntityStatus.Processing]: 2,
+        [EntityStatusDTO.Processing]: 2,
         total: 2,
       });
     });
@@ -177,7 +177,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       const query: PXGetExtractorStatusesRequest = {
         id: createdExtractorId,
         page: { number: 1, size: 2 },
-        filter: { status: [EntityStatus.Processing, EntityStatus.New] },
+        filter: { status: [EntityStatusDTO.Processing, EntityStatusDTO.New] },
       };
       const response = await request(app)
         .get('/api/paragraphExtraction/extractorStatuses')
@@ -192,13 +192,13 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
             availableFileLanguages: ['en', 'pt'],
             entity: { sharedId: entityFixtures.entity1En.sharedId, language: 'pt' },
             paragraphsCount: 2,
-            status: { status: EntityStatus.Processing },
+            status: { status: EntityStatusDTO.Processing },
           },
           {
             availableFileLanguages: ['en'],
             entity: { sharedId: entityFixtures.entity2En.sharedId },
             paragraphsCount: 0,
-            status: { status: EntityStatus.Processing },
+            status: { status: EntityStatusDTO.Processing },
           },
         ],
       });

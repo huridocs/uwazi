@@ -203,7 +203,14 @@ export class MongoPXEntitiesStatusDataSource
 
     await this.getCollection().updateOne(
       { _id: new ObjectId(entityStatusId) },
-      { $set: { status: EntityStatus.Obsolete } },
+      {
+        $set: {
+          status:
+            currentStatus?.status === EntityStatus.Processing
+              ? EntityStatus.ProcessingObsolete
+              : EntityStatus.Obsolete,
+        },
+      },
       { upsert: false }
     );
   }
@@ -225,11 +232,21 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async markAsProcessed(entityStatusId: string): Promise<void> {
+    const currentStatus = await this.getCollection().findOne(
+      { _id: new ObjectId(entityStatusId) },
+      { projection: { status: 1 } }
+    );
+
+    const newStatus =
+      currentStatus?.status === EntityStatus.ProcessingObsolete
+        ? EntityStatus.Obsolete
+        : EntityStatus.Processed;
+
     await this.getCollection().updateOne(
       {
         _id: new ObjectId(entityStatusId),
       },
-      { $set: { status: EntityStatus.Processed } },
+      { $set: { status: newStatus } },
       { upsert: false }
     );
   }
