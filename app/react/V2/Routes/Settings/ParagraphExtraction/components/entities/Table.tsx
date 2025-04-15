@@ -12,6 +12,7 @@ interface EntitiesTableProps {
   onSelectionChange: (selected: TablePXEntityRow[]) => void;
   sourceTemplate?: Template;
   totalRows: number;
+  initialSelection: TablePXEntityRow[];
 }
 
 const EntitiesTable = ({
@@ -19,11 +20,13 @@ const EntitiesTable = ({
   onSelectionChange,
   sourceTemplate,
   totalRows,
+  initialSelection,
 }: EntitiesTableProps) => (
   <Table
     data={pxEntitiesData}
     columns={columns}
     enableSelections
+    initialSelection={initialSelection}
     header={
       <TableTitle
         items={sourceTemplate ? [sourceTemplate] : []}
