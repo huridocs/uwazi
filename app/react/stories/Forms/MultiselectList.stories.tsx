@@ -51,7 +51,6 @@ const StoryComponent = ({ args }: any) => {
           <MultiselectList
             label={args.label}
             items={args.items}
-            onChange={args.onChange}
             hasErrors={args.hasErrors}
             checkboxes={args.checkboxes}
             foldableGroups={args.foldableGroups}
@@ -94,7 +93,6 @@ const WithError: Story = {
   ...Primary,
   args: {
     ...Basic.args,
-    onChange: () => {},
     hasErrors: true,
   },
 };
@@ -183,7 +181,6 @@ const BlankState: Story = {
   ...Primary,
   args: {
     ...Basic.args,
-    onChange: () => {},
     items: [],
   },
 };
@@ -192,7 +189,7 @@ const remoteLookupFunction = async (search: string): Promise<MultiselectListOpti
   new Promise(resolve => {
     setTimeout(() => {
       resolve(
-        items.filter(({ searchLabel }) => searchLabel.toLowerCase().includes(search.toLowerCase()))
+        items.filter(({ searchLabel }) => searchLabel?.toLowerCase().includes(search.toLowerCase()))
       );
     }, 1000);
   });
@@ -201,7 +198,6 @@ const RemoteSearch: Story = {
   ...Primary,
   args: {
     ...Basic.args,
-    onChange: () => {},
     items: [],
     onSearch: remoteLookupFunction,
   },

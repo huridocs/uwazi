@@ -100,7 +100,6 @@ const MultiselectList = ({
 }: MultiselectListProps) => {
   const [selections, setSelections] = useState<string[]>(selectedValues || []);
   const [availableItems, setAvailableItems] = useState(items);
-  const [selectedItems, setSelectedItems] = useState<MultiselectListOption[] | undefined>();
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selections.length));
   const [searchTerm, setSearchTerm] = useState(search);
   const [openGroups, setOpenGroups] = useState<string[]>([]);

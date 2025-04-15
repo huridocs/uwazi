@@ -413,7 +413,7 @@ const SuggestionSidepanel = ({
             singleSelect={type === 'select'}
             search={selectAndSearchValue}
             suggestions
-            onSearch={_lookup}
+            onSearch={type === 'relationship' ? _lookup : undefined}
           />
         )}
       />
