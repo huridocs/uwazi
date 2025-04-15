@@ -175,7 +175,13 @@ const MultiselectList = ({
     }
   }, [isDirty, items, searchTerm]);
 
-  useEffect(() => () => setIsDirty(false), []);
+  useEffect(
+    () => () => {
+      setIsDirty(false);
+      setSearchTerm('');
+    },
+    []
+  );
 
   const handleSelect = (_value: string) => {
     let newValues;
