@@ -16,16 +16,6 @@ import { initSentry } from './initSentry';
 
 initSentry();
 
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
-
 function register<T extends Dispatchable>(
   this: QueueWorker,
   dispatchable: DispatchableClass<T>,
@@ -73,7 +63,7 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
 };
 
 logger.info('Starting worker');
-DB.connect(config.DBHOST, dbAuth)
+DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     logger.info('Connected to MongoDB');
     const adapter = DefaultQueueAdapter();

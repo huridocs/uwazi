@@ -154,17 +154,7 @@ process.on('unhandledRejection', error => {
   throw error;
 });
 
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
-
-DB.connect(config.DBHOST, dbAuth).then(async () => {
+DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   const start = Date.now();
   await tenants.setupTenants();
 

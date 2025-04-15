@@ -19,9 +19,13 @@ done
 DB=${filtered[0]:-${DATABASE_NAME:-uwazi_development}}
 HOST=${filtered[1]:-${DBHOST:-127.0.0.1}}
 
+AUTH=()
+[[ -n "$DBUSER" ]] && AUTH+=("--authenticationDatabase" "admin" "-u" "$DBUSER")
+[[ -n "$DBPASS" ]] && AUTH+=("-p" "$DBPASS")
+
 recreate_database() {
-    mongosh --quiet -host "$HOST" "$DB" --eval "db.dropDatabase()"
-    mongorestore -h "$HOST" blank_state/uwazi_development/ --db="$DB"
+    mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval "db.dropDatabase()"
+    mongorestore -h "$HOST" "${AUTH[@]}" blank_state/uwazi_development/ --db="$DB"
 
     INDEX_NAME=$DB DATABASE_NAME=$DB yarn migrate
     INDEX_NAME=$DB DATABASE_NAME=$DB yarn reindex
@@ -29,7 +33,7 @@ recreate_database() {
     exit 0
 }
 
-mongo_indexof_db=$(mongosh --quiet -host "$HOST" --eval "db.getMongo().getDBNames().indexOf('$DB')")
+mongo_indexof_db=$(mongosh --quiet "${AUTH[@]}" -host "$HOST" --eval "db.getMongo().getDBNames().indexOf('$DB')")
 RED='\033[0;31m'
 NC='\033[0m'
 if [ "$mongo_indexof_db" -ne "-1" ]; then    
