@@ -10,13 +10,18 @@ const TextCell = ({
 
   const text = cell.getValue();
   const shouldEllipsize = text.length > MAX_LENGTH * 2;
+  let startText = '';
+  let endText = '';
 
-  const startText = text.slice(0, Math.min(text.indexOf('.') + 1, MAX_LENGTH));
-  const endTextStartIndex = text.length - MAX_LENGTH;
-  const adjustedEndTextStartIndex = text.lastIndexOf(' ', endTextStartIndex);
-  const endText = text.slice(
-    adjustedEndTextStartIndex > startText.length ? adjustedEndTextStartIndex : endTextStartIndex
-  );
+  if (shouldEllipsize) {
+    const startTextEndIndex = Math.min(text.indexOf('.', 100) + 1 || MAX_LENGTH, MAX_LENGTH);
+    startText = text.slice(0, startTextEndIndex);
+    const endTextStartIndex = Math.max(text.length - MAX_LENGTH, startTextEndIndex);
+    const adjustedEndTextStartIndex = text.lastIndexOf(' ', endTextStartIndex);
+    endText = text.slice(
+      adjustedEndTextStartIndex > startTextEndIndex ? adjustedEndTextStartIndex : endTextStartIndex
+    );
+  }
 
   return (
     <span className="relative max-w-full text-xs font-normal text-gray-900">

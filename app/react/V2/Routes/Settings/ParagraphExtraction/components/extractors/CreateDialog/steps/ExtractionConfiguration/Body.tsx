@@ -105,7 +105,9 @@ const Body = () => {
             </Translate>
           }
           value={targetRelationshipId}
-          options={getOptions(relationships)}
+          options={getOptions(
+            relationships.filter(relation => relation.value !== sourceRelationshipId)
+          )}
           onChange={evt => {
             setTargetRelationshipId(evt.target.value);
           }}
@@ -120,7 +122,9 @@ const Body = () => {
             </Translate>
           }
           value={sourceRelationshipId}
-          options={getOptions(relationships)}
+          options={getOptions(
+            relationships.filter(relation => relation.value !== targetRelationshipId)
+          )}
           onChange={evt => {
             setSourceRelationshipId(evt.target.value);
           }}

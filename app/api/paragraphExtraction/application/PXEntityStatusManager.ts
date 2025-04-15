@@ -1,21 +1,20 @@
+import { ObjectId } from 'mongodb';
+
 import { FileType as LegacyFileType } from 'shared/types/fileType';
 import { FileType } from 'api/files.v2/model/FileType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import entities from 'api/entities';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-
-import { ObjectId } from 'mongodb';
 import { Document } from 'api/files.v2/model/Document';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 
-type LegacyEntitiesDS = typeof entities;
-
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
-  entitiesDS: LegacyEntitiesDS;
+  entitiesDS: EntitiesDataSource;
   settingsDS: SettingsDataSource;
   extractorsDS: PXExtractorsDataSource;
   filesDS: FilesDataSource;
@@ -71,7 +70,7 @@ export class PXEntityStatusManager {
       );
     }
 
-    const [entity] = await this.dependencies.entitiesDS.getAllLanguages(after.entity);
+    const [entity] = await this.dependencies.entitiesDS.getByIds([after.entity]).all();
 
     if (!entity) {
       throw new PXValidationError(
