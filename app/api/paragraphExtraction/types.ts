@@ -1,4 +1,4 @@
-enum EntityStatus {
+export enum EntityStatusDTO {
   New = 'new',
   Processing = 'processing',
   Obsolete = 'obsolete',
@@ -32,7 +32,7 @@ export type PXGetExtractorStatusesRequest = {
   id: string;
   filter?:
     | {
-        status?: EntityStatus[] | undefined;
+        status?: EntityStatusDTO[] | undefined;
       }
     | undefined;
   page?:

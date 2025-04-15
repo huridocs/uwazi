@@ -1,6 +1,7 @@
 enum EntityStatus {
   New = 'new',
   Processing = 'processing',
+  ProcessingObsolete = 'processing_obsolete',
   Obsolete = 'obsolete',
   Error = 'error',
   Processed = 'processed',

@@ -1,7 +1,9 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+
 import { EntityStatus } from './PXEntityStatusModel';
+import { EntityStatusDTO } from '../types';
 
 type GetExtractorsOutput = {
   _id: string;
@@ -30,7 +32,7 @@ type GetExtractorStatusesInput = {
 type GetExtractorStatusesOutput = {
   rows: {
     entity: { _id: string; sharedId: string; title: string; language: LanguageISO6391 };
-    status: { _id: string; status: EntityStatus };
+    status: { _id: string; status: EntityStatusDTO };
   }[];
   page: { number: number; size: number };
   totalRows: number;
