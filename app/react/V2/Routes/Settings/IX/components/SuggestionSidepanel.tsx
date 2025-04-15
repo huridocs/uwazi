@@ -86,7 +86,9 @@ const SuggestionSidepanel = ({
     } else {
       setSelectAndSearchValue(undefined);
     }
-  }, [selectAndSearch, setSelectAndSearchValue, selectedText]);
+    // we don't want to trigger this effect simply by selecting text, so selectedText is removed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectAndSearch, setSelectAndSearchValue]);
 
   const {
     register,
@@ -215,13 +217,7 @@ const SuggestionSidepanel = ({
           });
       }
     }
-
-    return () => {
-      setPdf(undefined);
-      setEntity(undefined);
-      setCurrentValueOptions([]);
-    };
-  }, [suggestion]);
+  }, [property, suggestion]);
 
   useEffect(() => {
     if (pdf?.extractedMetadata && suggestion && showSidepanel) {
@@ -234,15 +230,22 @@ const SuggestionSidepanel = ({
         )
       );
     }
-
-    return () => {
-      setSelectedText(undefined);
-      setSelectionError(undefined);
-      setHighlights(undefined);
-      setSelections(undefined);
-      setValue('field', undefined, { shouldDirty: false });
-    };
   }, [pdf, setValue, showSidepanel, suggestion]);
+
+  const handleClose = () => {
+    setSelectedText(undefined);
+    setSelectionError(undefined);
+    setHighlights(undefined);
+    setSelections(undefined);
+    setValue('field', undefined, { shouldDirty: false });
+    setPdf(undefined);
+    setEntity(undefined);
+    setCurrentValueOptions([]);
+    setSelectAndSearchValue('');
+    setSelectAndSearch(false);
+    reset();
+    setShowSidepanel(false);
+  };
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -278,7 +281,7 @@ const SuggestionSidepanel = ({
       setNotifications({ type: 'success', text: 'Saved successfully.' });
     }
 
-    setShowSidepanel(false);
+    handleClose();
   };
 
   const handleClickToFill = async () => {
@@ -441,7 +444,7 @@ const SuggestionSidepanel = ({
       withOverlay
       size="large"
       title={entity?.title}
-      closeSidepanelFunction={() => setShowSidepanel(false)}
+      closeSidepanelFunction={handleClose}
     >
       <div className="flex-grow overflow-y-scroll">
         <form
@@ -518,15 +521,7 @@ const SuggestionSidepanel = ({
           </div>
           {renderForm()}
           <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
-            <Button
-              type="button"
-              styling="outline"
-              disabled={isSubmitting}
-              onClick={() => {
-                setShowSidepanel(false);
-                reset();
-              }}
-            >
+            <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
             <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
