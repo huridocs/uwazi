@@ -203,7 +203,7 @@ class MongoPXExtractorsQueryService
             status: {
               ...r.status,
               _id: r.status._id.toString(),
-              status: PXEntityStatusMapper.toDTO(r.status.status),
+              status: PXEntityStatusMapper.toDTO(r.status.status as any as EntityStatus),
             },
           })),
         }) as GetExtractorStatusesOutput
