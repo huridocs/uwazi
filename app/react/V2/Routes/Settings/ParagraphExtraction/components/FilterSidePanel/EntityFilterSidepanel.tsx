@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router';
-import { useAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
+import { useAtom, useAtomValue } from 'jotai';
 import { mapValues } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Button, Sidepanel } from 'V2/Components/UI';
-import { Extractor, PXEntityLoaderResponse } from 'V2/shared/ParagraphExtractionTypes';
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import { EntityFilter, Filters } from './Filters';
-import { filterSidepanelAtom } from './filterSidepanelAtom';
+import { filterSidepanelAtom, filterSidepanelStatusAtom } from './filterSidepanelAtom';
 
 const getFilterStatus = (
   searchParams: object,
@@ -29,12 +29,24 @@ const getFilterStatus = (
 };
 
 const EntityFilterSidepanel = () => {
-  const { extractor } = useLoaderData() as PXEntityLoaderResponse;
+  const filterSidepanelStatus = useAtomValue(filterSidepanelStatusAtom);
   const [searchParams, setSearchParams] = useSearchParams();
   const [open, setOpen] = useAtom(filterSidepanelAtom);
-  const [appliedFilters, setAppliedFilters] = useState<Filters>(() =>
-    getFilterStatus(searchParams, extractor?.statusCount)
+  const [appliedFilters, setAppliedFilters] = useState<Filters>(
+    getFilterStatus(searchParams, filterSidepanelStatus as Extractor['statusCount'])
   );
+
+  useEffect(() => {
+    const newFilters = getFilterStatus(
+      searchParams,
+      filterSidepanelStatus as Extractor['statusCount']
+    );
+    if (newFilters !== appliedFilters) {
+      setAppliedFilters(newFilters);
+    }
+    // avoids infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterSidepanelStatus]);
 
   const handleSubmit = () => {
     setSearchParams((prev: URLSearchParams) => {

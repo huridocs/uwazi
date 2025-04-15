@@ -19,112 +19,159 @@ jobs:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
         ports:
-          - 9200/tcp
-        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=30s --health-retries=10
+          - '9200:9200'
+        options: >-
+          -e "discovery.type=single-node"
+          --health-cmd="curl http://localhost:9200/_cluster/health"
+          --health-interval=10s
+          --health-timeout=30s
+          --health-retries=10
       redis:
         image: redis:5.0.14
         ports:
           - 6379:6379
 
     steps:
-      - name: 🍃 Install mongosh
+      # MongoDB Setup
+      - name: 🍃 Install MongoDB tools
         run: |
           sudo apt-get update
           sudo apt-get install -y wget gnupg
           wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
           echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
           sudo apt-get update
-          sudo apt-get install -y mongodb-mongosh
-          sudo apt-get install -y mongodb-org-tools
+          sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
-      - name: Checkout reposistory
+
+      # Repository Setup
+      - name: Checkout repository and submodules
         uses: actions/checkout@v4
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
-      - name: Setup Nodejs
+        with:
+          submodules: recursive
+
+      # Node.js Setup with Cypress Caching
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Cache node modules
+          cache: 'yarn'
+
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies and Cypress binary
         uses: actions/cache@v4
+        id: cache
         with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: install dependencies
-        run: yarn install
-      - run: sudo apt update
-      - run: sudo apt-get install poppler-utils
+          path: |
+            ${{ steps.yarn-cache-dir.outputs.dir }}
+            node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Verify Cypress
+        run: npx cypress verify
+
+      # System Dependencies
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      # Build Cache
       - name: Cache build
         id: cache-build
         uses: actions/cache@v4
         with:
-          path: ./prod
-          key: >-
-            ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-
-            ${{ hashFiles('database/**/*.*') }}-
-            ${{ hashFiles('**/yarn.lock') }}-
-            ${{ hashFiles('**/webpack.production.config.js') }}-
-            ${{ hashFiles('**/.babelrc') }}-
-            ${{ hashFiles('webpack/**/config.js') }}-
-      - name: build production
+          path: prod
+          key: ${{ runner.os }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
+
+      # Python Services Setup
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
-      - name: Clone dummy services
+
+      - name: Clone and setup dummy services
         uses: actions/checkout@v4
         with:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
-      - run: python3 -m venv .venv
+
+      - name: Setup Python virtual environment
         working-directory: dummy_extractor_services
-      - run: make install_venv -C dummy_extractor_services
-      - run: make start -C dummy_extractor_services > logs.log &
-      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
-      - name: Log on failure
-        if: ${{ failure() }}
-        run: cat dummy_extractor_services/logs.log
-      - run: yarn blank-state
-        id: blank-state-attempt1
-        continue-on-error: true
+        run: |
+          python3 -m venv .venv
+          make install_venv
+
+      - name: Start dummy services
+        run: |
+          make start -C dummy_extractor_services > logs.log &
+          sleep 5
+          wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+
+      # Uwazi Setup
+      - name: Initialize blank state
+        id: blank-state
+        run: |
+          yarn blank-state || yarn blank-state --force
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
-      - run: yarn blank-state --force
-        id: blank-state-attempt2
-        if: steps.blank-state-attempt1.outcome == 'failure'
-        env:
-          DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-          DATABASE_NAME: uwazi_e2e
-          INDEX_NAME: uwazi_e2e
-          TRANSPILED: true
-      - run: yarn ix-config
+
+      - name: Configure IX
+        run: yarn ix-config
         env:
           DBHOST: localhost:27017
           DATABASE_NAME: uwazi_e2e
-      - name: start Uwazi
+
+      # Uwazi Server
+      - name: Start Uwazi server
+        run: yarn run-production > output.txt &
         env:
           NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
-        run: yarn run-production > output.txt &
-      - name: wait for uwazi to be ready
-        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
+
+      - name: Wait for Uwazi to be ready
+        run: |
+          for i in {1..12}; do
+            if curl -sSf http://localhost:3000 >/dev/null; then
+              echo "Server is up!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Server did not start in time"
+          exit 1
         timeout-minutes: 3
-      - name: Cypress run
+
+      # Cypress Tests
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
@@ -134,18 +181,24 @@ jobs:
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          ELASTICSEARCH_URL: http://localhost:9200
           TRANSPILED: true
-      - uses: actions/upload-artifact@v4
+
+      # Artifacts on Failure
+      - name: Upload snapshots on failure
         if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: snapshots
+          name: cypress-snapshots
           path: cypress/e2e/**/__image_snapshots__/
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload videos on failure
         if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: video
+          name: cypress-videos
           path: cypress/videos/
-      - name: Print server output
+
+      - name: Print server output on failure
+        if: ${{ failure() }}
         run: cat output.txt
-        if: failure()
