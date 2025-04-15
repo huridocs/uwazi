@@ -221,7 +221,10 @@ class MongoPXExtractorsQueryService
         },
       },
       {
-        $unwind: { path: '$entityStatuses', preserveNullAndEmptyArrays: true },
+        $unwind: {
+          path: '$entityStatuses',
+          preserveNullAndEmptyArrays: !(input.options?.requireEntityStatus ?? true),
+        },
       },
       {
         $addFields: {

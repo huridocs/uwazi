@@ -100,6 +100,7 @@ export class MongoPXEntitiesStatusDataSource
         .getEntityParagraphRelationships({
           id: entity.sharedId,
           extractorId,
+          options: { requireEntityStatus: false },
         })
         .all();
 

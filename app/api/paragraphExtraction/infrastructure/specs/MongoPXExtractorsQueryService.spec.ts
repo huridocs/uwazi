@@ -23,6 +23,7 @@ import {
 } from '../../application/specs/shared/extractorsQueryFixtures';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
+import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 
 const createFixtures = (): DBFixture => extractorsQueryFixtures;
 
@@ -210,6 +211,51 @@ describe('MongoPXExtractorsQueryService', () => {
 
       expect(entity5Paragraphs).toMatchObject([
         mappedRelationship(relationshipFixtures.relationshipP1Hub3),
+      ]);
+    });
+
+    it('should not include relationships if the entityStatus is missing, by default', async () => {
+      const temporaryFixtures = createFixtures();
+      const fixturesWithoutStatuses = {
+        ...temporaryFixtures,
+        [mongoPXEntitiesStatusCollection]: [],
+      };
+      await testingEnvironment.setUp(fixturesWithoutStatuses);
+
+      const { extractorsQueryService } = setUpSut();
+
+      const entity1Paragraphs = await extractorsQueryService
+        .getEntityParagraphRelationships({
+          id: entityFixtures.entity1En.sharedId!,
+          extractorId: extractor1._id.toString(),
+        })
+        .all();
+
+      expect(entity1Paragraphs).toMatchObject([]);
+    });
+
+    it('should include relationships if the entityStatus is missing if required (certain flows require this, like extractor creation)', async () => {
+      const temporaryFixtures = createFixtures();
+      const fixturesWithoutStatuses = {
+        ...temporaryFixtures,
+        [mongoPXEntitiesStatusCollection]: [],
+      };
+      await testingEnvironment.setUp(fixturesWithoutStatuses);
+
+      const { extractorsQueryService } = setUpSut();
+
+      const entity1Paragraphs = await extractorsQueryService
+        .getEntityParagraphRelationships({
+          id: entityFixtures.entity1En.sharedId!,
+          extractorId: extractor1._id.toString(),
+          options: { requireEntityStatus: false },
+        })
+        .all();
+
+      expect(entity1Paragraphs).toMatchObject([
+        mappedRelationship(relationshipFixtures.relationshipP1Hub1),
+        mappedRelationship(relationshipFixtures.relationshipP2Hub1),
+        mappedRelationship(relationshipFixtures.relationshipP3Hub2),
       ]);
     });
   });
