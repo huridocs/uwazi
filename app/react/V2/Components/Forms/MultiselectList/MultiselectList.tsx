@@ -246,7 +246,7 @@ const MultiselectList = ({
     return (
       <li
         key={item.value}
-        className={`${!selected && searchTerm && !showAll ? 'opacity-70' : ''} ${itemClassName ?? ' bg-gray-50 rounded-lg mb-2'} `}
+        className={`${!selected && searchTerm && !showAll ? 'opacity-70' : ''} ${itemClassName ?? ' rounded-lg mb-2'} `}
       >
         <Checkbox
           name={item.value}
@@ -314,7 +314,7 @@ const MultiselectList = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
+      <div className="sticky top-0 w-full pt-4 mb-2">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
