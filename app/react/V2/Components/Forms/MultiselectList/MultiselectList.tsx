@@ -298,10 +298,10 @@ const MultiselectList = ({
   const renderSelectedLabel = () => {
     if (suggestions) {
       return (
-        <>
+        <span className="flex gap-1">
           <Translate>Selected or suggested</Translate>
           {selectedOrSuggestedItems.size ? `(${selectedOrSuggestedItems.size})` : ''}
-        </>
+        </span>
       );
     }
 
