@@ -1,48 +1,27 @@
 import { config } from 'api/config';
-import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { elastic, search } from 'api/search';
 import { IndexError } from 'api/search/entitiesIndex';
-import { search } from 'api/search';
+import { tenants } from 'api/tenants/tenantContext';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
+import { legacyLogger } from '../app/api/log';
 import templatesModel from '../app/api/templates';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
-import { legacyLogger } from '../app/api/log';
 
-const getIndexUrl = () => {
-  const elasticUrl = config.elasticsearch_nodes[0];
-  return `${elasticUrl}/${tenants.current().indexName}`;
-};
-
-const headers = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-};
-
-const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) => {
-  let body = {
-    index: {
-      refresh_interval: refreshInterval,
-      number_of_replicas: numberOfReplicas,
-      translog: {
-        durability: translogDurability,
+const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
+  elastic.indices.putSettings({
+    body: {
+      index: {
+        refresh_interval: refreshInterval,
+        number_of_replicas: numberOfReplicas,
+        translog: {
+          durability: translogDurability,
+        },
       },
     },
-  };
-
-  if (process.env.REINDEX_WITH_OPTIMIZATION) {
-    body = JSON.stringify(body);
-  }
-
-  const result = await fetch(`${getIndexUrl()}/_settings`, {
-    method: 'PUT',
-    headers,
-    body,
   });
-
-  return result;
-};
 
 const restoreSettings = async () => {
   process.stdout.write('Restoring index settings...');
@@ -91,12 +70,10 @@ const indexEntities = async () => {
 const prepareIndex = async () => {
   process.stdout.write(`Deleting index ${tenants.current().indexName}...`);
   try {
-    await fetch(getIndexUrl(), { method: 'delete' });
+    await elastic.indices.delete({});
   } catch (err) {
-    // Should not stop on index_not_found_exception
-    if (err.json.error.type === 'index_not_found_exception') {
-      process.stdout.write('\r\nThe index was not found:\r\n');
-      process.stdout.write(`${JSON.stringify(err, null, ' ')}\r\nMoving on.\r\n`);
+    if (err?.meta?.body?.error?.type === 'index_not_found_exception') {
+      process.stdout.write('\r\nThe index was not found when trying to delete it, moving on\r\n');
     } else {
       throw err;
     }
@@ -106,20 +83,12 @@ const prepareIndex = async () => {
   process.stdout.write(`Creating index ${tenants.current().indexName}...\r\n`);
   process.stdout.write(' - Base properties mapping\r\n');
 
-  await fetch(getIndexUrl(), {
-    headers,
-    method: 'PUT',
-    body: JSON.stringify(elasticMapping),
-  });
+  await elastic.indices.create({ body: elasticMapping });
 
   process.stdout.write(' - Custom templates mapping\r\n');
   const templates = await templatesModel.get();
   const templatesMapping = await elasticMapFactory.mapping(templates);
-  await fetch(`${getIndexUrl()}/_mapping`, {
-    headers,
-    method: 'PUT',
-    body: JSON.stringify(templatesMapping),
-  });
+  await elastic.indices.putMapping({ body: templatesMapping });
   process.stdout.write(' [done]\n');
 };
 

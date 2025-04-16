@@ -1,34 +1,15 @@
 import { config } from 'api/config';
-import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
 import { IndexError } from 'api/search/entitiesIndex';
+import { tenants } from 'api/tenants/tenantContext';
 
+import { elastic } from 'api/search';
 import { legacyLogger } from '../app/api/log';
 
-const getIndexUrl = () => {
-  const elasticUrl = config.elasticsearch_nodes[0];
-  return `${elasticUrl}/${tenants.current().indexName}`;
-};
-
-const headers = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-};
-
 const setIndexSettings = async numberOfReplicas => {
-  const body = JSON.stringify({
-    index: {
-      number_of_replicas: numberOfReplicas,
-    },
-  });
+  const body = { index: { number_of_replicas: numberOfReplicas } };
 
-  const result = await fetch(`${getIndexUrl()}/_settings`, {
-    method: 'PUT',
-    headers,
-    body,
-  });
-
-  return result;
+  return elastic.indices.putSettings({ body });
 };
 
 const setTenantSettings = async () => {

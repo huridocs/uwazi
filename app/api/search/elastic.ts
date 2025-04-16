@@ -10,8 +10,9 @@ import { EntitySchema } from 'shared/types/entityType';
 import { SearchResponse, IndicesPutMapping, IndicesDelete, IndicesCreate } from './elasticTypes';
 
 const elasticClient = new elasticSearch.Client({
-  nodes: config.elasticsearch_nodes,
-  requestTimeout: config.elasticsearch_requestTimeout,
+  nodes: config.elasticsearch.nodes,
+  requestTimeout: config.elasticsearch.requestTimeout,
+  auth: config.elasticsearch.auth,
 });
 
 const elastic = {
@@ -38,6 +39,16 @@ const elastic = {
   },
 
   indices: {
+    async putSettings(params: IndicesPutMapping, options?: TransportRequestOptions) {
+      return elasticClient.indices.putSettings(
+        {
+          ...params,
+          index: tenants.current().indexName,
+        },
+        options
+      );
+    },
+
     async putMapping(params: IndicesPutMapping, options?: TransportRequestOptions) {
       return elasticClient.indices.putMapping(
         { ...params, index: tenants.current().indexName },
