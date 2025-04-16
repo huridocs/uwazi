@@ -1,13 +1,14 @@
 import elasticSearch, { RequestParams } from '@elastic/elasticsearch';
+import { IndicesPutSettings } from '@elastic/elasticsearch/api/requestParams';
 import {
-  TransportRequestOptions,
   RequestBody,
   RequestNDBody,
+  TransportRequestOptions,
 } from '@elastic/elasticsearch/lib/Transport';
-import { tenants } from 'api/tenants';
 import { config } from 'api/config';
+import { tenants } from 'api/tenants';
 import { EntitySchema } from 'shared/types/entityType';
-import { SearchResponse, IndicesPutMapping, IndicesDelete, IndicesCreate } from './elasticTypes';
+import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes';
 
 const elasticClient = new elasticSearch.Client({
   nodes: config.elasticsearch.nodes,
@@ -39,7 +40,7 @@ const elastic = {
   },
 
   indices: {
-    async putSettings(params: IndicesPutMapping, options?: TransportRequestOptions) {
+    async putSettings(params: IndicesPutSettings, options?: TransportRequestOptions) {
       return elasticClient.indices.putSettings(
         {
           ...params,
