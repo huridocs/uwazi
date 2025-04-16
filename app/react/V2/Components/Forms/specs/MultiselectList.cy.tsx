@@ -2,7 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/Forms/MultiselectList.stories.tsx';
+import * as stories from 'app/stories/Forms/MultiselectList.stories';
 import { remoteLookupFunction } from 'app/stories/Forms/MultiselectListSotoryFixtures';
 import { MultiselectList } from '../MultiselectList/MultiselectList';
 import { specialCharacters, pizzas, salads } from './fixtures';
