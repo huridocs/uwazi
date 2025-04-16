@@ -3,6 +3,7 @@ import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/MultiselectList.stories.tsx';
+import { remoteLookupFunction } from 'app/stories/Forms/MultiselectListSotoryFixtures';
 import { MultiselectList } from '../MultiselectList/MultiselectList';
 import { specialCharacters, pizzas, salads } from './fixtures';
 
@@ -380,7 +381,7 @@ describe('MultiselectList.cy.tsx', () => {
     const { RemoteSearch } = composeStories(stories);
 
     beforeEach(() => {
-      const searchSpy = cy.spy(stories.remoteLookupFunction).as('searchSpy');
+      const searchSpy = cy.spy(remoteLookupFunction).as('searchSpy');
       cy.viewport(450, 650);
       mount(<RemoteSearch onSearch={searchSpy} />);
     });
