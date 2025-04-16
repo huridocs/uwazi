@@ -381,19 +381,7 @@ const SuggestionSidepanel = ({
     );
   };
 
-  const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
-    const response = await lookup(
-      searchTerm || '',
-      property?.content ? [property.content] : undefined
-    );
-    return response.options.map((option: any) => ({
-      label: option.label,
-      value: option.value,
-      searchLabel: option.label,
-    }));
-  };
-
-  const uniqueOptions = [...options, ...currentValueOptions].reduce((acc, option) => {
+  const initialOptions = [...options, ...currentValueOptions].reduce((acc, option) => {
     if (!acc.find(_option => _option.value === option.value)) {
       acc.push(option);
     }
@@ -401,8 +389,27 @@ const SuggestionSidepanel = ({
     return acc;
   }, [] as MultiselectListOption[]);
 
+  const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
+    const response = await lookup(
+      searchTerm || '',
+      property?.content ? [property.content] : undefined
+    );
+
+    const newItems = response.options.map((option: any) => ({
+      label: option.label,
+      value: option.value,
+      searchLabel: option.label,
+    }));
+
+    if (!searchTerm) {
+      return initialOptions;
+    }
+
+    return newItems;
+  };
+
   const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => (
-    <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
+    <div className={`px-4 pb-4 overflow-y-scroll ${labelInputIsOpen ? '' : 'hidden'}`}>
       <Controller
         control={control}
         name="field"
@@ -411,7 +418,7 @@ const SuggestionSidepanel = ({
           <MultiselectList
             onChange={onChange}
             selectedValues={value as string[]}
-            items={uniqueOptions}
+            items={initialOptions}
             checkboxes
             singleSelect={type === 'select'}
             search={selectAndSearchValue}

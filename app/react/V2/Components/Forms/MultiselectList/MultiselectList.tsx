@@ -314,7 +314,7 @@ const MultiselectList = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="sticky top-0 w-full pt-4 mb-2">
+      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -367,11 +367,14 @@ const MultiselectList = ({
       </div>
 
       {availableItems.length === 0 && !searching && (
-        <div className="flex w-full h-full items-center justify-center min-h-[400px]">
+        <div className="flex w-full h-full justify-center items-start min-h-[400px]">
           {renderChild(blankState)}
         </div>
       )}
-      <ul className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow '}`} ref={optionsRef}>
+      <ul
+        className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow min-h-[400px]'}`}
+        ref={optionsRef}
+      >
         {availableItems.map(renderItem)}
       </ul>
     </div>
