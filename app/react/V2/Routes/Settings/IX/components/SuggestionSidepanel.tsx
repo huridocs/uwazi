@@ -390,6 +390,10 @@ const SuggestionSidepanel = ({
   }, [] as MultiselectListOption[]);
 
   const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
+    if (!searchTerm) {
+      return initialOptions;
+    }
+
     const response = await lookup(
       searchTerm || '',
       property?.content ? [property.content] : undefined
@@ -400,10 +404,6 @@ const SuggestionSidepanel = ({
       value: option.value,
       searchLabel: option.label,
     }));
-
-    if (!searchTerm) {
-      return initialOptions;
-    }
 
     return newItems;
   };
