@@ -140,21 +140,45 @@ describe('PXExtractParagraphsFromEntity', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should change Extraction status to "error" on fail', async () => {
+  it('should change Extraction status to "error" on fail if use case is not going to be retried again', async () => {
     const { extractParagraphs } = setUpUseCase();
 
-    const promise = extractParagraphs.execute({
-      entitySharedId: 'entity_shared_id_that_does_not_exist',
-      extractorId: extractor._id.toString(),
-      userId: userId.toString(),
-      entityStatusId: entityStatus1._id.toString(),
-    });
+    await expect(
+      extractParagraphs.execute(
+        {
+          entitySharedId: 'entity_shared_id_that_does_not_exist',
+          extractorId: extractor._id.toString(),
+          userId: userId.toString(),
+          entityStatusId: entityStatus1._id.toString(),
+        },
+        true
+      )
+    ).rejects.toThrow();
 
-    await expect(promise).rejects.toThrow();
+    const entitiesStatus1 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+    expect(entitiesStatus1).toMatchObject([
+      {
+        _id: entityStatus1._id,
+        status: EntityStatus.Processing,
+      },
+    ]);
 
-    expect(extractions).toMatchObject([
+    await expect(
+      extractParagraphs.execute(
+        {
+          entitySharedId: 'entity_shared_id_that_does_not_exist',
+          extractorId: extractor._id.toString(),
+          userId: userId.toString(),
+          entityStatusId: entityStatus1._id.toString(),
+        },
+        false
+      )
+    ).rejects.toThrow();
+
+    const entitiesStatus2 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+
+    expect(entitiesStatus2).toMatchObject([
       {
         _id: entityStatus1._id,
         status: EntityStatus.Error,
