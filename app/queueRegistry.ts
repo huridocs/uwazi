@@ -59,22 +59,7 @@ export function registerJobs(
 
   register(TestJob, async () => new TestJob());
 
-  register(PXExtractParagraphsFromEntityJob, async () => {
-    const transactionManager = DefaultTransactionManager();
-    const connection = getConnection();
-    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-      connection,
-      transactionManager,
-    });
-    return new PXExtractParagraphsFromEntityJob({
-      pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
-        getConnection(),
-        transactionManager,
-        DefaultSettingsDataSource(transactionManager),
-        extractorsQueryService
-      ),
-    });
-  });
+  register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = DefaultTransactionManager();
