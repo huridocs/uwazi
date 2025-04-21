@@ -1,10 +1,9 @@
 name: e2e cypress BASE
 
 on:
-  push:
-    branches:
-      - development
-  pull_request:
+  workflow_run:
+    workflows: ['Build App']
+    types: [completed]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
