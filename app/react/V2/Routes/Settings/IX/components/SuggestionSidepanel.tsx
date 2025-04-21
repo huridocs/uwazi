@@ -86,7 +86,9 @@ const SuggestionSidepanel = ({
     } else {
       setSelectAndSearchValue(undefined);
     }
-  }, [selectAndSearch, setSelectAndSearchValue, selectedText]);
+    // we don't want to trigger this effect simply by selecting text, so selectedText is removed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectAndSearch, setSelectAndSearchValue]);
 
   const {
     register,
@@ -215,13 +217,7 @@ const SuggestionSidepanel = ({
           });
       }
     }
-
-    return () => {
-      setPdf(undefined);
-      setEntity(undefined);
-      setCurrentValueOptions([]);
-    };
-  }, [suggestion]);
+  }, [property, suggestion]);
 
   useEffect(() => {
     if (pdf?.extractedMetadata && suggestion && showSidepanel) {
@@ -234,15 +230,22 @@ const SuggestionSidepanel = ({
         )
       );
     }
-
-    return () => {
-      setSelectedText(undefined);
-      setSelectionError(undefined);
-      setHighlights(undefined);
-      setSelections(undefined);
-      setValue('field', undefined, { shouldDirty: false });
-    };
   }, [pdf, setValue, showSidepanel, suggestion]);
+
+  const handleClose = () => {
+    setSelectedText(undefined);
+    setSelectionError(undefined);
+    setHighlights(undefined);
+    setSelections(undefined);
+    setValue('field', undefined, { shouldDirty: false });
+    setPdf(undefined);
+    setEntity(undefined);
+    setCurrentValueOptions([]);
+    setSelectAndSearchValue('');
+    setSelectAndSearch(false);
+    reset();
+    setShowSidepanel(false);
+  };
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -278,7 +281,7 @@ const SuggestionSidepanel = ({
       setNotifications({ type: 'success', text: 'Saved successfully.' });
     }
 
-    setShowSidepanel(false);
+    handleClose();
   };
 
   const handleClickToFill = async () => {
@@ -378,19 +381,7 @@ const SuggestionSidepanel = ({
     );
   };
 
-  const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
-    const response = await lookup(
-      searchTerm || '',
-      property?.content ? [property.content] : undefined
-    );
-    return response.options.map((option: any) => ({
-      label: option.label,
-      value: option.value,
-      searchLabel: option.label,
-    }));
-  };
-
-  const uniqueOptions = [...options, ...currentValueOptions].reduce((acc, option) => {
+  const initialOptions = [...options, ...currentValueOptions].reduce((acc, option) => {
     if (!acc.find(_option => _option.value === option.value)) {
       acc.push(option);
     }
@@ -398,8 +389,27 @@ const SuggestionSidepanel = ({
     return acc;
   }, [] as MultiselectListOption[]);
 
+  const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
+    if (!searchTerm) {
+      return initialOptions;
+    }
+
+    const response = await lookup(
+      searchTerm || '',
+      property?.content ? [property.content] : undefined
+    );
+
+    const newItems = response.options.map((option: any) => ({
+      label: option.label,
+      value: option.value,
+      searchLabel: option.label,
+    }));
+
+    return newItems;
+  };
+
   const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => (
-    <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
+    <div className={`px-4 pb-4 overflow-y-scroll ${labelInputIsOpen ? '' : 'hidden'}`}>
       <Controller
         control={control}
         name="field"
@@ -407,13 +417,13 @@ const SuggestionSidepanel = ({
         render={({ field: { onChange, value } }) => (
           <MultiselectList
             onChange={onChange}
-            value={value as string[]}
-            items={uniqueOptions}
+            selectedValues={value as string[]}
+            items={initialOptions}
             checkboxes
             singleSelect={type === 'select'}
             search={selectAndSearchValue}
             suggestions
-            lookup={_lookup}
+            onSearch={type === 'relationship' ? _lookup : undefined}
           />
         )}
       />
@@ -441,7 +451,7 @@ const SuggestionSidepanel = ({
       withOverlay
       size="large"
       title={entity?.title}
-      closeSidepanelFunction={() => setShowSidepanel(false)}
+      closeSidepanelFunction={handleClose}
     >
       <div className="flex-grow overflow-y-scroll">
         <form
@@ -518,15 +528,7 @@ const SuggestionSidepanel = ({
           </div>
           {renderForm()}
           <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
-            <Button
-              type="button"
-              styling="outline"
-              disabled={isSubmitting}
-              onClick={() => {
-                setShowSidepanel(false);
-                reset();
-              }}
-            >
+            <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
             <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">

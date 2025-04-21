@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import { MultiSelect, MultiSelectProps, Option, defaultProps } from './MultiSelect';
 
-export type LookupMultiSelectProps = MultiSelectProps<string[]> & {
+interface LookupMultiSelectProps extends MultiSelectProps<string[]> {
   lookup: Function;
-};
+}
 
-export interface LookupMultiSelectState {
+interface LookupMultiSelectState {
   lookupOptions: Option[];
   selectedOptions: Option[];
   totalPossibleOptions: number;
@@ -36,7 +36,9 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
       totalPossibleOptions: props.totalPossibleOptions,
     };
     this.onChange = this.onChange.bind(this);
-    this.onFilter = debounce(this.onFilter.bind(this), debounceTime);
+    this.onFilter = debounce(this.onFilter.bind(this), debounceTime) as (
+      searchTerm: string
+    ) => Promise<void>;
   }
 
   onChange(value: string[]) {
@@ -93,3 +95,5 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     );
   }
 }
+
+export type { LookupMultiSelectState, LookupMultiSelectProps };

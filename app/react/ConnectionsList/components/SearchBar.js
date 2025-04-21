@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 

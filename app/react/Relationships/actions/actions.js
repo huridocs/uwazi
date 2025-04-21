@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 import api from 'app/utils/api';
 import { actions } from 'app/BasicReducer';
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import { createSelector } from 'reselect';
 import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';

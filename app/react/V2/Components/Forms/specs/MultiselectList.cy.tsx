@@ -1,152 +1,109 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { MultiselectList, MultiselectListOption } from '../MultiselectList/MultiselectList';
+import { composeStories } from '@storybook/react';
+import * as stories from 'app/stories/Forms/MultiselectList.stories';
+import { remoteLookupFunction } from 'app/stories/Forms/MultiselectListSotoryFixtures';
+import { MultiselectList } from '../MultiselectList/MultiselectList';
+import { specialCharacters, pizzas, salads } from './fixtures';
 
 describe('MultiselectList.cy.tsx', () => {
-  const pizzas: MultiselectListOption[] = [
-    { label: 'Margherita', value: 'MGT', searchLabel: 'Margherita' },
-    { label: 'Pepperoni', value: 'PPR', searchLabel: 'Pepperoni' },
-    { label: 'Hawaiian', value: 'HWN', searchLabel: 'Hawaiian' },
-    { label: 'Vegetarian', value: 'VGT', searchLabel: 'Vegetarian' },
-    { label: 'Meat Lovers', value: 'MLV', searchLabel: 'Meat Lovers' },
-    { label: 'BBQ Chicken', value: 'BQC', searchLabel: 'BBQ Chicken' },
-    { label: 'Mushroom', value: 'MSH', searchLabel: 'Mushroom' },
-    { label: 'Four Cheese', value: 'FC', searchLabel: 'Four Cheese' },
-    { label: 'Buffalo Chicken', value: 'BFC', searchLabel: 'Buffalo Chicken' },
-    { label: 'Chicken Bacon Ranch', value: 'CBR', searchLabel: 'Chicken Bacon Ranch' },
-    { label: 'Chicken Alfredo', value: 'CAF', searchLabel: 'Chicken Alfredo' },
-  ];
-
-  const remoteLookupFunction = async (search: string): Promise<MultiselectListOption[]> =>
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve(
-          pizzas.filter(({ searchLabel }) =>
-            searchLabel.toLowerCase().includes(search.toLowerCase())
-          )
-        );
-      }, 1000);
+  describe('general', () => {
+    beforeEach(() => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList items={pizzas} />
+        </div>
+      );
     });
 
-  const salads = [
-    {
-      label: 'Veggy',
-      searchLabel: 'Veggy',
-      value: 'veggy',
-      items: [
-        { label: 'Caesar', value: 'veggy_caesar', searchLabel: 'caesar' },
-        { label: 'Mediterranean', value: 'veggy_medit', searchLabel: 'mediterranean' },
-        { label: 'Tai', value: 'tai', searchLabel: 'tai' },
-      ],
-    },
-    {
-      label: 'Vegan',
-      searchLabel: 'Vegan',
-      value: 'vegan',
-      items: [
-        { label: 'Caesar', value: 'vegan_caesar', searchLabel: 'caesar' },
-        { label: 'Mediterranean', value: 'vegan_medit', searchLabel: 'mediterranean' },
-        { label: 'Rice', value: 'rice', searchLabel: 'rice' },
-      ],
-    },
-    {
-      label: 'Regular',
-      searchLabel: 'Regular',
-      value: 'regular',
-      items: [
-        { label: 'Caesar', value: 'caesar', searchLabel: 'caesar' },
-        { label: 'Mediterranean', value: 'medit', searchLabel: 'mediterranean' },
-        { label: 'Super', value: 'super', searchLabel: 'super' },
-      ],
-    },
-  ];
+    it('should be accessible', () => {
+      cy.injectAxe();
+      cy.checkA11y();
+    });
 
-  let selected: string[] = [];
+    it('should render the list of options', () => {
+      pizzas.forEach(({ label }) => {
+        cy.contains(label as string).should('be.visible');
+      });
+    });
 
-  beforeEach(() => {
-    cy.viewport(450, 650);
-    mount(
-      <div className="p-2 tw-content">
-        <MultiselectList
-          items={pizzas}
-          onChange={selectedItems => {
-            selected = selectedItems;
-          }}
-        />
-      </div>
-    );
-  });
+    it('should filter the list of options', () => {
+      cy.get('input[type=text]').type('chicken');
+      cy.contains('BBQ Chicken').should('be.visible');
+      cy.contains('Buffalo Chicken').should('be.visible');
+      cy.contains('Chicken Bacon Ranch').should('be.visible');
+      cy.contains('Chicken Alfredo').should('be.visible');
+      cy.contains('Margherita').should('not.exist');
+    });
 
-  it('should be accessible', () => {
-    cy.injectAxe();
-    cy.checkA11y();
-  });
-
-  it('should render the list of options', () => {
-    pizzas.forEach(({ label }) => {
-      cy.contains(label as string).should('be.visible');
+    it('should show all the options with their status', () => {
+      const items: string[] = [];
+      cy.get('input[type="radio"]:checked').siblings().contains('All');
+      cy.get('input[type="radio"]').eq(1).should('be.disabled');
+      cy.get('[data-testid="pill-comp"]').eq(3).click();
+      cy.get('[data-testid="pill-comp"]').eq(6).click();
+      cy.get('li:visible').each($li => items.push($li.text()));
+      cy.wrap(items).should('deep.equal', [
+        'MargheritaSelect',
+        'PepperoniSelect',
+        'HawaiianSelect',
+        'VegetarianSelected',
+        'Meat LoversSelect',
+        'BBQ ChickenSelect',
+        'MushroomSelected',
+        'Four CheeseSelect',
+        'Buffalo ChickenSelect',
+        'Chicken Bacon RanchSelect',
+        'Chicken AlfredoSelect',
+      ]);
     });
   });
 
-  it('should filter the list of options', () => {
-    cy.get('input[type=text]').type('chicken');
-    cy.contains('BBQ Chicken').should('be.visible');
-    cy.contains('Buffalo Chicken').should('be.visible');
-    cy.contains('Chicken Bacon Ranch').should('be.visible');
-    cy.contains('Chicken Alfredo').should('be.visible');
-    cy.contains('Margherita').should('not.exist');
-  });
+  describe('selections', () => {
+    let selected: string[] = [];
 
-  it('should select options', () => {
-    cy.get('input[type=text]').type('chicken');
-    cy.contains('BBQ Chicken').click();
-
-    cy.get('[data-testid="clear-field-button"]').click();
-    cy.get('input[type=text]').type('margherita');
-    cy.contains('Margherita').click();
-
-    cy.get('[data-testid="clear-field-button"]').click();
-    cy.contains('span', 'BBQ Chicken').siblings().contains('Selected');
-    cy.contains('span', 'Margherita').siblings().contains('Selected');
-    cy.get('ul').then(() => {
-      expect(selected).to.deep.equal(['BQC', 'MGT']);
+    beforeEach(() => {
+      cy.viewport(450, 650);
+      mount(
+        <div className="p-2 tw-content">
+          <MultiselectList
+            items={pizzas}
+            onChange={selectedItems => {
+              selected = selectedItems;
+            }}
+          />
+        </div>
+      );
     });
-  });
 
-  it('should show all the options with their status', () => {
-    const items: string[] = [];
-    cy.get('input[type="radio"]:checked').siblings().contains('All');
-    cy.get('input[type="radio"]').eq(1).should('be.disabled');
-    cy.get('[data-testid="pill-comp"]').eq(3).click();
-    cy.get('[data-testid="pill-comp"]').eq(6).click();
-    cy.get('li:visible').each($li => items.push($li.text()));
-    cy.wrap(items).should('deep.equal', [
-      'MargheritaSelect',
-      'PepperoniSelect',
-      'HawaiianSelect',
-      'VegetarianSelected',
-      'Meat LoversSelect',
-      'BBQ ChickenSelect',
-      'MushroomSelected',
-      'Four CheeseSelect',
-      'Buffalo ChickenSelect',
-      'Chicken Bacon RanchSelect',
-      'Chicken AlfredoSelect',
-    ]);
-  });
+    it('should select options', () => {
+      cy.get('input[type=text]').type('chicken');
+      cy.contains('BBQ Chicken').click();
 
-  it('should show only the selected options', () => {
-    const selectedItems: string[] = [];
-    cy.get('[data-testid="pill-comp"]').eq(3).click();
-    cy.get('[data-testid="pill-comp"]').eq(6).click();
+      cy.get('[data-testid="clear-field-button"]').click();
+      cy.get('input[type=text]').type('margherita');
+      cy.contains('Margherita').click();
 
-    cy.get('input[type="radio"]').eq(1).click();
-    cy.get('li:visible').each($li => selectedItems.push($li.text()));
-    cy.wrap(selectedItems).should('deep.equal', ['VegetarianSelected', 'MushroomSelected']);
-  });
+      cy.get('[data-testid="clear-field-button"]').click();
+      cy.contains('span', 'BBQ Chicken').siblings().contains('Selected');
+      cy.contains('span', 'Margherita').siblings().contains('Selected');
+      cy.get('ul').then(() => {
+        expect(selected).to.deep.equal(['BQC', 'MGT']);
+      });
+    });
 
-  describe('select all', () => {
+    it('should show only the selected options', () => {
+      const selectedItems: string[] = [];
+      cy.get('[data-testid="pill-comp"]').eq(3).click();
+      cy.get('[data-testid="pill-comp"]').eq(6).click();
+
+      cy.get('input[type="radio"]').eq(1).click();
+      cy.get('li:visible').each($li => selectedItems.push($li.text()));
+      cy.wrap(selectedItems).should('deep.equal', ['VegetarianSelected', 'MushroomSelected']);
+    });
+
     it('should allow selecting all items', () => {
       const selections: string[] = [];
 
@@ -241,6 +198,7 @@ describe('MultiselectList.cy.tsx', () => {
       cy.contains('no items string').should('be.visible');
     });
   });
+
   describe('hide filters property', () => {
     it('should load/show filters when hideFilters is not set', () => {
       cy.viewport(450, 650);
@@ -371,8 +329,7 @@ describe('MultiselectList.cy.tsx', () => {
           <MultiselectList
             onChange={() => {}}
             items={[]}
-            lookup={remoteLookupFunction}
-            value={['MGT']}
+            selectedValues={['MGT']}
             itemContainerClassName="custom-container-class"
           />
         </div>
@@ -391,26 +348,68 @@ describe('MultiselectList.cy.tsx', () => {
     });
   });
 
-  describe('remote lookup', () => {
-    it('should show fetched data', () => {
+  describe('search function', () => {
+    beforeEach(() => {
       cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
-          <MultiselectList
-            onChange={() => {}}
-            items={[]}
-            lookup={remoteLookupFunction}
-            value={['MGT']}
-          />
+          <MultiselectList items={specialCharacters} />
         </div>
       );
+    });
 
-      cy.get('input[type=text]').type('chicken');
-      cy.contains('BBQ Chicken').should('be.visible');
-      cy.contains('Buffalo Chicken').should('be.visible');
-      cy.contains('Chicken Bacon Ranch').should('be.visible');
-      cy.contains('Chicken Alfredo').should('be.visible');
-      cy.contains('Margherita').should('not.exist');
+    [
+      { searchTerm: 'Aslog', results: ['Åslög'] },
+      { searchTerm: 'Hélèna', results: ['Hélèna'] },
+      { searchTerm: 'penelope', results: ['Pénélope', 'Penelopee'] },
+      { searchTerm: 'Loïca', results: ['Loïca'] },
+      { searchTerm: '.com', results: ['oakley.com'] },
+      { searchTerm: '琳', results: ['美琳'] },
+      { searchTerm: '银含', results: ['银含'] },
+      { searchTerm: 'Татьяна', results: ['Татьяна'] },
+    ].forEach(({ searchTerm, results }) => {
+      it(`should be able to search ${results} by ${searchTerm}`, () => {
+        cy.get('input[type=text]').type(searchTerm);
+        results.forEach(result => {
+          cy.contains('li', result).should('have.length', 1);
+        });
+      });
+    });
+  });
+
+  describe('custom search', () => {
+    const { RemoteSearch } = composeStories(stories);
+
+    beforeEach(() => {
+      const searchSpy = cy.spy(remoteLookupFunction).as('searchSpy');
+      cy.viewport(450, 650);
+      mount(<RemoteSearch onSearch={searchSpy} />);
+    });
+
+    it('should not trigger the search function on mount', () => {
+      cy.clock();
+      cy.tick(2000);
+      cy.contains('No items available').then(() => {
+        cy.get('@searchSpy').should('not.have.been.called');
+      });
+    });
+
+    it('should search once after the user finishes typing', () => {
+      cy.clock();
+      cy.get('input[type=text]').type('Item');
+      cy.tick(2000);
+      cy.contains('Item A').then(() => {
+        cy.get('@searchSpy').should('have.been.calledOnce');
+      });
+    });
+
+    it('should search when filling the field via a UI action instead of typing', () => {
+      cy.clock();
+      cy.contains('button', 'Search & Focus').click();
+      cy.tick(2000);
+      cy.contains('Another').then(() => {
+        cy.get('@searchSpy').should('have.been.calledOnce');
+      });
     });
   });
 });

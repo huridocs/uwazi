@@ -18,7 +18,6 @@ const Primary: Story = {
   render: args => (
     <Checkbox
       label={args.label}
-      defaultChecked={args.defaultChecked}
       checked={args.checked}
       name={args.name}
       onChange={args.onChange}
@@ -33,7 +32,6 @@ const Basic: Story = {
   args: {
     label: 'Uwazi is awesome',
     name: 'awesomeness',
-    defaultChecked: false,
     disabled: false,
     checked: false,
     className: '',
