@@ -54,55 +54,18 @@ jobs:
         with:
           submodules: recursive
 
-      # Node.js Setup with Cypress Caching
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Use Pre-built App
+      - name: Download pre-built app
+        uses: actions/download-artifact@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
-
-      - name: Get yarn cache directory
-        id: yarn-cache-dir
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies and Cypress binary
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir.outputs.dir }}
-            node_modules
-            ~/.cache/Cypress
-          key: ${{ runner.os }}-cypress-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cypress-
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-        if: steps.cache.outputs.cache-hit != 'true'
-
-      - name: Verify Cypress
-        run: npx cypress verify
+          name: app-build
+          path: prod/
 
       # System Dependencies
       - name: Install system packages
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils
-
-      # Build Cache
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v4
-        with:
-          path: prod
-          key: ${{ runner.os }}-build-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
-
-      - name: Build production
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: yarn production-build
 
       # Python Services Setup
       - name: Set up Python 3.11

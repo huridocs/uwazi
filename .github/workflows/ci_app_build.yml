@@ -1,0 +1,58 @@
+name: Build App
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-app:
+    runs-on: ubuntu-24.04
+    steps:
+      # Checkout Repository
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Node.js Setup with Dependency Caching
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir.outputs.dir }}
+            node_modules
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      # Build the Application
+      - name: Build production
+        run: yarn production-build
+
+      # Save Build Output
+      - name: Upload built app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: prod/
