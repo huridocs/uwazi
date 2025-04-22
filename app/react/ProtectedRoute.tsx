@@ -15,10 +15,9 @@ const ProtectedRoute = ({
   const userRole = store?.getState().user.get('role') || '';
 
   useEffect(() => {
-    if (allowedRoles && !allowedRoles.includes(userRole)) {
-      navigate('/login', { replace: true });
-    } else if (!allowedRoles && !userId) {
-      navigate('/login', { replace: true });
+    if ((allowedRoles && !allowedRoles.includes(userRole)) || !userId) {
+      // eslint-disable-next-line no-void
+      void navigate('/login', { replace: true });
     }
   }, [allowedRoles, userRole, userId, navigate]);
 
