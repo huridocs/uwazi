@@ -87,16 +87,20 @@ describe('ExtractionUseCase', () => {
 
   it('should call useCase execute with extracted data', async () => {
     const heartBeatCallBack = jest.fn();
-    await job.handleDispatch(heartBeatCallBack, {
-      results: {
-        success: true,
-        data_url: 'any_url',
-        error_message: undefined,
+    await job.handleDispatch(
+      heartBeatCallBack,
+      {
+        results: {
+          success: true,
+          data_url: 'any_url',
+          error_message: undefined,
+        },
+        entityStatusId: extractionKey.entityStatusId,
+        tenantName: extractionKey.tenantName,
+        userId: extractionKey.userId,
       },
-      entityStatusId: extractionKey.entityStatusId,
-      tenantName: extractionKey.tenantName,
-      userId: extractionKey.userId,
-    });
+      { retryCount: 2, maxRetries: 3 }
+    );
 
     expect(useCase.execute).toHaveBeenCalledWith({
       userId: extractionKey.userId,
@@ -114,9 +118,9 @@ describe('ExtractionUseCase', () => {
       userId: extractionKey.userId,
     };
 
-    await expect(job.handleDispatch(jest.fn(), params)).rejects.toBeInstanceOf(
-      NonRetryableJobError
-    );
+    await expect(
+      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3 })
+    ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
 
   it('should throw a non retryable error when data_url is undefined', async () => {
@@ -127,12 +131,12 @@ describe('ExtractionUseCase', () => {
       userId: extractionKey.userId,
     };
 
-    await expect(job.handleDispatch(jest.fn(), params)).rejects.toBeInstanceOf(
-      NonRetryableJobError
-    );
+    await expect(
+      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3 })
+    ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
 
-  it('should set Extraction status to "error" when the operation failed', async () => {
+  it('should set Extraction status to "error" if use case is not going be retried', async () => {
     const params = {
       results: { success: false, data_url: 'url', error_message: undefined },
       entityStatusId: extractionKey.entityStatusId,
@@ -140,11 +144,21 @@ describe('ExtractionUseCase', () => {
       userId: extractionKey.userId,
     };
 
-    await expect(job.handleDispatch(jest.fn(), params)).rejects.toBeInstanceOf(
-      NonRetryableJobError
-    );
+    await expect(
+      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3 })
+    ).rejects.toBeInstanceOf(NonRetryableJobError);
 
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-    expect(extractions).toMatchObject([{ _id: extractionDBO._id, status: EntityStatus.Error }]);
+    const extractions1 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+
+    expect(extractions1).toMatchObject([
+      { _id: extractionDBO._id, status: EntityStatus.Processing },
+    ]);
+
+    await expect(
+      job.handleDispatch(jest.fn(), params, { retryCount: 3, maxRetries: 3 })
+    ).rejects.toBeInstanceOf(NonRetryableJobError);
+
+    const extractions2 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+    expect(extractions2).toMatchObject([{ _id: extractionDBO._id, status: EntityStatus.Error }]);
   });
 });

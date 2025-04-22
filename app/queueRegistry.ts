@@ -7,7 +7,7 @@ import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructur
 import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
 import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory';
 import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
-import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntitiesJob';
+import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -59,22 +59,7 @@ export function registerJobs(
 
   register(TestJob, async () => new TestJob());
 
-  register(PXExtractParagraphsFromEntityJob, async () => {
-    const transactionManager = DefaultTransactionManager();
-    const connection = getConnection();
-    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-      connection,
-      transactionManager,
-    });
-    return new PXExtractParagraphsFromEntityJob({
-      pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
-        getConnection(),
-        transactionManager,
-        DefaultSettingsDataSource(transactionManager),
-        extractorsQueryService
-      ),
-    });
-  });
+  register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = DefaultTransactionManager();
