@@ -38,6 +38,10 @@ export const config = {
   PORT: process.env.PORT || 3000,
 
   DBHOST: MONGO_URI || onlyDBHOST(),
+  DBAUTH: {
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  },
 
   mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 5,
 
@@ -47,9 +51,13 @@ export const config = {
 
   userSessionSecret: USER_SESSION_SECRET || uniqueID(),
 
-  elasticsearch_nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
-
-  elasticsearch_requestTimeout: 60000,
+  elasticsearch: {
+    nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
+    requestTimeout: 60000,
+    auth: {
+      apiKey: process.env.ELASTICSEARCH_API_KEY || '',
+    },
+  },
 
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',

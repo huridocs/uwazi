@@ -8,13 +8,13 @@ import { MongoPXExtractorsQueryService } from './MongoPXExtractorsQueryService';
 
 type Props = {
   connection?: Db;
-  mongoTransactionManager?: MongoTransactionManager;
+  transactionManager?: MongoTransactionManager;
 };
 
 export class PXExtractorsQueryServiceFactory {
   static createDefault(props?: Props) {
     const db = props?.connection || getConnection();
-    const transactionManager = props?.mongoTransactionManager || DefaultTransactionManager();
+    const transactionManager = props?.transactionManager || DefaultTransactionManager();
 
     return new MongoPXExtractorsQueryService(db, transactionManager);
   }

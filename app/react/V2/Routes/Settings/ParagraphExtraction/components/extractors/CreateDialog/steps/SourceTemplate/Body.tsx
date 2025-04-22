@@ -24,7 +24,7 @@ const Body = () => {
   return (
     <div>
       <MultiselectList
-        value={[sourceTemplateId]}
+        selectedValues={[sourceTemplateId]}
         items={sourceTemplateOptions}
         onChange={selected => {
           setSourceTemplateId(selected[0]);

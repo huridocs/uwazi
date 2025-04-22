@@ -14,6 +14,7 @@ import {
 } from '../MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
+import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory';
 
 const extractionDBO: MongoPXEntityStatusDBO = {
   _id: new ObjectId(),
@@ -61,13 +62,21 @@ describe('ExtractionUseCase', () => {
     await testingEnvironment.setUp({
       [mongoPXEntitiesStatusCollection]: [extractionDBO],
     });
+
+    const connection = getConnection();
+    const transactionManager = DefaultTransactionManager();
+    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+      connection,
+      transactionManager,
+    });
     job = new PXCreateParagraphsJob({
       extractionService,
       useCase,
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
-        getConnection(),
-        DefaultTransactionManager(),
-        DefaultSettingsDataSource(DefaultTransactionManager())
+        connection,
+        transactionManager,
+        DefaultSettingsDataSource(transactionManager),
+        extractorsQueryService
       ),
     });
   });

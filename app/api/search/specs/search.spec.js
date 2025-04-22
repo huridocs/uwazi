@@ -1,3 +1,4 @@
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import date from 'api/utils/date';
@@ -1015,6 +1016,14 @@ describe('search', () => {
     expect(desc.rows[1].title).toBe(' Metadáta4');
     expect(desc.rows[2].title).toBe('metádata3');
     expect(desc.rows[3].title).toBe('Metadata2');
+  });
+
+  it('should throw a validation error if order is not asc or desc', async () => {
+    await expect(async () =>
+      search.search({ types: [], order: 'badOrder', sort: 'title' }, 'en')
+    ).rejects.toEqual(
+      new ValidationError([{ path: 'query.order', message: 'order must be "asc" or "desc"' }])
+    );
   });
 
   it('sort by metadata values', async () => {

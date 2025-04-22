@@ -22,6 +22,7 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -904,11 +905,13 @@ const search = {
     });
   },
 
-  async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
+  async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
     const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
       dictionariesModel.get(),
     ]);
+
+    const searchTerm = _searchTerm || '';
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
       templates,
@@ -919,6 +922,10 @@ const search = {
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
 
+    if (!property) {
+      throw new OperationalError(`Property ${propertyName} not found`);
+    }
+
     queryBuilder
       .resetAggregations()
       .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
@@ -927,7 +934,7 @@ const search = {
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
-    this.appendAutoCompleteFilters(property, searchTerm, aggregation);
+    this.appendAutoCompleteFilters(property, searchTerm || '', aggregation);
 
     const response = await elastic.search({
       body,

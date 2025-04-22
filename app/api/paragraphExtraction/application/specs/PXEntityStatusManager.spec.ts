@@ -2,19 +2,13 @@ import { ObjectId } from 'mongodb';
 
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoExtractorBuilder } from 'api/paragraphExtraction/infrastructure/specs/MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import entitiesDS from 'api/entities';
-import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
-import { PXEntityStatusManager } from '../PXEntityStatusManager';
+import { PXEntityStatusManagerFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusManagerFactory';
 
 const { extractor, sourceTemplate, targetTemplate, targetRelationship, sourceRelationship } =
   MongoExtractorBuilder.create().build();
@@ -39,24 +33,7 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const connection = getConnection();
-  const mongoTransactionManager = DefaultTransactionManager();
-  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-  const settingsDS = DefaultSettingsDataSource(mongoTransactionManager);
-  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
-    connection,
-    mongoTransactionManager,
-  });
-
-  const entityStatusManager = new PXEntityStatusManager({
-    entitiesDS,
-    entitiesStatusDS,
-    settingsDS,
-    extractorsDS,
-  });
+  const entityStatusManager = PXEntityStatusManagerFactory.createDefault();
 
   return {
     entityStatusManager,
@@ -78,11 +55,13 @@ describe('PXEntityStatusManager', () => {
 
     await entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         status: 'processing',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         language: 'en',
@@ -110,23 +89,32 @@ describe('PXEntityStatusManager', () => {
       status: EntityStatus.Processed,
     };
 
+    const documentEn = factory.document('document_en', {
+      _id: new ObjectId(),
+      language: 'en',
+      entity: entity.sharedId!,
+    });
+
     await testingEnvironment.setFixtures({
       ...createFixtures(),
       [mongoPXEntitiesStatusCollection]: [mongoEntityStatus],
+      files: [documentEn],
     });
 
     const { entityStatusManager } = setUpUseCase();
 
     await entityStatusManager.execute({
       before: {
-        type: 'document',
-        entity: entity.sharedId!,
+        id: documentEn._id.toString(),
+        type: documentEn.type!,
+        entity: documentEn.entity!,
         language: 'pt',
         status: 'ready',
       },
       after: {
-        type: 'document',
-        entity: entity.sharedId!,
+        id: documentEn._id.toString(),
+        type: documentEn.type!,
+        entity: documentEn.entity!,
         language: 'en',
         status: 'ready',
       },
@@ -136,10 +124,61 @@ describe('PXEntityStatusManager', () => {
 
     expect(entitiesStatus).toMatchObject([
       {
-        _id: expect.any(ObjectId),
+        _id: mongoEntityStatus._id,
         status: EntityStatus.Obsolete,
-        extractorId: extractor._id,
-        entitySharedId: entity.sharedId,
+        extractorId: mongoEntityStatus.extractorId,
+        entitySharedId: mongoEntityStatus.entitySharedId,
+      },
+    ]);
+  });
+
+  it('should change EntityStatus to processing_obsolete', async () => {
+    const mongoEntityStatus: MongoPXEntityStatusDBO = {
+      _id: factory.id('entity_status'),
+      entitySharedId: entity.sharedId!,
+      extractorId: extractor._id,
+      status: EntityStatus.Processing,
+    };
+
+    const documentEn = factory.document('document_en', {
+      _id: new ObjectId(),
+      language: 'en',
+      entity: entity.sharedId!,
+    });
+
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXEntitiesStatusCollection]: [mongoEntityStatus],
+      files: [documentEn],
+    });
+
+    const { entityStatusManager } = setUpUseCase();
+
+    await entityStatusManager.execute({
+      before: {
+        id: documentEn._id.toString(),
+        type: documentEn.type!,
+        entity: documentEn.entity!,
+        language: 'pt',
+        status: 'ready',
+      },
+      after: {
+        id: documentEn._id.toString(),
+        type: documentEn.type!,
+        entity: documentEn.entity!,
+        language: 'en',
+        status: 'ready',
+      },
+    });
+
+    const entitiesStatus = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+
+    expect(entitiesStatus).toMatchObject([
+      {
+        _id: mongoEntityStatus._id,
+        status: EntityStatus.ProcessingObsolete,
+        extractorId: mongoEntityStatus.extractorId,
+        entitySharedId: mongoEntityStatus.entitySharedId,
       },
     ]);
   });
@@ -161,12 +200,14 @@ describe('PXEntityStatusManager', () => {
 
     await entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         language: 'pt',
         status: 'ready',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         language: 'en',
@@ -186,16 +227,61 @@ describe('PXEntityStatusManager', () => {
     ]);
   });
 
+  it('should do nothing if the updated Document was not used for paragraph Extraction', async () => {
+    const mongoEntityStatus: MongoPXEntityStatusDBO = {
+      _id: factory.id('entity_status'),
+      entitySharedId: entity.sharedId!,
+      extractorId: extractor._id,
+      status: EntityStatus.Processed,
+    };
+
+    const documentEn = factory.document('document_en', {
+      language: 'en',
+      entity: entity.sharedId!,
+      _id: new ObjectId(),
+    });
+
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXEntitiesStatusCollection]: [mongoEntityStatus],
+      files: [documentEn],
+    });
+
+    const { entityStatusManager } = setUpUseCase();
+
+    await entityStatusManager.execute({
+      before: {
+        id: new ObjectId().toString(),
+        type: 'document',
+        entity: entity.sharedId!,
+        status: 'processing',
+      },
+      after: {
+        id: new ObjectId().toString(),
+        type: 'document',
+        entity: entity.sharedId!,
+        language: 'en',
+        status: 'ready',
+      },
+    });
+
+    const entitiesStatus = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+
+    expect(entitiesStatus).toMatchObject([mongoEntityStatus]);
+  });
+
   it('should throw if the File is not a Document', async () => {
     const { entityStatusManager } = setUpUseCase();
 
     const promise = entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'custom',
         entity: entity.sharedId!,
         status: 'processing',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'custom',
         entity: entity.sharedId!,
         language: 'en',
@@ -211,11 +297,13 @@ describe('PXEntityStatusManager', () => {
 
     const promise = entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         status: 'processing',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         language: 'en',
@@ -231,12 +319,14 @@ describe('PXEntityStatusManager', () => {
 
     const promise = entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         status: 'ready',
         language: 'en',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         status: 'ready',
@@ -252,12 +342,14 @@ describe('PXEntityStatusManager', () => {
 
     const promise = entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: 'any_source_entity',
         status: 'ready',
         language: 'en',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: 'any_source_entity',
         status: 'ready',
@@ -273,12 +365,14 @@ describe('PXEntityStatusManager', () => {
 
     const promise = entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         status: 'ready',
         language: 'en',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity.sharedId!,
         status: 'ready',
@@ -294,11 +388,13 @@ describe('PXEntityStatusManager', () => {
 
     const promise = entityStatusManager.execute({
       before: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity2.sharedId!,
         status: 'processing',
       },
       after: {
+        id: new ObjectId().toString(),
         type: 'document',
         entity: entity2.sharedId!,
         status: 'ready',

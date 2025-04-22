@@ -23,7 +23,7 @@ const setupUseCase = () => {
 
   const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
     connection,
-    mongoTransactionManager,
+    transactionManager: mongoTransactionManager,
   });
 
   const getExtractorStatuses = new PXGetExtractorStatuses({

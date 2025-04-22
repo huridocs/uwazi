@@ -14,15 +14,18 @@ export class PXFileUpdatedListener {
 
   private static async afterFileUpdated(data: FileUpdatedEvent['data']) {
     const useCase = PXEntityStatusManagerFactory.createDefault();
+
     try {
       await useCase.execute({
         after: {
+          id: data.after._id!.toString(),
           entity: data.after.entity!,
           status: data.after.status!,
           type: data.after.type!,
           language: LanguageUtils.fromISO639_3(data.after.language!).ISO639_1!,
         },
         before: {
+          id: data.before._id!.toString(),
           entity: data.before.entity!,
           status: data.before.status!,
           type: data.before.type!,

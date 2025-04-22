@@ -9,6 +9,12 @@
       "cypress-real-events"
     ]
   },
-  "include": ["./**/*", "./**/*.d.ts", "../app/react/V2/**/*.cy.tsx", "../app/shared/types/*.d.ts"],
+  "include": [
+    "./**/*",
+    "./**/*.d.ts",
+    "../app/react/V2/**/*.cy.tsx",
+    "../app/react/stories/**/*.tsx",
+    "../app/shared/types/*.d.ts"
+  ],
   "exclude": []
 }

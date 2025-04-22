@@ -30,7 +30,10 @@ class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
         extractorId,
       });
 
-      if (!entityStatus || entityStatus?.status === EntityStatus.Processing) {
+      if (
+        !entityStatus?.status ||
+        [EntityStatus.Processing, EntityStatus.ProcessingObsolete].includes(entityStatus?.status)
+      ) {
         return;
       }
 

@@ -84,18 +84,9 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(requestIdMiddleware);
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
 
 console.info('==> Connecting to', config.DBHOST);
-DB.connect(config.DBHOST, dbAuth).then(async () => {
+DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await tenants.setupTenants();
   authRoutes(app);
   versionRoutes(app);

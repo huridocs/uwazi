@@ -34,7 +34,16 @@ services:
     container_name: mongoreplicaset_start_script
     depends_on:
       - mongo
-    entrypoint: [ "bash", "-c", "sleep 1 && mongosh --host mongo:27017 --eval 'rs.initiate();cfg = rs.config(); cfg.members[0].host = \"localhost:27017\";rs.reconfig(cfg, {force:true})'"]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        sleep 1 && mongosh --host mongo:27017 --eval '
+        rs.initiate();
+        cfg = rs.config();
+        cfg.members[0].host = "localhost:27017";
+        rs.reconfig(cfg, {force:true});
+        '
 
   redis:
     image: 'redis:5.0.14'

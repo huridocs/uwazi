@@ -184,7 +184,7 @@ const ExtractorModal = ({
 
         <div className={`${step !== 1 && 'hidden'}`}>
           <MultiselectList
-            value={values || []}
+            selectedValues={values || []}
             items={options}
             onChange={selected => {
               setValues(selected);

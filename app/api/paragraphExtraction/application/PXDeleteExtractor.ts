@@ -1,14 +1,10 @@
-import { z } from 'zod';
-
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 
-const InputSchema = z.object({
-  id: z.string({ message: 'You should provide an Extractor ID' }),
-});
-
-type Input = z.infer<typeof InputSchema>;
+type Input = {
+  id: string;
+};
 
 type Output = any;
 
@@ -27,6 +23,6 @@ class PXDeleteExtractor implements UseCase<Input, Output> {
   }
 }
 
-export { PXDeleteExtractor, InputSchema };
+export { PXDeleteExtractor };
 
 export type { Input };

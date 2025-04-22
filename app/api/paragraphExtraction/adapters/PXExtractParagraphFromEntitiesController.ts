@@ -6,8 +6,6 @@ import {
 
 import { PXExtractParagraphsFromEntitiesFactory } from '../infrastructure/PXExtractParagraphsFromEntitiesFactory';
 
-type Request = z.infer<typeof RequestSchema>;
-
 type Dependencies = AbstractControllerDependencies<Request>;
 
 const RequestSchema = z.object({
@@ -15,19 +13,21 @@ const RequestSchema = z.object({
   entitySharedIds: z.array(z.string({ message: 'You should provide an Entity' })).min(1),
 });
 
+type Request = z.infer<typeof RequestSchema>;
+
 class PXExtractParagraphFromEntitiesController extends AbstractController<Request> {
   constructor(dependencies: Dependencies) {
     super(dependencies);
   }
 
   async handle(): Promise<void> {
+    const dto = RequestSchema.parse(this.request.body);
+
     this.ensureUser();
 
     const useCase = await PXExtractParagraphsFromEntitiesFactory.createDefault({
       tenantName: this.tenantName,
     });
-
-    const dto = RequestSchema.parse(this.request.body);
 
     await useCase.execute({ ...dto, userId: this.user._id.toString() });
 
