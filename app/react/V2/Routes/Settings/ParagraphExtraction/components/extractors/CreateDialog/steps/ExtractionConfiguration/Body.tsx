@@ -85,7 +85,7 @@ const Body = () => {
           id="numeric-text-property"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Paragraph text extraction property (numeric text)
+              Paragraph text extraction property (numeric)
             </Translate>
           }
           value={paragraphNumberPropertyId}

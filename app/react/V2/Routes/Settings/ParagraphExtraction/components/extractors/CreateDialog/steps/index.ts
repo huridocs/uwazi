@@ -12,14 +12,14 @@ const AddExtractorSteps: Record<
     title: TargetTemplateStep.title,
   },
   2: {
-    Body: ExtractionConfigurationStep.Body,
-    Footer: ExtractionConfigurationStep.Footer,
-    title: ExtractionConfigurationStep.title,
-  },
-  3: {
     Body: SourceTemplateStep.Body,
     Footer: SourceTemplateStep.Footer,
     title: SourceTemplateStep.title,
+  },
+  3: {
+    Body: ExtractionConfigurationStep.Body,
+    Footer: ExtractionConfigurationStep.Footer,
+    title: ExtractionConfigurationStep.title,
   },
 };
 
