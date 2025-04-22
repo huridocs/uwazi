@@ -1,7 +1,3 @@
-@use "../config/colors";
-@use "../config/materials";
-@use "../config/typography";
-
 .FiltersForm-list,
 .FiltersForm-constructor {
   .panel {
@@ -14,9 +10,9 @@
   .list-group-item {
     display: -webkit-flex;
     display: flex;
-    border-radius: materials.$border-radius !important;
-    border: 1px solid colors.$c-grey-light !important;
-    box-shadow: materials.$box-shadow !important;
+    border-radius: $border-radius !important;
+    border: 1px solid $c-grey-light !important;
+    box-shadow: $box-shadow !important;
     align-items: center;
   }
   .list-group-item > div {
@@ -28,8 +24,8 @@
   }
   .no-properties {
     text-align: center;
-    font-size: typography.$f-size;
-    color: colors.$c-grey;
+    font-size: $f-size;
+    color: $c-grey;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-top: 15px;
@@ -37,14 +33,14 @@
   .no-properties-wrap {
     display: block;
     padding: 15px 0;
-    border: 1px dashed colors.$c-grey;
+    border: 1px dashed $c-grey;
   }
   .list-group-item > svg, .list-group-item > span svg {
     margin-right: 5px;
-    color: colors.$c-grey;
+    color: $c-grey;
   }
   .list-group-item:hover > svg {
-    color: colors.$c-grey-dark;
+    color: $c-grey-dark;
   }
   .fa-reorder + div {
     width: 100%;
@@ -56,7 +52,7 @@
 }
 .FiltersForm-constructor {
   padding-left: 30px;
-  border-left: 1px solid colors.$c-grey-light;
+  border-left: 1px solid $c-grey-light;
 
   .no-properties {
     display: none;
@@ -74,7 +70,7 @@
       margin-bottom: 15px;
     }
     .no-properties {
-      background: colors.$c-white;
+      background: $c-white;
       padding: 0 0 10px;
     }
     .btn {

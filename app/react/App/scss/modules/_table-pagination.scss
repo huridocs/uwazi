@@ -1,4 +1,4 @@
-@use '../../scss/config/colors';
+@import '../../scss/config/colors';
 
 .table-pagination{
   display: flex;
@@ -18,7 +18,7 @@
     cursor: pointer;
 
     &.active{
-      color: colors.$c-primary;
+      color: $c-primary;
       font-weight: bold;
     }
 

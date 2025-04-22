@@ -1,25 +1,21 @@
-@use "../config/breakpoints";
-@use "../config/colors";
-@use "../config/typography";
-
 body {
-	background-color: colors.$c-background;
-	color: colors.$c-black;
-	font-family: typography.$f-regular;
+	background-color: $c-background;
+	color: $c-black;
+	font-family: $f-regular;
 	font-size: 13px;
 	overflow: hidden;
-	@include breakpoints.big {
+	@include big {
 		font-size: 15px;
 	}
 }
 
 a {
-  color: colors.$c-primary;
+  color: $c-primary;
 
   &:hover,
   &:focus,
   &:active {
-    color: colors.$c-primary-dark;
+    color: $c-primary-dark;
   }
 }
 
@@ -35,7 +31,7 @@ label {
 dt {
   font-weight: normal;
 	font-style: italic;
-  color: colors.$c-grey-dark;
+  color: $c-grey-dark;
 }
 
 input[type="radio"], input[type="checkbox"] {

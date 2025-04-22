@@ -1,13 +1,12 @@
 @use "sass:color";
 
-@use '../../scss/config/_colors.scss';
-@use '../../scss/config/_materials.scss';
-@use '../../scss/config/_typography.scss';
-@use '../../scss/elements/_tooltip.scss';
-@use "../config/commonLayout";
+@import '../../scss/config/_colors.scss';
+@import '../../scss/config/_materials.scss';
+@import '../../scss/config/_typography.scss';
+@import '../../scss/elements/_tooltip.scss';
 
-$c-sidebar: color.adjust(colors.$c-background, $lightness: -0%, $space: hsl);
-$c-sidebar: colors.$c-white;
+$c-sidebar: color.adjust($c-background, $lightness: -0%, $space: hsl);
+$c-sidebar: $c-white;
 
 .side-panel {
   z-index: 4;
@@ -15,11 +14,11 @@ $c-sidebar: colors.$c-white;
   flex-direction: column;
   position: fixed;
   right: 0;
-  top: materials.$header-height + 1;
+  top: $header-height + 1;
   bottom: 0;
-  border-left: 1px solid colors.$c-grey-light;
+  border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;
-  width: calc(100% - #{materials.$header-height});
+  width: calc(100% - #{$header-height});
   transition: right 300ms;
 
   &.is-hidden {
@@ -58,7 +57,7 @@ $c-sidebar: colors.$c-white;
     display: flex;
 
     > div {
-      border-left: 1px solid colors.$c-grey-light;
+      border-left: 1px solid $c-grey-light;
     }
   }
 
@@ -76,7 +75,7 @@ $c-sidebar: colors.$c-white;
   }
 
   h1 {
-    font-size: typography.$f-size-lg;
+    font-size: $f-size-lg;
   }
 
   .item-icon.item-icon-center {
@@ -93,26 +92,26 @@ $c-sidebar: colors.$c-white;
   .item-info .btn-color {
     display: inline-block;
     margin-top: 8px;
-    font-size: typography.$f-size-sm;
+    font-size: $f-size-sm;
   }
 
   .closeSidepanel {
     position: absolute;
     top: 0;
     right: 0;
-    width: materials.$header-height;
-    height: materials.$header-height;
-    line-height: materials.$header-height;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
     text-align: center;
-    font-size: typography.$f-size-lg;
-    color: colors.$c-grey;
+    font-size: $f-size-lg;
+    color: $c-grey;
     cursor: pointer;
     z-index: 5;
     border: 0;
     background-color: transparent;
 
     &:hover {
-      color: colors.$c-grey-dark;
+      color: $c-grey-dark;
     }
   }
 
@@ -120,7 +119,7 @@ $c-sidebar: colors.$c-white;
     margin: 0;
 
     .fa-warning {
-      color: colors.$c-warning;
+      color: $c-warning;
     }
   }
 
@@ -143,12 +142,12 @@ $c-sidebar: colors.$c-white;
     background: 0;
     box-shadow: none;
     outline: none;
-    background: colors.$c-grey-lighten;
+    background: $c-grey-lighten;
     margin-bottom: 1px;
 
     &.is-expanded {
-      border-bottom: 1px solid colors.$c-grey-light;
-      color: colors.$c-primary;
+      border-bottom: 1px solid $c-grey-light;
+      color: $c-primary;
     }
 
     .itemGroup-title {
@@ -160,7 +159,7 @@ $c-sidebar: colors.$c-white;
     }
 
     &:hover .multiselectItem-action {
-      border-color: colors.$c-primary;
+      border-color: $c-primary;
     }
 
     .title {
@@ -189,19 +188,19 @@ $c-sidebar: colors.$c-white;
 
     &.relationship-hover,
     &.highlight-hover:hover {
-      box-shadow: inset 0 0 0 1px colors.$c-grey-light;
+      box-shadow: inset 0 0 0 1px $c-grey-light;
     }
 
     &.relationship-active {
       box-shadow:
-        inset 0 0 0 1px colors.$c-primary,
-        inset 0 0 0 4px color.adjust(colors.$c-primary, $alpha: -0.7);
+        inset 0 0 0 1px $c-primary,
+        inset 0 0 0 4px color.adjust($c-primary, $alpha: -0.7);
     }
   }
 
   @media (min-width: 1024px) {
     .item-metadata dt {
-      @include tooltip.tooltip('top-left');
+      @include tooltip('top-left');
     }
   }
 
@@ -212,7 +211,7 @@ $c-sidebar: colors.$c-white;
     z-index: 1;
 
     .form-control {
-      font-size: typography.$f-size;
+      font-size: $f-size;
     }
   }
 }
@@ -222,9 +221,9 @@ $c-sidebar: colors.$c-white;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  font-size: typography.$f-size-sm;
-  margin-bottom: commonLayout.$FooterHeight;
-  padding-bottom: commonLayout.$FooterHeight;
+  font-size: $f-size-sm;
+  margin-bottom: $FooterHeight;
+  padding-bottom: $FooterHeight;
 
   @media (min-width: 1024px) {
     padding-bottom: 0;
@@ -235,7 +234,7 @@ $c-sidebar: colors.$c-white;
   }
 
   &.footer-extra-row {
-    margin-bottom: calc(#{commonLayout.$FooterHeight} * 2 + 2px);
+    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
   }
 
   // & > *:last-child {
@@ -246,7 +245,7 @@ $c-sidebar: colors.$c-white;
     display: flex;
     flex-direction: column;
     height: 100%;
-    font-size: typography.$f-size-lg;
+    font-size: $f-size-lg;
 
     .sticky {
       padding-top: 46px;
@@ -342,9 +341,9 @@ $c-sidebar: colors.$c-white;
 .sidepanel-header {
   background: $c-sidebar;
   position: relative;
-  min-height: materials.$header-height;
-  line-height: materials.$header-height;
-  border-bottom: 1px solid colors.$c-grey-light;
+  min-height: $header-height;
+  line-height: $header-height;
+  border-bottom: 1px solid $c-grey-light;
   padding: 0 15px;
 
   .button-list > button {
@@ -377,11 +376,11 @@ $c-sidebar: colors.$c-white;
     position: absolute;
     left: 0;
     bottom: 0;
-    right: materials.$header-height;
+    right: $header-height;
   }
 
   .fa {
-    font-size: typography.$f-size-lg;
+    font-size: $f-size-lg;
   }
 
   .entity-sidepanel-tab-link {
@@ -401,7 +400,7 @@ $c-sidebar: colors.$c-white;
   }
 
   .selected {
-    color: colors.$c-primary;
+    color: $c-primary;
   }
 }
 
@@ -471,7 +470,7 @@ $c-sidebar: colors.$c-white;
 
 .add-thesauriValue-modal {
   .error {
-    color: colors.$c-type-1;
+    color: $c-type-1;
     font-size: 0.9em;
   }
 

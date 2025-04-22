@@ -1,8 +1,3 @@
-@use "../config/colors";
-@use "../config/commonLayout";
-@use "../config/materials";
-@use "../config/typography";
-
 @use "sass:color";
 
 .document-viewer {
@@ -14,11 +9,11 @@
   }
 
   &.with-footer {
-    height: calc(100% - #{commonLayout.$FooterHeight});
+    height: calc(100% - #{$FooterHeight});
   }
 
   &.with-header.with-footer {
-    height: calc(100% - #{commonLayout.$FooterHeight} - 50px);
+    height: calc(100% - #{$FooterHeight} - 50px);
   }
 
   padding: 15px 15px 0;
@@ -80,12 +75,12 @@
 
 .document-article {
   padding: 80px 120px;
-  background: colors.$c-white;
+  background: $c-white;
   border-radius: 0 !important;
-  border-bottom: 1px solid colors.$c-grey;
-  box-shadow: materials.$box-shadow;
+  border-bottom: 1px solid $c-grey;
+  box-shadow: $box-shadow;
   position: relative;
-  font-size: typography.$f-size-lg;
+  font-size: $f-size-lg;
   font-family: sans-serif;
 }
 
@@ -122,7 +117,7 @@
 mark,
 .mark {
   color: transparent !important;
-  background-color: color.adjust(colors.$c-primary, $alpha: -0.8) !important;
+  background-color: color.adjust($c-primary, $alpha: -0.8) !important;
   padding: 0 !important;
 
   mark,
@@ -142,7 +137,7 @@ mark.searchTerm {
 .side-panel {
   .item {
     &.relationship-selected {
-      background: colors.$c-success;
+      background: $c-success;
     }
 
     &.disabled {
@@ -159,8 +154,8 @@ mark.searchTerm {
     display: flex;
     position: fixed;
     z-index: 1;
-    background: linear-gradient(colors.$c-background 0%, colors.$c-background 70%, transparent 100%);
-    top: materials.$header-height;
+    background: linear-gradient($c-background 0%, $c-background 70%, transparent 100%);
+    top: $header-height;
     width: 100%;
     max-width: 900px;
     left: 0;
@@ -175,11 +170,11 @@ mark.searchTerm {
   .btn {
     padding: 5px 10px;
     margin: 12px 10px 12px 0;
-    font-size: typography.$f-size-sm;
+    font-size: $f-size-sm;
   }
 
   h2 {
-    font-size: typography.$f-size-sm;
+    font-size: $f-size-sm;
     padding-left: 20px;
     position: relative;
     text-transform: uppercase;
@@ -191,8 +186,8 @@ mark.searchTerm {
       left: 0;
       height: 16px;
       line-height: 15px;
-      border: 1px solid colors.$c-grey;
-      color: colors.$c-grey-dark;
+      border: 1px solid $c-grey;
+      color: $c-grey-dark;
       width: 16px;
       text-align: center;
       border-radius: 50%;
@@ -210,8 +205,8 @@ mark.searchTerm {
   line-height: 24px;
   padding: 15px;
   margin: 0 -15px;
-  color: colors.$c-grey-dark;
-  border-bottom: 1px solid colors.$c-grey-lighten;
+  color: $c-grey-dark;
+  border-bottom: 1px solid $c-grey-lighten;
   overflow-y: auto;
   max-height: 150px;
   font-size: 0.9em;
@@ -222,11 +217,11 @@ mark.searchTerm {
 
   .fa {
     width: 20px;
-    color: colors.$c-grey-light;
+    color: $c-grey-light;
   }
 
   .fa.fa-check {
-    color: colors.$c-success;
+    color: $c-success;
   }
 
   &-title {
@@ -246,24 +241,24 @@ mark.searchTerm {
       top: 50%;
       transform: translateY(-50%);
       left: 15px;
-      color: colors.$c-black;
+      color: $c-black;
       cursor: pointer;
     }
   }
 
   .form-control {
     padding-left: 40px;
-    height: materials.$header-height;
-    line-height: materials.$header-height;
+    height: $header-height;
+    line-height: $header-height;
     border-radius: 0;
     border: 0;
-    color: colors.$c-black;
+    color: $c-black;
     box-shadow: none !important;
-    @include materials.placeholder(colors.$c-black);
+    @include placeholder($c-black);
 
     &:focus {
       background: transparent;
-      @include materials.placeholder(transparent);
+      @include placeholder(transparent);
     }
   }
 }
@@ -276,23 +271,23 @@ mark.searchTerm {
     align-items: center;
     min-height: auto;
     padding: 5px 15px 5px 15px;
-    border-color: colors.$c-grey-light !important;
+    border-color: $c-grey-light !important;
     margin-bottom: 0;
 
     &:hover {
-      background-color: color.adjust(colors.$c-primary-light, $alpha: -0.7);
+      background-color: color.adjust($c-primary-light, $alpha: -0.7);
     }
 
     &:active,
     &.is-selected {
-      box-shadow: inset 0 0 0 1px color.adjust(colors.$c-primary, $alpha: -0.7);
-      background-color: color.adjust(colors.$c-primary-light, $alpha: -0.7);
+      box-shadow: inset 0 0 0 1px color.adjust($c-primary, $alpha: -0.7);
+      background-color: color.adjust($c-primary-light, $alpha: -0.7);
     }
 
     .item-name {
-      font-size: typography.$f-size;
-      font-family: typography.$f-regular;
-      color: colors.$c-grey-dark;
+      font-size: $f-size;
+      font-family: $f-regular;
+      color: $c-grey-dark;
     }
 
     .item-actions {

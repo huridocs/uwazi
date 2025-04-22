@@ -1,7 +1,3 @@
-@use "../config/colors";
-@use "../config/materials";
-@use "../config/typography";
-
 .thesauri-values {
   margin-top: 25px;
 
@@ -15,9 +11,9 @@
   .list-group-item {
     display: -webkit-flex;
     display: flex;
-    border-radius: materials.$border-radius !important;
-    border: 1px solid colors.$c-grey-light !important;
-    box-shadow: materials.$box-shadow !important;
+    border-radius: $border-radius !important;
+    border: 1px solid $c-grey-light !important;
+    box-shadow: $box-shadow !important;
   }
   .list-group-item > div {
     width: 100%;
@@ -28,8 +24,8 @@
   }
   .no-properties {
     text-align: center;
-    font-size: typography.$f-size;
-    color: colors.$c-grey;
+    font-size: $f-size;
+    color: $c-grey;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-top: 15px;
@@ -37,15 +33,15 @@
   .no-properties-wrap {
     display: block;
     padding: 15px 0;
-    border: 1px dashed colors.$c-grey;
+    border: 1px dashed $c-grey;
   }
   .list-group-item > svg,
   .list-group-item > span svg {
     margin: 8px 10px 0 0;
-    color: colors.$c-grey;
+    color: $c-grey;
   }
   .list-group-item:hover > svg {
-    color: colors.$c-grey-dark;
+    color: $c-grey-dark;
   }
   .fa-reorder + div {
     width: 100%;
@@ -68,7 +64,7 @@
       margin-bottom: 15px;
     }
     .no-properties {
-      background: colors.$c-white;
+      background: $c-white;
       padding: 0 0 10px;
     }
     .btn {
@@ -124,17 +120,17 @@
   }
   td {
     text-align: right;
-    color: colors.$c-grey;
-    font-size: typography.$f-size-xs;
+    color: $c-grey;
+    font-size: $f-size-xs;
   }
   th {
-    background-color: colors.$c-white;
+    background-color: $c-white;
   }
   th:not(:last-of-type) {
-    border-right: 1px solid colors.$c-white;
+    border-right: 1px solid $c-white;
   }
   tr:not(:last-of-type) {
-    border-bottom: 1px solid colors.$c-grey-light;
+    border-bottom: 1px solid $c-grey-light;
   }
 
   th[scope='row'] {
@@ -144,11 +140,11 @@
   }
 
   td:nth-child(2) {
-    border-right: 1px solid colors.$c-grey-light;
+    border-right: 1px solid $c-grey-light;
   }
 
   .vertical-line {
-    border-right: colors.$c-grey-light;
+    border-right: $c-grey-light;
   }
 
   .thesaurus-suggestion-count {

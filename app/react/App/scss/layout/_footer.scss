@@ -1,7 +1,3 @@
-@use "../config/colors";
-@use "../config/commonLayout";
-@use "../elements/tooltip";
-
 @mixin relationshipsFooterButtons {
   .relationships-right-buttons {
     float: right;
@@ -15,11 +11,11 @@ footer {
   margin: 30px 0 0;
   padding: 20px 0 15px;
   text-align: left;
-  color: colors.$c-grey;
-  border-top: 1px solid colors.$c-grey-light;
+  color: $c-grey;
+  border-top: 1px solid $c-grey-light;
 
   a {
-    color: colors.$c-grey;
+    color: $c-grey;
   }
 
   @media (min-width: 1024px) {
@@ -58,12 +54,12 @@ footer {
     width: 100%;
     height: 1px;
     margin: 15px 0;
-    border-bottom: 1px solid colors.$c-grey-light;
+    border-bottom: 1px solid $c-grey-light;
     @media (min-width: 1024px) {
       width: auto;
       height: auto;
       margin: 0;
-      border-left: 1px solid colors.$c-grey-light;
+      border-left: 1px solid $c-grey-light;
       border-bottom: 0;
     }
   }
@@ -73,7 +69,7 @@ footer {
   height: 20px;
 }
 .footer-tooltip {
-  @include tooltip.tooltip('top');
+  @include tooltip('top');
   padding: 15px;
 
   .footer-nav_item:hover & {
@@ -105,7 +101,7 @@ footer {
 .library-footer,
 .settings-footer,
 .sidepanel-footer {
-  min-height: commonLayout.$FooterHeight;
+  min-height: $FooterHeight;
   border-top: 1px solid #ddd;
   padding: 10px 16px 0;
   bottom: 0;
@@ -154,7 +150,7 @@ footer {
   .btn {
     padding: 4px 8px;
     margin-bottom: 11px;
-    color: colors.$c-black;
+    color: $c-black;
 
     span.translation {
       max-width: calc(min(100vw - 80px, 250px));
@@ -216,7 +212,7 @@ footer {
   padding: 4px 12px;
   height: 24px;
   left: 100px;
-  background-color: colors.$c-white;
+  background-color: $c-white;
   z-index: 1;
   width: max-content;
   height: max-content;
@@ -307,7 +303,7 @@ footer {
 
   &.with-sidepanel {
     @media (min-width: 1024px) {
-      width: calc(#{commonLayout.$SettingsContentWidth} - 400px);
+      width: calc(#{$SettingsContentWidth} - 400px);
     }
   }
 }
@@ -322,7 +318,7 @@ footer {
     opacity: 0.7;
   }
   .btn:disabled .btn-label {
-    color: colors.$c-grey !important;
+    color: $c-grey !important;
   }
 
   @include relationshipsFooterButtons();
@@ -343,7 +339,7 @@ footer {
 
 @media (min-width: 1024px) {
   .settings-footer {
-    width: commonLayout.$SettingsContentWidth;
+    width: $SettingsContentWidth;
   }
 
   .sidepanel-footer {

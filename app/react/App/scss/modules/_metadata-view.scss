@@ -1,6 +1,4 @@
-@use '../../scss/elements/pill';
-@use "../config/colors";
-@use "../config/typography";
+@import '../../scss/elements/pill';
 
 .sidepanel-body {
   .print-view-alt {
@@ -21,8 +19,8 @@
       margin: 0;
 
       &.highlight dd {
-        background-color: colors.$c-card-highlight;
-        border: 1px solid colors.$c-shadow;
+        background-color: $c-card-highlight;
+        border: 1px solid $c-shadow;
         border-radius: 6px;
         padding: 0 3px;
       }
@@ -32,7 +30,7 @@
       width: 100%;
       font-weight: 300;
       font-style: normal;
-      font-family: typography.$f-special;
+      font-family: $f-special;
       margin-bottom: 5px;
     }
     dd {
@@ -52,7 +50,7 @@
         background: none !important;
         border: none;
         padding: 0 !important;
-        color: colors.$c-primary;
+        color: $c-primary;
         cursor: pointer;
         background-color: transparent;
 
@@ -62,13 +60,13 @@
       }
     }
     a {
-      color: colors.$c-primary;
-      border-bottom: 1px solid colors.$c-primary-light;
+      color: $c-primary;
+      border-bottom: 1px solid $c-primary-light;
       text-decoration: none !important;
 
       &:hover {
-        color: colors.$c-primary;
-        border-color: colors.$c-primary;
+        color: $c-primary;
+        border-color: $c-primary;
       }
     }
   }
@@ -77,7 +75,7 @@
     margin: 15px 0;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: typography.$f-size-sm;
+    font-size: $f-size-sm;
     font-weight: bold;
   }
 
@@ -140,7 +138,7 @@ ul.comma-separated li {
 }
 
 .sidepanel-body .view dl {
-  border-top: 1px solid colors.$c-grey-lighten;
+  border-top: 1px solid $c-grey-lighten;
   &:first-child {
     border-top: 0;
   }
@@ -204,7 +202,7 @@ dl.metadata-type-multimedia {
 
 .metadata-type-geolocation,
 .metadata-type-geolocation_group {
-  @include pill.pillItem(#d9534e, white);
+  @include pillItem(#d9534e, white);
 
   .pills-container {
     border-top: none;
@@ -223,8 +221,8 @@ dl.metadata-type-multimedia {
     button {
       border: none;
       background: none;
-      font-size: typography.$f-size-xs;
-      color: colors.$c-primary;
+      font-size: $f-size-xs;
+      color: $c-primary;
       padding-left: 0px;
       margin: 0.2em 0 0 auto;
     }

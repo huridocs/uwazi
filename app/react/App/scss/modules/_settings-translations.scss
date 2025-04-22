@@ -1,6 +1,3 @@
-@use "../config/colors";
-@use "../config/typography";
-
 .EditTranslationForm {
   .panel > .list-group .list-group-item {
     display: block;
@@ -8,7 +5,7 @@
   .input-group-addon {
     min-width: 45px;
     text-transform: uppercase;
-    color: colors.$c-grey-dark;
+    color: $c-grey-dark;
   }
 
   .untranslated:not(.default) {
@@ -60,11 +57,11 @@
     margin-top: 15px;
   }
   .error {
-    font-size: typography.$f-size-sm;
+    font-size: $f-size-sm;
     margin-top: 5px;
     margin-left: 5px;
     font-weight: bold;
-    color: colors.$c-type-0;
+    color: $c-type-0;
   }
 }
 

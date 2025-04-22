@@ -1,14 +1,10 @@
-@use "../config/colors";
-@use "../config/materials";
-@use "../config/typography";
-
 .panel-default {
-  border-color: colors.$c-grey-light;
+  border-color: $c-grey-light;
 
   .panel-heading {
     font-weight: bold;
     border: none;
-    background-color: colors.$c-grey-lighten;
+    background-color: $c-grey-lighten;
     padding: 7px 10px;
 
     a {
@@ -30,7 +26,7 @@
   -webkit-justify-content: space-between;
   justify-content: space-between;
   line-height: 24px;
-  border-color: colors.$c-grey-light;
+  border-color: $c-grey-light;
   border-left-color: transparent;
   outline: none;
   box-shadow: none;
@@ -48,7 +44,7 @@
   .propery-form {
     height: 0;
     width: 100%;
-    border: 1px solid colors.$c-grey-light;
+    border: 1px solid $c-grey-light;
 
     &.expand {
       height: auto;
@@ -84,8 +80,8 @@
     .list-group-item {
       small {
         margin-left: 5px;
-        font-size: typography.$f-size;
-        color: colors.$c-grey-dark;
+        font-size: $f-size;
+        color: $c-grey-dark;
         text-decoration: none;
       }
       .btn:not(:first-child) {
@@ -94,12 +90,12 @@
 
       &.error {
         display: block;
-        border: 1px solid colors.$c-danger !important;
-        box-shadow: materials.$box-shadow-danger !important;
+        border: 1px solid $c-danger !important;
+        box-shadow: $box-shadow-danger !important;
 
         .property-name,
         .property-name .fa {
-          color: colors.$c-danger;
+          color: $c-danger;
         }
 
         .validation-error {

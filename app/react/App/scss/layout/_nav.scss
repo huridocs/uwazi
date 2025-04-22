@@ -1,8 +1,3 @@
-@use "../config/colors";
-@use "../config/materials";
-@use "../config/typography";
-@use "../elements/tooltip";
-
 .library-nav {
   display: block;
   position: fixed !important;
@@ -11,14 +6,14 @@
   right: -80%;
   width: 80%;
   z-index: 2;
-  background: colors.$c-grey-light;
-  border-left: 1px solid colors.$c-grey;
+  background: $c-grey-light;
+  border-left: 1px solid $c-grey;
   padding: 15px;
 }
 
 .library-nav h1 {
   font-weight: bold;
-  font-size: typography.$f-size-lg;
+  font-size: $f-size-lg;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 5px 0 30px;
@@ -30,12 +25,12 @@
   padding: 0;
 
   li {
-    font-size: typography.$f-size-lg;
+    font-size: $f-size-lg;
     line-height: 40px;
   }
   li.active {
-    background: colors.$c-white;
-    color: colors.$c-primary;
+    background: $c-white;
+    color: $c-primary;
     font-weight: bold;
     margin-left: -5px;
     padding: 0 5px;
@@ -45,11 +40,11 @@
   }
   .login {
     margin-top: 370px;
-    color: colors.$c-grey-dark;
+    color: $c-grey-dark;
   }
 }
 
-$nav-height: materials.$header-height;
+$nav-height: $header-height;
 
 .nav > li > a {
   padding: 0px 10px;
@@ -59,8 +54,8 @@ $nav-height: materials.$header-height;
 
 .nav .tab-separator {
   width: 1px;
-  height: materials.$header-height;
-  background-color: colors.$c-grey-light;
+  height: $header-height;
+  background-color: $c-grey-light;
 }
 
 .nav-tabs {
@@ -70,7 +65,7 @@ $nav-height: materials.$header-height;
   flex-wrap: nowrap;
   -webkit-justify-content: flex-end;
   justify-content: flex-end;
-  height: materials.$header-height;
+  height: $header-height;
   margin-top: -1px;
   text-align: center;
   border: 0;
@@ -95,7 +90,7 @@ $nav-height: materials.$header-height;
   line-height: $nav-height;
   padding: 3px 0 0;
   background-color: transparent;
-  color: colors.$c-grey-dark;
+  color: $c-grey-dark;
   border: 0;
   border-radius: 0;
   white-space: nowrap;
@@ -108,7 +103,7 @@ $nav-height: materials.$header-height;
 .nav-tabs > li > div.tab-link-active,
 .nav-tabs > li > div.tab-link-active:focus,
 .nav-tabs > li > div.tab-link-active:hover {
-  color: colors.$c-primary;
+  color: $c-primary;
 
   &:after {
     content: '';
@@ -118,22 +113,22 @@ $nav-height: materials.$header-height;
     left: 0;
     width: 100%;
     height: 3px;
-    background: colors.$c-primary;
+    background: $c-primary;
   }
 }
 
 .tab-link-tooltip {
-  @include tooltip.tooltip('bottom');
+  @include tooltip('bottom');
 }
 
 .ocr-tooltip {
   display: none;
-  @include tooltip.tooltip('left');
+  @include tooltip('left');
 }
 
 .connectionsNumber {
   position: relative;
-  font-size: typography.$f-size-sm;
+  font-size: $f-size-sm;
   line-height: 1em;
   margin-left: 5px;
 }

@@ -1,6 +1,3 @@
-@use "../config/colors";
-@use "../config/materials";
-
 .Dropdown {
   position: absolute;
   display: -webkit-flex;
@@ -10,15 +7,15 @@
   z-index: 3;
 
   &:hover {
-    background: colors.$c-grey-lighten;
+    background: $c-grey-lighten;
   }
   &.is-active {
     -webkit-align-items: flex-start;
     align-items: flex-start;
-    border-radius: materials.$border-radius;
-    background: colors.$c-white;
-    box-shadow: materials.$box-shadow;
-    border-color: colors.$c-grey;
+    border-radius: $border-radius;
+    background: $c-white;
+    box-shadow: $box-shadow;
+    border-color: $c-grey;
   }
 }
 
@@ -49,7 +46,7 @@
   list-style-type: none;
   overflow-y: auto;
   max-height: 50vh;
-  border: 1px solid colors.$c-grey-light;
+  border: 1px solid $c-grey-light;
   border-radius: 5px;
 }
 .Dropdown-option,
@@ -92,7 +89,7 @@
 
   .Dropdown-option__item.is-active,
   .fa {
-    color: colors.$c-black !important;
+    color: $c-black !important;
   }
 }
 

@@ -1,5 +1,3 @@
-@use "../config/materials";
-
 body {
   direction: ltr;
 }
@@ -10,7 +8,7 @@ body {
   -webkit-flex-direction: column;
   flex-direction: column;
   height: 100vh;
-  padding-top: materials.$header-height;
+  padding-top: $header-height;
   overflow: hidden;
 }
 
