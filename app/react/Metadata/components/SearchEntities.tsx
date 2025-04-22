@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import SearchResults from 'app/Connections/components/SearchResults';
 import { EntitySchema } from 'shared/types/entityType';
 import SearchInput from 'app/Layout/SearchInput';
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';

@@ -2,7 +2,7 @@ import { Translate } from 'app/I18N';
 import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from 'UI';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import { MemberListItemInfo } from './MemberListItemInfo';
 
 interface UserGroupsLookupFieldProps {
