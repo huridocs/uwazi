@@ -3,7 +3,12 @@ name: e2e cypress BASE
 on:
   workflow_run:
     workflows: ['Build App']
-    types: [completed]
+    types:
+      - completed
+    branches:
+      - development
+      - production
+      - staging
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -32,6 +37,12 @@ jobs:
           - 6379:6379
 
     steps:
+      # Use Pre-built App
+      - name: Download pre-built app
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+          path: prod/
       # MongoDB Setup
       - name: 🍃 Install MongoDB tools
         run: |
@@ -53,13 +64,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      # Use Pre-built App
-      - name: Download pre-built app
-        uses: actions/download-artifact@v4
-        with:
-          name: app-build
-          path: prod/
 
       # System Dependencies
       - name: Install system packages

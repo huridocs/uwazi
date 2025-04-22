@@ -50,9 +50,14 @@ jobs:
       - name: Build production
         run: yarn production-build
 
+      - name: Set cache key
+        id: set-cache-key
+       run: echo "cache-key=build-${{ github.sha }}" >> $GITHUB_OUTPUT
       # Save Build Output
       - name: Upload built app artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-build
           path: prod/
+          compression-level: 9
+          retention-days: 1
