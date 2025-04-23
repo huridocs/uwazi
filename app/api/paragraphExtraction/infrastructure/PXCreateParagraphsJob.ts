@@ -3,7 +3,7 @@ import {
   UserAwareDispatchableParams,
 } from 'api/queue.v2/application/contracts/UserAwareDispatchable';
 import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
-import { HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+import { HeartbeatCallback, JobInfo } from 'api/queue.v2/application/contracts/Dispatchable';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
@@ -28,7 +28,9 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
     super();
   }
 
-  async handle(heartBeatCallBack: HeartbeatCallback) {
+  // eslint-disable-next-line max-statements
+  async handle(heartBeatCallBack: HeartbeatCallback, jobInfo: JobInfo) {
+    const isRetriable = jobInfo.retryCount < jobInfo.maxRetries;
     try {
       if (!this.params.results.success) {
         throw new NonRetryableJobError(
@@ -48,7 +50,9 @@ class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobP
         onParagraphCreated: heartBeatCallBack,
       });
     } catch (e) {
-      await this.dependencies.pxEntitiesStatusDS.markAsError(this.params.entityStatusId);
+      if (!isRetriable) {
+        await this.dependencies.pxEntitiesStatusDS.markAsError(this.params.entityStatusId);
+      }
       throw e;
     }
   }

@@ -51,6 +51,7 @@ export class FormConfigCommon extends Component {
         </Field>
         {property.name === 'title' && (
           <PropertyConfigOption
+            key="property generatedid"
             label="Generated ID"
             model={`template.data.commonProperties[${this.getZeroIndex()}].generatedId`}
           >
