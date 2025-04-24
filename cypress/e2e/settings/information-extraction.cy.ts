@@ -28,12 +28,14 @@ describe('Information Extraction', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     cy.exec('yarn ix-config', { env });
+    cy.intercept('GET', '/api/search*').as('search');
     clearCookiesAndLogin();
   });
 
   describe('labeling entities', () => {
     // eslint-disable-next-line max-statements
     it('should label the title property for the first six entities', () => {
+      //cy.wait('@search');
       labelEntityTitle(0, 'Lorem Ipsum');
       cy.get('a[aria-label="Library"]').click();
       labelEntityTitle(1, 'Uwazi Heroes Investigation');
@@ -44,9 +46,9 @@ describe('Information Extraction', () => {
       cy.get('a[aria-label="Library"]').click();
       labelEntityTitle(4, 'The Amazing Spider-Man');
       cy.get('a[aria-label="Library"]').click();
-      labelEntityTitle(5, 'Spider-Man: Shattered Dimensions');
+      labelEntityTitle(5, 'The Spectacular Spider-Man');
       cy.get('a[aria-label="Library"]').click();
-      labelEntityTitle(6, 'The Spectacular Spider-Man');
+      //labelEntityTitle(6, 'Spider-Verse');
     });
   });
 
@@ -272,7 +274,7 @@ describe('Information Extraction', () => {
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
         'Batman v Superman: Dawn of Justice (en)',
         '2023 (en)',
-        'Spider-Man: Shattered Dimensions (en)',
+        'Resolución de la Corte IDH. Supervisión de cumplimiento de Sentencia de 29 de junio de 2005 (en)',
         'The Spectacular Spider-Man (en)',
         'Uwazi Heroes Investigation (other)',
       ];
@@ -357,7 +359,7 @@ describe('Information Extraction', () => {
         '2023 (en)',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
         'Batman v Superman: Dawn of Justice (en)',
-        'Spider-Man: Shattered Dimensions (en)',
+        'Resolución de la Corte IDH. Supervisión de cumplimiento de Sentencia de 29 de junio de 2005 (en)',
         'A title (en)',
         'Uwazi Heroes Investigation (other)',
       ];

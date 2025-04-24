@@ -25,8 +25,11 @@ describe('Routes', () => {
   describe('getIndexElement', () => {
     it('should navigate to the library when there is a user', () => {
       const { element, parameters } = getIndexElement(settings, userId);
-      expect(element.props.to).toBe('/library/?q=(includeUnpublished:!t)');
-      expect(element.props.state).toMatchObject({ isClient: true });
+      expect(element).toMatchObject(
+        <LibraryRoot>
+          <LibraryTable />
+        </LibraryRoot>
+      );
       expect(parameters).toBeUndefined();
     });
 
@@ -42,7 +45,11 @@ describe('Routes', () => {
         settings.home_page = '/incorrect/page';
         const { element, parameters } = getIndexElement(settings, userId);
         expect(parameters).toBeUndefined();
-        expect(element.props.to).toBe('/library/?q=(includeUnpublished:!t)');
+        expect(element).toMatchObject(
+          <LibraryRoot>
+            <LibraryTable />
+          </LibraryRoot>
+        );
       });
 
       it('should render an entity view page when set', () => {
