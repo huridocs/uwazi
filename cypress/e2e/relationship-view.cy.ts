@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { clearCookiesAndLogin } from './helpers';
 
 const removeEntity = (title: string) => {
@@ -174,6 +175,110 @@ describe('Relationship view', () => {
           cy.contains('div', 'Roberto de Figueiredo Caldas').should('not.exist');
           cy.contains('div', 'Humberto Antonio Sierra Porto').should('not.exist');
         });
+    });
+  });
+
+  describe('hub actions', () => {
+    it('should navigate to another relationship view', () => {
+      cy.visit('http://localhost:3000');
+      cy.get('ul.search__filter')
+        .contains('label', 'Informe de admisibilidad')
+        .should('be.visible');
+      cy.get('ul.search__filter').contains('label', 'Informe de admisibilidad').realClick();
+      cy.contains(
+        'div.item-document',
+        'Artavia Murillo and others. Admissibility Report N° 25/04'
+      ).within(() => {
+        cy.contains('a', 'View').realClick();
+      });
+      cy.contains('h1', 'Artavia Murillo and others. Admissibility Report N° 25/04');
+      cy.contains('a', 'Relationships').realClick();
+      cy.get('#tabpanel-relationships').should('be.visible');
+    });
+
+    it('should start edition mode', () => {
+      cy.contains('button', 'Edit').should('be.visible').realClick();
+    });
+
+    it('should remove the second hub completly', () => {
+      cy.get('div.relationshipsHub')
+        .eq(1)
+        .within(() => {
+          cy.get('div.removeRightRelationshipGroup > button.relationships-icon').realClick();
+        });
+    });
+
+    it('shoud empty the last hub', () => {
+      removeEntity('Costa Rica');
+    });
+
+    it('should create a new hub', () => {
+      cy.contains('button', 'New relationships group').realClick();
+      cy.get('div.relationshipsHub')
+        .eq(4)
+        .within(() => {
+          cy.contains('div.rw-widget-input', 'New relationship type').realClick();
+          cy.contains('li', 'Paises').realClick();
+        });
+      cy.get('aside.side-panel.create-reference.is-active').should('be.visible');
+      cy.get('aside.side-panel.create-reference.is-active').within(() => {
+        cy.get('input').realClick();
+        cy.get('input').type('Argentina');
+        cy.get('div.item').contains('Argentina').realClick();
+      });
+    });
+
+    it('should save all the changes and verify them', () => {
+      cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.get('div.relationshipsHub').should('have.length', 3);
+      cy.get('div.rightRelationships')
+        .eq(0)
+        .within(() => {
+          cy.contains('div.rightRelationshipType', 'Commission');
+          cy.contains('div.rightRelationship', 'Artavia Murillo et al');
+        });
+      cy.get('div.rightRelationships')
+        .eq(1)
+        .within(() => {
+          cy.contains('div.rightRelationshipType', 'Mecanismo');
+          cy.contains('div.rightRelationship', 'Comisión Interamericana de Derechos Humanos');
+        });
+      cy.get('div.rightRelationships')
+        .eq(2)
+        .within(() => {
+          cy.contains('div.rightRelationshipType', 'Paises');
+          cy.contains('div.rightRelationship', 'Argentina');
+        });
+    });
+  });
+
+  describe('relationships check', () => {
+    it('should navigate to the entity used to create a new relationship in the previous step', () => {
+      cy.visit('http://localhost:3000/en/entity/gq5x91tl5vdndn29/relationships');
+      cy.get('#tabpanel-relationships').should('be.visible');
+    });
+
+    it('should contain the reference to the related entity', () => {
+      cy.get('div.rightRelationships')
+        .eq(0)
+        .within(() => {
+          cy.contains(
+            'div.rightRelationshipType',
+            'Artavia Murillo and others. Admissibility Report N° 25/04'
+          );
+        });
+    });
+
+    it('should navigate to the entity that was removed from the relationships in the previous step', () => {
+      cy.visit('http://localhost:3000/en/entity/9t6z1x5idsdr6bt9/relationships');
+      cy.get('#tabpanel-relationships').should('be.visible');
+    });
+
+    it('should not contain the reference to the related entity', () => {
+      cy.contains(
+        'div.rightRelationshipType',
+        'Artavia Murillo and others. Admissibility Report N° 25/04'
+      ).should('not.exist');
     });
   });
 });
