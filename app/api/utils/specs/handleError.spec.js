@@ -166,7 +166,7 @@ original error: {
       const uncaught = true;
       const error = handleError({ message: 'error' }, { uncaught });
       expect(error.message).toBe(
-        'uncaught exception or unhandled rejection, Node process finished !!\n error'
+        'uncaught exception or unhandled rejection, gracefully shutting down uwazi\n error'
       );
     });
   });

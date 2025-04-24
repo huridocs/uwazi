@@ -125,7 +125,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   }
 
   if (uncaught) {
-    result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
+    result.message = `uncaught exception or unhandled rejection, gracefully shutting down uwazi\n ${result.message}`;
     result.logLevel = 'error';
     result.code = 500;
   }
