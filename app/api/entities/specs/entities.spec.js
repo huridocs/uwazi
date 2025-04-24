@@ -582,14 +582,13 @@ describe('entities', () => {
         template: templateChangingNames,
       };
 
-      const updatedDoc = await entities.save(doc, { language: 'en' });
-      expect(updatedDoc.language).toBe('en');
-      const [es, en, pt] = await Promise.all([
+      const en = await entities.save(doc, { language: 'en' });
+      const [es, pt] = await Promise.all([
         entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
         entities.getById('shared', 'pt'),
       ]);
 
+      expect(en.language).toBe('en');
       expect(en.metadata).toEqual(es.metadata);
       expect(en.metadata).toEqual(pt.metadata);
     });
