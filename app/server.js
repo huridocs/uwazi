@@ -57,10 +57,29 @@ app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false 
 
 const http = Server(app);
 
+const gracefullShutdown = () => {
+  process.stdout.write('SIGINT signal received.\r\n');
+  http.close(error => {
+    process.stdout.write('Gracefully closing express connections\r\n');
+    if (error) {
+      process.stderr.write(error.toString());
+      process.exit(1);
+    }
+
+    DB.disconnect().then(() => {
+      process.stdout.write('Disconnected from database\r\n');
+
+      process.stdout.write('Server closed succesfully\r\n');
+      process.exit(0);
+    });
+  });
+  closeSockets();
+};
+
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
   Sentry.close(2000).then(() => {
-    process.exit(1);
+    gracefullShutdown();
   });
 };
 
@@ -140,22 +159,5 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     }
   });
 
-  process.on('SIGINT', () => {
-    process.stdout.write('SIGINT signal received.\r\n');
-    http.close(error => {
-      process.stdout.write('Gracefully closing express connections\r\n');
-      if (error) {
-        process.stderr.write(error.toString());
-        process.exit(1);
-      }
-
-      DB.disconnect().then(() => {
-        process.stdout.write('Disconnected from database\r\n');
-
-        process.stdout.write('Server closed succesfully\r\n');
-        process.exit(0);
-      });
-    });
-    closeSockets();
-  });
+  process.on('SIGINT', gracefullShutdown);
 });
