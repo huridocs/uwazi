@@ -18,7 +18,6 @@ import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import { risonDecodeOrIgnore } from 'app/utils';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
-import blankState from '../Library/helpers/blankState';
 
 const selectAllEntities = command => {
   command.selectAllDocuments();
@@ -241,7 +240,7 @@ class DocumentsList extends Component {
           )}
           {this.props.SortButtons !== undefined && this.relationshipsToolbar(counter)}
 
-          {blankState() && <Welcome />}
+          {!this.props.documents.get('rows').size && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
             <div

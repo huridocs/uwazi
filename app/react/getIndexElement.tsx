@@ -51,11 +51,7 @@ const getLibraryDefault = (
   defaultLibraryView: string | undefined,
   privateInstance: boolean | undefined
 ) => {
-  if (userId) {
-    return <Navigate to="/library/?q=(includeUnpublished:!t)" state={{ isClient: true }} />;
-  }
-
-  if (privateInstance) {
+  if (!userId && privateInstance) {
     return <Login />;
   }
 
