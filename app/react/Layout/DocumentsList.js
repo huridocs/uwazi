@@ -241,7 +241,7 @@ class DocumentsList extends Component {
           )}
           {this.props.SortButtons !== undefined && this.relationshipsToolbar(counter)}
 
-          {blankState() && <Welcome />}
+          {!this.props.documents.get('rows').size && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
             <div
