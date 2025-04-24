@@ -47,11 +47,12 @@ const FIELD_TYPES_TO_SYNC = [
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
-  if (
+  const templateHasChanged =
     docLanguages[0].template &&
     entity.template &&
-    docLanguages[0].template.toString() !== entity.template.toString()
-  ) {
+    docLanguages[0].template.toString() !== entity.template.toString();
+
+  if (templateHasChanged) {
     await Promise.all([
       this.deleteRelatedEntityFromMetadata(docLanguages[0]),
       relationships.delete({ entity: entity.sharedId }, null, false),
@@ -100,13 +101,17 @@ async function updateEntity(entity, _template, unrestricted = false) {
       const toSave = { ...d };
 
       if (entity.metadata) {
-        toSave.metadata = { ...(toSave.metadata || entity.metadata) };
+        if (templateHasChanged) {
+          toSave.metadata = entity.metadata;
+        } else {
+          toSave.metadata = { ...(toSave.metadata || entity.metadata) };
 
-        toSyncProperties
-          .filter(p => entity.metadata[p])
-          .forEach(p => {
-            toSave.metadata[p] = entity.metadata[p];
-          });
+          toSyncProperties
+            .filter(p => entity.metadata[p])
+            .forEach(p => {
+              toSave.metadata[p] = entity.metadata[p];
+            });
+        }
 
         toSave.metadata = await denormalizeMetadata(toSave.metadata, toSave.language, template, {
           thesauriByKey,
