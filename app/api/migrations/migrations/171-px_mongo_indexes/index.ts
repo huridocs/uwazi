@@ -11,7 +11,9 @@ export default {
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
-    await db.collection('px_entities_status').createIndex({ extractorId: 1, entitySharedId: 1 });
-    await db.collection('px_extractors').createIndex({ sourceTemplateId: 1 });
+    await db
+      .collection('px_entities_status')
+      .createIndex({ extractorId: 1, entitySharedId: 1 }, { unique: true, background: true });
+    await db.collection('px_extractors').createIndex({ sourceTemplateId: 1 }, { background: true });
   },
 };
