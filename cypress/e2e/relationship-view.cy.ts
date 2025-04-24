@@ -1,5 +1,25 @@
 import { clearCookiesAndLogin } from './helpers';
 
+const removeEntity = (title: string) => {
+  cy.contains('div.rightRelationship', title).scrollIntoView();
+  cy.contains('div.rightRelationship', title).within(() => {
+    cy.get('div.removeEntity').within(() => {
+      cy.get('button').realClick();
+    });
+  });
+  cy.contains('div.rightRelationship.deleted', title);
+};
+
+const selectEntityToMove = (title: string) => {
+  cy.contains('div.rightRelationship', title).scrollIntoView();
+  cy.contains('div.rightRelationship', title).within(() => {
+    cy.get('div.moveEntity').within(() => {
+      cy.get('button').realClick();
+    });
+  });
+  cy.contains('div.rightRelationship.move', title);
+};
+
 describe('Relationship view', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
@@ -49,6 +69,111 @@ describe('Relationship view', () => {
       cy.get('div.item-document')
         .contains('Acevedo Buendia et al. Judgment. July 1, 2009')
         .should('have.length', 1);
+    });
+  });
+
+  describe('editing existing hubs', () => {
+    it('should navigate to another relationship view', () => {
+      cy.contains('a', 'Library').realClick();
+      cy.get('ul.search__filter').contains('label', 'Ordenes del presidente').realClick();
+      cy.contains(
+        'div.item-document',
+        'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
+      ).within(() => {
+        cy.contains('a', 'View').realClick();
+      });
+      cy.contains(
+        'h1',
+        'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
+      );
+      cy.contains('a', 'Relationships').realClick();
+      cy.get('#tabpanel-relationships').should('be.visible');
+    });
+
+    it('should be able to remove entities from a hub', () => {
+      cy.contains('button', 'Edit').realClick();
+      removeEntity('Diego García-Sayán');
+      removeEntity('Costa Rica');
+      cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.contains('div.rightRelationship', 'Diego García-Sayán').should('not.exist');
+      cy.contains('div.rightRelationship', 'Costa Rica').should('not.exist');
+    });
+
+    it('should be able to add an existing entity into a hub', () => {
+      cy.contains('button', 'Edit').realClick();
+      cy.get('div.relationshipsHub')
+        .first()
+        .within(() => {
+          cy.contains('button', 'Add entities / documents').realClick();
+        });
+      cy.get('aside.side-panel.create-reference.is-active').should('be.visible');
+      cy.get('aside.side-panel.create-reference.is-active').within(() => {
+        cy.get('input').realClick();
+        cy.get('input').type('Anzualdo Castro');
+        cy.get('div.item').contains('Anzualdo Castro').realClick();
+      });
+      cy.get('div.relationshipsHub')
+        .first()
+        .within(() => {
+          cy.contains('div', 'Anzualdo Castro');
+        });
+      cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.get('div.relationshipsHub')
+        .first()
+        .within(() => {
+          cy.contains('div', 'Anzualdo Castro');
+        });
+      cy.waitForLegacyNotifications();
+    });
+
+    it('should be able to create a new entity and add it to the last existing hub', () => {
+      cy.contains('button', 'Edit').should('be.visible').realClick();
+      cy.get('div.relationshipsHub')
+        .eq(2)
+        .within(() => {
+          cy.contains('button', 'Add entities / documents').realClick();
+        });
+      cy.get('aside.side-panel.create-reference.is-active').should('be.visible');
+      cy.get('aside.side-panel.create-reference.is-active').within(() => {
+        cy.contains('button', 'Create Entity').realClick();
+      });
+      cy.get('aside.side-panel.connections-metadata.is-active').should('be.visible');
+      cy.get('aside.side-panel.connections-metadata.is-active').within(() => {
+        cy.get('textarea[name="relationships.metadata.title"]').type('My test Mecanismo');
+        cy.contains('button', 'Save').realClick();
+      });
+      cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.get('div.relationshipsHub')
+        .eq(2)
+        .within(() => {
+          cy.contains('div', 'My test Mecanismo');
+        });
+      cy.waitForLegacyNotifications();
+    });
+
+    it('should be able to move entities from the second hub to the first one', () => {
+      cy.contains('button', 'Edit').should('be.visible').realClick();
+      selectEntityToMove('Roberto de Figueiredo Caldas');
+      selectEntityToMove('Humberto Antonio Sierra Porto');
+      cy.get('div.relationshipsHub').first().scrollIntoView();
+      cy.get('div.relationshipsHub')
+        .first()
+        .within(() => {
+          cy.get('div.insertEntities > button.relationships-icon').realClick();
+        });
+      cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.get('div.relationshipsHub')
+        .first()
+        .within(() => {
+          cy.contains('div', 'Roberto de Figueiredo Caldas');
+          cy.contains('div', 'Humberto Antonio Sierra Porto');
+        });
+      cy.get('div.relationshipsHub')
+        .eq(1)
+        .within(() => {
+          cy.contains('div', 'Roberto de Figueiredo Caldas').should('not.exist');
+          cy.contains('div', 'Humberto Antonio Sierra Porto').should('not.exist');
+        });
     });
   });
 });
