@@ -18,7 +18,6 @@ import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import { risonDecodeOrIgnore } from 'app/utils';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
-import blankState from '../Library/helpers/blankState';
 
 const selectAllEntities = command => {
   command.selectAllDocuments();
