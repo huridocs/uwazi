@@ -366,7 +366,6 @@
     "jest-puppeteer": "6.1.0",
     "jsdom-testing-mocks": "^1.13.1",
     "mini-css-extract-plugin": "^2.9.2",
-    "miragejs": "^0.1.48",
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^4.1.0",
     "nodemon": "^3.1.9",
