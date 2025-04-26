@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Db, ObjectId } from 'mongodb';
+import { Db, MongoServerError, ObjectId } from 'mongodb';
 
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
 import { EntitySchema } from 'shared/types/entityType';
@@ -19,6 +19,7 @@ import {
 import { EntityStatus, PXEntityStatusModel } from '../domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from './MongoPXEntityStatusDBO';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
+import { PXValidationError } from '../domain/PXValidationError';
 
 export const mongoPXEntitiesStatusCollection = 'px_entities_status';
 
@@ -120,17 +121,31 @@ export class MongoPXEntitiesStatusDataSource
   }
 
   async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
-    const dbo: MongoPXEntityStatusDBO = {
-      _id: new ObjectId(),
-      extractorId: new ObjectId(input.extractorId),
-      entitySharedId: input.entitySharedId,
+    try {
+      const dbo: MongoPXEntityStatusDBO = {
+        _id: new ObjectId(),
+        extractorId: new ObjectId(input.extractorId),
+        entitySharedId: input.entitySharedId,
 
-      status: EntityStatus.New,
-    };
+        status: EntityStatus.New,
+      };
 
-    await this.getCollection().insertOne(dbo);
+      await this.getCollection().insertOne(dbo);
 
-    return MongoPXEntitiesStatusDataSource.toDomain(dbo);
+      return MongoPXEntitiesStatusDataSource.toDomain(dbo);
+    } catch (e) {
+      if (
+        e instanceof MongoServerError &&
+        e.errorResponse.errmsg?.includes('duplicate key error collection')
+      ) {
+        throw new PXValidationError(
+          PXValidationError.codes.CANNOT_CREATE_ENTITY_STATUS,
+          'Cannot create an EntityStatus with duplicated extractorId and entitySharedId in this collection'
+        );
+      }
+
+      throw e;
+    }
   }
 
   async getById(extractionId: string): Promise<PXEntityStatusModel | undefined> {
