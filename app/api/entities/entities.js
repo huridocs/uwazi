@@ -109,7 +109,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
         if (templateHasChanged) {
           previousTemplate.properties.forEach(prevProperty => {
-            // Delete properties that are ONLY on the previous template
             const isUniqueToPreviousTemplate = template.properties.every(
               property => property.name !== prevProperty.name || property.type !== prevProperty.type
             );
