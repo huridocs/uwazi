@@ -133,6 +133,7 @@ describe('Relationship view', () => {
 
     it('should be able to create a new entity and add it to the last existing hub', () => {
       cy.contains('button', 'Edit').should('be.visible').realClick();
+      cy.get('div.relationshipsHub').eq(2).scrollIntoView();
       cy.get('div.relationshipsHub')
         .eq(2)
         .within(() => {
@@ -148,7 +149,6 @@ describe('Relationship view', () => {
         cy.get('textarea[name="relationships.metadata.title"]').type('My test Mecanismo');
         cy.contains('button', 'Save').realClick();
       });
-      cy.waitForLegacyNotifications();
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
       cy.waitForLegacyNotifications();
       cy.get('div.relationshipsHub')
