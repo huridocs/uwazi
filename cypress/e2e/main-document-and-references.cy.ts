@@ -99,7 +99,7 @@ describe('text references', () => {
     cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
   });
 
-  it('should display entity relationship page', () => {
+  it('should verify the reference in the entity relationships page', () => {
     cy.contains(
       '.item-document:nth-child(1)',
       'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
@@ -114,7 +114,7 @@ describe('text references', () => {
     cy.contains('div.relationshipsHub:nth-child(5)', 'Chile');
   });
 
-  it('should display the related entity on the sidepanel', () => {
+  it('should verify the reference on the sidepanel references tab', () => {
     cy.get('#tab-references').click();
     cy.contains(
       'aside.side-panel',
