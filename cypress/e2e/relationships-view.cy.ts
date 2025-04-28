@@ -46,10 +46,8 @@ describe('Relationship view', () => {
     });
 
     it('should should sort the relationships by Fecha property', () => {
-      cy.intercept('http://localhost:3000/api/references/search?*').as('search');
       cy.get('div.sort-buttons').contains('Date added').realClick();
       cy.get('div.rw-popup-container').contains('Fecha').realClick();
-      cy.wait('@search');
       cy.get('div.relationshipsHub')
         .first()
         .contains('Acevedo Buendía y otros. Resolución de la CorteIDH de 28 de enero de 2015');
@@ -57,7 +55,6 @@ describe('Relationship view', () => {
       cy.get('div.sort-buttons').within(() => {
         cy.get('button.sorting-toggle').realClick();
       });
-      cy.wait('@search');
       cy.get('div.relationshipsHub')
         .first()
         .contains('Acevedo Buendía et al. Admissibility Report N° 47/02');
@@ -99,7 +96,6 @@ describe('Relationship view', () => {
       removeEntity('Diego García-Sayán');
       removeEntity('Costa Rica');
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
-      cy.waitForLegacyNotifications();
       cy.contains('div.rightRelationship', 'Diego García-Sayán').should('not.exist');
       cy.contains('div.rightRelationship', 'Costa Rica').should('not.exist');
     });
@@ -123,17 +119,16 @@ describe('Relationship view', () => {
           cy.contains('div', 'Anzualdo Castro');
         });
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
-      cy.waitForLegacyNotifications();
       cy.get('div.relationshipsHub')
         .first()
         .within(() => {
           cy.contains('div', 'Anzualdo Castro');
         });
+      cy.waitForLegacyNotifications();
     });
 
     it('should be able to create a new entity and add it to the last existing hub', () => {
       cy.contains('button', 'Edit').should('be.visible').realClick();
-      cy.get('div.relationshipsHub').eq(2).scrollIntoView();
       cy.get('div.relationshipsHub')
         .eq(2)
         .within(() => {
@@ -145,17 +140,16 @@ describe('Relationship view', () => {
       });
       cy.get('aside.side-panel.connections-metadata.is-active').should('be.visible');
       cy.get('aside.side-panel.connections-metadata.is-active').within(() => {
-        cy.get('textarea[name="relationships.metadata.title"]').scrollIntoView();
         cy.get('textarea[name="relationships.metadata.title"]').type('My test Mecanismo');
         cy.contains('button', 'Save').realClick();
       });
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
-      cy.waitForLegacyNotifications();
       cy.get('div.relationshipsHub')
         .eq(2)
         .within(() => {
           cy.contains('div', 'My test Mecanismo');
         });
+      cy.waitForLegacyNotifications();
     });
 
     it('should be able to move entities from the second hub to the first one', () => {
@@ -175,7 +169,6 @@ describe('Relationship view', () => {
           cy.contains('div', 'Roberto de Figueiredo Caldas');
           cy.contains('div', 'Humberto Antonio Sierra Porto');
         });
-      cy.get('div.relationshipsHub').eq(1).scrollIntoView();
       cy.get('div.relationshipsHub')
         .eq(1)
         .within(() => {
