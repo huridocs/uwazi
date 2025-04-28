@@ -147,6 +147,7 @@ describe('Relationship view', () => {
         cy.get('textarea[name="relationships.metadata.title"]').type('My test Mecanismo');
         cy.contains('button', 'Save').realClick();
       });
+      cy.waitForLegacyNotifications();
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
       cy.waitForLegacyNotifications();
       cy.get('div.relationshipsHub')
@@ -173,6 +174,7 @@ describe('Relationship view', () => {
           cy.contains('div', 'Roberto de Figueiredo Caldas');
           cy.contains('div', 'Humberto Antonio Sierra Porto');
         });
+      cy.get('div.relationshipsHub').eq(1).scrollIntoView();
       cy.get('div.relationshipsHub')
         .eq(1)
         .within(() => {
