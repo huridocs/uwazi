@@ -52,13 +52,17 @@ async function updateEntity(entity, _template, unrestricted = false) {
     entity.template &&
     docLanguages[0].template.toString() !== entity.template.toString();
 
+  const template = _template || { properties: [] };
+  let previousTemplate;
+
   if (templateHasChanged) {
     await Promise.all([
       this.deleteRelatedEntityFromMetadata(docLanguages[0]),
       relationships.delete({ entity: entity.sharedId }, null, false),
     ]);
+
+    previousTemplate = await templates.getById(docLanguages[0].template);
   }
-  const template = _template || { properties: [] };
   const toSyncProperties = template.properties
     .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
@@ -101,17 +105,26 @@ async function updateEntity(entity, _template, unrestricted = false) {
       const toSave = { ...d };
 
       if (entity.metadata) {
-        if (templateHasChanged) {
-          toSave.metadata = entity.metadata;
-        } else {
-          toSave.metadata = { ...(toSave.metadata || entity.metadata) };
+        toSave.metadata = { ...entity.metadata, ...toSave.metadata };
 
-          toSyncProperties
-            .filter(p => entity.metadata[p])
-            .forEach(p => {
-              toSave.metadata[p] = entity.metadata[p];
-            });
+        if (templateHasChanged) {
+          previousTemplate.properties.forEach(prevProperty => {
+            // Delete properties that are ONLY on the previous template
+            const isUniqueToPreviousTemplate = template.properties.every(
+              property => property.name !== prevProperty.name || property.type !== prevProperty.type
+            );
+
+            if (isUniqueToPreviousTemplate) {
+              delete toSave.metadata[prevProperty.name];
+            }
+          });
         }
+
+        toSyncProperties
+          .filter(p => entity.metadata[p])
+          .forEach(p => {
+            toSave.metadata[p] = entity.metadata[p];
+          });
 
         toSave.metadata = await denormalizeMetadata(toSave.metadata, toSave.language, template, {
           thesauriByKey,

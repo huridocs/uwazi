@@ -26,6 +26,7 @@ import fixtures, {
   batmanFinishesId,
   docId1,
   entityGetTestTemplateId,
+  fixtureFactory,
   syncPropertiesEntityId,
   templateChangingNames,
   templateChangingNamesProps,
@@ -567,6 +568,82 @@ describe('entities', () => {
             targetLanguageKey: 'en',
           })
         );
+      });
+    });
+
+    describe('when the Template is changed', () => {
+      it('should keep existing metadata value if Property are present in previous and next Template', async () => {
+        const commonProperty1 = fixtureFactory.property('common_property_1', 'text');
+        const commonProperty2 = fixtureFactory.property('common_property_2', 'numeric');
+        const exclusiveTemplateA1 = fixtureFactory.property('exclusive_template_a_1', 'text');
+        const exclusiveTemplateA2 = fixtureFactory.property('exclusive_template_a_2', 'numeric');
+        const exclusiveTemplateB1 = fixtureFactory.property('exclusive_template_b_1', 'text');
+
+        const templateA = fixtureFactory.template('template_a', [
+          commonProperty1,
+          commonProperty2,
+          exclusiveTemplateA1,
+          exclusiveTemplateA2,
+        ]);
+
+        const templateB = fixtureFactory.template('template_b', [
+          commonProperty1,
+          commonProperty2,
+          exclusiveTemplateB1,
+        ]);
+
+        const [entityEs, entityEn, entityPt] = fixtureFactory.entityInMultipleLanguages(
+          ['es', 'en', 'pt'],
+          'entity_template_changed',
+          templateA.name,
+          {
+            [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
+            [commonProperty2.name]: [{ value: 0 }],
+            [exclusiveTemplateA1.name]: [{ value: 'any_text_spanish_2' }],
+            [exclusiveTemplateA2.name]: [{ value: 1 }],
+          }
+        );
+
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          entities: [entityEs, entityEn, entityPt],
+          templates: [templateA, templateB],
+        });
+
+        const input = {
+          _id: entityEn._id,
+          sharedId: entityEn.sharedId,
+          template: templateB,
+          metadata: {
+            [commonProperty1.name]: [{ value: 'changed_text_english' }],
+            [commonProperty2.name]: [{ value: 0 }],
+            [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+          },
+        };
+
+        const editedEn = await entities.save(input, { language: 'en' });
+        const [editedEs, editedPt] = await Promise.all([
+          entities.getById(entityEs.sharedId, 'es'),
+          entities.getById(entityEs.sharedId, 'pt'),
+        ]);
+
+        expect(editedEn.metadata).toEqual({
+          [commonProperty1.name]: [{ value: 'changed_text_english' }],
+          [commonProperty2.name]: [{ value: 0 }],
+          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+        });
+
+        expect(editedEs.metadata).toEqual({
+          [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
+          [commonProperty2.name]: [{ value: 0 }],
+          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+        });
+
+        expect(editedPt.metadata).toEqual({
+          [commonProperty1.name]: [{ value: 'any_text_spanish_1' }],
+          [commonProperty2.name]: [{ value: 0 }],
+          [exclusiveTemplateB1.name]: [{ value: 'any_text' }],
+        });
       });
     });
 
