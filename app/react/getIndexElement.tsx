@@ -25,7 +25,7 @@ const getCustomLibraryPage = (customHomePage: string[]) => {
 
   if (customHomePage.includes('map')) {
     return (
-      <LibraryRoot>
+      <LibraryRoot params={{ q: queryString }}>
         <LibraryMap params={{ q: queryString }} />
       </LibraryRoot>
     );
@@ -33,14 +33,14 @@ const getCustomLibraryPage = (customHomePage: string[]) => {
 
   if (customHomePage.includes('table')) {
     return (
-      <LibraryRoot>
+      <LibraryRoot params={{ q: queryString }}>
         <LibraryTable params={{ q: queryString }} />
       </LibraryRoot>
     );
   }
 
   return (
-    <LibraryRoot>
+    <LibraryRoot params={{ q: queryString }}>
       <LibraryCards params={{ q: queryString }} />
     </LibraryRoot>
   );
@@ -55,26 +55,28 @@ const getLibraryDefault = (
     return <Login />;
   }
 
+  const searchQuery = deconstructSearchQuery('?q=(includeUnpublished:!t)');
+
   switch (defaultLibraryView) {
     case 'table':
       return (
-        <LibraryRoot>
-          <LibraryTable />
+        <LibraryRoot params={{ ...(userId && { q: searchQuery }) }}>
+          <LibraryTable params={{ ...(userId && { q: searchQuery }) }} />
         </LibraryRoot>
       );
 
     case 'map':
       return (
-        <LibraryRoot>
-          <LibraryMap />
+        <LibraryRoot params={{ ...(userId && { q: searchQuery }) }}>
+          <LibraryMap params={{ ...(userId && { q: searchQuery }) }} />
         </LibraryRoot>
       );
 
     case 'cards':
     default:
       return (
-        <LibraryRoot>
-          <LibraryCards />
+        <LibraryRoot params={{ ...(userId && { q: searchQuery }) }}>
+          <LibraryCards params={{ ...(userId && { q: searchQuery }) }} />
         </LibraryRoot>
       );
   }
