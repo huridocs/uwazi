@@ -99,9 +99,9 @@ describe('Relationship view', () => {
       removeEntity('Diego García-Sayán');
       removeEntity('Costa Rica');
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.waitForLegacyNotifications();
       cy.contains('div.rightRelationship', 'Diego García-Sayán').should('not.exist');
       cy.contains('div.rightRelationship', 'Costa Rica').should('not.exist');
-      cy.waitForLegacyNotifications();
     });
 
     it('should be able to add an existing entity into a hub', () => {
@@ -123,12 +123,12 @@ describe('Relationship view', () => {
           cy.contains('div', 'Anzualdo Castro');
         });
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.waitForLegacyNotifications();
       cy.get('div.relationshipsHub')
         .first()
         .within(() => {
           cy.contains('div', 'Anzualdo Castro');
         });
-      cy.waitForLegacyNotifications();
     });
 
     it('should be able to create a new entity and add it to the last existing hub', () => {
@@ -148,12 +148,12 @@ describe('Relationship view', () => {
         cy.contains('button', 'Save').realClick();
       });
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
+      cy.waitForLegacyNotifications();
       cy.get('div.relationshipsHub')
         .eq(2)
         .within(() => {
           cy.contains('div', 'My test Mecanismo');
         });
-      cy.waitForLegacyNotifications();
     });
 
     it('should be able to move entities from the second hub to the first one', () => {
