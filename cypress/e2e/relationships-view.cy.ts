@@ -101,6 +101,7 @@ describe('Relationship view', () => {
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
       cy.contains('div.rightRelationship', 'Diego García-Sayán').should('not.exist');
       cy.contains('div.rightRelationship', 'Costa Rica').should('not.exist');
+      cy.waitForLegacyNotifications();
     });
 
     it('should be able to add an existing entity into a hub', () => {
