@@ -144,6 +144,7 @@ describe('Relationship view', () => {
       });
       cy.get('aside.side-panel.connections-metadata.is-active').should('be.visible');
       cy.get('aside.side-panel.connections-metadata.is-active').within(() => {
+        cy.get('textarea[name="relationships.metadata.title"]').scrollIntoView();
         cy.get('textarea[name="relationships.metadata.title"]').type('My test Mecanismo');
         cy.contains('button', 'Save').realClick();
       });
