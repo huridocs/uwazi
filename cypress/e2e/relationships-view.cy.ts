@@ -127,21 +127,22 @@ describe('Relationship view', () => {
       cy.waitForLegacyNotifications();
     });
 
+    // eslint-disable-next-line max-statements
     it('should be able to create a new entity and add it to the last existing hub', () => {
-      cy.contains('button', 'Edit').should('be.visible').realClick();
+      cy.contains('button', 'Edit').should('be.visible').click();
       cy.get('div.relationshipsHub')
         .eq(2)
         .within(() => {
-          cy.contains('button', 'Add entities / documents').realClick();
+          cy.contains('button', 'Add entities / documents').click();
         });
       cy.get('aside.side-panel.create-reference.is-active').should('be.visible');
       cy.get('aside.side-panel.create-reference.is-active').within(() => {
-        cy.contains('button', 'Create Entity').realClick();
+        cy.contains('button', 'Create Entity').click();
       });
       cy.get('aside.side-panel.connections-metadata.is-active').should('be.visible');
       cy.get('aside.side-panel.connections-metadata.is-active').within(() => {
         cy.get('textarea[name="relationships.metadata.title"]').type('My test Mecanismo');
-        cy.contains('button', 'Save').realClick();
+        cy.contains('button', 'Save').click();
       });
       cy.get('div.entity-footer').contains('button', 'Save').realClick();
       cy.get('div.relationshipsHub')
