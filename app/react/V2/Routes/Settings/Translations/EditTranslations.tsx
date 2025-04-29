@@ -201,6 +201,7 @@ const EditTranslations = () => {
     handleSubmit,
     setValue,
     getFieldState,
+    reset,
     formState: { dirtyFields, isSubmitting: formIsSubmitting },
   } = useForm({
     defaultValues: { formValues: defaultFormValues },
@@ -244,6 +245,15 @@ const EditTranslations = () => {
         break;
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
+
+  useEffect(() => {
+    if (fetcher.data) {
+      const updatedFromValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+      reset({ formValues: updatedFromValues });
+    }
+    // updated effect, should only trigger when action returns data to update the table
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translations]);
 
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
