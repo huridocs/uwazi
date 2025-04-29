@@ -16,7 +16,6 @@ import './App/sockets';
 import CustomProvider from './App/Provider';
 import { atomStore } from './V2/atoms';
 import { store } from './store';
-import { options } from './reactRouterConfig';
 import { routes } from './appRoutes';
 
 if (window.SENTRY_APP_DSN) {
@@ -39,7 +38,7 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
-const router = createBrowserRouter(routes, options);
+const router = createBrowserRouter(routes);
 
 const App = () => (
   <ReduxProvider store={store as any}>
