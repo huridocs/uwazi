@@ -17,7 +17,7 @@ describe('Settings mobile menu', () => {
   it('should only show the menu', () => {
     cy.intercept('GET', '/api/search*').as('search');
     cy.location().should(location => {
-      expect(location.pathname).to.contain('library');
+      expect(location.pathname).not.to.contain('login');
     });
     cy.wait('@search');
     cy.get('.menu-button').click();

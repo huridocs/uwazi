@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import templatesAPI from 'api/templates';
@@ -9,7 +7,6 @@ import entities from 'api/entities/entities';
 import { createError } from 'api/utils';
 
 import { ObjectId } from 'mongodb';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import model from './model';
 import { generateNames } from '../templates/utils';
 
@@ -428,10 +425,12 @@ export default {
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
     if (updateMetdata) {
-      await ArrayUtils.sequentialFor(languages, l =>
-        this.updateEntitiesMetadata(
-          entitiesAffected.map(e => e._id),
-          l.key
+      await Promise.all(
+        languages.map(l =>
+          this.updateEntitiesMetadata(
+            entitiesAffected.map(e => e._id),
+            l.key
+          )
         )
       );
     }

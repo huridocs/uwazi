@@ -58,7 +58,7 @@ enum ItemTypes {
 
 type FeatureFlags = Tenant['featureFlags'] & {};
 
-type ClientFeatureFlags = Pick<FeatureFlags, 'ixExtraSources' | 'paragraphExtraction'>;
+type ClientFeatureFlags = Pick<FeatureFlags, 'ixExtraSources'>;
 
 export { ItemTypes };
 export type {
