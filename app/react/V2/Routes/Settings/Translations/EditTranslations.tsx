@@ -251,7 +251,7 @@ const EditTranslations = () => {
       const updatedFromValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
       reset({ formValues: updatedFromValues });
     }
-    // updated effect, should only trigger when action returns data to update the table
+    // updater effect, should only trigger when action returns data to update the table
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [translations]);
 
