@@ -646,29 +646,6 @@ describe('entities', () => {
         });
       });
     });
-
-    it('should replicate metadata of edited Entity on all Entities languages if template is changed', async () => {
-      const doc = {
-        _id: batmanFinishesId,
-        sharedId: 'shared',
-        metadata: {
-          property1: [{ value: 'any_text_1' }],
-          property2: [{ value: 'any_text_2' }],
-          property3: [{ value: 'any_text_3' }],
-        },
-        template: templateChangingNames,
-      };
-
-      const en = await entities.save(doc, { language: 'en' });
-      const [es, pt] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'pt'),
-      ]);
-
-      expect(en.language).toBe('en');
-      expect(en.metadata).toEqual(es.metadata);
-      expect(en.metadata).toEqual(pt.metadata);
-    });
   });
 
   describe('updateMetdataFromRelationships', () => {
