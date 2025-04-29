@@ -219,6 +219,14 @@ const EditTranslations = () => {
 
   useEffect(() => {
     switch (true) {
+      case fetcher.data instanceof FetchResponseError:
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
+        });
+        break;
+
       case fetcher.formData?.get('intent') === 'form-submit':
         setNotifications({
           type: 'success',
@@ -230,14 +238,6 @@ const EditTranslations = () => {
         setNotifications({
           type: 'success',
           text: <Translate>Translations imported.</Translate>,
-        });
-        break;
-
-      case fetcher.data instanceof FetchResponseError:
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
         });
         break;
 
