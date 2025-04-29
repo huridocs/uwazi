@@ -55,20 +55,24 @@ const editTranslationsLoader =
 
 const editTranslationsAction =
   (): ActionFunction =>
-  async ({ params, request }) => {
+  // eslint-disable-next-line max-statements
+  async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
     const formData = await request.formData();
     const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
     const { context } = params;
+    let response: ClientTranslationSchema[] | FetchResponseError = [];
 
     if (formIntent === 'form-submit' && context) {
       const formValues = formData.get('data') as string;
-      await translationsAPI.post(JSON.parse(formValues), context);
+      response = await translationsAPI.post(JSON.parse(formValues), context);
     }
 
     if (formIntent === 'file-upload') {
       const file = formData.get('data') as File;
-      await translationsAPI.importTranslations(file, 'System');
+      response = await translationsAPI.importTranslations(file, 'System');
     }
+
+    return response;
   };
 
 type formValuesType = {
@@ -177,17 +181,16 @@ const EditTranslations = () => {
     translations: ClientTranslationSchema[];
     settings: Settings;
   };
-
+  const fetcher = useFetcher<ClientTranslationSchema[] | FetchResponseError>();
   const [hideTranslated, setHideTranslated] = useState(false);
-  const fetcher = useFetcher();
-  const setNotifications = useSetAtom(notificationAtom);
   const [showModal, setShowModal] = useState(false);
+  const setNotifications = useSetAtom(notificationAtom);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+
   const tablesData = useMemo(
     () => calculateTableData(contextTerms, defaultFormValues, hideTranslated),
     [contextTerms, defaultFormValues, hideTranslated]
@@ -198,8 +201,7 @@ const EditTranslations = () => {
     handleSubmit,
     setValue,
     getFieldState,
-    reset,
-    formState: { dirtyFields, isSubmitting: formIsSubmitting, isSubmitSuccessful },
+    formState: { dirtyFields, isSubmitting: formIsSubmitting },
   } = useForm({
     defaultValues: { formValues: defaultFormValues },
     mode: 'onSubmit',
@@ -242,7 +244,6 @@ const EditTranslations = () => {
         break;
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
-
 
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
