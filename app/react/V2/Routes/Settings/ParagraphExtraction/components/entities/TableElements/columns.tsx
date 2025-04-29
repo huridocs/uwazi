@@ -34,7 +34,7 @@ const columns = [
     enableSorting: false,
   }),
   pxColumnHelper.accessor('entity.sharedId', {
-    header: generateTableHeader(''),
+    header: generateTableHeader('Action', { className: 'sr-only' }),
     cell: ActionCell,
     meta: { headerClassName: 'w-1/12' },
     enableSorting: false,
