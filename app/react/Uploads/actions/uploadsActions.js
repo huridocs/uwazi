@@ -182,6 +182,8 @@ export function documentProcessed(sharedId, __reducerKey) {
         files: doc.documents,
         __reducerKey: 'library',
       });
+      dispatch(basicActions.update('entityView/entity', doc));
+      dispatch(basicActions.update('viewer/doc', doc));
       dispatch({ type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId });
     });
   };
