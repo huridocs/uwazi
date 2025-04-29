@@ -28,7 +28,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
     meta: { headerClassName: 'w-4/6 max-w-2/3 ' },
   }),
   pxColumnHelper.accessor('rowId', {
-    header: generateTableHeader(''),
+    header: generateTableHeader('Action', { className: 'sr-only' }),
     cell: props =>
       ActionCell(() => {
         const paragraphId = props.cell.getValue();
