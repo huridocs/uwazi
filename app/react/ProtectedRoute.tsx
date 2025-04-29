@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router';
+import React, { ReactElement } from 'react';
+import { Navigate, Outlet } from 'react-router';
 import { store } from 'app/store';
 import { ClientSettings } from 'app/apiResponseTypes';
 
@@ -10,18 +10,8 @@ const ProtectedRoute = ({
   children: ReactElement;
   allowedRoles?: string[];
 }) => {
-  const navigate = useNavigate();
   const userId = store?.getState().user.get('_id');
   const userRole = store?.getState().user.get('role') || '';
-
-  useEffect(() => {
-    if ((allowedRoles && !allowedRoles.includes(userRole)) || !userId) {
-      // eslint-disable-next-line no-void
-      void navigate('/login', { replace: true });
-    }
-  }, [allowedRoles, userRole, userId, navigate]);
-
-  // Render children or <Outlet> only if the user is authenticated
   if (allowedRoles && allowedRoles.includes(userRole)) {
     return children || <Outlet />;
   }
@@ -30,8 +20,7 @@ const ProtectedRoute = ({
     return children || <Outlet />;
   }
 
-  // Optionally, render a fallback (e.g., a loading spinner) while redirecting
-  return null;
+  return <Navigate to="/login" replace />;
 };
 
 const adminsOnlyRoute = (element: ReactElement) => (
@@ -42,5 +31,4 @@ const privateRoute = (element: ReactElement, settings: ClientSettings | undefine
   !settings?.private ? element : <ProtectedRoute>{element}</ProtectedRoute>;
 
 const loggedInUsersRoute = (element: ReactElement) => <ProtectedRoute>{element}</ProtectedRoute>;
-
 export { loggedInUsersRoute, adminsOnlyRoute, privateRoute, ProtectedRoute };
