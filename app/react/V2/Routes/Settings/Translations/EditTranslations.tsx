@@ -62,15 +62,13 @@ const editTranslationsAction =
 
     if (formIntent === 'form-submit' && context) {
       const formValues = formData.get('data') as string;
-      return translationsAPI.post(JSON.parse(formValues), context);
+      await translationsAPI.post(JSON.parse(formValues), context);
     }
 
     if (formIntent === 'file-upload') {
       const file = formData.get('data') as File;
-      return translationsAPI.importTranslations(file, 'System');
+      await translationsAPI.importTranslations(file, 'System');
     }
-
-    return null;
   };
 
 type formValuesType = {
@@ -201,21 +199,14 @@ const EditTranslations = () => {
     setValue,
     getFieldState,
     reset,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState: { dirtyFields, isSubmitting: formIsSubmitting, isSubmitSuccessful },
   } = useForm({
     defaultValues: { formValues: defaultFormValues },
     mode: 'onSubmit',
   });
 
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
-  const blocker = useBlocker(isDirtyAlt && !formIsSubmitting);
-
-  React.useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset({}, { keepValues: true });
-    }
-  }, [isSubmitSuccessful, reset]);
+  const isDirty = !!Object.keys(dirtyFields).length;
+  const blocker = useBlocker(isDirty && !formIsSubmitting);
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -225,14 +216,14 @@ const EditTranslations = () => {
 
   useEffect(() => {
     switch (true) {
-      case fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data):
+      case fetcher.formData?.get('intent') === 'form-submit':
         setNotifications({
           type: 'success',
           text: <Translate>Translations saved</Translate>,
         });
         break;
 
-      case fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data):
+      case fetcher.formData?.get('intent') === 'file-upload':
         setNotifications({
           type: 'success',
           text: <Translate>Translations imported.</Translate>,
@@ -252,13 +243,13 @@ const EditTranslations = () => {
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
 
+
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
     const values = prepareValuesToSave(data.formValues, translations);
     formData.set('intent', 'form-submit');
     formData.set('data', JSON.stringify(values));
     await fetcher.submit(formData, { method: 'post' });
-    reset({}, { keepValues: true });
   };
 
   const importFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,7 +260,6 @@ const EditTranslations = () => {
       formData.set('intent', 'file-upload');
       formData.set('data', file);
       await fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
-      reset({}, { keepValues: true });
     }
   };
 
