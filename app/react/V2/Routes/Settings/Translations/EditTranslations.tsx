@@ -340,7 +340,7 @@ const EditTranslations = () => {
                                 getFieldState(value.fieldKey as any)?.error
                               );
                               return (
-                                <tr>
+                                <tr key={value.fieldKey}>
                                   <td className="px-6 py-2">{value.language}</td>
                                   <td className="px-6 py-2">
                                     <LanguagePill
