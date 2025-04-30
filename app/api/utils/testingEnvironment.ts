@@ -95,6 +95,10 @@ const testingEnvironment = {
     async getAllFrom(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName).find().toArray();
     },
+
+    getCollection(collectionName: string) {
+      return testingDB.mongodb?.collection(collectionName);
+    },
   },
 };
 
