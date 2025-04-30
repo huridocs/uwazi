@@ -79,8 +79,8 @@ const getPXProperties = (
     language: entity.language!,
     template: entity.template?.toString()!,
     rowId: entity._id!.toString(),
-    paragraphText: entity.metadata?.[textProperty]?.[0].value?.toString() || '',
-    paragraphNumber: Number(entity.metadata?.[paragraphNumberProperty]?.[0].value) || 0,
+    paragraphText: entity.metadata?.[textProperty]?.[0]?.value?.toString() || '',
+    paragraphNumber: Number(entity.metadata?.[paragraphNumberProperty]?.[0]?.value) || 0,
     _id: entity._id?.toString() || '',
   };
   return extractedParagraph;
