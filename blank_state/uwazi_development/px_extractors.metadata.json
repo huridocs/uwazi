@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"3a210af509f14b75ac9f079b84c5a845","collectionName":"px_extractors","type":"collection"}
