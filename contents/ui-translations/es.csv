@@ -2,13 +2,11 @@ Key,Spanish
 % of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
 A source template must,A source template must
-A target template needs at least,A target template needs at least
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accept suggestion,Accept suggestion
