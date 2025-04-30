@@ -2,13 +2,11 @@ Key,Thai
 % of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
 A source template must,A source template must
-A target template needs at least,A target template needs at least
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,จำเป็นต้องใช้อีเมล
 Accept,ตกลง
 Accept suggestion,Accept suggestion

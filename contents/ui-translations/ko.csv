@@ -2,13 +2,11 @@ Key,Korean
 % of sentences above threshold,임계값 이상 문장 비율
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
 A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
 A source template must,A source template must
-A target template needs at least,A target template needs at least
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,이메일이 필요합니다.
 Accept,수락
 Accept suggestion,Accept suggestion
