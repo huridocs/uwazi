@@ -1,9 +1,9 @@
 name: Build App
 
+permissions:
+  contents: read
+
 on:
-  push:
-    branches:
-      - development
   pull_request:
 
 concurrency:
@@ -53,6 +53,7 @@ jobs:
       - name: Set cache key
         id: set-cache-key
         run: echo "cache-key=build-${{ github.sha }}" >> $GITHUB_OUTPUT
+
       # Save Build Output
       - name: Upload built app artifact
         uses: actions/upload-artifact@v4
