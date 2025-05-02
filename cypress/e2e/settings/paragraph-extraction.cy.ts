@@ -98,10 +98,6 @@ describe('Paragraph Extraction', () => {
       cy.url().should('include', '/settings/paragraph-extraction/');
     });
 
-    it('should check for a11y violations', () => {
-      cy.checkA11y();
-    });
-
     it('should view the details of the extractor and navigate through the flow', () => {
       cy.get('table').contains('caption', 'Paragraphs');
       cy.get('tbody tr').should('have.length', 3);
@@ -134,9 +130,13 @@ describe('Paragraph Extraction', () => {
     it('should update the processed entities after 25 seconds', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(30000); //wait for processing to finish
-      cy.contains('tbody tr', 'New').eq(0).should('not.have.text', '0', {
+      cy.contains('tbody tr', 'New').should('not.exist', {
         timeout: 30000,
       });
+    });
+
+    it('should check for a11y violations', () => {
+      cy.checkA11y();
     });
   });
 
@@ -147,7 +147,7 @@ describe('Paragraph Extraction', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000); //wait for loader paragraphs to finish
 
-      cy.contains('tbody tr', 'New')
+      cy.contains('tbody tr', 'Processed')
         .eq(0)
         .within(() => {
           cy.get('td:nth-child(2) > span')

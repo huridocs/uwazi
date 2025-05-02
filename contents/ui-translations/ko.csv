@@ -641,6 +641,7 @@ Priority sorting,우선순위 정렬
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,비공개 인스턴스
+Processed,Processed
 Processing,처리 중
 Properties,속성
 Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
