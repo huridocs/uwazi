@@ -32,6 +32,7 @@ import {
   propertyTypeIsSelectOrMultiSelect,
   NoSegmentedFiles,
   NoLabeledFiles,
+  getEntitiesForTraining,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -203,6 +204,39 @@ class InformationExtraction {
     }
 
     return data;
+  };
+
+  sendMaterialsForProperty = async (
+    entitiesForTraining: EntitySchema[],
+    extractor: IXExtractorType,
+    serviceUrl: string,
+    type = 'labeled_data'
+  ) => {
+    await Promise.all(
+      entitiesForTraining.map(async entity => {
+        const languageIso =
+          LanguageUtils.fromISO639_3(entity.language!, false)?.ISO639_1 || defaultTrainingLanguage;
+
+        let data: MaterialsData = {
+          language_iso: languageIso,
+          id: extractor._id.toString(),
+          tenant: tenants.current().name,
+        };
+
+        if (type === 'labeled_data') {
+          data = {
+            ...data,
+            label_text: propertyValue || propertyLabeledData?.selection?.text,
+            source_text: entity.metadata?.[extractor.source.property]?.[0]?.value,
+          };
+        }
+
+        await request.post(urljoin(serviceUrl, type), data);
+        if (type === 'prediction_data') {
+          await this.saveSuggestionProcess(entity, extractor);
+        }
+      })
+    );
   };
 
   sendMaterials = async (
@@ -515,27 +549,39 @@ class InformationExtraction {
     extractor: IXExtractorType,
     serviceUrl: string
   ): Promise<[boolean, { status: string; message: string }?]> {
-    try {
-      const files = await getFilesForTraining(extractor.templates, extractor.property);
-      if (!files.length) {
-        return [false];
-      }
-      await this.sendMaterials(files, extractor, serviceUrl);
+    if (extractor.source.property) {
+      // return [false, { status: 'error', message: 'No property found' }];
+      const entitiesForTraining = await getEntitiesForTraining(
+        extractor.templates,
+        extractor.property,
+        extractor.source.property
+      );
+      await this.sendMaterialsForProperty(entitiesForTraining, extractor, serviceUrl);
       return [true];
-    } catch (e) {
-      if (e instanceof NoSegmentedFiles) {
-        return [
-          false,
-          {
-            status: 'error',
-            message: 'There are no documents segmented yet, please try again later',
-          },
-        ];
+    }
+    if (extractor.source.pdf) {
+      try {
+        const files = await getFilesForTraining(extractor.templates, extractor.property);
+        if (!files.length) {
+          return [false];
+        }
+        await this.sendMaterials(files, extractor, serviceUrl);
+        return [true];
+      } catch (e) {
+        if (e instanceof NoSegmentedFiles) {
+          return [
+            false,
+            {
+              status: 'error',
+              message: 'There are no documents segmented yet, please try again later',
+            },
+          ];
+        }
+        if (e instanceof NoLabeledFiles) {
+          return [false, { status: 'error', message: 'No labeled data' }];
+        }
+        throw e;
       }
-      if (e instanceof NoLabeledFiles) {
-        return [false, { status: 'error', message: 'No labeled data' }];
-      }
-      throw e;
     }
   }
 

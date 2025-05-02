@@ -207,6 +207,36 @@ describe('InformationExtraction', () => {
       );
     });
 
+    describe('when extracting from text property', () => {
+      fit('should not send xmls', async () => {
+        await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+
+        expect(IXExternalService.materialsFileParams).toEqual(undefined);
+        expect(IXExternalService.files.length).toBe(0);
+      });
+
+      fit('should send labeled data', async () => {
+        await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+
+        expect(IXExternalService.materials.length).toBe(2);
+        expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
+          id: factory.id('prop1extractor').toString(),
+          tenant: 'tenant1',
+          language_iso: 'en',
+          label_text: 'different from selected text',
+          source_text: 'text 1',
+        });
+
+        // expect(IXExternalService.materials.find(m => m.source_text === 'text 2')).toEqual({
+        //   id: factory.id('prop1extractor').toString(),
+        //   tenant: 'tenant1',
+        //   language_iso: 'en',
+        //   label_text: 'different from selected text',
+        //   source_text: 'text 1',
+        // });
+      });
+    });
+
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 

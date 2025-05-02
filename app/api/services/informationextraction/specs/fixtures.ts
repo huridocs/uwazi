@@ -38,6 +38,9 @@ const fixtures: DBFixture = {
       'templateToSegmentA',
       'templateToSegmentB',
     ]),
+    factory.ixExtractor('sourceTextExtractor1', 'property1', ['templateToSegmentA'], {
+      property: 'text',
+    }),
     factory.ixExtractor('prop2extractor', 'property2', ['templateToSegmentA']),
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
@@ -68,25 +71,15 @@ const fixtures: DBFixture = {
       'A1',
       'templateToSegmentA',
       {
-        property1: [
-          {
-            value: 1088985600,
-          },
-        ],
+        property1: [{ value: 1088985600 }],
+        text: [{ value: 'text 1' }],
       },
       { language: 'other' }
     ),
     factory.entity('A1', 'templateToSegmentA', {
-      property1: [
-        {
-          value: 'different from selected text',
-        },
-      ],
-      property2: [
-        {
-          value: 1299196800,
-        },
-      ],
+      property1: [{ value: 'different from selected text' }],
+      property2: [{ value: 1299196800 }],
+      text: [{ value: 'text 2' }],
     }),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),

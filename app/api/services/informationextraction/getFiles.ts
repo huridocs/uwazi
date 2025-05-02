@@ -162,16 +162,34 @@ async function fileQuery(
 
 function entityForTrainingQuery(
   templates: ObjectIdSchema[],
-  property: string,
-  propertyType: PropertyTypeSchema
+  toProperty: string,
+  propertyType: PropertyTypeSchema,
+  fromProperty?: string
 ) {
   const query: {
     [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
   } = { template: { $in: templates } };
-  if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
-    query[`metadata.${property}`] = { $exists: true, $ne: [] };
+  if (fromProperty) {
+    query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
   }
+  if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
+    query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
+  }
+  console.log(query);
   return query;
+}
+
+async function getEntitiesForTraining(
+  templates: ObjectIdSchema[],
+  toProperty: string,
+  fromProperty: string
+) {
+  const propertyType = await getPropertyType(templates, toProperty);
+  const entities = await entitiesModel.getUnrestricted(
+    entityForTrainingQuery(templates, toProperty, propertyType, fromProperty),
+    `sharedId metadata.${toProperty} metadata.${fromProperty} language`
+  );
+  return entities;
 }
 
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
@@ -271,6 +289,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
 
 export {
   getFilesForTraining,
+  getEntitiesForTraining,
   getFilesForSuggestions,
   getSegmentedFilesIds,
   propertyTypeIsSelectOrMultiSelect,
