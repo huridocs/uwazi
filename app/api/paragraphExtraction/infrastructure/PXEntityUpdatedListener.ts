@@ -86,7 +86,8 @@ export class PXEntityUpdatedListener {
   }
 
   private async afterEntityUpdated({ before, after }: EntityUpdatedEvent['data']) {
-    const templateHasChanged = after[0].template !== before[0].template;
+    const templateHasChanged = after[0].template?.toString() !== before[0].template?.toString();
+
     if (!templateHasChanged) {
       return;
     }
