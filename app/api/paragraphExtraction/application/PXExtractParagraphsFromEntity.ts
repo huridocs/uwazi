@@ -46,7 +46,7 @@ export class PXExtractParagraphsFromEntity
   constructor(private dependencies: Dependencies) {}
 
   // eslint-disable-next-line max-statements
-  async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
+  async execute(input: PXExtractParagraphsFromEntityInput, isRetriable = false): Promise<Output> {
     try {
       const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
@@ -89,7 +89,10 @@ export class PXExtractParagraphsFromEntity
         })}`
       );
     } catch (e) {
-      await this.dependencies.entitiesStatusDS.markAsError(input.entityStatusId);
+      if (!isRetriable) {
+        await this.dependencies.entitiesStatusDS.markAsError(input.entityStatusId);
+      }
+
       throw e;
     }
   }

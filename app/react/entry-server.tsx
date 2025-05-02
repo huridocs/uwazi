@@ -34,7 +34,6 @@ import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
-import { options } from './reactRouterConfig';
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -261,7 +260,7 @@ const getSSRProperties = async (
   const { fetchRequest, ssrError } = createFetchRequest(req);
   const { query } = createStaticHandler(routes);
   const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext, options);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
 
   return {
@@ -301,6 +300,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     ixExtraSources: featureFlags?.ixExtraSources,
+    paragraphExtraction: featureFlags?.paragraphExtraction,
   };
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,

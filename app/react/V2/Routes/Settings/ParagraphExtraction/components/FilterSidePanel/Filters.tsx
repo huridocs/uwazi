@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { Translate } from 'app/I18N';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 
@@ -10,6 +10,27 @@ type EntityFilterProps = {
 };
 
 const EntityFilter = ({ filters, setFilters }: EntityFilterProps) => {
+  const filtersRef = useRef(filters);
+
+  useEffect(() => {
+    Object.entries(filters).forEach(([key]) => {
+      if (filtersRef.current[key]) {
+        // eslint-disable-next-line no-param-reassign
+        filters[key].status = filtersRef.current[key].status;
+      }
+    });
+    filtersRef.current = filters;
+  }, [filters]);
+
+  const handleCheckboxChange = (key: string, count: number, checked: boolean) => {
+    const updatedFilters = {
+      ...filtersRef.current,
+      [key]: { count, status: checked },
+    };
+    filtersRef.current = updatedFilters;
+    setFilters(updatedFilters);
+  };
+
   const statusKeys: { [key in EntityStatus]: string } = {
     new: 'New',
     processing: 'Processing',
@@ -30,12 +51,7 @@ const EntityFilter = ({ filters, setFilters }: EntityFilterProps) => {
               <input
                 type="checkbox"
                 checked={status || false}
-                onChange={e =>
-                  setFilters({
-                    ...filters,
-                    [key]: { count, status: Boolean(e.currentTarget.checked) },
-                  })
-                }
+                onChange={e => handleCheckboxChange(key, count, Boolean(e.currentTarget.checked))}
                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
               <span className="ml-3 flex flex-1 justify-between items-center text-sm text-gray-600">

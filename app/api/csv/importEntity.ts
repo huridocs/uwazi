@@ -210,6 +210,7 @@ const translateEntity = async (
       if (translatedEntity.propertiesFromColumns.file) {
         const file = await importFile.extractFile(translatedEntity.propertiesFromColumns.file);
         await processDocument(ensure(entity.sharedId), file);
+        await storage.storeFile(file.filename, createReadStream(file.path), 'document');
       }
     })
   );

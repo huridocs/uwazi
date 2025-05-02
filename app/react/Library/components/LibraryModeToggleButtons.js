@@ -13,8 +13,8 @@ const LibraryModeToggleButtons = ({
   zoomIn,
   showGeolocation,
   searchUrl,
-  tableViewMode,
-  mapViewMode,
+  tableViewMode = false,
+  mapViewMode = false,
 }) => {
   const renderTableButton = () => {
     if (!isClient) {
@@ -31,7 +31,7 @@ const LibraryModeToggleButtons = ({
         to={`library/table${searchUrl}`}
         className="btn btn-default"
         activeclassname="is-active"
-        aria-label={t('System', 'library table view', null, false)}
+        aria-label={t('System', 'library table view', 'library table view', false)}
       >
         <Icon icon="align-justify" />
         <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
@@ -57,7 +57,7 @@ const LibraryModeToggleButtons = ({
         to={`library/map${searchUrl}`}
         className="btn btn-default"
         activeclassname="is-active"
-        aria-label={t('System', 'library map view', null, false)}
+        aria-label={t('System', 'library map view', 'library map view', false)}
       >
         <Icon icon="map-marker" />
         <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
@@ -119,13 +119,6 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
-};
-
-LibraryModeToggleButtons.defaultProps = {
-  tableViewMode: false,
-  mapViewMode: false,
-  zoomIn: null,
-  zoomOut: null,
 };
 
 export const encodedSearch = createSelector(

@@ -3,7 +3,7 @@ import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatche
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
-import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntitiesJob';
+import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntityJob';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Input = {

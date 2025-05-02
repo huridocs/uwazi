@@ -136,7 +136,24 @@ describe('Translations', () => {
   });
 
   describe('Live translations', () => {
-    //The translations modal has not been tested with checkA11y since is not yet rewritten
+    it('should enable live translate', () => {
+      cy.contains('button', 'English').click();
+      cy.contains('button', 'Live translate').click();
+    });
+
+    it('should check for accessibilty', () => {
+      cy.contains('span', 'Account').click();
+      cy.get('#translationsFormModal').should('exist');
+      cy.checkA11y();
+      cy.get('#translationsFormModal').within(() => {
+        cy.contains('button', 'Cancel').click();
+      });
+    });
+
+    it('should disable live translate', () => {
+      cy.get('button.singleItem[aria-label="Turn off inline translation"]').click();
+    });
+
     it('Should navigate to library and active live translate', () => {
       cy.contains('a', 'Library').click();
       cy.contains('button', 'English').click();
