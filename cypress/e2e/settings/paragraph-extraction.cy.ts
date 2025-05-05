@@ -128,10 +128,8 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should update the processed entities after 25 seconds', () => {
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(40000); //wait for processing to finish
       cy.contains('tbody tr', 'New').should('not.exist');
-      cy.contains('tbody tr', 'Processed');
+      cy.contains('tbody tr', 'Processed', { timeout: 400000 });
     });
 
     it('should check for a11y violations', () => {
