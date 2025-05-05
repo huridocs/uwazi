@@ -134,7 +134,10 @@ const PXParagraphLoader =
         getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );
 
-      return { ...defaultLanguageEntity, subRows: otherLanguagesEntities };
+      return {
+        ...defaultLanguageEntity,
+        subRows: otherLanguagesEntities.length ? otherLanguagesEntities : undefined,
+      };
     });
 
     return {

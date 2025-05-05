@@ -35,7 +35,7 @@ const EntityFilterSidepanel = () => {
   const [appliedFilters, setAppliedFilters] = useState<Filters>(
     getFilterStatus(searchParams, filterSidepanelStatus as Extractor['statusCount'])
   );
-  console.log(searchParams);
+
   useEffect(() => {
     const newFilters = getFilterStatus(
       searchParams,
