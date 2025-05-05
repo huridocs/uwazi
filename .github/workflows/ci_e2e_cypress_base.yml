@@ -16,7 +16,6 @@ concurrency:
 jobs:
   on-success:
     e2e-cypress:
-      if: ${{ github.event.workflow_run.conclusion == 'success' }}
       runs-on: ubuntu-24.04
       env:
         CYPRESS_RETRIES: 2
@@ -158,3 +157,4 @@ jobs:
         - name: Print server output
           run: cat output.txt
           if: failure()
+  on-failure: echo "App build job failed"
