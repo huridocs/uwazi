@@ -47,7 +47,12 @@ const PXEntityDashboard = () => {
         await revalidator.revalidate();
         setNotifications({
           type: 'success',
-          text: <Translate>Paragraphs extracted</Translate>,
+          text: (
+            <Translate>
+              The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.
+            </Translate>
+          ),
         });
         await revalidator.revalidate();
       }
@@ -124,7 +129,7 @@ const PXEntityDashboard = () => {
               >
                 <Translate>Extract new paragraphs</Translate>
               </Button>
-              {newEntitiesCount && <DisplayPill count={newEntitiesCount} />}
+              {Boolean(newEntitiesCount) && <DisplayPill count={newEntitiesCount} />}
             </div>
           )}
           {selected?.length > 0 && (

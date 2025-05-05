@@ -1,8 +1,8 @@
 import { Pill } from 'app/V2/Components/UI';
 import React from 'react';
-import { Icon } from 'app/UI';
 import { Translate } from 'app/I18N';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 const entityStatusMap: Record<EntityStatus, React.ReactNode> = {
   [EntityStatus.New]: (
@@ -15,7 +15,7 @@ const entityStatusMap: Record<EntityStatus, React.ReactNode> = {
       <Translate>Processing</Translate>...
     </Pill>
   ),
-  [EntityStatus.Processed]: <Icon className="text-green-600" icon="check-circle" />,
+  [EntityStatus.Processed]: <CheckCircleIcon className="w-6 text-success-700" />,
   [EntityStatus.Error]: (
     <Pill color="red">
       <Translate>Error</Translate>
