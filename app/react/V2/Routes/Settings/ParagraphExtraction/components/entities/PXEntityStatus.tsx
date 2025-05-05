@@ -15,7 +15,12 @@ const entityStatusMap: Record<EntityStatus, React.ReactNode> = {
       <Translate>Processing</Translate>...
     </Pill>
   ),
-  [EntityStatus.Processed]: <Icon className="text-green-600" icon="check-circle" />,
+  [EntityStatus.Processed]: (
+    <span>
+      <Icon className="text-green-600" icon="check-circle" />
+      <Translate className="sr-only">Processed</Translate>
+    </span>
+  ),
   [EntityStatus.Error]: (
     <Pill color="red">
       <Translate>Error</Translate>

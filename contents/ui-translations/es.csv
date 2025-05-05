@@ -639,6 +639,7 @@ Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
 Private entities description,AVISO: Las entidades seleccionadas serán **privadas**. Solo usuarios con permiso podrán visualizarlos.
 Private instance,Instancia privada
+Processed,Processed
 Processing,Procesando
 Properties,Propiedades
 Properties from other templates in the collection using the same label,Propiedades de otras plantillas de la colección que utilizan la misma etiqueta.

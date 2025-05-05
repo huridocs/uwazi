@@ -638,6 +638,7 @@ Priority sorting,Приоритетная сортировка
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,Приватная база данных
+Processed,Processed
 Processing,Обработка
 Properties,Свойства
 Properties from other templates in the collection using the same label,"Свойства из других шаблонов в коллекциях, использующих ту же метку"

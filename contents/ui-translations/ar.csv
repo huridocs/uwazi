@@ -640,6 +640,7 @@ Priority sorting,تصنيف حسب الأولوية
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,تنبيه: الكيانات (الإدخالات) المختارة سوف .لن تتاح رؤيتها إلا للمستخدمين المسموح لهم
 Private instance,قاعدة بيانات داخلية
+Processed,Processed
 Processing,معالجة
 Properties,الخصائص
 Properties from other templates in the collection using the same label,خصائص من قوالب أخرى في المجموعة تستخدم التسمية نفسها
