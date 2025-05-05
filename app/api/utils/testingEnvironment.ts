@@ -93,7 +93,10 @@ const testingEnvironment = {
 
   db: {
     async getAllFrom(collectionName: string) {
-      return testingDB.mongodb?.collection(collectionName).find().toArray();
+      if (!testingDB.mongodb) {
+        throw new Error('MongoDB is not initialized');
+      }
+      return testingDB.mongodb.collection(collectionName).find().toArray();
     },
 
     getCollection(collectionName: string) {

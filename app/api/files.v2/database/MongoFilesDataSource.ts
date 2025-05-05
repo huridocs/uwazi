@@ -30,6 +30,22 @@ export type SegmentationDBO = SegmentationType & {
 export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implements FilesDataSource {
   protected collectionName = 'files';
 
+  async update(file: UwaziFile): Promise<void> {
+    const count = await this.getCollection().countDocuments({ _id: new ObjectId(file.id) });
+    if (count === 0) {
+      throw new Error(`File with id ${file.id} not found`);
+    }
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(file.id) },
+      { $set: FileMappers.toDBO(file) }
+    );
+  }
+
+  async getById(id: string): Promise<UwaziFile | null> {
+    const file = await this.getCollection().findOne({ _id: new ObjectId(id) });
+    return file ? FileMappers.toModel(file) : null;
+  }
+
   getSegmentations(filesId: string[]): ResultSet<Segmentation> {
     const cursor = this.getCollection<SegmentationDBO>('segmentations').find({
       fileID: { $in: filesId.map(id => new ObjectId(id)) },

@@ -1,9 +1,9 @@
 export class BaseFile {
   readonly id: string;
 
-  readonly entity: string;
+  entity: string;
 
-  readonly totalPages: number;
+  totalPages: number;
 
   creationDate?: Date;
 

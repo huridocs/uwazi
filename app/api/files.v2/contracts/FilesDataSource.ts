@@ -11,10 +11,12 @@ type GetDocumentsForEntityOptions = {
 interface FilesDataSource {
   filesExistForEntities(files: { entity: string; _id: string }[]): Promise<boolean>;
   getAll(): ResultSet<UwaziFile>;
+  getById(id: string): Promise<UwaziFile | null>;
   getSegmentations(fileId: string[]): ResultSet<Segmentation>;
   getDocumentsForEntity(
     entitySharedId: string,
     options?: GetDocumentsForEntityOptions
   ): ResultSet<Document>;
+  update(file: UwaziFile): Promise<void>;
 }
 export type { FilesDataSource, GetDocumentsForEntityOptions };

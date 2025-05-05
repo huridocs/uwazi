@@ -1,7 +1,8 @@
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { Document } from 'api/files.v2/model/Document';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
 
 const factory = getFixturesFactory();
@@ -26,6 +27,61 @@ afterAll(async () => {
 });
 
 describe('MongoFilesDataSource', () => {
+  describe('getById', () => {
+    it('should return the file by id', async () => {
+      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+
+      const file = await ds.getById(factory.id('file1').toHexString());
+      expect(file).toBeInstanceOf(Document);
+      expect(file?.entity).toBe('entity1');
+    });
+
+    it('should return null if the file does not exist', async () => {
+      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+
+      const file = await ds.getById(factory.id('nonexistent').toHexString());
+      expect(file).toBeNull();
+    });
+  });
+
+  describe('update', () => {
+    it('should update the file properties', async () => {
+      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const originalFile = await ds.getById(factory.id('file1').toHexString());
+
+      if (!(originalFile instanceof Document)) {
+        throw new Error('Expected originalFile to be an instance of Document');
+      }
+
+      originalFile.filename = 'updated_filename';
+      originalFile.language = 'fr';
+      originalFile.entity = 'entity2';
+      await ds.update(originalFile);
+
+      const retrievedFile = await ds.getById(factory.id('file1').toHexString());
+      if (!(retrievedFile instanceof Document)) {
+        throw new Error('Expected originalFile to be an instance of Document');
+      }
+
+      expect(retrievedFile).toBeInstanceOf(Document);
+      expect(retrievedFile?.filename).toBe('updated_filename');
+      expect(retrievedFile?.language).toBe('fr');
+      expect(retrievedFile?.entity).toBe('entity2');
+    });
+
+    it('should throw an error when updating a non-existent file', async () => {
+      const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
+      const nonExistentFile = new Document(
+        factory.id('nonexistent').toHexString(),
+        'entity1',
+        0,
+        'nonexistent_file',
+        'en'
+      );
+      await expect(ds.update(nonExistentFile)).rejects.toThrow();
+    });
+  });
+
   describe('filesExistForEntities', () => {
     it('should return true if the file exists and belongs to the entity', async () => {
       const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());

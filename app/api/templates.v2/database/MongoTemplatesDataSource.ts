@@ -89,7 +89,11 @@ export class MongoTemplatesDataSource
     if (!this._nameToPropertyMap) {
       const templates = await this.getCollection().find({}).toArray();
       const properties = templates
-        .map(t => t.properties.map(p => TemplateMappers.propertyToApp(p, t._id)) || [])
+        .map(t =>
+          t.commonProperties
+            .map(p => TemplateMappers.propertyToApp(p, t._id))
+            .concat(t.properties.map(p => TemplateMappers.propertyToApp(p, t._id)) || [])
+        )
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
