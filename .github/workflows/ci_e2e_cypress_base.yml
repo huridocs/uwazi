@@ -5,11 +5,9 @@ on:
     workflows: [Build App]
     types:
       - completed
-  # branches:
-  #   - development
-  #   - production
-  #   - staging
-  # pull_request:
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
