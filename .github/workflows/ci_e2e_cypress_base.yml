@@ -1,13 +1,12 @@
 name: e2e Cypress BASE
 
-on:
-  workflow_run:
-    workflows: [Build App]
-    types:
-      - completed
-
 permissions:
   contents: read
+
+on:
+  workflow_run:
+    workflows: ['Build App']
+    types: [completed]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,9 +14,11 @@ concurrency:
 
 jobs:
   e2e-cypress:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
+
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
@@ -40,6 +41,7 @@ jobs:
         with:
           name: app-build
           path: prod/
+          workflow_run: ${{ github.event.workflow_run.id }}
 
       - name: 🍃 Install mongosh
         run: |
