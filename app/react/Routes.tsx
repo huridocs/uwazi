@@ -170,17 +170,29 @@ const getRoutesLayout = (
         <Route
           loader={ParagraphExtractorLoader(headers)}
           index
-          element={adminsOnlyRoute(<ParagraphExtractorDashboard />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <ParagraphExtractorDashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           loader={PXEntityLoader(headers)}
           path=":extractorId/entities"
-          element={adminsOnlyRoute(<PXEntityDashboard />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <PXEntityDashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           loader={PXParagraphLoader(headers)}
           path=":extractorId/entities/:sharedId/paragraphs"
-          element={adminsOnlyRoute(<PXParagraphDashboard />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <PXParagraphDashboard />
+            </ProtectedRoute>
+          }
         />
       </Route>
       <Route path="relationship-types">
