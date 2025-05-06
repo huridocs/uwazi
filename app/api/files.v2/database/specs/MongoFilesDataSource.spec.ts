@@ -58,15 +58,12 @@ describe('MongoFilesDataSource', () => {
       originalFile.entity = 'entity2';
       await ds.update(originalFile);
 
-      const retrievedFile = await ds.getById(factory.id('file1').toHexString());
-      if (!(retrievedFile instanceof Document)) {
-        throw new Error('Expected originalFile to be an instance of Document');
-      }
+      const [retrievedFile] = await testingEnvironment.db.getAllFrom('files');
 
-      expect(retrievedFile).toBeInstanceOf(Document);
-      expect(retrievedFile?.filename).toBe('updated_filename');
-      expect(retrievedFile?.language).toBe('fr');
-      expect(retrievedFile?.entity).toBe('entity2');
+      expect(retrievedFile.type).toBe('document');
+      expect(retrievedFile.filename).toBe('updated_filename');
+      expect(retrievedFile.language).toBe('fra');
+      expect(retrievedFile.entity).toBe('entity2');
     });
 
     it('should throw an error when updating a non-existent file', async () => {
