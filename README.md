@@ -97,18 +97,6 @@ For End-to-End testing, we have a full set of fixtures that test the overall fun
 
 Running end to end tests requires a running Uwazi app.
 
-Running tests with Nightmare
-
-```
-$ yarn hot
-```
-
-On a different console tab, run
-
-```
-$ yarn e2e
-```
-
 Running tests with Puppeteer
 
 ```
