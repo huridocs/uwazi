@@ -610,7 +610,6 @@ Paragraph text extraction property (numeric),Paragraph text extraction property 
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
-Paragraphs extracted,Paragraphs extracted
 Password,Parola
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -846,6 +845,9 @@ Templates:,Templates:
 Text,Metin
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,İçe aktarma işlemi bir hata verdi:
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,Şablon hatalar içeriyor
 The token does not validate against the secret key,The token does not validate against the secret key

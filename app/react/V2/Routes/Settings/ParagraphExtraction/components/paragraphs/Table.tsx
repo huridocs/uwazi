@@ -27,7 +27,7 @@ const ParagraphsTable = ({
   openPDFSidepanel,
 }: ParagraphsTableProps) => {
   const templates = useAtomValue(templatesAtom);
-  const { extractor, sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
+  const { extractor } = useLoaderData() as PXParagraphLoaderResponse;
 
   const languages =
     pxParagraphData.length > 0
@@ -47,24 +47,19 @@ const ParagraphsTable = ({
       : [];
 
   const template = templates.find(temp => temp._id === extractor?.sourceTemplateId)!;
-
   return (
     <Table
       data={pxParagraphData}
       columns={tableBuilder({ onViewAction: viewParagraph })}
       header={
         <TableTitle
-          items={[
-            { _id: sourceEntity?._id?.toString() || '', name: sourceEntity?.title || '' },
-            template,
-            ...languages,
-          ]}
+          items={[template, ...languages]}
           Buttons={
             <div className="flex gap-3">
               <Button
                 onClick={() => openPDFSidepanel(true)}
                 styling="light"
-                className="leading-4 flex gap-2 items-center text-gray-800"
+                className="flex items-center gap-2 leading-4 text-gray-800"
               >
                 <Translate>Open PDF</Translate>
               </Button>

@@ -47,7 +47,12 @@ const PXEntityDashboard = () => {
         await revalidator.revalidate();
         setNotifications({
           type: 'success',
-          text: <Translate>Paragraphs extracted</Translate>,
+          text: (
+            <Translate>
+              The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.
+            </Translate>
+          ),
         });
         await revalidator.revalidate();
       }
@@ -115,7 +120,7 @@ const PXEntityDashboard = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
           {selected?.length === 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 className="disabled:opacity-50"
@@ -124,11 +129,11 @@ const PXEntityDashboard = () => {
               >
                 <Translate>Extract new paragraphs</Translate>
               </Button>
-              <DisplayPill count={newEntitiesCount} />
+              {Boolean(newEntitiesCount) && <DisplayPill count={newEntitiesCount} />}
             </div>
           )}
           {selected?.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <ExtractEntitiesDialog
                 setIsProcessing={setIsSaving}
                 onSuccess={async () => {
@@ -140,9 +145,9 @@ const PXEntityDashboard = () => {
               />
               <div className="text-gray-500">
                 <Translate>Selected</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
+                <span className="font-semibold text-gray-900">{selected.length}</span>{' '}
                 <Translate>of</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{totalRows}</span>
+                <span className="font-semibold text-gray-900">{totalRows}</span>
               </div>
             </div>
           )}

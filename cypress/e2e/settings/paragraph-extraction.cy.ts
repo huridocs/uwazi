@@ -112,7 +112,9 @@ describe('Paragraph Extraction', () => {
 
     it('should extract the paragraphs', () => {
       cy.contains('button', 'Extract new paragraphs').click();
-      cy.contains('Paragraphs extracted').as('successMessage');
+      cy.contains('The process of extracting the paragraphs has successfully started').as(
+        'successMessage'
+      );
       cy.contains('Dismiss').click();
     });
 
@@ -163,12 +165,6 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should view the extracted paragraphs', () => {
-      cy.get('table')
-        .contains('caption', 'Paragraphs')
-        .should(
-          'contain.text',
-          `${firstEntityProcessed}Ordenes del presidenteEnglishالعربيةEspañolOpen PDF`
-        );
       cy.contains('For e2e paragraph 0 in en');
       cy.get('tbody tr').should('have.length.at.least', 3);
     });

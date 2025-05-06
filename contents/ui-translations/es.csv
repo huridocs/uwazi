@@ -608,7 +608,6 @@ Paragraph text extraction property (numeric),Paragraph text extraction property 
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
-Paragraphs extracted,Paragraphs extracted
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -843,6 +842,9 @@ Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,La petición no pudo ser procesada.
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key

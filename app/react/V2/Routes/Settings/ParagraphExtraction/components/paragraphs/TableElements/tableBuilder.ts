@@ -10,22 +10,22 @@ const pxColumnHelper = createColumnHelper<TablePXEntityParagraphRow>();
 
 const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) => void }) => [
   pxColumnHelper.accessor('paragraphNumber', {
-    header: generateTableHeader('Paragraph #'),
+    header: generateTableHeader('Paragraph #', { className: 'whitespace-nowrap' }),
     cell: ParagraphCountCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-1/6' },
+    meta: { headerClassName: 'w-0' },
   }),
   pxColumnHelper.accessor('language', {
     header: generateTableHeader('Language'),
     cell: LanguagesCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-1/6' },
+    meta: { headerClassName: 'w-0' },
   }),
   pxColumnHelper.accessor('paragraphText', {
     header: generateTableHeader('Text'),
     cell: TextCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-4/6 max-w-2/3 ' },
+    meta: { headerClassName: 'w-auto' },
   }),
   pxColumnHelper.accessor('rowId', {
     header: generateTableHeader('Action', { className: 'sr-only' }),
