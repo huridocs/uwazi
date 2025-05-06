@@ -18,7 +18,7 @@ const DisplayPill = generateDisplayPill({
   label: 'New',
 });
 
-const PollIntervalSeconds = 120;
+const PollIntervalSeconds = 25;
 const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
