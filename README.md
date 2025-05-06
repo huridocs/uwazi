@@ -91,13 +91,31 @@ This will run the entire test suite, both on server and client apps.
 
 Some suites need MongoDB configured in Replica Set mode to run properly. The provided Docker Compose file runs MongoDB in Replica Set mode and initializes the cluster automatically, if you are using your own mongo installation Refer to [MongoDB's documentation](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set) for more information.
 
-#### End to End (e2e)
+There are also Cypress components tests.
 
-For End-to-End testing, we have a full set of fixtures that test the overall functionality. Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any existing data and replace it with the testing fixtures. DO NOT RUN ON PRODUCTION ENVIRONMENTS!
+You can run individual tests with the Cypress UI:
 
-Running end to end tests requires a running Uwazi app.
+```
+$ yarn cypress
+```
 
-Running tests with Puppeteer
+or you can run tests in headless mode
+
+```
+$ yarn cy-components --browser chrome
+```
+
+### End to End testing (e2e)
+
+Running end to end tests requires a running Uwazi app. For End-to-End testing, we have a full set of fixtures that test the overall functionality. **It's not advised to run these tests on production environments**, since an incorrectly configured run can have unwanted effects on the production database.
+
+Note that if you already have an instance running, this will likely throw an error of ports already being used. Only one instance of Uwazi may be run in the same port at the same time.
+
+The Uwazi APP needs to run on a specific database and with a specific ElasticSearch index. This is configured via environment variables when starting the application.
+
+#### Running tests with Puppeteer (legacy)
+
+Start UWazi:
 
 ```
 $ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
@@ -109,7 +127,43 @@ On a different console tab, run
 $ yarn e2e-puppeteer
 ```
 
-Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in the same port at the same time.
+This will trigger a run of all the Puppeteer tests.
+
+You can run test individually:
+
+```
+yarn e2e-puppeteer-all path/to/test.test.ts
+```
+
+#### Running tests with Cypress
+
+Start Uwazi:
+
+```
+$ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+```
+
+On a different console tab, run
+
+```
+$ yarn cypress
+```
+
+This will open the Cypress interface where you can select the tests to run.
+
+You can run tests in headless mode, and run individual suites via
+
+```
+$ yarn cy-e2e --browser chrome --spec path/to/test.cy.ts
+```
+
+Cypress test that use our Information Extraction features need to run Uwazi together with a [dummy service](https://github.com/huridocs/dummy_extractor_services) that mimics the external services needed for the feature.
+
+To run these test you also need to add the following environment variables when running Uwazi:
+
+```
+$ EXTERNAL_SERVICES=true FEATURE_FLAG_PARAGRAPH_EXTRACTION=true PARAGRAPH_EXTRACTION_URL=http://localhost:5051 DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+```
 
 ### Default login
 
