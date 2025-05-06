@@ -850,9 +850,6 @@ The import process threw an error:,The import process threw an error:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
-"The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,The template contains errors
 The token does not validate against the secret key,The token does not validate against the secret key

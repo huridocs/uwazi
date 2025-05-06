@@ -848,9 +848,6 @@ The import process threw an error:,업로드 과정에서 오류가 발생했습
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
-"The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,템플릿에 오류가 포함되어 있습니다.
 The token does not validate against the secret key,The token does not validate against the secret key

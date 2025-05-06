@@ -845,9 +845,6 @@ The import process threw an error:,El proceso de importación tiene un error.
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
-"The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
 The request could not be processed.,La petición no pudo ser procesada.
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key

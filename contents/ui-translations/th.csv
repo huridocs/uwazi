@@ -848,9 +848,6 @@ The import process threw an error:,กระบวนการนำเข้า
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
-"The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,มีข้อผิดพลาดที่แม่แบบ
 The token does not validate against the secret key,The token does not validate against the secret key

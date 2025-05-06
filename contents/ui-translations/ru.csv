@@ -845,9 +845,6 @@ The import process threw an error:,Процесс импорта выдал ош
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
-"The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,Шаблон содержит ошибки
 The token does not validate against the secret key,The token does not validate against the secret key
