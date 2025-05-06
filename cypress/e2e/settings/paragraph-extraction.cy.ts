@@ -112,7 +112,9 @@ describe('Paragraph Extraction', () => {
 
     it('should extract the paragraphs', () => {
       cy.contains('button', 'Extract new paragraphs').click();
-      cy.contains('Paragraphs extracted').as('successMessage');
+      cy.contains('The process of extracting the paragraphs has successfully started').as(
+        'successMessage'
+      );
       cy.contains('Dismiss').click();
     });
 
