@@ -7,6 +7,7 @@ on:
   workflow_run:
     workflows: ['Build App']
     types: [completed]
+    branches: ['**']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
