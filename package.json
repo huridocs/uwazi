@@ -82,7 +82,10 @@
     "node-fetch": "2.6.7",
     "ws": "8.18.0",
     "body-parser": "^1.20.3",
-    "cross-spawn": "^7.0.5"
+    "cross-spawn": "^7.0.5",
+    "//underscore & axios": "Are required exclusively for testing purposes.",
+    "underscore": "1.13.7",
+    "axios": "0.30.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.744.0",
