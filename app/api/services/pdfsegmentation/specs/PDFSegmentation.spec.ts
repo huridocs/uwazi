@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
@@ -68,13 +69,13 @@ describe('PDFSegmentation', () => {
   let fileA: Buffer;
   let fileB: Buffer;
 
-  afterAll(async () => {
-    await DB.disconnect();
-  });
-
   beforeAll(async () => {
     const uri = config.DBHOST;
     await DB.connect(`${uri}PDFSegmentation_spec`);
+  });
+
+  afterAll(async () => {
+    await DB.disconnect();
   });
 
   beforeEach(async () => {
@@ -150,7 +151,7 @@ describe('PDFSegmentation', () => {
     }, 'tenantOne');
   });
 
-  it('should only send pdfs not already segmented or in the process', async () => {
+  it('should only send ready pdfs not already segmented or in the process', async () => {
     await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
     await dbOne.collection('segmentations').insertMany([
       {
