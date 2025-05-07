@@ -22,7 +22,7 @@ const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
   const searchQuery = deconstructSearchQuery(query);
   const queryString = query ? searchQuery : '';
-
+  console.log('queryString', queryString);
   if (customHomePage.includes('map')) {
     return (
       <LibraryRoot>
@@ -51,11 +51,8 @@ const getLibraryDefault = (
   defaultLibraryView: string | undefined,
   privateInstance: boolean | undefined
 ) => {
-  if (userId) {
-    return <Navigate to="/library/?q=(includeUnpublished:!t)" state={{ isClient: true }} />;
-  }
 
-  if (privateInstance) {
+  if (privateInstance && !userId) {
     return <Login />;
   }
 
@@ -63,14 +60,14 @@ const getLibraryDefault = (
     case 'table':
       return (
         <LibraryRoot>
-          <LibraryTable />
+          <LibraryTable params={{ q: '(includeUnpublished:!t)' }} />
         </LibraryRoot>
       );
 
     case 'map':
       return (
         <LibraryRoot>
-          <LibraryMap />
+          <LibraryMap params={{ q: '(includeUnpublished:!t)' }} />
         </LibraryRoot>
       );
 
@@ -78,7 +75,7 @@ const getLibraryDefault = (
     default:
       return (
         <LibraryRoot>
-          <LibraryCards />
+          <LibraryCards params={{ q: '(includeUnpublished:!t)' }} />
         </LibraryRoot>
       );
   }
