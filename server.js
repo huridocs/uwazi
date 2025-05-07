@@ -26,8 +26,6 @@ const fileExists = async filePath => {
 };
 
 (async () => {
-  throw new Error('This is a test error');
-
   if (NODE_ENV === 'production') {
     const productionBuildExists = await fileExists('./prod/app/server.js');
     if (productionBuildExists) {
