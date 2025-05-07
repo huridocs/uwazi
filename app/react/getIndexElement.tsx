@@ -22,7 +22,6 @@ const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
   const searchQuery = deconstructSearchQuery(query);
   const queryString = query ? searchQuery : '';
-  console.log('queryString', queryString);
   if (customHomePage.includes('map')) {
     return (
       <LibraryRoot>
