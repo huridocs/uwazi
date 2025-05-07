@@ -1,10 +1,9 @@
 name: e2e puppeteer
 
 on:
-  push:
-    branches:
-      - development
   pull_request:
+    branches: [development, staging, production]
+    types: [ready_for_review, synchronize]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
