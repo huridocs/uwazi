@@ -158,7 +158,7 @@ You can run tests in headless mode, and run individual suites via:
 $ yarn cy-e2e --browser chrome --spec path/to/test.cy.ts
 ```
 
-Cypress tests that use our Information Extraction features need to run Uwazi together with a [dummy service](https://github.com/huridocs/dummy_extractor_services) that mimics the external services needed for the feature.
+Cypress tests that use our Information Extraction features need to run Uwazi together with a [dummy service](https://github.com/huridocs/dummy_extractor_services) that mimics the external services needed for the features.
 
 To run these tests you also need to add the following environment variables when running Uwazi:
 
