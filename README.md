@@ -91,7 +91,7 @@ This will run the entire test suite, both on server and client apps.
 
 Some suites need MongoDB configured in Replica Set mode to run properly. The provided Docker Compose file runs MongoDB in Replica Set mode and initializes the cluster automatically, if you are using your own mongo installation Refer to [MongoDB's documentation](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set) for more information.
 
-There are also Cypress components tests.
+There are also Cypress components tests. It's recommended that Cypress tests are run with Chrome, or Chrome based browsers.
 
 You can run individual tests with the Cypress UI:
 
@@ -149,7 +149,7 @@ On a different console tab, run
 $ yarn cypress
 ```
 
-This will open the Cypress interface where you can select the tests to run.
+This will open the Cypress interface where you can select the tests to run. It's recommended that Cypress tests are run with Chrome, or Chrome based browsers.
 
 You can run tests in headless mode, and run individual suites via
 
