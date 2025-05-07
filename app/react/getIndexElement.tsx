@@ -50,7 +50,6 @@ const getLibraryDefault = (
   defaultLibraryView: string | undefined,
   privateInstance: boolean | undefined
 ) => {
-
   if (privateInstance && !userId) {
     return <Login />;
   }
