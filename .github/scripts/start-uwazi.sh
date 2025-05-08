@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-UWAZI_ENDPOINT="http://localhost:3000"
+UWAZI_ENDPOINT="http://localhost:3000/api/version"
 LOG_DIR=".github/logs"
 START_UWAZI_LOG="$LOG_DIR/start-uwazi-logs.txt"
 HEALTH_CHECK_LOG="$LOG_DIR/health-check-logs.txt"
@@ -13,9 +13,8 @@ mkdir -p "$LOG_DIR"
 > "$HEALTH_CHECK_LOG"
 
 yarn run-production > "$START_UWAZI_LOG" 2>&1 &
-sleep 2  # Give yarn time to start the Node process
+sleep 2  
 
-# Find the Node.js process running the Uwazi app
 uwazi_pid=$(pgrep -f "server.js")
 
 echo "⏳ Waiting for Uwazi to start..."
@@ -41,5 +40,6 @@ timeout 60s bash -c "
   exit 1
 }
 
+echo
 echo "✅ Uwazi is up!"
 exit 0
