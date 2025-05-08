@@ -22,13 +22,14 @@ Read the [user guide](https://uwazi.io/page/9852italrtk/support)
 
 Before anything else you will need to install the application dependencies:
 
-- **NodeJs >= 20.9.0** For ease of update, use nvm: https://github.com/creationix/nvm.
-- **ElasticSearch 7.17.7** https://www.elastic.co/downloads/past-releases/elasticsearch-7-17-6 Please note that ElasticSearch requires Java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
+- **NodeJs >= 20.9.0** For ease of update, use [nvm](https://github.com/creationix/nvm).
+- [**ElasticSearch 7.17.7**](https://www.elastic.co/downloads/past-releases/elasticsearch-7-17-6) Please note that ElasticSearch requires Java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
   `xpack.ml.enabled: false`
-- **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
-- **MongoDB 6.0** https://www.mongodb.com/docs/v5.0/installation/ . The MongoDB installation needs to be configured as a Replica Set.  It can be a single-node replica set, but Replica Set must be [initialized](https://www.mongodb.com/docs/v6.0/tutorial/deploy-replica-set/).  If you have a previous version installed, please follow the instructions on how to [upgrade here](https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-standalone/). The new mongosh dependency needs to be added [installation](https://www.mongodb.com/docs/mongodb-shell/).
-- **Yarn** https://yarnpkg.com/en/docs/install.
-- **pdftotext (Poppler)** tested to work on version 0.86 but it's recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
+- [**ICU Analysis Plugin (recommended)**](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
+- [**MongoDB 6.0**](https://www.mongodb.com/docs/v5.0/installation/) The MongoDB installation needs to be configured as a Replica Set. It can be a single-node replica set, but Replica Set must be [initialized](https://www.mongodb.com/docs/v6.0/tutorial/deploy-replica-set/). If you have a previous version installed, please follow the instructions on how to [upgrade here](https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-standalone/).
+- [**mongosh**](https://www.mongodb.com/docs/mongodb-shell/) The new mongosh dependency needs to be added.
+- [**Yarn**](https://yarnpkg.com/en/docs/install)
+- **pdftotext (Poppler)** tested to work on version 0.86 but it's recommended to use the [latest available for your platform](https://poppler.freedesktop.org/). Make sure to **install libjpeg-dev** if you build from source.
 
 # Production
 
@@ -43,20 +44,6 @@ $ git clone https://github.com/huridocs/uwazi.git
 $ cd uwazi
 $ yarn install
 $ yarn blank-state
-```
-
-If you want to download the Uwazi repository and also download the included git submodules, such as the `uwazi-fixtures`, which is used for running the end-to-end testing:
-
-```
-$ git clone --recurse-submodules https://github.com/huridocs/uwazi.git
-$ cd uwazi
-$ yarn install
-```
-
-If the main Uwazi repository had already been cloned/downloaded and now you want to load its sub-modules, you can run
-
-```
-$ git submodule update --init
 ```
 
 There may be an issue with pngquant not running correctly. If you encounter this issue, you are probably missing the library **libpng-dev**. Please run:
@@ -105,37 +92,79 @@ This will run the entire test suite, both on server and client apps.
 
 Some suites need MongoDB configured in Replica Set mode to run properly. The provided Docker Compose file runs MongoDB in Replica Set mode and initializes the cluster automatically, if you are using your own mongo installation Refer to [MongoDB's documentation](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set) for more information.
 
-#### End to End (e2e)
+There are also Cypress components tests. It's recommended that Cypress tests are run with Chrome or Chrome based browsers.
 
-For End-to-End testing, we have a full set of fixtures that test the overall functionality. Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any existing data and replace it with the testing fixtures. DO NOT RUN ON PRODUCTION ENVIRONMENTS!
-
-Running end to end tests requires a running Uwazi app.
-
-Running tests with Nightmare
+You can run individual tests with the Cypress UI:
 
 ```
-$ yarn hot
+$ yarn cypress
 ```
 
-On a different console tab, run
+or you can run tests in headless mode:
 
 ```
-$ yarn e2e
+$ yarn cy-components --browser chrome
 ```
 
-Running tests with Puppeteer
+### End-to-End testing (e2e)
+
+Running end-to-end tests requires a running Uwazi app. For End-to-End testing, we have a full set of fixtures that test the overall functionality. **It's not advised to run these tests on production environments**, since an incorrectly configured run can have unwanted effects on the production database.
+
+Note that if you already have an instance running, this will likely throw an error of ports already being used. Only one instance of Uwazi may be run in the same port at the same time.
+
+The Uwazi APP needs to run on a specific database and with a specific ElasticSearch index. This is configured via environment variables when starting the application.
+
+#### Running tests with Puppeteer (legacy)
+
+Start UWazi:
 
 ```
 $ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
 ```
 
-On a different console tab, run
+On a different console tab, run:
 
 ```
 $ yarn e2e-puppeteer
 ```
 
-Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in the same port at the same time.
+This will trigger a run of all the Puppeteer tests.
+
+You can run test individually:
+
+```
+yarn e2e-puppeteer-all path/to/test.test.ts
+```
+
+#### Running tests with Cypress
+
+Start Uwazi:
+
+```
+$ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+```
+
+On a different console tab, run:
+
+```
+$ yarn cypress
+```
+
+This will open the Cypress interface where you can select the tests to run. It's recommended that Cypress tests are run with Chrome or Chrome based browsers.
+
+You can run tests in headless mode, and run individual suites via:
+
+```
+$ yarn cy-e2e --browser chrome --spec path/to/test.cy.ts
+```
+
+Cypress tests that use our Information Extraction features need to run Uwazi together with a [dummy service](https://github.com/huridocs/dummy_extractor_services) that mimics the external services needed for the features.
+
+To run these tests you also need to add the following environment variables when running Uwazi:
+
+```
+$ EXTERNAL_SERVICES=true FEATURE_FLAG_PARAGRAPH_EXTRACTION=true PARAGRAPH_EXTRACTION_URL=http://localhost:5051 DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+```
 
 ### Default login
 
