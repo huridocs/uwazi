@@ -39,8 +39,6 @@ jobs:
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v4
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
@@ -60,7 +58,8 @@ jobs:
         with:
           path: ./prod
           key: >-
-            ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-
+            ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
+            ${{ hashFiles('app/**/*.*') }}-
             ${{ hashFiles('database/**/*.*') }}-
             ${{ hashFiles('**/yarn.lock') }}-
             ${{ hashFiles('**/webpack.production.config.js') }}-
