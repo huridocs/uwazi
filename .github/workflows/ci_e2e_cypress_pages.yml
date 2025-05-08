@@ -122,7 +122,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
-        run: bash .github/scripts/start-uwazi.sh
+        run: .github/scripts/start-uwazi.sh
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:

@@ -123,7 +123,7 @@ jobs:
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
           FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
-        run: bash .github/scripts/start-uwazi.sh
+        run: .github/scripts/start-uwazi.sh
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
