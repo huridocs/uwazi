@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import entities from 'api/entities';
@@ -10,7 +11,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ImportFile } from 'api/csv/importFile';
 import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
-import { files, storage } from 'api/files';
+import { files, generateFileName, storage } from 'api/files';
 import { generateID } from 'shared/IDGenerator';
 
 import typeParsers from './typeParsers';
@@ -82,8 +83,24 @@ const importEntity = async (
 ) => {
   const { propertiesFromColumns } = toImportEntity;
   const { attachments } = propertiesFromColumns;
+
+  const parsedAttachments = attachments.split(csvConstants.multiValueSeparator).map(attachment => ({
+    filename: generateFileName({ originalname: attachment }),
+    originalname: attachment,
+  }));
+
   delete propertiesFromColumns.attachments;
+
   const eo = await entityObject(toImportEntity, template, { language, dateFormat });
+
+  Object.entries(eo.metadata as [string, any[]]).forEach(([key, metadata]) => {
+    const attachment = parsedAttachments.find(pA => pA.originalname === metadata[0].value);
+
+    if (attachment) {
+      eo.metadata[key] = [{ value: `/api/files/${attachment.filename}` }];
+    }
+  });
+
   const entity = await entities.save(
     eo,
     { user, language },
@@ -97,18 +114,20 @@ const importEntity = async (
   }
 
   if (attachments && entity.sharedId) {
-    await attachments
-      .split(csvConstants.multiValueSeparator)
-      .reduce(async (promise: Promise<any>, attachment) => {
-        await promise;
-        const attachmentFile = await importFile.extractFile(attachment);
-        await storage.storeFile(
-          attachmentFile.filename,
-          createReadStream(attachmentFile.path),
-          'attachment'
-        );
-        return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
-      }, Promise.resolve());
+    await parsedAttachments.reduce(async (promise: Promise<any>, attachment) => {
+      await promise;
+
+      const attachmentFile = await importFile.extractFile(
+        attachment.originalname,
+        attachment.filename
+      );
+      await storage.storeFile(
+        attachmentFile.filename,
+        createReadStream(attachmentFile.path),
+        'attachment'
+      );
+      return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
+    }, Promise.resolve());
   }
 
   await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
