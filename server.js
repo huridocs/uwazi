@@ -8,8 +8,8 @@ require('dotenv').config();
 process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
 const { NODE_ENV } = process.env;
 
-require.extensions['.scss'] = function scss() { };
-require.extensions['.css'] = function css() { };
+require.extensions['.scss'] = function scss() {};
+require.extensions['.css'] = function css() {};
 
 const fileExists = async filePath => {
   try {

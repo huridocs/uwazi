@@ -21,8 +21,8 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
     (sourceEntity?.documents && sourceEntity.documents[0]);
 
   return (
-    <div className="px-4 py-3 flex flex-col gap-6">
-      <div className="rounded-md bg-gray-50 text-sm font-bold flex gap-2 justify-between">
+    <div className="flex flex-col gap-6">
+      <div className="rounded-md bg-gray-50 text-sm font-bold flex gap-2 justify-between p-3">
         <div>{paragraphData.title}</div>
         <div>
           <DisplayPill color={paragraphTemplate?.color}>
@@ -30,16 +30,16 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
           </DisplayPill>
         </div>
       </div>
-      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100">
+      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
         <Translate>Language</Translate>: {language?.localized_label}
       </div>
-      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100">
+      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
         <Translate>Document</Translate>: {sourceDocument?.originalname}
       </div>
-      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100">
+      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
         <Translate>Paragraph</Translate>: {paragraphData.paragraphNumber}
       </div>
-      <div className="flex-grow rounded-md border border-gray-100 flex flex-col gap-2">
+      <div className="flex-grow rounded-md border border-gray-100 flex flex-col gap-2 p-3">
         <div className="leading-tight text-sm font-bold">
           <Translate>Text</Translate>
         </div>

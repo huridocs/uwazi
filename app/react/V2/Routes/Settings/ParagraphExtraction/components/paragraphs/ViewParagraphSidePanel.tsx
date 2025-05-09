@@ -29,7 +29,7 @@ const ViewParagraphSidePanel = ({
       </span>
     }
   >
-    <Sidepanel.Body className="flex-grow overflow-y-scroll">
+    <Sidepanel.Body className="flex-grow overflow-y-auto">
       {paragraphOnView && <ViewParagraph paragraphData={paragraphOnView} />}
     </Sidepanel.Body>
     <Sidepanel.Footer className="px-4 py-3 border-t">
