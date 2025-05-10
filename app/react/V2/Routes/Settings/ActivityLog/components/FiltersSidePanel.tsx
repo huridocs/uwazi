@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
-import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
+import { InputField, MultiSelect } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom, localeAtom } from 'app/V2/atoms';
+import { DateRange } from 'app/V2/Components/Forms/DatePicker';
 
 interface ActivityLogSearch {
   username: string;
@@ -115,31 +116,34 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 control={control}
                 name="dateRange"
                 render={({ field: { value }, fieldState }) => (
-                  <DateRangePicker
+                  <DateRange
                     key="activity-log-range"
                     label={<Translate translationKey="property daterange" />}
-                    language={locale}
+                    locale={locale}
                     className="pt-4 -top-4"
                     placeholderStart={t('System', 'From', null, false)}
                     placeholderEnd={t('System', 'To', null, false)}
                     labelToday={t('System', 'Today', null, false)}
                     hasErrors={fieldState.error !== undefined}
                     labelClear={t('System', 'Clear', null, false)}
-                    from={value?.from || ''}
-                    to={value?.to || ''}
-                    onFromDateSelected={e => {
-                      setValue('dateRange.from', e.target.value);
-                      if (!getValues('dateRange.to')) {
-                        setValue('dateRange.to', e.target.value);
-                      }
+                    value={value}
+                    onChange={(value)=>{
+                      setValue('dateRange.from', value.from?.toString()||'')                       
+                      setValue('dateRange.to', value.to?.toString()||'')
                     }}
-                    onToDateSelected={e => {
-                      setValue('dateRange.to', e.target.value);
-                      if (!getValues('dateRange.from')) {
-                        setValue('dateRange.from', e.target.value);
-                      }
-                    }}
-                    dateFormat={dateFormat}
+                    // onFromDateSelected={e => {
+                    //   setValue('dateRange.from', e.target.value);
+                    //   if (!getValues('dateRange.to')) {
+                    //     setValue('dateRange.to', e.target.value);
+                    //   }
+                    // }}
+                    // onToDateSelected={e => {
+                    //   setValue('dateRange.to', e.target.value);
+                    //   if (!getValues('dateRange.from')) {
+                    //     setValue('dateRange.from', e.target.value);
+                    //   }
+                    // }}
+                    format={dateFormat}
                     onClear={(field: 'from' | 'to') => {
                       setValue(`dateRange.${field}`, '');
                       setCurrentFilters({

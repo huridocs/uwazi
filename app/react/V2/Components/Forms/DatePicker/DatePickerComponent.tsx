@@ -14,8 +14,8 @@ import { InputError } from '../InputError';
 interface DatePickerProps extends FlowbiteDatepickerProps {
   dateFormat: string;
   language: string;
-  labelToday: string;
-  labelClear: string;
+  labelToday?: string;
+  labelClear?: string;
   id?: string;
   label?: string | React.ReactNode;
   disabled?: boolean;
@@ -78,8 +78,8 @@ const validateLocale = (language: string) => {
 const DatePickerComponent = React.forwardRef(
   (
     {
-      labelToday,
-      labelClear,
+      labelToday = 'Today',
+      labelClear = 'Clear',
       label,
       disabled,
       placeholder,
@@ -112,7 +112,7 @@ const DatePickerComponent = React.forwardRef(
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language);
 
-    useEffect(() => {
+    useEffect((): (() => void) => {
       Object.assign(Datepicker.locales, {
         [locale]: {
           ...datePickerOptionsByLocale(locale, labelToday, labelClear),

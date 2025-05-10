@@ -1,7 +1,7 @@
-import DatePicker from 'app/Forms/components/DatePicker';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import {DatePicker} from 'app/V2/Components/Forms/DatePicker';
 
 export interface MultiDateProps {
   value?: (number | null)[];
@@ -21,21 +21,21 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
     this.state = { values };
   }
 
-  onChange(index: number, value: number) {
+  onChange(index: number, value: number | null) {
     const values = this.state.values.slice();
     values[index] = value;
     this.setState({ values });
     this.props.onChange(values);
   }
 
-  add(e: any) {
+  add(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     const values = this.state.values.slice();
     values.push(null);
     this.setState({ values });
   }
 
-  remove(index: number, e: any) {
+  remove(index: number, e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     const values = this.state.values.slice();
     values.splice(index, 1);
@@ -52,17 +52,17 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
               <DatePicker
                 locale={this.props.locale}
                 format={this.props.format}
-                onChange={this.onChange.bind(this, index)}
+                onChange={(val) => this.onChange(index, val)}
                 value={value}
               />
               <button
                 type="button"
                 className="react-datepicker__delete-icon"
-                onClick={this.remove.bind(this, index)}
+                onClick={(e) => this.remove(index, e)}
               />
             </div>
           )))()}
-        <button type="button" className="btn btn-success add" onClick={this.add.bind(this)}>
+        <button type="button" className="btn btn-success add" onClick={(e) => this.add(e)}>
           <Icon icon="plus" />
           &nbsp;
           <Translate>Add date</Translate>

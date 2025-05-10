@@ -1,18 +1,32 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import DatePicker from './DatePicker';
+import {DatePicker} from 'V2/Components/Forms/DatePicker';
 
-class MultiDateRange extends Component {
-  constructor(props) {
+interface DateRangeValue {
+  from: number | null;
+  to: number | null;
+}
+
+interface MultiDateRangeProps {
+  value?: DateRangeValue[];
+  onChange: (values: DateRangeValue[]) => void;
+  format: string;
+}
+
+interface MultiDateRangeState {
+  values: DateRangeValue[];
+}
+
+class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState> {
+  constructor(props: MultiDateRangeProps) {
     super(props);
     const values =
       this.props.value && this.props.value.length ? this.props.value : [{ from: null, to: null }];
     this.state = { values };
   }
 
-  fromChange(index, value) {
+  fromChange(index: number, value: number | null) {
     const values = this.state.values.slice();
     values[index] = { ...values[index] };
     values[index].from = value;
@@ -20,7 +34,7 @@ class MultiDateRange extends Component {
     this.props.onChange(values);
   }
 
-  toChange(index, value) {
+  toChange(index: number, value: number | null) {
     const values = this.state.values.slice();
     values[index] = { ...values[index] };
     values[index].to = value;
@@ -28,14 +42,14 @@ class MultiDateRange extends Component {
     this.props.onChange(values);
   }
 
-  add(e) {
+  add(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     const values = this.state.values.slice();
     values.push({ from: null, to: null });
     this.setState({ values });
   }
 
-  remove(index, e) {
+  remove(index: number, e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     const values = this.state.values.slice();
     values.splice(index, 1);
@@ -57,7 +71,7 @@ class MultiDateRange extends Component {
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
-                    onChange={this.fromChange.bind(this, index)}
+                    onChange={(val) => this.fromChange(index, val)}
                   />
                 </div>
                 <div className="DatePicker__To">
@@ -68,18 +82,18 @@ class MultiDateRange extends Component {
                     format={this.props.format}
                     value={value.to}
                     endOfDay
-                    onChange={this.toChange.bind(this, index)}
+                    onChange={(val) => this.toChange(index, val)}
                   />
                 </div>
                 <button
                   className="react-datepicker__delete-icon"
-                  onClick={this.remove.bind(this, index)}
+                  onClick={(e) => this.remove(index, e)}
                 />
                 <div className="multidate-range-clear-float"></div>
               </div>
             </div>
           )))()}
-        <button className="btn btn-success add" onClick={this.add.bind(this)}>
+        <button className="btn btn-success add" onClick={(e) => this.add(e)}>
           <Icon icon="plus" />
           &nbsp;
           <Translate>Add date</Translate>
@@ -89,10 +103,4 @@ class MultiDateRange extends Component {
   }
 }
 
-MultiDateRange.propTypes = {
-  value: PropTypes.array,
-  onChange: PropTypes.func,
-  format: PropTypes.string,
-};
-
-export default MultiDateRange;
+export default MultiDateRange; 

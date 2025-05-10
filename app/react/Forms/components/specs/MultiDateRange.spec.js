@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import MultiDateRange from '../MultiDateRange';
-import DatePicker from '../DatePicker';
+import DatePicker from '../../../V2/Components/Forms/DatePicker/DatePicker';
 
 describe('MultiDateRange', () => {
   let component;

@@ -2,11 +2,13 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { DateRangePicker } from 'app/V2/Components/Forms';
+import { DateRange } from 'V2/Components/Forms/DatePicker';
+import { TestAtomStoreProvider } from 'V2/testing';
+import { settingsAtom } from 'V2/atoms';
 
-const meta: Meta<typeof DateRangePicker> = {
+const meta: Meta<typeof DateRange> = {
   title: 'Forms/DateRangePicker',
-  component: DateRangePicker,
+  component: DateRange,
   args: {
     onFromDateSelected: fn(),
     onToDateSelected: fn(),
@@ -18,23 +20,25 @@ const meta: Meta<typeof DateRangePicker> = {
   },
 };
 
-type Story = StoryObj<typeof DateRangePicker>;
+type Story = StoryObj<typeof DateRange>;
 
 const Primary: Story = {
   render: args => (
     <div className="tw-container">
       <div className="mx-2">
-        <DateRangePicker
+        <DateRange
           className="mx-2"
-          language={args.language}
-          dateFormat={args.dateFormat}
+          locale={args.locale}
+          format={args.format}
           labelToday={args.labelToday}
           labelClear={args.labelClear}
           placeholderStart={args.placeholderStart}
           placeholderEnd={args.placeholderEnd}
+          value={args.value}
+          useTimezone={args.useTimezone}
           onFromDateSelected={args.onFromDateSelected}
-          onToDateSelected={args.onToDateSelected}
-        />
+          onToDateSelected={args.onToDateSelected} 
+          />
       </div>
     </div>
   ),
@@ -43,12 +47,13 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
-    language: 'es',
-    dateFormat: 'dd-mm-yyyy',
+    locale: 'es',
+    format: 'dd-mm-yyyy',
     labelToday: 'Hoy',
     labelClear: 'Limpiar',
     placeholderStart: 'Inicio',
     placeholderEnd: 'Fin',
+    useTimezone: true,
     onFromDateSelected: action('changed'),
     onToDateSelected: action('blurred'),
   },
