@@ -21,7 +21,7 @@ const initTest = async (fixture: Fixture) => {
 };
 
 beforeAll(async () => {
-  // jest.spyOn(process.stdout, 'write').mockImplementation((_str: string | Uint8Array) => true);
+  jest.spyOn(process.stdout, 'write').mockImplementation((_str: string | Uint8Array) => true);
 });
 
 afterAll(async () => {
@@ -41,7 +41,7 @@ describe('migration test', () => {
     expect(migration.reindex).toBe(false);
   });
 
-  it('should detect and assign MIME-type for files without it', async () => {
+  it('should detect and assign a MIME-type ONLY for files without one', async () => {
     await migration.up(db!);
 
     const files = await db!.collection('files').find({}).sort({ creationDate: 1 }).toArray();
