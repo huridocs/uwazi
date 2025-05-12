@@ -8,7 +8,6 @@ const primaryDocument: FileType = {
   originalname: 'originalDocument.pdf',
   filename: generateFileName({ originalname: 'originalDocument.pdf' }),
   type: 'document',
-  mimetype: undefined,
   creationDate: 0,
 };
 
@@ -17,7 +16,6 @@ const attachmentFile1: FileType = {
   originalname: 'attachmentFile1.png',
   filename: generateFileName({ originalname: 'attachmentFile1.png' }),
   type: 'attachment',
-  mimetype: undefined,
   creationDate: 1,
 };
 
@@ -26,7 +24,6 @@ const attachmentFile2: FileType = {
   originalname: 'attachmentFile2.txt',
   filename: generateFileName({ originalname: 'attachmentFile2.txt' }),
   type: 'attachment',
-  mimetype: undefined,
   creationDate: 2,
 };
 
@@ -35,14 +32,13 @@ const attachmentWithInvalidExtension: FileType = {
   originalname: 'attachmentWithInvalidExtension.tx',
   filename: generateFileName({ originalname: 'attachmentWithInvalidExtension.tx' }),
   type: 'attachment',
-  mimetype: undefined,
   creationDate: 3,
 };
 
 const fileWithDefinedMimeType: FileType = {
   _id: new ObjectId(),
-  originalname: 'fileWithDefinedMimeType.pdf',
-  filename: generateFileName({ originalname: 'fileWithDefinedMimeType.pdf' }),
+  originalname: 'fileWithDefinedMimeType.txt',
+  filename: generateFileName({ originalname: 'fileWithDefinedMimeType.txt' }),
   type: 'document',
   mimetype: 'application/pdf',
   creationDate: 4,
