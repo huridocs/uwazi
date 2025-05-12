@@ -1,14 +1,24 @@
 import { files } from 'api/files';
+import { IXSelectionsModel } from 'api/suggestions/IXSelectionsModel';
 import { uniqBy } from 'lodash';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 
-interface EntityWithExtractedMetadata extends EntitySchema {
-  __extractedMetadata?: { fileID: string; selections: ExtractedMetadataSchema[] };
+interface ExtractedMetadataSource {
+  type: 'file' | 'entity_property';
+  id?: string;
+  propertyName?: string;
 }
 
-const updateSelections = (
+interface EntityWithExtractedMetadata extends EntitySchema {
+  __extractedMetadata?: {
+    source: ExtractedMetadataSource;
+    selections: ExtractedMetadataSchema[];
+  };
+}
+
+const mergeUniqueSelections = (
   newSelections: ExtractedMetadataSchema[],
   storedSelections: ExtractedMetadataSchema[]
 ) => {
@@ -21,7 +31,7 @@ const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) 
   let selections = entity.__extractedMetadata?.selections || [];
 
   if (file.extractedMetadata) {
-    selections = updateSelections(selections, file.extractedMetadata).filter(
+    selections = mergeUniqueSelections(selections, file.extractedMetadata).filter(
       selection => !selection.deleteSelection
     );
   }
@@ -43,19 +53,30 @@ const selectionsHaveChanged = (
 };
 
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
-  let mainDocument: FileType[] = [];
+  if (!entity.__extractedMetadata?.source?.id) {
+    return null;
+  }
 
-  if (entity.__extractedMetadata?.fileID) {
-    mainDocument = await files.get({
-      _id: entity.__extractedMetadata.fileID,
+  if (entity.__extractedMetadata.source.type === 'entity_property') {
+    return IXSelectionsModel.save({
+      source: {
+        type: 'entity_property',
+        id: entity.__extractedMetadata.source.id,
+        property: entity.__extractedMetadata.source.propertyName,
+      },
+      selections: entity.__extractedMetadata.selections,
     });
   }
 
-  if (mainDocument.length > 0) {
-    const selections = prepareSelections(entity, mainDocument[0]);
+  const [mainDocument] = await files.get({
+    _id: entity.__extractedMetadata.source.id,
+  });
 
-    if (selectionsHaveChanged(mainDocument[0].extractedMetadata || [], selections)) {
-      return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
+  if (mainDocument) {
+    const selections = prepareSelections(entity, mainDocument);
+
+    if (selectionsHaveChanged(mainDocument.extractedMetadata || [], selections)) {
+      return files.save({ _id: mainDocument._id, extractedMetadata: selections });
     }
   }
 

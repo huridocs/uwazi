@@ -1,4 +1,5 @@
 import { files } from 'api/files';
+import { IXSelectionsModel } from 'api/suggestions/IXSelectionsModel';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 import { saveSelections } from '../saveSelections';
@@ -67,7 +68,10 @@ describe('saveSelections', () => {
       sharedId: 'entityWithNoFile',
       language: 'en',
       __extractedMetadata: {
-        fileID: '',
+        source: {
+          type: 'file',
+          id: '',
+        },
         selections: [{ name: 'Title', selection: { text: 'a selection for testing porpouses' } }],
       },
     });
@@ -78,7 +82,13 @@ describe('saveSelections', () => {
     await saveSelections({
       sharedId: 'anotherEntity',
       language: 'en',
-      __extractedMetadata: { fileID: file2ID.toString(), selections: [] },
+      __extractedMetadata: {
+        source: {
+          type: 'file',
+          id: file2ID.toString(),
+        },
+        selections: [],
+      },
     });
     expect(files.save).not.toHaveBeenCalled();
   });
@@ -87,7 +97,10 @@ describe('saveSelections', () => {
     await saveSelections({
       sharedId: 'entitySharedId',
       __extractedMetadata: {
-        fileID: file1ID.toString(),
+        source: {
+          type: 'file',
+          id: file1ID.toString(),
+        },
         selections: [],
       },
       metadata: {
@@ -111,7 +124,10 @@ describe('saveSelections', () => {
       _id: 'entityID',
       sharedId: 'entitySharedId',
       __extractedMetadata: {
-        fileID: file1ID.toString(),
+        source: {
+          type: 'file',
+          id: file1ID.toString(),
+        },
         selections: [
           { name: 'property_a', selection: { text: 'newer selected text of prop A' } },
           { name: 'property_c', selection: { text: 'new selected text of prop C' } },
@@ -154,7 +170,10 @@ describe('saveSelections', () => {
       sharedId: 'entitySharedId',
       title: 'document title',
       __extractedMetadata: {
-        fileID: file3ID.toString(),
+        source: {
+          type: 'file',
+          id: file3ID.toString(),
+        },
         selections: [
           {
             name: 'title',
@@ -201,6 +220,53 @@ describe('saveSelections', () => {
           selection: { text: 'new selection' },
         },
       ],
+    });
+  });
+
+  it('should save selections when source is an entity property', async () => {
+    const sourceEntityId = testingDB.id();
+    jest.spyOn(IXSelectionsModel, 'save').mockResolvedValue({} as any);
+    const propertySelections = [
+      {
+        name: 'title',
+        selection: { text: 'extracted from description' },
+      },
+      {
+        name: 'property1',
+        propertyID: '1',
+        selection: { text: 'another extraction from description' },
+      },
+    ];
+
+    await saveSelections({
+      _id: 'entityID',
+      sharedId: 'entitySharedId',
+      title: 'document title',
+      __extractedMetadata: {
+        source: {
+          type: 'entity_property',
+          id: sourceEntityId.toString(),
+          propertyName: 'description',
+        },
+        selections: propertySelections,
+      },
+      metadata: {
+        property1: [
+          {
+            value: 'another extraction from description',
+          },
+        ],
+      },
+    });
+
+    expect(files.save).not.toHaveBeenCalled();
+    expect(IXSelectionsModel.save).toHaveBeenCalledWith({
+      source: {
+        type: 'entity_property',
+        id: sourceEntityId.toString(),
+        property: 'description',
+      },
+      selections: propertySelections,
     });
   });
 });
