@@ -4,6 +4,7 @@ import { uniqBy } from 'lodash';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
+import { validateIxSelection } from 'shared/types/ixSelectionSchema';
 import entities from '../entities';
 
 interface ExtractedMetadataSource {
@@ -60,15 +61,20 @@ const saveSelections = async (entity: EntityWithExtractedMetadata) => {
 
   if (entity.__extractedMetadata.source.type === 'entity_property') {
     const originalEntity = await entities.getById(entity._id);
-    return IXSelectionsModel.save({
-      language: originalEntity.language,
+    if (!originalEntity) {
+      throw new Error(`Entity with ID ${entity._id} not found`);
+    }
+    const ixSelection: any = {
+      ...entity.__extractedMetadata,
       source: {
         type: 'entity_property',
         id: entity.__extractedMetadata.source.id,
-        property: entity.__extractedMetadata.source.propertyName,
+        propertyName: entity.__extractedMetadata.source.propertyName,
       },
-      selections: entity.__extractedMetadata.selections,
-    });
+      language: originalEntity.language,
+    };
+    validateIxSelection(ixSelection);
+    return IXSelectionsModel.save(ixSelection);
   }
 
   const [mainDocument] = await files.get({

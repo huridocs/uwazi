@@ -243,7 +243,6 @@ describe('saveSelections', () => {
       },
       {
         name: 'property1',
-        propertyID: '1',
         selection: { text: 'another extraction from description' },
       },
     ];
@@ -275,9 +274,38 @@ describe('saveSelections', () => {
       source: {
         type: 'entity_property',
         id: sourceEntityId.toString(),
-        property: 'description',
+        propertyName: 'description',
       },
       selections: propertySelections,
+    });
+  });
+
+  it('should validate extractedMetadata when saving entity_property selections', async () => {
+    const sourceEntityId = testingDB.id();
+    jest.spyOn(IXSelectionsModel, 'save').mockResolvedValue({} as any);
+
+    const invalidSelections = {
+      _id: entityID,
+      sharedId: 'entitySharedId',
+      title: 'document title',
+      __extractedMetadata: {
+        source: {
+          type: 'entity_property' as const,
+          id: sourceEntityId.toString(),
+          propertyName: 'description',
+        },
+        selections: [
+          {
+            name: 'title',
+            selection: {},
+          },
+        ],
+      },
+      metadata: {},
+    };
+
+    await expect(saveSelections(invalidSelections)).rejects.toMatchObject({
+      errors: [{ message: "must have required property 'text'" }],
     });
   });
 });

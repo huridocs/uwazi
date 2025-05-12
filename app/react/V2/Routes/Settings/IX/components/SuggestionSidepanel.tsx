@@ -270,7 +270,6 @@ const SuggestionSidepanel = ({
           selections,
         },
       };
-      // const savedFile = await handleFileSave(pdf, selections);
       const savedEntity = await handleEntitySave(toSaveEntity, property.name, metadata, isDirty);
 
       if (savedEntity instanceof FetchResponseError) {
