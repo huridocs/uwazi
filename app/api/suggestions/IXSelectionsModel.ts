@@ -17,14 +17,10 @@ interface IXSelectionType {
   }[];
 }
 
-const sourceSchema = new mongoose.Schema(
-  {
-    type: { type: String, enum: ['file', 'entity_property'], required: true },
-    id: { type: String, required: true },
-    property: { type: String },
-  },
-  { _id: false }
-);
+const sourceSchema = new mongoose.Schema({
+  type: { type: String, enum: ['file', 'entity_property'], required: true },
+  property: { type: String },
+});
 
 const props = {
   source: { type: sourceSchema, required: true },
@@ -56,4 +52,3 @@ const IXSelectionsModel = instanceModel<IXSelectionType>('ixselections', mongoSc
 
 export { IXSelectionsModel };
 export type { IXSelectionType, IXSelectionSource };
-

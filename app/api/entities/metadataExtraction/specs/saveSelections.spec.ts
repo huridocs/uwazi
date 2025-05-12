@@ -7,6 +7,7 @@ import { saveSelections } from '../saveSelections';
 const file1ID = testingDB.id();
 const file2ID = testingDB.id();
 const file3ID = testingDB.id();
+const entityID = testingDB.id();
 
 const fixture: DBFixture = {
   settings: [
@@ -19,6 +20,15 @@ const fixture: DBFixture = {
           default: true,
         },
       ],
+    },
+  ],
+  entities: [
+    {
+      _id: entityID,
+      language: 'en',
+      sharedId: 'entitySharedId',
+      title: 'document title',
+      metadata: {},
     },
   ],
   files: [
@@ -239,7 +249,7 @@ describe('saveSelections', () => {
     ];
 
     await saveSelections({
-      _id: 'entityID',
+      _id: entityID,
       sharedId: 'entitySharedId',
       title: 'document title',
       __extractedMetadata: {
@@ -261,6 +271,7 @@ describe('saveSelections', () => {
 
     expect(files.save).not.toHaveBeenCalled();
     expect(IXSelectionsModel.save).toHaveBeenCalledWith({
+      language: 'en',
       source: {
         type: 'entity_property',
         id: sourceEntityId.toString(),

@@ -4,6 +4,7 @@ import { uniqBy } from 'lodash';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
+import entities from '../entities';
 
 interface ExtractedMetadataSource {
   type: 'file' | 'entity_property';
@@ -58,7 +59,9 @@ const saveSelections = async (entity: EntityWithExtractedMetadata) => {
   }
 
   if (entity.__extractedMetadata.source.type === 'entity_property') {
+    const originalEntity = await entities.getById(entity._id);
     return IXSelectionsModel.save({
+      language: originalEntity.language,
       source: {
         type: 'entity_property',
         id: entity.__extractedMetadata.source.id,
