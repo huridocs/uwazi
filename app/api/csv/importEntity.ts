@@ -84,22 +84,27 @@ const importEntity = async (
   const { propertiesFromColumns } = toImportEntity;
   const { attachments } = propertiesFromColumns;
 
-  const parsedAttachments = attachments.split(csvConstants.multiValueSeparator).map(attachment => ({
-    filename: generateFileName({ originalname: attachment }),
-    originalname: attachment,
-  }));
+  let parsedAttachments: { filename: string; originalname: string }[] | undefined;
+  if (attachments) {
+    parsedAttachments = attachments?.split(csvConstants.multiValueSeparator)?.map(attachment => ({
+      filename: generateFileName({ originalname: attachment }),
+      originalname: attachment,
+    }));
+  }
 
   delete propertiesFromColumns.attachments;
 
   const eo = await entityObject(toImportEntity, template, { language, dateFormat });
 
-  Object.entries(eo.metadata as [string, any[]]).forEach(([key, metadata]) => {
-    const attachment = parsedAttachments.find(pA => pA.originalname === metadata[0].value);
+  if (parsedAttachments?.length) {
+    Object.entries(eo.metadata as [string, any[]]).forEach(([key, metadata]) => {
+      const attachment = parsedAttachments.find(pA => pA.originalname === metadata[0].value);
 
-    if (attachment) {
-      eo.metadata[key] = [{ value: `/api/files/${attachment.filename}` }];
-    }
-  });
+      if (attachment) {
+        eo.metadata[key] = [{ value: `/api/files/${attachment.filename}` }];
+      }
+    });
+  }
 
   const entity = await entities.save(
     eo,
@@ -113,7 +118,7 @@ const importEntity = async (
     await storage.storeFile(file.filename, createReadStream(file.path), 'document');
   }
 
-  if (attachments && entity.sharedId) {
+  if (parsedAttachments?.length && entity.sharedId) {
     await parsedAttachments.reduce(async (promise: Promise<any>, attachment) => {
       await promise;
 
