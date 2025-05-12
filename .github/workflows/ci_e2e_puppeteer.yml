@@ -1,10 +1,9 @@
 name: e2e puppeteer
 
 on:
-  push:
-    branches:
-      - development
   pull_request:
+    branches: [development, staging, production]
+    types: [ready_for_review, synchronize]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,8 +39,6 @@ jobs:
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v4
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
@@ -61,7 +58,8 @@ jobs:
         with:
           path: ./prod
           key: >-
-            ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-
+            ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
+            ${{ hashFiles('app/**/*.*') }}-
             ${{ hashFiles('database/**/*.*') }}-
             ${{ hashFiles('**/yarn.lock') }}-
             ${{ hashFiles('**/webpack.production.config.js') }}-
@@ -83,10 +81,7 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-        run: yarn run-production > output.txt &
-      - name: wait for uwazi to be ready
-        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
-        timeout-minutes: 2
+        run: .github/scripts/start-uwazi.sh
       - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
         timeout-minutes: 25
         env:

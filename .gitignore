@@ -58,3 +58,4 @@ cypress/videos/*
 *.actual.png
 .trunk/*
 app/react/App/styles/globals.css
+.github/logs
