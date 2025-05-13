@@ -18,7 +18,10 @@ export default {
 
     const files = await filesCollection
       .find(
-        { mimetype: { $exists: false }, originalname: { $exists: true } },
+        {
+          $or: [{ mimetype: { $exists: false } }, { mimetype: null }, { mimetype: '' }],
+          originalname: { $exists: true },
+        },
         { projection: { _id: 1, originalname: 1 } }
       )
       .toArray();

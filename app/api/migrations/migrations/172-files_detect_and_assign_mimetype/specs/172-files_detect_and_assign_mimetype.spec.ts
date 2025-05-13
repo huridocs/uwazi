@@ -10,6 +10,9 @@ import {
   fileWithDefinedMimeType,
   fixtures,
   primaryDocument,
+  primaryDocument2,
+  primaryDocument3,
+  primaryDocument4,
 } from './fixtures';
 
 let db: Db | null;
@@ -50,6 +53,9 @@ describe('migration test', () => {
 
     expect(files).toEqual([
       { ...primaryDocument, mimetype: 'application/pdf' },
+      { ...primaryDocument2, mimetype: 'application/pdf' },
+      { ...primaryDocument3, mimetype: 'application/pdf' },
+      { ...primaryDocument4, mimetype: 'application/pdf' },
       {
         ...attachmentFile1,
         mimetype: 'image/png',

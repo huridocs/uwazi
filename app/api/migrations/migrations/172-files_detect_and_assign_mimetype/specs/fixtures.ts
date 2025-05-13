@@ -11,6 +11,33 @@ const primaryDocument: FileType = {
   creationDate: 0,
 };
 
+const primaryDocument2: FileType = {
+  _id: new ObjectId(),
+  originalname: 'primaryDocument2.pdf',
+  mimetype: '',
+  filename: generateFileName({ originalname: 'primaryDocument2.pdf' }),
+  type: 'document',
+  creationDate: 0,
+};
+
+const primaryDocument3: FileType = {
+  _id: new ObjectId(),
+  originalname: 'primaryDocument3.pdf',
+  mimetype: null as any,
+  filename: generateFileName({ originalname: 'primaryDocument3.pdf' }),
+  type: 'document',
+  creationDate: 0,
+};
+
+const primaryDocument4: FileType = {
+  _id: new ObjectId(),
+  originalname: 'primaryDocument3.pdf',
+  mimetype: undefined,
+  filename: generateFileName({ originalname: 'primaryDocument4.pdf' }),
+  type: 'document',
+  creationDate: 0,
+};
+
 const attachmentFile1: FileType = {
   _id: new ObjectId(),
   originalname: 'attachmentFile1.png',
@@ -47,6 +74,9 @@ const fileWithDefinedMimeType: FileType = {
 const fixtures: Fixture = {
   files: [
     primaryDocument,
+    primaryDocument2,
+    primaryDocument3,
+    primaryDocument4,
     attachmentFile1,
     attachmentFile2,
     attachmentWithInvalidExtension,
@@ -57,6 +87,9 @@ const fixtures: Fixture = {
 export {
   fixtures,
   primaryDocument,
+  primaryDocument2,
+  primaryDocument3,
+  primaryDocument4,
   attachmentFile1,
   attachmentFile2,
   attachmentWithInvalidExtension,
