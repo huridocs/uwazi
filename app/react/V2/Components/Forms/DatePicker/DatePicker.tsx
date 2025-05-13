@@ -80,28 +80,33 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const datePickerValue = removeOffset(useTimezone, value);
 
   useEffect(() => {
-    setInputValue(datePickerValue?.locale(locale).format(dateFormat) || '');
+    if(datePickerValue) {
+      setInputValue(datePickerValue?.locale?.(locale).format(dateFormat) || '');
+    }
   }, [datePickerValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = addOffset(useTimezone, endOfDay, e.target.value, dateFormat)
-    setInputValue(newValue?.locale?.(locale).format(dateFormat) ||'');
-
-    if (!newValue) {
+    const inputValue = e.target.value;
+    if (!inputValue) {
       onChange(null);
+      setInputValue('');
+      return;
+    }
+    const newValue = addOffset(useTimezone, endOfDay, inputValue, dateFormat);
+    if (newValue) {
+      setInputValue(newValue.locale(locale).format(dateFormat));
+      onChange(newValue.valueOf());
     } else {
-      if (newValue !== null) {
-        onChange(newValue?.valueOf() || null);
-      }
+      setInputValue(inputValue);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab'];
-    if (!allowedKeys.includes(e.key)) {
-      e.preventDefault();
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab'];
+  //   if (isNaN(Number(e.key)) && !allowedKeys.includes(e.key)) {
+  //     e.preventDefault();
+  //   }
+  // };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -125,7 +130,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         dateFormat={dateFormat.toLowerCase()}
         value={inputValue}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
+        // onKeyDown={handleKeyDown}
         onBlur={handleBlur}
         placeholder={placeholder}
         labelToday={labelToday}

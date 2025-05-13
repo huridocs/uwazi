@@ -7,6 +7,7 @@ import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import uniqueID from 'shared/uniqueID';
+import { debounce } from 'app/utils';
 import { t } from 'app/I18N';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
@@ -116,6 +117,23 @@ const DatePickerComponent = React.forwardRef(
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language);
 
+    const debouncedOnChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      if (newValue !== value && newValue.length === 10) {
+        onChange(e);
+      }
+    }, 1000);
+
+    const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      if (newValue && !moment(newValue, dateFormat, true).isValid()) {
+        if (newValue === '') {
+          onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
+        }
+      }
+      onBlur(e);
+    }, 1000);
+
     useEffect((): (() => void) => {
       Object.assign(Datepicker.locales, {
         [locale]: {
@@ -146,36 +164,32 @@ const DatePickerComponent = React.forwardRef(
           const date = moment.unix(Number(value));
           newValue = date.format('DD-MM-YYYY');
         }
-        ref.current.value = newValue;
+        if (ref.current.value !== newValue) {
+          ref.current.value = newValue;
+        }
       }
     }, [instance, value, useTimezone]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      onChange(e);
+      if (ref.current) {
+        ref.current.value = newValue;
+      }
+      debouncedOnChange(e);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab'];
-      if (!allowedKeys.includes(e.key)) {
+      const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab', '-', '/'];
+      const isNumber = /^[0-9]$/.test(e.key);
+      const isAllowedKey = allowedKeys.includes(e.key);
+      
+      if (!isNumber && !isAllowedKey) {
         e.preventDefault();
-      }
-      if (e.key === 'Backspace' || e.key === 'Delete') {
-        const input = e.target as HTMLInputElement;
-        const value = input.value;
-        const newValue = value.slice(0, -1);
-        input.value = newValue;
-        onChange({ target: { value: newValue } } as React.ChangeEvent<HTMLInputElement>);
       }
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (value && !moment(value, 'DD-MM-YYYY', true).isValid()) {
-        e.target.value = '';
-        onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
-      }
-      onBlur(e);
+      debouncedOnBlur(e);
     };
 
     return (
@@ -202,7 +216,7 @@ const DatePickerComponent = React.forwardRef(
               name={name}
               ref={ref}
               disabled={disabled}
-              value={value}
+              defaultValue={value}
               className={`block flex-1 w-full text-sm ${fieldStyles} disabled:text-gray-500`}
               placeholder={placeholder || dateFormat}
               autoComplete={autoComplete}
