@@ -8,8 +8,4 @@ export class ArrayUtils {
       return callback(item, index, array);
     }, Promise.resolve());
   }
-
-  static async parallelFor<Item>(array: Item[], callback: Callback<Item>): Promise<void> {
-    await Promise.all(array.map(async (item, index) => callback(item, index, array)));
-  }
 }
