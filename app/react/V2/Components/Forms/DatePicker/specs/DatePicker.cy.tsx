@@ -1,8 +1,8 @@
 import React from 'react';
+import moment from 'moment-timezone';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import moment from 'moment-timezone';
 import * as stories from '../../../../../stories/Forms/DatePicker.stories';
 
 const { Basic } = composeStories(stories);
@@ -94,7 +94,14 @@ describe('DatePicker', () => {
     });
   });
 
-  xdescribe('when useTimezone is true', () => {
+  describe('useTimezone', () => {
+    it('should render with the correct date transformed to local value', () => {
+      const date = moment.utc('2016-07-28T00:00:00+00:00');
+      mount(<Basic value={Number(date.format('X'))} />);
+      const utcDate = moment.utc(date.format('X'), 'X');
+      cy.get('input[name=dateField]').should('have.value', utcDate.format('DD-MM-YYYY'));
+    });
+
     it('should render without transforming the value to local', () => {
       const date = moment.utc('2016-07-28T00:00:00+00:00');
       mount(<Basic value={Number(date.format('X'))} useTimezone />);
@@ -102,7 +109,7 @@ describe('DatePicker', () => {
     });
   });
 
-  xdescribe('when date is in a different timezone', () => {
+  describe('when date is in a different timezone', () => {
     const testTimezones = [
       { timezone: 'Japan', dateToTest: '1950-08-05' },
       { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
@@ -133,21 +140,14 @@ describe('DatePicker', () => {
     });
   });
 
-  xdescribe('when using a non-latin locale', () => {
-    beforeEach(() => {
-      moment.locale('ar');
-    });
+  describe('when using a non-latin locale', () => {
 
-    afterEach(() => {
-      moment.locale('en');
-    });
-
-    it('should render dates in latin format', () => {
+    it('should render dates correctly', () => {
       const date = moment.utc('2016-07-28T00:00:00+00:00');
       mount(<Basic value={Number(date.format('X'))} locale="ar" />);
       cy.get('input[name=dateField]').should(
         'have.value',
-        moment('2016-07-28').locale('en').format('DD-MM-YYYY')
+        moment('2016-07-28').locale('ar').format('DD-MM-YYYY')
       );
     });
 
@@ -164,7 +164,7 @@ describe('DatePicker', () => {
     });
   });
 
-  xdescribe('when using endOfDay flag', () => {
+  describe('when using endOfDay flag', () => {
     it('should set the value to the end of the day', () => {
       const onChange = cy.stub().as('onChange');
       mount(<Basic onChange={onChange} endOfDay />);

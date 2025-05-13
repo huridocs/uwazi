@@ -10,6 +10,9 @@ export default defineConfig({
   viewportHeight: 768,
   defaultCommandTimeout: 12000,
   requestTimeout: 30000,
+  env: {
+    TZ: 'UTC'
+  },
   e2e: {
     baseUrl: 'http://localhost:3000',
     video: true,

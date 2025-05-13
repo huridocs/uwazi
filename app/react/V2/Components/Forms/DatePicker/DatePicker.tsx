@@ -81,9 +81,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   useEffect(() => {
     if(datePickerValue) {
-      setInputValue(datePickerValue?.locale?.(locale).format(dateFormat) || '');
+      const formattedValue = datePickerValue.locale(locale).format(dateFormat);
+      setInputValue(formattedValue);
     }
-  }, [datePickerValue]);
+  }, [datePickerValue, dateFormat]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -101,22 +102,15 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   };
 
-  // const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  //   const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab'];
-  //   if (isNaN(Number(e.key)) && !allowedKeys.includes(e.key)) {
-  //     e.preventDefault();
-  //   }
-  // };
-
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value) {
       const newValue = removeOffset(useTimezone, e.target.value);
       const timestamp = addOffset(useTimezone, endOfDay, e.target.value, dateFormat);
       if (timestamp !== null) {
         onChange(timestamp.valueOf());
-        setInputValue(timestamp?.locale?.(locale).format(dateFormat) || '');
+        setInputValue(timestamp.locale(locale).format(dateFormat));
       } else {
-        setInputValue(datePickerValue?.locale?.(locale).format(dateFormat) || '');
+        setInputValue(datePickerValue?.locale(locale).format(dateFormat) || '');
       }
     }
     onBlur?.(e);
@@ -130,7 +124,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
         dateFormat={dateFormat.toLowerCase()}
         value={inputValue}
         onChange={handleChange}
-        // onKeyDown={handleKeyDown}
         onBlur={handleBlur}
         placeholder={placeholder}
         labelToday={labelToday}

@@ -115,7 +115,7 @@ const DatePickerComponent = React.forwardRef(
       : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
     const instance = useRef<Datepicker | null>(null);
-    const locale = validateLocale(language);
+    const locale = validateLocale(language) || 'en';
 
     const debouncedOnChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
