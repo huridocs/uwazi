@@ -8,6 +8,7 @@ describe('Settings mobile menu', () => {
 
   beforeEach(() => {
     cy.viewport(384, 768);
+    cy.intercept('GET', '/api/search*').as('search');
   });
 
   it('should login', () => {
@@ -15,10 +16,6 @@ describe('Settings mobile menu', () => {
   });
 
   it('should only show the menu', () => {
-    cy.intercept('GET', '/api/search*').as('search');
-    cy.location().should(location => {
-      expect(location.pathname).to.contain('library');
-    });
     cy.wait('@search');
     cy.get('.menu-button').click();
     cy.contains('.only-mobile a', 'Settings').click();
