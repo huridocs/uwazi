@@ -1,32 +1,31 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
-import React, { useEffect, useState } from 'react';
-import { useLoaderData } from 'react-router';
-import { useForm, Controller } from 'react-hook-form';
-import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import loadable from '@loadable/component';
-import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
-import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
-import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
+import { Button, Sidepanel } from 'V2/Components/UI';
 import { lookup } from 'V2/api/search';
-import { preloadOptionsLimit } from 'shared/config';
+import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
+import { secondsToISODate } from 'V2/shared/dateHelpers';
+import { Translate } from 'app/I18N';
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { useAtomValue, useSetAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useLoaderData } from 'react-router';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { preloadOptionsLimit } from 'shared/config';
+import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { FileType } from 'shared/types/fileType';
 import { Highlights, TableSuggestion } from '../types';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
-  handleFileSave,
   loadSidepanelData,
   loadValuesAndSuggestions,
   SELECT_TYPES,
@@ -247,42 +246,47 @@ const SuggestionSidepanel = ({
     setShowSidepanel(false);
   };
 
-  const onSubmit = async (value: {
-    field: PropertyValueSchema | PropertyValueSchema[] | undefined;
-  }) => {
-    if (!property) {
-      throw new Error('Property not found');
-    }
-
-    let metadata = value.field;
-
-    if (property.type === 'date' && isDirty && metadata) {
-      metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
-    }
-    const savedFile = await handleFileSave(pdf, selections);
-    const savedEntity = await handleEntitySave(entity, property.name, metadata, isDirty);
-
-    if (savedFile instanceof FetchResponseError || savedEntity instanceof FetchResponseError) {
-      const details =
-        (savedFile as FetchResponseError)?.json.prettyMessage ||
-        (savedEntity as FetchResponseError)?.json.prettyMessage;
-
-      setNotifications({ type: 'error', text: 'An error occurred', details });
-    } else if (savedFile || savedEntity) {
-      if (savedFile) {
-        setPdf(savedFile);
+  const createOnSubmit =
+    (sourceType: 'pdf' | 'entity_property', propertyName: string | null) =>
+    async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
+      if (!property) {
+        throw new Error('Property not found');
       }
 
-      if (savedEntity) {
-        setEntity(savedEntity);
-        onEntitySave(savedEntity);
+      let metadata = value.field;
+
+      if (property.type === 'date' && isDirty && metadata) {
+        metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
       }
 
-      setNotifications({ type: 'success', text: 'Saved successfully.' });
-    }
+      const toSaveEntity = {
+        ...entity,
+        __extractedMetadata: {
+          source: {
+            type: sourceType,
+            id: sourceType === 'pdf' ? pdf?._id : entity?.sharedId,
+            propertyName,
+          },
+          selections,
+        },
+      };
+      const savedEntity = await handleEntitySave(toSaveEntity, property.name, metadata, isDirty);
 
-    handleClose();
-  };
+      if (savedEntity instanceof FetchResponseError) {
+        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+
+        setNotifications({ type: 'error', text: 'An error occurred', details });
+      } else if (savedEntity) {
+        if (savedEntity) {
+          setEntity(savedEntity);
+          onEntitySave(savedEntity);
+        }
+
+        setNotifications({ type: 'success', text: 'Saved successfully.' });
+      }
+
+      handleClose();
+    };
 
   const handleClickToFill = async () => {
     if (!property) {
@@ -445,6 +449,9 @@ const SuggestionSidepanel = ({
     }
   };
 
+  const sourceType = suggestion?.extractorSource.pdf ? 'pdf' : 'entity_property';
+  const sourceProperty = suggestion?.extractorSource.property || null;
+
   return (
     <Sidepanel
       isOpen={showSidepanel}
@@ -457,7 +464,7 @@ const SuggestionSidepanel = ({
         <form
           id="ixpdfform"
           className="flex flex-col h-full gap-4 p-0"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(createOnSubmit(sourceType, sourceProperty))}
         >
           <div className="grow">
             {suggestion?.extractorSource.pdf && pdf && (

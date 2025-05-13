@@ -61,7 +61,14 @@ export function saveDocument(doc, fileID) {
   return async (dispatch, getState) => {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
     const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;
-    updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
+    // updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
+    updateDoc.__extractedMetadata = {
+      source: {
+        type: 'pdf',
+        id: entityFileId,
+      },
+      ...extractredMetadata,
+    };
     const updatedDoc = await saveEntityWithFiles(updateDoc, dispatch);
 
     dispatchUpdatedDocument(dispatch, doc, updatedDoc, entityFileId);
