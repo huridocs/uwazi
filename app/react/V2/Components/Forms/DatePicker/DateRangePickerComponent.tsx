@@ -45,7 +45,7 @@ const DateRangePickerComponent = React.forwardRef(
       className = '',
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
-      value,
+      value = { from: '', to: '' },
       onClear = () => {},
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
@@ -103,7 +103,7 @@ const DateRangePickerComponent = React.forwardRef(
       <div className="tw-content">
         <div
           id="tw-container"
-          className={`${className} absolute tw-datepicker z-50`}
+          className={`${className} absolute tw-datepicker z-50 w-full`}
           data-test-id={id}
         />
         <div>
@@ -120,7 +120,7 @@ const DateRangePickerComponent = React.forwardRef(
           >
             <div
               // eslint-disable-next-line max-len
-              className="relative "
+              className="relative w-full"
             >
               <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
                 <svg
@@ -141,6 +141,7 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
                 type="text"
+                value={value?.from?.toString() || ''}
                 onSelect={onFromDateSelected}
                 onChange={onFromDateSelected}
                 onBlur={onFromDateSelected}
@@ -175,6 +176,7 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
                 type="text"
+                value={value?.to?.toString() || ''}
                 onSelect={onToDateSelected}
                 onChange={onToDateSelected}
                 onBlur={onToDateSelected}
@@ -196,15 +198,6 @@ const DateRangePickerComponent = React.forwardRef(
     );
   }
 );
-
-DateRangePickerComponent.defaultProps = {
-  placeholderStart: 'Select start',
-  placeholderEnd: 'Select end',
-  onFromDateSelected: () => {},
-  onToDateSelected: () => {},
-  value: { from: '', to: '' },
-  onClear: () => {},
-};
 
 export type { DateRangePickerProps };
 export { DateRangePickerComponent };

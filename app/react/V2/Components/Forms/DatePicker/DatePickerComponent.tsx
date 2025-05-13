@@ -12,7 +12,7 @@ import { Label } from '../Label';
 import { InputError } from '../InputError';
 
 interface DatePickerProps extends FlowbiteDatepickerProps {
-  dateFormat: string;
+  dateFormat?: string;
   language: string;
   labelToday?: string;
   labelClear?: string;
@@ -31,6 +31,8 @@ interface DatePickerProps extends FlowbiteDatepickerProps {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
   className?: string;
+  useTimezone?: boolean;
+  endOfDay?: boolean;
 }
 
 const titleFormat = (locale: string) => {
@@ -47,6 +49,7 @@ const titleFormat = (locale: string) => {
       return 'MM y';
   }
 };
+
 const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string) => {
   const localeData = moment.localeData(language);
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
@@ -60,7 +63,7 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
     monthsTitle: t('System', 'Months', null, false),
     clear: labelClear,
     weekStart: localeData.firstDayOfWeek(),
-    format: 'dd/mm/yyyy',
+    format: 'dd-mm-yyyy',
     titleFormat: titleFormat(language),
     rtl: isRTL,
   };
@@ -80,33 +83,34 @@ const DatePickerComponent = React.forwardRef(
     {
       labelToday = 'Today',
       labelClear = 'Clear',
-      label,
-      disabled,
+      label = '',
+      disabled = false,
       placeholder,
-      hasErrors,
-      errorMessage,
-      value,
-      autoComplete,
+      hasErrors = false,
+      errorMessage = '',
+      value = '',
+      autoComplete = 'off',
       id = uniqueID(),
       language = 'en',
       dateFormat = 'YYYY-MM-DD',
       hideLabel = true,
       inputClassName = '',
       className = '',
-      name = '',
+      name = 'date',
       onChange = () => {},
       onBlur = () => {},
       clearFieldAction = () => {},
+      useTimezone = false,
+      endOfDay = false,
     }: DatePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
     useImperativeHandle(forwardedRef, () => ref.current);
 
-    const datePickerFormat = dateFormat.toLocaleLowerCase();
+    const datePickerFormat = dateFormat.toLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
-      ? // eslint-disable-next-line max-len
-        `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
+      ? `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
     const instance = useRef<Datepicker | null>(null);
@@ -133,22 +137,55 @@ const DatePickerComponent = React.forwardRef(
         format: datePickerFormat,
       });
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
-    }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
+    }, []);
 
     useEffect(() => {
       if (instance?.current && ref?.current) {
-        ref.current.value = isNumber(value) ? value.toString() : value || '';
+        let newValue = isNumber(value) ? value.toString() : value || '';
+        if (useTimezone && isNumber(value)) {
+          const date = moment.unix(Number(value));
+          newValue = date.format('DD-MM-YYYY');
+        }
+        ref.current.value = newValue;
       }
-    }, [instance, value]);
+    }, [instance, value, useTimezone]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      onChange(e);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab'];
+      if (!allowedKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        const input = e.target as HTMLInputElement;
+        const value = input.value;
+        const newValue = value.slice(0, -1);
+        input.value = newValue;
+        onChange({ target: { value: newValue } } as React.ChangeEvent<HTMLInputElement>);
+      }
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (value && !moment(value, 'DD-MM-YYYY', true).isValid()) {
+        e.target.value = '';
+        onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
+      }
+      onBlur(e);
+    };
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className={`absolute z-50 ${className} tw-datepicker`} />
+        <div id="tw-container" className={`absolute z-50 ${className} tw-datepicker w-full`} />
         <div className="tw-datepicker">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
           </Label>
-          <div className="relative w-72">
+          <div className="relative w-full">
             <input
               id={id}
               // @ts-ignore
@@ -158,15 +195,16 @@ const DatePickerComponent = React.forwardRef(
               datepicker-autoselect-today="true"
               type="text"
               lang={locale}
-              onChange={onChange}
-              onSelect={onChange}
-              onBlur={onBlur}
+              onChange={handleChange}
+              onSelect={handleChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
               name={name}
               ref={ref}
               disabled={disabled}
               value={value}
               className={`block flex-1 w-full text-sm ${fieldStyles} disabled:text-gray-500`}
-              placeholder={placeholder}
+              placeholder={placeholder || dateFormat}
               autoComplete={autoComplete}
             />
             <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
@@ -191,24 +229,6 @@ const DatePickerComponent = React.forwardRef(
     );
   }
 );
-
-DatePickerComponent.defaultProps = {
-  id: uniqueID(),
-  label: '',
-  disabled: false,
-  hideLabel: true,
-  placeholder: 'Select a date',
-  hasErrors: false,
-  errorMessage: '',
-  value: '',
-  inputClassName: '',
-  className: '',
-  autoComplete: 'off',
-  name: 'datePicker',
-  clearFieldAction: () => {},
-  onChange: () => {},
-  onBlur: () => {},
-};
 
 export type { DatePickerProps };
 export { DatePickerComponent, datePickerOptionsByLocale, validateLocale };

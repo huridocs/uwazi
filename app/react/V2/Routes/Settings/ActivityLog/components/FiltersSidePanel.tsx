@@ -127,22 +127,12 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     hasErrors={fieldState.error !== undefined}
                     labelClear={t('System', 'Clear', null, false)}
                     value={value}
-                    onChange={(value)=>{
-                      setValue('dateRange.from', value.from?.toString()||'')                       
-                      setValue('dateRange.to', value.to?.toString()||'')
+                    onChange={(newValue) => {
+                      setValue('dateRange', {
+                        from: newValue.from?.toString() || '',
+                        to: newValue.to?.toString() || ''
+                      });
                     }}
-                    // onFromDateSelected={e => {
-                    //   setValue('dateRange.from', e.target.value);
-                    //   if (!getValues('dateRange.to')) {
-                    //     setValue('dateRange.to', e.target.value);
-                    //   }
-                    // }}
-                    // onToDateSelected={e => {
-                    //   setValue('dateRange.to', e.target.value);
-                    //   if (!getValues('dateRange.from')) {
-                    //     setValue('dateRange.from', e.target.value);
-                    //   }
-                    // }}
                     format={dateFormat}
                     onClear={(field: 'from' | 'to') => {
                       setValue(`dateRange.${field}`, '');

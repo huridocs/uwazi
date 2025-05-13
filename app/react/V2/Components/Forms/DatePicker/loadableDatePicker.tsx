@@ -19,7 +19,7 @@ const DateRangePickerComponent = loadable(async () => {
 });
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-const LazyDatePicker = (props: DatePickerProps) => <DatePickerComponent {...props} dateFormat={props.dateFormat || 'YYYY-MM-DD'} />;
+const LazyDatePicker = (props: DatePickerProps) => <DatePickerComponent {...props} dateFormat={props.dateFormat || 'DD-MM-YYYY'} />;
 // eslint-disable-next-line react/jsx-props-no-spreading
 const LazyDateRangePicker = (props: DateRangePickerProps) => <DateRangePickerComponent {...props} dateFormat={props.dateFormat || 'YYYY-MM-DD'} />;
 

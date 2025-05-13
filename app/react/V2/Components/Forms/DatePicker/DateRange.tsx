@@ -25,6 +25,7 @@ interface DateRangeProps {
   label?: React.ReactElement;
   hasErrors?: boolean;
   onClear?: (field: 'from' | 'to') => void;
+  modelPrefix?: string;
 }
 
 const removeOffset = (useTimezone: boolean, value: string | number | null | undefined): string | null => {
@@ -62,6 +63,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   format = 'YYYY-MM-DD', 
   useTimezone = false,
   model,
+  modelPrefix,
   label,
   hasErrors,
   onClear
@@ -90,13 +92,21 @@ const DateRange: React.FC<DateRangeProps> = ({
     onChange({ ...value, [field]: null });
   };
 
+  const fullModel = modelPrefix ? `${modelPrefix}.${model}` : model;
+
+  // Format the values for display
+  const displayValue = {
+    from: removeOffset(useTimezone, from) || '',
+    to: removeOffset(useTimezone, to) || ''
+  };
+
   return (
     <div>
       <LazyDateRangePicker
-        label={<Translate translationKey="property daterange">Date Range</Translate>}
+        label={label || <Translate translationKey="property daterange">Date Range</Translate>}
         language={locale}
         dateFormat={format}
-        value={{from: removeOffset(useTimezone, from) || '', to: removeOffset(useTimezone, to) || ''}}
+        value={displayValue}
         onFromDateSelected={handleFromDateSelected}
         onToDateSelected={handleToDateSelected}
         onClear={handleClear}
@@ -104,8 +114,9 @@ const DateRange: React.FC<DateRangeProps> = ({
         placeholderEnd={t('System', 'To', null, false)}
         labelToday={t('System', 'Today', null, false)}
         labelClear={t('System', 'Clear', null, false)}
-        name={model}
+        name={fullModel}
         hideLabel={false}
+        hasErrors={hasErrors}
       />
     </div>
   );
