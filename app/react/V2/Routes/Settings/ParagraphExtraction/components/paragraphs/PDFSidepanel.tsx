@@ -25,7 +25,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, entity }: PDFSidepanelS
       title={entity?.title}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
-      <Sidepanel.Body className="flex-grow overflow-y-scroll">
+      <Sidepanel.Body className="flex-grow overflow-y-auto">
         {mainDocument && <PDF fileUrl={`/api/files/${mainDocument.filename}`} />}
       </Sidepanel.Body>
       <Sidepanel.Footer>

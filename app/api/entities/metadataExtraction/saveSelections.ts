@@ -1,14 +1,26 @@
 import { files } from 'api/files';
+import { IXSelectionsModel } from 'api/suggestions/IXSelectionsModel';
 import { uniqBy } from 'lodash';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
+import { validateIxSelection } from 'shared/types/ixSelectionSchema';
+import entities from '../entities';
 
-interface EntityWithExtractedMetadata extends EntitySchema {
-  __extractedMetadata?: { fileID: string; selections: ExtractedMetadataSchema[] };
+interface ExtractedMetadataSource {
+  type: 'file' | 'entity_property';
+  id?: string;
+  propertyName?: string;
 }
 
-const updateSelections = (
+interface EntityWithExtractedMetadata extends EntitySchema {
+  __extractedMetadata?: {
+    source: ExtractedMetadataSource;
+    selections: ExtractedMetadataSchema[];
+  };
+}
+
+const mergeUniqueSelections = (
   newSelections: ExtractedMetadataSchema[],
   storedSelections: ExtractedMetadataSchema[]
 ) => {
@@ -21,7 +33,7 @@ const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) 
   let selections = entity.__extractedMetadata?.selections || [];
 
   if (file.extractedMetadata) {
-    selections = updateSelections(selections, file.extractedMetadata).filter(
+    selections = mergeUniqueSelections(selections, file.extractedMetadata).filter(
       selection => !selection.deleteSelection
     );
   }
@@ -43,19 +55,37 @@ const selectionsHaveChanged = (
 };
 
 const saveSelections = async (entity: EntityWithExtractedMetadata) => {
-  let mainDocument: FileType[] = [];
-
-  if (entity.__extractedMetadata?.fileID) {
-    mainDocument = await files.get({
-      _id: entity.__extractedMetadata.fileID,
-    });
+  if (!entity.__extractedMetadata?.source?.id) {
+    return null;
   }
 
-  if (mainDocument.length > 0) {
-    const selections = prepareSelections(entity, mainDocument[0]);
+  if (entity.__extractedMetadata.source.type === 'entity_property') {
+    const originalEntity = await entities.getById(entity._id);
+    if (!originalEntity) {
+      throw new Error(`Entity with ID ${entity._id} not found`);
+    }
+    const ixSelection: any = {
+      ...entity.__extractedMetadata,
+      source: {
+        type: 'entity_property',
+        id: entity.__extractedMetadata.source.id,
+        propertyName: entity.__extractedMetadata.source.propertyName,
+      },
+      language: originalEntity.language,
+    };
+    validateIxSelection(ixSelection);
+    return IXSelectionsModel.save(ixSelection);
+  }
 
-    if (selectionsHaveChanged(mainDocument[0].extractedMetadata || [], selections)) {
-      return files.save({ _id: mainDocument[0]._id, extractedMetadata: selections });
+  const [mainDocument] = await files.get({
+    _id: entity.__extractedMetadata.source.id,
+  });
+
+  if (mainDocument) {
+    const selections = prepareSelections(entity, mainDocument);
+
+    if (selectionsHaveChanged(mainDocument.extractedMetadata || [], selections)) {
+      return files.save({ _id: mainDocument._id, extractedMetadata: selections });
     }
   }
 

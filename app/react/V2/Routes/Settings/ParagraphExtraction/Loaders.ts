@@ -16,7 +16,7 @@ import {
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { ClientEntitySchema } from 'app/istore';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 30;
 
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -134,7 +134,10 @@ const PXParagraphLoader =
         getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );
 
-      return { ...defaultLanguageEntity, subRows: otherLanguagesEntities };
+      return {
+        ...defaultLanguageEntity,
+        subRows: otherLanguagesEntities.length ? otherLanguagesEntities : undefined,
+      };
     });
 
     return {
@@ -146,4 +149,4 @@ const PXParagraphLoader =
     };
   };
 
-export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };
+export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader, PAGE_SIZE };

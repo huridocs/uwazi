@@ -40,7 +40,7 @@ describe('Private instance', () => {
     cy.get('[data-testid="settings-account"]').within(() => {
       cy.contains('a', 'Logout').realClick();
     });
-    cy.contains('.blank-state', 'Welcome to Uwazi');
-    cy.contains('div.sidepanel-title', 'Filters');
+    cy.contains('.blank-state', 'Welcome to Uwazi').should('exist');
+    cy.contains('div.sidepanel-title', 'Filters').should('exist');
   });
 });

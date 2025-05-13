@@ -74,7 +74,7 @@ const EntityFilterSidepanel = () => {
         setOpen(false);
       }}
       title={
-        <span className="text-base font-semibold text-gray-500 leading-6 uppercase">
+        <span className="text-base font-semibold leading-6 text-gray-500 uppercase">
           <Translate>Filters</Translate>
         </span>
       }
@@ -84,7 +84,7 @@ const EntityFilterSidepanel = () => {
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <form
-          className="flex gap-2 justify-end"
+          className="flex justify-end gap-2"
           onSubmit={e => {
             e.preventDefault();
             handleSubmit();

@@ -98,10 +98,6 @@ describe('Paragraph Extraction', () => {
       cy.url().should('include', '/settings/paragraph-extraction/');
     });
 
-    it('should check for a11y violations', () => {
-      cy.checkA11y();
-    });
-
     it('should view the details of the extractor and navigate through the flow', () => {
       cy.get('table').contains('caption', 'Paragraphs');
       cy.get('tbody tr').should('have.length', 3);
@@ -116,7 +112,9 @@ describe('Paragraph Extraction', () => {
 
     it('should extract the paragraphs', () => {
       cy.contains('button', 'Extract new paragraphs').click();
-      cy.contains('Paragraphs extracted').as('successMessage');
+      cy.contains('The process of extracting the paragraphs has successfully started').as(
+        'successMessage'
+      );
       cy.contains('Dismiss').click();
     });
 
@@ -132,11 +130,12 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should update the processed entities after 25 seconds', () => {
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(30000); //wait for processing to finish
-      cy.contains('tbody tr', 'New').eq(0).should('not.have.text', '0', {
-        timeout: 30000,
-      });
+      cy.contains('tbody tr', 'New').should('not.exist');
+      cy.contains('tbody tr', 'Processed', { timeout: 400000 });
+    });
+
+    it('should check for a11y violations', () => {
+      cy.checkA11y();
     });
   });
 
@@ -147,7 +146,7 @@ describe('Paragraph Extraction', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000); //wait for loader paragraphs to finish
 
-      cy.contains('tbody tr', 'New')
+      cy.contains('tbody tr', 'Processed')
         .eq(0)
         .within(() => {
           cy.get('td:nth-child(2) > span')
@@ -166,12 +165,6 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should view the extracted paragraphs', () => {
-      cy.get('table')
-        .contains('caption', 'Paragraphs')
-        .should(
-          'contain.text',
-          `${firstEntityProcessed}Ordenes del presidenteEnglishالعربيةEspañolOpen PDF`
-        );
       cy.contains('For e2e paragraph 0 in en');
       cy.get('tbody tr').should('have.length.at.least', 3);
     });

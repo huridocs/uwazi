@@ -1,9 +1,11 @@
+import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
 import { EventsBus } from 'api/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { LanguageUtils } from 'shared/language';
-import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
-import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory';
+import { inspect } from 'util';
 import { PXValidationError } from '../domain/PXValidationError';
+import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory';
 
 export class PXFileUpdatedListener {
   private eventBus: EventsBus;
@@ -14,6 +16,7 @@ export class PXFileUpdatedListener {
 
   private static async afterFileUpdated(data: FileUpdatedEvent['data']) {
     const useCase = PXEntityStatusManagerFactory.createDefault();
+    const logger = DefaultLogger();
 
     try {
       await useCase.execute({
@@ -34,6 +37,7 @@ export class PXFileUpdatedListener {
       });
     } catch (e) {
       if (e instanceof PXValidationError) {
+        logger.info(inspect(e));
         return;
       }
 

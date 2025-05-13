@@ -609,7 +609,6 @@ Paragraph text extraction property (numeric),Paragraph text extraction property 
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
-Paragraphs extracted,Paragraphs extracted
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -640,6 +639,7 @@ Priority sorting,تصنيف حسب الأولوية
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,تنبيه: الكيانات (الإدخالات) المختارة سوف .لن تتاح رؤيتها إلا للمستخدمين المسموح لهم
 Private instance,قاعدة بيانات داخلية
+Processed,Processed
 Processing,معالجة
 Properties,الخصائص
 Properties from other templates in the collection using the same label,خصائص من قوالب أخرى في المجموعة تستخدم التسمية نفسها
@@ -844,6 +844,9 @@ Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,نتج عن عملية الاستيراد الخطأ التالي:
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,يحتوي القالب على أخطاء
 The token does not validate against the secret key,The token does not validate against the secret key

@@ -31,19 +31,40 @@ const fixturesPdfNameB = 'documentB.pdf';
 const fixturesOneFile: DBFixture = {
   entities: [factory.entity('A1', 'templateToSegmentA')],
   settings,
-  files: [factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA)],
+  files: [
+    factory.file('F1', {
+      filename: fixturesPdfNameA,
+      entity: 'A1',
+      type: 'document',
+      status: 'ready',
+    }),
+  ],
 };
 
 const fixturesOtherFile: DBFixture = {
   entities: [factory.entity('A2', 'templateToSegmentB')],
   settings: otherSettings,
-  files: [factory.fileDeprecated('F2', 'A2', 'document', fixturesPdfNameB)],
+  files: [
+    factory.file('F2', {
+      filename: fixturesPdfNameB,
+      entity: 'A2',
+      type: 'document',
+      status: 'ready',
+    }),
+  ],
 };
 
 const fixturesMissingPdf: DBFixture = {
   entities: [factory.entity('A1', 'templateToSegmentA')],
   settings,
-  files: [factory.fileDeprecated('F1', 'A1', 'document', 'missing.pdf')],
+  files: [
+    factory.file('F1', {
+      filename: 'missing.pdf',
+      entity: 'A1',
+      type: 'document',
+      status: 'ready',
+    }),
+  ],
 };
 
 const fixturesFiveFiles: DBFixture = {
@@ -56,11 +77,42 @@ const fixturesFiveFiles: DBFixture = {
     factory.entity('A5', 'templateToSegmentA'),
   ],
   files: [
-    factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA),
-    factory.fileDeprecated('F2', 'A2', 'document', fixturesPdfNameA),
-    factory.fileDeprecated('F3', 'A3', 'document', fixturesPdfNameA),
-    factory.fileDeprecated('F4', 'A4', 'document', fixturesPdfNameA),
-    factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameA),
+    factory.file('F1', {
+      filename: fixturesPdfNameA,
+      entity: 'A1',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F2', {
+      filename: fixturesPdfNameA,
+      entity: 'A2',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F3', {
+      filename: fixturesPdfNameA,
+      entity: 'A3',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F4', {
+      filename: fixturesPdfNameA,
+      entity: 'A4',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F5', {
+      filename: fixturesPdfNameA,
+      entity: 'A5',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F6', {
+      filename: fixturesPdfNameA,
+      entity: 'A5',
+      type: 'document',
+      status: 'failed',
+    }),
   ],
 };
 
@@ -70,7 +122,12 @@ const fixturesOneHundredFiles: DBFixture = {
     factory.entity(`A${x.toString()}`, 'templateToSegmentA')
   ),
   files: [...Array(100).keys()].map(x =>
-    factory.fileDeprecated(`F${x.toString()}`, `A${x.toString()}`, 'document', fixturesPdfNameA)
+    factory.file(`F${x.toString()}`, {
+      filename: fixturesPdfNameA,
+      entity: `A${x.toString()}`,
+      type: 'document',
+      status: 'ready',
+    })
   ),
 };
 

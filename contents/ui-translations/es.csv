@@ -608,7 +608,6 @@ Paragraph text extraction property (numeric),Paragraph text extraction property 
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
-Paragraphs extracted,Paragraphs extracted
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -639,6 +638,7 @@ Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
 Private entities description,AVISO: Las entidades seleccionadas serán **privadas**. Solo usuarios con permiso podrán visualizarlos.
 Private instance,Instancia privada
+Processed,Processed
 Processing,Procesando
 Properties,Propiedades
 Properties from other templates in the collection using the same label,Propiedades de otras plantillas de la colección que utilizan la misma etiqueta.
@@ -842,6 +842,9 @@ Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,La petición no pudo ser procesada.
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key

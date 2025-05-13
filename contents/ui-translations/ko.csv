@@ -610,7 +610,6 @@ Paragraph text extraction property (numeric),Paragraph text extraction property 
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
-Paragraphs extracted,Paragraphs extracted
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -641,6 +640,7 @@ Priority sorting,우선순위 정렬
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,비공개 인스턴스
+Processed,Processed
 Processing,처리 중
 Properties,속성
 Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
@@ -845,6 +845,9 @@ Templates:,Templates:
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,업로드 과정에서 오류가 발생했습니다:
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The template contains errors,템플릿에 오류가 포함되어 있습니다.
 The token does not validate against the secret key,The token does not validate against the secret key
