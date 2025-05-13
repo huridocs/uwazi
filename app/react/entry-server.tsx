@@ -34,6 +34,7 @@ import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
+import { ProtectedRoute } from './ProtectedRoute';
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -284,6 +285,17 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
+  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
+  const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+  if (isProtectedRoute) {
+    const userId = req.user?._id;
+    const userRole = req.user?.role || '';
+    const allowedRoles = lastRouteElement.props.allowedRoles;
+    if (!userId || (allowedRoles && !allowedRoles.includes(userRole))) {
+      res.redirect('/login');
+      return;
+    }
+  }
   //extract the language from the route pathName, i.e /en/library
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 

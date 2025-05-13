@@ -338,7 +338,12 @@ describe('documentActions', () => {
           .then(() => {
             expect(libraryActions.saveEntityWithFiles).toHaveBeenCalledWith(
               {
-                __extractedMetadata: { fileID: 'file1' },
+                __extractedMetadata: {
+                  source: {
+                    type: 'pdf',
+                    id: 'file1',
+                  },
+                },
                 attachments: [{ _id: '1', originalname: 'supportingFile' }],
                 name: 'doc',
               },

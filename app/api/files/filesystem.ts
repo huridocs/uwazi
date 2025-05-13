@@ -78,10 +78,12 @@ const getExtension = (mimetype = '') => {
   return result === 'jpeg' ? 'jpg' : result;
 };
 
+const getMimetypeFromOriginalName = (originalname: string) => mimetypes.lookup(originalname);
+
 const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
   const fileName = `${Date.now()}${ID()}`;
 
-  const extensionFromOriginalName = getExtension(mimetypes.lookup(originalname) || '');
+  const extensionFromOriginalName = getExtension(getMimetypeFromOriginalName(originalname) || '');
   if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
 
   const extensionFromMime = getExtension(mimetype);
@@ -148,6 +150,7 @@ export {
   activityLogPath,
   testingUploadPaths,
   fileExistsOnPath,
+  getMimetypeFromOriginalName,
 };
 
 export type { FilePath, pathFunction };
