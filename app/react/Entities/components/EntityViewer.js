@@ -26,7 +26,8 @@ import ContextMenu from 'app/ContextMenu';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { PageViewer } from 'app/Pages/components/PageViewer';
-
+import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { atomStore, libraryURLAtom } from 'V2/atoms';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import V2NewRelationshipsBoard from './V2NewRelationshipsBoard';
 import { deleteEntity } from '../actions/actions';
@@ -66,7 +67,9 @@ class EntityViewer extends Component {
     this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteEntity(this.props.entity.toJS()).then(() => {
-          this.props.navigate(-1);
+          this.props.unselectAllDocuments();
+          const lastLibraryUrl = atomStore.get(libraryURLAtom) || '/library';
+          this.props.navigate(lastLibraryUrl);
         });
       },
       title: 'Confirm delete',
@@ -414,6 +417,7 @@ EntityViewer.propTypes = {
   newRelationshipsEnabled: PropTypes.bool,
   formState: PropTypes.instanceOf(Object).isRequired,
   entityState: PropTypes.instanceOf(Object).isRequired,
+  unselectAllDocuments: PropTypes.func,
 };
 
 const selectRelationTypes = createSelector(
@@ -456,6 +460,7 @@ function mapDispatchToProps(dispatch) {
       deleteConnection,
       showTab,
       startNewConnection: connectionsActions.startNewConnection,
+      unselectAllDocuments,
     },
     dispatch
   );

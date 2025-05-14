@@ -4,7 +4,7 @@ import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-
+import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 import { withContext, withRouter } from 'app/componentWrappers';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
@@ -25,7 +25,8 @@ import * as viewerModule from 'app/Viewer';
 import * as viewerActions from 'app/Viewer/actions/actionTypes';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
-import { getDocumentReferences } from 'app/Library/actions/libraryActions';
+import { getDocumentReferences, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { atomStore, libraryURLAtom } from 'V2/atoms';
 import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
@@ -87,11 +88,9 @@ class DocumentSidePanel extends Component {
     this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS()).then(() => {
-          const currentPath = this.props.location.pathname;
-          const isLibrary = /library|^\/$|^\/..\/$/;
-          if (!currentPath.match(isLibrary)) {
-            this.props.navigate(-1);
-          }
+          this.props.unselectAllDocuments();
+          const lastLibraryUrl = atomStore.get(libraryURLAtom) || '/library';
+          this.props.navigate(lastLibraryUrl);
         });
       },
       title: 'Confirm',
@@ -797,6 +796,7 @@ DocumentSidePanel.propTypes = {
   selectedDocument: PropTypes.instanceOf(Immutable.Map),
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
+  unselectAllDocuments: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -833,6 +833,13 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ unselectAllDocuments }, dispatch);
+}
+
 export { DocumentSidePanel, mapStateToProps };
 
-export default connect(mapStateToProps)(withContext(withRouter(DocumentSidePanel)));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withContext(withRouter(DocumentSidePanel)));
