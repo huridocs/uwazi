@@ -247,7 +247,7 @@ const SuggestionSidepanel = ({
   };
 
   const createOnSubmit =
-    (sourceType: 'pdf' | 'entity_property', propertyName: string | null) =>
+    (sourceType: 'pdf' | 'entity_property') =>
     async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
       if (!property) {
         throw new Error('Property not found');
@@ -259,18 +259,13 @@ const SuggestionSidepanel = ({
         metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
       }
 
-      const toSaveEntity = {
-        ...entity,
-        __extractedMetadata: {
-          source: {
-            type: sourceType,
-            id: sourceType === 'pdf' ? pdf?._id : entity?.sharedId,
-            propertyName,
-          },
-          selections,
-        },
-      };
-      const savedEntity = await handleEntitySave(toSaveEntity, property.name, metadata, isDirty);
+      const entityToSave = { ...entity };
+
+      if (sourceType === 'pdf') {
+        entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
+      }
+
+      const savedEntity = await handleEntitySave(entityToSave, property.name, metadata, isDirty);
 
       if (savedEntity instanceof FetchResponseError) {
         const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
@@ -450,7 +445,6 @@ const SuggestionSidepanel = ({
   };
 
   const sourceType = suggestion?.extractorSource.pdf ? 'pdf' : 'entity_property';
-  const sourceProperty = suggestion?.extractorSource.property || null;
 
   return (
     <Sidepanel
@@ -464,7 +458,7 @@ const SuggestionSidepanel = ({
         <form
           id="ixpdfform"
           className="flex flex-col h-full gap-4 p-0"
-          onSubmit={handleSubmit(createOnSubmit(sourceType, sourceProperty))}
+          onSubmit={handleSubmit(createOnSubmit(sourceType))}
         >
           <div className="grow">
             {suggestion?.extractorSource.pdf && pdf && (
