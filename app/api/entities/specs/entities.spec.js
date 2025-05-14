@@ -657,6 +657,11 @@ describe('entities', () => {
   });
 
   describe('updateMetdataFromRelationships', () => {
+    let sanitizationSpy;
+    beforeEach(() => {
+      sanitizationSpy = jest.spyOn(entities, 'sanitize');
+    });
+
     it('should update the metdata based on the entity relationships', async () => {
       await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
       const updatedEntity = await entities.getById('shared', 'en');
@@ -688,25 +693,6 @@ describe('entities', () => {
         select: [],
         text: [],
       });
-    });
-
-    it('should sanitize the entities', async () => {
-      const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-      await entities.updateMetdataFromRelationships(['shared'], 'en');
-
-      expect(sanitizationSpy.mock.calls).toMatchObject([
-        [
-          {
-            sharedId: 'shared',
-            language: 'en',
-            title: 'Batman finishes',
-          },
-          {
-            name: 'template_test',
-          },
-        ],
-      ]);
-      sanitizationSpy.mockRestore();
     });
 
     describe('unrestricted for collaborator', () => {

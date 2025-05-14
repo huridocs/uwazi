@@ -31,6 +31,7 @@ import {
   updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
+import _ from 'lodash';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -593,41 +594,95 @@ export default {
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async updateMetdataFromRelationships(entities, language, reindex = true) {
+  async updateMetdataFromRelationships(entityIds, language, reindex = true) {
+    if (!entityIds || entityIds.length === 0) {
+      return;
+    }
+
     const entitiesToReindex = [];
-    const _templates = await templates.get();
+    // 1. Fetch all templates once
+    const allTemplates = await templates.get();
+    const templateMap = new Map(allTemplates.map(t => [t._id.toString(), t]));
+
+    // 2. Batch-fetch all relevant entities for the given language
+    const entitiesData = await model.get(
+      { sharedId: { $in: entityIds }, language },
+      { _id: 1, sharedId: 1, language: 1, template: 1, metadata: 1 }
+    );
+
+    if (entitiesData.length === 0) {
+      return;
+    }
+
+    const relationsByEntityId = new Map();
     await Promise.all(
-      entities.map(async entityId => {
-        const entity = await this.getById(entityId, language);
-        const relations = await relationships.getByDocument(entityId, language);
-
-        if (entity && entity.template) {
-          entity.metadata = entity.metadata || {};
-          const template = _templates.find(t => t._id.toString() === entity.template.toString());
-
-          const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
-          relationshipProperties.forEach(property => {
-            const relationshipsGoingToThisProperty = relations.filter(
-              r =>
-                r.template &&
-                r.template.toString() === property.relationType.toString() &&
-                (!property.content || r.entityData.template.toString() === property.content)
-            );
-
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
-              value: r.entity,
-              label: r.entityData.title,
-            }));
-          });
-          if (relationshipProperties.length) {
-            entitiesToReindex.push(entity.sharedId);
-            await this.updateEntity(this.sanitize(entity, template), template, true);
-          }
-        }
+      entitiesData.map(async entity => {
+        const rels = await relationships.getByDocument(entity.sharedId, language);
+        relationsByEntityId.set(entity.sharedId, rels);
       })
     );
 
-    if (reindex) {
+    const bulkUpdateOperations = [];
+
+    for (const entity of entitiesData) {
+      if (!entity.template) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      const template = templateMap.get(entity.template.toString());
+      if (!template) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      const currentRelations = relationsByEntityId.get(entity.sharedId) || [];
+      let metadataChanged = false;
+      // Ensure metadata exists, defaulting to an empty object
+      const newMetadata = { ...(entity.metadata || {}) };
+
+      const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+
+      for (const property of relationshipProperties) {
+        const relationshipsGoingToThisProperty = currentRelations.filter(
+          r =>
+            r.template &&
+            r.template.toString() === property.relationType.toString() &&
+            (!property.content ||
+              (r.entityData &&
+                r.entityData.template &&
+                r.entityData.template.toString() === property.content))
+        );
+
+        const newValues = relationshipsGoingToThisProperty.map(r => ({
+          value: r.entity,
+          label: r.entityData ? r.entityData.title : undefined,
+          icon: r.entityData && r.entityData.icon ? r.entityData.icon : null,
+          type: 'entity',
+        }));
+
+        if (!_.isEqual(newMetadata[property.name], newValues)) {
+          newMetadata[property.name] = newValues;
+          metadataChanged = true;
+        }
+      }
+
+      if (metadataChanged) {
+        entitiesToReindex.push(entity.sharedId);
+        bulkUpdateOperations.push({
+          updateOne: {
+            filter: { _id: entity._id }, // Use specific document _id
+            update: { $set: { metadata: newMetadata, editDate: date.currentUTC() } },
+          },
+        });
+      }
+    }
+
+    if (bulkUpdateOperations.length > 0) {
+      await model.bulkWrite(bulkUpdateOperations);
+    }
+
+    if (reindex && entitiesToReindex.length > 0) {
       await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
     }
   },

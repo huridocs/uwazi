@@ -113,14 +113,14 @@ export default {
           return res;
         }, {});
 
-        const relationshipsCollection = processRelationshipCollection(
+        const result = processRelationshipCollection(
           _relationships,
           connectedDocuments,
           sharedId,
           unpublished
         );
 
-        return relationshipsCollection;
+        return result;
       });
     });
   },
@@ -256,16 +256,27 @@ export default {
       return [];
     }
 
-    const savedRelationships = await model.saveMultiple(
-      relationships.map(r =>
-        r._id
-          ? {
-              ...r,
-              template: r.template && r.template._id !== null ? r.template : null,
-            }
-          : r
-      )
-    );
+    const relationshipsToSave = relationships.map(r => {
+      const processed = { ...r }; // Create a copy to modify
+      let finalTemplateValue = null;
+
+      if (processed.template) { // Check if template exists and is not null/undefined/empty string etc.
+        if (typeof processed.template === 'object' && processed.template._id) {
+          // It's an object like { _id: 'someId', ... }, extract the _id
+          finalTemplateValue = processed.template._id.toString ? processed.template._id.toString() : String(processed.template._id);
+        } else if (typeof processed.template === 'string') {
+          // It's already a string (hopefully an ID)
+          finalTemplateValue = processed.template;
+        }
+        // If processed.template was an object without _id, or some other type, finalTemplateValue remains null here.
+      }
+
+      // Ensure template is a valid ObjectId string or null before saving.
+      processed.template = ObjectId.isValid(finalTemplateValue) ? finalTemplateValue : null;
+      return processed;
+    });
+
+    const savedRelationships = await model.saveMultiple(relationshipsToSave);
 
     const result = await this.appendRelatedEntityData(savedRelationships, language);
 

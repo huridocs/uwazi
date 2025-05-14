@@ -150,11 +150,18 @@ function removeSingleHubs(relationshipArray) {
 
 function withConnectedData(relationshipArray, connectedDocuments) {
   return relationshipArray
-    .map(relationship => ({
-      template: null,
-      entityData: connectedDocuments[relationship.entity],
-      ...relationship,
-    }))
+    .map(relationship => {
+      const entityDataForThisRelationship = connectedDocuments[relationship.entity];
+      const processedRel = {
+        ...relationship,
+        entityData: entityDataForThisRelationship,
+      };
+      // If template is undefined (e.g., not set in DB), ensure it's null for consistent output.
+      if (processedRel.template === undefined) {
+        processedRel.template = null;
+      }
+      return processedRel;
+    })
     .filter(relationship => Boolean(relationship.entityData));
 }
 
