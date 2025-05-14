@@ -3,7 +3,7 @@ name: e2e cypress PAGES
 on:
   pull_request:
     branches: [development, staging, production]
-    types: [ready_for_review, synchronize]
+    types: [ready_for_review]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
