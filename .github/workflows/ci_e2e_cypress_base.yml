@@ -9,8 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-#test
-
 jobs:
   e2e-cypress:
     if: github.event.pull_request.draft == false
