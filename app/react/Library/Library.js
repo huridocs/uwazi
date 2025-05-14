@@ -6,7 +6,6 @@ import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actio
 import { wrapDispatch } from 'app/Multireducer';
 import { withRouter } from 'app/componentWrappers';
 import { routes as appRoutes } from 'app/appRoutes';
-import { atomStore, libraryURLAtom } from 'V2/atoms';
 
 class LibraryRootComponent extends RouteHandler {
   constructor(props, context) {
@@ -28,14 +27,12 @@ class LibraryRootComponent extends RouteHandler {
   }
 
   componentDidMount() {
-    this.updateLibraryUrlAtom();
     this.getClientState(this.props);
   }
 
   componentDidUpdate(prevProps) {
     if (this.urlHasChanged(prevProps)) {
       this.getClientState(this.props);
-      this.updateLibraryUrlAtom();
     }
   }
 
@@ -83,11 +80,6 @@ class LibraryRootComponent extends RouteHandler {
         scrollCount: prevState.scrollCount + 1,
       }));
     }
-  }
-
-  updateLibraryUrlAtom() {
-    const url = window.location.pathname + window.location.search;
-    atomStore.set(libraryURLAtom, url);
   }
 
   render() {

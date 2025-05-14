@@ -27,7 +27,7 @@ export class Doc extends Component {
 
   onClick(e) {
     if (this.props.onClick) {
-      this.props.onClick(e, this.props.doc, this.props.active);
+      this.props.onClick(e, this.props.doc, this.props.active, { replace: true });
     }
   }
 

@@ -27,7 +27,6 @@ import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { PageViewer } from 'app/Pages/components/PageViewer';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { atomStore, libraryURLAtom } from 'V2/atoms';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import V2NewRelationshipsBoard from './V2NewRelationshipsBoard';
 import { deleteEntity } from '../actions/actions';
@@ -68,8 +67,7 @@ class EntityViewer extends Component {
       accept: () => {
         this.props.deleteEntity(this.props.entity.toJS()).then(() => {
           this.props.unselectAllDocuments();
-          const lastLibraryUrl = atomStore.get(libraryURLAtom) || '/library';
-          this.props.navigate(lastLibraryUrl);
+          this.props.navigate(-1);
         });
       },
       title: 'Confirm delete',
@@ -260,6 +258,7 @@ class EntityViewer extends Component {
                       <I18NLink
                         className={this.linkClassNames(['page'])}
                         to={`/entity/${rawEntity.sharedId}/page`}
+                        replaceNavigationHistory
                       >
                         <Icon icon="file-image" />
                         <span className="tab-link-tooltip">{t('System', 'Page')}</span>
@@ -278,6 +277,7 @@ class EntityViewer extends Component {
                     <I18NLink
                       className={this.linkClassNames(['info', ''])}
                       to={`/entity/${rawEntity.sharedId}/info`}
+                      replaceNavigationHistory
                     >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
@@ -295,6 +295,7 @@ class EntityViewer extends Component {
                     <I18NLink
                       className={this.linkClassNames(['relationships'])}
                       to={`/entity/${rawEntity.sharedId}/relationships`}
+                      replaceNavigationHistory
                     >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
@@ -314,6 +315,7 @@ class EntityViewer extends Component {
                       <I18NLink
                         className={this.linkClassNames(['newrelationships'])}
                         to={`/entity/${rawEntity.sharedId}/newrelationships`}
+                        replaceNavigationHistory
                       >
                         <Icon icon="exchange-alt" />*
                         <span className="tab-link-tooltip" no-translate>

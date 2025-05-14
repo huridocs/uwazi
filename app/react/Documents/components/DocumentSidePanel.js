@@ -26,7 +26,6 @@ import * as viewerActions from 'app/Viewer/actions/actionTypes';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { atomStore, libraryURLAtom } from 'V2/atoms';
 import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
@@ -89,8 +88,7 @@ class DocumentSidePanel extends Component {
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS()).then(() => {
           this.props.unselectAllDocuments();
-          const lastLibraryUrl = atomStore.get(libraryURLAtom) || '/library';
-          this.props.navigate(lastLibraryUrl);
+          this.props.navigate(-1);
         });
       },
       title: 'Confirm',
