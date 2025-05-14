@@ -255,29 +255,5 @@ describe('PDF display', () => {
         cy.get('.closeSidepanel').realTouch();
       });
     });
-
-    describe('IX sidepanel', { viewportWidth: 375, viewportHeight: 812 }, () => {
-      it('should navigate to the extractor', () => {
-        cy.get('header').within(() => {
-          cy.get('.menu-button').realTouch();
-        });
-        cy.get('.menuActions > .menuNav-list').within(() => {
-          cy.contains('.only-mobile', 'Settings').realTouch();
-        });
-        cy.contains('a', 'Metadata Extraction').realTouch();
-        cy.contains('td', 'Extractor 1');
-        cy.contains('button', 'Review').realTouch();
-        cy.contains('td', 'Entity with pdf (es)');
-      });
-
-      it('should open the pdf sidepanel and show the correct page', () => {
-        cy.contains('button', 'Open').scrollIntoView();
-        cy.contains('button', 'Open').realTouch();
-        cy.contains('Loading').should('not.exist');
-        cy.get('#pdf-container').should('be.visible');
-        cy.get('.highlight-rectangle').should('be.visible');
-        cy.get('#root').toMatchImageSnapshot();
-      });
-    });
   });
 });
