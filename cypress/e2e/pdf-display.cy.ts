@@ -215,6 +215,7 @@ describe('PDF display', () => {
       it('should close the sidepanel', () => {
         cy.contains('button', 'Cancel').click();
       });
+    });
   });
 
   describe('responsiveness', { viewportWidth: 768, viewportHeight: 1024 }, () => {
