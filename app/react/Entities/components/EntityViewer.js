@@ -17,7 +17,7 @@ import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
-import { t, I18NLink } from 'app/I18N';
+import { t, I18NLinkV2 as I18NLink } from 'app/I18N';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
@@ -258,7 +258,7 @@ class EntityViewer extends Component {
                       <I18NLink
                         className={this.linkClassNames(['page'])}
                         to={`/entity/${rawEntity.sharedId}/page`}
-                        replaceNavigationHistory
+                        replace
                       >
                         <Icon icon="file-image" />
                         <span className="tab-link-tooltip">{t('System', 'Page')}</span>
@@ -277,7 +277,7 @@ class EntityViewer extends Component {
                     <I18NLink
                       className={this.linkClassNames(['info', ''])}
                       to={`/entity/${rawEntity.sharedId}/info`}
-                      replaceNavigationHistory
+                      replace
                     >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
@@ -295,7 +295,7 @@ class EntityViewer extends Component {
                     <I18NLink
                       className={this.linkClassNames(['relationships'])}
                       to={`/entity/${rawEntity.sharedId}/relationships`}
-                      replaceNavigationHistory
+                      replace
                     >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
@@ -315,7 +315,7 @@ class EntityViewer extends Component {
                       <I18NLink
                         className={this.linkClassNames(['newrelationships'])}
                         to={`/entity/${rawEntity.sharedId}/newrelationships`}
-                        replaceNavigationHistory
+                        replace
                       >
                         <Icon icon="exchange-alt" />*
                         <span className="tab-link-tooltip" no-translate>

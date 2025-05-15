@@ -9,7 +9,7 @@ import { Icon } from 'UI';
 import { withContext, withRouter } from 'app/componentWrappers';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { I18NLinkV2 as I18NLink, t, Translate } from 'app/I18N';
 import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
@@ -211,6 +211,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'semantic-search-results')}
+                            replace
                             to={linkTo('semantic-search-results')}
                             onClick={() =>
                               store.dispatch(
@@ -257,6 +258,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'text-search')}
+                            replace
                             to={linkTo('text-search')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'))
@@ -295,6 +297,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'toc')}
+                            replace
                             to={linkTo('toc')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'toc'))
@@ -340,11 +343,11 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'references')}
+                            replace
                             to={linkTo('references')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'references'))
                             }
-                            replacenavigationhistory="true"
                           >
                             <Icon icon="sitemap" />
                             <span className="connectionsNumber">{references.size}</span>
@@ -388,6 +391,7 @@ class DocumentSidePanel extends Component {
                   >
                     <I18NLink
                       className={this.linkClassNames(tab === 'metadata' || tab === '')}
+                      replace
                       to={linkTo('metadata')}
                       onClick={() =>
                         store.dispatch(actions.set('viewer.sidepanel.tab', 'metadata'))
@@ -426,6 +430,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'relationships')}
+                            replace
                             to={linkTo('relationships')}
                             onClick={() => {
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'relationships'));
@@ -468,6 +473,7 @@ class DocumentSidePanel extends Component {
                   >
                     <I18NLink
                       className={this.linkClassNames(['newrelationships'])}
+                      replace
                       to={linkTo('newrelationships')}
                       onClick={() =>
                         store.dispatch(actions.set('viewer.sidepanel.tab', 'newrelationships'))
