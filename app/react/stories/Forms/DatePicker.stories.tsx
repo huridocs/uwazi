@@ -64,24 +64,6 @@ const Basic: Story = {
   },
 };
 
-const FormIntegration: Story = {
-  ...Primary,
-  args: {
-    model: 'metadata.dateField',
-    label: 'Form Date Field',
-    locale: 'es',
-    format: 'dd-mm-yyyy',
-    labelToday: 'Hoy',
-    labelClear: 'Limpiar',
-    placeholder: 'Seleccione una fecha',
-    hideLabel: false,
-    className: '',
-    useTimezone: true,
-    onChange: action('changed'),
-    onBlur: action('blurred'),
-    clearFieldAction: action('cleared'),
-  },
-};
 
 const DateRangeBasic: DateRangeStory = {
   render: args => (
@@ -117,6 +99,6 @@ const DateRangeBasic: DateRangeStory = {
   },
 };
 
-export { Basic, DateRangeBasic, FormIntegration };
+export { Basic, DateRangeBasic };
 
 export default meta;

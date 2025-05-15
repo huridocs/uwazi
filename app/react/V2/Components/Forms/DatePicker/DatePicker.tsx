@@ -48,14 +48,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const date = removeOffset(useTimezone, value);
     if (date) {
       setRawDate(date);
-      setInputValue(date.locale(locale).format(dateFormat));
+      setInputValue(date.format(dateFormat));
       setIsValid(true);
     } else {
       setRawDate(null);
       setInputValue('');
       setIsValid(true);
     }
-  }, []);
+  }, [value, useTimezone, dateFormat]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
@@ -74,7 +74,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       if (withOffset) {
         setRawDate(withOffset);
         setIsValid(true);
-        const formattedDate = withOffset.locale(locale).format(dateFormat);
+        const formattedDate = withOffset.format(dateFormat);
         onChange(withOffset.valueOf()/1000);
         setInputValue(formattedDate);
       }
