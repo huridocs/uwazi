@@ -1,6 +1,5 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
 import moment from 'moment';
-import { isNumber } from 'lodash';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //Module has no types
 //@ts-ignore
@@ -125,12 +124,6 @@ const DatePickerComponent = React.forwardRef(
     }, 1000);
 
     const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      if (newValue && !moment(newValue, dateFormat, true).isValid()) {
-        if (newValue === '') {
-          onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
-        }
-      }
       onBlur(e);
     }, 1000);
 
@@ -156,19 +149,6 @@ const DatePickerComponent = React.forwardRef(
       });
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, []);
-
-    useEffect(() => {
-      if (instance?.current && ref?.current) {
-        let newValue = isNumber(value) ? value.toString() : value || '';
-        if (useTimezone && isNumber(value)) {
-          const date = moment.unix(Number(value));
-          newValue = date.format('DD-MM-YYYY');
-        }
-        if (ref.current.value !== newValue) {
-          ref.current.value = newValue;
-        }
-      }
-    }, [instance, value, useTimezone]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;

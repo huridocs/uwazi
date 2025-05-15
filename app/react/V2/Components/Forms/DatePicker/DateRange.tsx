@@ -1,123 +1,118 @@
-import React, { ChangeEventHandler } from 'react';
-import moment from 'moment-timezone';
-import { Translate, t } from 'app/I18N';
+import React, { ReactNode, useState, useEffect } from 'react';
+import moment, { Moment } from 'moment-timezone';
+import { Translate } from 'app/I18N';
 import { LazyDateRangePicker } from './loadableDatePicker';
-
-interface DateRangeValue {
-  from: string | number | null;
-  to: string | number | null;
-}
+import { removeOffset, addOffset } from './dateUtils';
 
 interface DateRangeProps {
-  value?: DateRangeValue;
-  onChange?: (value: DateRangeValue) => void;
+  label?: ReactNode;
+  labelToday?: string;
+  labelClear?: string;
+  value?: { from: string | number | null; to: string | number | null };
+  onChange?: (value: { from: string | number | null; to: string | number | null }) => void;
   locale?: string;
   format?: string;
   useTimezone?: boolean;
+  endOfDay?: boolean;
   model?: string;
-  className?: string;
-  labelToday?: string;
-  labelClear?: string;
   placeholderStart?: string;
   placeholderEnd?: string;
-  onFromDateSelected?: ChangeEventHandler<HTMLInputElement>;
-  onToDateSelected?: ChangeEventHandler<HTMLInputElement>;
-  label?: React.ReactElement;
-  hasErrors?: boolean;
-  onClear?: (field: 'from' | 'to') => void;
-  modelPrefix?: string;
+  hideLabel?: boolean;
+  className?: string;
+  onBlur?: any;
+  clearFieldAction?: any;
 }
 
-const removeOffset = (useTimezone: boolean, value: string | number | null | undefined): string | null => {
-  if (!value) return null;
-  
-  const milliseconds = typeof value === 'number' ? value * 1000 : moment(value).valueOf();
-  const newValue = moment.utc(milliseconds);
-
-  if (!useTimezone) {
-    newValue.subtract(moment(moment(milliseconds)).utcOffset(), 'minutes');
-  }
-
-  return newValue.locale('en').format('YYYY-MM-DD');
-};
-
-const addOffset = (useTimezone: boolean, endOfDay: boolean, value: string): number => {
-  const newValue = moment.utc(value);
-
-  if (!useTimezone) {
-    newValue.add(moment(value).utcOffset(), 'minutes');
-  }
-
-  if (endOfDay) {
-    const method = useTimezone ? newValue.local() : newValue.utc();
-    method.endOf('day');
-  }
-
-  return parseInt(newValue.locale('en').format('X'), 10);
-};
-
-const DateRange: React.FC<DateRangeProps> = ({ 
-  value = { from: null, to: null }, 
-  onChange = () => {}, 
-  locale = 'en', 
-  format = 'YYYY-MM-DD', 
-  useTimezone = false,
-  model,
-  modelPrefix,
+const DateRange: React.FC<DateRangeProps> = ({
+  value,
   label,
-  hasErrors,
-  onClear
+  labelToday='Today',
+  labelClear='Clear',
+  onChange = () => {},
+  locale = 'en',
+  format = 'YYYY-MM-DD',
+  useTimezone = false,
+  endOfDay = false,
+  model,
+  placeholderStart,
+  placeholderEnd,
+  hideLabel,
+  className,
+  onBlur,
+  clearFieldAction,
 }) => {
-  const { from, to } = value;
+  const dateFormat = format.toUpperCase();
+  const [fromValue, setFromValue] = useState<string>('');
+  const [toValue, setToValue] = useState<string>('');
+  const fromDate = removeOffset(useTimezone, value?.from);
+  const toDate = removeOffset(useTimezone, value?.to);
 
-  const handleFromDateSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.value) {
-      onChange({ ...value, from: null });
-    } else {
-      const newValue = addOffset(useTimezone, false, e.target.value);
-      onChange({ ...value, from: newValue });
+  useEffect(() => {
+    if (fromDate) {
+      setFromValue(fromDate.locale(locale).format(dateFormat));
     }
-  };
-
-  const handleToDateSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.value) {
-      onChange({ ...value, to: null });
-    } else {
-      const newValue = addOffset(useTimezone, true, e.target.value);
-      onChange({ ...value, to: newValue });
+    if (toDate) {
+      setToValue(toDate.locale(locale).format(dateFormat));
     }
+  }, [fromDate, toDate, dateFormat, locale]);
+
+  const handleFromChange = (newValue: number | null) => {
+    onChange({ from: newValue, to: value?.to || null });
   };
 
-  const handleClear = (field: 'from' | 'to') => {
-    onChange({ ...value, [field]: null });
+  const handleToChange = (newValue: number | null) => {
+    onChange({ from: value?.from || null, to: newValue });
   };
 
-  const fullModel = modelPrefix ? `${modelPrefix}.${model}` : model;
+  const handleFromBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      const timestamp = addOffset(useTimezone, endOfDay, e.target.value, dateFormat);
+      if (timestamp !== null) {
+        handleFromChange(timestamp.valueOf());
+        setFromValue(timestamp.locale(locale).format(dateFormat));
+      } else {
+        setFromValue(fromDate?.locale(locale).format(dateFormat) || '');
+      }
+    }
+    onBlur?.(e);
+  };
 
-  // Format the values for display
-  const displayValue = {
-    from: removeOffset(useTimezone, from) || '',
-    to: removeOffset(useTimezone, to) || ''
+  const handleToBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      const timestamp = addOffset(useTimezone, endOfDay, e.target.value, dateFormat);
+      if (timestamp !== null) {
+        debugger;
+        handleToChange(timestamp.valueOf());
+        setToValue(timestamp.locale(locale).format(dateFormat));
+      } else {
+        setToValue(toDate?.locale(locale).format(dateFormat) || '');
+      }
+    }
+    onBlur?.(e);
   };
 
   return (
-    <div>
-      <LazyDateRangePicker
-        label={label || <Translate translationKey="property daterange">Date Range</Translate>}
-        language={locale}
-        dateFormat={format}
-        value={displayValue}
-        onFromDateSelected={handleFromDateSelected}
-        onToDateSelected={handleToDateSelected}
-        onClear={handleClear}
-        placeholderStart={t('System', 'From', null, false)}
-        placeholderEnd={t('System', 'To', null, false)}
-        labelToday={t('System', 'Today', null, false)}
-        labelClear={t('System', 'Clear', null, false)}
-        name={fullModel}
-        hideLabel={false}
-        hasErrors={hasErrors}
-      />
+    <div className="date-range">
+      <div className="date-range-from">
+        <LazyDateRangePicker
+          label={label || <Translate translationKey="property date from">From</Translate>}
+          value={{ from: value?.from || null, to: value?.to || null }}
+          onFromDateSelected={handleFromChange}
+          onToDateSelected={handleToChange}
+          placeholderStart={placeholderStart}
+          placeholderEnd={placeholderEnd}
+          onBlur={handleFromBlur}
+          language={locale}
+          dateFormat={format}
+          useTimezone={useTimezone}
+          endOfDay={endOfDay}
+          model={model ? `${model}.from` : undefined}
+          placeholder={placeholderStart}
+          hideLabel={hideLabel}
+          className={className}
+          clearFieldAction={clearFieldAction}
+        />
+      </div>
     </div>
   );
 };

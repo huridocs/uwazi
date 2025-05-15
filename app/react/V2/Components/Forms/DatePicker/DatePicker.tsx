@@ -1,12 +1,13 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import moment, { Moment } from 'moment-timezone';
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { LazyDatePicker } from './loadableDatePicker';
+import { removeOffset, addOffset } from './dateUtils';
 
 interface DatePickerProps {
   label?: ReactNode;
   value?: string | number | null;
-  onChange?: (value: number | null) => void;
+  onChange?: (value: number | string | null) => void;
   locale?: string;
   format?: string;
   labelToday?: string;
@@ -20,43 +21,6 @@ interface DatePickerProps {
   onBlur?: any;
   clearFieldAction?: any;
 }
-
-const removeOffset = (useTimezone: boolean, value: string | number | null | undefined): Moment | null => {
-  if (!value) return null;
-  
-  const milliseconds = typeof value === 'number' ? value * 1000 : moment(value).valueOf();
-  const newValue = moment.utc(milliseconds);
-
-  if (!useTimezone) {
-    newValue.subtract(moment(moment(milliseconds)).utcOffset(), 'minutes');
-  }
-
-  return newValue;
-};
-
-const addOffset = (useTimezone: boolean, endOfDay: boolean, value: string, dateFormat: string): Moment | null => {
-  let parsedDate = moment(value, dateFormat, true);
-  if (!parsedDate.isValid()) {
-    parsedDate = moment(value);
-  }
-  if (!parsedDate.isValid()) {
-    return null;
-  }
-
-  const newValue = moment.utc(parsedDate);
-
-  if (!useTimezone) {
-    newValue.add(moment(value).utcOffset(), 'minutes');
-  }
-
-  if (endOfDay) {
-    const dateValue = useTimezone ? newValue.local() : newValue.utc();
-    dateValue.endOf('day');
-    return dateValue;
-  }
-
-  return newValue;
-};
 
 const DatePicker: React.FC<DatePickerProps> = ({
   value,
@@ -76,43 +40,50 @@ const DatePicker: React.FC<DatePickerProps> = ({
   clearFieldAction,
 }) => {
   const dateFormat = format.toUpperCase();
-  const [inputValue, setInputValue] = useState<string>('');
-  const datePickerValue = removeOffset(useTimezone, value);
+  const [inputValue, setInputValue] = useState('');
+  const [rawDate, setRawDate] = useState<Moment | null>(null);
+  const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
-    if(datePickerValue) {
-      const formattedValue = datePickerValue.locale(locale).format(dateFormat);
-      setInputValue(formattedValue);
+    const date = removeOffset(useTimezone, value);
+    if (date) {
+      setRawDate(date);
+      setInputValue(date.locale(locale).format(dateFormat));
+      setIsValid(true);
+    } else {
+      setRawDate(null);
+      setInputValue('');
+      setIsValid(true);
     }
-  }, [datePickerValue, dateFormat]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    if (!inputValue) {
+    const typedValue = e.target.value;
+    setInputValue(typedValue);
+
+    if (!typedValue) {
+      setRawDate(null);
+      setIsValid(true);
       onChange(null);
-      setInputValue('');
       return;
     }
-    const newValue = addOffset(useTimezone, endOfDay, inputValue, dateFormat);
-    if (newValue) {
-      setInputValue(newValue.locale(locale).format(dateFormat));
-      onChange(newValue.valueOf());
+
+    const parsedDate = moment(typedValue, dateFormat, true);
+    if (parsedDate.isValid()) {
+      const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
+      if (withOffset) {
+        setRawDate(withOffset);
+        setIsValid(true);
+        const formattedDate = withOffset.locale(locale).format(dateFormat);
+        onChange(withOffset.valueOf()/1000);
+        setInputValue(formattedDate);
+      }
     } else {
-      setInputValue(inputValue);
+      setIsValid(false);
     }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      const newValue = removeOffset(useTimezone, e.target.value);
-      const timestamp = addOffset(useTimezone, endOfDay, e.target.value, dateFormat);
-      if (timestamp !== null) {
-        onChange(timestamp.valueOf());
-        setInputValue(timestamp.locale(locale).format(dateFormat));
-      } else {
-        setInputValue(datePickerValue?.locale(locale).format(dateFormat) || '');
-      }
-    }
     onBlur?.(e);
   };
 
@@ -137,4 +108,4 @@ const DatePicker: React.FC<DatePickerProps> = ({
   );
 };
 
-export { DatePicker }; 
+export { DatePicker };
