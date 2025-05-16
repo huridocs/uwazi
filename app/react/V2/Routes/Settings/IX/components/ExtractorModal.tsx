@@ -68,7 +68,6 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
       };
 
       if (propertyName === 'title' || !propertyName) {
-        console.log('inside');
         option.items.push({
           label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }, template._id),
           value: `${template._id?.toString()}-title`,
