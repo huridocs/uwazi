@@ -3,7 +3,7 @@ name: e2e puppeteer
 on:
   pull_request:
     branches: [development, staging, production]
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, !converted_to_draft]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -88,6 +88,6 @@ jobs:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
-      - name: Print server outputs
+      - name: Print server output
         run: cat output.txt
         if: failure()
