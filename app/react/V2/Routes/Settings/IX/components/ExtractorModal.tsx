@@ -47,7 +47,6 @@ const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
 
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
   const propertyName = values.length ? values[0].split('-', 2)[1] : null;
-  console.log('propertyName', values);
   return templates
     .map(template => {
       const option = {
