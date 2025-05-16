@@ -3,7 +3,7 @@ name: e2e cypress SETTINGS
 on:
   pull_request:
     branches: [development, staging, production]
-    types: [ready_for_review]
+    types: [!draft ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
