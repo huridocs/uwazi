@@ -88,6 +88,6 @@ jobs:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
-      - name: Print server output
+      - name: Print server outputs
         run: cat output.txt
         if: failure()
