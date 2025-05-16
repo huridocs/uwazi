@@ -175,7 +175,6 @@ function entityForTrainingQuery(
   if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
     query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
   }
-  console.log(query);
   return query;
 }
 

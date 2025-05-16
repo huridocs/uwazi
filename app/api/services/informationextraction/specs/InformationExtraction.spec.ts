@@ -207,36 +207,6 @@ describe('InformationExtraction', () => {
       );
     });
 
-    describe('when extracting from text property', () => {
-      fit('should not send xmls', async () => {
-        await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
-
-        expect(IXExternalService.materialsFileParams).toEqual(undefined);
-        expect(IXExternalService.files.length).toBe(0);
-      });
-
-      fit('should send labeled data', async () => {
-        await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
-
-        expect(IXExternalService.materials.length).toBe(2);
-        expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
-          id: factory.id('prop1extractor').toString(),
-          tenant: 'tenant1',
-          language_iso: 'en',
-          label_text: 'different from selected text',
-          source_text: 'text 1',
-        });
-
-        // expect(IXExternalService.materials.find(m => m.source_text === 'text 2')).toEqual({
-        //   id: factory.id('prop1extractor').toString(),
-        //   tenant: 'tenant1',
-        //   language_iso: 'en',
-        //   label_text: 'different from selected text',
-        //   source_text: 'text 1',
-        // });
-      });
-    });
-
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
@@ -872,9 +842,9 @@ describe('InformationExtraction', () => {
       setIXServiceResults([
         {},
         {
-          text: 'suggestion_text_2',
-          xml_file_name: 'documentC.xml',
-          segment_text: 'segment_text_2',
+          text: 'suggestion_text_1',
+          entity_name: 'A1',
+          segment_text: 'segment_text_1',
         },
       ]);
 
@@ -1479,6 +1449,729 @@ describe('InformationExtraction', () => {
           },
         ]);
       });
+    });
+  });
+
+  describe('when extracting from text property', () => {
+    fit('should not send xmls', async () => {
+      await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+
+      expect(IXExternalService.materialsFileParams).toEqual(undefined);
+      expect(IXExternalService.files.length).toBe(0);
+    });
+
+    fit('should send labeled data', async () => {
+      await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
+        entity_name: 'A1',
+        id: factory.id('sourceTextExtractor1').toString(),
+        tenant: 'tenant1',
+        language_iso: 'other',
+        source_text: 'text 1',
+        label_text: 1088985600,
+      });
+
+      expect(IXExternalService.materials.find(m => m.source_text === 'text 2')).toEqual({
+        entity_name: 'A1',
+        id: factory.id('sourceTextExtractor1').toString(),
+        tenant: 'tenant1',
+        language_iso: 'en',
+        label_text: 'labeled text',
+        source_text: 'text 2',
+      });
+    });
+
+    fit('should send the materials for the suggestions', async () => {
+      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+
+      expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
+        entity_name: 'A1',
+        id: factory.id('sourceTextExtractor1').toString(),
+        tenant: 'tenant1',
+        language_iso: 'other',
+        source_text: 'text 1',
+      });
+
+      expect(IXExternalService.materials.find(m => m.source_text === 'text 2')).toEqual({
+        entity_name: 'A1',
+        id: factory.id('sourceTextExtractor1').toString(),
+        tenant: 'tenant1',
+        language_iso: 'en',
+        source_text: 'text 2',
+      });
+    });
+
+    fit('should create the task for the suggestions', async () => {
+      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+
+      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+        params: {
+          id: factory.id('sourceTextExtractor1').toString(),
+          metadata: {
+            extractor_name: 'sourceTextExtractor1',
+            property: 'property1',
+            templates: expect.anything(),
+          },
+        },
+        tenant: 'tenant1',
+        task: 'suggestions',
+      });
+    });
+
+    xit('should create the suggestions placeholder with status processing', async () => {
+      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId: factory.id('sourceTextExtractor1'),
+      });
+      expect(suggestions).toMatchObject([
+        {
+          language: 'other',
+          entityId: 'A1',
+          status: 'processing',
+          state: {
+            labeled: true,
+            match: null,
+            withValue: true,
+            withSuggestion: true,
+            hasContext: true,
+            processing: true,
+            obsolete: true,
+            error: false,
+          },
+        },
+        {
+          language: 'en',
+          entityId: 'A1',
+          status: 'processing',
+          state: {
+            labeled: true,
+            match: null,
+            withValue: true,
+            withSuggestion: true,
+            hasContext: true,
+            processing: true,
+            obsolete: true,
+            error: false,
+          },
+        },
+      ]);
+    });
+
+    describe('when suggestions are ready', () => {
+      fit('should request and store the suggestions', async () => {
+        setIXServiceResults([
+          {},
+          {
+            text: 'suggestion_text_2',
+            segment_text: 'segment_text_2',
+            entity_name: 'A1',
+          },
+        ]);
+
+        // await saveSuggestionProcess('F3', 'A3', 'eng', 'sourceTextExtractor1');
+        await saveSuggestionProcess('F1', 'A1', 'eng', 'sourceTextExtractor1');
+        await informationExtraction.processResults({
+          params: { id: factory.id('sourceTextExtractor1').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        const suggestions = await IXSuggestionsModel.get({
+          status: 'ready',
+          extractorId: factory.id('sourceTextExtractor1'),
+        });
+
+        // expect(suggestions.length).toBe(2);
+        expect(suggestions.find(s => s.suggestedValue === 'suggestion_text_2')).toEqual(
+          expect.objectContaining({
+            entityId: 'A1',
+            language: 'en',
+            propertyName: 'property1',
+            suggestedValue: 'suggestion_text_2',
+            segment: 'segment_text_2',
+            status: 'ready',
+            state: {
+              labeled: true,
+              withValue: true,
+              withSuggestion: true,
+              match: false,
+              hasContext: true,
+              processing: false,
+              obsolete: false,
+              error: false,
+            },
+          })
+        );
+      });
+
+      // it('should save different language suggestions for the same entity', async () => {
+      //   IXExternalService.setResults([
+      //     {
+      //       tenant: 'tenant1',
+      //       id: factory.id('prop1extractor').toString(),
+      //       xml_file_name: 'documentA.xml',
+      //       text: 'text_in_other_language',
+      //       segment_text: 'segmented_text_in_other_language',
+      //       segments_boxes: [
+      //         {
+      //           left: 1,
+      //           top: 2,
+      //           width: 3,
+      //           height: 4,
+      //           page_number: 1,
+      //         },
+      //       ],
+      //     },
+      //     {
+      //       tenant: 'tenant1',
+      //       id: factory.id('prop1extractor').toString(),
+      //       xml_file_name: 'documentD.xml',
+      //       text: 'text_in_eng_language',
+      //       segment_text: 'segmented_text_in_eng_language',
+      //       segments_boxes: [
+      //         {
+      //           left: 1,
+      //           top: 2,
+      //           width: 3,
+      //           height: 4,
+      //           page_number: 1,
+      //         },
+      //       ],
+      //     },
+      //   ]);
+      //
+      //   await saveSuggestionProcess('F1', 'A1', 'other', 'prop1extractor');
+      //   await saveSuggestionProcess('F4', 'A1', 'eng', 'prop1extractor');
+      //
+      //   await informationExtraction.processResults({
+      //     params: { id: factory.id('prop1extractor').toString() },
+      //     tenant: 'tenant1',
+      //     task: 'suggestions',
+      //     success: true,
+      //     data_url: 'http://localhost:1234/suggestions_results',
+      //   });
+      //
+      //   const suggestions = await IXSuggestionsModel.get({
+      //     status: 'ready',
+      //     extractorId: factory.id('prop1extractor'),
+      //   });
+      //
+      //   expect(suggestions.length).toBe(2);
+      //
+      //   expect(suggestions.find(s => s.language === 'other')).toEqual(
+      //     expect.objectContaining({
+      //       language: 'other',
+      //       propertyName: 'property1',
+      //       status: 'ready',
+      //       suggestedValue: 'text_in_other_language',
+      //       state: {
+      //         labeled: true,
+      //         withValue: true,
+      //         withSuggestion: true,
+      //         match: false,
+      //         hasContext: true,
+      //         processing: false,
+      //         obsolete: false,
+      //         error: false,
+      //       },
+      //     })
+      //   );
+      //
+      //   expect(suggestions.find(s => s.language === 'en')).toEqual(
+      //     expect.objectContaining({
+      //       language: 'en',
+      //       propertyName: 'property1',
+      //       status: 'ready',
+      //       suggestedValue: 'text_in_eng_language',
+      //       state: {
+      //         labeled: false,
+      //         withValue: true,
+      //         withSuggestion: true,
+      //         match: false,
+      //         hasContext: true,
+      //         processing: false,
+      //         obsolete: false,
+      //         error: false,
+      //       },
+      //     })
+      //   );
+      // });
+      //
+      // it('should store non-configured languages as default language suggestion', async () => {
+      //   setIXServiceResults([
+      //     {
+      //       xml_file_name: 'documentE.xml',
+      //       text: 'Esto es una prueba',
+      //     },
+      //   ]);
+      //
+      //   await saveSuggestionProcess('F5', 'A5', 'eng', 'prop1extractor');
+      //
+      //   await informationExtraction.processResults({
+      //     params: { id: factory.id('prop1extractor').toString() },
+      //     tenant: 'tenant1',
+      //     task: 'suggestions',
+      //     success: true,
+      //     data_url: 'http://localhost:1234/suggestions_results',
+      //   });
+      //
+      //   const suggestions = await IXSuggestionsModel.get({
+      //     status: 'ready',
+      //     extractorId: factory.id('prop1extractor'),
+      //   });
+      //   expect(suggestions.length).toBe(1);
+      //   expect(suggestions[0].language).toBe('en');
+      // });
+      //
+      // it('should store failed suggestions', async () => {
+      //   setIXServiceResults([
+      //     {
+      //       text: '',
+      //       segment_text: '',
+      //     },
+      //   ]);
+      //
+      //   await informationExtraction.processResults({
+      //     params: { id: factory.id('prop1extractor').toString() },
+      //     tenant: 'tenant1',
+      //     task: 'suggestions',
+      //     success: false,
+      //     error_message: 'Issue calculation suggestion',
+      //     data_url: 'http://localhost:1234/suggestions_results',
+      //   });
+      //
+      //   const suggestions = await IXSuggestionsModel.get({
+      //     status: 'failed',
+      //     extractorId: factory.id('prop1extractor'),
+      //   });
+      //
+      //   expect(suggestions.length).toBe(1);
+      //   expect(suggestions[0]).toEqual(
+      //     expect.objectContaining({
+      //       entityId: 'A1',
+      //       language: 'en',
+      //       propertyName: 'property1',
+      //       suggestedValue: '',
+      //       segment: '',
+      //       status: 'failed',
+      //       error: 'Issue calculation suggestion',
+      //       state: {
+      //         labeled: true,
+      //         match: null,
+      //         withValue: true,
+      //         withSuggestion: false,
+      //         hasContext: false,
+      //         processing: false,
+      //         obsolete: false,
+      //         error: true,
+      //       },
+      //     })
+      //   );
+      // });
+      //
+      // it('should not store invalid suggestions for the field as ready', async () => {
+      //   setIXServiceResults([
+      //     {
+      //       id: factory.id('prop2extractor').toString(),
+      //       text: '',
+      //     },
+      //     {
+      //       id: factory.id('prop2extractor').toString(),
+      //       xml_file_name: 'documentC.xml',
+      //       text: 'Not a valid date',
+      //       segment_text: 'segment_text_2',
+      //     },
+      //   ]);
+      //
+      //   await informationExtraction.processResults({
+      //     params: { id: factory.id('prop2extractor').toString() },
+      //     tenant: 'tenant1',
+      //     task: 'suggestions',
+      //     success: true,
+      //     data_url: 'http://localhost:1234/suggestions_results',
+      //   });
+      //
+      //   const suggestions = await IXSuggestionsModel.get({
+      //     status: 'ready',
+      //     extractorId: factory.id('prop2extractor'),
+      //   });
+      //   expect(suggestions.length).toBe(4);
+      // });
+      //
+      // describe('text', () => {
+      //   it('should store empty suggestions when they are of type text', async () => {
+      //     setIXServiceResults([
+      //       {
+      //         text: '',
+      //         segment_text: '',
+      //       },
+      //       {
+      //         text: '',
+      //         segment_text: '',
+      //       },
+      //     ]);
+      //
+      //     await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+      //
+      //     await informationExtraction.processResults({
+      //       params: { id: factory.id('prop1extractor').toString() },
+      //       tenant: 'tenant1',
+      //       task: 'suggestions',
+      //       success: true,
+      //       data_url: 'http://localhost:1234/suggestions_results',
+      //     });
+      //
+      //     const suggestionsText = await IXSuggestionsModel.get({
+      //       status: 'ready',
+      //       extractorId: factory.id('prop1extractor'),
+      //     });
+      //     expect(suggestionsText.length).toBe(1);
+      //   });
+      // });
+      //
+      // describe('dates', () => {
+      //   it('should store the suggestion text and suggestion value for dates', async () => {
+      //     setIXServiceResults([
+      //       {
+      //         xml_file_name: 'documentC.xml',
+      //         text: '2019-10-12',
+      //         segment_text: 'Birthday of John Doe is October 12, 2019',
+      //       },
+      //     ]);
+      //
+      //     await saveSuggestionProcess('F3', 'A3', 'eng', 'prop2extractor');
+      //
+      //     await informationExtraction.processResults({
+      //       params: { id: factory.id('prop2extractor').toString() },
+      //       tenant: 'tenant1',
+      //       task: 'suggestions',
+      //       success: true,
+      //       data_url: 'http://localhost:1234/suggestions_results',
+      //     });
+      //
+      //     const suggestions = await IXSuggestionsModel.get({
+      //       status: 'ready',
+      //       extractorId: factory.id('prop2extractor'),
+      //       entityId: 'A3',
+      //     });
+      //
+      //     expect(suggestions).toMatchObject([
+      //       { suggestedValue: 1570838400, suggestedText: '2019-10-12' },
+      //     ]);
+      //   });
+      // });
+      //
+      // describe('select/multiselect', () => {
+      //   it('should request and store the suggestions (select)', async () => {
+      //     setIXServiceResults(
+      //       [
+      //         {
+      //           id: factory.id('extractorWithSelect').toString(),
+      //           xml_file_name: 'documentG.xml',
+      //           values: [{ id: 'A', label: 'A' }],
+      //           segment_text: 'it is A',
+      //         },
+      //         {
+      //           id: factory.id('extractorWithSelect').toString(),
+      //           xml_file_name: 'documentH.xml',
+      //           values: [{ id: 'B', label: 'B' }],
+      //           segment_text: 'it is B',
+      //         },
+      //         {
+      //           id: factory.id('extractorWithSelect').toString(),
+      //           xml_file_name: 'documentI.xml',
+      //           values: [{ id: 'A', label: 'A' }],
+      //           segment_text: 'it is A',
+      //         },
+      //       ],
+      //       'value'
+      //     );
+      //
+      //     await saveSuggestionProcess('SUG17B', 'A17', 'eng', 'extractorWithSelect');
+      //     await saveSuggestionProcess('SUG18B', 'A18', 'eng', 'extractorWithSelect');
+      //     await saveSuggestionProcess('SUG19B', 'A19', 'eng', 'extractorWithSelect');
+      //
+      //     await informationExtraction.processResults({
+      //       params: { id: factory.id('extractorWithSelect').toString() },
+      //       tenant: 'tenant1',
+      //       task: 'suggestions',
+      //       success: true,
+      //       data_url: 'http://localhost:1234/suggestions_results',
+      //     });
+      //
+      //     const suggestions = await IXSuggestionsModel.get({
+      //       status: 'ready',
+      //       extractorId: factory.id('extractorWithSelect'),
+      //     });
+      //
+      //     const sorted = sortByStrings(suggestions, [(s: any) => s.entityId]);
+      //
+      //     const expectedBase = {
+      //       _id: expect.any(ObjectId),
+      //       entityTemplate: factory.id('templateToSegmentD').toString(),
+      //       language: 'en',
+      //       propertyName: 'property_select',
+      //       extractorId: factory.id('extractorWithSelect'),
+      //       status: 'ready',
+      //       page: 1,
+      //       date: expect.any(Number),
+      //       error: '',
+      //       state: {
+      //         labeled: true,
+      //         withValue: true,
+      //         withSuggestion: true,
+      //         match: true,
+      //         hasContext: true,
+      //         processing: false,
+      //         obsolete: false,
+      //         error: false,
+      //       },
+      //     };
+      //
+      //     expect(sorted).toEqual([
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F17'),
+      //         entityId: 'A17',
+      //         suggestedValue: 'A',
+      //         segment: 'it is A',
+      //       },
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F18'),
+      //         entityId: 'A18',
+      //         suggestedValue: 'B',
+      //         segment: 'it is B',
+      //       },
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F19'),
+      //         entityId: 'A19',
+      //         suggestedValue: 'A',
+      //         segment: 'it is A',
+      //         state: {
+      //           ...expectedBase.state,
+      //           withValue: false,
+      //           labeled: false,
+      //           match: false,
+      //         },
+      //       },
+      //     ]);
+      //   });
+      //
+      //   it('should request and store the suggestions (multiselect)', async () => {
+      //     setIXServiceResults(
+      //       [
+      //         {
+      //           id: factory.id('extractorWithMultiselect').toString(),
+      //           xml_file_name: 'documentG.xml',
+      //           values: [{ id: 'A', label: 'A' }],
+      //           segment_text: 'it is A',
+      //         },
+      //         {
+      //           id: factory.id('extractorWithMultiselect').toString(),
+      //           xml_file_name: 'documentH.xml',
+      //           values: [
+      //             { id: 'B', label: 'B' },
+      //             { id: 'C', label: 'C' },
+      //           ],
+      //           segment_text: 'it is B or C',
+      //         },
+      //         {
+      //           id: factory.id('extractorWithMultiselect').toString(),
+      //           xml_file_name: 'documentI.xml',
+      //           values: [
+      //             { id: 'A', label: 'A' },
+      //             { id: 'C', label: 'C' },
+      //           ],
+      //           segment_text: 'it is A or C',
+      //         },
+      //       ],
+      //       'value'
+      //     );
+      //
+      //     await saveSuggestionProcess('SUG17', 'A17', 'eng', 'extractorWithMultiselect');
+      //     await saveSuggestionProcess('SUG18', 'A18', 'eng', 'extractorWithMultiselect');
+      //     await saveSuggestionProcess('SUG19', 'A19', 'eng', 'extractorWithMultiselect');
+      //
+      //     await informationExtraction.processResults({
+      //       params: { id: factory.id('extractorWithMultiselect').toString() },
+      //       tenant: 'tenant1',
+      //       task: 'suggestions',
+      //       success: true,
+      //       data_url: 'http://localhost:1234/suggestions_results',
+      //     });
+      //
+      //     const suggestions = await IXSuggestionsModel.get({
+      //       status: 'ready',
+      //       extractorId: factory.id('extractorWithMultiselect'),
+      //     });
+      //
+      //     const sorted = sortByStrings(suggestions, [(s: any) => s.entityId]);
+      //
+      //     const expectedBase = {
+      //       _id: expect.any(ObjectId),
+      //       entityTemplate: factory.id('templateToSegmentD').toString(),
+      //       language: 'en',
+      //       propertyName: 'property_multiselect',
+      //       extractorId: factory.id('extractorWithMultiselect'),
+      //       status: 'ready',
+      //       page: 1,
+      //       date: expect.any(Number),
+      //       error: '',
+      //       state: {
+      //         labeled: true,
+      //         withValue: true,
+      //         withSuggestion: true,
+      //         match: true,
+      //         hasContext: true,
+      //         processing: false,
+      //         obsolete: false,
+      //         error: false,
+      //       },
+      //     };
+      //
+      //     expect(sorted).toEqual([
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F17'),
+      //         entityId: 'A17',
+      //         suggestedValue: ['A'],
+      //         segment: 'it is A',
+      //       },
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F18'),
+      //         entityId: 'A18',
+      //         suggestedValue: ['B', 'C'],
+      //         segment: 'it is B or C',
+      //       },
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F19'),
+      //         entityId: 'A19',
+      //         suggestedValue: ['A', 'C'],
+      //         segment: 'it is A or C',
+      //         state: {
+      //           ...expectedBase.state,
+      //           withValue: false,
+      //           labeled: false,
+      //           match: false,
+      //         },
+      //       },
+      //     ]);
+      //   });
+      // });
+      //
+      // describe('relationship', () => {
+      //   it('should request and store the suggestions (relationship)', async () => {
+      //     setIXServiceResults(
+      //       [
+      //         {
+      //           id: factory.id('extractorWithRelationship').toString(),
+      //           xml_file_name: 'documentK.xml',
+      //           values: [{ id: 'P1sharedId', label: 'P1' }],
+      //           segment_text: 'it is P1',
+      //         },
+      //         {
+      //           id: factory.id('extractorWithRelationship').toString(),
+      //           xml_file_name: 'documentL.xml',
+      //           values: [
+      //             { id: 'P1sharedId', label: 'P1' },
+      //             { id: 'P2sharedId', label: 'P2' },
+      //           ],
+      //           segment_text: 'it is P1 or P2',
+      //         },
+      //         {
+      //           id: factory.id('extractorWithRelationship').toString(),
+      //           xml_file_name: 'documentM.xml',
+      //           values: [{ id: 'P3sharedId', label: 'P3' }],
+      //           segment_text: 'it is P3',
+      //         },
+      //       ],
+      //       'value'
+      //     );
+      //
+      //     await saveSuggestionProcess('SUG21', 'A21', 'eng', 'extractorWithRelationship');
+      //     await saveSuggestionProcess('SUG22', 'A22', 'eng', 'extractorWithRelationship');
+      //     await saveSuggestionProcess('SUG23', 'A23', 'eng', 'extractorWithRelationship');
+      //
+      //     await informationExtraction.processResults({
+      //       params: { id: factory.id('extractorWithRelationship').toString() },
+      //       tenant: 'tenant1',
+      //       task: 'suggestions',
+      //       success: true,
+      //       data_url: 'http://localhost:1234/suggestions_results',
+      //     });
+      //
+      //     const suggestions = await IXSuggestionsModel.get({
+      //       status: 'ready',
+      //       extractorId: factory.id('extractorWithRelationship'),
+      //     });
+      //
+      //     const sorted = sortByStrings(suggestions, [(s: any) => s.entityId]);
+      //
+      //     const expectedBase = {
+      //       _id: expect.any(ObjectId),
+      //       entityTemplate: factory.id('templateToSegmentF').toString(),
+      //       language: 'en',
+      //       propertyName: 'property_relationship',
+      //       extractorId: factory.id('extractorWithRelationship'),
+      //       status: 'ready',
+      //       page: 1,
+      //       date: expect.any(Number),
+      //       error: '',
+      //       state: {
+      //         labeled: true,
+      //         withValue: true,
+      //         withSuggestion: true,
+      //         match: true,
+      //         hasContext: true,
+      //         processing: false,
+      //         obsolete: false,
+      //         error: false,
+      //       },
+      //     };
+      //
+      //     expect(sorted).toEqual([
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F21'),
+      //         entityId: 'A21',
+      //         suggestedValue: ['P1sharedId'],
+      //         segment: 'it is P1',
+      //       },
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F22'),
+      //         entityId: 'A22',
+      //         suggestedValue: ['P1sharedId', 'P2sharedId'],
+      //         segment: 'it is P1 or P2',
+      //         state: {
+      //           ...expectedBase.state,
+      //           match: false,
+      //         },
+      //       },
+      //       {
+      //         ...expectedBase,
+      //         fileId: factory.id('F23'),
+      //         entityId: 'A23',
+      //         suggestedValue: ['P3sharedId'],
+      //         segment: 'it is P3',
+      //         state: {
+      //           ...expectedBase.state,
+      //           withValue: false,
+      //           labeled: false,
+      //           match: false,
+      //         },
+      //       },
+      //     ]);
+      //   });
+      // });
     });
   });
 });

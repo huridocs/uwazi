@@ -77,7 +77,7 @@ const fixtures: DBFixture = {
       { language: 'other' }
     ),
     factory.entity('A1', 'templateToSegmentA', {
-      property1: [{ value: 'different from selected text' }],
+      property1: [{ value: 'labeled text' }],
       property2: [{ value: 1299196800 }],
       text: [{ value: 'text 2' }],
     }),
@@ -671,6 +671,12 @@ const fixtures: DBFixture = {
     },
   ],
   ixmodels: [
+    {
+      extractorId: factory.id('sourceTextExtractor1'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
     {
       extractorId: factory.id('prop1extractor'),
       creationDate: 200,
