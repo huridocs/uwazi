@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   e2e-cypress:
-    if: github.event.action != 'converted_to_draft'
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
