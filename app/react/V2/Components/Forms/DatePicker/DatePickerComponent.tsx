@@ -97,9 +97,9 @@ const DatePickerComponent = React.forwardRef(
       inputClassName = '',
       className = '',
       name = 'date',
-      onChange = () => {},
-      onBlur = () => {},
-      clearFieldAction = () => {},
+      onChange = () => { },
+      onBlur = () => { },
+      clearFieldAction = () => { },
       useTimezone = false,
       endOfDay = false,
     }: DatePickerProps,
@@ -162,7 +162,7 @@ const DatePickerComponent = React.forwardRef(
       const allowedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'Tab', '-', '/'];
       const isNumber = /^[0-9]$/.test(e.key);
       const isAllowedKey = allowedKeys.includes(e.key);
-      
+
       if (!isNumber && !isAllowedKey) {
         e.preventDefault();
       }

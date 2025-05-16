@@ -38,9 +38,12 @@ const Primary: Story = {
       hideLabel={args.hideLabel}
       className={args.className}
       useTimezone={args.useTimezone}
+      disabled={args.disabled}
+      hasErrors={args.hasErrors}
       onChange={args.onChange}
       onBlur={args.onBlur}
       clearFieldAction={args.clearFieldAction}
+      errorMessage={args.errorMessage}
     />
   ),
 };
@@ -58,6 +61,8 @@ const Basic: Story = {
     hideLabel: true,
     className: '',
     useTimezone: true,
+    disabled: false,
+    hasErrors: false,
     onChange: action('changed'),
     onBlur: action('blurred'),
     clearFieldAction: action('cleared'),
@@ -71,6 +76,8 @@ const DateRangeBasic: DateRangeStory = {
       model={args.model}
       value={args.value}
       label={args.label}
+      labelToday={args.labelToday}
+      labelClear={args.labelClear}
       placeholderStart={args.placeholderStart}
       placeholderEnd={args.placeholderEnd}
       locale={args.locale}
@@ -78,14 +85,20 @@ const DateRangeBasic: DateRangeStory = {
       hideLabel={args.hideLabel}
       className={args.className}
       useTimezone={args.useTimezone}
+      disabled={args.disabled}
+      hasErrors={args.hasErrors}
       onChange={args.onChange}
       onBlur={args.onBlur}
       clearFieldAction={args.clearFieldAction}
+      errorMessage={args.errorMessage}
+      endOfDay={args.endOfDay}
     />
   ),
   args: {
     model: 'dateField',
     label: 'Rango de fechas',
+    labelToday: 'Hoy',
+    labelClear: 'Limpiar',
     locale: 'es',
     format: 'dd-mm-yyyy',
     placeholderStart: 'Inicio',
@@ -93,6 +106,8 @@ const DateRangeBasic: DateRangeStory = {
     hideLabel: true,
     className: '',
     useTimezone: true,
+    disabled: false,
+    hasErrors: true,
     onChange: action('changed'),
     onBlur: action('blurred'),
     clearFieldAction: action('cleared'),

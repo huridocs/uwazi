@@ -20,12 +20,15 @@ interface DatePickerProps {
   className?: string;
   onBlur?: any;
   clearFieldAction?: any;
+  disabled?: boolean;
+  hasErrors?: boolean;
+  errorMessage?: string;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
   value,
   label,
-  onChange = () => {},
+  onChange = () => { },
   locale = 'en',
   format = 'YYYY-MM-DD',
   useTimezone = false,
@@ -38,8 +41,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
   className,
   onBlur,
   clearFieldAction,
+  disabled = false,
+  hasErrors = false,
+  errorMessage = '',
 }) => {
-  const dateFormat = format.toUpperCase();
+  const dateFormat = (format || 'YYYY/MM/DD').toUpperCase();
   const [inputValue, setInputValue] = useState('');
   const [rawDate, setRawDate] = useState<Moment | null>(null);
   const [isValid, setIsValid] = useState(true);
@@ -75,7 +81,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         setRawDate(withOffset);
         setIsValid(true);
         const formattedDate = withOffset.format(dateFormat);
-        onChange(withOffset.valueOf()/1000);
+        onChange(withOffset.valueOf() / 1000);
         setInputValue(formattedDate);
       }
     } else {
@@ -103,6 +109,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
         hideLabel={hideLabel}
         className={className}
         clearFieldAction={clearFieldAction}
+        disabled={disabled}
+        hasErrors={hasErrors}
+        errorMessage={errorMessage}
       />
     </div>
   );
