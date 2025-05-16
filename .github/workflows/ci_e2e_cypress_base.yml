@@ -12,9 +12,6 @@ concurrency:
 
 jobs:
   e2e-cypress:
-    #run only when pushing directly to branches.
-    #avoid running if it's a draft pull request.
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
