@@ -97,7 +97,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => {}}
+                onBlur={() => { }}
               />
               <InputField
                 id="search"
@@ -110,7 +110,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => {}}
+                onBlur={() => { }}
               />
               <Controller
                 control={control}
@@ -127,7 +127,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     hasErrors={fieldState.error !== undefined}
                     labelClear={t('System', 'Clear', null, false)}
                     value={value}
-                    onChange={(newValue) => {
+                    onChange={(newValue: any) => {
                       setValue('dateRange', {
                         from: newValue.from?.toString() || '',
                         to: newValue.to?.toString() || ''

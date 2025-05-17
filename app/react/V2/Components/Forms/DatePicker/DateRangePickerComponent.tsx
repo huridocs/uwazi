@@ -8,6 +8,7 @@ import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
+import { debounce } from 'app/utils';
 import uniqueID from 'shared/uniqueID';
 import { t } from 'app/I18N';
 import { Label } from '../Label';
@@ -31,6 +32,7 @@ interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
   model?: string;
   disabled?: boolean;
   hasErrors?: boolean;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 const DateRangePickerComponent = React.forwardRef(
@@ -57,6 +59,7 @@ const DateRangePickerComponent = React.forwardRef(
       onFromDateSelected = () => { },
       onToDateSelected = () => { },
       onClear = () => { },
+      onBlur = () => { },
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
@@ -114,63 +117,42 @@ const DateRangePickerComponent = React.forwardRef(
       }
     }, [instance, value, useTimezone]);
 
+
+    const debouncedOnFromToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      if (newValue !== value.from && newValue.length === 10) {
+        onFromDateSelected(e);
+      }
+    }, 1000);
+
+    const debouncedOnToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      if (newValue !== value.to && newValue.length === 10) {
+        onToDateSelected(e);
+      }
+    }, 1000);
+
+
     const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      if (!newValue) {
-        onFromDateSelected(e);
-        return;
+      if (fromRef.current) {
+        fromRef.current.value = newValue;
       }
-      const timestamp = addOffset(useTimezone, endOfDay, newValue, dateFormat);
-      if (timestamp !== null) {
-        const syntheticEvent = {
-          target: { value: timestamp.valueOf() },
-          currentTarget: e.currentTarget,
-          nativeEvent: e.nativeEvent,
-          bubbles: e.bubbles,
-          cancelable: e.cancelable,
-          defaultPrevented: e.defaultPrevented,
-          eventPhase: e.eventPhase,
-          isTrusted: e.isTrusted,
-          preventDefault: e.preventDefault,
-          stopPropagation: e.stopPropagation,
-          timeStamp: e.timeStamp,
-          type: e.type,
-          isDefaultPrevented: e.isDefaultPrevented,
-          isPropagationStopped: e.isPropagationStopped,
-          persist: e.persist,
-        } as unknown as React.ChangeEvent<HTMLInputElement>;
-        onFromDateSelected(syntheticEvent);
-      }
+      debouncedOnFromToDateSelected(e);
     };
 
     const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      if (!newValue) {
-        onToDateSelected(e);
-        return;
+      if (toRef.current) {
+        toRef.current.value = newValue;
       }
-      const timestamp = addOffset(useTimezone, endOfDay, newValue, dateFormat);
-      if (timestamp !== null) {
-        const syntheticEvent = {
-          target: { value: timestamp.valueOf() },
-          currentTarget: e.currentTarget,
-          nativeEvent: e.nativeEvent,
-          bubbles: e.bubbles,
-          cancelable: e.cancelable,
-          defaultPrevented: e.defaultPrevented,
-          eventPhase: e.eventPhase,
-          isTrusted: e.isTrusted,
-          preventDefault: e.preventDefault,
-          stopPropagation: e.stopPropagation,
-          timeStamp: e.timeStamp,
-          type: e.type,
-          isDefaultPrevented: e.isDefaultPrevented,
-          isPropagationStopped: e.isPropagationStopped,
-          persist: e.persist,
-        } as unknown as React.ChangeEvent<HTMLInputElement>;
-        onToDateSelected(syntheticEvent);
-      }
+      debouncedOnToDateSelected(e);
     };
+
+    const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
+      onBlur(e);
+    }, 1000);
+
 
     return (
       <div className="tw-content">
@@ -214,7 +196,8 @@ const DateRangePickerComponent = React.forwardRef(
                 type="text"
                 defaultValue={formatValue(value?.from)}
                 onChange={handleFromChange}
-                onBlur={onFromDateSelected}
+                onSelect={handleFromChange}
+                onBlur={onBlur}
                 disabled={disabled}
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${inputClassName || ''} rounded-lg ${hasErrors || errorMessage
                   ? '[&>div>*:nth-child(odd)]:border-error-300 [&>div>*:nth-child(odd)]:focus:border-error-500 [&>div>*:nth-child(odd)]:focus:ring-error-500 [&>div>*:nth-child(odd)]:border-2 [&>div>*:nth-child(odd)]:text-error-900 [&>div>*:nth-child(odd)]:bg-error-50 [&>div>*:nth-child(odd)]:placeholder-error-700'
@@ -251,7 +234,8 @@ const DateRangePickerComponent = React.forwardRef(
                 type="text"
                 defaultValue={formatValue(value?.to)}
                 onChange={handleToChange}
-                onBlur={onToDateSelected}
+                onSelect={handleToChange}
+                onBlur={onBlur}
                 disabled={disabled}
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${inputClassName || ''} rounded-lg ${hasErrors || errorMessage
                   ? '[&>div>*:nth-child(odd)]:border-error-300 [&>div>*:nth-child(odd)]:focus:border-error-500 [&>div>*:nth-child(odd)]:focus:ring-error-500 [&>div>*:nth-child(odd)]:border-2 [&>div>*:nth-child(odd)]:text-error-900 [&>div>*:nth-child(odd)]:bg-error-50 [&>div>*:nth-child(odd)]:placeholder-error-700'

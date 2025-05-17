@@ -2,62 +2,70 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { DateRange } from 'V2/Components/Forms/DatePicker';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { settingsAtom } from 'V2/atoms';
+import { DateRange } from 'V2/Components/Forms/DatePicker/DateRange';
 
 const meta: Meta<typeof DateRange> = {
   title: 'Forms/DateRangePicker',
   component: DateRange,
   args: {
-    onFromDateSelected: fn(),
-    onToDateSelected: fn(),
+    onChange: fn(),
+    onBlur: fn(),
   },
   parameters: {
     actions: {
-      handles: ['change'],
+      handles: ['change', 'blur'],
     },
   },
 };
 
 type Story = StoryObj<typeof DateRange>;
 
-const Primary: Story = {
-  render: args => (
-    <div className="tw-container">
-      <div className="mx-2">
-        <DateRange
-          className="mx-2"
-          locale={args.locale}
-          format={args.format}
-          labelToday={args.labelToday}
-          labelClear={args.labelClear}
-          placeholderStart={args.placeholderStart}
-          placeholderEnd={args.placeholderEnd}
-          value={args.value}
-          useTimezone={args.useTimezone}
-          onFromDateSelected={args.onFromDateSelected}
-          onToDateSelected={args.onToDateSelected} 
-          />
-      </div>
-    </div>
-  ),
-};
+
 
 const Basic: Story = {
-  ...Primary,
+  render: args => (
+    <DateRange
+      model={args.model}
+      value={args.value}
+      label={args.label}
+      labelToday={args.labelToday}
+      labelClear={args.labelClear}
+      placeholderStart={args.placeholderStart}
+      placeholderEnd={args.placeholderEnd}
+      locale={args.locale}
+      format={args.format}
+      hideLabel={args.hideLabel}
+      className={args.className}
+      useTimezone={args.useTimezone}
+      disabled={args.disabled}
+      hasErrors={args.hasErrors}
+      onChange={args.onChange}
+      onBlur={args.onBlur}
+      clearFieldAction={args.clearFieldAction}
+      errorMessage={args.errorMessage}
+      endOfDay={args.endOfDay}
+    />
+  ),
   args: {
-    locale: 'es',
-    format: 'dd-mm-yyyy',
+    model: 'dateField',
+    label: 'Rango de fechas',
     labelToday: 'Hoy',
     labelClear: 'Limpiar',
+    locale: 'es',
+    format: 'dd-mm-yyyy',
     placeholderStart: 'Inicio',
     placeholderEnd: 'Fin',
+    hideLabel: true,
+    className: '',
     useTimezone: true,
-    onFromDateSelected: action('changed'),
-    onToDateSelected: action('blurred'),
+    disabled: false,
+    hasErrors: false,
+    onChange: action('changed'),
+    onBlur: action('blurred'),
+    clearFieldAction: action('cleared'),
   },
 };
+
 
 export { Basic };
 

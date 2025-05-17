@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import {DatePicker} from 'V2/Components/Forms/DatePicker';
+import { DatePicker } from 'V2/Components/Forms/DatePicker';
 
 interface DateRangeValue {
   from: number | null;

@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
 import { DatePicker } from 'V2/Components/Forms/DatePicker/DatePicker';
-import { DateRange } from 'V2/Components/Forms/DatePicker/DateRange';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Forms/DatePicker',
@@ -15,14 +14,13 @@ const meta: Meta<typeof DatePicker> = {
   },
   parameters: {
     actions: {
-      handles: ['change'],
+      handles: ['change', 'blur'],
     },
   },
 };
 
 type Story = StoryObj<typeof DatePicker>;
 
-type DateRangeStory = StoryObj<typeof DateRange>;
 
 const Primary: Story = {
   render: args => (
@@ -69,51 +67,6 @@ const Basic: Story = {
   },
 };
 
-
-const DateRangeBasic: DateRangeStory = {
-  render: args => (
-    <DateRange
-      model={args.model}
-      value={args.value}
-      label={args.label}
-      labelToday={args.labelToday}
-      labelClear={args.labelClear}
-      placeholderStart={args.placeholderStart}
-      placeholderEnd={args.placeholderEnd}
-      locale={args.locale}
-      format={args.format}
-      hideLabel={args.hideLabel}
-      className={args.className}
-      useTimezone={args.useTimezone}
-      disabled={args.disabled}
-      hasErrors={args.hasErrors}
-      onChange={args.onChange}
-      onBlur={args.onBlur}
-      clearFieldAction={args.clearFieldAction}
-      errorMessage={args.errorMessage}
-      endOfDay={args.endOfDay}
-    />
-  ),
-  args: {
-    model: 'dateField',
-    label: 'Rango de fechas',
-    labelToday: 'Hoy',
-    labelClear: 'Limpiar',
-    locale: 'es',
-    format: 'dd-mm-yyyy',
-    placeholderStart: 'Inicio',
-    placeholderEnd: 'Fin',
-    hideLabel: true,
-    className: '',
-    useTimezone: true,
-    disabled: false,
-    hasErrors: true,
-    onChange: action('changed'),
-    onBlur: action('blurred'),
-    clearFieldAction: action('cleared'),
-  },
-};
-
-export { Basic, DateRangeBasic };
+export { Basic };
 
 export default meta;

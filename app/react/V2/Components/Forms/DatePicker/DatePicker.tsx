@@ -7,7 +7,7 @@ import { removeOffset, addOffset } from './dateUtils';
 interface DatePickerProps {
   label?: ReactNode;
   value?: string | number | null;
-  onChange?: (value: number | string | null) => void;
+  onChange?: (value: number | null) => void;
   locale?: string;
   format?: string;
   labelToday?: string;
@@ -48,18 +48,15 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const dateFormat = (format || 'YYYY/MM/DD').toUpperCase();
   const [inputValue, setInputValue] = useState('');
   const [rawDate, setRawDate] = useState<Moment | null>(null);
-  const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
     const date = removeOffset(useTimezone, value);
     if (date) {
       setRawDate(date);
       setInputValue(date.format(dateFormat));
-      setIsValid(true);
     } else {
       setRawDate(null);
       setInputValue('');
-      setIsValid(true);
     }
   }, [value, useTimezone, dateFormat]);
 
@@ -69,7 +66,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
     if (!typedValue) {
       setRawDate(null);
-      setIsValid(true);
       onChange(null);
       return;
     }
@@ -79,13 +75,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
         setRawDate(withOffset);
-        setIsValid(true);
         const formattedDate = withOffset.format(dateFormat);
         onChange(withOffset.valueOf() / 1000);
         setInputValue(formattedDate);
       }
-    } else {
-      setIsValid(false);
     }
   };
 
