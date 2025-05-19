@@ -23,8 +23,6 @@ updates:
       - dependency-name: otplib
       - dependency-name: redux
       - dependency-name: redux-thunk
-      - dependency-name: '@typescript-eslint/eslint-plugin'
-      - dependency-name: '@typescript-eslint/parser'
       - dependency-name: eslint #6784
       - dependency-name: fetch-mock
       - dependency-name: react-datepicker

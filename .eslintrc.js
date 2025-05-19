@@ -15,6 +15,7 @@ module.exports = {
     'eslint-plugin-cypress',
   ],
   rules: {
+    "quotes": ["error", "single", { "avoidEscape": true }],
     'prettier/prettier': [
       'error',
       {

@@ -134,4 +134,4 @@ const TableRowComponent = ({
   );
 };
 
-export const TableRow = connect(mapStateToProps)(TableRowComponent);
+export const TableRow = connector(TableRowComponent);
