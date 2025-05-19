@@ -53,11 +53,11 @@ describe('DateRangePicker', () => {
     mount(<Basic onChange={onChange} />);
 
     cy.get('#from').click();
-    cy.contains('Today').click();
+    cy.contains('Hoy').click();
     cy.get('@onChange').should('have.been.called');
 
     cy.get('#to').click();
-    cy.contains('Today').click();
+    cy.contains('Hoy').click();
     cy.get('@onChange').should('have.been.called');
 
     checkSelectedDate('#from', today.getDate().toString().padStart(2, '0'));
@@ -69,9 +69,9 @@ describe('DateRangePicker', () => {
     mount(<Basic onChange={onChange} />);
 
     cy.get('#from').click();
-    cy.contains('Today').click();
+    cy.contains('Hoy').click();
     cy.get('#from').click();
-    cy.contains('Clear').click();
+    cy.contains('Limpiar').click();
     cy.get('@onChange').should('have.been.called');
   });
 
@@ -80,7 +80,7 @@ describe('DateRangePicker', () => {
     mount(<Basic onChange={onChange} />);
 
     cy.get('#from').click();
-    cy.contains('Today').click();
+    cy.contains('Hoy').click();
     cy.get('div[date-rangepicker=true]')
       .eq(0)
       .within(() => {
@@ -177,6 +177,80 @@ describe('DateRangePicker', () => {
           cy.contains('12').click();
         });
       cy.get('@onChange').should('have.been.called');
+    });
+  });
+
+  describe('when using endOfDay flag', () => {
+    it('should set the value to the end of the day', () => {
+      const onChange = cy.stub().as('onChange');
+      mount(<Basic onChange={onChange} endOfDay />);
+      cy.get('input[name=dateField]').click();
+      cy.get('.days')
+        .eq(0)
+        .within(() => {
+          cy.contains('12').click();
+        });
+      cy.get('@onChange').should('have.been.called');
+    });
+  });
+
+  describe('when used with react-redux-form', () => {
+    it('should handle date selection correctly in form context', () => {
+      const onChange = cy.stub().as('onChange');
+      mount(
+        <Basic
+          model="metadata.dateField"
+          onChange={onChange}
+          locale="es"
+          format="dd-mm-yyyy"
+          labelToday="Hoy"
+          labelClear="Limpiar"
+          placeholderStart="Seleccione una fecha"
+          placeholderEnd="Seleccione una fecha"
+          hideLabel={true}
+          className=""
+          useTimezone={true}
+        />
+      );
+
+      cy.get('input[name="metadata.dateField.from"]').click();
+      cy.get('.days')
+        .eq(0)
+        .within(() => {
+          cy.contains('1').click();
+        });
+      cy.wait(1000);
+
+      cy.get('@onChange').should('have.been.called');
+
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const formattedDate = moment(firstDay).format("DD-MM-yyyy")
+      cy.get('input[name="metadata.dateField.from"]').should('have.value', formattedDate);
+    });
+
+    it('should handle date input correctly in form context', () => {
+      const onChange = cy.stub().as('onChange');
+      mount(
+        <Basic
+          model="metadata.dateField"
+          onChange={onChange}
+          locale="es"
+          format="dd-mm-yyyy"
+          labelToday="Hoy"
+          labelClear="Limpiar"
+          hideLabel={true}
+          className=""
+          useTimezone={true}
+        />
+      );
+
+      cy.get('input[name="metadata.dateField.from"]').type('01-04-2005', { delay: 0 });
+      cy.wait(1000);
+
+      cy.get('@onChange').should('have.been.called');
+
+      cy.get('input[name="metadata.dateField.from"]').should('have.value', '01-04-2005');
     });
   });
 });

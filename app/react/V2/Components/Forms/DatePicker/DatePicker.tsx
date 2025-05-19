@@ -1,8 +1,8 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import moment, { Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 import { Translate } from 'app/I18N';
-import { LazyDatePicker } from './loadableDatePicker';
 import { removeOffset, addOffset } from './dateUtils';
+import { DatePickerComponent } from './DatePickerComponent';
 
 interface DatePickerProps {
   label?: ReactNode;
@@ -47,25 +47,22 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const dateFormat = (format || 'YYYY/MM/DD').toUpperCase();
   const [inputValue, setInputValue] = useState('');
-  const [rawDate, setRawDate] = useState<Moment | null>(null);
 
   useEffect(() => {
     const date = removeOffset(useTimezone, value);
     if (date) {
-      setRawDate(date);
       setInputValue(date.format(dateFormat));
     } else {
-      setRawDate(null);
       setInputValue('');
     }
   }, [value, useTimezone, dateFormat]);
 
+  // eslint-disable-next-line max-statements
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
     setInputValue(typedValue);
 
     if (!typedValue) {
-      setRawDate(null);
       onChange(null);
       return;
     }
@@ -74,7 +71,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
     if (parsedDate.isValid()) {
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
-        setRawDate(withOffset);
         const formattedDate = withOffset.format(dateFormat);
         onChange(withOffset.valueOf() / 1000);
         setInputValue(formattedDate);
@@ -88,7 +84,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   return (
     <div>
-      <LazyDatePicker
+      <DatePickerComponent
         label={label || <Translate translationKey="property date">Date</Translate>}
         language={locale}
         dateFormat={dateFormat.toLowerCase()}

@@ -1,35 +1,37 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
+import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
 import moment from 'moment';
 import { isNumber } from 'lodash';
-import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
+//Module has no types
 //@ts-ignore
-import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
-//@ts-ignore
-import Datepicker from 'flowbite-datepicker/Datepicker';
+import { Datepicker, DateRangePicker } from 'flowbite-datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import { debounce } from 'app/utils';
 import uniqueID from 'shared/uniqueID';
-import { t } from 'app/I18N';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { InputField } from '../InputField';
 import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
-import { removeOffset, addOffset } from './dateUtils';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
-  placeholderStart?: string;
-  placeholderEnd?: string;
-  onFromDateSelected?: any;
-  onToDateSelected?: any;
+  language: string;
+  dateFormat?: string;
+  useTimezone?: boolean;
+  endOfDay?: boolean;
+  hideLabel?: boolean;
+  className?: string;
+  model?: string;
   value?: {
     from: string | number | null;
     to: string | number | null;
   };
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelect?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholderStart?: string;
+  placeholderEnd?: string;
+  onFromDateSelected?: any;
+  onToDateSelected?: any;
   onClear?: (field: 'from' | 'to') => void;
-  useTimezone?: boolean;
-  endOfDay?: boolean;
-  model?: string;
   disabled?: boolean;
   hasErrors?: boolean;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
@@ -63,6 +65,7 @@ const DateRangePickerComponent = React.forwardRef(
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
+    const datePickerFormat = dateFormat.toLowerCase();
     const divRef = useRef(null);
     const fromRef = useRef<HTMLInputElement>(null);
     const toRef = useRef<HTMLInputElement>(null);
@@ -75,7 +78,7 @@ const DateRangePickerComponent = React.forwardRef(
       if (!val) return '';
       if (isNumber(val)) {
         const date = useTimezone ? moment.unix(val) : moment.utc(val * 1000);
-        return date.format(dateFormat.toLowerCase());
+        return date.format(datePickerFormat);
       }
       return val;
     };
@@ -84,12 +87,18 @@ const DateRangePickerComponent = React.forwardRef(
       Object.assign(Datepicker.locales, {
         [locale]: {
           ...datePickerOptionsByLocale(locale, labelToday, labelClear),
-          format: dateFormat.toLowerCase(),
+          format: datePickerFormat,
+        },
+      });
+      Object.assign(DateRangePicker?.locales || {}, {
+        [locale]: {
+          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+          format: datePickerFormat,
         },
       });
       const startEl = fromRef.current;
       const endEl = toRef.current;
-      instance.current = new DateRangePicker(divRef.current!, {
+      const options = {
         inputs: [startEl!, endEl!],
         container: '#tw-container',
         language: locale,
@@ -99,12 +108,16 @@ const DateRangePickerComponent = React.forwardRef(
         todayBtn: true,
         clearBtn: true,
         autohide: true,
-        format: dateFormat.toLowerCase(),
-      });
+        allowOneSidedRange: true,
+        format: datePickerFormat,
+      };
+      instance.current = new DateRangePicker(divRef.current!, options);
 
-      instance.current.setDates(formatValue(value?.from), formatValue(value?.to));
+      if (instance.current) {
+        instance.current.setDates(formatValue(value?.from), formatValue(value?.to));
+      }
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
-    }, []);
+    }, [locale, datePickerFormat, labelToday, labelClear]);
 
     useEffect(() => {
       if (!instance.current) {
@@ -115,8 +128,7 @@ const DateRangePickerComponent = React.forwardRef(
       } else {
         instance.current.setDates({ clear: true }, { clear: true });
       }
-    }, [instance, value, useTimezone]);
-
+    }, [instance, value, useTimezone, datePickerFormat]);
 
     const debouncedOnFromToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
@@ -131,7 +143,6 @@ const DateRangePickerComponent = React.forwardRef(
         onToDateSelected(e);
       }
     }, 1000);
-
 
     const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
@@ -152,7 +163,6 @@ const DateRangePickerComponent = React.forwardRef(
     const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
       onBlur(e);
     }, 1000);
-
 
     return (
       <div className="tw-content">
@@ -203,7 +213,7 @@ const DateRangePickerComponent = React.forwardRef(
                   ? '[&>div>*:nth-child(odd)]:border-error-300 [&>div>*:nth-child(odd)]:focus:border-error-500 [&>div>*:nth-child(odd)]:focus:ring-error-500 [&>div>*:nth-child(odd)]:border-2 [&>div>*:nth-child(odd)]:text-error-900 [&>div>*:nth-child(odd)]:bg-error-50 [&>div>*:nth-child(odd)]:placeholder-error-700'
                   : '[&>div>*:nth-child(odd)]:bg-gray-50 [&>div>*:nth-child(odd)]:border [&>div>*:nth-child(odd)]:border-gray-300'
                   }`}
-                placeholder={placeholderStart}
+                placeholder={placeholderStart || dateFormat}
                 ref={fromRef}
                 clearFieldAction={() => {
                   instance.current?.setDates({ clear: true }, formatValue(value?.to));
@@ -241,7 +251,7 @@ const DateRangePickerComponent = React.forwardRef(
                   ? '[&>div>*:nth-child(odd)]:border-error-300 [&>div>*:nth-child(odd)]:focus:border-error-500 [&>div>*:nth-child(odd)]:focus:ring-error-500 [&>div>*:nth-child(odd)]:border-2 [&>div>*:nth-child(odd)]:text-error-900 [&>div>*:nth-child(odd)]:bg-error-50 [&>div>*:nth-child(odd)]:placeholder-error-700'
                   : '[&>div>*:nth-child(odd)]:bg-gray-50 [&>div>*:nth-child(odd)]:border [&>div>*:nth-child(odd)]:border-gray-300'
                   }`}
-                placeholder={placeholderEnd}
+                placeholder={placeholderEnd || dateFormat}
                 clearFieldAction={() => {
                   instance.current?.setDates(formatValue(value?.from), { clear: true });
                   onClear('to');

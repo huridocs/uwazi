@@ -38,6 +38,7 @@ declare module 'flowbite-datepicker/DateRangePicker' {
   }
 
   interface DateRangePicker {
+    locales: Record<string, any>;
     hide: () => void;
     setDates: (from: string | { clear: boolean }, to: string | { clear: boolean }) => void;
     new (element: HTMLElement | null, options: DateRangePickerOptions): DateRangePicker;

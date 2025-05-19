@@ -1,82 +1,15 @@
-import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
-import moment from 'moment';
-import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
+import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
+
 //Module has no types
 //@ts-ignore
-import Datepicker from 'flowbite-datepicker/Datepicker';
+import { Datepicker } from 'flowbite-datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import uniqueID from 'shared/uniqueID';
 import { debounce } from 'app/utils';
-import { t } from 'app/I18N';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
+import { datePickerOptionsByLocale, DatePickerProps, validateLocale } from './dateUtils';
 
-interface DatePickerProps extends FlowbiteDatepickerProps {
-  dateFormat?: string;
-  language: string;
-  labelToday?: string;
-  labelClear?: string;
-  id?: string;
-  label?: string | React.ReactNode;
-  disabled?: boolean;
-  hideLabel?: boolean;
-  placeholder?: string;
-  hasErrors?: boolean;
-  errorMessage?: string | React.ReactNode;
-  value?: string | number;
-  inputClassName?: string;
-  autoComplete?: 'on' | 'off';
-  name?: string;
-  clearFieldAction?: () => any;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: ChangeEventHandler<HTMLInputElement>;
-  className?: string;
-  useTimezone?: boolean;
-  endOfDay?: boolean;
-}
-
-const titleFormat = (locale: string) => {
-  switch (locale) {
-    case 'hu':
-      return 'y. MM';
-    case 'ja':
-      return 'y年mm月';
-    case 'ko':
-      return 'y년mm월';
-    case 'zh-CN':
-      return 'y年mm月';
-    default:
-      return 'MM y';
-  }
-};
-
-const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string) => {
-  const localeData = moment.localeData(language);
-  const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
-  return {
-    days: localeData.weekdays(),
-    daysShort: localeData.weekdaysShort(),
-    daysMin: localeData.weekdaysMin(),
-    months: localeData.months(),
-    monthsShort: localeData.monthsShort(),
-    today: labelToday,
-    monthsTitle: t('System', 'Months', null, false),
-    clear: labelClear,
-    weekStart: localeData.firstDayOfWeek(),
-    format: 'dd-mm-yyyy',
-    titleFormat: titleFormat(language),
-    rtl: isRTL,
-  };
-};
-
-const validateLocale = (language: string) => {
-  try {
-    Intl.getCanonicalLocales(language);
-    return language;
-  } catch (_err) {
-    return 'en';
-  }
-};
 
 const DatePickerComponent = React.forwardRef(
   (
@@ -129,10 +62,7 @@ const DatePickerComponent = React.forwardRef(
 
     useEffect((): (() => void) => {
       Object.assign(Datepicker.locales, {
-        [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
-          format: datePickerFormat,
-        },
+        [locale]: datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat)
       });
       instance.current = new Datepicker(ref.current, {
         container: '#tw-container',

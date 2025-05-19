@@ -1,4 +1,7 @@
 import moment, { Moment } from 'moment-timezone';
+import type { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
+import { ChangeEventHandler } from 'react';
+import { t } from 'app/I18N';
 
 export const removeOffset = (
   useTimezone: boolean,
@@ -37,3 +40,71 @@ export const addOffset = (
   }
   return newValue;
 }; 
+
+
+export interface DatePickerProps extends FlowbiteDatepickerProps {
+  dateFormat?: string;
+  language: string;
+  labelToday?: string;
+  labelClear?: string;
+  id?: string;
+  label?: string | React.ReactNode;
+  disabled?: boolean;
+  hideLabel?: boolean;
+  placeholder?: string;
+  hasErrors?: boolean;
+  errorMessage?: string | React.ReactNode;
+  value?: string | number;
+  inputClassName?: string;
+  autoComplete?: 'on' | 'off';
+  name?: string;
+  clearFieldAction?: () => any;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onBlur?: ChangeEventHandler<HTMLInputElement>;
+  className?: string;
+  useTimezone?: boolean;
+  endOfDay?: boolean;
+}
+
+const titleFormat = (locale: string) => {
+  switch (locale) {
+    case 'hu':
+      return 'y. MM';
+    case 'ja':
+      return 'y年mm月';
+    case 'ko':
+      return 'y년mm월';
+    case 'zh-CN':
+      return 'y年mm月';
+    default:
+      return 'MM y';
+  }
+};
+
+export const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string, dateFormat: string = 'DD-MM-YYYY') => {
+  const localeData = moment.localeData(language);
+  const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
+  return {
+    days: localeData.weekdays(),
+    daysShort: localeData.weekdaysShort(),
+    daysMin: localeData.weekdaysMin(),
+    months: localeData.months(),
+    monthsShort: localeData.monthsShort(),
+    today: labelToday,
+    monthsTitle: t('System', 'Months', null, false),
+    clear: labelClear,
+    weekStart: localeData.firstDayOfWeek(),
+    format: dateFormat,
+    titleFormat: titleFormat(language),
+    rtl: isRTL,
+  };
+};
+
+export const validateLocale = (language: string) => {
+  try {
+    Intl.getCanonicalLocales(language);
+    return language;
+  } catch (_err) {
+    return 'en';
+  }
+};

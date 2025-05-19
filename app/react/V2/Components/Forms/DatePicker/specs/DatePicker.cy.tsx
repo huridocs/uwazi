@@ -3,7 +3,6 @@ import moment from 'moment-timezone';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import { DatePicker } from '../DatePicker';
 import * as stories from '../../../../../stories/Forms/DatePicker.stories';
 
 const { Basic } = composeStories(stories);
@@ -60,7 +59,7 @@ describe('DatePicker', () => {
   });
 
   describe('when typing dates', () => {
-    it('should allow entering dates in the format DD/MM/YYYY', () => {
+    it('should allow entering dates in the format DD-MM-YYYY', () => {
       const onChange = cy.stub().as('onChange');
       mount(<Basic onChange={onChange} />);
       cy.get('input[name=dateField]').type('15-05-2024', { delay: 0 });
@@ -177,7 +176,7 @@ describe('DatePicker', () => {
     it('should handle date selection correctly in form context', () => {
       const onChange = cy.stub().as('onChange');
       mount(
-        <DatePicker
+        <Basic
           model="metadata.dateField"
           value={null}
           onChange={onChange}
@@ -211,7 +210,7 @@ describe('DatePicker', () => {
     it('should handle date input correctly in form context', () => {
       const onChange = cy.stub().as('onChange');
       mount(
-        <DatePicker
+        <Basic
           model="metadata.dateField"
           value={null}
           onChange={onChange}

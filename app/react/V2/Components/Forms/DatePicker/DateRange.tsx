@@ -1,8 +1,7 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import moment, { Moment } from 'moment-timezone';
-import { Translate } from 'app/I18N';
-import { LazyDateRangePicker } from './loadableDatePicker';
+import moment from 'moment-timezone';
 import { removeOffset, addOffset } from './dateUtils';
+import { DateRangePickerComponent } from './DateRangePickerComponent';
 
 interface DateRangeProps {
   label?: ReactNode;
@@ -17,6 +16,7 @@ interface DateRangeProps {
   useTimezone?: boolean;
   endOfDay?: boolean;
   model?: string;
+  name?: string;
   placeholderStart?: string;
   placeholderEnd?: string;
   hideLabel?: boolean;
@@ -27,60 +27,56 @@ interface DateRangeProps {
   errorMessage?: string;
 }
 
-const DateRange: React.FC<DateRangeProps> = ({
-  value,
-  label,
-  labelToday = 'Today',
-  labelClear = 'Clear',
-  disabled = false,
-  hasErrors = false,
-  onChange = () => { },
-  locale = 'en',
-  format = 'YYYY-MM-DD',
-  useTimezone = false,
-  endOfDay = false,
-  model,
-  placeholderStart,
-  placeholderEnd,
-  hideLabel,
-  className,
-  onBlur,
-  onClear,
-  clearFieldAction,
-  errorMessage,
-}) => {
+const DateRange: React.FC<DateRangeProps> = (props) => {
+  const {
+    value,
+    label,
+    labelToday = 'Today',
+    labelClear = 'Clear',
+    disabled = false,
+    hasErrors = false,
+    onChange = () => { },
+    locale = 'en',
+    format = 'YYYY-MM-DD',
+    useTimezone = false,
+    endOfDay = false,
+    model,
+    name,
+    placeholderStart,
+    placeholderEnd,
+    hideLabel,
+    className,
+    onBlur,
+    onClear,
+    clearFieldAction,
+    errorMessage,
+  } = props;
   const dateFormat = (format || 'YYYY/MM/DD').toUpperCase();
   const [fromInputValue, setFromInputValue] = useState('');
   const [toInputValue, setToInputValue] = useState('');
-  const [fromRawDate, setFromRawDate] = useState<Moment | null>(null);
-  const [toRawDate, setToRawDate] = useState<Moment | null>(null);
 
   useEffect(() => {
     const fromDate = removeOffset(useTimezone, value?.from);
     const toDate = removeOffset(useTimezone, value?.to);
 
     if (fromDate) {
-      setFromRawDate(fromDate);
       setFromInputValue(fromDate.format(dateFormat));
     } else {
-      setFromRawDate(null);
       setFromInputValue('');
     }
     if (toDate) {
-      setToRawDate(toDate);
       setToInputValue(toDate.format(dateFormat));
     } else {
-      setToRawDate(null);
       setToInputValue('');
     }
   }, [value, useTimezone, dateFormat]);
 
+  // eslint-disable-next-line max-statements
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
     setFromInputValue(typedValue);
 
     if (!typedValue) {
-      setFromRawDate(null);
       onChange({ from: null, to: value?.to || null });
       return;
     }
@@ -89,7 +85,6 @@ const DateRange: React.FC<DateRangeProps> = ({
     if (parsedDate.isValid()) {
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
-        setFromRawDate(withOffset);
         const formattedDate = withOffset.format(dateFormat);
         onChange({ from: withOffset.valueOf() / 1000, to: value?.to || null });
         setFromInputValue(formattedDate);
@@ -97,12 +92,12 @@ const DateRange: React.FC<DateRangeProps> = ({
     }
   };
 
+  // eslint-disable-next-line max-statements
   const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
     setToInputValue(typedValue);
 
     if (!typedValue) {
-      setToRawDate(null);
       onChange({ from: value?.from || null, to: null });
       return;
     }
@@ -111,7 +106,6 @@ const DateRange: React.FC<DateRangeProps> = ({
     if (parsedDate.isValid()) {
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
-        setToRawDate(withOffset);
         const formattedDate = withOffset.format(dateFormat);
         onChange({ from: value?.from || null, to: withOffset.valueOf() / 1000 });
         setToInputValue(formattedDate);
@@ -122,14 +116,14 @@ const DateRange: React.FC<DateRangeProps> = ({
   return (
     <div className="date-range">
       <div className="date-range-from">
-        <LazyDateRangePicker
+        <DateRangePickerComponent
           language={locale}
           dateFormat={dateFormat}
           useTimezone={useTimezone}
           endOfDay={endOfDay}
           hideLabel={hideLabel}
           className={className}
-          model={model}
+          model={model || name}
           value={{ from: fromInputValue, to: toInputValue }}
           label={label}
           labelToday={labelToday}
