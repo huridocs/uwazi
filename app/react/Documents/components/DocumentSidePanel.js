@@ -86,8 +86,8 @@ class DocumentSidePanel extends Component {
   deleteDocument() {
     this.props.mainContext.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.doc.toJS()).then(() => {
-          this.props.unselectAllDocuments();
+        this.props.deleteDocument(this.props.doc.toJS()).then(async () => {
+          await this.props.unselectAllDocuments();
           this.props.navigate(-1);
         });
       },

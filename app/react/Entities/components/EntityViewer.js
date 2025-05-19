@@ -65,8 +65,8 @@ class EntityViewer extends Component {
   deleteEntity() {
     this.props.mainContext.confirm({
       accept: () => {
-        this.props.deleteEntity(this.props.entity.toJS()).then(() => {
-          this.props.unselectAllDocuments();
+        this.props.deleteEntity(this.props.entity.toJS()).then(async () => {
+          await this.props.unselectAllDocuments();
           this.props.navigate(-1);
         });
       },

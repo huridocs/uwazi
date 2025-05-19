@@ -86,7 +86,7 @@ class Viewer extends Component {
               This entity has no document, you probably want to see the metadata
             </Translate>
             &nbsp;
-            <I18NLink to={`/entity/${doc.get('sharedId')}`} replaceNavigationHistory>
+            <I18NLink to={`/entity/${doc.get('sharedId')}`}>
               <Translate>view</Translate>
             </I18NLink>
           </div>
