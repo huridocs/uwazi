@@ -29,19 +29,11 @@ describe('DateRangePicker', () => {
 
     cy.get('input[placeholder="Inicio"]').should('exist');
     cy.get('#from', { timeout: 3000 }).click();
-    cy.get('.days')
-      .eq(0)
-      .within(() => {
-        cy.contains('12').click();
-      });
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('12').click();
     cy.get('@onChange').should('have.been.called');
 
     cy.get('#to').click();
-    cy.get('.days')
-      .eq(1)
-      .within(() => {
-        cy.contains('17').click();
-      });
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('17').click();
     cy.get('@onChange').should('have.been.called');
 
     checkSelectedDate('#from', '12');
@@ -53,11 +45,13 @@ describe('DateRangePicker', () => {
     mount(<Basic onChange={onChange} />);
 
     cy.get('#from').click();
-    cy.contains('Hoy').click();
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
+    cy.wait(1000);
     cy.get('@onChange').should('have.been.called');
 
     cy.get('#to').click();
-    cy.contains('Hoy').click();
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
+    cy.wait(1000);
     cy.get('@onChange').should('have.been.called');
 
     checkSelectedDate('#from', today.getDate().toString().padStart(2, '0'));
@@ -69,9 +63,9 @@ describe('DateRangePicker', () => {
     mount(<Basic onChange={onChange} />);
 
     cy.get('#from').click();
-    cy.contains('Hoy').click();
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
     cy.get('#from').click();
-    cy.contains('Limpiar').click();
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Limpiar').click();
     cy.get('@onChange').should('have.been.called');
   });
 
@@ -86,6 +80,7 @@ describe('DateRangePicker', () => {
       .within(() => {
         cy.get('button[data-testid=clear-field-button]').eq(0).click();
       });
+    cy.wait(1000);
     cy.get('@onChange').should('have.been.called');
   });
 

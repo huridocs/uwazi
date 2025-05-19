@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import moment from 'moment-timezone';
-import { removeOffset, addOffset } from './dateUtils';
+import { removeOffset, addOffset, defaultDateFormat } from './dateUtils';
 import { DateRangePickerComponent } from './DateRangePickerComponent';
 
 interface DateRangeProps {
@@ -37,7 +37,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     hasErrors = false,
     onChange = () => { },
     locale = 'en',
-    format = 'YYYY-MM-DD',
+    format = defaultDateFormat,
     useTimezone = false,
     endOfDay = false,
     model,
@@ -51,13 +51,13 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     clearFieldAction,
     errorMessage,
   } = props;
-  const dateFormat = (format || 'YYYY/MM/DD').toUpperCase();
+  const dateFormat = format.toUpperCase();
   const [fromInputValue, setFromInputValue] = useState('');
   const [toInputValue, setToInputValue] = useState('');
 
   useEffect(() => {
-    const fromDate = removeOffset(useTimezone, value?.from);
-    const toDate = removeOffset(useTimezone, value?.to);
+    const fromDate = removeOffset(useTimezone, value?.from ?? null, dateFormat);
+    const toDate = removeOffset(useTimezone, value?.to ?? null, dateFormat);
 
     if (fromDate) {
       setFromInputValue(fromDate.format(dateFormat));
@@ -118,7 +118,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
       <div className="date-range-from">
         <DateRangePickerComponent
           language={locale}
-          dateFormat={dateFormat}
+          dateFormat={dateFormat.toLowerCase()}
           useTimezone={useTimezone}
           endOfDay={endOfDay}
           hideLabel={hideLabel}
@@ -136,7 +136,6 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
           onFromDateSelected={handleFromChange}
           onToDateSelected={handleToChange}
           onBlur={onBlur}
-          onClear={onClear}
           clearFieldAction={clearFieldAction}
         />
       </div>
