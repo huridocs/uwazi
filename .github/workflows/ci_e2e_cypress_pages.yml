@@ -3,6 +3,12 @@ name: e2e cypress PAGES
 on:
   pull_request:
     branches: [development, staging, production]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - converted_to_draft
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -10,6 +16,7 @@ concurrency:
 
 jobs:
   e2e-cypress:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
