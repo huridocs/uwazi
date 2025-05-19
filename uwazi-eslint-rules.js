@@ -1,12 +1,4 @@
 module.exports = {
-  quotes: 'off',
-  '@typescript-eslint/quotes': [
-    'error',
-    'single',
-    {
-      avoidEscape: true,
-    },
-  ],
   'no-shadow': 'off',
   '@typescript-eslint/no-shadow': ['error'],
   'no-use-before-define': 'off',
