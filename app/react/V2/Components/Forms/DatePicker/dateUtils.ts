@@ -3,16 +3,21 @@ import type { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react'
 import { ChangeEventHandler } from 'react';
 import { t } from 'app/I18N';
 
+export const defaultDateFormat = 'DD-MM-YYYY';
+
 export const removeOffset = (
   useTimezone: boolean,
-  value: string | number | null | undefined
+  value: string | number | null | undefined,
+  dateFormat?: string
 ): Moment | null => {
   if (!value) return null;
   const milliseconds = typeof value === 'number' ? value * 1000 : moment(value).valueOf();
   const newValue = moment.utc(milliseconds);
+
   if (!useTimezone) {
     newValue.subtract(moment(milliseconds).utcOffset(), 'minutes');
   }
+
   return newValue;
 };
 
@@ -22,25 +27,22 @@ export const addOffset = (
   value: string,
   dateFormat: string
 ): Moment | null => {
-  let parsedDate = moment(value, dateFormat, true);
-  if (!parsedDate.isValid()) {
-    parsedDate = moment(value);
-  }
-  if (!parsedDate.isValid()) {
+  const newValue = moment.utc(value, dateFormat, true);
+  if (!newValue.isValid()) {
     return null;
   }
-  const newValue = moment.utc(parsedDate);
+
   if (!useTimezone) {
     newValue.add(moment(value).utcOffset(), 'minutes');
   }
-  if (endOfDay) {
-    const dateValue = useTimezone ? newValue.local() : newValue.utc();
-    dateValue.endOf('day');
-    return dateValue;
-  }
-  return newValue;
-}; 
 
+  if (endOfDay) {
+    const method = useTimezone ? newValue.local() : newValue.utc();
+    method.endOf('day');
+  }
+
+  return newValue;
+};
 
 export interface DatePickerProps extends FlowbiteDatepickerProps {
   dateFormat?: string;
@@ -81,7 +83,7 @@ const titleFormat = (locale: string) => {
   }
 };
 
-export const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string, dateFormat: string = 'DD-MM-YYYY') => {
+export const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string, dateFormat: string = defaultDateFormat) => {
   const localeData = moment.localeData(language);
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
   return {

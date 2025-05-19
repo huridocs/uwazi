@@ -8,8 +8,7 @@ import uniqueID from 'shared/uniqueID';
 import { debounce } from 'app/utils';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
-import { datePickerOptionsByLocale, DatePickerProps, validateLocale } from './dateUtils';
-
+import { datePickerOptionsByLocale, DatePickerProps, defaultDateFormat, validateLocale } from './dateUtils';
 
 const DatePickerComponent = React.forwardRef(
   (
@@ -25,7 +24,7 @@ const DatePickerComponent = React.forwardRef(
       autoComplete = 'off',
       id = uniqueID(),
       language = 'en',
-      dateFormat = 'YYYY-MM-DD',
+      dateFormat = defaultDateFormat,
       hideLabel = true,
       inputClassName = '',
       className = '',
@@ -36,10 +35,14 @@ const DatePickerComponent = React.forwardRef(
       useTimezone = false,
       endOfDay = false,
     }: DatePickerProps,
-    forwardedRef: Ref<HTMLInputElement | null>
+    forwardedRef: Ref<{ setValue: (val: string) => void }>
   ) => {
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-    useImperativeHandle(forwardedRef, () => ref.current);
+    useImperativeHandle(forwardedRef, () => ({
+      setValue: (val: string) => {
+        if (ref.current) ref.current.value = val;
+      },
+    }));
 
     const datePickerFormat = dateFormat.toLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
