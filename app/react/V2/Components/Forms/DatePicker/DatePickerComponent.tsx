@@ -52,17 +52,6 @@ const DatePickerComponent = React.forwardRef(
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language) || 'en';
 
-    const debouncedOnChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      if (newValue !== value && newValue.length === 10) {
-        onChange(e);
-      }
-    }, 1000);
-
-    const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
-      onBlur(e);
-    }, 1000);
-
     useEffect((): (() => void) => {
       Object.assign(Datepicker.locales, {
         [locale]: datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat)
@@ -82,6 +71,18 @@ const DatePickerComponent = React.forwardRef(
       });
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, []);
+
+
+    const debouncedOnChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      if (newValue !== value && newValue.length === 10) {
+        onChange(e);
+      }
+    }, 1000);
+
+    const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
+      onBlur(e);
+    }, 1000);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;

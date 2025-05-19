@@ -80,10 +80,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    onBlur?.(e);
-  };
-
   return (
     <div>
       <DatePickerComponent
@@ -93,7 +89,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         dateFormat={dateFormat.toLowerCase()}
         value={inputValue}
         onChange={handleChange}
-        onBlur={handleBlur}
+        onBlur={onBlur}
         placeholder={placeholder}
         labelToday={labelToday}
         labelClear={labelClear}
