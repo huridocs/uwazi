@@ -26,10 +26,6 @@ class LibraryRootComponent extends RouteHandler {
     return nextSearchParams.get('q') !== currentSearchParams.get('q');
   }
 
-  componentDidMount() {
-    this.getClientState(this.props);
-  }
-
   componentDidUpdate(prevProps) {
     if (this.urlHasChanged(prevProps)) {
       this.getClientState(this.props);
