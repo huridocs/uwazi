@@ -8,11 +8,12 @@ import { t } from 'app/I18N';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';
+import { atomStore, deletedEntityAtom } from 'V2/atoms';
 
 import { Item } from 'app/Layout';
 import helpers from 'app/Documents/helpers';
 
-export class Doc extends Component {
+class Doc extends Component {
   shouldComponentUpdate(nextProps) {
     return (
       !is(this.props.doc, nextProps.doc) ||
@@ -101,6 +102,7 @@ export class Doc extends Component {
         buttons={buttons}
         labels={<UploadEntityStatus doc={this.props.doc} />}
         className={className}
+        markAsDeleted={atomStore.get(deletedEntityAtom) === sharedId}
       />
     );
   }
@@ -124,7 +126,7 @@ Doc.propTypes = {
   targetReference: PropTypes.instanceOf(Map),
 };
 
-export function mapStateToProps(state, ownProps) {
+function mapStateToProps(state, ownProps) {
   const active = ownProps.storeKey
     ? !!state[ownProps.storeKey].ui
         .get('selectedDocuments')
@@ -135,4 +137,5 @@ export function mapStateToProps(state, ownProps) {
   };
 }
 
+export { Doc, mapStateToProps };
 export default connect(mapStateToProps)(Doc);
