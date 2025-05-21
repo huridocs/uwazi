@@ -47,4 +47,4 @@ const TableRowsComponent = ({
   );
 };
 
-export const TableRows = connect(mapStateToProps)(TableRowsComponent);
+export const TableRows = connector(TableRowsComponent);
