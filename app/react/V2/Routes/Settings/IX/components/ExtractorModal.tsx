@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
@@ -47,7 +47,6 @@ const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
 
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
   const propertyName = values.length ? values[0].split('-', 2)[1] : null;
-
   return templates
     .map(template => {
       const option = {
@@ -122,7 +121,7 @@ const ExtractorModal = ({
   const [name, setName] = useState(extractor?.name || '');
   const [values, setValues] = useState<string[]>(initialValues);
   const [source, setSource] = useState<string>('0');
-  const [options, setOptions] = useState(formatOptions(initialValues, templates));
+  const [options, setOptions] = useState<any[]>([]);
   const [hasNameError, setNameError] = useState(false);
 
   const handleClose = () => {
@@ -130,6 +129,10 @@ const ExtractorModal = ({
     setValues([]);
     onClose();
   };
+
+  useEffect(() => {
+    setOptions(formatOptions(values, templates));
+  }, [values, templates]);
 
   const handleSubmit = () => {
     if (!name.length) {
@@ -186,10 +189,7 @@ const ExtractorModal = ({
           <MultiselectList
             selectedValues={values || []}
             items={options}
-            onChange={selected => {
-              setValues(selected);
-              setOptions(formatOptions(selected, templates));
-            }}
+            onChange={setValues}
             checkboxes
             foldableGroups
             allowSelelectAll={values.length > 0}

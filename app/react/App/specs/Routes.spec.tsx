@@ -24,10 +24,14 @@ describe('Routes', () => {
 
   describe('getIndexElement', () => {
     it('should navigate to the library when there is a user', () => {
-      const { element, parameters } = getIndexElement(settings, userId);
-      expect(element.props.to).toBe('/library/?q=(includeUnpublished:!t)');
-      expect(element.props.state).toMatchObject({ isClient: true });
+      const { element, parameters, defaultToLibrary } = getIndexElement(settings, userId);
+      expect(element).toMatchObject(
+        <LibraryRoot>
+          <LibraryTable params={{ q: '(includeUnpublished:!t)' }} />
+        </LibraryRoot>
+      );
       expect(parameters).toBeUndefined();
+      expect(defaultToLibrary).toBe(true);
     });
 
     describe('custom home page', () => {
@@ -40,9 +44,14 @@ describe('Routes', () => {
 
       it('should redirect to library if the custom homepage is incorrect', () => {
         settings.home_page = '/incorrect/page';
-        const { element, parameters } = getIndexElement(settings, userId);
+        const { element, parameters, defaultToLibrary } = getIndexElement(settings, userId);
         expect(parameters).toBeUndefined();
-        expect(element.props.to).toBe('/library/?q=(includeUnpublished:!t)');
+        expect(element).toMatchObject(
+          <LibraryRoot>
+            <LibraryTable params={{ q: '(includeUnpublished:!t)' }} />
+          </LibraryRoot>
+        );
+        expect(defaultToLibrary).toBe(true);
       });
 
       it('should render an entity view page when set', () => {

@@ -1,10 +1,14 @@
 name: e2e cypress BASE
 
 on:
-  push:
-    branches:
-      - development
   pull_request:
+    branches: [development, staging, production]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - converted_to_draft
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,6 +16,7 @@ concurrency:
 
 jobs:
   e2e-cypress:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
@@ -43,8 +48,6 @@ jobs:
           mongodb-replica-set: test-rs
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
@@ -66,7 +69,8 @@ jobs:
         with:
           path: ./prod
           key: >-
-            ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-
+            ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
+            ${{ hashFiles('app/**/*.*') }}-
             ${{ hashFiles('database/**/*.*') }}-
             ${{ hashFiles('**/yarn.lock') }}-
             ${{ hashFiles('**/webpack.production.config.js') }}-
@@ -122,10 +126,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
-        run: yarn run-production > output.txt &
-      - name: wait for uwazi to be ready
-        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
-        timeout-minutes: 3
+        run: .github/scripts/start-uwazi.sh
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
