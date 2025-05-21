@@ -657,11 +657,6 @@ describe('entities', () => {
   });
 
   describe('updateMetdataFromRelationships', () => {
-    let sanitizationSpy;
-    beforeEach(() => {
-      sanitizationSpy = jest.spyOn(entities, 'sanitize');
-    });
-
     it('should update the metdata based on the entity relationships', async () => {
       await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
       const updatedEntity = await entities.getById('shared', 'en');
