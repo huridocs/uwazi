@@ -257,22 +257,19 @@ export default {
     }
 
     const relationshipsToSave = relationships.map(r => {
-      const processed = { ...r }; // Create a copy to modify
-      let finalTemplateValue = null;
-
-      if (processed.template) { // Check if template exists and is not null/undefined/empty string etc.
-        if (typeof processed.template === 'object' && processed.template._id) {
-          // It's an object like { _id: 'someId', ... }, extract the _id
-          finalTemplateValue = processed.template._id.toString ? processed.template._id.toString() : String(processed.template._id);
-        } else if (typeof processed.template === 'string') {
-          // It's already a string (hopefully an ID)
-          finalTemplateValue = processed.template;
-        }
-        // If processed.template was an object without _id, or some other type, finalTemplateValue remains null here.
+      const processed = { ...r };
+      if (processed.template && typeof processed.template === 'object' && processed.template._id) {
+        // If template is an object with _id, ensure template becomes the string ID.
+        processed.template = processed.template._id.toString
+          ? processed.template._id.toString()
+          : String(processed.template._id);
+      } else if (typeof processed.template === 'string') {
+        // If template is already a string, trust it (Mongoose/MongoDB will handle validation or casting).
+        // No explicit ObjectId.isValid() check here, to mimic production's flexibility.
+      } else {
+        // If template is neither a recognized object with _id nor a string, set to null.
+        processed.template = null;
       }
-
-      // Ensure template is a valid ObjectId string or null before saving.
-      processed.template = ObjectId.isValid(finalTemplateValue) ? finalTemplateValue : null;
       return processed;
     });
 
