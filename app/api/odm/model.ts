@@ -232,13 +232,6 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
     return this.db.facet(aggregations, pipelines, project);
   }
 
-  async bulkWrite(
-    operations: mongoose.AnyBulkWriteOperation<DataType<T>>[],
-    options?: mongoose.mongo.BulkWriteOptions
-  ): Promise<mongoose.mongo.BulkWriteResult> {
-    return this.db.bulkWrite(operations, options || {});
-  }
-
   openBulkWriteStream(stackLimit?: number, ordered?: boolean) {
     return new ModelBulkWriteStream(this, stackLimit, ordered);
   }
