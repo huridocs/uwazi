@@ -66,6 +66,8 @@ export interface DatePickerProps extends FlowbiteDatepickerProps {
   className?: string;
   useTimezone?: boolean;
   endOfDay?: boolean;
+  showCalendarIcon?: boolean;
+  showClearFieldIcon?: boolean;
 }
 
 const titleFormat = (locale: string) => {

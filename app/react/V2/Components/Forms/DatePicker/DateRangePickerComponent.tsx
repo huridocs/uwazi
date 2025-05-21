@@ -5,10 +5,10 @@ import React, { useEffect, useRef } from 'react';
 import { Datepicker, DateRangePicker } from 'flowbite-datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import { debounce } from 'app/utils';
+import { CalendarDateRangeIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
-import { InputField } from '../InputField';
 import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
 
 interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
@@ -29,6 +29,8 @@ interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
   disabled?: boolean;
   hasErrors?: boolean;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  showCalendarIcon?: boolean;
+  showClearFieldIcon?: boolean;
 }
 
 const DateRangePickerComponent = React.forwardRef(
@@ -52,6 +54,8 @@ const DateRangePickerComponent = React.forwardRef(
     onFromDateSelected = () => { },
     onToDateSelected = () => { },
     onBlur = () => { },
+    showCalendarIcon = true,
+    showClearFieldIcon = true,
   }: DateRangePickerProps) => {
     const datePickerFormat = dateFormat.toLowerCase();
     const divRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -156,17 +160,39 @@ const DateRangePickerComponent = React.forwardRef(
       debouncedOnBlur(e);
     };
 
+    const clearFromValue = () => {
+      instance.current?.setDates({ clear: true }, value?.to);
+      handleFromChange({
+        target: {
+          value: '',
+        },
+      } as any);
+    };
+    const clearToValue = () => {
+      instance.current?.setDates(value?.from, { clear: true });
+      handleToChange({
+        target: {
+          value: '',
+        },
+      } as any);
+
+    };
     return (
       <div className="tw-content">
         <div
           id="tw-container"
-          className={`${className} absolute tw-datepicker z-50 w-full`}
+          className={`${className} tw-datepicker z-50 w-full inline-block p-0`}
           data-test-id={id}
         />
         <div>
-          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+          <Label
+            htmlFor={id}
+            hideLabel={hideLabel}
+            hasErrors={Boolean(hasErrors || errorMessage)}
+          >
             {label}
           </Label>
+
           <div
             ref={divRef}
             id={id}
@@ -175,97 +201,96 @@ const DateRangePickerComponent = React.forwardRef(
             datepicker-autoselect-today="true"
             className="flex items-center gap-4"
           >
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                </svg>
-              </div>
-              <InputField
+            <div className="relative w-1/2 text-gray-600">
+              {showCalendarIcon && (
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                </div>
+              )}
+
+              <input
                 id="from"
-                name={model ? `${model}.from` : `dateField`}
+                name={model ? `${model}.from` : 'dateField'}
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
                 type="text"
-                defaultValue={value?.from}
+                defaultValue={value?.from || ''}
                 onChange={handleFromChange}
                 onSelect={handleFromChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
-                className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${inputClassName || ''} rounded-lg ${hasErrors || errorMessage
-                  ? '[&>div>*:nth-child(odd)]:border-error-300 [&>div>*:nth-child(odd)]:focus:border-error-500 [&>div>*:nth-child(odd)]:focus:ring-error-500 [&>div>*:nth-child(odd)]:border-2 [&>div>*:nth-child(odd)]:text-error-900 [&>div>*:nth-child(odd)]:bg-error-50 [&>div>*:nth-child(odd)]:placeholder-error-700'
-                  : '[&>div>*:nth-child(odd)]:bg-gray-50 [&>div>*:nth-child(odd)]:border [&>div>*:nth-child(odd)]:border-gray-300'
-                  }`}
+                className={`
+            block w-full text-sm h-8 rounded-lg pl-10 pr-8
+            placeholder-opacity-100 placeholder-gray-500
+            ${inputClassName || ''}
+            ${hasErrors || errorMessage
+                    ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700'
+                    : 'border border-gray-300 focus:outline-none focus:lightBlue-400 focus:border-lightBlue-400'
+                  }
+          `}
                 placeholder={placeholderStart || dateFormat}
                 ref={fromRef}
-                clearFieldAction={() => {
-                  instance.current?.setDates({ clear: true }, value?.to);
-                  handleFromChange({
-                    target: {
-                      value: '',
-                    },
-                  } as any);
-                }}
+                clearFieldAction={clearFromValue}
               />
+
+              {Boolean(value?.from) && showClearFieldIcon && (
+                <button data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearFromValue}>
+                  <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
+                </button>
+              )}
             </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                </svg>
-              </div>
-              <InputField
+
+            <div className="relative w-1/2 text-gray-600">
+              {showCalendarIcon && (
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                </div>
+              )}
+
+              <input
                 id="to"
-                name={model ? `${model}.to` : `dateField`}
+                name={model ? `${model}.to` : 'dateField'}
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
                 type="text"
-                defaultValue={value?.to}
+                defaultValue={value?.to || ''}
                 onChange={handleToChange}
                 onSelect={handleToChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
-                className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${inputClassName || ''} rounded-lg ${hasErrors || errorMessage
-                  ? '[&>div>*:nth-child(odd)]:border-error-300 [&>div>*:nth-child(odd)]:focus:border-error-500 [&>div>*:nth-child(odd)]:focus:ring-error-500 [&>div>*:nth-child(odd)]:border-2 [&>div>*:nth-child(odd)]:text-error-900 [&>div>*:nth-child(odd)]:bg-error-50 [&>div>*:nth-child(odd)]:placeholder-error-700'
-                  : '[&>div>*:nth-child(odd)]:bg-gray-50 [&>div>*:nth-child(odd)]:border [&>div>*:nth-child(odd)]:border-gray-300'
-                  }`}
+                className={`
+            block w-full text-sm h-8 rounded-lg pl-10 pr-8
+            placeholder-opacity-100 placeholder-gray-500
+            ${inputClassName || ''}
+            ${hasErrors || errorMessage
+                    ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700'
+                    : 'border border-gray-300 focus:outline-none focus:lightBlue-400 focus:border-lightBlue-400'
+                  }
+          `}
                 placeholder={placeholderEnd || dateFormat}
                 ref={toRef}
-                clearFieldAction={() => {
-                  instance.current?.setDates(value?.from, { clear: true });
-                  handleToChange({
-                    target: {
-                      value: '',
-                    },
-                  } as any);
-
-                }}
+                clearFieldAction={clearToValue}
               />
+
+              {Boolean(value?.to) && showClearFieldIcon && (
+                <button data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearToValue}>
+                  <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
+                </button>
+              )}
             </div>
           </div>
           {errorMessage && <InputError>{errorMessage}</InputError>}
         </div>
       </div>
+
     );
   }
 );

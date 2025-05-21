@@ -1,7 +1,7 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import { removeOffset, addOffset, defaultDateFormat } from './dateUtils';
-import { DateRangePickerComponent } from './DateRangePickerComponent';
+import { LazyDateRangePicker } from './loadableDatePicker';
 
 interface DateRangeProps {
   label?: ReactNode;
@@ -37,7 +37,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     hasErrors = false,
     onChange = () => { },
     locale = 'en',
-    format = defaultDateFormat,
+    format,
     useTimezone = false,
     endOfDay = false,
     model,
@@ -51,7 +51,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     clearFieldAction,
     errorMessage,
   } = props;
-  const dateFormat = format.toUpperCase();
+  const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [fromInputValue, setFromInputValue] = useState('');
   const [toInputValue, setToInputValue] = useState('');
 
@@ -77,6 +77,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     setFromInputValue(typedValue);
 
     if (!typedValue) {
+      console.log('changed from clear');
       onChange({ from: null, to: value?.to || null });
       return;
     }
@@ -86,6 +87,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
         const formattedDate = withOffset.format(dateFormat);
+        console.log('changed from');
         onChange({ from: withOffset.valueOf() / 1000, to: value?.to || null });
         setFromInputValue(formattedDate);
       }
@@ -116,7 +118,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
   return (
     <div className="date-range">
       <div className="date-range-from">
-        <DateRangePickerComponent
+        <LazyDateRangePicker
           language={locale}
           dateFormat={dateFormat.toLowerCase()}
           useTimezone={useTimezone}

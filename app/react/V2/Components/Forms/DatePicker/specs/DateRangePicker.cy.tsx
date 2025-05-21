@@ -46,12 +46,10 @@ describe('DateRangePicker', () => {
 
     cy.get('#from').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
-    cy.wait(1000);
     cy.get('@onChange').should('have.been.called');
 
     cy.get('#to').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
-    cy.wait(1000);
     cy.get('@onChange').should('have.been.called');
 
     checkSelectedDate('#from', today.getDate().toString().padStart(2, '0'));
@@ -64,8 +62,10 @@ describe('DateRangePicker', () => {
 
     cy.get('#from').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
+    cy.wait(1000);
     cy.get('#from').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Limpiar').click();
+    cy.wait(1000);
     cy.get('@onChange').should('have.been.called');
   });
 
@@ -74,7 +74,8 @@ describe('DateRangePicker', () => {
     mount(<Basic onChange={onChange} />);
 
     cy.get('#from').click();
-    cy.contains('Hoy').click();
+    cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
+    cy.wait(1000);
     cy.get('div[date-rangepicker=true]')
       .eq(0)
       .within(() => {
@@ -179,7 +180,7 @@ describe('DateRangePicker', () => {
     it('should set the value to the end of the day', () => {
       const onChange = cy.stub().as('onChange');
       mount(<Basic onChange={onChange} endOfDay />);
-      cy.get('input[name=dateField]').click();
+      cy.get('#from').click();
       cy.get('.days')
         .eq(0)
         .within(() => {

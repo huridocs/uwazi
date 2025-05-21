@@ -2,7 +2,7 @@ import React, { ReactNode, useState, useEffect, useRef } from 'react';
 import moment from 'moment-timezone';
 import { Translate } from 'app/I18N';
 import { removeOffset, addOffset, defaultDateFormat } from './dateUtils';
-import { DatePickerComponent } from './DatePickerComponent';
+import { LazyDatePicker } from './loadableDatePicker';
 
 interface DatePickerProps {
   label?: ReactNode;
@@ -23,6 +23,8 @@ interface DatePickerProps {
   disabled?: boolean;
   hasErrors?: boolean;
   errorMessage?: string;
+  showCalendarIcon?: boolean;
+  showClearFieldIcon?: boolean;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -30,7 +32,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   label,
   onChange = () => { },
   locale = 'en',
-  format = defaultDateFormat,
+  format,
   useTimezone = false,
   endOfDay = false,
   model,
@@ -44,19 +46,18 @@ const DatePicker: React.FC<DatePickerProps> = ({
   disabled = false,
   hasErrors = false,
   errorMessage = '',
+  showCalendarIcon = true,
+  showClearFieldIcon = true,
 }) => {
-  const dateFormat = format.toUpperCase();
+  const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [inputValue, setInputValue] = useState('');
-  const datePickerRef = useRef<{ setValue: (val: string) => void }>(null);
 
   useEffect(() => {
     const date = removeOffset(useTimezone, value, dateFormat);
     if (date) {
       setInputValue(date.format(dateFormat));
-      datePickerRef.current?.setValue(date.format(dateFormat));
     } else {
       setInputValue('');
-      datePickerRef.current?.setValue('');
     }
   }, [value, useTimezone, dateFormat]);
 
@@ -82,8 +83,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   return (
     <div>
-      <DatePickerComponent
-        ref={datePickerRef}
+      <LazyDatePicker
         label={label || <Translate translationKey="property date">Date</Translate>}
         language={locale}
         dateFormat={dateFormat.toLowerCase()}
@@ -102,6 +102,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         errorMessage={errorMessage}
         useTimezone={useTimezone}
         endOfDay={endOfDay}
+        showCalendarIcon={showCalendarIcon}
       />
     </div>
   );
