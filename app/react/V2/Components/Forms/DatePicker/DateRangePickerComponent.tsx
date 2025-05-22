@@ -9,31 +9,10 @@ import { CalendarDateRangeIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
-import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
+import { datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
+import { DateRangePickerProps } from './dateUtils';
 
-interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
-  language: string;
-  dateFormat?: string;
-  hideLabel?: boolean;
-  className?: string;
-  model?: string;
-  value?: {
-    from: string | number | null;
-    to: string | number | null;
-  };
-  onSelect?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholderStart?: string;
-  placeholderEnd?: string;
-  onFromDateSelected?: any;
-  onToDateSelected?: any;
-  disabled?: boolean;
-  hasErrors?: boolean;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  showCalendarIcon?: boolean;
-  showClearFieldIcon?: boolean;
-}
-
-const DateRangePickerComponent = React.forwardRef(
+const DateRangePickerComponent =
   ({
     id = uniqueID(),
     model,
@@ -56,6 +35,7 @@ const DateRangePickerComponent = React.forwardRef(
     onBlur = () => { },
     showCalendarIcon = true,
     showClearFieldIcon = true,
+    required = false,
   }: DateRangePickerProps) => {
     const datePickerFormat = dateFormat.toLowerCase();
     const divRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
@@ -228,13 +208,13 @@ const DateRangePickerComponent = React.forwardRef(
             placeholder-opacity-100 placeholder-gray-500
             ${inputClassName || ''}
             ${hasErrors || errorMessage
-                    ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700'
-                    : 'border border-gray-300 focus:outline-none focus:lightBlue-400 focus:border-lightBlue-400'
+                    ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                    : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
                   }
           `}
                 placeholder={placeholderStart || dateFormat}
                 ref={fromRef}
-                clearFieldAction={clearFromValue}
+                required={required}
               />
 
               {Boolean(value?.from) && showClearFieldIcon && (
@@ -271,13 +251,13 @@ const DateRangePickerComponent = React.forwardRef(
             placeholder-opacity-100 placeholder-gray-500
             ${inputClassName || ''}
             ${hasErrors || errorMessage
-                    ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700'
-                    : 'border border-gray-300 focus:outline-none focus:lightBlue-400 focus:border-lightBlue-400'
+                    ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                    : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
                   }
           `}
                 placeholder={placeholderEnd || dateFormat}
                 ref={toRef}
-                clearFieldAction={clearToValue}
+                required={required}
               />
 
               {Boolean(value?.to) && showClearFieldIcon && (
@@ -290,10 +270,8 @@ const DateRangePickerComponent = React.forwardRef(
           {errorMessage && <InputError>{errorMessage}</InputError>}
         </div>
       </div>
-
     );
-  }
-);
+  };
 
-export type { DateRangePickerProps };
+
 export { DateRangePickerComponent };

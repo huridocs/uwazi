@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { DatePicker } from 'V2/Components/Forms/DatePicker/DatePicker';
+import { DatePicker } from 'V2/Components/Forms/DatePicker';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Forms/DatePicker',
@@ -42,6 +42,7 @@ const Primary: Story = {
       onBlur={args.onBlur}
       clearFieldAction={args.clearFieldAction}
       errorMessage={args.errorMessage}
+      required={args.required}
     />
   ),
 };
@@ -64,6 +65,7 @@ const Basic: Story = {
     onChange: action('changed'),
     onBlur: action('blurred'),
     clearFieldAction: action('cleared'),
+    required: false,
   },
 };
 

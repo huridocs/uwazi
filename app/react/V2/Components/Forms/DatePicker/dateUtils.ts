@@ -44,32 +44,6 @@ export const addOffset = (
   return newValue;
 };
 
-export interface DatePickerProps extends FlowbiteDatepickerProps {
-  dateFormat?: string;
-  language: string;
-  labelToday?: string;
-  labelClear?: string;
-  id?: string;
-  label?: string | React.ReactNode;
-  disabled?: boolean;
-  hideLabel?: boolean;
-  placeholder?: string;
-  hasErrors?: boolean;
-  errorMessage?: string | React.ReactNode;
-  value?: string | number;
-  inputClassName?: string;
-  autoComplete?: 'on' | 'off';
-  name?: string;
-  clearFieldAction?: () => any;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: ChangeEventHandler<HTMLInputElement>;
-  className?: string;
-  useTimezone?: boolean;
-  endOfDay?: boolean;
-  showCalendarIcon?: boolean;
-  showClearFieldIcon?: boolean;
-}
-
 const titleFormat = (locale: string) => {
   switch (locale) {
     case 'hu':
@@ -112,3 +86,56 @@ export const validateLocale = (language: string) => {
     return 'en';
   }
 };
+
+
+
+export interface DatePickerProps extends FlowbiteDatepickerProps {
+  dateFormat?: string;
+  language: string;
+  labelToday?: string;
+  labelClear?: string;
+  id?: string;
+  label?: string | React.ReactNode;
+  disabled?: boolean;
+  hideLabel?: boolean;
+  placeholder?: string;
+  hasErrors?: boolean;
+  errorMessage?: string | React.ReactNode;
+  value?: string | number;
+  inputClassName?: string;
+  autoComplete?: 'on' | 'off';
+  name?: string;
+  clearFieldAction?: () => any;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onBlur?: ChangeEventHandler<HTMLInputElement>;
+  className?: string;
+  useTimezone?: boolean;
+  endOfDay?: boolean;
+  showCalendarIcon?: boolean;
+  showClearFieldIcon?: boolean;
+  required?: boolean;
+}
+
+
+export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
+  language: string;
+  dateFormat?: string;
+  hideLabel?: boolean;
+  className?: string;
+  model?: string;
+  value?: {
+    from: string | number | null;
+    to: string | number | null;
+  };
+  onSelect?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholderStart?: string;
+  placeholderEnd?: string;
+  onFromDateSelected?: any;
+  onToDateSelected?: any;
+  disabled?: boolean;
+  hasErrors?: boolean;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  showCalendarIcon?: boolean;
+  showClearFieldIcon?: boolean;
+  required?: boolean;
+}

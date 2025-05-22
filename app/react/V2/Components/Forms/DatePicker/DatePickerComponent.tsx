@@ -11,7 +11,7 @@ import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { datePickerOptionsByLocale, DatePickerProps, defaultDateFormat, validateLocale } from './dateUtils';
 
-const DatePickerComponent = React.forwardRef(
+const DatePickerComponent =
   (
     {
       labelToday = 'Today',
@@ -37,20 +37,15 @@ const DatePickerComponent = React.forwardRef(
       endOfDay = false,
       showCalendarIcon = true,
       showClearFieldIcon = true,
+      required = false,
     }: DatePickerProps,
-    forwardedRef: Ref<{ setValue: (val: string) => void }>
   ) => {
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-    useImperativeHandle(forwardedRef, () => ({
-      setValue: (val: string) => {
-        if (ref.current) ref.current.value = val;
-      },
-    }));
 
     const datePickerFormat = dateFormat.toLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
-      ? `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:lightBlue-400 focus:border-lightBlue-400 block w-full p-2.5`
-      : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+      ? `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 block w-full p-2.5`
+      : `${inputClassName || ''} border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400`;
 
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language) || 'en';
@@ -78,7 +73,7 @@ const DatePickerComponent = React.forwardRef(
 
     const debouncedOnChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
-      if (newValue !== value && newValue.length === 10) {
+      if (newValue !== value && (newValue === '' || newValue.length === 10)) {
         onChange(e);
       }
     }, 1000);
@@ -145,6 +140,7 @@ const DatePickerComponent = React.forwardRef(
                 className={`block w-full text-sm border rounded-md pl-10 pr-8 py-1 focus:outline-none focus:border-blue-400 ${fieldStyles} disabled:text-gray-500 placeholder-opacity-100`}
                 placeholder={placeholder || dateFormat}
                 autoComplete={autoComplete}
+                required={required}
               />
 
               {ref.current?.value && showClearFieldIcon && (
@@ -160,10 +156,7 @@ const DatePickerComponent = React.forwardRef(
           </div>
         </div>
       </div>
-
     );
-  }
-);
+  };
 
-export type { DatePickerProps };
 export { DatePickerComponent, datePickerOptionsByLocale, validateLocale };

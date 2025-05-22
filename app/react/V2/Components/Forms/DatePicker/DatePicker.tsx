@@ -15,6 +15,7 @@ interface DatePickerProps {
   useTimezone?: boolean;
   endOfDay?: boolean;
   model?: string;
+  name?: string;
   placeholder?: string;
   hideLabel?: boolean;
   className?: string;
@@ -25,6 +26,7 @@ interface DatePickerProps {
   errorMessage?: string;
   showCalendarIcon?: boolean;
   showClearFieldIcon?: boolean;
+  required?: boolean;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -36,6 +38,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   useTimezone = false,
   endOfDay = false,
   model,
+  name,
   placeholder,
   labelToday,
   labelClear,
@@ -48,6 +51,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   errorMessage = '',
   showCalendarIcon = true,
   showClearFieldIcon = true,
+  required = false,
 }) => {
   const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [inputValue, setInputValue] = useState('');
@@ -93,7 +97,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         placeholder={placeholder}
         labelToday={labelToday}
         labelClear={labelClear}
-        name={model}
+        name={model || name}
         hideLabel={hideLabel}
         className={className}
         clearFieldAction={clearFieldAction}
@@ -103,6 +107,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         useTimezone={useTimezone}
         endOfDay={endOfDay}
         showCalendarIcon={showCalendarIcon}
+        required={required}
       />
     </div>
   );

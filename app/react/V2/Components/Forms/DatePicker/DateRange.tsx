@@ -25,6 +25,7 @@ interface DateRangeProps {
   onClear?: any;
   clearFieldAction?: any;
   errorMessage?: string;
+  required?: boolean;
 }
 
 const DateRange: React.FC<DateRangeProps> = (props) => {
@@ -50,6 +51,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     onClear,
     clearFieldAction,
     errorMessage,
+    required = false,
   } = props;
   const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [fromInputValue, setFromInputValue] = useState('');
@@ -139,10 +141,11 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
           onToDateSelected={handleToChange}
           onBlur={onBlur}
           clearFieldAction={clearFieldAction}
+          required={required}
         />
       </div>
     </div>
   );
 };
 
-export { DateRange }; 
+export { DateRange };

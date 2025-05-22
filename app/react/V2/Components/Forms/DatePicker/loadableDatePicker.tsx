@@ -1,22 +1,26 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import loadable from '@loadable/component';
-import { DatePickerComponent } from './DatePickerComponent';
-import { DateRangePickerComponent } from './DateRangePickerComponent';
+import { DatePickerProps, DateRangePickerProps, defaultDateFormat } from './dateUtils';
 
-const LazyDatePicker = loadable(async () => {
+
+const DatePickerComponent = loadable(async () => {
   const { DatePickerComponent: Component } = await import(
     /* webpackChunkName: "LazyLoadDatePickerComponent" */ './DatePickerComponent'
   );
   return Component;
 });
 
-const LazyDateRangePicker = loadable(async () => {
+const DateRangePickerComponent = loadable(async () => {
   const { DateRangePickerComponent: Component } = await import(
     /* webpackChunkName: "LazyLoadDateRangePickerComponent" */ './DateRangePickerComponent'
   );
   return Component;
 });
 
+// eslint-disable-next-line react/jsx-props-no-spreading
+const LazyDatePicker = (props: DatePickerProps) => <DatePickerComponent {...props} dateFormat={props.dateFormat || defaultDateFormat} />;
+// eslint-disable-next-line react/jsx-props-no-spreading
+const LazyDateRangePicker = (props: DateRangePickerProps) => <DateRangePickerComponent {...props} dateFormat={props.dateFormat || defaultDateFormat} />;
 
 export { LazyDatePicker, LazyDateRangePicker }; 

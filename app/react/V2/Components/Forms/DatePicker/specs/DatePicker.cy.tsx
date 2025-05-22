@@ -54,7 +54,7 @@ describe('DatePicker', () => {
     cy.get('input[name=dateField]').click();
     cy.contains('Limpiar').click();
     cy.wait(1000);
-    cy.get('@onChange').should('have.been.called');
+    cy.get('@onChange').should('have.been.calledWith', null);
     cy.get('input[name=dateField]').should('have.value', '');
   });
 
