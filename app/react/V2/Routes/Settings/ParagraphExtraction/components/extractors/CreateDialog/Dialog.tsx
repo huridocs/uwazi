@@ -13,9 +13,13 @@ const Dialog = () => {
   return (
     <Modal size="xxl">
       <Modal.Header>
-        <h1 className="text-lg font-semibold text-gray-900">
-          <Translate>{AddExtractorSteps[step].title}</Translate>
-        </h1>
+        <div className="flex flex-col">
+          <h1 className="text-lg font-semibold text-gray-900">{AddExtractorSteps[step].title()}</h1>
+          <p className="mt-1 text-sm font-light text-gray-500">
+            {AddExtractorSteps[step].description()}
+          </p>
+        </div>
+
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
       <Modal.Body className="pt-0">

@@ -320,6 +320,7 @@ Exporting entities to CSV,Экспортировать объекты в CSV
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -600,10 +601,10 @@ Others,Others
 out of,из
 Page,Страница
 Pages,Страницы
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric),Paragraph text extraction property (numeric)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
@@ -745,6 +746,8 @@ Select files on your device,Выбрать файлы на вашем устро
 Select from computer,Select from computer
 Select relationship type,Выберите тип взаимосвязей
 Select target paragraph,Выберите целевой абзац
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,Выбрать...
 Selected,Selected
 selected,выбранный
@@ -801,6 +804,7 @@ Source,Source
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -831,6 +835,7 @@ Table view,Табличный вид
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Шаблон
 Template conflict,Template conflict
 Template name,Template name

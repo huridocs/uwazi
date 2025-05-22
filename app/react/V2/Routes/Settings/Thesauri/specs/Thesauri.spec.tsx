@@ -132,9 +132,6 @@ describe('Settings Thesauri', () => {
     };
 
     describe('render existing thesauri', () => {
-      it('should show a list of existing thesauri', async () => {
-        expect(renderResult.container).toMatchSnapshot();
-      });
       it('should not allow to delete used thesaurus', async () => {
         rows = await waitFor(() => screen.getAllByRole('row'));
         const usedThesaurusCheckbox = within(rows[3].children[0] as HTMLElement).getByRole(

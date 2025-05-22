@@ -85,7 +85,7 @@ const Body = () => {
           id="numeric-text-property"
           label={
             <Translate className="text-sm font-semibold text-gray-900">
-              Paragraph text extraction property (numeric)
+              Paragrap number extraction property (numeric)
             </Translate>
           }
           value={paragraphNumberPropertyId}
@@ -100,9 +100,14 @@ const Body = () => {
         <Select
           id="target-relationship-type"
           label={
-            <Translate className="text-sm font-semibold text-gray-900">
-              Target relationship type
-            </Translate>
+            <div className="flex flex-col gap-1">
+              <Translate className="text-sm font-semibold text-gray-900">
+                Target relationship type
+              </Translate>
+              <Translate className="text-sm font-light text-gray-500">
+                Target's role in the relationship Source-Target.
+              </Translate>
+            </div>
           }
           value={targetRelationshipId}
           options={getOptions(
@@ -117,9 +122,14 @@ const Body = () => {
         <Select
           id="source-relationship-type"
           label={
-            <Translate className="text-sm font-semibold text-gray-900">
-              Source relationship type
-            </Translate>
+            <div className="flex flex-col gap-1">
+              <Translate className="text-sm font-semibold text-gray-900">
+                Source relationship type
+              </Translate>
+              <Translate className="text-sm font-light text-gray-500">
+                Source's role in the relationship Source-Target.
+              </Translate>
+            </div>
           }
           value={sourceRelationshipId}
           options={getOptions(
