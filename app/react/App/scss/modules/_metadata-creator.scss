@@ -1,8 +1,10 @@
+@use "../config/colors";
+
 form {
   .highlight {
     .multiselect {
-      background-color: $c-card-highlight;
-      border: 1px solid $c-shadow;
+      background-color: colors.$c-card-highlight;
+      border: 1px solid colors.$c-shadow;
       border-radius: 6px;
       padding: 0 3px;
     }
@@ -10,7 +12,7 @@ form {
     input,
     select,
     textarea {
-      background-color: $c-card-highlight;
+      background-color: colors.$c-card-highlight;
     }
   }
 }

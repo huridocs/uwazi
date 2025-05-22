@@ -1,6 +1,6 @@
-@import '../../scss/config/colors';
-@import '../../scss/config/typography';
-@import '../../scss/elements/pill';
+@use '../../scss/config/colors';
+@use '../../scss/config/typography';
+@use '../../scss/elements/pill';
 
 .userManagementTabs {
   position: relative;
@@ -9,29 +9,29 @@
   .react-tabs__tab-list {
     display: flex;
     list-style: none;
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
     height: 28px;
     padding-left: 0px;
   }
   .react-tabs__tab {
     display: inline-block;
     padding: 5px 12px 0;
-    font-size: $f-size;
+    font-size: typography.$f-size;
     cursor: pointer;
     border-bottom: 1px;
     color: black;
     height: 28px;
 
     &:hover {
-      color: $c-black;
-      border-bottom: 1px dotted $c-black;
+      color: colors.$c-black;
+      border-bottom: 1px dotted colors.$c-black;
     }
     &.react-tabs__tab--selected {
-      color: $c-primary;
+      color: colors.$c-primary;
       border-top-left-radius: 0.25rem;
       border-top-right-radius: 0.25rem;
       border: 1px solid;
-      border-color: $c-grey-light $c-grey-light transparent;
+      border-color: colors.$c-grey-light colors.$c-grey-light transparent;
       background-color: white;
     }
     &:focus {
@@ -53,17 +53,17 @@
     th,
     td {
       padding: 7px 10px;
-      font-size: $f-size;
+      font-size: typography.$f-size;
     }
     th {
       font-weight: bold;
-      border-bottom: 2px solid $c-grey-light;
+      border-bottom: 2px solid colors.$c-grey-light;
     }
     th:nth-child(2) {
       text-align: center;
     }
     td {
-      @include pillItem;
+      @include pill.pillItem;
     }
     tbody tr {
       &:hover > td {
@@ -76,7 +76,7 @@
       }
     }
     tbody td {
-      border-bottom: 1px solid $c-grey-light;
+      border-bottom: 1px solid colors.$c-grey-light;
     }
   }
   table.edition-mode {

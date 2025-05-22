@@ -1,7 +1,10 @@
+@use "../config/colors";
+@use "../config/typography";
+
 @use "sass:color";
 
 $breakpoint: 768px;
-$c-background: #fcfcfc;
+colors.$c-background: #fcfcfc;
 
 .entity-viewer,
 .document-viewer {
@@ -252,7 +255,7 @@ $c-background: #fcfcfc;
   .connection-type {
     width: 100%;
     padding: 5px 15px;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     margin: 0;
     color: #777;
 
@@ -299,7 +302,7 @@ $c-background: #fcfcfc;
       align-items: center;
       height: auto;
       position: relative;
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
 
       .item-label-group {
         width: auto;
@@ -326,8 +329,8 @@ $c-background: #fcfcfc;
   .hub {
     width: $hub-size;
     height: $hub-size;
-    background: $c-grey-lighten;
-    border: 1px solid $c-grey-light;
+    background: colors.$c-grey-lighten;
+    border: 1px solid colors.$c-grey-light;
     position: absolute;
     top: calc((28px - $hub-size) / 2);
     right: calc(-50px - $hub-size / 2);
@@ -339,7 +342,7 @@ $c-background: #fcfcfc;
     &:after {
       content: '';
       display: block;
-      background: $c-grey-light;
+      background: colors.$c-grey-light;
       position: absolute;
       height: 1px;
       width: 50px;
@@ -353,7 +356,7 @@ $c-background: #fcfcfc;
     .item.no-connection:before {
       content: '';
       display: block;
-      background: $c-grey-light;
+      background: colors.$c-grey-light;
       position: absolute;
       height: 1px;
       width: 16px;
@@ -372,20 +375,20 @@ $c-background: #fcfcfc;
       width: 1px;
       top: -100vh;
       bottom: $hub-size - 1px;
-      background: $c-grey-light;
+      background: colors.$c-grey-light;
       position: absolute;
       left: 50%;
     }
   }
 
   .target-connections {
-    border-left: 1px solid $c-grey-light;
+    border-left: 1px solid colors.$c-grey-light;
 
     .connection:last-child:after {
       content: '';
       display: block;
       width: 14px;
-      background: $c-background;
+      background: colors.$c-background;
       position: absolute;
       bottom: 0;
       top: 30px;
@@ -416,7 +419,7 @@ $c-background: #fcfcfc;
       content: '';
       display: block;
       width: 14px;
-      background: $c-background;
+      background: colors.$c-background;
       position: absolute;
       bottom: -15px;
       top: 30px;
@@ -554,8 +557,8 @@ $relationship-type-height: 32px;
 .rounded-icon,
 .relationships-icon {
   position: absolute;
-  border: 1px solid $c-grey-light;
-  color: $c-grey;
+  border: 1px solid colors.$c-grey-light;
+  color: colors.$c-grey;
   text-align: center;
   border-radius: 50%;
   cursor: pointer;
@@ -566,8 +569,8 @@ $relationship-type-height: 32px;
 
 .rounded-icon-small {
   position: absolute;
-  border: 1px solid $c-grey;
-  color: $c-grey;
+  border: 1px solid colors.$c-grey;
+  color: colors.$c-grey;
   text-align: center;
   border-radius: 50%;
   cursor: pointer;
@@ -586,8 +589,8 @@ $relationship-type-height: 32px;
   }
 
   &.moving {
-    border: 1px solid $c-success;
-    color: $c-success;
+    border: 1px solid colors.$c-success;
+    color: colors.$c-success;
   }
 
   .rightRelationship &,
@@ -644,7 +647,7 @@ $relationship-type-height: 32px;
   }
 
   &:after {
-    background: $c-grey-light;
+    background: colors.$c-grey-light;
     width: 1px;
     height: calc(100% - 30px);
     content: '';
@@ -735,7 +738,7 @@ $relationship-type-height: 32px;
     display: block;
     width: 50px;
     height: 1px;
-    background: $c-grey-light;
+    background: colors.$c-grey-light;
     position: absolute;
     top: 13px;
     left: 100%;
@@ -747,7 +750,7 @@ $relationship-type-height: 32px;
   display: block;
   width: 50px;
   height: 1px;
-  background: $c-grey-light;
+  background: colors.$c-grey-light;
   position: absolute;
   top: calc(50% - 1px);
   right: 100%;
@@ -781,7 +784,7 @@ $relationship-type-height: 32px;
   position: absolute;
   width: 16px;
   height: 16px;
-  background-color: $c-grey-light;
+  background-color: colors.$c-grey-light;
   border-radius: 50%;
   transform: translateX(-50%) translateY(7px);
 }
@@ -817,7 +820,7 @@ $relationship-type-height: 32px;
   }
 
   &.move .item {
-    box-shadow: 4px 3px 20px 0px $c-grey;
+    box-shadow: 4px 3px 20px 0px colors.$c-grey;
   }
 }
 
@@ -849,27 +852,27 @@ $relationship-type-height: 32px;
   text-align: left;
   background: transparent;
   padding: 5px 15px;
-  border: 1px dotted $c-grey-light;
-  color: $c-grey-dark;
+  border: 1px dotted colors.$c-grey-light;
+  color: colors.$c-grey-dark;
   line-height: $relationship-type-height;
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   .fa {
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   &:hover {
-    border-color: $c-grey;
-    color: $c-black;
+    border-color: colors.$c-grey;
+    color: colors.$c-black;
   }
 
   &.is-active {
-    border: 1px solid $c-primary;
-    color: $c-black;
+    border: 1px solid colors.$c-primary;
+    color: colors.$c-black;
     box-shadow:
-      inset 0 1px 2px $c-grey-lighten,
-      0 0 0 3px color.adjust($c-primary, $alpha: -0.7);
+      inset 0 1px 2px colors.$c-grey-lighten,
+      0 0 0 3px color.adjust(colors.$c-primary, $alpha: -0.7);
   }
 }

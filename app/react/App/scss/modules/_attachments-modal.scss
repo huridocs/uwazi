@@ -1,3 +1,7 @@
+@use "../config/breakpoints";
+@use "../config/colors";
+@use "../config/typography";
+
 .attachments-modal {
   position: absolute;
   display: flex;
@@ -11,7 +15,7 @@
   bottom: auto;
   margin-right: -50%;
   transform: translate(-50%, -50%);
-  background: $c-white;
+  background: colors.$c-white;
   padding: 16px 24px;
   outline: none;
 
@@ -42,7 +46,7 @@
     padding: 5px 8px 4px 8px;
     border: 1px solid #555555;
     border-radius: 2px;
-    background: $c-white;
+    background: colors.$c-white;
 
     svg {
       margin-right: 4px;
@@ -84,7 +88,7 @@
 
       &-active {
         border: 1px solid #dddddd;
-        border-bottom-color: $c-white;
+        border-bottom-color: colors.$c-white;
       }
     }
   }
@@ -124,7 +128,7 @@
           top: 7px;
           right: 7px;
           width: 17px;
-          color: $c-primary;
+          color: colors.$c-primary;
         }
       }
 
@@ -164,7 +168,7 @@
           padding: 6px;
 
           &.active {
-            border-color: $c-type-9;
+            border-color: colors.$c-type-9;
             border-width: 2px;
           }
 
@@ -239,7 +243,7 @@
     &-title {
       margin-top: 24px;
       margin-bottom: 4px;
-      font-size: $f-size-lg;
+      font-size: typography.$f-size-lg;
     }
   }
 
@@ -247,7 +251,7 @@
     border-radius: 2px;
   }
 
-  @include desktop {
+  @include breakpoints.desktop {
     width: 80vw;
     height: 70vh;
   }

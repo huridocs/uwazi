@@ -1,3 +1,5 @@
+@use "../config/colors";
+
 .nprogress-container {
   height: 4px;
   margin-bottom: -4px;
@@ -7,7 +9,7 @@
   transition: all 0ms !important;
   .bar {
     height: 4px;
-    background: $c-primary;
+    background: colors.$c-primary;
     position: absolute;
   }
 
