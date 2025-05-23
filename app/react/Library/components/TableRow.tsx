@@ -100,7 +100,6 @@ const TableRowComponent = ({
     return { key, value };
   });
   const [firstCell, ...rowCells] = cells;
-
   return (
     <tr
       className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${

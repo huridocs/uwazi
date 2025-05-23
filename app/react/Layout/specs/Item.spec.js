@@ -1,11 +1,10 @@
 import { fromJS as Immutable } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { FavoriteBanner } from 'app/Favorites';
-
+import { Translate } from 'app/I18N';
 import { FormatMetadata } from '../../Metadata';
 import { Item, mapStateToProps } from '../Item';
 import { RowList, ItemFooter } from '../Lists';
@@ -49,6 +48,7 @@ describe('Item', () => {
   it('should have default props values assigned', () => {
     render();
     expect(component.instance().props.search).toEqual(prioritySortingCriteria.get());
+    expect(component.instance().props.markAsDeleted).toBe(false);
   });
 
   it('should extend RowList.Item and append active, type and classNames correctly', () => {
@@ -59,10 +59,24 @@ describe('Item', () => {
     expect(component.find(RowList.Item).props().active).toBe(true);
   });
 
-  it('should not fail on legacy entities without template', () => {
-    props.doc = props.doc.set('template', undefined);
+  it('should add deleted class when markAsDeleted is true', () => {
+    props.markAsDeleted = true;
     render();
-    expect(component.find(RowList.Item).props().className).toContain('template-undefined');
+    expect(component.find(RowList.Item).props().className).toContain('deleted');
+  });
+
+  it('should show deleted message in footer when markAsDeleted is true', () => {
+    props.markAsDeleted = true;
+    render();
+    const translateComponent = component.find(ItemFooter).find(Translate);
+    expect(translateComponent.props().children).toBe('Deleted entity');
+  });
+
+  it('should not show template label and buttons when markAsDeleted is true', () => {
+    props.markAsDeleted = true;
+    render();
+    expect(component.find(ItemFooter).find(TemplateLabel).length).toBe(0);
+    expect(component.find(ItemFooter).find('div').length).toBe(0);
   });
 
   it('should replicate onClick, onMouseEnter and onMouseLeave behaviours of parent', () => {

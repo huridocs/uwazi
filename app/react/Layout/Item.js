@@ -36,7 +36,7 @@ class Item extends Component {
         <div className="item-snippet">{additionalText}</div>
       </div>
     ) : null;
-    const baseClasName = `item-document template-${doc.template}`;
+    const baseClasName = `item-document template-${doc.template} ${this.props.markAsDeleted ? ' deleted' : ''}`;
     const itemClassName = `${baseClasName} ${this.props.className || ''}`;
     const itemProps = {
       className: itemClassName,
@@ -48,7 +48,7 @@ class Item extends Component {
     };
 
     return (
-      <RowList.Item {...itemProps} className={this.props.markAsDeleted ? ' deleted' : ''}>
+      <RowList.Item {...itemProps}>
         {this.props.itemHeader}
         <div className="item-info">
           <h2 className="item-name">

@@ -96,12 +96,12 @@ export function saveToc(toc, fileId) {
 }
 
 export function deleteDocument(doc) {
-  atomStore.set(deletedEntityAtom, doc.sharedId);
   return async dispatch => {
     await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
+    atomStore.set(deletedEntityAtom, doc.sharedId);
     await dispatch(unselectAllDocuments());
   };
 }

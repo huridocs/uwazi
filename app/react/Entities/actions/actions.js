@@ -38,11 +38,11 @@ export function resetForm() {
 }
 
 export function deleteEntity(entity) {
-  atomStore.set(deletedEntityAtom, entity.sharedId);
   return async dispatch => {
     await api.delete(new RequestParams({ sharedId: entity.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
+    atomStore.set(deletedEntityAtom, entity.sharedId);
     await dispatch(unselectDocument(entity._id));
   };
 }
