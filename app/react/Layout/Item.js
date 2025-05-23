@@ -48,7 +48,7 @@ class Item extends Component {
     };
 
     return (
-      <RowList.Item {...itemProps}>
+      <RowList.Item {...itemProps} className={this.props.markAsDeleted ? ' deleted' : ''}>
         {this.props.itemHeader}
         <div className="item-info">
           <h2 className="item-name">
