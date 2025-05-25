@@ -321,6 +321,7 @@ Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -601,10 +602,10 @@ Others,Others
 out of,fuera de
 Page,Página
 Pages,Páginas
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric),Paragraph text extraction property (numeric)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
@@ -746,6 +747,8 @@ Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship type,Seleccionar tipo de relación
 Select target paragraph,Seleccionar párrafo de destino
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
@@ -802,6 +805,7 @@ Source,Source
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,Estado
 Stats & Filters,Stats & Filters
 Status,Status
@@ -832,6 +836,7 @@ Table view,Vista de Tabla
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Plantilla
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
