@@ -323,6 +323,7 @@ Exporting entities to CSV,엔티티를 CSV 로 추출
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -603,10 +604,10 @@ Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric),Paragraph text extraction property (numeric)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
@@ -748,6 +749,8 @@ Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,Select from computer
 Select relationship type,연결 유형 선택
 Select target paragraph,대상 단락 선택
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,선택
 Selected,Selected
 selected,선택 완료
@@ -804,6 +807,7 @@ Source,Source
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -834,6 +838,7 @@ Table view,테이블 뷰
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name

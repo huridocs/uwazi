@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/MultiselectList.stories';
 import { remoteLookupFunction } from 'app/stories/Forms/MultiselectListSotoryFixtures';
-import { MultiselectList } from '../MultiselectList/MultiselectList';
+import { MultiselectList, MultiselectListOption } from '../MultiselectList/MultiselectList';
 import { specialCharacters, pizzas, salads } from './fixtures';
 
 describe('MultiselectList.cy.tsx', () => {
@@ -410,6 +410,70 @@ describe('MultiselectList.cy.tsx', () => {
       cy.contains('Another').then(() => {
         cy.get('@searchSpy').should('have.been.calledOnce');
       });
+    });
+  });
+
+  describe('items prop updates', () => {
+    const ParentComponent = ({ initialItems }: { initialItems: MultiselectListOption[] }) => {
+      const [items, setItems] = useState(initialItems);
+
+      return (
+        <div className="p-2 tw-content">
+          <MultiselectList items={items} />
+          <button
+            type="button"
+            onClick={() => {
+              setItems([
+                {
+                  label: 'Updated Item 1',
+                  searchLabel: 'Updated Item 1',
+                  value: 'item3',
+                },
+                {
+                  label: 'Updated Item 2',
+                  searchLabel: 'Updated Item 2',
+                  value: 'item4',
+                },
+              ]);
+            }}
+          >
+            Update Items
+          </button>
+        </div>
+      );
+    };
+
+    it('should update rendered items when items prop changes from parent', () => {
+      const initialItems = [
+        {
+          label: 'Initial Item 1',
+          searchLabel: 'Initial Item 1',
+          value: 'item1',
+        },
+        {
+          label: 'Initial Item 2',
+          searchLabel: 'Initial Item 2',
+          value: 'item2',
+        },
+      ];
+
+      cy.viewport(450, 650);
+      mount(<ParentComponent initialItems={initialItems} />);
+
+      // Verify initial items are rendered
+      cy.contains('Initial Item 1').should('be.visible');
+      cy.contains('Initial Item 2').should('be.visible');
+
+      // Click button to update items
+      cy.contains('button', 'Update Items').click();
+
+      // Verify updated items are rendered
+      cy.contains('Updated Item 1').should('be.visible');
+      cy.contains('Updated Item 2').should('be.visible');
+
+      // Verify old items are no longer visible
+      cy.contains('Initial Item 1').should('not.exist');
+      cy.contains('Initial Item 2').should('not.exist');
     });
   });
 });
