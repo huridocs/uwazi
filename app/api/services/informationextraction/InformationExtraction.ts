@@ -282,7 +282,6 @@ class InformationExtraction {
         }
       }
 
-      console.log(`Data for ${type}`, data);
       await request.post(urljoin(serviceUrl, type), data);
 
       if (type === 'prediction_data') {
