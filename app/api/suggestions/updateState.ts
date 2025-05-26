@@ -130,8 +130,6 @@ export const updateStates = async (query: any) => {
     const propertyType = propertyTypes[suggestion.propertyName];
     const _suggestion = postProcessCurrentValue(suggestion, propertyType);
 
-    console.log(_suggestion.labeledValue);
-    console.log(_suggestion.currentValue);
     if (typeof extractor?.source.property !== 'undefined' && !_suggestion.labeledValue) {
       _suggestion.labeledValue = suggestion.currentValue[0] as any;
     }

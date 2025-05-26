@@ -548,8 +548,6 @@ class InformationExtraction {
     if (extractor.source.property) {
       const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId);
 
-      console.log('entitiesfor', entitiesForSuggestions);
-
       if (!entitiesForSuggestions.length) {
         await this.stopModel(extractorId);
         emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
