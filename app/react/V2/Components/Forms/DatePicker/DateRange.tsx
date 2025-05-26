@@ -54,33 +54,34 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
     required = false,
   } = props;
   const dateFormat = (format || defaultDateFormat).toUpperCase();
-  const [fromInputValue, setFromInputValue] = useState('');
-  const [toInputValue, setToInputValue] = useState('');
+  const [fromInputValue, setFromInputValue] = useState<moment.Moment | null>(null);
+  const [toInputValue, setToInputValue] = useState<moment.Moment | null>(null);
 
   useEffect(() => {
     const fromDate = removeOffset(useTimezone, value?.from ?? null, dateFormat);
     const toDate = removeOffset(useTimezone, value?.to ?? null, dateFormat);
 
     if (fromDate) {
-      setFromInputValue(fromDate.format(dateFormat));
+      setFromInputValue(fromDate);
     } else {
-      setFromInputValue('');
+      setFromInputValue(null);
     }
     if (toDate) {
-      setToInputValue(toDate.format(dateFormat));
+      setToInputValue(toDate);
     } else {
-      setToInputValue('');
+      setToInputValue(null);
     }
   }, [value, useTimezone, dateFormat]);
 
   // eslint-disable-next-line max-statements
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
-    setFromInputValue(typedValue);
+    setFromInputValue(moment(typedValue, dateFormat, true));
+
+    const previousToValue = toInputValue?.valueOf() ? toInputValue.valueOf() / 1000 : null;
 
     if (!typedValue) {
-      console.log('changed from clear');
-      onChange({ from: null, to: value?.to || null });
+      onChange({ from: null, to: previousToValue });
       return;
     }
 
@@ -89,9 +90,8 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
         const formattedDate = withOffset.format(dateFormat);
-        console.log('changed from');
-        onChange({ from: withOffset.valueOf() / 1000, to: value?.to || null });
-        setFromInputValue(formattedDate);
+        onChange({ from: withOffset.valueOf() / 1000, to: previousToValue });
+        setFromInputValue(withOffset);
       }
     }
   };
@@ -99,10 +99,10 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
   // eslint-disable-next-line max-statements
   const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
-    setToInputValue(typedValue);
-
+    setToInputValue(moment(typedValue, dateFormat, true));
+    const previousFromValue = fromInputValue?.valueOf() ? fromInputValue.valueOf() / 1000 : null;
     if (!typedValue) {
-      onChange({ from: value?.from || null, to: null });
+      onChange({ from: previousFromValue, to: null });
       return;
     }
 
@@ -111,8 +111,8 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
       const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
       if (withOffset) {
         const formattedDate = withOffset.format(dateFormat);
-        onChange({ from: value?.from || null, to: withOffset.valueOf() / 1000 });
-        setToInputValue(formattedDate);
+        onChange({ from: previousFromValue, to: withOffset.valueOf() / 1000 });
+        setToInputValue(withOffset);
       }
     }
   };
@@ -128,7 +128,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
           hideLabel={hideLabel}
           className={className}
           model={model || name}
-          value={{ from: fromInputValue, to: toInputValue }}
+          value={{ from: fromInputValue?.valueOf() ?? null, to: toInputValue?.valueOf() ?? null }}
           label={label}
           labelToday={labelToday}
           labelClear={labelClear}

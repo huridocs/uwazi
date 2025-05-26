@@ -43,9 +43,6 @@ const DatePickerComponent =
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
     const datePickerFormat = dateFormat.toLowerCase();
-    const fieldStyles = !(hasErrors || errorMessage)
-      ? `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 block w-full p-2.5`
-      : `${inputClassName || ''} border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400`;
 
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language) || 'en';
@@ -137,7 +134,9 @@ const DatePickerComponent =
                 ref={ref}
                 disabled={disabled}
                 defaultValue={value}
-                className={`block w-full text-sm border rounded-md pl-10 pr-8 py-1 focus:outline-none focus:border-blue-400 ${fieldStyles} disabled:text-gray-500 placeholder-opacity-100`}
+                className={`block w-full text-sm border rounded-md pl-10 pr-8 py-1 focus:outline-none focus:border-blue-400 ${!(hasErrors || errorMessage)
+                  ? `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 block w-full p-2.5`
+                  : `${inputClassName || ''} border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400`} disabled:text-gray-500 placeholder-opacity-100`}
                 placeholder={placeholder || dateFormat}
                 autoComplete={autoComplete}
                 required={required}

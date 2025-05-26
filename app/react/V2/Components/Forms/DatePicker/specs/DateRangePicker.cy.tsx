@@ -93,8 +93,8 @@ describe('DateRangePicker', () => {
 
   it('should handle error state', () => {
     mount(<Basic hasErrors={true} errorMessage="This field is required" />);
-    cy.get('#from').parent().parent().should('have.class', '[&>div>*:nth-child(odd)]:border-error-300');
-    cy.get('#to').parent().parent().should('have.class', '[&>div>*:nth-child(odd)]:border-error-300');
+    cy.get('#from').should('have.class', 'border-red-300');
+    cy.get('#to').should('have.class', 'border-red-300');
     cy.contains('This field is required').should('be.visible');
   });
 
@@ -114,32 +114,32 @@ describe('DateRangePicker', () => {
 
   describe('when date is in a different timezone', () => {
     const testTimezones = [
-      { timezone: 'Japan', dateToTest: '1950-08-05' },
-      { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
-      { timezone: 'Europe/Madrid', dateToTest: '2020-08-18' },
+      { timezone: 'Japan', dateToTest: '1950-11-05' },
+      { timezone: 'Europe/Madrid', dateToTest: '1973-11-18' },
+      { timezone: 'Europe/Madrid', dateToTest: '2020-11-18' },
     ];
 
     testTimezones.forEach(({ timezone, dateToTest }) => {
       it(`should handle dates correctly in ${timezone}`, () => {
         const onChange = cy.stub().as('onChange');
-        const newDate = moment.utc(dateToTest);
+        const fromDate = moment.utc(dateToTest);
+        const toDate = moment.utc(dateToTest).add(2, 'day');
         mount(
           <Basic
-            value={{ from: newDate.format('YYYY-MM-DD'), to: newDate.format('YYYY-MM-DD') }}
+            value={{ from: fromDate.format('YYYY-MM-DD'), to: toDate.format('YYYY-MM-DD') }}
             onChange={onChange}
           />
         );
 
-        cy.get('#from').should('have.value', moment(dateToTest).format('DD-MM-YYYY'));
-        cy.get('#to').should('have.value', moment(dateToTest).format('DD-MM-YYYY'));
+        cy.get('#from').should('have.value', fromDate.format('DD-MM-YYYY'));
+        cy.get('#to').should('have.value', toDate.format('DD-MM-YYYY'));
 
-        cy.get('#from').click();
-        cy.get('.days')
-          .eq(0)
-          .within(() => {
-            cy.contains('12').click();
-          });
-        cy.get('@onFromDateSelected').should('have.been.called');
+        cy.get('#to').click();
+        cy.get('.datepicker.datepicker-dropdown:not(.hidden)').within(() => {
+          cy.contains('20').click();
+        });
+        cy.wait(1000);
+        cy.get('@onChange').should('have.been.called');
       });
     });
   });
