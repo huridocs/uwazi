@@ -286,7 +286,7 @@ const Suggestions = {
     await IXSuggestionsModel.updateMany(
       {
         ...query,
-        fileId: { $nin: segmentedFilesIds },
+        fileId: { $exists: true, $ne: null, $nin: segmentedFilesIds },
       },
       { $set: { 'state.error': true, 'state.match': null } }
     );

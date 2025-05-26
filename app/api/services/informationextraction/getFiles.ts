@@ -204,7 +204,7 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
     {
       extractorId,
       date: { $lt: currentModel.creationDate },
-      // 'state.error': { $ne: true },
+      'state.error': { $ne: true },
     },
     '',
     { limit: SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE }
