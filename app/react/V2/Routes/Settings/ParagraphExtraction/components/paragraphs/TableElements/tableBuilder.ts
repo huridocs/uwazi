@@ -25,7 +25,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
     header: generateTableHeader('Text'),
     cell: TextCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-auto' },
+    meta: { headerClassName: 'w-full' },
   }),
   pxColumnHelper.accessor('rowId', {
     header: generateTableHeader('Action', { className: 'sr-only' }),
@@ -37,6 +37,7 @@ const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) =>
         }
       }),
     enableSorting: false,
+    meta: { headerClassName: 'w-0' },
   }),
 ];
 

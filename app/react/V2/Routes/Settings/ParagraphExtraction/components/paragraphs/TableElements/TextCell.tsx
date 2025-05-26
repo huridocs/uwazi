@@ -57,7 +57,7 @@ const TextCell = ({
           {endText}
         </span>
       ) : (
-        <span className="whitespace-nowrap">{text}</span>
+        <span>{text}</span>
       )}
     </span>
   );
