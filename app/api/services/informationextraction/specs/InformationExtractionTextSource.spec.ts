@@ -206,7 +206,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: '2004-07-04',
+        label_text: '2004-07-05',
       });
 
       expect(suggestion2).toEqual({
@@ -215,7 +215,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: '2004-07-04',
+        label_text: '2004-07-05',
       });
     });
   });
