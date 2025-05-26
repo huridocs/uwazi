@@ -13,6 +13,7 @@ describe('save()', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({
       settings: [{ languages: [{ default: true, label: 'English', key: 'en' }] }],
+      ixextractors: [fixtureFactory.ixExtractor('extractor', 'target_text', ['template'])],
     });
   });
 

@@ -20,7 +20,12 @@ import templatesModel from 'api/templates/templates';
 import dictionatiesModel from 'api/thesauri/dictionariesModel';
 import request from 'shared/JSONRequest';
 import { EntitySchema } from 'shared/types/entityType';
-import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import {
+  ExtractedMetadataSchema,
+  LanguageISO6391,
+  ObjectIdSchema,
+  PropertySchema,
+} from 'shared/types/commonTypes';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
@@ -32,12 +37,17 @@ import {
   propertyTypeIsSelectOrMultiSelect,
   NoSegmentedFiles,
   NoLabeledFiles,
+  getEntitiesForTraining,
+  getPropertyType,
+  getEntitiesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { LanguageUtils } from 'shared/language';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
+import moment from 'moment';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
@@ -46,8 +56,9 @@ import {
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
-  formatSuggestion,
+  formatSuggestionFacade,
 } from './suggestionFormatting';
+import { ExtractionKey } from './ExtractionKey';
 
 const defaultTrainingLanguage = 'en';
 
@@ -103,6 +114,8 @@ interface LabeledMaterialsData extends CommonMaterialsData {
 
 interface TextSelectionMaterialsData extends LabeledMaterialsData {
   label_text: FileWithAggregation['propertyValue'];
+  entity_name?: string;
+  source_text?: string;
   label_segments_boxes:
     | (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[]
     | undefined;
@@ -116,6 +129,16 @@ type MaterialsData =
   | CommonMaterialsData
   | TextSelectionMaterialsData
   | ValuesSelectionMaterialsData;
+
+interface PropertySourceMaterials {
+  entity_name: string;
+  language_iso: string;
+  id: string;
+  tenant: string;
+  source_text: string;
+  label_text?: any;
+  values?: { id: string; label: string }[];
+}
 
 async function fetchCandidates(property: PropertySchema) {
   const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
@@ -205,6 +228,68 @@ class InformationExtraction {
     return data;
   };
 
+  async sendMaterialsForProperty(
+    entitiesForTraining: EntitySchema[],
+    extractor: IXExtractorType,
+    serviceUrl: string,
+    type = 'labeled_data'
+  ) {
+    const targetPropertyType = await getPropertyType(extractor.templates, extractor.property);
+
+    await ArrayUtils.sequentialFor(entitiesForTraining, async entity => {
+      const extractionKey = ExtractionKey.create({
+        entitySharedId: entity.sharedId!,
+        language: entity.language as LanguageISO6391,
+      });
+
+      if (!extractor.source.property) {
+        throw new Error('Extractor has not property configured');
+      }
+
+      const data: PropertySourceMaterials = {
+        entity_name: extractionKey.key,
+        language_iso: extractionKey.language,
+        id: extractor._id.toString(),
+        tenant: tenants.current().name,
+        source_text: entity.metadata?.[extractor.source.property]?.[0]?.value as string,
+      };
+
+      if (type === 'labeled_data') {
+        if (['multiselect', 'relationship'].includes(targetPropertyType)) {
+          const values = entity?.metadata?.[extractor.property]?.map(({ value, label }) => ({
+            id: value,
+            label,
+          }));
+
+          const hasValue = !!values?.filter(v => !!v.id)?.length;
+          if (!values || !hasValue) {
+            return;
+          }
+
+          data.values = values as { id: string; label: string }[];
+        } else {
+          let labelText = entity.metadata?.[extractor.property]?.[0]?.value;
+
+          if (typeof labelText === 'undefined') {
+            return;
+          }
+
+          if (targetPropertyType === 'date') {
+            labelText = moment(Number(labelText) * 1000).format('YYYY-MM-DD');
+          }
+
+          data.label_text = labelText;
+        }
+      }
+
+      await request.post(urljoin(serviceUrl, type), data);
+
+      if (type === 'prediction_data') {
+        await this.saveSuggestionProcessForTextSource(entity, extractor);
+      }
+    });
+  }
+
   sendMaterials = async (
     files: FileWithAggregation[],
     extractor: IXExtractorType,
@@ -247,6 +332,7 @@ class InformationExtraction {
             data
           );
         }
+
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {
           await this.saveSuggestionProcess(file, extractor);
@@ -288,10 +374,52 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  saveSuggestions = async (message: InternalIXResultsMessage) => {
+  async saveSuggestionsForTextSource(
+    extractor: EnforcedWithId<IXExtractorType>,
+    rawSuggestions: RawSuggestion[],
+    message: InternalIXResultsMessage
+  ) {
+    const targetTemplate = await templatesModel.getById(extractor.templates[0]);
+    const properties = [
+      ...(targetTemplate!.commonProperties || []),
+      ...(targetTemplate!.properties || []),
+    ];
+
+    const targetProperty = properties.find(p => p.name === extractor.property);
+    if (!targetProperty) {
+      return;
+    }
+
+    await ArrayUtils.sequentialFor(rawSuggestions, async rawSuggestion => {
+      if (!rawSuggestion.entity_name) {
+        return undefined;
+      }
+
+      const extractionKey = new ExtractionKey(rawSuggestion.entity_name);
+
+      const [currentSuggestion] = await IXSuggestionsModel.get({
+        entityId: extractionKey.entitySharedId,
+        extractorId: extractor._id,
+        language: extractionKey.language,
+      });
+
+      const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
+        targetProperty,
+        rawSuggestion,
+        currentSuggestion,
+        message
+      );
+
+      return Suggestions.save(suggestion);
+    });
+  }
+
+  async saveSuggestionsForPdfSource(
+    extractor: EnforcedWithId<IXExtractorType>,
+    rawSuggestions: RawSuggestion[],
+    message: InternalIXResultsMessage
+  ) {
     const templates = await templatesModel.get();
-    const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
-    const [extractor] = await Extractors.get({ _id: message.params?.id });
 
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
@@ -323,7 +451,7 @@ class InformationExtraction {
             ? { name: 'title' as 'title', type: 'title' as 'title' }
             : allProps.find(p => p.name === extractor.property);
 
-        const suggestion = await formatSuggestion(
+        const suggestion = formatSuggestionFacade.formatSuggestionPdfSource(
           property,
           rawSuggestion,
           currentSuggestion,
@@ -334,6 +462,41 @@ class InformationExtraction {
         return Suggestions.save(suggestion);
       })
     );
+  }
+
+  saveSuggestionsManager = async (message: InternalIXResultsMessage) => {
+    const [extractor, rawSuggestions] = await Promise.all([
+      Extractors.getById({ _id: message.params?.id }),
+      this.requestResults(message),
+    ]);
+
+    if (extractor?.source.pdf) {
+      return this.saveSuggestionsForPdfSource(extractor, rawSuggestions, message);
+    }
+
+    if (extractor?.source.property) {
+      return this.saveSuggestionsForTextSource(extractor, rawSuggestions, message);
+    }
+  };
+
+  saveSuggestionProcessForTextSource = async (entity: EntitySchema, extractor: IXExtractorType) => {
+    const [existingSuggestions] = await IXSuggestionsModel.get({
+      entityId: entity.sharedId,
+      extractorId: extractor._id,
+      language: entity.language,
+    });
+
+    const suggestion: IXSuggestionType = {
+      ...existingSuggestions,
+      entityId: entity.sharedId!,
+      language: entity.language!,
+      extractorId: extractor._id,
+      propertyName: extractor.property,
+      status: 'processing',
+      date: new Date().getTime(),
+    };
+
+    return Suggestions.save(suggestion);
   };
 
   saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXExtractorType) => {
@@ -343,6 +506,7 @@ class InformationExtraction {
       extractorId: extractor._id,
       fileId: file._id,
     });
+
     const suggestion: IXSuggestionType = {
       ...existingSuggestions,
       entityId: entity.sharedId!,
@@ -368,15 +532,36 @@ class InformationExtraction {
   };
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
-    const files = await getFilesForSuggestions(extractorId);
     const [extractor] = await Extractors.get({ _id: extractorId });
-    if (files.length === 0) {
-      await this.stopModel(extractorId);
-      emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
-      return;
+    if (extractor.source.pdf) {
+      const files = await getFilesForSuggestions(extractorId);
+
+      if (files.length === 0) {
+        await this.stopModel(extractorId);
+        emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
+        return;
+      }
+
+      await this.materialsForSuggestions(files, extractor);
     }
 
-    await this.materialsForSuggestions(files, extractor);
+    if (extractor.source.property) {
+      const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId);
+
+      if (!entitiesForSuggestions.length) {
+        await this.stopModel(extractorId);
+        emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
+        return;
+      }
+
+      await this.sendMaterialsForProperty(
+        entitiesForSuggestions,
+        extractor,
+        await this.serviceUrl(),
+        'prediction_data'
+      );
+    }
+
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
@@ -504,6 +689,7 @@ class InformationExtraction {
       { $set: { findingSuggestions: false } },
       {}
     );
+
     if (res) {
       return { status: 'ready', message: 'Ready' };
     }
@@ -515,6 +701,16 @@ class InformationExtraction {
     extractor: IXExtractorType,
     serviceUrl: string
   ): Promise<[boolean, { status: string; message: string }?]> {
+    if (extractor.source.property) {
+      const entitiesForTraining = await getEntitiesForTraining(
+        extractor.templates,
+        extractor.property,
+        extractor.source.property
+      );
+
+      await this.sendMaterialsForProperty(entitiesForTraining, extractor, serviceUrl);
+      return [true];
+    }
     try {
       const files = await getFilesForTraining(extractor.templates, extractor.property);
       if (!files.length) {
@@ -571,13 +767,18 @@ class InformationExtraction {
       }
 
       if (message.task === 'suggestions') {
-        await this.saveSuggestions(message);
+        await this.saveSuggestionsManager(message);
         await this.updateSuggestionStatus(message, currentModel);
       }
 
       if (!currentModel.findingSuggestions) {
-        emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
-        return;
+        return emitToTenant(
+          message.tenant,
+          'ix_model_status',
+          _message.params!.id,
+          'ready',
+          'Canceled'
+        );
       }
 
       await this.getSuggestions(message.params!.id);

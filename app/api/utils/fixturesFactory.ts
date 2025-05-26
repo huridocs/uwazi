@@ -371,7 +371,7 @@ function getFixturesFactory() {
       name: string,
       property: string,
       templates: string[] = [],
-      source = { pdf: true }
+      source: { pdf?: boolean; property?: string } = { pdf: true }
     ): IXExtractorType => ({
       _id: idMapper(name),
       name,
