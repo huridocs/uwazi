@@ -120,10 +120,10 @@ const DatePickerComponent =
               <input
                 id={id}
                 // @ts-ignore
-                datepicker="true"
-                datepicker-autohide="true"
-                datepicker-buttons="true"
-                datepicker-autoselect-today="true"
+                data-datepicker="true"
+                data-datepicker-autohide="true"
+                data-datepicker-buttons="true"
+                data-datepicker-autoselect-today="true"
                 type="text"
                 lang={locale}
                 onChange={handleChange}
