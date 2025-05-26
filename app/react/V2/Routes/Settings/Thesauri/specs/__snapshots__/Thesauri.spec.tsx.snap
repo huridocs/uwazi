@@ -7,7 +7,7 @@ HTMLCollection [
       class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
     >
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <label>
           <span
@@ -23,7 +23,7 @@ HTMLCollection [
         </label>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <div
           class="flex items-center"
@@ -45,14 +45,14 @@ HTMLCollection [
         </div>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <div
           class="flex flex-wrap gap-2"
         />
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <button
           class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
@@ -71,7 +71,7 @@ HTMLCollection [
       class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
     >
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <label>
           <span
@@ -87,7 +87,7 @@ HTMLCollection [
         </label>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <div
           class="flex items-center"
@@ -109,14 +109,14 @@ HTMLCollection [
         </div>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <div
           class="flex flex-wrap gap-2"
         />
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <button
           class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
@@ -135,7 +135,7 @@ HTMLCollection [
       class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
     >
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <label>
           <span
@@ -152,7 +152,7 @@ HTMLCollection [
         </label>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <div
           class="flex items-center"
@@ -174,7 +174,7 @@ HTMLCollection [
         </div>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <div
           class="flex flex-wrap gap-2"
@@ -194,7 +194,7 @@ HTMLCollection [
         </div>
       </td>
       <td
-        class="relative px-4 py-2 undefined "
+        class="relative px-4 py-2  "
       >
         <button
           class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
