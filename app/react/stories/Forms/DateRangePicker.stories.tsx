@@ -57,7 +57,7 @@ const Basic: Story = {
     placeholderEnd: 'Fin',
     hideLabel: true,
     className: '',
-    useTimezone: true,
+    useTimezone: false,
     disabled: false,
     hasErrors: false,
     onChange: action('changed'),

@@ -9,6 +9,7 @@ const { Basic } = composeStories(stories);
 
 describe('DatePicker', () => {
   const today = new Date();
+  const date = moment.utc('2016-07-28T00:00:00+00:00');
   const checkSelectedDate = (selector: string, day: string) => {
     cy.get(selector).should(
       'have.value',
@@ -94,37 +95,65 @@ describe('DatePicker', () => {
 
   describe('useTimezone', () => {
     it('should render with the correct date transformed to local value', () => {
-      const date = moment.utc('2016-07-28T00:00:00+00:00');
       mount(<Basic value={Number(date.format('X'))} />);
-      const utcDate = moment.utc(date.format('X'), 'X');
-      cy.get('input[name=dateField]').should('have.value', utcDate.format('DD-MM-YYYY'));
+      const expectedDate = moment(date).utc().format('DD-MM-YYYY');
+      cy.get('input[name=dateField]').should('have.value', expectedDate);
     });
 
-    it('should render without transforming the value to local', () => {
-      const date = moment.utc('2016-07-28T00:00:00+00:00');
-      mount(<Basic value={Number(date.format('X'))} useTimezone />);
-      cy.get('input[name=dateField]').should('have.value', date.format('DD-MM-YYYY'));
+    it('should render with the correct date from timestamp', () => {
+      mount(<Basic value={1747528923} />);
+      cy.get('input[name=dateField]').should('have.value', '18-05-2025');
     });
-  });
 
-  describe('when date is in a different timezone', () => {
-    const testTimezones = [
-      { timezone: 'Japan', dateToTest: '1950-08-05' },
-      { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
-      { timezone: 'Europe/Madrid', dateToTest: '2020-08-18' },
-    ];
+    describe('when useTimezone is true', () => {
+      it('should render without transforming the value to local', () => {
+        mount(<Basic value={Number(date.format('X'))} useTimezone />);
+        cy.get('input[name=dateField]').should('have.value', date.format('DD-MM-YYYY'));
+      });
+    });
 
-    testTimezones.forEach(({ timezone, dateToTest }) => {
-      it(`should handle dates correctly in ${timezone}`, () => {
-        const onChange = cy.stub().as('onChange');
-        const newDate = moment.utc(dateToTest);
-        mount(<Basic value={Number(newDate.format('X'))} onChange={onChange} />);
+    describe('when date is in a different timezone', () => {
+      const testTimezones = [
+        { timezone: 'Japan', dateToTest: '1950-08-05' },
+        { timezone: 'Europe/Madrid', dateToTest: '1973-08-18' },
+      ];
 
+      testTimezones.forEach(({ timezone, dateToTest }) => {
+        it(`should handle dates correctly in ${timezone}`, () => {
+          moment.tz.setDefault(timezone);
+          const onChange = cy.stub().as('onChange');
+          const newDate = moment.utc(dateToTest);
+          mount(<Basic value={Number(newDate.format('X'))} onChange={onChange} />);
+
+          cy.get('input[name=dateField]').should(
+            'have.value',
+            moment(dateToTest).local().format('DD-MM-YYYY')
+          );
+
+          cy.get('input[name=dateField]').click();
+          cy.get('.days')
+            .eq(0)
+            .within(() => {
+              cy.contains('20').click();
+            });
+          cy.get('@onChange').should('have.been.called');
+        });
+      });
+    });
+
+    describe('when using a non-latin locale', () => {
+      it('should render dates in latin format', () => {
+        const date = moment.utc('2016-07-28T00:00:00+00:00');
+        mount(<Basic value={Number(date.format('X'))} locale="ar" />);
         cy.get('input[name=dateField]').should(
           'have.value',
-          moment(dateToTest).format('DD-MM-YYYY')
+          moment('2016-07-28').local().format('DD-MM-YYYY')
         );
+      });
 
+      it('should handle date selection correctly', () => {
+        const onChange = cy.stub().as('onChange');
+        mount(<Basic onChange={onChange} locale="ar" />);
         cy.get('input[name=dateField]').click();
         cy.get('.days')
           .eq(0)
@@ -134,42 +163,48 @@ describe('DatePicker', () => {
         cy.get('@onChange').should('have.been.called');
       });
     });
-  });
 
-  describe('when using a non-latin locale', () => {
-    it('should render dates in latin format', () => {
-      const date = moment.utc('2016-07-28T00:00:00+00:00');
-      mount(<Basic value={Number(date.format('X'))} locale="ar" />);
-      cy.get('input[name=dateField]').should(
-        'have.value', '28-07-2016'
-      );
+    describe('when using endOfDay flag', () => {
+      it('should set the value to the end of the day', () => {
+        const onChange = cy.stub().as('onChange');
+        mount(<Basic onChange={onChange} endOfDay />);
+        cy.get('input[name=dateField]').click();
+        cy.get('.days')
+          .eq(0)
+          .within(() => {
+            cy.contains('12').click();
+          });
+        cy.get('@onChange').should('have.been.called');
+      });
+    });
+    describe('when useTimezone is true (for activity log, etc)', () => {
+      it('should set the value to timestamp NOT offsetting to UTC', () => {
+        const onChange = cy.stub().as('onChange');
+        const newDate = new Date('2020-08-18');
+        mount(<Basic onChange={onChange} useTimezone />);
+        cy.get('input[name=dateField]').click();
+        cy.get('.days')
+          .eq(0)
+          .within(() => {
+            cy.contains('18').click();
+          });
+        cy.get('@onChange').should('have.been.called');
+      });
+
+      it('should set the value to the end of the day NOT offsetting to UTC', () => {
+        const onChange = cy.stub().as('onChange');
+        const newDate = new Date('2020-08-18');
+        mount(<Basic onChange={onChange} useTimezone endOfDay />);
+        cy.get('input[name=dateField]').click();
+        cy.get('.days')
+          .eq(0)
+          .within(() => {
+            cy.contains('18').click();
+          });
+        cy.get('@onChange').should('have.been.called');
+      });
     });
 
-    it('should handle date selection correctly', () => {
-      const onChange = cy.stub().as('onChange');
-      mount(<Basic onChange={onChange} locale="ar" />);
-      cy.get('input[name=dateField]').click();
-      cy.get('.days')
-        .eq(0)
-        .within(() => {
-          cy.contains('12').click();
-        });
-      cy.get('@onChange').should('have.been.called');
-    });
-  });
-
-  describe('when using endOfDay flag', () => {
-    it('should set the value to the end of the day', () => {
-      const onChange = cy.stub().as('onChange');
-      mount(<Basic onChange={onChange} endOfDay />);
-      cy.get('input[name=dateField]').click();
-      cy.get('.days')
-        .eq(0)
-        .within(() => {
-          cy.contains('12').click();
-        });
-      cy.get('@onChange').should('have.been.called');
-    });
   });
 
   describe('when used with react-redux-form', () => {

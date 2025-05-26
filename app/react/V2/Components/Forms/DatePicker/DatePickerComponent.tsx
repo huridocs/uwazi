@@ -119,21 +119,20 @@ const DatePickerComponent =
 
               <input
                 id={id}
-                // @ts-ignore
+                name={name}
                 data-datepicker="true"
                 data-datepicker-autohide="true"
                 data-datepicker-buttons="true"
                 data-datepicker-autoselect-today="true"
                 type="text"
                 lang={locale}
+                defaultValue={value}
                 onChange={handleChange}
                 onSelect={handleChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                name={name}
                 ref={ref}
                 disabled={disabled}
-                defaultValue={value}
                 className={`block w-full text-sm border rounded-md pl-10 pr-8 py-1 focus:outline-none focus:border-blue-400 ${!(hasErrors || errorMessage)
                   ? `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 block w-full p-2.5`
                   : `${inputClassName || ''} border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400`} disabled:text-gray-500 placeholder-opacity-100`}

@@ -59,7 +59,7 @@ const Basic: Story = {
     placeholder: 'Seleccione una fecha',
     hideLabel: true,
     className: '',
-    useTimezone: true,
+    useTimezone: false,
     disabled: false,
     hasErrors: false,
     onChange: action('changed'),

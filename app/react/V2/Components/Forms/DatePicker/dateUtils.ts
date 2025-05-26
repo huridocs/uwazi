@@ -3,36 +3,35 @@ import type { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react'
 import { ChangeEventHandler } from 'react';
 import { t } from 'app/I18N';
 
+/**
+ * Default format used in date parsing/formatting.
+ */
 export const defaultDateFormat = 'DD-MM-YYYY';
 
-export const removeOffset = (
-  useTimezone: boolean,
-  value: string | number | null | undefined,
-  dateFormat?: string
-): Moment | null => {
-  if (!value) return null;
-  const milliseconds = typeof value === 'number' ? value * 1000 : moment(value).valueOf();
-  const newValue = moment.utc(milliseconds);
+export const removeOffset = (value: number, useTimezone: boolean) => {
+  let datePickerValue = null;
+  const miliseconds = value * 1000;
+  if (value) {
+    const newValue = moment.utc(miliseconds);
 
-  if (!useTimezone) {
-    newValue.subtract(moment(milliseconds).utcOffset(), 'minutes');
+    if (!useTimezone) {
+      // in order to get the system offset for the specific date we
+      // need to create a new not UTC moment object with the original timestamp
+      newValue.subtract(moment(moment(miliseconds)).utcOffset(), 'minutes');
+    }
+
+    datePickerValue = parseInt(newValue.locale('en').format('x'), 10);
   }
 
-  return newValue;
+  return datePickerValue;
 };
 
-export const addOffset = (
-  useTimezone: boolean,
-  endOfDay: boolean,
-  value: string,
-  dateFormat: string
-): Moment | null => {
-  const newValue = moment.utc(value, dateFormat, true);
-  if (!newValue.isValid()) {
-    return null;
-  }
+export const addOffset = (value: number, useTimezone: boolean, endOfDay: boolean) => {
+  const newValue = moment.utc(value);
 
   if (!useTimezone) {
+    // in order to get the proper offset moment has to be initialized with the actual date
+    // without this you always get the "now" moment offset
     newValue.add(moment(value).utcOffset(), 'minutes');
   }
 

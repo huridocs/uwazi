@@ -17,6 +17,7 @@ const DateRangePickerComponent =
     id = uniqueID(),
     model,
     value = { from: '', to: '' },
+    autoComplete = 'off',
     language = 'en',
     dateFormat = 'YYYY-MM-DD',
     hideLabel = false,
@@ -191,17 +192,18 @@ const DateRangePickerComponent =
               <input
                 id="from"
                 name={model ? `${model}.from` : 'dateField'}
-                // @ts-ignore
                 data-datepicker={true}
                 data-datepicker-autohide={true}
                 data-datepicker-buttons={true}
                 data-datepicker-autoselect-today={true}
                 type="text"
+                lang={locale}
                 defaultValue={value?.from || ''}
                 onChange={handleFromChange}
                 onSelect={handleFromChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
+                ref={fromRef}
                 disabled={disabled}
                 className={`
             block w-full text-sm h-8 rounded-lg pl-10 pr-8
@@ -213,7 +215,7 @@ const DateRangePickerComponent =
                   }
           `}
                 placeholder={placeholderStart || dateFormat}
-                ref={fromRef}
+                autoComplete={autoComplete}
                 required={required}
               />
 
@@ -234,17 +236,18 @@ const DateRangePickerComponent =
               <input
                 id="to"
                 name={model ? `${model}.to` : 'dateField'}
-                // @ts-ignore
                 data-datepicker={true}
                 data-datepicker-autohide={true}
                 data-datepicker-buttons={true}
                 data-datepicker-autoselect-today={true}
                 type="text"
+                lang={locale}
                 defaultValue={value?.to || ''}
                 onChange={handleToChange}
                 onSelect={handleToChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
+                ref={toRef}
                 disabled={disabled}
                 className={`
             block w-full text-sm h-8 rounded-lg pl-10 pr-8
@@ -256,7 +259,7 @@ const DateRangePickerComponent =
                   }
           `}
                 placeholder={placeholderEnd || dateFormat}
-                ref={toRef}
+                autoComplete={autoComplete}
                 required={required}
               />
 

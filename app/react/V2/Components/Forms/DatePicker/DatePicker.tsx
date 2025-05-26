@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useEffect, useRef } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import { Translate } from 'app/I18N';
 import { removeOffset, addOffset, defaultDateFormat } from './dateUtils';
@@ -54,20 +54,20 @@ const DatePicker: React.FC<DatePickerProps> = ({
   required = false,
 }) => {
   const dateFormat = (format || defaultDateFormat).toUpperCase();
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<moment.Moment | null>(null);
 
   useEffect(() => {
-    const date = removeOffset(useTimezone, value, dateFormat);
-    if (date) {
-      setInputValue(date.format(dateFormat));
+    const timestampMs = removeOffset(typeof value === 'string' ? parseInt(value, 10) : value || 0, useTimezone);
+    if (timestampMs) {
+      const displayDate = !useTimezone ? moment(timestampMs).local() : moment(timestampMs).utc();
+      setInputValue(displayDate);
     } else {
-      setInputValue('');
+      setInputValue(null);
     }
-  }, [value, useTimezone, dateFormat]);
+  }, [value, useTimezone]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
-    setInputValue(typedValue);
 
     if (!typedValue) {
       onChange(null);
@@ -75,23 +75,26 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
 
     const parsedDate = moment(typedValue, dateFormat, true);
+    setInputValue(parsedDate);
+
     if (parsedDate.isValid()) {
-      const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
+      const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
       if (withOffset) {
-        const formattedDate = withOffset.format(dateFormat);
-        setInputValue(formattedDate);
-        onChange(withOffset.valueOf() / 1000);
+        setInputValue(withOffset);
+        onChange(withOffset.valueOf() / 1000); // return seconds
       }
     }
   };
 
+  const dateValue = inputValue && useTimezone ? inputValue.clone().utc().format(dateFormat) : inputValue ? inputValue.clone().local().format(dateFormat) : '';
+
   return (
     <div>
       <LazyDatePicker
-        label={label || <Translate translationKey="property date">Date</Translate>}
+        label={label}
         language={locale}
         dateFormat={dateFormat.toLowerCase()}
-        value={inputValue}
+        value={dateValue}
         onChange={handleChange}
         onBlur={onBlur}
         placeholder={placeholder}
@@ -107,6 +110,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         useTimezone={useTimezone}
         endOfDay={endOfDay}
         showCalendarIcon={showCalendarIcon}
+        showClearFieldIcon={showClearFieldIcon}
         required={required}
       />
     </div>

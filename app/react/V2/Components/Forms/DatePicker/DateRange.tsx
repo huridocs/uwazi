@@ -10,7 +10,7 @@ interface DateRangeProps {
   disabled?: boolean;
   hasErrors?: boolean;
   value?: { from: string | number | null; to: string | number | null };
-  onChange?: any;
+  onChange?: (val: { from: number | null; to: number | null }) => void;
   locale?: string;
   format?: string;
   useTimezone?: boolean;
@@ -28,94 +28,100 @@ interface DateRangeProps {
   required?: boolean;
 }
 
-const DateRange: React.FC<DateRangeProps> = (props) => {
-  const {
-    value,
-    label,
-    labelToday = 'Today',
-    labelClear = 'Clear',
-    disabled = false,
-    hasErrors = false,
-    onChange = () => { },
-    locale = 'en',
-    format,
-    useTimezone = false,
-    endOfDay = false,
-    model,
-    name,
-    placeholderStart,
-    placeholderEnd,
-    hideLabel,
-    className,
-    onBlur,
-    onClear,
-    clearFieldAction,
-    errorMessage,
-    required = false,
-  } = props;
+const DateRange: React.FC<DateRangeProps> = ({
+  value,
+  label,
+  labelToday = 'Today',
+  labelClear = 'Clear',
+  disabled = false,
+  hasErrors = false,
+  onChange = () => { },
+  locale = 'en',
+  format,
+  useTimezone = false,
+  endOfDay = false,
+  model,
+  name,
+  placeholderStart,
+  placeholderEnd,
+  hideLabel,
+  className,
+  onBlur,
+  onClear,
+  clearFieldAction,
+  errorMessage,
+  required = false,
+}) => {
   const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [fromInputValue, setFromInputValue] = useState<moment.Moment | null>(null);
   const [toInputValue, setToInputValue] = useState<moment.Moment | null>(null);
 
   useEffect(() => {
-    const fromDate = removeOffset(useTimezone, value?.from ?? null, dateFormat);
-    const toDate = removeOffset(useTimezone, value?.to ?? null, dateFormat);
 
-    if (fromDate) {
-      setFromInputValue(fromDate);
+    const fromValue = typeof value?.from === 'string' ? parseInt(value.from, 10) : value?.from;
+    const toValue = typeof value?.to === 'string' ? parseInt(value.to, 10) : value?.to;
+
+    const fromTimestampMs = removeOffset(fromValue || 0, useTimezone);
+    const toTimestampMs = removeOffset(toValue || 0, useTimezone);
+
+    if (fromTimestampMs) {
+      const fromDisplayDate = !useTimezone ? moment(fromTimestampMs).local() : moment(fromTimestampMs).utc();
+      setFromInputValue(fromDisplayDate);
     } else {
       setFromInputValue(null);
     }
-    if (toDate) {
-      setToInputValue(toDate);
+
+    if (toTimestampMs) {
+      const toDisplayDate = !useTimezone ? moment(toTimestampMs).local() : moment(toTimestampMs).utc();
+      setToInputValue(toDisplayDate);
     } else {
       setToInputValue(null);
     }
-  }, [value, useTimezone, dateFormat]);
+  }, [value, useTimezone]);
 
-  // eslint-disable-next-line max-statements
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
-    setFromInputValue(moment(typedValue, dateFormat, true));
+    const parsedDate = moment(typedValue, dateFormat, true);
 
-    const previousToValue = toInputValue?.valueOf() ? toInputValue.valueOf() / 1000 : null;
+    setFromInputValue(parsedDate.isValid() ? parsedDate : null);
 
-    if (!typedValue) {
-      onChange({ from: null, to: previousToValue });
+    const toSeconds = toInputValue?.valueOf() ? toInputValue.valueOf() / 1000 : null;
+
+    if (!typedValue || !parsedDate.isValid()) {
+      onChange({ from: null, to: toSeconds });
       return;
     }
 
-    const parsedDate = moment(typedValue, dateFormat, true);
-    if (parsedDate.isValid()) {
-      const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
-      if (withOffset) {
-        const formattedDate = withOffset.format(dateFormat);
-        onChange({ from: withOffset.valueOf() / 1000, to: previousToValue });
-        setFromInputValue(withOffset);
-      }
+    const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
+    if (withOffset) {
+      onChange({ from: withOffset.valueOf() / 1000, to: toSeconds });
+      setFromInputValue(withOffset);
     }
   };
 
-  // eslint-disable-next-line max-statements
   const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const typedValue = e.target.value;
-    setToInputValue(moment(typedValue, dateFormat, true));
-    const previousFromValue = fromInputValue?.valueOf() ? fromInputValue.valueOf() / 1000 : null;
-    if (!typedValue) {
-      onChange({ from: previousFromValue, to: null });
+    const parsedDate = moment(typedValue, dateFormat, true);
+
+    setToInputValue(parsedDate.isValid() ? parsedDate : null);
+
+    const fromSeconds = fromInputValue?.valueOf() ? fromInputValue.valueOf() / 1000 : null;
+
+    if (!typedValue || !parsedDate.isValid()) {
+      onChange({ from: fromSeconds, to: null });
       return;
     }
 
-    const parsedDate = moment(typedValue, dateFormat, true);
-    if (parsedDate.isValid()) {
-      const withOffset = addOffset(useTimezone, endOfDay, typedValue, dateFormat);
-      if (withOffset) {
-        const formattedDate = withOffset.format(dateFormat);
-        onChange({ from: previousFromValue, to: withOffset.valueOf() / 1000 });
-        setToInputValue(withOffset);
-      }
+    const withOffset = addOffset(parsedDate.valueOf(), useTimezone, endOfDay);
+    if (withOffset) {
+      onChange({ from: fromSeconds, to: withOffset.valueOf() / 1000 });
+      setToInputValue(withOffset);
     }
   };
+
+
+  const formattedFrom = fromInputValue && useTimezone ? fromInputValue.clone().utc().format(dateFormat) : fromInputValue ? fromInputValue.clone().local().format(dateFormat) : '';
+  const formattedTo = toInputValue && useTimezone ? toInputValue.clone().utc().format(dateFormat) : toInputValue ? toInputValue.clone().local().format(dateFormat) : '';
 
   return (
     <div className="date-range">
@@ -128,7 +134,7 @@ const DateRange: React.FC<DateRangeProps> = (props) => {
           hideLabel={hideLabel}
           className={className}
           model={model || name}
-          value={{ from: fromInputValue?.valueOf() ?? null, to: toInputValue?.valueOf() ?? null }}
+          value={{ from: formattedFrom, to: formattedTo }}
           label={label}
           labelToday={labelToday}
           labelClear={labelClear}
