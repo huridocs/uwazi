@@ -17,7 +17,6 @@ type Input = {
   paragraphNumberPropertyId: string;
   sourceRelationshipTypeId: string;
   targetRelationshipTypeId: string;
-  tenantName: string;
 };
 
 type Output = PXExtractor;

@@ -9,7 +9,6 @@ const RequestSchema = z.object({
   paragraphNumberPropertyId: z.string(),
   sourceRelationshipTypeId: z.string(),
   targetRelationshipTypeId: z.string(),
-  tenantName: z.string(),
 });
 
 type RequestBodySchema = z.infer<typeof RequestSchema>;
