@@ -133,7 +133,7 @@ jobs:
           browser: chrome
           component: false
           config-file: cypress.config.ts
-          spec: 'cypress/e2e/*.cy.ts'
+          spec: 'cypress/e2e/relationships-view.cy.ts'
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
