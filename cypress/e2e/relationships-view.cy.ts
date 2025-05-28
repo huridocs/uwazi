@@ -49,11 +49,17 @@ describe('Relationship view', () => {
       cy.intercept('GET', '/api/references/search*').as('referencesSearch');
       cy.get('div.sort-buttons').contains('Date added').realClick();
       cy.get('div.rw-popup-container').contains('Fecha').realClick();
+      cy.get('div.sort-buttons').contains('Fecha');
       cy.wait('@referencesSearch');
       cy.get('div.relationshipsHub')
         .first()
         .contains('Acevedo Buendía y otros. Resolución de la CorteIDH de 28 de enero de 2015');
       cy.get('div.relationshipsHub').last().contains('Peru');
+    });
+
+    it('should should sort the relationships by Fecha property in the reverted order', () => {
+      cy.intercept('GET', '/api/references/search*').as('referencesSearch');
+      cy.get('div.sort-buttons').contains('Fecha');
       cy.get('div.sort-buttons').within(() => {
         cy.get('button.sorting-toggle').realClick();
       });
