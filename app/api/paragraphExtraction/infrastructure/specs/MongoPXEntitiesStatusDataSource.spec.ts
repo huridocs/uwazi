@@ -65,9 +65,10 @@ describe('MongoPXEntitiesStatusDataSource', () => {
     );
 
     await expect(
-      sut.createAsNew({
+      sut.createWithStatus({
         entitySharedId: entityStatusDBO.entitySharedId,
         extractorId: entityStatusDBO.extractorId.toString(),
+        status: EntityStatus.New,
       })
     ).rejects.toMatchObject({
       code: PXValidationError.codes.CANNOT_CREATE_ENTITY_STATUS,
