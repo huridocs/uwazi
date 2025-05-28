@@ -8,9 +8,11 @@ const checkStringValuesInSelectors = async (
     expected: any;
   }[]
 ) => {
-  values.map(async ({ selector, expected }) => {
-    await expect(selector).toMatch(expected);
-  });
+  await Promise.all(
+    values.map(async ({ selector, expected }) => {
+      await expect(selector).toMatch(expected);
+    })
+  );
 };
 
 const getContentBySelector = async (selector: string) =>

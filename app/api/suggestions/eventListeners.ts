@@ -21,8 +21,10 @@ import { IXExtractorType } from 'shared/types/extractorType';
 import { EnforcedWithId } from 'api/odm';
 import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { Suggestions } from './suggestions';
-import { getBlankSuggestionForPdf } from './blankSuggestions';
+import { getBlankSuggestionForPdf, getBlankSuggestionForProperty } from './blankSuggestions';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();
@@ -136,6 +138,43 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     await handleTemplateChange(originalDoc, modifiedDoc, extractors);
   });
 
+  eventsBus.on(EntityCreatedEvent, async payload => {
+    if (!(await featureIsEnabled())) return;
+    const [entity] = payload.entities;
+
+    const extractors = await Extractors.get({
+      templates: { $in: [entity.template] },
+      'source.property': { $exists: true },
+    });
+
+    if (extractors.length) {
+      const { languages } = await settings.get();
+
+      const suggestionsToSave: IXSuggestionType[] = [];
+
+      await ArrayUtils.parallelFor(extractors, async e => {
+        const sampleProperty = await templates.getPropertyByName(e.property);
+
+        languages!.forEach(l =>
+          suggestionsToSave.push(
+            getBlankSuggestionForProperty({
+              entityId: entity.sharedId!,
+              extractorId: e._id,
+              propertyName: e.property,
+              template: entity.template!,
+              propertyType: sampleProperty.type,
+              language: l.key,
+            })
+          )
+        );
+      });
+
+      if (suggestionsToSave.length) {
+        await Suggestions.saveMultiple(suggestionsToSave);
+      }
+    }
+  });
+
   eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
     if (!(await featureIsEnabled())) return;
 
@@ -144,17 +183,17 @@ const registerEventListeners = (eventsBus: EventsBus) => {
         await entities.get({ sharedId: newFile.entity }, 'template')
       )[0].template.toString();
 
-      const extractors = await Extractors.get();
-      const extractorsForEntity = extractors.filter(extractor =>
-        extractor.templates.map(templateId => templateId.toString()).includes(entityTemplateId)
-      );
+      const extractors = await Extractors.get({
+        templates: { $in: [entityTemplateId] },
+        'source.pdf': { $exists: true, $eq: true },
+      });
 
-      if (extractorsForEntity.length) {
+      if (extractors.length) {
         const defaultLanguage = await settings.getDefaultLanguage();
         await createDefaultSuggestionsForFiles(
           [newFile],
           entityTemplateId,
-          extractorsForEntity,
+          extractors,
           defaultLanguage.key
         );
       }

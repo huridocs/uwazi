@@ -4,6 +4,7 @@ import { createError } from 'api/utils';
 import { errors as elasticErrors } from '@elastic/elasticsearch';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { S3Error } from 'api/files/S3Storage';
+import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
@@ -39,6 +40,18 @@ describe('handleError', () => {
         expect(legacyLogger.debug.mock.calls[0][0]).toContain('operational error');
       });
     });
+    describe('and is instance of IXValidationError', () => {
+      it('should be a 422 debug logLevel', () => {
+        const errorInstance = new IXValidationError(
+          IXValidationError.codes.TEMPLATE_MISSING,
+          'template not found'
+        );
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({ code: 422, logLevel: 'debug' });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('template not found');
+      });
+    });
+
     describe('and is instance of PXValidationError', () => {
       it('should be a 422 debug logLevel', () => {
         const errorInstance = new PXValidationError('code', 'segmentation files not found');

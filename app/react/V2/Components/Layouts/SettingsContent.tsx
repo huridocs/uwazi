@@ -45,7 +45,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
         </Breadcrumb.Item>
       ))}
       {title !== undefined && (
-        <Breadcrumb.Item className="max-w-xs">
+        <Breadcrumb.Item>
           <Translate context={contextId || 'System'} className="max-w-xs truncate">
             {title}
           </Translate>

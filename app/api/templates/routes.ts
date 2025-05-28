@@ -1,4 +1,5 @@
 import { Application, Request } from 'express';
+import { inspect } from 'util';
 import settings from 'api/settings';
 import { reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
@@ -16,7 +17,7 @@ const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
     return await callback();
   } catch (e: any) {
     if (e.meta?.body?.error?.reason?.match(/mapp[ing|er]/)) {
-      throw createError('mapping conflict', 409);
+      throw createError(`mapping conflict: ${inspect(e)}`, 409);
     }
     throw e;
   }

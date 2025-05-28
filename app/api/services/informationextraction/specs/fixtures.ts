@@ -38,6 +38,9 @@ const fixtures: DBFixture = {
       'templateToSegmentA',
       'templateToSegmentB',
     ]),
+    factory.ixExtractor('sourceTextExtractor1', 'property1', ['templateToSegmentA'], {
+      property: 'text',
+    }),
     factory.ixExtractor('prop2extractor', 'property2', ['templateToSegmentA']),
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
@@ -59,35 +62,114 @@ const fixtures: DBFixture = {
     factory.ixExtractor('selectExtractorWithoutSegmentations', 'property_select', [
       'templateWithoutSegmentations',
     ]),
+    factory.ixExtractor(
+      'extractor_target_multiselect_source_text',
+      'property_multiselect',
+      ['templateToSegmentD'],
+      { property: 'source_property' }
+    ),
+    factory.ixExtractor(
+      'extractor_target_relationship_source_text',
+      'property_relationship',
+      ['templateToSegmentF'],
+      { property: 'source_property' }
+    ),
+    factory.ixExtractor(
+      'extractor_target_date_source_text',
+      'date_property',
+      ['templateToSegmentA'],
+      {
+        property: 'source_property',
+      }
+    ),
+    factory.ixExtractor(
+      'extractor_target_title_source_text',
+      'title',
+      ['extractor_target_title_source_text_template'],
+      {
+        property: 'source_property',
+      }
+    ),
+    factory.ixExtractor(
+      'extractor_target_numeric_source_text',
+      'target_numeric',
+      ['extractor_target_numeric_source_text_template'],
+      {
+        property: 'source_property',
+      }
+    ),
+    factory.ixExtractor(
+      'extractor_target_select_source_text',
+      'target_select',
+      ['extractor_target_select_source_text_template'],
+      {
+        property: 'source_property',
+      }
+    ),
   ],
   entities: [
     factory.entity('P1', 'relationshipPartnerTemplate', {}, { sharedId: 'P1sharedId' }),
     factory.entity('P2', 'relationshipPartnerTemplate', {}, { sharedId: 'P2sharedId' }),
     factory.entity('P3', 'relationshipPartnerTemplate', {}, { sharedId: 'P3sharedId' }),
     factory.entity(
+      'extractor_target_title_source_text_entity',
+      'extractor_target_title_source_text_template',
+      {
+        source_property: [{ value: 'any_source_text' }],
+      }
+    ),
+    factory.entity(
+      'extractor_target_numeric_source_text_entity',
+      'extractor_target_numeric_source_text_template',
+      {
+        target_numeric: [{ value: 123 }],
+        source_property: [{ value: 'any_source_text' }],
+      }
+    ),
+    factory.entity(
+      'extractor_target_select_source_text_entity',
+      'extractor_target_select_source_text_template',
+      {
+        target_select: [{ value: 1, label: 'A label' }],
+        source_property: [{ value: 'any_source_text' }],
+      }
+    ),
+    factory.entity(
       'A1',
       'templateToSegmentA',
       {
-        property1: [
-          {
-            value: 1088985600,
-          },
-        ],
+        property1: [{ value: 1088985600 }],
+        text: [{ value: 'text 1' }],
+        source_property: [{ value: 'any_source_text' }],
+        date_property: [{ value: 1088985600 }],
       },
       { language: 'other' }
     ),
     factory.entity('A1', 'templateToSegmentA', {
-      property1: [
-        {
-          value: 'different from selected text',
-        },
-      ],
-      property2: [
-        {
-          value: 1299196800,
-        },
-      ],
+      property1: [{ value: 'labeled text' }],
+      property2: [{ value: 1299196800 }],
+      text: [{ value: 'text 2' }],
+      source_property: [{ value: 'any_source_text' }],
+      date_property: [{ value: 1088985600 }],
     }),
+    factory.entity(
+      'entity_without_label_data',
+      'templateToSegmentA',
+      {
+        property2: [{ value: 1299196800 }],
+        text: [{ value: 'any_source_text' }],
+      },
+      { language: 'es' }
+    ),
+    factory.entity(
+      'entity_without_label_data',
+      'templateToSegmentA',
+      {
+        property2: [{ value: 1299196800 }],
+        text: [{ value: 'any_source_text' }],
+      },
+      { language: 'en' }
+    ),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),
     factory.entity('A4', 'templateToSegmentA'),
@@ -106,6 +188,7 @@ const fixtures: DBFixture = {
     factory.entity('A17', 'templateToSegmentD', {
       property_select: [{ value: 'A', label: 'A' }],
       property_multiselect: [{ value: 'A', label: 'A' }],
+      source_property: [{ value: 'any_source_text_1' }],
     }),
     factory.entity('A18', 'templateToSegmentD', {
       property_select: [{ value: 'B', label: 'B' }],
@@ -113,10 +196,12 @@ const fixtures: DBFixture = {
         { value: 'B', label: 'B' },
         { value: 'C', label: 'C' },
       ],
+      source_property: [{ value: 'any_source_text_2' }],
     }),
     factory.entity('A19', 'templateToSegmentD', {
       property_select: [],
       property_multiselect: [],
+      source_property: [{ value: 'any_source_text_3' }],
     }),
     factory.entity('A20', 'templateToSegmentE', {
       property_multiselect: [],
@@ -125,6 +210,7 @@ const fixtures: DBFixture = {
       property_relationship: [{ value: 'P1sharedId', label: 'P1' }],
       property_empty_relationship: [],
       property_relationship_to_any: [{ value: 'P1sharedId', label: 'P1' }],
+      source_property: [{ value: 'any_source_text' }],
     }),
     factory.entity('A22', 'templateToSegmentF', {
       property_relationship: [
@@ -136,11 +222,13 @@ const fixtures: DBFixture = {
         { value: 'P1', label: 'P1' },
         { value: 'A1', label: 'A1' },
       ],
+      source_property: [{ value: 'any_source_text' }],
     }),
     factory.entity('A23', 'templateToSegmentF', {
       property_relationship: [],
       property_empty_relationship: [],
       property_relationship_to_any: [],
+      source_property: [{ value: 'any_source_text' }],
     }),
     factory.entity('entityWithoutSegmentation', 'templateWithoutSegmentations', {
       property_select: [{ value: 'B', label: 'B' }],
@@ -676,8 +764,149 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
     },
+    {
+      extractorId: factory.id('sourceTextExtractor1'),
+      entityId: 'A1',
+      entityTemplate: factory.idString('templateToSegmentA'),
+      language: 'en',
+      propertyName: 'property1',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('sourceTextExtractor1'),
+      entityId: 'A1',
+      entityTemplate: factory.idString('templateToSegmentA'),
+      language: 'other',
+      propertyName: 'property1',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('sourceTextExtractor1'),
+      entityId: 'entity_without_label_data',
+      entityTemplate: factory.idString('templateToSegmentA'),
+      language: 'es',
+      propertyName: 'property1',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_title_source_text'),
+      entityId: 'extractor_target_title_source_text_entity',
+      entityTemplate: factory.idString('extractor_target_title_source_text_template'),
+      language: 'en',
+      propertyName: 'title',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_numeric_source_text'),
+      entityId: 'extractor_target_numeric_source_text_entity',
+      entityTemplate: factory.idString('extractor_target_numeric_source_text_template'),
+      language: 'en',
+      propertyName: 'target_numeric',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_select_source_text'),
+      entityId: 'extractor_target_select_source_text_entity',
+      entityTemplate: factory.idString('extractor_target_select_source_text_template'),
+      language: 'en',
+      propertyName: 'target_select',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_date_source_text'),
+      entityId: 'A1',
+      entityTemplate: factory.idString('templateToSegmentA'),
+      language: 'en',
+      propertyName: 'date_property',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_multiselect_source_text'),
+      entityId: 'A17',
+      entityTemplate: factory.idString('templateToSegmentD'),
+      language: 'en',
+      propertyName: 'property_multiselect',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_relationship_source_text'),
+      entityId: 'A21',
+      entityTemplate: factory.idString('templateToSegmentF'),
+      language: 'en',
+      propertyName: 'property_relationship',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
   ],
   ixmodels: [
+    {
+      extractorId: factory.id('sourceTextExtractor1'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_title_source_text'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_select_source_text'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_numeric_source_text'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_date_source_text'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_multiselect_source_text'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_relationship_source_text'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
     {
       extractorId: factory.id('prop1extractor'),
       creationDate: 200,
@@ -756,6 +985,8 @@ const fixtures: DBFixture = {
       factory.property('property1', 'text'),
       factory.property('property2', 'date'),
       factory.property('property3', 'numeric'),
+      factory.property('source_property', 'text'),
+      factory.property('date_property', 'date'),
     ]),
     factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
     factory.template('templateToSegmentC', [factory.property('property15', 'text')]),
@@ -766,6 +997,7 @@ const fixtures: DBFixture = {
       factory.property('property_multiselect', 'multiselect', {
         content: factory.id('thesauri1').toString(),
       }),
+      factory.property('source_property', 'text'),
     ]),
     factory.template('templateToSegmentE', [
       factory.property('property_multiselect', 'multiselect', {
@@ -785,11 +1017,23 @@ const fixtures: DBFixture = {
         content: '',
         relationType: factory.idString('relatedToAny'),
       }),
+      factory.property('source_property', 'text'),
     ]),
     factory.template('templateWithoutSegmentations', [
       factory.property('property_select', 'select', {
         content: factory.id('thesauri1').toString(),
       }),
+    ]),
+    factory.template('extractor_target_title_source_text_template', [
+      factory.property('source_property', 'text'),
+    ]),
+    factory.template('extractor_target_numeric_source_text_template', [
+      factory.property('source_property', 'text'),
+      factory.property('target_numeric', 'numeric'),
+    ]),
+    factory.template('extractor_target_select_source_text_template', [
+      factory.property('source_property', 'text'),
+      factory.property('target_select', 'select'),
     ]),
   ],
   dictionaries: [factory.nestedThesauri('thesauri1', ['A', 'B', 'C', { 1: ['1A', '1B'] }])],
