@@ -54,6 +54,7 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
                 format={this.props.format}
                 onChange={(val) => this.onChange(index, val)}
                 value={value}
+                showClearFieldIcon={false}
               />
               <button
                 type="button"

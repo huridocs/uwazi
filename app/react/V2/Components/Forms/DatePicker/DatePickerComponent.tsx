@@ -9,7 +9,10 @@ import uniqueID from 'shared/uniqueID';
 import { debounce } from 'app/utils';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
-import { datePickerOptionsByLocale, DatePickerProps, defaultDateFormat, validateLocale } from './dateUtils';
+import { datePickerOptionsByLocale, DatePickerProps, validateLocale } from './dateUtils';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom } from 'app/V2/atoms';
+import { useAtomValue } from 'jotai';
 
 const DatePickerComponent =
   (
@@ -25,7 +28,7 @@ const DatePickerComponent =
       autoComplete = 'off',
       id = uniqueID(),
       language = 'en',
-      dateFormat = defaultDateFormat,
+      dateFormat,
       hideLabel = true,
       inputClassName = '',
       className = '',
@@ -42,7 +45,8 @@ const DatePickerComponent =
   ) => {
     const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
-    const datePickerFormat = dateFormat.toLowerCase();
+    const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
+    const datePickerFormat = (dateFormat || defaultDateFormat).toLowerCase();
 
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language) || 'en';
@@ -142,7 +146,8 @@ const DatePickerComponent =
               />
 
               {ref.current?.value && showClearFieldIcon && (
-                <button data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={() => {
+
+                <button type="button" data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={() => {
                   handleChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
                 }}>
                   <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />

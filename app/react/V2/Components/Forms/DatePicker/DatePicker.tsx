@@ -1,8 +1,11 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import { Translate } from 'app/I18N';
-import { removeOffset, addOffset, defaultDateFormat } from './dateUtils';
+import { removeOffset, addOffset } from './dateUtils';
 import { LazyDatePicker } from './loadableDatePicker';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom } from 'app/V2/atoms';
+import { useAtomValue } from 'jotai';
 
 interface DatePickerProps {
   label?: ReactNode;
@@ -53,6 +56,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   showClearFieldIcon = true,
   required = false,
 }) => {
+  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
   const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [inputValue, setInputValue] = useState<moment.Moment | null>(null);
 

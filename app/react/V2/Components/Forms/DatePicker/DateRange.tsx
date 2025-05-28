@@ -1,7 +1,10 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import moment from 'moment-timezone';
-import { removeOffset, addOffset, defaultDateFormat } from './dateUtils';
+import { removeOffset, addOffset } from './dateUtils';
 import { LazyDateRangePicker } from './loadableDatePicker';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom } from 'app/V2/atoms';
+import { useAtomValue } from 'jotai';
 
 interface DateRangeProps {
   label?: ReactNode;
@@ -52,7 +55,9 @@ const DateRange: React.FC<DateRangeProps> = ({
   errorMessage,
   required = false,
 }) => {
+  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
   const dateFormat = (format || defaultDateFormat).toUpperCase();
+
   const [fromInputValue, setFromInputValue] = useState<moment.Moment | null>(null);
   const [toInputValue, setToInputValue] = useState<moment.Moment | null>(null);
 

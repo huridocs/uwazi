@@ -214,10 +214,11 @@ describe('Entities', () => {
     it('should create an entity filling all the props.', () => {
       cy.contains('a', 'Library').click();
       cy.get('button').contains('Create entity').click();
+      // cy.intercept('GET', '/api/thesauris').as('fetchThesauri');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
       cy.contains('#metadataForm', 'Type').get('select').eq(0).select('All props');
-      cy.get('select:first-of-type').select('All props');
+      cy.get('select:first-of-type').select('All props');    
       cy.get('.form-group.text input').type('demo text', { delay: 0 });
       cy.get('.form-group.numeric input').type('42', { delay: 0 });
 
@@ -243,9 +244,7 @@ describe('Entities', () => {
       cy.contains('.form-group.multiselect', 'Multiselect').within(() => {
         cy.contains('Activo').click();
       });
-
-      cy.get('.form-group.daterange div.DatePicker__From input').type('23/11/1963', { delay: 0 });
-      cy.get('.form-group.daterange div.DatePicker__To input').type('12/09/1964', { delay: 0 });
+      // cy.wait('@fetchThesauri');
       cy.get('.form-group.multidate button.btn.add').click();
       cy.get('.form-group.multidate .multidate-item:first-of-type input').type('23/11/1963', {
         delay: 0,
@@ -253,10 +252,15 @@ describe('Entities', () => {
       cy.get('.form-group.multidate .multidate-item:nth-of-type(2) input').type('12/09/1964', {
         delay: 0,
       });
-      cy.get('.form-group.multidaterange button.btn.add').click();
+      cy.get('.form-group.daterange div.DatePicker__From input').type('23/11/1963', { delay: 0 });
+      //wait for the datepickers to be updated
+      cy.wait(1000);
+      cy.get('.form-group.daterange div.DatePicker__To input').type('12/09/1964', { delay: 0 });
       cy.get('.form-group.link #label').type('Huridocs', { delay: 0 });
       cy.get('.form-group.link #url').scrollIntoView();
       cy.get('.form-group.link #url').type('https://www.huridocs.org/', { delay: 0 });
+      cy.get('.form-group.multidaterange button.btn.add').scrollIntoView();
+      cy.get('.form-group.multidaterange button.btn.add').click();
       cy.get(
         '.form-group.multidaterange .multidate-item:first-of-type div.DatePicker__From input'
       ).type('23/11/1963', { delay: 0 });
@@ -269,37 +273,41 @@ describe('Entities', () => {
       cy.get(
         '.form-group.multidaterange .multidate-item:nth-of-type(2) div.DatePicker__To input'
       ).type('12/09/1964', { delay: 0 });
+      //wait for the datepickers to be updated
+      cy.wait(1000);
       cy.get('.form-group.markdown textarea').type(textWithHtml, { delay: 0 });
       saveEntity();
       cy.waitForLegacyNotifications();
     });
 
     it('should have all the values correctly saved.', () => {
-      cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
-      cy.get('.metadata-type-text').should('contain.text', 'demo text');
-      cy.get('.metadata-type-numeric').should('contain.text', '42');
-      cy.get('.metadata-type-select').should('contain.text', 'Activo');
-      cy.get('.metadata-type-multiselect').should('contain.text', 'Activo');
-      cy.get('.metadata-type-relationship').should('contain.text', '19 Comerciantes');
-      cy.get('.metadata-type-date').should('contain.text', 'Sep 8, 1966');
-      cy.get('.metadata-type-daterange').should(
-        'contain.text',
-        'Date RangeNov 23, 1963 ~ Sep 12, 1964'
-      );
-      cy.get('.metadata-type-multidate').should(
-        'contain.text',
-        'Multi DateNov 23, 1963Sep 12, 1964'
-      );
-      cy.contains('.metadata-type-multidaterange', 'Multi Date RangeNov 23, 1963 ~ Sep 12, 1964');
-      cy.get('.metadata-type-link a')
-        .should('have.text', 'Huridocs')
-        .and('have.attr', 'href', 'https://www.huridocs.org/');
+      cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();    
+      cy.get('#tabpanel-metadata').within(()=>{          
+        cy.get('.metadata-type-text').should('contain.text', 'demo text');
+        cy.get('.metadata-type-numeric').should('contain.text', '42');
+        cy.get('.metadata-type-select').should('contain.text', 'Activo');
+        cy.get('.metadata-type-multiselect').should('contain.text', 'Activo');
+        cy.get('.metadata-type-relationship').should('contain.text', '19 Comerciantes');
+        cy.get('.metadata-type-date').should('contain.text', 'Sep 8, 1966');
+        cy.get('.metadata-type-daterange').should(
+          'contain.text',
+          'Date RangeNov 23, 1963 ~ Sep 12, 1964'
+        );
+        cy.get('.metadata-type-multidate').should(
+          'contain.text',
+          'Multi DateNov 23, 1963Sep 12, 1964'
+        );
+        cy.contains('.metadata-type-multidaterange', 'Multi Date RangeNov 23, 1963 ~ Sep 12, 1964');
+        cy.get('.metadata-type-link a')
+          .should('have.text', 'Huridocs')
+          .and('have.attr', 'href', 'https://www.huridocs.org/');
+      })
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1300);
-      checkMediaSnapshots('#tabpanel-metadata .metadata-type-multimedia.metadata-name-media');
-      cy.get('.leaflet-container').scrollIntoView();
-      cy.get('.leaflet-marker-icon').should('have.length', 1);
+        checkMediaSnapshots('#tabpanel-metadata .metadata-type-multimedia.metadata-name-media');
+        cy.get('.leaflet-container').scrollIntoView();
+        cy.get('.leaflet-marker-icon').should('have.length', 1);
     });
-
+    
     it('should check that the HTML is show as expected', () => {
       cy.contains('h1', 'The title').should('exist');
       cy.contains('a', 'I am a link to an external site').should('exist');
@@ -525,10 +533,10 @@ describe('Entities', () => {
 
       cy.get('.form-group.date input').eq(0).scrollIntoView();
       cy.get('.form-group.date input').eq(0).clear();
-      cy.get('.form-group.daterange div.DatePicker__From input').clear();
-      cy.get('.form-group.daterange div.DatePicker__To input').clear();
       cy.get('.form-group.multidate .multidate-item:nth-of-type(2) > button').click();
       cy.get('.form-group.multidate .multidate-item:first-of-type > button').click();
+      cy.get('.form-group.daterange div.DatePicker__From input').clear();
+      cy.get('.form-group.daterange div.DatePicker__To input').clear();
       cy.get('div.form-group.multidaterange .multidate-item:nth-child(2) > div > button').click();
       cy.get('div.form-group.multidaterange .multidate-item:nth-child(1) > div > button').click();
       cy.get('.form-group.markdown textarea').scrollIntoView();

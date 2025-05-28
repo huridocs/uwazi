@@ -3,10 +3,6 @@ import type { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react'
 import { ChangeEventHandler } from 'react';
 import { t } from 'app/I18N';
 
-/**
- * Default format used in date parsing/formatting.
- */
-export const defaultDateFormat = 'DD-MM-YYYY';
 
 export const removeOffset = (value: number, useTimezone: boolean) => {
   let datePickerValue = null;
@@ -58,7 +54,7 @@ const titleFormat = (locale: string) => {
   }
 };
 
-export const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string, dateFormat: string = defaultDateFormat) => {
+export const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string, dateFormat: string ) => {
   const localeData = moment.localeData(language);
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
   return {

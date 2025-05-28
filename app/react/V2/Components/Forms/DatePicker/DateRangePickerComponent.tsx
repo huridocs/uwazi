@@ -11,6 +11,9 @@ import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
 import { DateRangePickerProps } from './dateUtils';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom } from 'app/V2/atoms';
+import { useAtomValue } from 'jotai';
 
 const DateRangePickerComponent =
   ({
@@ -38,7 +41,9 @@ const DateRangePickerComponent =
     showClearFieldIcon = true,
     required = false,
   }: DateRangePickerProps) => {
-    const datePickerFormat = dateFormat.toLowerCase();
+    const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
+    const datePickerFormat = (dateFormat || defaultDateFormat).toLowerCase();
+
     const divRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
     const fromRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
     const toRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
@@ -49,13 +54,13 @@ const DateRangePickerComponent =
     useEffect((): (() => void) => {
       Object.assign(Datepicker.locales, {
         [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+          ...datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat),
           format: datePickerFormat,
         },
       });
       Object.assign(DateRangePicker?.locales || {}, {
         [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+          ...datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat),
           format: datePickerFormat,
         },
       });
@@ -182,7 +187,7 @@ const DateRangePickerComponent =
             datepicker-autoselect-today="true"
             className="flex items-center gap-4"
           >
-            <div className="relative w-1/2 text-gray-600">
+            <div className="relative w-1/2 text-gray-600 DatePicker__From">
               {showCalendarIcon && (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -220,13 +225,13 @@ const DateRangePickerComponent =
               />
 
               {Boolean(value?.from) && showClearFieldIcon && (
-                <button data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearFromValue}>
+                <button type="button" data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearFromValue}>
                   <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
                 </button>
               )}
             </div>
 
-            <div className="relative w-1/2 text-gray-600">
+            <div className="relative w-1/2 text-gray-600 DatePicker__To">
               {showCalendarIcon && (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -264,7 +269,7 @@ const DateRangePickerComponent =
               />
 
               {Boolean(value?.to) && showClearFieldIcon && (
-                <button data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearToValue}>
+                <button type="button" data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearToValue}>
                   <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
                 </button>
               )}

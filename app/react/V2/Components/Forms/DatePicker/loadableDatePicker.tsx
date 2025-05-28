@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import loadable from '@loadable/component';
-import { DatePickerProps, DateRangePickerProps, defaultDateFormat } from './dateUtils';
+import { DatePickerProps, DateRangePickerProps } from './dateUtils';
 
 
 const DatePickerComponent = loadable(async () => {
@@ -19,8 +19,8 @@ const DateRangePickerComponent = loadable(async () => {
 });
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-const LazyDatePicker = (props: DatePickerProps) => <DatePickerComponent {...props} dateFormat={props.dateFormat || defaultDateFormat} />;
+const LazyDatePicker = (props: DatePickerProps) => <DatePickerComponent {...props} dateFormat={props.dateFormat} />;
 // eslint-disable-next-line react/jsx-props-no-spreading
-const LazyDateRangePicker = (props: DateRangePickerProps) => <DateRangePickerComponent {...props} dateFormat={props.dateFormat || defaultDateFormat} />;
+const LazyDateRangePicker = (props: DateRangePickerProps) => <DateRangePickerComponent {...props} dateFormat={props.dateFormat} />;
 
 export { LazyDatePicker, LazyDateRangePicker }; 
