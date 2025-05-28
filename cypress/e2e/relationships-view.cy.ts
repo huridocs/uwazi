@@ -46,8 +46,10 @@ describe('Relationship view', () => {
     });
 
     it('should should sort the relationships by Fecha property', () => {
+      cy.intercept('GET', '/api/references/search*').as('referencesSearch');
       cy.get('div.sort-buttons').contains('Date added').realClick();
       cy.get('div.rw-popup-container').contains('Fecha').realClick();
+      cy.wait('@referencesSearch');
       cy.get('div.relationshipsHub')
         .first()
         .contains('Acevedo Buendía y otros. Resolución de la CorteIDH de 28 de enero de 2015');
@@ -55,6 +57,7 @@ describe('Relationship view', () => {
       cy.get('div.sort-buttons').within(() => {
         cy.get('button.sorting-toggle').realClick();
       });
+      cy.wait('@referencesSearch');
       cy.get('div.relationshipsHub')
         .first()
         .contains('Acevedo Buendía et al. Admissibility Report N° 47/02');
