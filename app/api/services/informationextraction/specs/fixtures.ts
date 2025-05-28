@@ -127,12 +127,30 @@ const fixtures: DBFixture = {
       }
     ),
     factory.entity(
-      'extractor_target_select_source_text_entity',
+      'extractor_target_select_source_text_entity_1',
+      'extractor_target_select_source_text_template',
+      {
+        source_property: [{ value: 'any_source_text_1' }],
+      }
+    ),
+    factory.entity(
+      'extractor_target_select_source_text_entity_2',
+      'extractor_target_select_source_text_template',
+      {}
+    ),
+    factory.entity(
+      'extractor_target_select_source_text_entity_3',
       'extractor_target_select_source_text_template',
       {
         target_select: [{ value: 1, label: 'A label' }],
         source_property: [{ value: 'any_source_text' }],
       }
+    ),
+    factory.entity(
+      'extractor_target_select_source_text_entity_3_es',
+      'extractor_target_select_source_text_template',
+      {},
+      { language: 'es' }
     ),
     factory.entity(
       'A1',
@@ -820,17 +838,6 @@ const fixtures: DBFixture = {
       date: 100,
     },
     {
-      extractorId: factory.id('extractor_target_select_source_text'),
-      entityId: 'extractor_target_select_source_text_entity',
-      entityTemplate: factory.idString('extractor_target_select_source_text_template'),
-      language: 'en',
-      propertyName: 'target_select',
-      suggestedValue: '',
-      segment: '',
-      status: 'ready',
-      date: 100,
-    },
-    {
       extractorId: factory.id('extractor_target_date_source_text'),
       entityId: 'A1',
       entityTemplate: factory.idString('templateToSegmentA'),
@@ -859,6 +866,50 @@ const fixtures: DBFixture = {
       language: 'en',
       propertyName: 'property_relationship',
       suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_select_source_text'),
+      entityId: 'extractor_target_select_source_text_entity_1',
+      entityTemplate: factory.idString('extractor_target_select_source_text_template'),
+      language: 'en',
+      propertyName: 'target_select',
+      suggestedValue: [],
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_select_source_text'),
+      entityId: 'extractor_target_select_source_text_entity_2',
+      entityTemplate: factory.idString('extractor_target_select_source_text_template'),
+      language: 'en',
+      propertyName: 'target_select',
+      suggestedValue: [],
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_select_source_text'),
+      entityId: 'extractor_target_select_source_text_entity_3',
+      entityTemplate: factory.idString('extractor_target_select_source_text_template'),
+      language: 'en',
+      propertyName: 'target_select',
+      suggestedValue: [],
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_select_source_text'),
+      entityId: 'extractor_target_select_source_text_entity_3_es',
+      entityTemplate: factory.idString('extractor_target_select_source_text_template'),
+      language: 'es',
+      propertyName: 'target_select',
+      suggestedValue: [],
       segment: '',
       status: 'ready',
       date: 100,
