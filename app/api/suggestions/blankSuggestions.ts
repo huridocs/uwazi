@@ -174,4 +174,5 @@ export {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
   getBlankSuggestionForPdf,
+  getBlankSuggestionForProperty,
 };
