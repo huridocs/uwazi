@@ -1,3 +1,6 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
+/* eslint-disable max-classes-per-file */
 /* eslint-disable camelcase */
 import moment from 'moment';
 
@@ -19,8 +22,10 @@ import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure } from 'shared/tsUtils';
 import { LanguageUtils } from 'shared/language';
+import { Extractors } from './ixextractors';
 
 const BATCH_SIZE = 50;
+const SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE = 1000;
 const MAX_TRAINING_FILES_NUMBER = 2000;
 
 type PropertyValue = string | Array<{ value: string; label: string }>;
@@ -162,16 +167,81 @@ async function fileQuery(
 
 function entityForTrainingQuery(
   templates: ObjectIdSchema[],
-  property: string,
-  propertyType: PropertyTypeSchema
+  toProperty: string,
+  propertyType: PropertyTypeSchema,
+  fromProperty?: string
 ) {
   const query: {
     [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
   } = { template: { $in: templates } };
+  if (fromProperty) {
+    query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
+  }
   if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
-    query[`metadata.${property}`] = { $exists: true, $ne: [] };
+    query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
   }
   return query;
+}
+
+async function getEntitiesForTraining(
+  templates: ObjectIdSchema[],
+  toProperty: string,
+  fromProperty: string
+) {
+  const propertyType = await getPropertyType(templates, toProperty);
+  const entities = await entitiesModel.getUnrestricted(
+    entityForTrainingQuery(templates, toProperty, propertyType, fromProperty),
+    `sharedId metadata.${toProperty} metadata.${fromProperty} language`
+  );
+  return entities;
+}
+
+async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
+  const [currentModel] = await ixmodels.get({ extractorId });
+  const [extractor] = await Extractors.get({ _id: extractorId });
+
+  const suggestions = await IXSuggestionsModel.get(
+    {
+      extractorId,
+      date: { $lt: currentModel.creationDate },
+      'state.error': { $ne: true },
+    },
+    '',
+    { limit: SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE }
+  );
+
+  const templates = suggestions.map(s => s.entityTemplate);
+  const sharedIdLanguagePairs = suggestions
+    .filter(s => s.entityId && s.language)
+    .map(s => ({ sharedId: s.entityId, language: s.language }));
+
+  if (!templates.length || !extractor.property || !extractor || !sharedIdLanguagePairs.length) {
+    return [];
+  }
+
+  const propertyType = await getPropertyType(templates, extractor.property);
+
+  if (!propertyType) {
+    return [];
+  }
+
+  const orFilter = { $or: sharedIdLanguagePairs };
+
+  const baseQuery = entityForTrainingQuery(
+    templates,
+    extractor.property,
+    propertyType,
+    extractor.source.property
+  );
+
+  const finalQuery = { ...baseQuery, ...orFilter };
+
+  const entities = await entitiesModel.getUnrestricted(
+    finalQuery,
+    `sharedId metadata.${extractor.property} metadata.${extractor.source.property} language`
+  );
+
+  return entities;
 }
 
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
@@ -271,8 +341,11 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
 
 export {
   getFilesForTraining,
+  getEntitiesForTraining,
   getFilesForSuggestions,
+  getEntitiesForSuggestions,
   getSegmentedFilesIds,
+  getPropertyType,
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsMultiValued,

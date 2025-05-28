@@ -228,7 +228,7 @@ describe('InformationExtraction', () => {
         page_width: 595,
         page_height: 841,
         language_iso: 'en',
-        label_text: 'different from selected text',
+        label_text: 'labeled text',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
     });
@@ -440,9 +440,29 @@ describe('InformationExtraction', () => {
               id: 'P3sharedId',
               label: 'P3',
             },
-            ...Array.from({ length: 23 }, (_, i) => ({
-              id: `A${i + 1}`,
-              label: `A${i + 1}`,
+            {
+              id: 'extractor_target_title_source_text_entity',
+              label: 'extractor_target_title_source_text_entity',
+            },
+            {
+              id: 'extractor_target_numeric_source_text_entity',
+              label: 'extractor_target_numeric_source_text_entity',
+            },
+            {
+              id: 'extractor_target_select_source_text_entity',
+              label: 'extractor_target_select_source_text_entity',
+            },
+            {
+              id: 'A1',
+              label: 'A1',
+            },
+            {
+              id: 'entity_without_label_data',
+              label: 'entity_without_label_data',
+            },
+            ...Array.from({ length: 22 }, (_, i) => ({
+              id: `A${i + 2}`,
+              label: `A${i + 2}`,
             })),
             {
               id: 'entityWithoutSegmentation',
@@ -800,9 +820,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should stop the model when all the suggestions are done', async () => {
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
-      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
       expect(model.findingSuggestions).toBe(false);
     });
   });

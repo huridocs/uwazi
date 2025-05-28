@@ -4,6 +4,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
 import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';
 import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
+import { IXExtractorModel } from 'api/services/informationextraction/IXExtractorModel';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -117,12 +118,22 @@ export const updateStates = async (query: any) => {
     p => p.name,
     p => p.type
   );
+
   const cursor = findSuggestions(query, languages || []);
+
   const writeStream = IXSuggestionsModel.openBulkWriteStream();
   let suggestion: SuggestionsAggregationResult = await cursor.next();
   while (suggestion) {
+    // eslint-disable-next-line no-await-in-loop
+    const extractor = await IXExtractorModel.getById((suggestion as any).extractorId);
+
     const propertyType = propertyTypes[suggestion.propertyName];
     const _suggestion = postProcessCurrentValue(suggestion, propertyType);
+
+    if (typeof extractor?.source.property !== 'undefined' && !_suggestion.labeledValue) {
+      _suggestion.labeledValue = suggestion.currentValue[0] as any;
+    }
+
     // eslint-disable-next-line no-await-in-loop
     await writeStream.update(
       { _id: _suggestion._id },

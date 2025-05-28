@@ -7,6 +7,7 @@ import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionStateType } from 'shared/types/suggestionType';
 import { Extractors } from '../ixextractors';
+import { IXValidationError } from '../IXValidationError';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -445,7 +446,9 @@ describe('ixextractors', () => {
           property: 'invalid_property',
           templates: [fixtureFactory.id('personTemplate').toString()],
         })
-      ).rejects.toEqual(new Error('Missing property.'));
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.PROPERTY_MISSING,
+      });
       const [extractor] = await Extractors.get({ name: 'invalid extractor' });
       expect(extractor).toBe(undefined);
     });
@@ -458,7 +461,9 @@ describe('ixextractors', () => {
           property: 'location',
           templates: [fixtureFactory.id('personTemplate').toString()],
         })
-      ).rejects.toEqual(new Error('Property type not allowed.'));
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.PROPERTY_TYPE_NOT_ALLOWED,
+      });
       const [extractor] = await Extractors.get({ name: 'invalid extractor' });
       expect(extractor).toBe(undefined);
     });
@@ -591,7 +596,9 @@ describe('ixextractors', () => {
           property: 'missing_property',
           templates: existing.templates.map(t => t.toString()),
         })
-      ).rejects.toEqual(new Error('Missing property.'));
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.PROPERTY_MISSING,
+      });
       const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
       expect(extractor).toEqual(existing);
     });
@@ -606,7 +613,9 @@ describe('ixextractors', () => {
           property: 'location',
           templates: existing.templates.map(t => t.toString()),
         })
-      ).rejects.toEqual(new Error('Property type not allowed.'));
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.PROPERTY_TYPE_NOT_ALLOWED,
+      });
       const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
       expect(extractor).toEqual(existing);
     });

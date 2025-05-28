@@ -105,7 +105,7 @@ describe('extractor routes', () => {
     it.each([
       {
         reason: 'non existing template',
-        expectedMessage: 'Missing template.',
+        expectedMessage: 'does not exists',
         input: {
           name: 'extr1',
           property: 'text_property',
@@ -118,7 +118,7 @@ describe('extractor routes', () => {
       },
       {
         reason: 'non existing non existing property (in template)',
-        expectedMessage: 'Missing property.',
+        expectedMessage: 'does not exist in template',
         input: {
           name: 'extr1',
           property: 'other_text_property',
@@ -130,8 +130,8 @@ describe('extractor routes', () => {
         },
       },
     ])('should reject $reason', async ({ input, expectedMessage }) => {
-      const response = await request(app).post('/api/ixextractors').send(input).expect(500);
-      expect(response.body.error).toBe(expectedMessage);
+      const response = await request(app).post('/api/ixextractors').send(input).expect(422);
+      expect(response.body.error).toContain(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(3);
     });
@@ -183,13 +183,15 @@ describe('extractor routes', () => {
       {
         reason: 'non existing _id',
         expectedMessage: 'Missing extractor.',
+        expectedCode: 500,
         change: {
           _id: fixturesFactory.id('non_existing_extractor').toString(),
         },
       },
       {
         reason: 'non existing template',
-        expectedMessage: 'Missing template.',
+        expectedMessage: 'does not exists',
+        expectedCode: 422,
         change: {
           templates: [
             fixturesFactory.id('template1'),
@@ -199,15 +201,16 @@ describe('extractor routes', () => {
       },
       {
         reason: 'non existing non existing property (in template)',
-        expectedMessage: 'Missing property.',
+        expectedMessage: 'does not exist in template',
+        expectedCode: 422,
         change: {
           property: 'non-existing-property',
         },
       },
-    ])('should reject $reason', async ({ change, expectedMessage }) => {
+    ])('should reject $reason', async ({ change, expectedMessage, expectedCode }) => {
       const input: any = { ...extractorToUpdate, ...change };
-      const response = await request(app).put('/api/ixextractors').send(input).expect(500);
-      expect(response.body.error).toBe(expectedMessage);
+      const response = await request(app).put('/api/ixextractors').send(input).expect(expectedCode);
+      expect(response.body.error).toContain(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.[0]).toMatchObject(extractorToUpdate);
     });
