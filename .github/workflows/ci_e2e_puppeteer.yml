@@ -1,99 +1,99 @@
-# name: e2e puppeteer
+name: e2e puppeteer
 
-# on:
-#   pull_request:
-#     branches: [development, staging, production]
-#     types:
-#       - opened
-#       - synchronize
-#       - reopened
-#       - ready_for_review
-#       - converted_to_draft
+on:
+  pull_request:
+    branches: [development, staging, production]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - converted_to_draft
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-# jobs:
-#   e2e-puppeteer:
-#     if: github.event.pull_request.draft == false
-#     runs-on: ubuntu-24.04
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#         suite-dir: ['suite1', 'suite2', 'mobile']
-#     services:
-#       elasticsearch:
-#         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
-#         ports:
-#           - 9200/tcp
-#         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
-#     steps:
-#       - name: 🍃 Install mongosh
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y wget gnupg
-#           wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-#           echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-#           sudo apt-get update
-#           sudo apt-get install -y mongodb-mongosh
-#           sudo apt-get install -y mongodb-org-tools
-#       - name: Start MongoDB
-#         uses: supercharge/mongodb-github-action@1.8.0
-#         with:
-#           mongodb-version: 6.0
-#           mongodb-replica-set: test-rs
-#       - name: Checkout reposistory
-#         uses: actions/checkout@v4
-#       - name: Setup Nodejs
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version-file: '.nvmrc'
-#       - name: Cache node modules
-#         uses: actions/cache@v4
-#         with:
-#           path: ./node_modules
-#           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#       - name: install dependencies
-#         run: yarn install
-#       - run: sudo apt update
-#       - run: sudo apt-get install poppler-utils
-#       - name: Cache build
-#         id: cache-build
-#         uses: actions/cache@v4
-#         with:
-#           path: ./prod
-#           key: >-
-#             ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
-#             ${{ hashFiles('app/**/*.*') }}-
-#             ${{ hashFiles('database/**/*.*') }}-
-#             ${{ hashFiles('**/yarn.lock') }}-
-#             ${{ hashFiles('**/webpack.production.config.js') }}-
-#             ${{ hashFiles('**/.babelrc') }}-
-#             ${{ hashFiles('webpack/**/config.js') }}-
-#       - name: build production
-#         if: steps.cache-build.outputs.cache-hit != 'true'
-#         run: yarn production-build
-#       - run: yarn e2e-fixtures
-#         env:
-#           DBHOST: localhost:27017
-#           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-#           DATABASE_NAME: uwazi_e2e
-#           INDEX_NAME: uwazi_e2e
-#           TRANSPILED: true
-#       - name: start Uwazi
-#         env:
-#           DBHOST: localhost:27017
-#           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-#           DATABASE_NAME: uwazi_e2e
-#           INDEX_NAME: uwazi_e2e
-#         run: .github/scripts/start-uwazi.sh
-#       - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
-#         timeout-minutes: 25
-#         env:
-#           DBHOST: localhost:27017
-#           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-#           TRANSPILED: true
-#       - name: Print server output
-#         run: cat output.txt
-#         if: failure()
+jobs:
+  e2e-puppeteer:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        suite-dir: ['suite1', 'suite2', 'mobile']
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
+        ports:
+          - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - name: 🍃 Install mongosh
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-mongosh
+          sudo apt-get install -y mongodb-org-tools
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 6.0
+          mongodb-replica-set: test-rs
+      - name: Checkout reposistory
+        uses: actions/checkout@v4
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt update
+      - run: sudo apt-get install poppler-utils
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: ./prod
+          key: >-
+            ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
+            ${{ hashFiles('app/**/*.*') }}-
+            ${{ hashFiles('database/**/*.*') }}-
+            ${{ hashFiles('**/yarn.lock') }}-
+            ${{ hashFiles('**/webpack.production.config.js') }}-
+            ${{ hashFiles('**/.babelrc') }}-
+            ${{ hashFiles('webpack/**/config.js') }}-
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
+      - run: yarn e2e-fixtures
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+        run: .github/scripts/start-uwazi.sh
+      - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
+        timeout-minutes: 25
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          TRANSPILED: true
+      - name: Print server output
+        run: cat output.txt
+        if: failure()
