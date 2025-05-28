@@ -449,8 +449,8 @@ describe('InformationExtraction', () => {
               label: 'extractor_target_numeric_source_text_entity',
             },
             {
-              id: 'extractor_target_select_source_text_entity',
-              label: 'extractor_target_select_source_text_entity',
+              id: 'extractor_target_select_source_text_entity_3',
+              label: 'extractor_target_select_source_text_entity_3',
             },
             {
               id: 'A1',
