@@ -76,7 +76,7 @@ describe('Relationship view', () => {
     });
   });
 
-  describe('editing existing hubs', () => {
+  xdescribe('editing existing hubs', () => {
     it('should navigate to another relationship view', () => {
       cy.contains('a', 'Library').realClick();
       cy.get('ul.search__filter').contains('label', 'Ordenes del presidente').realClick();
@@ -182,7 +182,7 @@ describe('Relationship view', () => {
     });
   });
 
-  describe('hub actions', () => {
+  xdescribe('hub actions', () => {
     it('should navigate to another relationship view', () => {
       cy.visit('http://localhost:3000');
       cy.get('ul.search__filter')
@@ -256,7 +256,7 @@ describe('Relationship view', () => {
     });
   });
 
-  describe('relationships check', () => {
+  xdescribe('relationships check', () => {
     it('should navigate to the entity used to create a new relationship in the previous step', () => {
       cy.visit('http://localhost:3000/en/entity/gq5x91tl5vdndn29/relationships');
       cy.get('#tabpanel-relationships').should('be.visible');

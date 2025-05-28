@@ -1,4 +1,4 @@
-# name: e2e cypress PAGES
+# name: e2e cypress SETTINGS
 
 # on:
 #   pull_request:
@@ -126,6 +126,7 @@
 #           DATABASE_NAME: uwazi_e2e
 #           INDEX_NAME: uwazi_e2e
 #           EXTERNAL_SERVICES: true
+#           FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
 #         run: .github/scripts/start-uwazi.sh
 #       - name: Cypress run
 #         uses: cypress-io/github-action@v6
@@ -133,7 +134,7 @@
 #           browser: chrome
 #           component: false
 #           config-file: cypress.config.ts
-#           spec: 'cypress/e2e/pages/*.cy.ts'
+#           spec: 'cypress/e2e/settings/*.cy.ts'
 #         timeout-minutes: 25
 #         env:
 #           DBHOST: localhost:27017
