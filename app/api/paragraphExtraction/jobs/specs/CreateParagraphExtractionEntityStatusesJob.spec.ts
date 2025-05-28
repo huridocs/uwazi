@@ -53,6 +53,15 @@ const nonRelevantRelationshipType = {
 };
 
 const extractorId = f.id('extractor1');
+const extractor1 = {
+  _id: extractorId,
+  sourceTemplateId: sourceTemplate._id,
+  targetTemplateId: targetTemplate._id,
+  paragraphPropertyId: targetTemplate.properties![0]._id,
+  paragraphNumberPropertyId: targetTemplate.properties![1]._id,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
+};
 
 const createBaseFixtures = (): DBFixture => ({
   templates: [sourceTemplate, targetTemplate],
@@ -66,17 +75,10 @@ const createBaseFixtures = (): DBFixture => ({
       ],
     },
   ],
-  px_extractors: [
-    {
-      _id: extractorId,
-      sourceTemplateId: sourceTemplate._id,
-      targetTemplateId: targetTemplate._id,
-      paragraphPropertyId: targetTemplate.properties![0]._id,
-      paragraphNumberPropertyId: targetTemplate.properties![1]._id,
-      sourceRelationshipTypeId: sourceRelationshipType._id,
-      targetRelationshipTypeId: targetRelationshipType._id,
-    },
-  ],
+  px_extractors: [extractor1],
+  entities: [],
+  files: [],
+  connections: [],
 });
 
 const setUpJob = (db: Db, mockDispatcher: JobsDispatcher, batchSize?: number) => {
@@ -145,12 +147,19 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
         );
       }
     }
-    await testingEnvironment.setFixtures({ entities, files });
-    return entities.filter(e => e.language === 'en'); // Return default language entities
+
+    await testingEnvironment.setFixtures({
+      ...createBaseFixtures(),
+      entities: [...createBaseFixtures().entities!, ...entities],
+      files: [...createBaseFixtures().files!, ...files],
+    });
+
+    return { entities, files };
   };
 
   const prepareDataWithRelationships = async (
     baseEntities: EntitySchema[],
+    files: WithId<FileType>[],
     relationshipSetups: { entityIndex: number; hasRelationship: boolean }[]
   ) => {
     const relationships: ConnectionSchema[] = [];
@@ -158,32 +167,35 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
     relationshipSetups.forEach(setup => {
       if (setup.hasRelationship) {
-        const paragraphEntity = f.entity(
+        const languageParagraphEntities = f.entityInMultipleLanguages(
+          ['en', 'es'],
           `paragraph_for_${baseEntities[setup.entityIndex].sharedId}`,
           targetTemplate.name
         );
-        paragraphEntities.push(paragraphEntity);
+        paragraphEntities.push(...languageParagraphEntities);
 
-        // Corrected usage of f.bidirectionalHub
         const [hubConnection, spokeConnection] = f.bidirectionalHub(
           `hub_for_${baseEntities[setup.entityIndex].sharedId}`,
           {
             entity: baseEntities[setup.entityIndex].sharedId!,
-            template: sourceRelationshipType._id.toString(),
+            template: 'sourceRelationshipType',
           },
           [
             {
-              entity: paragraphEntity.sharedId!,
-              template: targetRelationshipType._id.toString(),
+              entity: languageParagraphEntities[0].sharedId!,
+              template: 'targetRelationshipType',
             },
           ]
         );
         relationships.push(hubConnection, spokeConnection);
       }
     });
+
     await testingEnvironment.setFixtures({
-      entities: paragraphEntities,
-      connections: relationships,
+      ...createBaseFixtures(),
+      entities: [...createBaseFixtures().entities!, ...baseEntities, ...paragraphEntities],
+      files: [...createBaseFixtures().files!, ...files],
+      connections: [...createBaseFixtures().connections!, ...relationships],
     });
   };
 
@@ -212,11 +224,13 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
   it('should process entities in batches and re-dispatch if a full batch is processed', async () => {
     // 3 entities, first two have 'en' files, third has 'es' (will be processed due to UI lang)
     // Batch size is 2. Expect 2 processed, 1 re-dispatch.
-    const entities = await prepareDataWithFiles(3, ['en', 'en', 'es']);
-    await prepareDataWithRelationships(entities, [
+    const { entities, files } = await prepareDataWithFiles(3, ['en', 'en', 'es']);
+    await prepareDataWithRelationships(entities, files, [
       { entityIndex: 0, hasRelationship: true }, // entity0 -> Processed
       { entityIndex: 1, hasRelationship: false }, // entity1 -> New
     ]);
+
+    const enEntities = entities.filter(e => e.language === 'en');
 
     const job = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
@@ -233,10 +247,13 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     expect(statuses).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          entitySharedId: entities[0].sharedId,
+          entitySharedId: enEntities[0].sharedId,
           status: EntityStatus.Processed,
         }),
-        expect.objectContaining({ entitySharedId: entities[1].sharedId, status: EntityStatus.New }),
+        expect.objectContaining({
+          entitySharedId: enEntities[1].sharedId,
+          status: EntityStatus.New,
+        }),
       ])
     );
     expect(mockDispatcher.dispatch).toHaveBeenCalledTimes(1);
@@ -248,9 +265,13 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
   it('should process remaining entities in the next run and not re-dispatch if batch is not full', async () => {
     // 3 entities. Entity0 and Entity1 will have 'en' docs, Entity2 'es' doc.
-    const entities = await prepareDataWithFiles(3, ['en', 'en', 'es']);
+    const { entities, files } = await prepareDataWithFiles(3, ['en', 'en', 'es']);
     // Entity0 has relationship (Processed), Entity1 no relationship (New), Entity2 no relationship (New)
-    await prepareDataWithRelationships(entities, [{ entityIndex: 0, hasRelationship: true }]);
+    await prepareDataWithRelationships(entities, files, [
+      { entityIndex: 0, hasRelationship: true },
+    ]);
+
+    const enEntities = entities.filter(e => e.language === 'en');
 
     const job = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
@@ -280,21 +301,31 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     expect(statuses).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          entitySharedId: entities[0].sharedId,
+          entitySharedId: enEntities[0].sharedId,
           status: EntityStatus.Processed,
         }),
-        expect.objectContaining({ entitySharedId: entities[1].sharedId, status: EntityStatus.New }),
-        expect.objectContaining({ entitySharedId: entities[2].sharedId, status: EntityStatus.New }),
+        expect.objectContaining({
+          entitySharedId: enEntities[1].sharedId,
+          status: EntityStatus.New,
+        }),
+        expect.objectContaining({
+          entitySharedId: enEntities[2].sharedId,
+          status: EntityStatus.New,
+        }),
       ])
     );
     expect(mockDispatcher.dispatch).not.toHaveBeenCalled(); // No re-dispatch
   });
 
   it('should correctly determine status "New" or "Processed"', async () => {
-    const entities = await prepareDataWithFiles(2, ['en', 'en']); // 2 entities with 'en' files
+    const { entities, files } = await prepareDataWithFiles(2, ['en', 'en']); // 2 entities with 'en' files
     // entity0 has relationship -> Processed
     // entity1 has no relationship -> New
-    await prepareDataWithRelationships(entities, [{ entityIndex: 0, hasRelationship: true }]);
+    await prepareDataWithRelationships(entities, files, [
+      { entityIndex: 0, hasRelationship: true },
+    ]);
+
+    const enEntities = entities.filter(e => e.language === 'en');
 
     const job = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
@@ -311,23 +342,37 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     expect(statuses).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          entitySharedId: entities[0].sharedId,
+          entitySharedId: enEntities[0].sharedId,
           status: EntityStatus.Processed,
           extractorId,
         }),
         expect.objectContaining({
-          entitySharedId: entities[1].sharedId,
+          entitySharedId: enEntities[1].sharedId,
           status: EntityStatus.New,
           extractorId,
         }),
       ])
     );
-    expect(mockDispatcher.dispatch).not.toHaveBeenCalled(); // Batch not full
+    expect(mockDispatcher.dispatch).toHaveBeenCalledTimes(1); // Batch was full, so dispatch is expected
+
+    // Simulate the re-dispatched job
+    mockDispatcher.dispatch.mockClear();
+    const job2 = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
+    await job2.handleDispatch(mockHeartbeat, params);
+
+    // No new entities should have been processed, so no further dispatch
+    const statusesAfterSecondCall = (await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    ))! as MongoPXEntityStatusDBO[];
+    expect(statusesAfterSecondCall).toHaveLength(TEST_SPECIFIC_BATCH_SIZE); // Still the same 2 statuses
+    expect(mockDispatcher.dispatch).not.toHaveBeenCalled();
   });
 
   it('should not process entities that do not have a file in any of the installed UI languages', async () => {
     // entity0 has 'pt' file (non-UI default, but installed), entity1 has no file
-    const entities = await prepareDataWithFiles(2, ['pt', null]);
+    const { entities } = await prepareDataWithFiles(2, ['pt', null]);
+
+    const enEntities = entities.filter(e => e.language === 'en');
 
     const job = setUpJob(db, mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
@@ -340,14 +385,17 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
       mongoPXEntitiesStatusCollection
     ))! as MongoPXEntityStatusDBO[];
     expect(statuses).toHaveLength(1); // Only entity0
-    expect(statuses[0].entitySharedId).toBe(entities[0].sharedId);
+    expect(statuses[0].entitySharedId).toBe(enEntities[0].sharedId);
     expect(mockDispatcher.dispatch).not.toHaveBeenCalled();
   });
 
   it('should do nothing if no entities match the criteria', async () => {
     // Add a source template that won't be used by any entity
     const otherSourceTemplate = f.template('Other Source Template');
-    await testingEnvironment.setFixtures({ templates: [otherSourceTemplate as TemplateSchema] });
+    await testingEnvironment.setFixtures({
+      ...createBaseFixtures(),
+      templates: [otherSourceTemplate as TemplateSchema],
+    });
 
     const job = setUpJob(db, mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
@@ -365,14 +413,19 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
   });
 
   it('should not re-process entities that already have a status for the given extractor', async () => {
-    const entities = await prepareDataWithFiles(1, ['en']);
+    const { entities } = await prepareDataWithFiles(1, ['en']);
+
+    const enEntities = entities.filter(e => e.language === 'en');
+
     // Pre-create a status for this entity and extractor
     await testingEnvironment.setFixtures({
+      ...createBaseFixtures(),
+      ...entities,
       [mongoPXEntitiesStatusCollection]: [
         {
           _id: f.id('preexisting_status'),
           extractorId,
-          entitySharedId: entities[0].sharedId,
+          entitySharedId: enEntities[0].sharedId,
           status: EntityStatus.New,
           creationDate: new Date(),
         },
@@ -392,7 +445,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     ))! as MongoPXEntityStatusDBO[];
     // Should still only be the one pre-existing status, no new one created
     expect(statuses).toHaveLength(1);
-    expect(statuses[0].entitySharedId).toBe(entities[0].sharedId);
+    expect(statuses[0].entitySharedId).toBe(enEntities[0].sharedId);
     expect(mockDispatcher.dispatch).not.toHaveBeenCalled();
   });
 });
