@@ -256,7 +256,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       await checkValidationForRoute(app, 'delete', '/api/paragraphExtraction/extractor');
     });
 
-    it('should get the entity paragraphs', async () => {
+    it('should delete the extractor', async () => {
       const query: PXDeleteExtractorRequest = {
         id: createdExtractorId,
       };
