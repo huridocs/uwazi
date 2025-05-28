@@ -172,12 +172,18 @@ const AcceptButton = ({
     return <div className="w-6 h-6 m-auto">{getIcon(color)}</div>;
   }
 
+  const isDisabled =
+    color === 'red' ||
+    !suggestionHasEntity ||
+    cell.row.original.state.obsolete ||
+    cell.row.original.state.error;
+
   return (
     <div className="m-auto">
       <EmbededButton
         icon={getIcon(color)}
         color={color}
-        disabled={color === 'red' || !suggestionHasEntity}
+        disabled={isDisabled}
         onClick={() => action && action([cell.row.original])}
       >
         <Translate>Accept</Translate>
