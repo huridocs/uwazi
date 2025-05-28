@@ -53,6 +53,10 @@ const fixtures: DBFixture = {
       fixturesFactory.property('target_text', propertyTypes.text),
       fixturesFactory.property('source_text', propertyTypes.text),
     ]),
+    fixturesFactory.template('extractor_source_text_target_text_template_1', [
+      fixturesFactory.property('target_text', propertyTypes.text),
+      fixturesFactory.property('source_text', propertyTypes.text),
+    ]),
   ],
   entities: [
     fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
@@ -65,6 +69,10 @@ const fixtures: DBFixture = {
     fixturesFactory.entity(
       'extractor_source_text_target_text_entity',
       'extractor_source_text_target_text_template'
+    ),
+    fixturesFactory.entity(
+      'extractor_source_text_target_text_entity_1',
+      'extractor_source_text_target_text_template_1'
     ),
   ],
   files: [
@@ -119,6 +127,12 @@ const fixtures: DBFixture = {
     fixturesFactory.ixExtractor('extractor_source_pdf_target_text', 'target_text', [
       'extractor_source_text_target_text_template',
     ]),
+    fixturesFactory.ixExtractor(
+      'extractor_source_pdf_target_text_1',
+      'target_text',
+      ['extractor_source_text_target_text_template_1'],
+      { property: 'source_text' }
+    ),
   ],
   ixsuggestions: [
     fixturesFactory.ixSuggestion_deprecated(
@@ -557,7 +571,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
 
     const fileInfo = fixturesFactory.fileDeprecated(
       'new file',
-      'extractor_source_text_target_text_entity',
+      'extractor_source_text_target_text_entity_1',
       'document',
       'new_file.pdf'
     );
@@ -715,11 +729,11 @@ describe('On EntityCreatedEvent', () => {
       })
     );
 
-    expect(saveSpy).toHaveBeenCalledWith([
+    expect(saveSpy.mock.calls[0][0]).toEqual([
       {
         language: 'en',
         entityId: 'any_shared_id_1',
-        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template'),
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
         extractorId: fixturesFactory.id('extractor_source_text_target_text'),
         propertyName: 'target_text',
         status: 'ready',
@@ -731,7 +745,7 @@ describe('On EntityCreatedEvent', () => {
       {
         language: 'pt',
         entityId: 'any_shared_id_1',
-        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template'),
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
         extractorId: fixturesFactory.id('extractor_source_text_target_text'),
         propertyName: 'target_text',
         status: 'ready',
@@ -969,10 +983,18 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
 
     const extractors = await testingDB.mongodb
       ?.collection('ixextractors')
-      .find({ templates: { $not: { $size: 0 } } })
+      .find({
+        templates: {
+          $in: [
+            fixturesFactory.id(otherExtractedTemplateName),
+            fixturesFactory.id(extractedTemplateName),
+            fixturesFactory.id('some_other_template'),
+          ],
+        },
+      })
       .toArray();
 
-    expect(extractors).toEqual([
+    expect(extractors).toMatchObject([
       fixturesFactory.ixExtractor('title_extractor', 'title', [
         extractedTemplateName,
         otherExtractedTemplateName,
@@ -1056,10 +1078,18 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
 
     const extractors = await testingDB.mongodb
       ?.collection('ixextractors')
-      .find({ templates: { $not: { $size: 0 } } })
+      .find({
+        templates: {
+          $in: [
+            fixturesFactory.id(otherExtractedTemplateName),
+            fixturesFactory.id(extractedTemplateName),
+            fixturesFactory.id('some_other_template'),
+          ],
+        },
+      })
       .toArray();
 
-    expect(extractors).toEqual([
+    expect(extractors).toMatchObject([
       fixturesFactory.ixExtractor('title_extractor', 'title', [
         extractedTemplateName,
         otherExtractedTemplateName,
@@ -1159,7 +1189,14 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
 
     const extractors = await testingDB.mongodb
       ?.collection('ixextractors')
-      .find({ templates: { $not: { $size: 0 } } })
+      .find({
+        templates: {
+          $in: [
+            fixturesFactory.id(otherExtractedTemplateName),
+            fixturesFactory.id('some_other_template'),
+          ],
+        },
+      })
       .toArray();
 
     expect(extractors).toEqual([
