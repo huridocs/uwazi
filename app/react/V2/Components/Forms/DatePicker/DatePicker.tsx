@@ -1,11 +1,10 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import moment from 'moment-timezone';
-import { Translate } from 'app/I18N';
-import { removeOffset, addOffset } from './dateUtils';
-import { LazyDatePicker } from './loadableDatePicker';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { settingsAtom } from 'app/V2/atoms';
 import { useAtomValue } from 'jotai';
+import moment from 'moment-timezone';
+import { settingsAtom } from 'app/V2/atoms';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { removeOffset, addOffset, formatDate } from './dateUtils';
+import { LazyDatePicker } from './loadableDatePicker';
 
 interface DatePickerProps {
   label?: ReactNode;
@@ -35,7 +34,7 @@ interface DatePickerProps {
 const DatePicker: React.FC<DatePickerProps> = ({
   value,
   label,
-  onChange = () => { },
+  onChange = () => {},
   locale = 'en',
   format,
   useTimezone = false,
@@ -56,12 +55,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
   showClearFieldIcon = true,
   required = false,
 }) => {
-  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
+  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
+    useAtomValue<ClientSettings>(settingsAtom);
   const dateFormat = (format || defaultDateFormat).toUpperCase();
   const [inputValue, setInputValue] = useState<moment.Moment | null>(null);
 
   useEffect(() => {
-    const timestampMs = removeOffset(typeof value === 'string' ? parseInt(value, 10) : value || 0, useTimezone);
+    const timestampMs = removeOffset(
+      typeof value === 'string' ? parseInt(value, 10) : value || 0,
+      useTimezone
+    );
     if (timestampMs) {
       const displayDate = !useTimezone ? moment(timestampMs).local() : moment(timestampMs).utc();
       setInputValue(displayDate);
@@ -90,7 +93,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   };
 
-  const dateValue = inputValue && useTimezone ? inputValue.clone().utc().format(dateFormat) : inputValue ? inputValue.clone().local().format(dateFormat) : '';
+  const formattedDate = formatDate(inputValue, dateFormat, useTimezone);
 
   return (
     <div>
@@ -98,7 +101,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         label={label}
         language={locale}
         dateFormat={dateFormat.toLowerCase()}
-        value={dateValue}
+        value={formattedDate}
         onChange={handleChange}
         onBlur={onBlur}
         placeholder={placeholder}

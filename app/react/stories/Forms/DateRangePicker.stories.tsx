@@ -20,8 +20,6 @@ const meta: Meta<typeof DateRange> = {
 
 type Story = StoryObj<typeof DateRange>;
 
-
-
 const Basic: Story = {
   render: args => (
     <DateRange
@@ -65,7 +63,6 @@ const Basic: Story = {
     clearFieldAction: action('cleared'),
   },
 };
-
 
 export { Basic };
 

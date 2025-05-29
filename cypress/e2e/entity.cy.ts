@@ -218,7 +218,7 @@ describe('Entities', () => {
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
       cy.contains('#metadataForm', 'Type').get('select').eq(0).select('All props');
-      cy.get('select:first-of-type').select('All props');    
+      cy.get('select:first-of-type').select('All props');
       cy.get('.form-group.text input').type('demo text', { delay: 0 });
       cy.get('.form-group.numeric input').type('42', { delay: 0 });
 
@@ -253,7 +253,7 @@ describe('Entities', () => {
         delay: 0,
       });
       cy.get('.form-group.daterange div.DatePicker__From input').type('23/11/1963', { delay: 0 });
-      //wait for the datepickers to be updated
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.get('.form-group.daterange div.DatePicker__To input').type('12/09/1964', { delay: 0 });
       cy.get('.form-group.link #label').type('Huridocs', { delay: 0 });
@@ -273,7 +273,7 @@ describe('Entities', () => {
       cy.get(
         '.form-group.multidaterange .multidate-item:nth-of-type(2) div.DatePicker__To input'
       ).type('12/09/1964', { delay: 0 });
-      //wait for the datepickers to be updated
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.get('.form-group.markdown textarea').type(textWithHtml, { delay: 0 });
       saveEntity();
@@ -281,8 +281,8 @@ describe('Entities', () => {
     });
 
     it('should have all the values correctly saved.', () => {
-      cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();    
-      cy.get('#tabpanel-metadata').within(()=>{          
+      cy.contains('.item-document:nth-child(1) span', 'Entity with all props').click();
+      cy.get('#tabpanel-metadata').within(() => {
         cy.get('.metadata-type-text').should('contain.text', 'demo text');
         cy.get('.metadata-type-numeric').should('contain.text', '42');
         cy.get('.metadata-type-select').should('contain.text', 'Activo');
@@ -301,13 +301,13 @@ describe('Entities', () => {
         cy.get('.metadata-type-link a')
           .should('have.text', 'Huridocs')
           .and('have.attr', 'href', 'https://www.huridocs.org/');
-      })
+      });
       cy.get('.side-panel.is-active .sidepanel-body.scrollable').scrollTo(0, 1300);
-        checkMediaSnapshots('#tabpanel-metadata .metadata-type-multimedia.metadata-name-media');
-        cy.get('.leaflet-container').scrollIntoView();
-        cy.get('.leaflet-marker-icon').should('have.length', 1);
+      checkMediaSnapshots('#tabpanel-metadata .metadata-type-multimedia.metadata-name-media');
+      cy.get('.leaflet-container').scrollIntoView();
+      cy.get('.leaflet-marker-icon').should('have.length', 1);
     });
-    
+
     it('should check that the HTML is show as expected', () => {
       cy.contains('h1', 'The title').should('exist');
       cy.contains('a', 'I am a link to an external site').should('exist');

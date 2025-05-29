@@ -71,7 +71,7 @@ class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState>
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
-                    onChange={(val) => this.fromChange(index, val)}
+                    onChange={val => this.fromChange(index, val)}
                   />
                 </div>
                 <div className="DatePicker__To">
@@ -82,18 +82,18 @@ class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState>
                     format={this.props.format}
                     value={value.to}
                     endOfDay
-                    onChange={(val) => this.toChange(index, val)}
+                    onChange={val => this.toChange(index, val)}
                   />
                 </div>
                 <button
                   className="react-datepicker__delete-icon"
-                  onClick={(e) => this.remove(index, e)}
+                  onClick={e => this.remove(index, e)}
                 />
                 <div className="multidate-range-clear-float"></div>
               </div>
             </div>
           )))()}
-        <button className="btn btn-success add" onClick={(e) => this.add(e)}>
+        <button className="btn btn-success add" onClick={e => this.add(e)}>
           <Icon icon="plus" />
           &nbsp;
           <Translate>Add date</Translate>
@@ -103,4 +103,4 @@ class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState>
   }
 }
 
-export default MultiDateRange; 
+export default MultiDateRange;

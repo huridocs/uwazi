@@ -46,4 +46,4 @@ declare module 'flowbite-datepicker/DateRangePicker' {
 
   const DateRangePicker: DateRangePicker;
   export default DateRangePicker;
-} 
+}

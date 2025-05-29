@@ -9,7 +9,7 @@ const { Basic } = composeStories(stories);
 
 describe('DateRangePicker', () => {
   const today = new Date();
-  const date = moment.utc('2016-07-28T00:00:00+00:00');
+  const testDate = moment.utc('2016-07-28T00:00:00+00:00');
 
   const checkSelectedDate = (selector: string, day: string) => {
     cy.get(selector).should(
@@ -33,14 +33,14 @@ describe('DateRangePicker', () => {
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('12').click();
     cy.get('@onChange').should('have.been.calledWith', {
       from: Cypress.sinon.match.number,
-      to: null
+      to: null,
     });
 
     cy.get('#to').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('17').click();
     cy.get('@onChange').should('have.been.calledWith', {
       from: Cypress.sinon.match.number,
-      to: Cypress.sinon.match.number
+      to: Cypress.sinon.match.number,
     });
 
     checkSelectedDate('#from', '12');
@@ -55,14 +55,14 @@ describe('DateRangePicker', () => {
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
     cy.get('@onChange').should('have.been.calledWith', {
       from: Cypress.sinon.match.number,
-      to: null
+      to: null,
     });
 
     cy.get('#to').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
     cy.get('@onChange').should('have.been.calledWith', {
       from: Cypress.sinon.match.number,
-      to: Cypress.sinon.match.number
+      to: Cypress.sinon.match.number,
     });
 
     checkSelectedDate('#from', today.getDate().toString().padStart(2, '0'));
@@ -75,21 +75,25 @@ describe('DateRangePicker', () => {
 
     cy.get('#from').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('#from').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Limpiar').click();
-    cy.wait(1000);
-    cy.get('@onChange').should('have.been.calledTwice').then(function () {
-      const stub = this.onChange;
-      const firstCallArgs = stub.args[0][0];
-      const secondCallArgs = stub.args[1][0];
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
+    cy.get('@onChange')
+      .should('have.been.calledTwice')
+      .then(function () {
+        const stub = this.onChange;
+        const firstCallArgs = stub.args[0][0];
+        const secondCallArgs = stub.args[1][0];
 
-      expect(firstCallArgs.from).to.be.a('number');
-      expect(firstCallArgs.to).to.be.null;
+        expect(firstCallArgs.from).to.be.a('number');
+        expect(firstCallArgs.to).to.equal(null);
 
-      expect(secondCallArgs.from).to.be.null;
-      expect(secondCallArgs.to).to.be.null;
-    });
+        expect(secondCallArgs.from).to.equal(null);
+        expect(secondCallArgs.to).to.equal(null);
+      });
   });
 
   it('should clear the selected date by the action in the input', () => {
@@ -98,16 +102,18 @@ describe('DateRangePicker', () => {
 
     cy.get('#from').click();
     cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('Hoy').click();
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('div[date-rangepicker=true]')
       .eq(0)
       .within(() => {
         cy.get('button[data-testid=clear-field-button]').eq(0).click();
       });
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('@onChange').should('have.been.calledWith', {
       from: null,
-      to: null
+      to: null,
     });
   });
 
@@ -126,7 +132,9 @@ describe('DateRangePicker', () => {
 
   describe('useTimezone', () => {
     it('should render with the correct date transformed to local value', () => {
-      mount(<Basic value={{ from: Number(date.format('X')), to: Number(date.format('X')) }} />);
+      mount(
+        <Basic value={{ from: Number(testDate.format('X')), to: Number(testDate.format('X')) }} />
+      );
       const expectedDate = moment('2016-07-28').format('DD-MM-YYYY');
       cy.get('#from').should('have.value', expectedDate);
       cy.get('#to').should('have.value', expectedDate);
@@ -134,9 +142,14 @@ describe('DateRangePicker', () => {
 
     describe('when useTimezone is true', () => {
       it('should render without transforming the value to local', () => {
-        mount(<Basic value={{ from: Number(date.format('X')), to: Number(date.format('X')) }} useTimezone />);
-        cy.get('#from').should('have.value', date.format('DD-MM-YYYY'));
-        cy.get('#to').should('have.value', date.format('DD-MM-YYYY'));
+        mount(
+          <Basic
+            value={{ from: Number(testDate.format('X')), to: Number(testDate.format('X')) }}
+            useTimezone
+          />
+        );
+        cy.get('#from').should('have.value', testDate.format('DD-MM-YYYY'));
+        cy.get('#to').should('have.value', testDate.format('DD-MM-YYYY'));
       });
     });
 
@@ -161,7 +174,10 @@ describe('DateRangePicker', () => {
           );
 
           cy.get('#from').should('have.value', moment(dateToTest).local().format('DD-MM-YYYY'));
-          cy.get('#to').should('have.value', moment(dateToTest).local().add(2, 'day').format('DD-MM-YYYY'));
+          cy.get('#to').should(
+            'have.value',
+            moment(dateToTest).local().add(2, 'day').format('DD-MM-YYYY')
+          );
 
           cy.get('#to').click();
           cy.get('.datepicker.datepicker-dropdown:not(.hidden)').within(() => {
@@ -169,7 +185,7 @@ describe('DateRangePicker', () => {
           });
           cy.get('@onChange').should('have.been.calledWith', {
             from: Cypress.sinon.match.number,
-            to: Cypress.sinon.match.number
+            to: Cypress.sinon.match.number,
           });
         });
       });
@@ -199,7 +215,7 @@ describe('DateRangePicker', () => {
           });
         cy.get('@onChange').should('have.been.calledWith', {
           from: Cypress.sinon.match.number,
-          to: null
+          to: null,
         });
       });
     });
@@ -216,7 +232,7 @@ describe('DateRangePicker', () => {
           });
         cy.get('@onChange').should('have.been.calledWith', {
           from: Cypress.sinon.match.number,
-          to: null
+          to: null,
         });
       });
     });
@@ -224,7 +240,6 @@ describe('DateRangePicker', () => {
     describe('when useTimezone is true (for activity log, etc)', () => {
       it('should set the value to timestamp NOT offsetting to UTC', () => {
         const onChange = cy.stub().as('onChange');
-        const newDate = new Date('2020-08-18');
         mount(<Basic onChange={onChange} useTimezone />);
         cy.get('#from').click();
         cy.get('.days')
@@ -234,13 +249,12 @@ describe('DateRangePicker', () => {
           });
         cy.get('@onChange').should('have.been.calledWith', {
           from: Cypress.sinon.match.number,
-          to: null
+          to: null,
         });
       });
 
       it('should set the value to the end of the day NOT offsetting to UTC', () => {
         const onChange = cy.stub().as('onChange');
-        const newDate = new Date('2020-08-18');
         mount(<Basic onChange={onChange} useTimezone endOfDay />);
         cy.get('#from').click();
         cy.get('.days')
@@ -250,7 +264,7 @@ describe('DateRangePicker', () => {
           });
         cy.get('@onChange').should('have.been.calledWith', {
           from: Cypress.sinon.match.number,
-          to: null
+          to: null,
         });
       });
     });
@@ -281,16 +295,17 @@ describe('DateRangePicker', () => {
         .within(() => {
           cy.contains('1').click();
         });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: Cypress.sinon.match.number,
-        to: null
+        to: null,
       });
 
       const now = new Date();
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const formattedDate = moment(firstDay).format("DD-MM-yyyy")
+      const formattedDate = moment(firstDay).format('DD-MM-yyyy');
       cy.get('input[name="metadata.dateField.from"]').should('have.value', formattedDate);
     });
 
@@ -311,11 +326,12 @@ describe('DateRangePicker', () => {
       );
 
       cy.get('input[name="metadata.dateField.from"]').type('01-04-2005', { delay: 0 });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: Cypress.sinon.match.number,
-        to: null
+        to: null,
       });
 
       cy.get('input[name="metadata.dateField.from"]').should('have.value', '01-04-2005');
@@ -332,7 +348,7 @@ describe('DateRangePicker', () => {
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: Cypress.sinon.match.number,
-        to: null
+        to: null,
       });
 
       cy.get('#to').click();
@@ -340,11 +356,17 @@ describe('DateRangePicker', () => {
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: Cypress.sinon.match.number,
-        to: Cypress.sinon.match.number
+        to: Cypress.sinon.match.number,
       });
 
-      cy.get('#from').should('have.value', `12-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`);
-      cy.get('#to').should('have.value', `17-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`);
+      cy.get('#from').should(
+        'have.value',
+        `12-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`
+      );
+      cy.get('#to').should(
+        'have.value',
+        `17-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`
+      );
     });
 
     it('should handle clearing dates and pass null values', () => {
@@ -361,7 +383,7 @@ describe('DateRangePicker', () => {
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: null,
-        to: Cypress.sinon.match.number
+        to: Cypress.sinon.match.number,
       });
 
       cy.get('#to').click();
@@ -369,7 +391,7 @@ describe('DateRangePicker', () => {
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: null,
-        to: null
+        to: null,
       });
 
       cy.get('#from').should('have.value', '');
@@ -388,8 +410,14 @@ describe('DateRangePicker', () => {
       cy.get('#to').click();
       cy.get('.datepicker.datepicker-dropdown:not(.hidden)').contains('17').click();
 
-      cy.get('#from').should('have.value', `12-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`);
-      cy.get('#to').should('have.value', `17-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`);
+      cy.get('#from').should(
+        'have.value',
+        `12-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`
+      );
+      cy.get('#to').should(
+        'have.value',
+        `17-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`
+      );
     });
 
     it('should handle invalid date inputs', () => {
@@ -400,10 +428,13 @@ describe('DateRangePicker', () => {
       cy.get('#from').should('have.value', '99-99-9999');
       cy.get('@onChange').should('not.have.been.called');
 
-      cy.get('#from').clear().type('12-12-2023');
+      cy.get('#from').clear();
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
+      cy.get('#from').type('12-12-2023');
       cy.get('@onChange').should('have.been.calledWith', {
         from: Cypress.sinon.match.number,
-        to: null
+        to: null,
       });
       cy.get('#from').should('have.value', '12-12-2023');
     });
@@ -417,10 +448,13 @@ describe('DateRangePicker', () => {
 
       cy.get('@onChange').should('have.been.calledWith', {
         from: Cypress.sinon.match.number,
-        to: null
+        to: null,
       });
 
-      cy.get('#from').should('have.value', `12-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`);
+      cy.get('#from').should(
+        'have.value',
+        `12-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear()}`
+      );
     });
   });
 });

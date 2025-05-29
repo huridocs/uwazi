@@ -9,7 +9,7 @@ const { Basic } = composeStories(stories);
 
 describe('DatePicker', () => {
   const today = new Date();
-  const date = moment.utc('2016-07-28T00:00:00+00:00');
+  const testDate = moment.utc('2016-07-28T00:00:00+00:00');
   const checkSelectedDate = (selector: string, day: string) => {
     cy.get(selector).should(
       'have.value',
@@ -32,7 +32,8 @@ describe('DatePicker', () => {
       .within(() => {
         cy.contains('12').click();
       });
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('@onChange').should('have.been.called');
   });
 
@@ -41,7 +42,8 @@ describe('DatePicker', () => {
     mount(<Basic onChange={onChange} />);
     cy.get('input[placeholder*="Seleccione una fecha"]').click();
     cy.contains('Hoy').click();
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('@onChange').should('have.been.called');
     checkSelectedDate('input[name=dateField]', today.getDate().toString().padStart(2, '0'));
   });
@@ -51,10 +53,12 @@ describe('DatePicker', () => {
     mount(<Basic onChange={onChange} />);
     cy.get('input[placeholder*="Seleccione una fecha"]').click();
     cy.contains('Hoy').click();
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('input[name=dateField]').click();
     cy.contains('Limpiar').click();
-    cy.wait(1000);
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('@onChange').should('have.been.calledWith', null);
     cy.get('input[name=dateField]').should('have.value', '');
   });
@@ -64,7 +68,8 @@ describe('DatePicker', () => {
       const onChange = cy.stub().as('onChange');
       mount(<Basic onChange={onChange} />);
       cy.get('input[name=dateField]').type('15-05-2024', { delay: 0 });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
       cy.get('input[name=dateField]').should('have.value', '15-05-2024');
       cy.get('@onChange').should('have.been.called');
     });
@@ -72,13 +77,16 @@ describe('DatePicker', () => {
     it('should handle backspace and delete keys', () => {
       mount(<Basic />);
       cy.get('input[name=dateField]').type('15-05-2024', { delay: 0 });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
       cy.get('input[name=dateField]').type('{backspace}', { force: true });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
       cy.get('input[name=dateField]').should('have.value', '15-05-202');
       cy.get('input[name=dateField]').type('{leftarrow}', { force: true });
       cy.get('input[name=dateField]').type('{del}', { force: true });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
       cy.get('input[name=dateField]').should('have.value', '15-05-20');
     });
 
@@ -88,15 +96,16 @@ describe('DatePicker', () => {
 
       cy.get('input[name=dateField]').type('99-99-9999', { delay: 0 });
       cy.get('input[name=dateField]').blur();
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
       cy.get('@onChange').should('not.have.been.called');
     });
   });
 
   describe('useTimezone', () => {
     it('should render with the correct date transformed to local value', () => {
-      mount(<Basic value={Number(date.format('X'))} />);
-      const expectedDate = moment(date).utc().format('DD-MM-YYYY');
+      mount(<Basic value={Number(testDate.format('X'))} />);
+      const expectedDate = moment(testDate).utc().format('DD-MM-YYYY');
       cy.get('input[name=dateField]').should('have.value', expectedDate);
     });
 
@@ -107,8 +116,8 @@ describe('DatePicker', () => {
 
     describe('when useTimezone is true', () => {
       it('should render without transforming the value to local', () => {
-        mount(<Basic value={Number(date.format('X'))} useTimezone />);
-        cy.get('input[name=dateField]').should('have.value', date.format('DD-MM-YYYY'));
+        mount(<Basic value={Number(testDate.format('X'))} useTimezone />);
+        cy.get('input[name=dateField]').should('have.value', testDate.format('DD-MM-YYYY'));
       });
     });
 
@@ -180,7 +189,7 @@ describe('DatePicker', () => {
     describe('when useTimezone is true (for activity log, etc)', () => {
       it('should set the value to timestamp NOT offsetting to UTC', () => {
         const onChange = cy.stub().as('onChange');
-        const newDate = new Date('2020-08-18');
+        const newDate = moment('2020-08-18');
         mount(<Basic onChange={onChange} useTimezone />);
         cy.get('input[name=dateField]').click();
         cy.get('.days')
@@ -188,12 +197,12 @@ describe('DatePicker', () => {
           .within(() => {
             cy.contains('18').click();
           });
-        cy.get('@onChange').should('have.been.called');
+        cy.get('@onChange').should('have.been.called.with', newDate.local().valueOf() / 1000);
       });
 
       it('should set the value to the end of the day NOT offsetting to UTC', () => {
         const onChange = cy.stub().as('onChange');
-        const newDate = new Date('2020-08-18');
+        const newDate = moment('2020-08-18');
         mount(<Basic onChange={onChange} useTimezone endOfDay />);
         cy.get('input[name=dateField]').click();
         cy.get('.days')
@@ -201,10 +210,9 @@ describe('DatePicker', () => {
           .within(() => {
             cy.contains('18').click();
           });
-        cy.get('@onChange').should('have.been.called');
+        cy.get('@onChange').should('have.been.called.with', newDate.local().valueOf() / 1000);
       });
     });
-
   });
 
   describe('when used with react-redux-form', () => {
@@ -232,13 +240,14 @@ describe('DatePicker', () => {
         .within(() => {
           cy.contains('1').click();
         });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
 
       cy.get('@onChange').should('have.been.called');
 
       const now = new Date();
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const formattedDate = moment(firstDay).format("DD-MM-yyyy")
+      const formattedDate = moment(firstDay).format('DD-MM-yyyy');
       cy.get('input[name="metadata.dateField"]').should('have.value', formattedDate);
     });
 
@@ -261,7 +270,8 @@ describe('DatePicker', () => {
       );
 
       cy.get('input[name="metadata.dateField"]').type('01-04-2005', { delay: 0 });
-      cy.wait(1000);
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
 
       cy.get('@onChange').should('have.been.called');
 

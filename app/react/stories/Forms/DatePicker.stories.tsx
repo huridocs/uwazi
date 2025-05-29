@@ -21,7 +21,6 @@ const meta: Meta<typeof DatePicker> = {
 
 type Story = StoryObj<typeof DatePicker>;
 
-
 const Primary: Story = {
   render: args => (
     <DatePicker

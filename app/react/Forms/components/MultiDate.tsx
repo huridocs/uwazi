@@ -52,18 +52,18 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
               <DatePicker
                 locale={this.props.locale}
                 format={this.props.format}
-                onChange={(val) => this.onChange(index, val)}
+                onChange={val => this.onChange(index, val)}
                 value={value}
                 showClearFieldIcon={false}
               />
               <button
                 type="button"
                 className="react-datepicker__delete-icon"
-                onClick={(e) => this.remove(index, e)}
+                onClick={e => this.remove(index, e)}
               />
             </div>
           )))()}
-        <button type="button" className="btn btn-success add" onClick={(e) => this.add(e)}>
+        <button type="button" className="btn btn-success add" onClick={e => this.add(e)}>
           <Icon icon="plus" />
           &nbsp;
           <Translate>Add date</Translate>

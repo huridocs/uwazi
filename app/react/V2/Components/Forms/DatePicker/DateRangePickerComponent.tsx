@@ -15,271 +15,277 @@ import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
 import { useAtomValue } from 'jotai';
 
-const DateRangePickerComponent =
-  ({
-    id = uniqueID(),
-    model,
-    value = { from: '', to: '' },
-    autoComplete = 'off',
-    language = 'en',
-    dateFormat = 'YYYY-MM-DD',
-    hideLabel = false,
-    inputClassName = '',
-    className = '',
-    labelToday = 'Today',
-    labelClear = 'Clear',
-    label,
-    disabled = false,
-    placeholderStart = 'Inicio',
-    placeholderEnd = 'Fin',
-    hasErrors = false,
-    errorMessage,
-    onFromDateSelected = () => { },
-    onToDateSelected = () => { },
-    onBlur = () => { },
-    showCalendarIcon = true,
-    showClearFieldIcon = true,
-    required = false,
-  }: DateRangePickerProps) => {
-    const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
-    const datePickerFormat = (dateFormat || defaultDateFormat).toLowerCase();
+const DateRangePickerComponent = ({
+  id = uniqueID(),
+  model,
+  value = { from: '', to: '' },
+  autoComplete = 'off',
+  language = 'en',
+  dateFormat = 'YYYY-MM-DD',
+  hideLabel = false,
+  inputClassName = '',
+  className = '',
+  labelToday = 'Today',
+  labelClear = 'Clear',
+  label,
+  disabled = false,
+  placeholderStart = 'Inicio',
+  placeholderEnd = 'Fin',
+  hasErrors = false,
+  errorMessage,
+  onFromDateSelected = () => {},
+  onToDateSelected = () => {},
+  onBlur = () => {},
+  showCalendarIcon = true,
+  showClearFieldIcon = true,
+  required = false,
+}: DateRangePickerProps) => {
+  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
+    useAtomValue<ClientSettings>(settingsAtom);
+  const datePickerFormat = (dateFormat || defaultDateFormat).toLowerCase();
 
-    const divRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-    const fromRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-    const toRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
+  const divRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
+  const fromRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
+  const toRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
-    const instance = useRef<DateRangePicker | null>(null);
-    const locale = validateLocale(language);
+  const instance = useRef<DateRangePicker | null>(null);
+  const locale = validateLocale(language);
 
-    useEffect((): (() => void) => {
-      Object.assign(Datepicker.locales, {
-        [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat),
-          format: datePickerFormat,
-        },
-      });
-      Object.assign(DateRangePicker?.locales || {}, {
-        [locale]: {
-          ...datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat),
-          format: datePickerFormat,
-        },
-      });
-      const startEl = fromRef.current;
-      const endEl = toRef.current;
-      const options = {
-        inputs: [startEl!, endEl!],
-        container: '#tw-container',
-        language: locale,
-        locales: { [locale]: Datepicker.locales[locale] },
-        Mode: 1,
-        todayBtnMode: 1,
-        todayBtn: true,
-        clearBtn: true,
-        autohide: true,
-        allowOneSidedRange: true,
+  useEffect((): (() => void) => {
+    Object.assign(Datepicker.locales, {
+      [locale]: {
+        ...datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat),
         format: datePickerFormat,
-      };
-      instance.current = new DateRangePicker(divRef.current!, options);
-
-      if (instance.current) {
-        instance.current.setDates(value?.from, value?.to);
-      }
-      return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [locale, datePickerFormat, labelToday, labelClear]);
-
-    const debouncedOnFromToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      if (newValue !== value.from && (newValue === '' || newValue.length === 10)) {
-        onFromDateSelected(e);
-      }
-    }, 1000);
-
-    const debouncedOnToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      if (newValue !== value.to && (newValue === '' || newValue.length === 10)) {
-        onToDateSelected(e);
-      }
-    }, 1000);
-
-    const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      if (fromRef.current) {
-        fromRef.current.value = newValue;
-      }
-      debouncedOnFromToDateSelected(e);
+      },
+    });
+    Object.assign(DateRangePicker?.locales || {}, {
+      [locale]: {
+        ...datePickerOptionsByLocale(locale, labelToday, labelClear, datePickerFormat),
+        format: datePickerFormat,
+      },
+    });
+    const startEl = fromRef.current;
+    const endEl = toRef.current;
+    const options = {
+      inputs: [startEl!, endEl!],
+      container: '#tw-container',
+      language: locale,
+      locales: { [locale]: Datepicker.locales[locale] },
+      Mode: 1,
+      todayBtnMode: 1,
+      todayBtn: true,
+      clearBtn: true,
+      autohide: true,
+      allowOneSidedRange: true,
+      format: datePickerFormat,
     };
+    instance.current = new DateRangePicker(divRef.current!, options);
 
-    const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      if (toRef.current) {
-        toRef.current.value = newValue;
-      }
-      debouncedOnToDateSelected(e);
-    };
+    if (instance.current) {
+      instance.current.setDates(value?.from, value?.to);
+    }
+    return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, datePickerFormat, labelToday, labelClear]);
 
-    const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
-      onBlur(e);
-    }, 1000);
+  const debouncedOnFromToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (newValue !== value.from && (newValue === '' || newValue.length === 10)) {
+      onFromDateSelected(e);
+    }
+  }, 300);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      const allowedKeys = [
-        'ArrowLeft',
-        'ArrowRight',
-        'ArrowUp',
-        'ArrowDown',
-        'Delete',
-        'Backspace',
-        'Tab',
-        '-',
-        '/',
-      ];
-      const isNumber = /^[0-9]$/.test(e.key);
-      const isAllowedKey = allowedKeys.includes(e.key);
+  const debouncedOnToDateSelected = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (newValue !== value.to && (newValue === '' || newValue.length === 10)) {
+      onToDateSelected(e);
+    }
+  }, 300);
 
-      if (!isNumber && !isAllowedKey) {
-        e.preventDefault();
-      }
-    };
-
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      debouncedOnBlur(e);
-    };
-
-    const clearFromValue = () => {
-      instance.current?.setDates({ clear: true }, value?.to);
-      handleFromChange({
-        target: {
-          value: '',
-        },
-      } as any);
-    };
-    const clearToValue = () => {
-      instance.current?.setDates(value?.from, { clear: true });
-      handleToChange({
-        target: {
-          value: '',
-        },
-      } as any);
-
-    };
-    return (
-      <div className="tw-content">
-        <div
-          id="tw-container"
-          className={`${className} tw-datepicker z-50 w-full inline-block p-0`}
-          data-test-id={id}
-        />
-        <div>
-          <Label
-            htmlFor={id}
-            hideLabel={hideLabel}
-            hasErrors={Boolean(hasErrors || errorMessage)}
-          >
-            {label}
-          </Label>
-
-          <div
-            ref={divRef}
-            id={id}
-            date-rangepicker="true"
-            datepicker-buttons="true"
-            datepicker-autoselect-today="true"
-            className="flex items-center gap-4"
-          >
-            <div className="relative w-1/2 text-gray-600 DatePicker__From">
-              {showCalendarIcon && (
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                </div>
-              )}
-
-              <input
-                id="from"
-                name={model ? `${model}.from` : 'dateField'}
-                data-datepicker={true}
-                data-datepicker-autohide={true}
-                data-datepicker-buttons={true}
-                data-datepicker-autoselect-today={true}
-                type="text"
-                lang={locale}
-                defaultValue={value?.from || ''}
-                onChange={handleFromChange}
-                onSelect={handleFromChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                ref={fromRef}
-                disabled={disabled}
-                className={`
-            block w-full text-sm h-8 rounded-lg pl-10 pr-8
-            placeholder-opacity-100 placeholder-gray-500
-            ${inputClassName || ''}
-            ${hasErrors || errorMessage
-                    ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                    : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-                  }
-          `}
-                placeholder={placeholderStart || dateFormat}
-                autoComplete={autoComplete}
-                required={required}
-              />
-
-              {Boolean(value?.from) && showClearFieldIcon && (
-                <button type="button" data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearFromValue}>
-                  <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative w-1/2 text-gray-600 DatePicker__To">
-              {showCalendarIcon && (
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                </div>
-              )}
-
-              <input
-                id="to"
-                name={model ? `${model}.to` : 'dateField'}
-                data-datepicker={true}
-                data-datepicker-autohide={true}
-                data-datepicker-buttons={true}
-                data-datepicker-autoselect-today={true}
-                type="text"
-                lang={locale}
-                defaultValue={value?.to || ''}
-                onChange={handleToChange}
-                onSelect={handleToChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                ref={toRef}
-                disabled={disabled}
-                className={`
-            block w-full text-sm h-8 rounded-lg pl-10 pr-8
-            placeholder-opacity-100 placeholder-gray-500
-            ${inputClassName || ''}
-            ${hasErrors || errorMessage
-                    ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                    : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-                  }
-          `}
-                placeholder={placeholderEnd || dateFormat}
-                autoComplete={autoComplete}
-                required={required}
-              />
-
-              {Boolean(value?.to) && showClearFieldIcon && (
-                <button type="button" data-testid="clear-field-button" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 " onClick={clearToValue}>
-                  <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
-                </button>
-              )}
-            </div>
-          </div>
-          {errorMessage && <InputError>{errorMessage}</InputError>}
-        </div>
-      </div>
-    );
+  const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (fromRef.current) {
+      fromRef.current.value = newValue;
+    }
+    debouncedOnFromToDateSelected(e);
   };
 
+  const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (toRef.current) {
+      toRef.current.value = newValue;
+    }
+    debouncedOnToDateSelected(e);
+  };
+
+  const debouncedOnBlur = debounce((e: React.FocusEvent<HTMLInputElement>) => {
+    onBlur(e);
+  }, 300);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedKeys = [
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Delete',
+      'Backspace',
+      'Tab',
+      '-',
+      '/',
+    ];
+    const isNumber = /^[0-9]$/.test(e.key);
+    const isAllowedKey = allowedKeys.includes(e.key);
+
+    if (!isNumber && !isAllowedKey) {
+      e.preventDefault();
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    debouncedOnBlur(e);
+  };
+
+  const clearFromValue = () => {
+    instance.current?.setDates({ clear: true }, value?.to);
+    handleFromChange({
+      target: {
+        value: '',
+      },
+    } as any);
+  };
+  const clearToValue = () => {
+    instance.current?.setDates(value?.from, { clear: true });
+    handleToChange({
+      target: {
+        value: '',
+      },
+    } as any);
+  };
+  return (
+    <div className="tw-content">
+      <div
+        id="tw-container"
+        className={`${className} tw-datepicker z-50 w-full inline-block p-0`}
+        data-test-id={id}
+      />
+      <div>
+        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+          {label}
+        </Label>
+
+        <div
+          ref={divRef}
+          id={id}
+          date-rangepicker="true"
+          datepicker-buttons="true"
+          datepicker-autoselect-today="true"
+          className="flex items-center gap-4"
+        >
+          <div className="relative w-1/2 text-gray-600 DatePicker__From">
+            {showCalendarIcon && (
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </div>
+            )}
+
+            <input
+              id="from"
+              name={model ? `${model}.from` : 'dateField'}
+              data-datepicker={true}
+              data-datepicker-autohide={true}
+              data-datepicker-buttons={true}
+              data-datepicker-autoselect-today={true}
+              type="text"
+              lang={locale}
+              defaultValue={value?.from || ''}
+              onChange={handleFromChange}
+              onSelect={handleFromChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              ref={fromRef}
+              disabled={disabled}
+              className={`
+            block w-full text-sm h-8 rounded-lg pl-10 pr-8
+            placeholder-opacity-100 placeholder-gray-500
+            ${inputClassName || ''}
+            ${
+              hasErrors || errorMessage
+                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+            }
+          `}
+              placeholder={placeholderStart || dateFormat}
+              autoComplete={autoComplete}
+              required={required}
+            />
+
+            {Boolean(value?.from) && showClearFieldIcon && (
+              <button
+                type="button"
+                data-testid="clear-field-button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 "
+                onClick={clearFromValue}
+              >
+                <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
+              </button>
+            )}
+          </div>
+
+          <div className="relative w-1/2 text-gray-600 DatePicker__To">
+            {showCalendarIcon && (
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </div>
+            )}
+
+            <input
+              id="to"
+              name={model ? `${model}.to` : 'dateField'}
+              data-datepicker={true}
+              data-datepicker-autohide={true}
+              data-datepicker-buttons={true}
+              data-datepicker-autoselect-today={true}
+              type="text"
+              lang={locale}
+              defaultValue={value?.to || ''}
+              onChange={handleToChange}
+              onSelect={handleToChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              ref={toRef}
+              disabled={disabled}
+              className={`
+            block w-full text-sm h-8 rounded-lg pl-10 pr-8
+            placeholder-opacity-100 placeholder-gray-500
+            ${inputClassName || ''}
+            ${
+              hasErrors || errorMessage
+                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+            }
+          `}
+              placeholder={placeholderEnd || dateFormat}
+              autoComplete={autoComplete}
+              required={required}
+            />
+
+            {Boolean(value?.to) && showClearFieldIcon && (
+              <button
+                type="button"
+                data-testid="clear-field-button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer z-10 "
+                onClick={clearToValue}
+              >
+                <XCircleIcon className="w-5 h-5 text-gray-200 dark:text-gray-400 hover:text-red-200" />
+              </button>
+            )}
+          </div>
+        </div>
+        {errorMessage && <InputError>{errorMessage}</InputError>}
+      </div>
+    </div>
+  );
+};
 
 export { DateRangePickerComponent };

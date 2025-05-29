@@ -1,8 +1,7 @@
-import moment, { Moment } from 'moment-timezone';
+import moment from 'moment-timezone';
 import type { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 import { ChangeEventHandler } from 'react';
 import { t } from 'app/I18N';
-
 
 export const removeOffset = (value: number, useTimezone: boolean) => {
   let datePickerValue = null;
@@ -54,7 +53,12 @@ const titleFormat = (locale: string) => {
   }
 };
 
-export const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string, dateFormat: string ) => {
+export const datePickerOptionsByLocale = (
+  language: string,
+  labelToday: string,
+  labelClear: string,
+  dateFormat: string
+) => {
   const localeData = moment.localeData(language);
   const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
   return {
@@ -81,8 +85,6 @@ export const validateLocale = (language: string) => {
     return 'en';
   }
 };
-
-
 
 export interface DatePickerProps extends FlowbiteDatepickerProps {
   dateFormat?: string;
@@ -111,7 +113,6 @@ export interface DatePickerProps extends FlowbiteDatepickerProps {
   required?: boolean;
 }
 
-
 export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
   language: string;
   dateFormat?: string;
@@ -134,3 +135,13 @@ export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
   showClearFieldIcon?: boolean;
   required?: boolean;
 }
+
+export const formatDate = (
+  value: moment.Moment | null,
+  dateFormat: string,
+  useTimezone: boolean
+) => {
+  if (!value) return '';
+  if (useTimezone) return value.clone().utc().format(dateFormat);
+  return value.clone().local().format(dateFormat);
+};

@@ -1,6 +1,6 @@
 import DropdownList from 'react-widgets/lib/DropdownList';
 import Select from './components/Select';
-import {DatePicker, DateRange} from 'V2/Components/Forms/DatePicker';
+import { DatePicker, DateRange } from 'V2/Components/Forms/DatePicker';
 import Captcha from './components/Captcha';
 import FormGroup from './components/FormGroup';
 import { MultiSelect, MultiSelectTristate } from './components/MultiSelect';

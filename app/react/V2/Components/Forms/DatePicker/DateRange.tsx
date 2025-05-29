@@ -1,10 +1,10 @@
 import React, { ReactNode, useState, useEffect } from 'react';
+import { useAtomValue } from 'jotai';
 import moment from 'moment-timezone';
-import { removeOffset, addOffset } from './dateUtils';
-import { LazyDateRangePicker } from './loadableDatePicker';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
-import { useAtomValue } from 'jotai';
+import { LazyDateRangePicker } from './loadableDatePicker';
+import { removeOffset, addOffset, formatDate } from './dateUtils';
 
 interface DateRangeProps {
   label?: ReactNode;
@@ -38,7 +38,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   labelClear = 'Clear',
   disabled = false,
   hasErrors = false,
-  onChange = () => { },
+  onChange = () => {},
   locale = 'en',
   format,
   useTimezone = false,
@@ -50,19 +50,18 @@ const DateRange: React.FC<DateRangeProps> = ({
   hideLabel,
   className,
   onBlur,
-  onClear,
   clearFieldAction,
   errorMessage,
   required = false,
 }) => {
-  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
+  const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
+    useAtomValue<ClientSettings>(settingsAtom);
   const dateFormat = (format || defaultDateFormat).toUpperCase();
 
   const [fromInputValue, setFromInputValue] = useState<moment.Moment | null>(null);
   const [toInputValue, setToInputValue] = useState<moment.Moment | null>(null);
 
   useEffect(() => {
-
     const fromValue = typeof value?.from === 'string' ? parseInt(value.from, 10) : value?.from;
     const toValue = typeof value?.to === 'string' ? parseInt(value.to, 10) : value?.to;
 
@@ -70,14 +69,18 @@ const DateRange: React.FC<DateRangeProps> = ({
     const toTimestampMs = removeOffset(toValue || 0, useTimezone);
 
     if (fromTimestampMs) {
-      const fromDisplayDate = !useTimezone ? moment(fromTimestampMs).local() : moment(fromTimestampMs).utc();
+      const fromDisplayDate = !useTimezone
+        ? moment(fromTimestampMs).local()
+        : moment(fromTimestampMs).utc();
       setFromInputValue(fromDisplayDate);
     } else {
       setFromInputValue(null);
     }
 
     if (toTimestampMs) {
-      const toDisplayDate = !useTimezone ? moment(toTimestampMs).local() : moment(toTimestampMs).utc();
+      const toDisplayDate = !useTimezone
+        ? moment(toTimestampMs).local()
+        : moment(toTimestampMs).utc();
       setToInputValue(toDisplayDate);
     } else {
       setToInputValue(null);
@@ -124,13 +127,12 @@ const DateRange: React.FC<DateRangeProps> = ({
     }
   };
 
-
-  const formattedFrom = fromInputValue && useTimezone ? fromInputValue.clone().utc().format(dateFormat) : fromInputValue ? fromInputValue.clone().local().format(dateFormat) : '';
-  const formattedTo = toInputValue && useTimezone ? toInputValue.clone().utc().format(dateFormat) : toInputValue ? toInputValue.clone().local().format(dateFormat) : '';
+  const formattedFrom = formatDate(fromInputValue, dateFormat, useTimezone);
+  const formattedTo = formatDate(toInputValue, dateFormat, useTimezone);
 
   return (
-    <div className="date-range">
-      <div className="date-range-from">
+    <div className="date-ra ge">
+      <div className="date-ra ge-from">
         <LazyDateRangePicker
           language={locale}
           dateFormat={dateFormat.toLowerCase()}
