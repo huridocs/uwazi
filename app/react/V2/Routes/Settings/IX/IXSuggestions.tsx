@@ -74,33 +74,8 @@ const IXSuggestions = () => {
     _id: string;
     activeFilters: number;
   };
-
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
-
-  useEffect(() => {
-    const template = templates.find(t => t._id === extractor.templates[0]);
-    const _property =
-      extractor.property === 'title'
-        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
-        : template?.properties.find(prop => prop.name === extractor.property);
-    setProperty(_property);
-  }, [templates, extractor]);
-
-  useMemo(() => {
-    if (property?.type === 'multiselect' || property?.type === 'relationship') {
-      const flatenedSuggestions = suggestions.map(suggestion =>
-        generateChildrenRows(suggestion as MultiValueSuggestion)
-      );
-      setCurrentSuggestions(flatenedSuggestions);
-      return;
-    }
-
-    setCurrentSuggestions(
-      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
-    );
-  }, [suggestions, property]);
-
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -116,6 +91,20 @@ const IXSuggestions = () => {
     message?: string;
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
+
+  useMemo(() => {
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
+      const flatenedSuggestions = suggestions.map(suggestion =>
+        generateChildrenRows(suggestion as MultiValueSuggestion)
+      );
+      setCurrentSuggestions(flatenedSuggestions);
+      return;
+    }
+
+    setCurrentSuggestions(
+      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
+    );
+  }, [suggestions, property]);
 
   useEffect(() => {
     socket.on(
@@ -179,6 +168,15 @@ const IXSuggestions = () => {
       ).catch(_e => {});
     }
   }, [sorting]);
+
+  useEffect(() => {
+    const template = templates.find(t => t._id === extractor.templates[0]);
+    const _property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
+        : template?.properties.find(prop => prop.name === extractor.property);
+    setProperty(_property);
+  }, [templates, extractor]);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
