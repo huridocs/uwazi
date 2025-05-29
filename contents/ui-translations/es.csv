@@ -76,6 +76,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
 An error occurred,Se ha producido un error
+An error occurred while updating suggestions,An error occurred while updating suggestions
 Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 Any entity or document,Cualquier entidad o documento
@@ -819,10 +820,11 @@ Submitting,Enviando
 Success,Exito
 "Success, Upload another?","Exito, cargar otro?"
 Suggestion,Sugerencia
-Suggestion accepted.,Suggestion accepted.
+Suggestion have been updated,Suggestion have been updated
 Suggestion:,Suggestion:
 Suggestions,Sugerencias
 suggestions,suggestions
+Suggestions sent,Suggestions sent
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.

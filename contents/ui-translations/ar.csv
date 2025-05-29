@@ -76,6 +76,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+An error occurred while updating suggestions,An error occurred while updating suggestions
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
@@ -820,10 +821,11 @@ Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
 Suggestion,Suggestion
-Suggestion accepted.,Suggestion accepted.
+Suggestion have been updated,Suggestion have been updated
 Suggestion:,Suggestion:
 Suggestions,اقتراحات
 suggestions,suggestions
+Suggestions sent,Suggestions sent
 Supporting files,ملفات الدعم
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
