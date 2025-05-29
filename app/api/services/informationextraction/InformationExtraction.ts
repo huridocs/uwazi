@@ -251,7 +251,7 @@ class InformationExtraction {
         language_iso: extractionKey.language,
         id: extractor._id.toString(),
         tenant: tenants.current().name,
-        source_text: entity.metadata?.[extractor.source.property]?.[0]?.value as string,
+        source_text: (entity.metadata?.[extractor.source.property]?.[0]?.value as string) || '',
       };
 
       if (type === 'labeled_data') {

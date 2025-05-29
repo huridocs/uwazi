@@ -3,13 +3,10 @@ import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
 
-export const baseQueryFragment = (extractorId: ObjectId, ignoreProcessing = true) => {
+export const baseQueryFragment = (extractorId: ObjectId) => {
   const query: FilterQuery<IXSuggestionType> = {
     extractorId,
   };
-  if (ignoreProcessing) {
-    query.status = { $ne: 'processing' };
-  }
   return query;
 };
 
