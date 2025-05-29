@@ -31,13 +31,9 @@ import {
   updateSuggestionsByEntity,
   generateChildrenRows,
   updateSuggestions,
+  formatAccepted,
 } from './components/helpers';
-import {
-  SuggestionValue,
-  TableSuggestion,
-  MultiValueSuggestion,
-  SingleValueSuggestion,
-} from './types';
+import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion } from './types';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -193,34 +189,14 @@ const IXSuggestions = () => {
   };
 
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
-    const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
-      let addedValues: SuggestionValue[] | undefined;
-      let removedValues: SuggestionValue[] | undefined;
-
-      if (acceptedSuggestion.isChild) {
-        addedValues = acceptedSuggestion.suggestedValue
-          ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
-          : undefined;
-        removedValues = acceptedSuggestion.currentValue
-          ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
-          : undefined;
-      }
-
-      return {
-        _id: acceptedSuggestion._id,
-        sharedId: acceptedSuggestion.sharedId,
-        entityId: acceptedSuggestion.entityId,
-        addedValues,
-        removedValues,
-      };
-    });
+    const preparedSuggestions = formatAccepted(acceptedSuggestions);
 
     try {
+      await suggestionsAPI.accept(preparedSuggestions);
       setCurrentSuggestions(prevSuggestions =>
         updateSuggestions(prevSuggestions, acceptedSuggestions)
       );
       setSelected([]);
-      await suggestionsAPI.accept(preparedSuggestions);
       setNotifications({
         type: 'info',
         text: <Translate>Suggestions sent</Translate>,

@@ -337,10 +337,34 @@ const getMetadataFromProperty = (
   return { value: '' };
 };
 
+const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
+  acceptedSuggestions.map(acceptedSuggestion => {
+    let addedValues: SuggestionValue[] | undefined;
+    let removedValues: SuggestionValue[] | undefined;
+
+    if (acceptedSuggestion.isChild) {
+      addedValues = acceptedSuggestion.suggestedValue
+        ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
+        : undefined;
+      removedValues = acceptedSuggestion.currentValue
+        ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
+        : undefined;
+    }
+
+    return {
+      _id: acceptedSuggestion._id,
+      sharedId: acceptedSuggestion.sharedId,
+      entityId: acceptedSuggestion.entityId,
+      addedValues,
+      removedValues,
+    };
+  });
+
 export {
   updateSuggestions,
   updateSuggestionsByEntity,
   generateChildrenRows,
   getAvailableSources,
   getMetadataFromProperty,
+  formatAccepted,
 };
