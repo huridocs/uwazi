@@ -10,7 +10,7 @@ const generateTableHeader =
     }
   ) =>
   () => (
-    <TableHeader className={options?.className}>
+    <TableHeader className={options?.className || ''}>
       {translationKey && <Translate>{translationKey}</Translate>}
     </TableHeader>
   );
