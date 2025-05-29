@@ -29,6 +29,8 @@ interface DateRangeProps {
   clearFieldAction?: any;
   errorMessage?: string;
   required?: boolean;
+  fromInputRef?: React.RefObject<HTMLInputElement>;
+  toInputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const DateRange: React.FC<DateRangeProps> = ({
@@ -53,6 +55,8 @@ const DateRange: React.FC<DateRangeProps> = ({
   clearFieldAction,
   errorMessage,
   required = false,
+  fromInputRef,
+  toInputRef,
 }) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
@@ -155,6 +159,8 @@ const DateRange: React.FC<DateRangeProps> = ({
           onBlur={onBlur}
           clearFieldAction={clearFieldAction}
           required={required}
+          fromInputRef={fromInputRef}
+          toInputRef={toInputRef}
         />
       </div>
     </div>

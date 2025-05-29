@@ -33,23 +33,26 @@ const DateRangePickerComponent = ({
   placeholderEnd = 'Fin',
   hasErrors = false,
   errorMessage,
-  onFromDateSelected = () => {},
-  onToDateSelected = () => {},
-  onBlur = () => {},
+  onFromDateSelected = () => { },
+  onToDateSelected = () => { },
+  onBlur = () => { },
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
+  fromInputRef: externalFromRef,
+  toInputRef: externalToRef,
 }: DateRangePickerProps) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
   const datePickerFormat = (dateFormat || defaultDateFormat).toLowerCase();
-
   const divRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-  const fromRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-  const toRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-
+  const internalFromRef = useRef<HTMLInputElement>(null);
+  const internalToRef = useRef<HTMLInputElement>(null);
   const instance = useRef<DateRangePicker | null>(null);
   const locale = validateLocale(language);
+
+  const fromInputRef = externalFromRef || internalFromRef;
+  const toInputRef = externalToRef || internalToRef;
 
   useEffect((): (() => void) => {
     Object.assign(Datepicker.locales, {
@@ -64,8 +67,8 @@ const DateRangePickerComponent = ({
         format: datePickerFormat,
       },
     });
-    const startEl = fromRef.current;
-    const endEl = toRef.current;
+    const startEl = fromInputRef?.current;
+    const endEl = toInputRef?.current;
     const options = {
       inputs: [startEl!, endEl!],
       container: '#tw-container',
@@ -104,16 +107,16 @@ const DateRangePickerComponent = ({
 
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    if (fromRef.current) {
-      fromRef.current.value = newValue;
+    if (fromInputRef?.current) {
+      fromInputRef.current.value = newValue;
     }
     debouncedOnFromToDateSelected(e);
   };
 
   const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    if (toRef.current) {
-      toRef.current.value = newValue;
+    if (toInputRef?.current) {
+      toInputRef.current.value = newValue;
     }
     debouncedOnToDateSelected(e);
   };
@@ -203,17 +206,16 @@ const DateRangePickerComponent = ({
               onSelect={handleFromChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              ref={fromRef}
+              ref={fromInputRef}
               disabled={disabled}
               className={`
             block w-full text-sm h-8 rounded-lg pl-10 pr-8
             placeholder-opacity-100 placeholder-gray-500
             ${inputClassName || ''}
-            ${
-              hasErrors || errorMessage
-                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-            }
+            ${hasErrors || errorMessage
+                  ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+                }
           `}
               placeholder={placeholderStart || dateFormat}
               autoComplete={autoComplete}
@@ -253,17 +255,16 @@ const DateRangePickerComponent = ({
               onSelect={handleToChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              ref={toRef}
+              ref={toInputRef}
               disabled={disabled}
               className={`
             block w-full text-sm h-8 rounded-lg pl-10 pr-8
             placeholder-opacity-100 placeholder-gray-500
             ${inputClassName || ''}
-            ${
-              hasErrors || errorMessage
-                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-            }
+            ${hasErrors || errorMessage
+                  ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+                }
           `}
               placeholder={placeholderEnd || dateFormat}
               autoComplete={autoComplete}

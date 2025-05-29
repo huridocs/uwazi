@@ -36,8 +36,8 @@ interface ActivityLogSearchParams {
 }
 
 const timeFilter = (from?: string, to?: string, dateFormat = 'YYYY-MM-DD') => {
-  const fromDate = from && moment(from, dateFormat).toDate().getTime();
-  const toDate = to && moment(to, dateFormat).toDate().getTime();
+  const fromDate = from && moment(from, dateFormat).valueOf();
+  const toDate = to && moment(to, dateFormat).valueOf();
   return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
 };
 

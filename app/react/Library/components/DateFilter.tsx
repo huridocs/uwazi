@@ -13,11 +13,11 @@ interface DateFilterProps {
   format?: string;
 }
 
-const DateFilter: React.FC<DateFilterProps> = ({ 
-  onChange = () => {}, 
-  model, 
-  label = '', 
-  format = '' 
+const DateFilter: React.FC<DateFilterProps> = ({
+  onChange = () => {},
+  model,
+  label = '',
+  format = '',
 }) => (
   <ul className="search__filter is-active">
     <li>
@@ -29,4 +29,4 @@ const DateFilter: React.FC<DateFilterProps> = ({
   </ul>
 );
 
-export default DateFilter; 
+export default DateFilter;

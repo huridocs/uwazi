@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
+import moment from 'moment';
 import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { ClientSettings } from 'app/apiResponseTypes';
@@ -35,7 +36,21 @@ const ActivityLog = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
-  const appliedFilters = getAppliedFilters(searchParams);
+
+  const appliedFilters = (() => {
+    const filters = getAppliedFilters(searchParams);
+    if (filters.dateRange) {
+      const { from, to } = filters.dateRange;
+      return {
+        ...filters,
+        dateRange: {
+          from: from ? moment(from, dateFormat).valueOf() : '',
+          to: to ? moment(to, dateFormat).valueOf() : '',
+        },
+      };
+    }
+    return filters;
+  })();
 
   const appliedFiltersCount = Object.keys(appliedFilters).filter(key =>
     ['method', 'username', 'search', 'dateRange'].includes(key)

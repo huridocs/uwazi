@@ -151,9 +151,11 @@ describe('Activity log', () => {
     applyFilters();
     cy.contains('button', 'Filters').click();
     cy.get('#from').type('2024-04-25', { delay: 0 });
-    cy.get('#to').clear();
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('#to').type('2024-05-09', { delay: 0 });
-    cy.get('#to').realPress('Tab');
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     applyFilters();
     cy.get('tr').should('have.length.at.most', 5);
   });
@@ -166,8 +168,12 @@ describe('Activity log', () => {
     cy.clearAndType('input[name=search]', 'Deleted entity', { delay: 0 });
     selectMethod(2);
     cy.get('#from').type('2024-05-28', { delay: 0 });
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('#to').click();
-    cy.get('.datepicker:not(.hidden) .datepicker-controls .today-btn').eq(1).click();
+    cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click();
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     applyFilters();
     cy.get('tr').should('have.length', 2);
     cy.contains('Deleted entity');
@@ -180,8 +186,12 @@ describe('Activity log', () => {
     cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     selectMethod(0);
     cy.get('#from').type('2024-05-28', { delay: 0 });
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     cy.get('#to').click();
-    cy.get('.datepicker:not(.hidden) .datepicker-controls .today-btn').eq(1).click();
+    cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click();
+    //eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(300);
     applyFilters();
     cy.get('tr').should('have.length', 3);
     cy.get('table > tbody > tr:nth-child(2) > td:nth-child(3)').contains('Created entity:');
