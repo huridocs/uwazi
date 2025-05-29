@@ -498,7 +498,7 @@ describe('suggestions', () => {
         },
         { page: { size: 50, number: 1 } }
       );
-      expect(suggestions.length).toBe(3);
+      expect(suggestions.length).toBe(4);
     });
 
     it('should return suggestion and extra entity information', async () => {
@@ -507,6 +507,28 @@ describe('suggestions', () => {
         { page: { size: 50, number: 1 } }
       );
       expect(suggestions).toMatchObject([
+        {
+          propertyName: 'super_powers',
+          suggestedValue: 'NOT_READY',
+          segment: 'Red Robin, a variation on the traditional Robin persona.',
+          language: 'en',
+          date: 2,
+          page: 3,
+          currentValue: 'scientific knowledge',
+          state: {
+            labeled: false,
+            withValue: true,
+            withSuggestion: true,
+            match: null,
+            hasContext: true,
+            obsolete: true,
+            processing: true,
+            error: false,
+          },
+          entityId: shared2enId,
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+        },
         {
           fileId: file2Id,
           propertyName: 'super_powers',
@@ -635,7 +657,9 @@ describe('suggestions', () => {
       });
 
       expect(
-        superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
+        superPowersSuggestions.find(
+          (s: EntitySuggestionType) => s.segment === 'he relies on his own scientific knowledge'
+        ).state
       ).toEqual({
         labeled: true,
         withValue: true,
@@ -695,17 +719,20 @@ describe('suggestions', () => {
         error: false,
       });
 
-      const { suggestions: ageSuggestions } = await getSuggestions({
-        extractorId: factory.id('age_extractor').toString(),
-      });
+      const { suggestions: ageSuggestions } = await getSuggestions(
+        {
+          extractorId: factory.id('age_extractor').toString(),
+        },
+        10
+      );
 
-      expect(ageSuggestions.length).toBe(5);
+      expect(ageSuggestions.length).toBe(6);
       expect(
         ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared5').state.obsolete
       ).toEqual(true);
 
       expect(
-        ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared3').state
+        ageSuggestions.find((s: EntitySuggestionType) => s.segment === 'Alfred 67 years old').state
       ).toEqual({
         labeled: false,
         withValue: true,
