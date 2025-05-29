@@ -39,7 +39,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   labelClear = 'Clear',
   disabled = false,
   hasErrors = false,
-  onChange = () => { },
+  onChange = () => {},
   locale = 'en',
   format,
   useTimezone = false,

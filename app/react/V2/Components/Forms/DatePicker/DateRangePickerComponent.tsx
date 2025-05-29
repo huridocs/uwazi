@@ -33,9 +33,9 @@ const DateRangePickerComponent = ({
   placeholderEnd = 'Fin',
   hasErrors = false,
   errorMessage,
-  onFromDateSelected = () => { },
-  onToDateSelected = () => { },
-  onBlur = () => { },
+  onFromDateSelected = () => {},
+  onToDateSelected = () => {},
+  onBlur = () => {},
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
@@ -212,10 +212,11 @@ const DateRangePickerComponent = ({
             block w-full text-sm h-8 rounded-lg pl-10 pr-8
             placeholder-opacity-100 placeholder-gray-500
             ${inputClassName || ''}
-            ${hasErrors || errorMessage
-                  ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-                }
+            ${
+              hasErrors || errorMessage
+                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+            }
           `}
               placeholder={placeholderStart || dateFormat}
               autoComplete={autoComplete}
@@ -261,10 +262,11 @@ const DateRangePickerComponent = ({
             block w-full text-sm h-8 rounded-lg pl-10 pr-8
             placeholder-opacity-100 placeholder-gray-500
             ${inputClassName || ''}
-            ${hasErrors || errorMessage
-                  ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-                }
+            ${
+              hasErrors || errorMessage
+                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+            }
           `}
               placeholder={placeholderEnd || dateFormat}
               autoComplete={autoComplete}
