@@ -203,7 +203,7 @@ export const suggestionsRoutes = (app: Application) => {
       res.status(202).json({ success: true });
 
       Suggestions.accept(suggestions)
-        .then(() => setTimeout(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'), 5000))
+        .then(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'))
         .catch(e => {
           const error = handleError(e);
           req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message);
