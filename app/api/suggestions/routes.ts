@@ -200,14 +200,14 @@ export const suggestionsRoutes = (app: Application) => {
     async (req, res, _next) => {
       const { suggestions } = req.body;
 
+      res.status(202).json({ success: true });
+
       Suggestions.accept(suggestions)
-        .then(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'))
+        .then(() => setTimeout(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'), 5000))
         .catch(e => {
           const error = handleError(e);
           req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message);
         });
-
-      res.status(202).json({ success: true });
     }
   );
 };
