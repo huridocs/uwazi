@@ -221,55 +221,76 @@ describe('Information Extraction: Extracting from text source', () => {
   });
 
   describe('given the model is trained when I request for suggestions', () => {
-    it('should send the materials for the suggestions', async () => {
-      const extractionKeyA1En = ExtractionKey.create({ entitySharedId: 'A1', language: 'en' });
-      const extractionKeyA1Other = ExtractionKey.create({
-        entitySharedId: 'A1',
-        language: 'other' as any,
+    it('should send materials to the Information extraction service', async () => {
+      const extractionKeyEn1 = ExtractionKey.create({
+        entitySharedId: 'extractor_target_select_source_text_entity_1',
+        language: 'en',
       });
-      const extractionKeyEntityWithoutLabelData = ExtractionKey.create({
-        entitySharedId: 'entity_without_label_data',
+      const extractionKeyEn2 = ExtractionKey.create({
+        entitySharedId: 'extractor_target_select_source_text_entity_2',
+        language: 'en',
+      });
+      const extractionKeyEn3 = ExtractionKey.create({
+        entitySharedId: 'extractor_target_select_source_text_entity_3',
+        language: 'en',
+      });
+      const extractionKeyEs3 = ExtractionKey.create({
+        entitySharedId: 'extractor_target_select_source_text_entity_3_es',
         language: 'es',
       });
 
-      const extractorId = factory.id('sourceTextExtractor1');
+      const extractorId = factory.id('extractor_target_select_source_text');
 
       await informationExtraction.getSuggestions(extractorId);
 
       const material1 = IXExternalService.materials.find(
-        m => m.entity_name === extractionKeyA1En.key
-      );
-      const material2 = IXExternalService.materials.find(
-        m => m.entity_name === extractionKeyA1Other.key
-      );
-      const material3 = IXExternalService.materials.find(
-        m => m.entity_name === extractionKeyEntityWithoutLabelData.key
+        m => m.entity_name === extractionKeyEn1.key
       );
 
-      expect(IXExternalService.materials.length).toBe(3);
+      const material2 = IXExternalService.materials.find(
+        m => m.entity_name === extractionKeyEn2.key
+      );
+
+      const material3 = IXExternalService.materials.find(
+        m => m.entity_name === extractionKeyEn3.key
+      );
+
+      const material3Es = IXExternalService.materials.find(
+        m => m.entity_name === extractionKeyEs3.key
+      );
+
+      expect(IXExternalService.materials.length).toBe(4);
 
       expect(material1).toEqual({
-        entity_name: extractionKeyA1En.key,
-        language_iso: extractionKeyA1En.language,
+        entity_name: extractionKeyEn1.key,
+        language_iso: extractionKeyEn1.language,
         id: extractorId.toString(),
         tenant: 'tenant1',
-        source_text: 'text 2',
+        source_text: 'any_source_text_1',
       });
 
       expect(material2).toEqual({
-        entity_name: extractionKeyA1Other.key,
-        language_iso: extractionKeyA1Other.language,
+        entity_name: extractionKeyEn2.key,
+        language_iso: extractionKeyEn2.language,
         id: extractorId.toString(),
         tenant: 'tenant1',
-        source_text: 'text 1',
+        source_text: '',
       });
 
       expect(material3).toEqual({
-        entity_name: extractionKeyEntityWithoutLabelData.key,
-        language_iso: extractionKeyEntityWithoutLabelData.language,
+        entity_name: extractionKeyEn3.key,
+        language_iso: extractionKeyEn3.language,
         id: extractorId.toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
+      });
+
+      expect(material3Es).toEqual({
+        entity_name: extractionKeyEs3.key,
+        language_iso: extractionKeyEs3.language,
+        id: extractorId.toString(),
+        tenant: 'tenant1',
+        source_text: '',
       });
     });
 
@@ -592,7 +613,7 @@ describe('Information Extraction: Extracting from text source', () => {
     it('should save suggestion for select target property', async () => {
       const extractorId = factory.id('extractor_target_select_source_text');
       const extractionKeyEn = ExtractionKey.create({
-        entitySharedId: 'extractor_target_select_source_text_entity',
+        entitySharedId: 'extractor_target_select_source_text_entity_1',
         language: 'en',
       });
 
@@ -625,8 +646,8 @@ describe('Information Extraction: Extracting from text source', () => {
         status: 'ready',
         error: '',
         state: {
-          labeled: true,
-          withValue: true,
+          labeled: false,
+          withValue: false,
           withSuggestion: true,
           hasContext: true,
           match: false,

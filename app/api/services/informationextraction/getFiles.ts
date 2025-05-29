@@ -210,34 +210,21 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
     { limit: SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE }
   );
 
-  const templates = suggestions.map(s => s.entityTemplate);
-  const sharedIdLanguagePairs = suggestions
-    .filter(s => s.entityId && s.language)
-    .map(s => ({ sharedId: s.entityId, language: s.language }));
-
-  if (!templates.length || !extractor.property || !extractor || !sharedIdLanguagePairs.length) {
+  if (!extractor.property || !extractor) {
     return [];
   }
 
-  const propertyType = await getPropertyType(templates, extractor.property);
+  const propertyType = await getPropertyType(extractor.templates, extractor.property);
 
   if (!propertyType) {
     return [];
   }
 
-  const orFilter = { $or: sharedIdLanguagePairs };
-
-  const baseQuery = entityForTrainingQuery(
-    templates,
-    extractor.property,
-    propertyType,
-    extractor.source.property
-  );
-
-  const finalQuery = { ...baseQuery, ...orFilter };
-
   const entities = await entitiesModel.getUnrestricted(
-    finalQuery,
+    {
+      sharedId: { $in: suggestions.map(s => s.entityId) },
+      language: { $in: suggestions.map(s => s.language) },
+    },
     `sharedId metadata.${extractor.property} metadata.${extractor.source.property} language`
   );
 
