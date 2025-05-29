@@ -54,7 +54,11 @@ const paragraphProperty = f.property('paragraphProperty', 'markdown');
 const paragraphNumberProperty = f.property('paragraphNumberProperty', 'numeric');
 const textProperty = f.property('textProperty', 'text');
 
-const targetTemplate = f.template('Target Template', [paragraphProperty, paragraphNumberProperty]);
+const targetTemplate = f.template('Target Template', [
+  paragraphProperty,
+  paragraphNumberProperty,
+  textProperty,
+]);
 
 const invalidTargetTemplate = f.template('Invalid Target');
 
@@ -96,7 +100,6 @@ const buildExtractorInput = (partialExtractor: Partial<Input> = {}): Input => ({
   paragraphPropertyId: paragraphProperty._id!.toString(),
   sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
   targetRelationshipTypeId: targetRelationshipType._id.toString(),
-  tenantName: 'test_tenant',
   ...partialExtractor,
 });
 
