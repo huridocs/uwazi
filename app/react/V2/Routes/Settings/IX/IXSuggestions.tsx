@@ -27,7 +27,11 @@ import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { SuggestionSidepanel } from './components/SuggestionSidepanel';
-import { updateSuggestionsByEntity, generateChildrenRows } from './components/helpers';
+import {
+  updateSuggestionsByEntity,
+  generateChildrenRows,
+  updateSuggestions,
+} from './components/helpers';
 import {
   SuggestionValue,
   TableSuggestion,
@@ -212,12 +216,17 @@ const IXSuggestions = () => {
     });
 
     try {
+      setCurrentSuggestions(prevSuggestions =>
+        updateSuggestions(prevSuggestions, acceptedSuggestions)
+      );
+      setSelected([]);
       await suggestionsAPI.accept(preparedSuggestions);
       setNotifications({
         type: 'info',
         text: <Translate>Suggestions sent</Translate>,
       });
     } catch (error) {
+      setCurrentSuggestions(suggestions);
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
