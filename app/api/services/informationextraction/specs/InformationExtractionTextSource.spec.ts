@@ -69,7 +69,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('sourceTextExtractor1').toString(),
         tenant: 'tenant1',
         source_text: 'text 1',
-        label_text: 1088985600,
+        label_text: '1088985600',
       });
 
       expect(IXExternalService.materials.find(m => m.source_text === 'text 2')).toEqual({

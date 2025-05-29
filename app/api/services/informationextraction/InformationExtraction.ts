@@ -278,7 +278,7 @@ class InformationExtraction {
             labelText = moment(Number(labelText) * 1000).format('YYYY-MM-DD');
           }
 
-          data.label_text = labelText;
+          data.label_text = String(labelText);
         }
       }
 
