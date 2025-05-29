@@ -27,6 +27,7 @@ import { Extractors } from './ixextractors';
 const BATCH_SIZE = 50;
 const SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE = 1000;
 const MAX_TRAINING_FILES_NUMBER = 2000;
+const MAX_TRAINING_ENTITIES_NUMBER = 2000;
 
 type PropertyValue = string | Array<{ value: string; label: string }>;
 
@@ -191,7 +192,8 @@ async function getEntitiesForTraining(
   const propertyType = await getPropertyType(templates, toProperty);
   const entities = await entitiesModel.getUnrestricted(
     entityForTrainingQuery(templates, toProperty, propertyType, fromProperty),
-    `sharedId metadata.${toProperty} metadata.${fromProperty} language`
+    `sharedId metadata.${toProperty} metadata.${fromProperty} language`,
+    { limit: MAX_TRAINING_ENTITIES_NUMBER }
   );
   return entities;
 }
