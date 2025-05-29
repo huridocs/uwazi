@@ -14,6 +14,7 @@ import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
+import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { registerEventListeners } from '../eventListeners';
 import { Suggestions } from '../suggestions';
 
@@ -48,6 +49,14 @@ const fixtures: DBFixture = {
       fixturesFactory.property('extracted_property_2_1', propertyTypes.text),
       fixturesFactory.property('extracted_property_2_2', propertyTypes.numeric),
     ]),
+    fixturesFactory.template('extractor_source_text_target_text_template', [
+      fixturesFactory.property('target_text', propertyTypes.text),
+      fixturesFactory.property('source_text', propertyTypes.text),
+    ]),
+    fixturesFactory.template('extractor_source_text_target_text_template_1', [
+      fixturesFactory.property('target_text', propertyTypes.text),
+      fixturesFactory.property('source_text', propertyTypes.text),
+    ]),
   ],
   entities: [
     fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
@@ -56,6 +65,14 @@ const fixtures: DBFixture = {
       notExtractedTemplateName,
       {},
       { sharedId: 'entity with template not in config' }
+    ),
+    fixturesFactory.entity(
+      'extractor_source_text_target_text_entity',
+      'extractor_source_text_target_text_template'
+    ),
+    fixturesFactory.entity(
+      'extractor_source_text_target_text_entity_1',
+      'extractor_source_text_target_text_template_1'
     ),
   ],
   files: [
@@ -70,7 +87,10 @@ const fixtures: DBFixture = {
   settings: [
     {
       _id: db.id(),
-      languages: [{ key: 'en', default: true, label: 'English' }],
+      languages: [
+        { key: 'en', default: true, label: 'English' },
+        { key: 'pt', label: 'Portuguese' },
+      ],
       features: {
         metadataExtraction: {
           url: 'service-url',
@@ -98,6 +118,21 @@ const fixtures: DBFixture = {
     fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
     fixturesFactory.ixExtractor('extractor7', 'multiselect_property', [extractedTemplateName]),
     fixturesFactory.ixExtractor('extractor8', 'relationship_property', [extractedTemplateName]),
+    fixturesFactory.ixExtractor(
+      'extractor_source_text_target_text',
+      'target_text',
+      ['extractor_source_text_target_text_template'],
+      { property: 'source_text' }
+    ),
+    fixturesFactory.ixExtractor('extractor_source_pdf_target_text', 'target_text', [
+      'extractor_source_text_target_text_template',
+    ]),
+    fixturesFactory.ixExtractor(
+      'extractor_source_pdf_target_text_1',
+      'target_text',
+      ['extractor_source_text_target_text_template_1'],
+      { property: 'source_text' }
+    ),
   ],
   ixsuggestions: [
     fixturesFactory.ixSuggestion_deprecated(
@@ -531,6 +566,27 @@ describe(`On ${FileCreatedEvent.name}`, () => {
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
+  it('should only create suggestions if Extractors extracts from pdf', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+    const fileInfo = fixturesFactory.fileDeprecated(
+      'new file',
+      'extractor_source_text_target_text_entity_1',
+      'document',
+      'new_file.pdf'
+    );
+
+    await applicationEventsBus.emit(
+      new FileCreatedEvent({
+        newFile: fileInfo,
+      })
+    );
+
+    expect(saveSpy).not.toHaveBeenCalled();
+
+    saveSpy.mockRestore();
+  });
+
   it('should create blank suggestions, if the new file is an entity document', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
@@ -648,6 +704,57 @@ describe(`On ${FileCreatedEvent.name}`, () => {
     );
 
     expect(saveSpy).not.toHaveBeenCalled();
+
+    saveSpy.mockRestore();
+  });
+});
+
+describe('On EntityCreatedEvent', () => {
+  it('should only create suggestions if Extractors extracts from text', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+    await applicationEventsBus.emit(
+      new EntityCreatedEvent({
+        targetLanguageKey: 'en',
+        entities: [
+          {
+            sharedId: 'any_shared_id_1',
+            template: fixturesFactory.id('extractor_source_text_target_text_template'),
+          },
+          {
+            sharedId: 'any_shared_id_1',
+            template: fixturesFactory.id('extractor_source_text_target_text_template'),
+          },
+        ],
+      })
+    );
+
+    expect(saveSpy.mock.calls[0][0]).toEqual([
+      {
+        language: 'en',
+        entityId: 'any_shared_id_1',
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
+        extractorId: fixturesFactory.id('extractor_source_text_target_text'),
+        propertyName: 'target_text',
+        status: 'ready',
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: expect.any(Number),
+      },
+      {
+        language: 'pt',
+        entityId: 'any_shared_id_1',
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
+        extractorId: fixturesFactory.id('extractor_source_text_target_text'),
+        propertyName: 'target_text',
+        status: 'ready',
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: expect.any(Number),
+      },
+    ]);
 
     saveSpy.mockRestore();
   });
@@ -876,10 +983,18 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
 
     const extractors = await testingDB.mongodb
       ?.collection('ixextractors')
-      .find({ templates: { $not: { $size: 0 } } })
+      .find({
+        templates: {
+          $in: [
+            fixturesFactory.id(otherExtractedTemplateName),
+            fixturesFactory.id(extractedTemplateName),
+            fixturesFactory.id('some_other_template'),
+          ],
+        },
+      })
       .toArray();
 
-    expect(extractors).toEqual([
+    expect(extractors).toMatchObject([
       fixturesFactory.ixExtractor('title_extractor', 'title', [
         extractedTemplateName,
         otherExtractedTemplateName,
@@ -963,10 +1078,18 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
 
     const extractors = await testingDB.mongodb
       ?.collection('ixextractors')
-      .find({ templates: { $not: { $size: 0 } } })
+      .find({
+        templates: {
+          $in: [
+            fixturesFactory.id(otherExtractedTemplateName),
+            fixturesFactory.id(extractedTemplateName),
+            fixturesFactory.id('some_other_template'),
+          ],
+        },
+      })
       .toArray();
 
-    expect(extractors).toEqual([
+    expect(extractors).toMatchObject([
       fixturesFactory.ixExtractor('title_extractor', 'title', [
         extractedTemplateName,
         otherExtractedTemplateName,
@@ -1066,7 +1189,14 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
 
     const extractors = await testingDB.mongodb
       ?.collection('ixextractors')
-      .find({ templates: { $not: { $size: 0 } } })
+      .find({
+        templates: {
+          $in: [
+            fixturesFactory.id(otherExtractedTemplateName),
+            fixturesFactory.id('some_other_template'),
+          ],
+        },
+      })
       .toArray();
 
     expect(extractors).toEqual([

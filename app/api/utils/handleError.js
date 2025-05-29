@@ -8,6 +8,7 @@ import { FileNotFound } from 'api/files/FileNotFound';
 import { S3Error } from 'api/files/S3Storage';
 import { legacyLogger } from 'api/log';
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
+import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
 import { appContext } from 'api/utils/AppContext';
 import { createError } from 'api/utils/index';
 import util from 'node:util';
@@ -76,7 +77,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
   }
 
-  if (error instanceof PXValidationError) {
+  if (error instanceof PXValidationError || error instanceof IXValidationError) {
     result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
   }
 

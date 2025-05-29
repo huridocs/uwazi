@@ -1,7 +1,10 @@
+/* eslint-disable camelcase */
+/* eslint-disable max-classes-per-file */
+/* eslint-disable max-lines */
 import Ajv from 'ajv';
 
 import date from 'api/utils/date';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import {
   CommonSuggestion,
@@ -17,7 +20,9 @@ import { syncWrapValidator } from 'shared/tsUtils';
 import { InternalIXResultsMessage } from './InformationExtraction';
 import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';
 
-type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
+type RawSuggestion = {
+  entity_name?: string;
+} & (TextSelectionSuggestion | ValuesSelectionSuggestion);
 
 class RawSuggestionValidationError extends Error {
   constructor(message: string) {
@@ -225,7 +230,102 @@ const readMessageSuccess = (message: InternalIXResultsMessage) =>
         error: message.error_message ? message.error_message : 'Unknown error',
       };
 
-const formatSuggestion = async (
+class SuggestionTextSourceFormatter {
+  private static title({ text, segment_text }: RawSuggestion) {
+    return {
+      suggestedValue: text,
+      segment: segment_text,
+    };
+  }
+
+  private static text({ text, segment_text }: RawSuggestion) {
+    return {
+      suggestedValue: text,
+      segment: segment_text,
+    };
+  }
+
+  private static numeric({ text, segment_text }: RawSuggestion) {
+    return {
+      suggestedValue: Number(text),
+      segment: segment_text,
+    };
+  }
+
+  private static date({ text, segment_text }: RawSuggestion, language: LanguageISO6391) {
+    const suggestedValue = date.dateToSeconds(text, language);
+
+    return {
+      suggestedValue,
+      segment: segment_text,
+      suggestedText: text,
+    };
+  }
+
+  private static select({ segment_text, values }: RawSuggestion) {
+    const suggestedValue = (values as any[])?.[0]?.id || '';
+
+    return {
+      suggestedValue,
+      segment: segment_text,
+    };
+  }
+
+  private static multiselect({ segment_text, values }: RawSuggestion) {
+    const suggestedValue = (values as any[]).map(value => value.id);
+
+    return {
+      suggestedValue,
+      segment: segment_text,
+    };
+  }
+
+  private static relationship({ segment_text, values }: RawSuggestion) {
+    const suggestedValue = (values as any[]).map(value => value.id);
+
+    return {
+      suggestedValue,
+      segment: segment_text,
+    };
+  }
+
+  static format(
+    targetProperty: PropertySchema,
+    rawSuggestion: RawSuggestion,
+    language: LanguageISO6391
+  ) {
+    const type = checkTypeIsAllowed(targetProperty?.type || '');
+
+    switch (type) {
+      case 'date':
+        return SuggestionTextSourceFormatter.date(rawSuggestion, language);
+
+      case 'multiselect':
+        return SuggestionTextSourceFormatter.multiselect(rawSuggestion);
+
+      case 'select':
+        return SuggestionTextSourceFormatter.select(rawSuggestion);
+
+      case 'numeric':
+        return SuggestionTextSourceFormatter.numeric(rawSuggestion);
+
+      case 'relationship':
+        return SuggestionTextSourceFormatter.relationship(rawSuggestion);
+
+      case 'text':
+        return SuggestionTextSourceFormatter.text(rawSuggestion);
+
+      case 'title':
+        return SuggestionTextSourceFormatter.title(rawSuggestion);
+
+      default: {
+        throw new Error(`Unsupported property type for format suggestion: ${type}`);
+      }
+    }
+  }
+}
+
+const formatSuggestionPdfSource = (
   property: PropertyOrTitle,
   rawSuggestion: RawSuggestion,
   currentSuggestion: IXSuggestionType,
@@ -244,5 +344,29 @@ const formatSuggestion = async (
   return suggestion;
 };
 
-export { formatSuggestion };
+const formatSuggestionTextSource = (
+  targetProperty: PropertySchema,
+  rawSuggestion: RawSuggestion,
+  currentSuggestion: IXSuggestionType,
+  message: InternalIXResultsMessage
+): IXSuggestionType => ({
+  ...currentSuggestion,
+  ...SuggestionTextSourceFormatter.format(
+    targetProperty,
+    rawSuggestion,
+    currentSuggestion.language! as LanguageISO6391
+  ),
+  ...readMessageSuccess(message),
+  status: 'ready' as 'ready',
+  error: '',
+  date: new Date().getTime(),
+});
+
+const formatSuggestionFacade = {
+  formatSuggestionPdfSource,
+  formatSuggestionTextSource,
+};
+
+export { formatSuggestionFacade };
+
 export type { CommonSuggestion, TextSelectionSuggestion, ValuesSelectionSuggestion, RawSuggestion };

@@ -72,6 +72,25 @@ describe('suggestions routes', () => {
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
         {
+          propertyName: 'super_powers',
+          suggestedValue: 'NOT_READY',
+          segment: 'Red Robin, a variation on the traditional Robin persona.',
+          language: 'en',
+          date: 2,
+          page: 3,
+          error: '',
+          state: {
+            labeled: false,
+            withValue: true,
+            withSuggestion: true,
+            match: null,
+            hasContext: true,
+            obsolete: true,
+            processing: true,
+            error: false,
+          },
+        },
+        {
           entityId: shared2enId.toString(),
           sharedId: 'shared2',
           entityTitle: 'Batman en',
@@ -135,7 +154,7 @@ describe('suggestions routes', () => {
       expect(response.body.totalPages).toBe(1);
     });
 
-    it('should include failed suggestions but not processing ones', async () => {
+    it('should include failed suggestions', async () => {
       const response = await request(app)
         .get('/api/suggestions')
         .query({
@@ -157,10 +176,6 @@ describe('suggestions routes', () => {
         },
         suggestedValue: null,
       });
-      const alfred = response.body.suggestions.find(
-        (suggestion: any) => suggestion.segment === 'Alfred 67 years old processing'
-      );
-      expect(alfred).toBeUndefined();
     });
 
     describe('pagination', () => {
@@ -256,6 +271,12 @@ describe('suggestions routes', () => {
         });
 
         expect(response.body.suggestions[2]).toMatchObject({
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+          language: 'en',
+        });
+
+        expect(response.body.suggestions[3]).toMatchObject({
           sharedId: 'shared3',
           entityTitle: 'Alfred',
           language: 'en',
