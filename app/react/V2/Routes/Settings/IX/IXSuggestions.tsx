@@ -27,11 +27,7 @@ import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { SuggestionSidepanel } from './components/SuggestionSidepanel';
-import {
-  updateSuggestions,
-  updateSuggestionsByEntity,
-  generateChildrenRows,
-} from './components/helpers';
+import { updateSuggestionsByEntity, generateChildrenRows } from './components/helpers';
 import {
   SuggestionValue,
   TableSuggestion,
@@ -135,10 +131,28 @@ const IXSuggestions = () => {
       }
     );
 
+    socket.on('ACCEPT_SUGGESTION_SUCCESS', async () => {
+      await revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Suggestion have been updated</Translate>,
+      });
+    });
+
+    socket.on('ACCEPT_SUGGESTION_ERROR', (message: string) => {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred while updating suggestions</Translate>,
+        details: message,
+      });
+    });
+
     return () => {
       socket.off('ix_model_status');
+      socket.off('ACCEPT_SUGGESTION_SUCCESS');
+      socket.off('ACCEPT_SUGGESTION_ERROR');
     };
-  }, [extractor._id, revalidate]);
+  }, [extractor._id, revalidate, setNotifications]);
 
   useEffect(() => {
     setAggregations(aggregation);
@@ -169,46 +183,39 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const fetchAgregations = async () => {
-    const newAggregations = await suggestionsAPI.aggregation(extractor._id!);
-    setAggregations(newAggregations);
-  };
-
   const onEntitySave = async (updatedEntity: ClientEntitySchema) => {
     setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity, property));
-    await fetchAgregations();
+    await revalidate();
   };
 
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
+    const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
+      let addedValues: SuggestionValue[] | undefined;
+      let removedValues: SuggestionValue[] | undefined;
+
+      if (acceptedSuggestion.isChild) {
+        addedValues = acceptedSuggestion.suggestedValue
+          ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
+          : undefined;
+        removedValues = acceptedSuggestion.currentValue
+          ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
+          : undefined;
+      }
+
+      return {
+        _id: acceptedSuggestion._id,
+        sharedId: acceptedSuggestion.sharedId,
+        entityId: acceptedSuggestion.entityId,
+        addedValues,
+        removedValues,
+      };
+    });
+
     try {
-      const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
-        let addedValues: SuggestionValue[] | undefined;
-        let removedValues: SuggestionValue[] | undefined;
-
-        if (acceptedSuggestion.isChild) {
-          addedValues = acceptedSuggestion.suggestedValue
-            ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
-            : undefined;
-          removedValues = acceptedSuggestion.currentValue
-            ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
-            : undefined;
-        }
-
-        return {
-          _id: acceptedSuggestion._id,
-          sharedId: acceptedSuggestion.sharedId,
-          entityId: acceptedSuggestion.entityId,
-          addedValues,
-          removedValues,
-        };
-      });
-
       await suggestionsAPI.accept(preparedSuggestions);
-      await fetchAgregations();
-      setCurrentSuggestions(current => updateSuggestions(current, acceptedSuggestions));
       setNotifications({
-        type: 'success',
-        text: <Translate>Suggestion accepted.</Translate>,
+        type: 'info',
+        text: <Translate>Suggestions sent</Translate>,
       });
     } catch (error) {
       setNotifications({
