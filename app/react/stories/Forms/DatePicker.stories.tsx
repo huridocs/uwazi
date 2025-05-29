@@ -10,7 +10,6 @@ const meta: Meta<typeof DatePicker> = {
   args: {
     onChange: fn(),
     onBlur: fn(),
-    clearFieldAction: fn(),
   },
   parameters: {
     actions: {
@@ -39,7 +38,6 @@ const Primary: Story = {
       hasErrors={args.hasErrors}
       onChange={args.onChange}
       onBlur={args.onBlur}
-      clearFieldAction={args.clearFieldAction}
       errorMessage={args.errorMessage}
       required={args.required}
     />
@@ -63,7 +61,6 @@ const Basic: Story = {
     hasErrors: false,
     onChange: action('changed'),
     onBlur: action('blurred'),
-    clearFieldAction: action('cleared'),
     required: false,
   },
 };

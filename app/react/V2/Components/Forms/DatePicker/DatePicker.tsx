@@ -22,13 +22,14 @@ interface DatePickerProps {
   hideLabel?: boolean;
   className?: string;
   onBlur?: any;
-  clearFieldAction?: any;
   disabled?: boolean;
   hasErrors?: boolean;
   errorMessage?: string;
   showCalendarIcon?: boolean;
   showClearFieldIcon?: boolean;
   required?: boolean;
+  autoComplete?: 'on' | 'off';
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -47,13 +48,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
   hideLabel,
   className,
   onBlur,
-  clearFieldAction,
   disabled = false,
   hasErrors = false,
   errorMessage = '',
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
+  inputRef,
+  autoComplete = 'off',
 }) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
@@ -110,7 +112,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
         name={model || name}
         hideLabel={hideLabel}
         className={className}
-        clearFieldAction={clearFieldAction}
         disabled={disabled}
         hasErrors={hasErrors}
         errorMessage={errorMessage}
@@ -119,6 +120,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
         showCalendarIcon={showCalendarIcon}
         showClearFieldIcon={showClearFieldIcon}
         required={required}
+        inputRef={inputRef}
+        autoComplete={autoComplete}
       />
     </div>
   );

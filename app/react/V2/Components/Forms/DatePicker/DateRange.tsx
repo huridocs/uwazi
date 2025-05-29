@@ -26,7 +26,6 @@ interface DateRangeProps {
   className?: string;
   onBlur?: any;
   onClear?: any;
-  clearFieldAction?: any;
   errorMessage?: string;
   required?: boolean;
   fromInputRef?: React.RefObject<HTMLInputElement>;
@@ -40,7 +39,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   labelClear = 'Clear',
   disabled = false,
   hasErrors = false,
-  onChange = () => {},
+  onChange = () => { },
   locale = 'en',
   format,
   useTimezone = false,
@@ -52,7 +51,6 @@ const DateRange: React.FC<DateRangeProps> = ({
   hideLabel,
   className,
   onBlur,
-  clearFieldAction,
   errorMessage,
   required = false,
   fromInputRef,
@@ -157,7 +155,6 @@ const DateRange: React.FC<DateRangeProps> = ({
           onFromDateSelected={handleFromChange}
           onToDateSelected={handleToChange}
           onBlur={onBlur}
-          clearFieldAction={clearFieldAction}
           required={required}
           fromInputRef={fromInputRef}
           toInputRef={toInputRef}

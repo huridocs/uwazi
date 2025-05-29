@@ -9,7 +9,6 @@ declare module 'flowbite-datepicker/Datepicker' {
     todayBtn?: boolean;
     clearBtn?: boolean;
     autohide?: boolean;
-    clearFieldAction?: () => void;
     format?: string;
   }
 

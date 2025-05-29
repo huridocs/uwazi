@@ -39,7 +39,6 @@ const Basic: Story = {
       hasErrors={args.hasErrors}
       onChange={args.onChange}
       onBlur={args.onBlur}
-      clearFieldAction={args.clearFieldAction}
       errorMessage={args.errorMessage}
       endOfDay={args.endOfDay}
     />
@@ -60,7 +59,6 @@ const Basic: Story = {
     hasErrors: false,
     onChange: action('changed'),
     onBlur: action('blurred'),
-    clearFieldAction: action('cleared'),
   },
 };
 

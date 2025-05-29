@@ -143,7 +143,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <InputField
                 id="search"
@@ -156,7 +156,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <Controller
                 control={control}

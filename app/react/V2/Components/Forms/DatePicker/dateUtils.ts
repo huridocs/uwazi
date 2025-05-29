@@ -1,6 +1,4 @@
 import moment from 'moment-timezone';
-import type { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
-import { ChangeEventHandler } from 'react';
 import { t } from 'app/I18N';
 
 export const removeOffset = (value: number, useTimezone: boolean) => {
@@ -86,31 +84,32 @@ export const validateLocale = (language: string) => {
   }
 };
 
-export interface DatePickerProps extends FlowbiteDatepickerProps {
+export interface DatePickerProps {
+  id?: string;
+  model?: string;
+  name?: string;
+  value?: string | number;
+  autoComplete?: 'on' | 'off';
+  language?: string;
   dateFormat?: string;
-  language: string;
+  hideLabel?: boolean;
+  inputClassName?: string;
+  className?: string;
   labelToday?: string;
   labelClear?: string;
-  id?: string;
-  label?: string | React.ReactNode;
+  label?: React.ReactNode;
   disabled?: boolean;
-  hideLabel?: boolean;
   placeholder?: string;
   hasErrors?: boolean;
-  errorMessage?: string | React.ReactNode;
-  value?: string | number;
-  inputClassName?: string;
-  autoComplete?: 'on' | 'off';
-  name?: string;
-  clearFieldAction?: () => any;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: ChangeEventHandler<HTMLInputElement>;
-  className?: string;
+  errorMessage?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   useTimezone?: boolean;
   endOfDay?: boolean;
   showCalendarIcon?: boolean;
   showClearFieldIcon?: boolean;
   required?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
@@ -147,3 +146,39 @@ export const formatDate = (
   if (useTimezone) return value.clone().utc().format(dateFormat);
   return value.clone().local().format(dateFormat);
 };
+
+export const ALLOWED_KEYS = [
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowUp',
+  'ArrowDown',
+  'Delete',
+  'Backspace',
+  'Tab',
+  '-',
+  '/',
+];
+
+export const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const isNumber = /^[0-9]$/.test(e.key);
+  const isAllowedKey = ALLOWED_KEYS.includes(e.key);
+
+  if (!isNumber && !isAllowedKey) {
+    e.preventDefault();
+  }
+};
+
+export const getInputClassName = (
+  inputClassName: string,
+  hasErrors: boolean,
+  errorMessage?: string
+) => `
+  block w-full text-sm h-8 rounded-lg pl-10 pr-8
+  placeholder-opacity-100 placeholder-gray-500
+  ${inputClassName || ''}
+  ${
+    hasErrors || errorMessage
+      ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
+      : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+  }
+`;
