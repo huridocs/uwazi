@@ -139,7 +139,6 @@ const Templates = () => {
         open={showDeleteModal}
         onAccept={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        deleting={deleting}
         templates={templates.filter(t => selected.includes(t._id))}
       />
     </div>
