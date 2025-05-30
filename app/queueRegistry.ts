@@ -11,6 +11,7 @@ import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infras
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 
@@ -75,27 +76,16 @@ export function registerJobs(
   });
 
   register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
-    const connection = getConnection();
-    const transactionManager = DefaultTransactionManager();
-    const settingsDS = DefaultSettingsDataSource(transactionManager);
-    const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
-      connection,
-      transactionManager,
-    });
-    const pxEntitiesStatusDS = new MongoPXEntitiesStatusDataSource(
-      connection,
-      transactionManager,
-      settingsDS,
-      extractorsQueryService
-    );
+    const batchSize = 50;
+    const useCase = PXCreateEntityStatusesFactory.createDefault(batchSize);
     const dispatcher = await DefaultDispatcher(namespace, { lockWindow: 1000 * 60 });
 
-    return new CreateParagraphExtractionEntityStatusesJob({
-      db: connection,
-      settingsDS,
-      extractorsQueryService,
-      pxEntitiesStatusDS,
-      dispatcher,
-    });
+    return new CreateParagraphExtractionEntityStatusesJob(
+      {
+        createEntityStatusesUseCase: useCase,
+        dispatcher,
+      },
+      batchSize
+    );
   });
 }
