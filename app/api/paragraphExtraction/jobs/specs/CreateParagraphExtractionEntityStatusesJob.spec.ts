@@ -1,110 +1,42 @@
 /* eslint-disable max-statements */
-import { Db, WithId } from 'mongodb';
+import { WithId } from 'mongodb';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import {
   CreateParagraphExtractionEntityStatusesJob,
   CreateParagraphExtractionEntityStatusesJobParams,
 } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { DBFixture } from 'api/utils/testing_db';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { TemplateSchema } from 'shared/types/templateType';
-
-const f = getFixturesFactory();
+import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
+import { f, createBaseFixtures, sourceTemplate, targetTemplate, extractorId } from './fixtures';
 
 const TEST_SPECIFIC_BATCH_SIZE = 2;
 
-const sourceTemplate = f.template('Source Template', [f.property('text', 'text')]);
-const targetTemplate = f.template('Target Template', [
-  f.property('paragraphProperty', 'markdown'),
-  f.property('paragraphNumberProperty', 'numeric'),
-]);
-
-const sourceRelationshipType = {
-  _id: f.id('sourceRelationshipType'),
-  name: 'Source Relationship Type',
-  properties: [],
-};
-
-const targetRelationshipType = {
-  _id: f.id('targetRelationshipType'),
-  name: 'Target Relationship Type',
-  properties: [],
-};
-
-const nonRelevantRelationshipType = {
-  _id: f.id('nonRelevantRelationshipType'),
-  name: 'Other Relationship Type',
-  properties: [],
-};
-
-const extractorId = f.id('extractor1');
-const extractor1 = {
-  _id: extractorId,
-  sourceTemplateId: sourceTemplate._id,
-  targetTemplateId: targetTemplate._id,
-  paragraphPropertyId: targetTemplate.properties![0]._id,
-  paragraphNumberPropertyId: targetTemplate.properties![1]._id,
-  sourceRelationshipTypeId: sourceRelationshipType._id,
-  targetRelationshipTypeId: targetRelationshipType._id,
-};
-
-const createBaseFixtures = (): DBFixture => ({
-  templates: [sourceTemplate, targetTemplate],
-  relationtypes: [sourceRelationshipType, targetRelationshipType, nonRelevantRelationshipType],
-  settings: [
-    {
-      languages: [
-        { key: 'en', label: 'English', default: true },
-        { key: 'es', label: 'Spanish' },
-        { key: 'pt', label: 'Portuguese' },
-      ],
-    },
-  ],
-  px_extractors: [extractor1],
-  entities: [],
-  files: [],
-  connections: [],
-});
-
-const setUpJob = (db: Db, mockDispatcher: JobsDispatcher, batchSize?: number) => {
+const setUpJob = (mockDispatcher: JobsDispatcher) => {
   const connection = getConnection();
   const transactionManager = DefaultTransactionManager();
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
-  const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
+
+  const createEntityStatusesUseCase = PXCreateEntityStatusesFactory.createDefault({
     connection,
     transactionManager,
+    batchSize: TEST_SPECIFIC_BATCH_SIZE,
   });
-  const pxEntitiesStatusDS = new MongoPXEntitiesStatusDataSource(
-    db,
-    transactionManager,
-    settingsDS,
-    extractorsQueryService
-  );
 
   return new CreateParagraphExtractionEntityStatusesJob(
     {
-      db,
-      settingsDS,
-      extractorsQueryService,
-      pxEntitiesStatusDS,
+      createEntityStatusesUseCase,
       dispatcher: mockDispatcher,
     },
-    batchSize
+    TEST_SPECIFIC_BATCH_SIZE
   );
 };
 
@@ -112,12 +44,10 @@ const setUpJob = (db: Db, mockDispatcher: JobsDispatcher, batchSize?: number) =>
 const mockHeartbeat = async () => Promise.resolve();
 
 describe('CreateParagraphExtractionEntityStatusesJob', () => {
-  let db: Db;
   let mockDispatcher: jest.Mocked<JobsDispatcher>;
 
   beforeEach(async () => {
     await testingEnvironment.setUp(createBaseFixtures());
-    db = getConnection();
     mockDispatcher = {
       dispatch: jest.fn().mockResolvedValue(undefined),
     };
@@ -201,7 +131,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
   it('should throw NonRetryableJobError if no languages are installed', async () => {
     await testingEnvironment.setFixtures({ settings: [{ languages: [] }] });
-    const job = setUpJob(db, mockDispatcher);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
@@ -213,7 +143,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     await testingEnvironment.setFixtures({
       settings: [{ languages: [{ key: 'en', label: 'English' }] }],
     });
-    const job = setUpJob(db, mockDispatcher);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
@@ -232,7 +162,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
     const enEntities = entities.filter(e => e.language === 'en');
 
-    const job = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
@@ -273,7 +203,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
     const enEntities = entities.filter(e => e.language === 'en');
 
-    const job = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
@@ -291,7 +221,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     // Clear mock for the second call check
     mockDispatcher.dispatch.mockClear();
     // Create new job instance to simulate a fresh run from the queue, it will pick up where left
-    const job2 = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
+    const job2 = setUpJob(mockDispatcher);
     await job2.handleDispatch(mockHeartbeat, params);
 
     statuses = (await testingEnvironment.db.getAllFrom(
@@ -327,7 +257,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
     const enEntities = entities.filter(e => e.language === 'en');
 
-    const job = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
@@ -357,7 +287,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
     // Simulate the re-dispatched job
     mockDispatcher.dispatch.mockClear();
-    const job2 = setUpJob(db, mockDispatcher, TEST_SPECIFIC_BATCH_SIZE);
+    const job2 = setUpJob(mockDispatcher);
     await job2.handleDispatch(mockHeartbeat, params);
 
     // No new entities should have been processed, so no further dispatch
@@ -374,7 +304,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
 
     const enEntities = entities.filter(e => e.language === 'en');
 
-    const job = setUpJob(db, mockDispatcher);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
@@ -397,7 +327,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
       templates: [otherSourceTemplate as TemplateSchema],
     });
 
-    const job = setUpJob(db, mockDispatcher);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: otherSourceTemplate._id.toString(), // Use a template with no entities
@@ -432,7 +362,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
       ],
     });
 
-    const job = setUpJob(db, mockDispatcher);
+    const job = setUpJob(mockDispatcher);
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),

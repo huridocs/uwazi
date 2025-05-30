@@ -77,7 +77,7 @@ export function registerJobs(
 
   register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
     const batchSize = 50;
-    const useCase = PXCreateEntityStatusesFactory.createDefault(batchSize);
+    const useCase = PXCreateEntityStatusesFactory.createDefault({ batchSize });
     const dispatcher = await DefaultDispatcher(namespace, { lockWindow: 1000 * 60 });
 
     return new CreateParagraphExtractionEntityStatusesJob(

@@ -7,11 +7,7 @@ import {
   JobsDispatcher,
   DispatchableClass,
 } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import {
-  PXCreateEntityStatusesInput,
-  PXCreateEntityStatusesOutput,
-} from '../application/PXCreateEntityStatuses';
+import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses';
 
 interface SpecificJobParams {
   extractorId: string;
@@ -19,7 +15,7 @@ interface SpecificJobParams {
 }
 
 interface Dependencies {
-  createEntityStatusesUseCase: UseCase<PXCreateEntityStatusesInput, PXCreateEntityStatusesOutput>;
+  createEntityStatusesUseCase: PXCreateEntityStatuses;
   dispatcher: JobsDispatcher;
 }
 
@@ -28,7 +24,7 @@ class CreateParagraphExtractionEntityStatusesJob implements Dispatchable {
 
   private batchSize: number;
 
-  constructor(dependencies: Dependencies, batchSize: number = 50) {
+  constructor(dependencies: Dependencies, batchSize: number) {
     this.dependencies = dependencies;
     this.batchSize = batchSize;
   }
