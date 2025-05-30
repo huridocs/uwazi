@@ -10,7 +10,7 @@ import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
-import { DateRangePickerProps } from './dateUtils';
+import { DateRangePickerProps, handleKeyDown } from './dateUtils';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
 import { useAtomValue } from 'jotai';
@@ -33,9 +33,9 @@ const DateRangePickerComponent = ({
   placeholderEnd = 'Fin',
   hasErrors = false,
   errorMessage,
-  onFromDateSelected = () => {},
-  onToDateSelected = () => {},
-  onBlur = () => {},
+  onFromDateSelected = () => { },
+  onToDateSelected = () => { },
+  onBlur = () => { },
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
@@ -125,26 +125,6 @@ const DateRangePickerComponent = ({
     onBlur(e);
   }, 300);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = [
-      'ArrowLeft',
-      'ArrowRight',
-      'ArrowUp',
-      'ArrowDown',
-      'Delete',
-      'Backspace',
-      'Tab',
-      '-',
-      '/',
-    ];
-    const isNumber = /^[0-9]$/.test(e.key);
-    const isAllowedKey = allowedKeys.includes(e.key);
-
-    if (!isNumber && !isAllowedKey) {
-      e.preventDefault();
-    }
-  };
-
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     debouncedOnBlur(e);
   };
@@ -209,15 +189,14 @@ const DateRangePickerComponent = ({
               ref={fromInputRef}
               disabled={disabled}
               className={`
-            block w-full text-sm h-8 rounded-lg pl-10 pr-8
-            placeholder-opacity-100 placeholder-gray-500
-            ${inputClassName || ''}
-            ${
-              hasErrors || errorMessage
-                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-            }
-          `}
+  block w-full text-sm h-8 rounded-lg pl-10 pr-8
+  placeholder-opacity-100 placeholder-gray-500
+  ${inputClassName || ''}
+  ${hasErrors || errorMessage
+                  ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 hover:border-red-400 focus:border-form-error-border focus:outline-none focus:shadow-form-error'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 form-control focus:border-[#66afe9] focus:outline-none focus:shadow-form-focus'
+                }
+`}
               placeholder={placeholderStart || dateFormat}
               autoComplete={autoComplete}
               required={required}
@@ -259,15 +238,14 @@ const DateRangePickerComponent = ({
               ref={toInputRef}
               disabled={disabled}
               className={`
-            block w-full text-sm h-8 rounded-lg pl-10 pr-8
-            placeholder-opacity-100 placeholder-gray-500
-            ${inputClassName || ''}
-            ${
-              hasErrors || errorMessage
-                ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 focus:ring-2 focus:ring-red-400 focus:border-red-400 hover:border-red-400'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-            }
-          `}
+  block w-full text-sm h-8 rounded-lg pl-10 pr-8
+  placeholder-opacity-100 placeholder-gray-500
+  ${inputClassName || ''}
+  ${hasErrors || errorMessage
+                  ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 hover:border-red-400 focus:border-form-error-border focus:outline-none focus:shadow-form-error'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 form-control focus:border-[#66afe9] focus:outline-none focus:shadow-form-focus'
+                }
+`}
               placeholder={placeholderEnd || dateFormat}
               autoComplete={autoComplete}
               required={required}

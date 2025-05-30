@@ -65,9 +65,14 @@ module.exports = {
     extend: {
       colors: {
         blue: colors.indigo,
+        'form-error-border': '#843534',
       },
       minWidth: {
         56: '14rem',
+      },
+      boxShadow: {
+        'form-focus': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6)',
+        'form-error': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483',
       },
     },
   },

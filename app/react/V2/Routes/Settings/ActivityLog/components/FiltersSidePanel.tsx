@@ -39,7 +39,7 @@ const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(m
 }));
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
-  const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
+  const { dateFormat = 'DD/MM/YYYY' } = useAtomValue<ClientSettings>(settingsAtom);
   const locale = useAtomValue(localeAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
   const fromInputRef = useRef<HTMLInputElement>(null);
@@ -109,10 +109,10 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
           const transformedData = {
             ...data,
             dateRange: {
-              from: data.dateRange.from
+              from: data.dateRange?.from
                 ? moment(Number(data.dateRange.from) * 1000).format(dateFormat)
                 : undefined,
-              to: data.dateRange.to
+              to: data.dateRange?.to
                 ? moment(Number(data.dateRange.to) * 1000).format(dateFormat)
                 : undefined,
             },
@@ -143,7 +143,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => {}}
+                onBlur={() => { }}
               />
               <InputField
                 id="search"
@@ -156,7 +156,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => {}}
+                onBlur={() => { }}
               />
               <Controller
                 control={control}

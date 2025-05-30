@@ -13,7 +13,7 @@ describe('Activity log', () => {
     cy.contains('Create entity').click();
     cy.get('#metadataForm select').select('Reporte');
     cy.contains('Title').scrollIntoView();
-    cy.get('textarea[name="library.sidepanel.metadata.title"]:not([disabled])').type('AL Report');
+    cy.get('textarea[name="library.sidepanel.metadata.ttle"]:not([disabled])').type('AL Report');
     cy.contains('aside.side-panel.metadata-sidepanel.is-active .btn-success', 'Save').click();
     cy.contains('Entity created');
   });
@@ -150,10 +150,10 @@ describe('Activity log', () => {
     cy.contains('button', 'Clear all').click();
     applyFilters();
     cy.contains('button', 'Filters').click();
-    cy.get('#from').type('2024-04-25', { delay: 0 });
+    cy.get('#from').type('25/04/2024', { delay: 0 });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
-    cy.get('#to').type('2024-05-09', { delay: 0 });
+    cy.get('#to').type('09/05/2024', { delay: 0 });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
     applyFilters();
@@ -167,10 +167,9 @@ describe('Activity log', () => {
     cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     cy.clearAndType('input[name=search]', 'Deleted entity', { delay: 0 });
     selectMethod(2);
-    cy.get('#from').type('2024-05-28', { delay: 0 });
+    cy.get('#from').type('28/05/2024', { delay: 0, force: true });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
-    cy.get('#to').click();
     cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click();
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
@@ -185,10 +184,9 @@ describe('Activity log', () => {
     cy.contains('button', 'Clear all').click();
     cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     selectMethod(0);
-    cy.get('#from').type('2024-05-28', { delay: 0 });
+    cy.get('#from').type('28/05/2024', { delay: 0, force: true });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
-    cy.get('#to').click();
     cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click();
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
