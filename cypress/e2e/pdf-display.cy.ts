@@ -23,6 +23,9 @@ describe('PDF display', () => {
       cy.contains('tr', 'Document').within(() => {
         cy.contains('a', 'Edit').click();
       });
+      cy.contains('li', 'Text').within(() => {
+        cy.get('button').click();
+      });
       cy.contains('button', 'Save').click();
       cy.contains('div', 'Saved successfully.');
     });
