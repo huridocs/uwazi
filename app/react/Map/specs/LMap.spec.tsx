@@ -1,12 +1,15 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
+import { createStore, Provider } from 'jotai';
 import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
 import { Map } from 'app/Map';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
 import * as MapHelper from 'app/Map/MapHelper';
+import { deletedEntityAtom } from 'V2/atoms';
 
 jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
@@ -19,6 +22,7 @@ jest.mock('react-router', () => ({
 
 describe('Map', () => {
   let renderResult: RenderResult;
+  const testStore = createStore();
   const storeState = {
     templates: Immutable.fromJS([{ _id: 't1', name: 'template1', color: 'blue' }]),
     translations: Immutable.fromJS([
@@ -41,6 +45,7 @@ describe('Map', () => {
   const onClick = jest.fn();
 
   const entity1 = { title: 'Entity 1', template: 't1', sharedId: 'entity1' };
+  const entity2 = { title: 'Entity 2', template: 't1', sharedId: 'entity2' };
   const clusterMarkers: MapHelper.MarkerInput[] = [
     {
       latitude: 60,
@@ -57,7 +62,7 @@ describe('Map', () => {
     {
       latitude: 58,
       longitude: 30,
-      properties: { entity: entity1 },
+      properties: { entity: entity2 },
       label: 'property1',
     },
   ];
@@ -75,13 +80,15 @@ describe('Map', () => {
     showControls = true
   ) => {
     ({ renderResult } = renderConnectedContainer(
-      <Map
-        markers={markers}
-        onClick={onClick}
-        clickOnCluster={clickOnCluster}
-        renderPopupInfo={renderPopupInfo}
-        showControls={showControls}
-      />,
+      <Provider store={testStore}>
+        <Map
+          markers={markers}
+          onClick={onClick}
+          clickOnCluster={clickOnCluster}
+          renderPopupInfo={renderPopupInfo}
+          showControls={showControls}
+        />
+      </Provider>,
       () => storeState
     ));
   };
@@ -137,6 +144,18 @@ describe('Map', () => {
         const data = renderResult.container.getElementsByClassName('leaflet-pane')[0];
         fireEvent.click(data);
         expect(onClick).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('deleted entities', () => {
+    it('should not show entities marked as deleted', async () => {
+      testStore.set(deletedEntityAtom, 'entity2');
+      await waitFor(async () => {
+        await render(clusterMarkers, true);
+        const cluster = await screen.getByText('2');
+        expect(cluster).toBeInTheDocument();
+        expect(screen.queryByText('3')).not.toBeInTheDocument();
       });
     });
   });
