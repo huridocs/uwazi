@@ -1,8 +1,8 @@
 /** @format */
 
-@import '../../App/scss/config/_colors.scss';
-@import '../../App/scss/config/_materials.scss';
-@import '../../App/scss/config/_typography.scss';
+@use '../../App/scss/config/colors' as colors;
+@use '../../App/scss/config/materials' as materials;
+@use '../../App/scss/config/typography' as typography;
 
 .content-header-document {
   .content-header-title {
@@ -29,20 +29,20 @@
 
     .status {
       font-style: italic;
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
     }
 
     .ocr-error {
       padding: 7px 10px 7px 10px;
-      border: 1px solid $c-black;
+      border: 1px solid colors.$c-black;
       border-radius: 4px;
-      background-color: $c-black;
+      background-color: colors.$c-black;
       color: white;
       font-style: italic;
     }
 
     .complete {
-      color: $c-type-9;
+      color: colors.$c-type-9;
     }
 
     &:hover .ocr-tooltip {
@@ -59,7 +59,7 @@
 }
 
 .document {
-  background: $c-white;
+  background: colors.$c-white;
   max-width: 900px;
   margin: 0 -15px;
   padding: 15px;
@@ -70,8 +70,8 @@
   }
 
   .fake-selection {
-    color: $c-success;
-    background-color: $c-success-light;
+    color: colors.$c-success;
+    background-color: colors.$c-success-light;
   }
 
   b {
@@ -80,28 +80,28 @@
       opacity: 0;
       display: block;
       position: absolute;
-      background: $c-white;
+      background: colors.$c-white;
       right: 0;
       width: 31px;
       height: 31px;
       line-height: 31px;
       text-align: center;
       border-radius: 50%;
-      box-shadow: $box-shadow;
-      border: 1px solid $c-grey;
-      color: $c-grey-dark;
+      box-shadow: materials.$box-shadow;
+      border: 1px solid colors.$c-grey;
+      color: colors.$c-grey-dark;
       transform: translateY(-100%) translateX(50%);
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
       cursor: pointer;
     }
     &.is-active {
-      background: $c-grey-light;
+      background: colors.$c-grey-light;
       padding: 4px 0 0;
       span {
         opacity: 1;
-        background: $c-success-light;
-        color: $c-success;
-        border-color: $c-success;
+        background: colors.$c-success-light;
+        color: colors.$c-success;
+        border-color: colors.$c-success;
       }
     }
     &.is-relation {
@@ -121,18 +121,18 @@
 .comments-button {
   display: block;
   position: absolute;
-  background: $c-white;
+  background: colors.$c-white;
   right: -35px;
   width: 31px;
   height: 31px;
   line-height: 31px;
   text-align: center;
   border-radius: 50%;
-  box-shadow: $box-shadow;
-  border: 1px solid $c-grey;
-  color: $c-grey-dark;
+  box-shadow: materials.$box-shadow;
+  border: 1px solid colors.$c-grey;
+  color: colors.$c-grey-dark;
   transform: translateY(-100%) translateX(50%);
-  font-size: $f-size-sm;
+  font-size: typography.$f-size-sm;
   .fa {
     margin-right: 2px;
   }
@@ -146,7 +146,7 @@
 
 .page {
   position: relative;
-  background: $c-white;
+  background: colors.$c-white;
   box-shadow: 0 1px 10px 1px rgba(108, 108, 123, 0.2);
   margin-bottom: 20px;
 }

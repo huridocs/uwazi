@@ -35,7 +35,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
         </Translate>
          
         <a
-          href="https://github.com/huridocs/uwazi/wiki/Import-CSV"
+          href="https://uwazi.readthedocs.io/en/latest/admin-docs/working-with-entities-in-your-collection.html#how-to-add-entities-in-bulk-with-csv-import"
           rel="noopener noreferrer"
           target="_blank"
         >

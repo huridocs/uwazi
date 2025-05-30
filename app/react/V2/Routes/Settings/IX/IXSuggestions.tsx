@@ -424,6 +424,8 @@ const IXSuggestionsLoader =
     const suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,
       rowId: suggestion._id,
+      disableRowSelection:
+        suggestion.state.obsolete || suggestion.state.processing || suggestion.state.error,
       extractorSource: extractors[0].source,
     }));
 

@@ -1,3 +1,7 @@
+@use "../config/colors";
+@use "../config/materials";
+@use "../config/typography";
+
 .content {
   height: 100%;
   display: flex;
@@ -7,14 +11,14 @@
 .content-header {
   position: relative;
   line-height: 1.8em;
-  background: $c-white;
-  border-bottom: 1px solid $c-grey-light;
+  background: colors.$c-white;
+  border-bottom: 1px solid colors.$c-grey-light;
 
   @media (min-width: 1024px) {
     display: -webkit-flex;
     display: flex;
-    min-height: $header-height;
-    line-height: $header-height;
+    min-height: materials.$header-height;
+    line-height: materials.$header-height;
   }
 }
 
@@ -26,7 +30,7 @@
   -webkit-align-items: center;
   align-items: center;
   padding: 15px;
-  height: $header-height;
+  height: materials.$header-height;
 
   @media (min-width: 1024px) {
     padding: 0 15px;
@@ -35,12 +39,12 @@
 
   h1 {
     margin: 0;
-    font-size: $f-size;
+    font-size: typography.$f-size;
     flex-grow: 1;
 
     @media (min-width: 1024px) {
       display: inline-block;
-      line-height: $header-height;
+      line-height: materials.$header-height;
       white-space: nowrap !important;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -48,12 +52,12 @@
   }
 
   .large {
-    font-size: $f-size-xl;
+    font-size: typography.$f-size-xl;
   }
 
   .btn-color {
     margin-left: 5px;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
   }
 }
 

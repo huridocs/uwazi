@@ -1,9 +1,11 @@
+@use "../config/colors";
+
 .translation.active {
-  border-bottom: 2px dashed $c-active-feature;
+  border-bottom: 2px dashed colors.$c-active-feature;
   cursor: pointer;
 }
 
 .menuNav-btn.inlineEdit.active {
-  border-color: $c-active-feature;
+  border-color: colors.$c-active-feature;
   background-color: white;
 }

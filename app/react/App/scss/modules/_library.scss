@@ -1,3 +1,7 @@
+@use "../config/colors";
+@use "../config/materials";
+@use "../config/typography";
+
 .library-viewer {
   background-color: #eaeaea33;
 
@@ -7,8 +11,8 @@
 }
 
 .order-by-arrow {
-  color: $c-primary;
-  font-size: $f-size-lg;
+  color: colors.$c-primary;
+  font-size: typography.$f-size-lg;
   width: 15px;
   height: 13px;
   line-height: 18px;
@@ -20,7 +24,7 @@
   top: -1px;
 
   &:hover {
-    color: $c-black;
+    color: colors.$c-black;
   }
 
   &.fa-long-arrow-down:before {
@@ -72,7 +76,7 @@
     left: 20px;
     color: #555;
     text-shadow: 1px 1px #fff;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     b {
       color: #555;
     }
@@ -90,16 +94,16 @@
     margin-left: 8px;
 
     .btn {
-      height: $header-height * 0.88;
-      line-height: $header-height * 0.88;
-      width: $header-height * 0.88;
+      height: materials.$header-height * 0.88;
+      line-height: materials.$header-height * 0.88;
+      width: materials.$header-height * 0.88;
       padding: 0;
       text-align: center;
       position: relative;
     }
 
     .btn.is-active {
-      background-color: $c-type-9;
+      background-color: colors.$c-type-9;
       color: white;
     }
   }
