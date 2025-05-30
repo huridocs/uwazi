@@ -19,6 +19,7 @@ export const ViewDocumentLink = ({ filename, entity, children }: ViewDocumentLin
       location={location}
       queryParams={{ file: filename, page: 1 }}
       type="button"
+      replace
     >
       {children}
     </CurrentLocationLink>
