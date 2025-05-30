@@ -89,17 +89,19 @@ describe('Metadata', () => {
 
     it('should go back to Template then delete the created template', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
-      await page.waitForSelector(
-        '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
-      );
+      // Wait for the table row with the template name
+      await page.waitForSelector('tr');
+      // Select the checkbox for the template row
       await expect(page).toClick(
-        '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
+        'tr:has(td:contains("My edited template")) input[type="checkbox"]'
       );
-      await page.waitForSelector('div.modal-content');
-      await expect(page).toMatchElement('div.modal-body > h4', {
-        text: 'Confirm deletion of template: My edited template',
-      });
-      await expect(page).toClick('button', { text: 'Accept' });
+      // Click the Delete button
+      await expect(page).toClick('button', { text: 'Delete' });
+      // Wait for the confirmation modal
+      await page.waitForSelector('div[role="dialog"]');
+      // Confirm deletion
+      await expect(page).toClick('button', { text: 'Delete' });
+      // Ensure the template is gone
       await expect(page).not.toMatch('My edited template');
     });
   });
