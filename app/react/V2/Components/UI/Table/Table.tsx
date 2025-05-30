@@ -127,7 +127,7 @@ const Table = <T extends TableRow<T>>({
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
-      enableRowSelection: (row: any) => !Boolean(row.original.disableRowSelection),
+      enableRowSelection: (row: any) => !row.original.disableRowSelection,
       onRowSelectionChange: setRowSelection,
     }),
   });
