@@ -13,4 +13,29 @@ const get = async (headers?: IncomingHttpHeaders): Promise<ClientTemplateSchema[
   }
 };
 
-export { get };
+const setDefault = async (requestParams: RequestParams) => {
+  const response = await api.post('templates/setasdefault', requestParams);
+  return response;
+};
+
+const remove = async (requestParams: RequestParams) => {
+  const response = await api.delete('templates', requestParams);
+  return response;
+};
+
+const checkTemplatesEntityCount = async (
+  headers: IncomingHttpHeaders | undefined,
+  templateIds: string[]
+): Promise<Record<string, number>> => {
+  if (!templateIds || !Array.isArray(templateIds) || templateIds.length === 0) return {};
+  const counts = await Promise.all(
+    templateIds.map(async id => {
+      const requestParams = new RequestParams({}, headers);
+      const response = await api.get(`documents/count_by_template?templateId=${id}`, requestParams);
+      return { id, count: response.json };
+    })
+  );
+  return counts.reduce((acc, { id, count }) => ({ ...acc, [id]: count }), {});
+};
+
+export { get, setDefault, remove, checkTemplatesEntityCount };

@@ -128,7 +128,7 @@ const Table = <T extends TableRow<T>>({
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
       //There seems to be a problem with react table types when using a function, typing as any fixes the issue
-      enableRowSelection: (row: any) => row.original.disableRowSelection !== true,
+      enableRowSelection: (row: any) => !Boolean(row.original.disableRowSelection),
       onRowSelectionChange: setRowSelection,
     }),
   });
@@ -208,7 +208,7 @@ const Table = <T extends TableRow<T>>({
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
-                        className={`flex ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
+                        className={`${headerSorting ? 'flex gap-2 cursor-pointer select-none' : ''}`}
                       >
                         {flexRender(hdr.column.columnDef.header, hdr.getContext())}
                         {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}

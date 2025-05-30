@@ -3,30 +3,51 @@
 import React, { useEffect, useRef } from 'react';
 import { Row, Table } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
+import { Tooltip } from 'flowbite-react';
 
-const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
+const IndeterminateCheckboxRow = <
+  T extends { rowId: string; disableRowSelection?: string | boolean },
+>({
+  row,
+}: {
+  row: Row<T>;
+}) => {
   const ref = useRef<HTMLInputElement>(null!);
   const checked = row.getIsSelected();
   const disabled = !row.getCanSelect();
   const onChange = row.getToggleSelectedHandler();
+  const disableReason = row.original.disableRowSelection;
 
   useEffect(() => {
     ref.current.checked = Boolean(checked);
   }, [ref, checked]);
 
+  const checkbox = (
+    <input
+      type="checkbox"
+      ref={ref}
+      className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      disabled={disabled}
+      onChange={onChange}
+      key={row.id}
+      id={row.id}
+      checked={checked}
+    />
+  );
+
   return (
     <label>
       <Translate className="sr-only">Select</Translate>
-      <input
-        type="checkbox"
-        ref={ref}
-        className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-        disabled={disabled}
-        onChange={onChange}
-        key={row.id}
-        id={row.id}
-        checked={checked}
-      />
+      {disabled && typeof disableReason === 'string' ? (
+        <Tooltip
+          content={<div className="text-xs text-gray-600 w-40">{disableReason}</div>}
+          style="light"
+        >
+          <span>{checkbox}</span>
+        </Tooltip>
+      ) : (
+        checkbox
+      )}
     </label>
   );
 };

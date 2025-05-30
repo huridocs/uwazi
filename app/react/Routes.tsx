@@ -68,6 +68,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+import { TemplatesList, templatesListLoader } from 'V2/Routes/Settings/Templates/TemplatesList';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -145,6 +146,13 @@ const getRoutesLayout = (
         <Route index element={adminsOnlyRoute(<EntityTypesList />)} />
         <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
         <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
+      </Route>
+      <Route path="templates_v2">
+        <Route
+          index
+          element={adminsOnlyRoute(<TemplatesList />)}
+          loader={templatesListLoader(headers)}
+        />
       </Route>
       <Route path="metadata_extraction">
         <Route
