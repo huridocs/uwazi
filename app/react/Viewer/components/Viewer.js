@@ -139,6 +139,7 @@ class Viewer extends Component {
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
                     queryParams={{ raw: raw || firstRender ? '' : 'true' }}
+                    replace
                   >
                     {raw || firstRender ? (
                       <Translate>Normal view</Translate>
