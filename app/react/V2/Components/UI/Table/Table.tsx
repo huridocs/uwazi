@@ -127,7 +127,6 @@ const Table = <T extends TableRow<T>>({
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
-      //There seems to be a problem with react table types when using a function, typing as any fixes the issue
       enableRowSelection: (row: any) => !Boolean(row.original.disableRowSelection),
       onRowSelectionChange: setRowSelection,
     }),

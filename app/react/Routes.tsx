@@ -7,7 +7,7 @@ import LibraryRoot from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { LibraryCards } from 'app/Library/LibraryCards';
 import { LibraryTable } from 'app/Library/LibraryTable';
-import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
+import { PreserveSettings, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';

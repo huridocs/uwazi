@@ -41,6 +41,7 @@ const IndeterminateCheckboxRow = <
       {disabled && typeof disableReason === 'string' ? (
         <Tooltip
           content={<div className="text-xs text-gray-600 w-40">{disableReason}</div>}
+          // eslint-disable-next-line react/style-prop-object
           style="light"
         >
           <span>{checkbox}</span>

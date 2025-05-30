@@ -21,7 +21,6 @@ const templatesLoader =
     const templates = await templatesApi.get(headers);
     const templateIds = templates.map((template: ClientTemplateSchema) => template._id);
     const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
-    // Add translation, rowId, entityCount, and disableRowSelection fields
     return templates.map((template: ClientTemplateSchema) => {
       return {
         ...template,
@@ -37,8 +36,6 @@ const Templates = () => {
   const templates = useLoaderData() as TemplateRow[];
   const [selected, setSelected] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [entityCounts, setEntityCounts] = useState<Record<string, number>>({});
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
 
@@ -61,23 +58,15 @@ const Templates = () => {
   };
 
   const handleDeleteClick = async () => {
-    const selectedTemplates = templates.filter(t => selected.includes(t._id));
-    const counts = await templatesApi.checkTemplatesEntityCount(
-      undefined,
-      selected.map(id => id)
-    );
-    setEntityCounts(counts);
     setShowDeleteModal(true);
   };
 
   const handleDelete = async (templatesToDelete: TemplateRow[]) => {
-    setDeleting(true);
     setShowDeleteModal(false);
     try {
       for (const template of templatesToDelete) {
         await templatesApi.remove(new RequestParams({ _id: template._id }));
       }
-      setDeleting(false);
       setSelected([]);
       setNotifications({
         type: 'success',
@@ -85,7 +74,6 @@ const Templates = () => {
       });
       await revalidator.revalidate();
     } catch (e) {
-      setDeleting(false);
       setNotifications({
         type: 'error',
         text: <Translate>Error deleting template(s)</Translate>,

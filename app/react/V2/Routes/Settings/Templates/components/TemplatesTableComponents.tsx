@@ -87,6 +87,7 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
           All editing options will be disabled.
         </div>
       }
+      // eslint-disable-next-line react/style-prop-object
       style="light"
     >
       <span className="cursor-help">
