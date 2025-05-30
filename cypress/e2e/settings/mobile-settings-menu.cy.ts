@@ -1,13 +1,12 @@
 import { clearCookiesAndLogin } from '../helpers';
 import 'cypress-axe';
 
-describe('Settings mobile menu', () => {
+describe('Settings mobile menu', { viewportWidth: 384, viewportHeight: 768 }, () => {
   before(() => {
     cy.blankState();
   });
 
   beforeEach(() => {
-    cy.viewport(384, 768);
     cy.intercept('GET', '/api/search*').as('search');
   });
 
