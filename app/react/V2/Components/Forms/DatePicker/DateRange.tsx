@@ -39,7 +39,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   labelClear = 'Clear',
   disabled = false,
   hasErrors = false,
-  onChange = () => {},
+  onChange = () => { },
   locale = 'en',
   format,
   useTimezone = false,
@@ -133,33 +133,31 @@ const DateRange: React.FC<DateRangeProps> = ({
   const formattedTo = formatDate(toInputValue, dateFormat, useTimezone);
 
   return (
-    <div className="date-ra ge">
-      <div className="date-ra ge-from">
-        <LazyDateRangePicker
-          language={locale}
-          dateFormat={dateFormat.toLowerCase()}
-          useTimezone={useTimezone}
-          endOfDay={endOfDay}
-          hideLabel={hideLabel}
-          className={className}
-          model={model || name}
-          value={{ from: formattedFrom, to: formattedTo }}
-          label={label}
-          labelToday={labelToday}
-          labelClear={labelClear}
-          placeholderStart={placeholderStart}
-          placeholderEnd={placeholderEnd}
-          disabled={disabled}
-          hasErrors={hasErrors}
-          errorMessage={errorMessage}
-          onFromDateSelected={handleFromChange}
-          onToDateSelected={handleToChange}
-          onBlur={onBlur}
-          required={required}
-          fromInputRef={fromInputRef}
-          toInputRef={toInputRef}
-        />
-      </div>
+    <div className="date-range">
+      <LazyDateRangePicker
+        language={locale}
+        dateFormat={dateFormat.toLowerCase()}
+        useTimezone={useTimezone}
+        endOfDay={endOfDay}
+        hideLabel={hideLabel}
+        className={className}
+        model={model || name}
+        value={{ from: formattedFrom, to: formattedTo }}
+        label={label}
+        labelToday={labelToday}
+        labelClear={labelClear}
+        placeholderStart={placeholderStart}
+        placeholderEnd={placeholderEnd}
+        disabled={disabled}
+        hasErrors={hasErrors}
+        errorMessage={errorMessage}
+        onFromDateSelected={handleFromChange}
+        onToDateSelected={handleToChange}
+        onBlur={onBlur}
+        required={required}
+        fromInputRef={fromInputRef}
+        toInputRef={toInputRef}
+      />
     </div>
   );
 };

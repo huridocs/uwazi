@@ -31,6 +31,10 @@ function latAndLon(val) {
   );
 }
 
+function dateRangeNotEmpty(val) {
+  return !(val && val.from === null && val.to === null);
+}
+
 const geolocationValidation = property => {
   const validationObject = {};
   if (property.required) {
@@ -75,7 +79,11 @@ export default {
 
     template.properties.forEach(property => {
       if (property.required) {
-        validationObject[`metadata.${property.name}`] = { required: notEmpty };
+        if (property.type === 'daterange') {
+          validationObject[`metadata.${property.name}`] = { required: dateRangeNotEmpty };
+        } else {
+          validationObject[`metadata.${property.name}`] = { required: notEmpty };
+        }
       }
 
       if (property.type === 'link') {

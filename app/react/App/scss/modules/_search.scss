@@ -1095,3 +1095,40 @@
     background-color: color.adjust(yellow, $alpha: -0.8);
   }
 }
+
+.form-control.datepicker-input {
+  // Placeholder styles
+  &::placeholder {
+    opacity: 1;
+    color: #6b7280;
+  }
+
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #111827;
+
+  &:hover {
+    border-color: #9ca3af;
+  }
+
+  &:focus {
+    border-color: #66afe9 !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 175, 233, 0.5) !important;
+    ring: 0 !important;
+  }
+}
+
+.has-error .form-control.datepicker-input {
+  border-color: #e3342f !important;
+  
+  &:hover {
+    border-color: #f87171 !important;
+  }
+
+  &:focus {      
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(227, 52, 47, 0.5) !important;
+    ring: 0 !important;
+  }
+}

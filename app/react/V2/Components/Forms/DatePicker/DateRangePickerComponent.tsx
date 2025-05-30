@@ -33,9 +33,9 @@ const DateRangePickerComponent = ({
   placeholderEnd = 'Fin',
   hasErrors = false,
   errorMessage,
-  onFromDateSelected = () => {},
-  onToDateSelected = () => {},
-  onBlur = () => {},
+  onFromDateSelected = () => { },
+  onToDateSelected = () => { },
+  onBlur = () => { },
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
@@ -189,15 +189,14 @@ const DateRangePickerComponent = ({
               ref={fromInputRef}
               disabled={disabled}
               className={`
-  block w-full text-sm h-8 rounded-lg pl-10 pr-8
-  placeholder-opacity-100 placeholder-gray-500
-  ${inputClassName || ''}
-  ${
-    hasErrors || errorMessage
-      ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 hover:border-red-400 focus:border-form-error-border focus:outline-none focus:shadow-form-error'
-      : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 form-control focus:border-[#66afe9] focus:outline-none focus:shadow-form-focus'
-  }
-`}
+                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-10 pr-8
+                placeholder-opacity-100 placeholder-gray-500
+                ${inputClassName || ''}
+                ${hasErrors || errorMessage
+                  ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+                }
+              `}
               placeholder={placeholderStart || dateFormat}
               autoComplete={autoComplete}
               required={required}
@@ -215,7 +214,7 @@ const DateRangePickerComponent = ({
             )}
           </div>
 
-          <div className="relative w-1/2 text-gray-600 DatePicker__To">
+          <div className="relative w-1/2 text-gray-600 date-range-to DatePicker__To">
             {showCalendarIcon && (
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                 <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -239,15 +238,14 @@ const DateRangePickerComponent = ({
               ref={toInputRef}
               disabled={disabled}
               className={`
-  block w-full text-sm h-8 rounded-lg pl-10 pr-8
-  placeholder-opacity-100 placeholder-gray-500
-  ${inputClassName || ''}
-  ${
-    hasErrors || errorMessage
-      ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 hover:border-red-400 focus:border-form-error-border focus:outline-none focus:shadow-form-error'
-      : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 form-control focus:border-[#66afe9] focus:outline-none focus:shadow-form-focus'
-  }
-`}
+                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-10 pr-8
+                placeholder-opacity-100 placeholder-gray-500
+                ${inputClassName || ''}
+                ${hasErrors || errorMessage
+                  ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+                }
+              `}
               placeholder={placeholderEnd || dateFormat}
               autoComplete={autoComplete}
               required={required}

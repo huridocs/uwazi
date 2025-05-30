@@ -33,8 +33,8 @@ const DatePickerComponent = ({
   placeholder = 'Select date',
   hasErrors = false,
   errorMessage,
-  onChange = () => {},
-  onBlur = () => {},
+  onChange = () => { },
+  onBlur = () => { },
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
@@ -143,14 +143,13 @@ const DatePickerComponent = ({
             ref={inputRef}
             disabled={disabled}
             className={`
-  block w-full text-sm h-8 rounded-lg pl-10 pr-8
+  form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-10 pr-8
   placeholder-opacity-100 placeholder-gray-500
   ${inputClassName || ''}
-  ${
-    hasErrors || errorMessage
-      ? 'border-2 border-red-300 text-red-900 bg-red-50 placeholder-red-700 hover:border-red-400 focus:border-form-error-border focus:outline-none focus:shadow-form-error'
-      : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 form-control focus:border-[#66afe9] focus:outline-none focus:shadow-form-focus'
-  }
+  ${hasErrors || errorMessage
+                ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+              }
 `}
             placeholder={placeholder || dateFormat}
             autoComplete={autoComplete}
