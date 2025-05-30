@@ -11,11 +11,11 @@ import * as templatesApi from 'V2/api/templates';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientTemplateSchema } from 'app/istore';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { columns } from './components/tableListComponents';
+import { columns } from './components/TemplatesTableComponents';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
 import { ColumnDef } from '@tanstack/react-table';
 
-const templatesListLoader =
+const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
   async () => {
     const templates = await templatesApi.get(headers);
@@ -26,7 +26,6 @@ const templatesListLoader =
       return {
         ...template,
         rowId: template._id,
-        synced: Math.random() > 0.5,
         translation: template.name,
         entityCount: entityCounts[template._id] || 0,
         disableRowSelection: template.default || entityCounts[template._id] > 0 || template.synced,
@@ -34,7 +33,7 @@ const templatesListLoader =
     });
   };
 
-const TemplatesList = () => {
+const Templates = () => {
   const templates = useLoaderData() as TemplateRow[];
   const [selected, setSelected] = useState<string[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -147,4 +146,4 @@ const TemplatesList = () => {
   );
 };
 
-export { TemplatesList, templatesListLoader };
+export { Templates, templatesLoader };
