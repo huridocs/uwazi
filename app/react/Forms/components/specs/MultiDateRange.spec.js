@@ -1,10 +1,8 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 
 import MultiDateRange from '../MultiDateRange';
-import DatePicker from '../../../V2/Components/Forms/DatePicker/DatePicker';
+import { DatePicker } from 'V2/Components/Forms/DatePicker';
 
 describe('MultiDateRange', () => {
   let component;
@@ -18,6 +16,7 @@ describe('MultiDateRange', () => {
         { from: 1474156800, to: 1474156801 },
       ],
       onChange: jasmine.createSpy('onChange'),
+      format: 'YYYY-MM-DD',
     };
   });
 

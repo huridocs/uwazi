@@ -1,10 +1,8 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 
 import MultiDate from '../MultiDate';
-import DatePicker from '../../../V2/Components/Forms/DatePicker/DatePicker';
+import { DatePicker } from 'V2/Components/Forms/DatePicker';
 
 describe('MultiDate', () => {
   let component;
