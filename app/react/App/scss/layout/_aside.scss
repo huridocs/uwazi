@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/typography";
+
 aside,
 .entity-viewer {
   .filelist,
@@ -6,7 +9,7 @@ aside,
   }
 
   h2 {
-    font-size: $f-size;
+    font-size: typography.$f-size;
     position: relative;
     letter-spacing: 0.1em;
     .property-help {
@@ -18,8 +21,8 @@ aside,
       left: 0;
       height: 16px;
       line-height: 15px;
-      border: 1px solid $c-grey;
-      color: $c-grey-dark;
+      border: 1px solid colors.$c-grey;
+      color: colors.$c-grey-dark;
       width: 16px;
       text-align: center;
       border-radius: 50%;

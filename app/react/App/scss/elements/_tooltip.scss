@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/typography";
+
 @use "sass:color";
 
 @mixin tooltip ($direction) {
@@ -8,13 +11,13 @@
   padding: 8px;
   line-height: 1.2em;
   text-align: center;
-  font-family: $f-regular;
-  font-size: $f-size-sm;
+  font-family: typography.$f-regular;
+  font-size: typography.$f-size-sm;
   font-weight: normal;
   font-style: normal;
   -webkit-font-smoothing: initial;
   background-color: color.adjust(#FFF7E2, $alpha: -.10);
-  color: $c-black;
+  color: colors.$c-black;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1), 0px 12px 24px rgba(0, 0, 0, 0.12);

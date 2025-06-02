@@ -1,5 +1,5 @@
-@import '../../scss/config/colors';
-@import '../../scss/config/typography';
+@use '../../scss/config/colors';
+@use '../../scss/config/typography';
 .error-fallback-ui {
   height: calc(100% - 200px);
   .message {
@@ -25,20 +25,20 @@
       }
     }
     .error-message-lg {
-      font-size: $f-size-lg;
+      font-size: typography.$f-size-lg;
       @media (max-width: 600px) {
         font-size: 14px;
       }
     }
     .error-message-sm {
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
       @media (max-width: 600px) {
-        font-size: $f-size-xs;
+        font-size: typography.$f-size-xs;
       }
 
     }
     .error-details {
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
       white-space: pre-wrap;
       overflow: scroll;
       max-height: 10em;
@@ -47,7 +47,7 @@
   .error-code {
     font-size: 150px;
     font-weight: bold;
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     position: fixed;
     top: 50%;
     left: 70%;

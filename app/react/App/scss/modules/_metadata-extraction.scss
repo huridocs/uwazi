@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .metadata-extraction-table {
   .table tr th {
     border: 1px solid #f5f5f5;
@@ -48,8 +51,8 @@
   border: unset;
   background-color: transparent;
   padding: 6px 0;
-  color: $c-primary;
-  font-size: $f-size-xs;
+  color: colors.$c-primary;
+  font-size: typography.$f-size-xs;
 
   &:hover {
     text-decoration: underline;

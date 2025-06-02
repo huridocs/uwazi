@@ -1,10 +1,13 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .blank-state {
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
   text-align: center;
   padding: 30px 0;
   
   h4 {
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     font-weight: bold;
   }
   
@@ -15,9 +18,9 @@
   
   & > .fa {
     display: block;
-    font-size: $f-size-xxl;
+    font-size: typography.$f-size-xxl;
     margin-bottom: 20px;
-    color: $c-grey;
+    color: colors.$c-grey;
   }
   
   .btn {

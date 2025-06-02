@@ -259,13 +259,15 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Find suggestions').click();
       cy.wait('@trainSuggestions');
       cy.contains('Training model...');
+      cy.contains('tr', 'Obsolete').contains('button', 'Accept').should('be.disabled');
       cy.contains('2023');
     });
 
     it('should accept a single suggestion without affecting the order', () => {
       cy.contains('tr', 'Lorem Ipsum').contains('button', 'Accept').click();
 
-      cy.contains('Suggestion accepted.');
+      cy.contains('Suggestions sent');
+      cy.contains('Suggestions have been updated');
       cy.contains('button', 'Dismiss').click();
 
       const titles = [

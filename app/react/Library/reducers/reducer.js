@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import Immutable from 'immutable';
 import createReducer from 'app/BasicReducer';
-import { multireducer } from 'app/Multireducer';
 import { isClient } from 'app/utils';
 
 import { modelReducer, formReducer } from 'react-redux-form';
@@ -29,16 +28,13 @@ defaultSearch.publishedStatus = { values: ['published', 'restricted'] };
 
 export default storeKey =>
   combineReducers({
-    aggregations: multireducer(aggregationsReducer, storeKey),
-    documents: multireducer(documentsReducer, storeKey),
-    ui: multireducer(
-      manageAttachmentsReducer(libraryUI, {
-        useDefaults: false,
-        setInArray: ['selectedDocuments', 0],
-      }),
-      storeKey
-    ),
-    filters: multireducer(libraryFilters, storeKey),
+    aggregations: aggregationsReducer,
+    documents: documentsReducer,
+    ui: manageAttachmentsReducer(libraryUI, {
+      useDefaults: false,
+      setInArray: ['selectedDocuments', 0],
+    }),
+    filters: libraryFilters,
     search: modelReducer(`${storeKey}.search`, defaultSearch),
     searchForm: formReducer(`${storeKey}.search`, defaultSearch),
     selectedSorting: createReducer(`${storeKey}.selectedSorting`, {}),

@@ -1,3 +1,5 @@
+@use '../config/materials' as materials;
+
 $header-height: 44px;
 
 .row.flex {
@@ -71,9 +73,9 @@ $header-height: 44px;
   .content-header {
     display: flex;
     flex-direction: row;
-    height: $header-height;
-    min-height: $header-height;
-    line-height: $header-height;
+    height: materials.$header-height;
+    min-height: materials.$header-height;
+    line-height: materials.$header-height;
     align-items: center;
 
     .content-header-title {
@@ -81,7 +83,7 @@ $header-height: 44px;
       display: flex;
       position: unset;
       width: 0;
-      height: $header-height;
+      height: materials.$header-height;
       flex-grow: 1;
       overflow: hidden;
       white-space: nowrap;
@@ -126,8 +128,8 @@ $header-height: 44px;
   .sidepanel-header {
     display: flex;
     flex-direction: row;
-    height: $header-height;
-    min-height: $header-height;
+    height: materials.$header-height;
+    min-height: materials.$header-height;
 
     .content-header-tabs {
       width: unset;
@@ -141,10 +143,10 @@ $header-height: 44px;
 
     .nav-tabs {
       position: unset;
-      height: $header-height;
+      height: materials.$header-height;
 
       li {
-        width: $header-height;
+        width: materials.$header-height;
 
         div {
           padding: unset;
@@ -159,8 +161,8 @@ $header-height: 44px;
 
     .closeSidepanel {
       position: unset;
-      height: $header-height;
-      width: $header-height;
+      height: materials.$header-height;
+      width: materials.$header-height;
     }
   }
 

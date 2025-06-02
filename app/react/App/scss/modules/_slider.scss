@@ -1,3 +1,5 @@
+@use "../config/typography";
+
 .slider {
     position: relative;
     width: 100%;
@@ -15,7 +17,7 @@
     line-height: 26px;
     text-align: center;
     border: 1px solid #ccc;
-    font-size: $f-size-xl;
+    font-size: typography.$f-size-xl;
 
     &:hover {
         background: #eee;

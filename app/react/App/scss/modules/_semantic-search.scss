@@ -1,3 +1,5 @@
+@use "../config/colors";
+
 .semantic-search-list-item:hover {
   background-color: #dee7ff4d;
 }
@@ -28,7 +30,7 @@
 }
 
 .semantic-search-list-item {
-  border-bottom: 1px solid $c-grey-light;
+  border-bottom: 1px solid colors.$c-grey-light;
   padding: 20px 30px;
   position: relative;
   display: flex;
@@ -69,11 +71,11 @@
 
 .semantic-search-filters {
   margin-top: 16px;
-  border-top: 1px solid $c-grey-light;
+  border-top: 1px solid colors.$c-grey-light;
 
   .semantic-search-filters-item {
     padding: 20px 30px;
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
 
     .item-header {
       margin-bottom: 15px;
@@ -84,11 +86,11 @@
 .uw-progress-bar {
   height: 9px;
   border-radius: 5px;
-  border: 1px solid $c-info-light;
+  border: 1px solid colors.$c-info-light;
   overflow: hidden;
 
   &--progress {
-    background-color: $c-type-5;
+    background-color: colors.$c-type-5;
     height: 100%;
   }
 
