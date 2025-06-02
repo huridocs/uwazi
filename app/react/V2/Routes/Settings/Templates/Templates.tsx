@@ -62,7 +62,7 @@ const Templates = () => {
   const revalidator = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
 
-  const hasSyncedTemplates = templates.some(t => t.synced);
+  const hasSyncedTemplates = templates.some(template => template.synced);
 
   const handleSetDefault = async (row: TemplateRow) => {
     try {
@@ -87,9 +87,11 @@ const Templates = () => {
   const handleDelete = async (templatesToDelete: TemplateRow[]) => {
     setShowDeleteModal(false);
     try {
-      for (const template of templatesToDelete) {
-        await templatesApi.remove(new RequestParams({ _id: template._id }));
-      }
+      await Promise.all(
+        templatesToDelete.map(template =>
+          templatesApi.remove(new RequestParams({ _id: template._id }))
+        )
+      );
       setSelected([]);
       setNotifications({
         type: 'success',
@@ -150,7 +152,7 @@ const Templates = () => {
         open={showDeleteModal}
         onAccept={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        templates={templates.filter(t => selected.includes(t._id))}
+        templates={templates.filter(template => selected.includes(template._id))}
       />
     </div>
   );
