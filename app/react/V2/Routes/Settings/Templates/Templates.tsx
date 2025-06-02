@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLink, t } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI/Table/Table';
@@ -22,12 +22,35 @@ const templatesLoader =
     const templateIds = templates.map((template: ClientTemplateSchema) => template._id);
     const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
     return templates.map((template: ClientTemplateSchema) => {
+      const reasons = [];
+      if (template.default) {
+        reasons.push(t('System', 'A default template cannot be deleted.', null, false));
+      }
+      if (entityCounts[template._id] > 0) {
+        reasons.push(
+          t(
+            'System',
+            'This template is in use by existing entities and cannot be deleted.',
+            null,
+            false
+          )
+        );
+      }
+      if (template.synced) {
+        reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
+      }
+      const cannotSelect = t('System', 'Cannot select:', null, false);
+      const disableRowSelection = reasons.length > 0;
+      const tooltip = disableRowSelection
+        ? `${cannotSelect}\n${reasons.map(reason => `${reason}`).join(' ')}`
+        : '';
+
       return {
         ...template,
         rowId: template._id,
         translation: template.name,
         entityCount: entityCounts[template._id] || 0,
-        disableRowSelection: template.default || entityCounts[template._id] > 0 || template.synced,
+        disableRowSelection: tooltip,
       };
     });
   };

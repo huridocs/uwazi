@@ -4,6 +4,7 @@ Key,Turkish
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,"Oluşturulan kimlik, varsayılan başlık olacaktır."
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
@@ -68,6 +69,7 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
+All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
@@ -114,6 +116,7 @@ Cancel,İptal et
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
 Cannot find extractor,Cannot find extractor
+Cannot select:,Cannot select:
 Captcha,Güvenlik kodu
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -227,6 +230,7 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,Varsayılan dil değişikliği başarısı
 Default template,Varsayılan şablon
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,Sil
 DELETE,Sil
@@ -314,7 +318,9 @@ Entity types,Varlık türü
 Entity updated,Entity updated
 Error,Hata
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Arama
@@ -827,6 +833,8 @@ Suggestions,Öneriler
 suggestions,suggestions
 Supporting files,Destekleyici belgeler
 Synced template,Synced template
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,sayfa içeriği oluşturmak için sözdizimi
@@ -845,7 +853,9 @@ Template name,Template name
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Şablonlar
+Templates v2,Templates v2
 Templates:,Templates:
 Text,Metin
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
@@ -854,6 +864,7 @@ The import process threw an error:,İçe aktarma işlemi bir hata verdi:
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
 The request could not be processed.,The request could not be processed.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,Şablon hatalar içeriyor
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
@@ -886,6 +897,7 @@ This property will be shown using all the width available.,"Bu özellik, mevcut 
 This property will be shown without the label.,Bu özellik etiketsiz olarak gösterilecektir.
 this template,this template
 This template has associated entities,This template has associated entities
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,"Bu şablon, yeni varlıklar için varsayılan olarak kullanılacaktır."
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Eşik
@@ -909,6 +921,7 @@ total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Çevir
+Translation,Translation
 Translations,Çeviriler
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully

@@ -18,25 +18,17 @@ const DeleteTemplatesConfirmationModal = ({
 }: DeleteTemplatesConfirmationModalProps) => {
   if (!open) return null;
 
-  let body: React.ReactNode = null;
-
-  body = (
-    <div>
-      <p className="font-medium mb-2">
-        <Translate>The following templates can be safely deleted:</Translate>
-      </p>
-      <ul className="list-disc list-inside break-words">
-        {templates.map(template => (
-          <li key={template._id}>{template.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-
   return (
     <ConfirmationModal
-      header={<Translate>Delete templates</Translate>}
-      body={body}
+      header={<Translate>Delete</Translate>}
+      warningText={<Translate>Do you want to delete the following items?</Translate>}
+      body={
+        <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
+          {templates.map(item => (
+            <li key={item.name}>{item.name}</li>
+          ))}
+        </ul>
+      }
       acceptButton={<Translate>Delete</Translate>}
       cancelButton={<Translate>Cancel</Translate>}
       onAcceptClick={() => onAccept(templates)}
