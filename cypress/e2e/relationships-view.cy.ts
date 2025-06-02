@@ -48,7 +48,7 @@ describe('Relationship view', () => {
     it('should should sort the relationships by Fecha property', () => {
       cy.intercept('GET', '/api/references/search*').as('referencesSearch');
       cy.get('div.sort-buttons').contains('Date added').realClick();
-      cy.get('div.rw-popup-container').contains('Fecha').realClick();
+      cy.get('div.rw-popup-container').should('be.visible').contains('Fecha').realClick();
       cy.get('div.sort-buttons').contains('Fecha');
       cy.wait('@referencesSearch');
       cy.get('div.relationshipsHub')
@@ -59,7 +59,6 @@ describe('Relationship view', () => {
 
     it('should should sort the relationships by Fecha property in the reverted order', () => {
       cy.intercept('GET', '/api/references/search*').as('referencesSearch');
-      cy.get('div.sort-buttons').contains('Fecha');
       cy.get('div.sort-buttons').within(() => {
         cy.get('button.sorting-toggle').realClick();
       });

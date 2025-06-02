@@ -119,5 +119,13 @@
     &.selected > td {
       background-color: #bed1ec;
     }
+
+    &.deleted > td {
+      opacity: 0.5;
+      background-color: #f5f5f5;
+      color: #666;
+      cursor: default;
+      pointer-events: none;
+    }
   }
 }

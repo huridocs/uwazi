@@ -8,7 +8,6 @@ describe('Thesauri configuration', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
-    cy.viewport('macbook-15');
     clearCookiesAndLogin();
     cy.visit('http://localhost:3000');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
