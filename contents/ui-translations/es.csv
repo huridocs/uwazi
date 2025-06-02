@@ -116,7 +116,6 @@ Cancel,Cancelar
 Canceling...,Cancelando
 Cannot delete template:,No se puede eliminar la plantilla:
 Cannot find extractor,Cannot find extractor
-Cannot select:,Cannot select:
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."

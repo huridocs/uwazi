@@ -6,14 +6,14 @@ import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI/Table/Table';
 import { Button } from 'V2/Components/UI/Button';
-import { TemplateRow } from './types';
 import * as templatesApi from 'V2/api/templates';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientTemplateSchema } from 'app/istore';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { ColumnDef } from '@tanstack/react-table';
 import { columns } from './components/TemplatesTableComponents';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
-import { ColumnDef } from '@tanstack/react-table';
+import { TemplateRow } from './types';
 
 const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
@@ -24,33 +24,29 @@ const templatesLoader =
     return templates.map((template: ClientTemplateSchema) => {
       const reasons = [];
       if (template.default) {
-        reasons.push(t('System', 'A default template cannot be deleted.', null, false));
+        reasons.push(
+          <Translate className="inline-block">A default template cannot be deleted.</Translate>
+        );
       }
       if (entityCounts[template._id] > 0) {
         reasons.push(
-          t(
-            'System',
-            'This template is in use by existing entities and cannot be deleted.',
-            null,
-            false
-          )
+          <Translate className="inline-block">
+            This template is in use by existing entities and cannot be deleted.
+          </Translate>
         );
       }
       if (template.synced) {
-        reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
+        reasons.push(
+          <Translate className="inline-block">Synced templates cannot be deleted.</Translate>
+        );
       }
-      const cannotSelect = t('System', 'Cannot select:', null, false);
-      const disableRowSelection = reasons.length > 0;
-      const tooltip = disableRowSelection
-        ? `${cannotSelect}\n${reasons.map(reason => `${reason}`).join(' ')}`
-        : '';
 
       return {
         ...template,
         rowId: template._id,
         translation: template.name,
         entityCount: entityCounts[template._id] || 0,
-        disableRowSelection: tooltip,
+        disableRowSelection: reasons.length > 0 ? reasons : undefined,
       };
     });
   };
@@ -88,7 +84,7 @@ const Templates = () => {
     setShowDeleteModal(false);
     try {
       await Promise.all(
-        templatesToDelete.map(template =>
+        templatesToDelete.map(async template =>
           templatesApi.remove(new RequestParams({ _id: template._id }))
         )
       );
@@ -137,7 +133,7 @@ const Templates = () => {
             {selected.length > 0 && (
               <div className="flex items-center gap-2">
                 <Button color="error" onClick={handleDeleteClick}>
-                  Delete
+                  <Translate>Delete</Translate>
                 </Button>
                 <span className="text-gray-700">
                   <Translate>Selected</Translate> {selected.length} <Translate>of</Translate>{' '}

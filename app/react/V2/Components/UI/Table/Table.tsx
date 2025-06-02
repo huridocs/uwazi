@@ -29,7 +29,11 @@ import { GroupCell, GroupHeader } from './GroupComponents';
 import { NoDataRow } from './NoDataRow';
 import { DefaultNoDataMessage } from './DefaultNoDataMessage';
 
-type TableRow<T> = { rowId: string; disableRowSelection?: boolean; subRows?: T[] };
+type TableRow<T> = {
+  rowId: string;
+  disableRowSelection?: boolean | string | React.ReactNode;
+  subRows?: T[];
+};
 type TableProps<T extends TableRow<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];

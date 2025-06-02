@@ -3,8 +3,8 @@ import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-tabl
 import { Button, Pill } from 'V2/Components/UI';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate, I18NLink } from 'app/I18N';
-import { TemplateRow } from '../types';
 import { Tooltip } from 'flowbite-react';
+import { TemplateRow } from '../types';
 
 const columnHelper = createColumnHelper<TemplateRow>();
 
@@ -20,7 +20,11 @@ const NameCell = ({ cell }: CellContext<TemplateRow, string>) => (
         {cell.getValue()}
       </I18NLink>
     )}
-    {cell.row.original.default && <Pill color="blue">Default</Pill>}
+    {cell.row.original.default && (
+      <Pill color="blue">
+        <Translate>Default</Translate>
+      </Pill>
+    )}
   </div>
 );
 
@@ -30,10 +34,10 @@ const TranslationCell = ({ cell }: CellContext<TemplateRow, string>) => (
 
 function formatNumberShort(value: number): string {
   if (value >= 1_000_000) {
-    return (value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1) + 'M';
+    return `${(value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1)}M`;
   }
   if (value >= 1_000) {
-    return (value / 1_000).toFixed(value % 1_000 === 0 ? 0 : 1) + 'k';
+    return `${(value / 1_000).toFixed(value % 1_000 === 0 ? 0 : 1)}k`;
   }
   return value.toString();
 }
@@ -44,24 +48,23 @@ const EntityCountCell = ({ cell }: CellContext<TemplateRow, number>) => (
 
 const DefaultButton =
   (handleSetDefault: (row: TemplateRow) => void) =>
-  ({ cell }: CellContext<TemplateRow, boolean>) => {
-    return (
-      <Button
-        styling={cell.row.original.default ? 'solid' : 'light'}
-        onClick={() => handleSetDefault(cell.row.original)}
-        className="leading-4 m-auto"
-        disabled={cell.row.original.default || cell.row.original.synced}
-      >
-        <StarIcon
-          className={
-            cell.row.original.default
-              ? 'w-4 text-white'
-              : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
-          }
-        />
-      </Button>
-    );
-  };
+  ({ cell }: CellContext<TemplateRow, boolean>) => (
+    <Button
+      styling={cell.row.original.default ? 'solid' : 'light'}
+      onClick={() => handleSetDefault(cell.row.original)}
+      className="leading-4 m-auto"
+      disabled={cell.row.original.default || cell.row.original.synced}
+    >
+      <Translate className="sr-only">Set as default</Translate>
+      <StarIcon
+        className={
+          cell.row.original.default
+            ? 'w-4 text-white'
+            : 'w-4 text-white stroke-current stroke-gray-300 stroke-2'
+        }
+      />
+    </Button>
+  );
 
 const EditButton = ({ cell }: CellContext<TemplateRow, string>) => (
   <I18NLink to={`/settings/templates/edit/${cell.row.original._id}`} className="px-3 py-1">
@@ -82,9 +85,9 @@ const SyncedTemplateCell = ({ cell }: CellContext<TemplateRow, boolean>) =>
     <Tooltip
       content={
         <div className="text-xs text-gray-600">
-          The source of this template is a sync.
+          <Translate>The source of this template is a sync.</Translate>
           <br />
-          All editing options will be disabled.
+          <Translate>All editing options will be disabled.</Translate>
         </div>
       }
       // eslint-disable-next-line react/style-prop-object

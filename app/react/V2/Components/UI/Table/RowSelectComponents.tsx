@@ -6,7 +6,7 @@ import { Translate } from 'app/I18N';
 import { Tooltip } from 'flowbite-react';
 
 const IndeterminateCheckboxRow = <
-  T extends { rowId: string; disableRowSelection?: string | boolean },
+  T extends { rowId: string; disableRowSelection?: string | boolean | React.ReactNode },
 >({
   row,
 }: {
@@ -17,7 +17,6 @@ const IndeterminateCheckboxRow = <
   const disabled = !row.getCanSelect();
   const onChange = row.getToggleSelectedHandler();
   const disableReason = row.original.disableRowSelection;
-
   useEffect(() => {
     ref.current.checked = Boolean(checked);
   }, [ref, checked]);
@@ -38,7 +37,7 @@ const IndeterminateCheckboxRow = <
   return (
     <label>
       <Translate className="sr-only">Select</Translate>
-      {disabled && typeof disableReason === 'string' ? (
+      {disabled && (typeof disableReason === 'string' || typeof disableReason === 'object') ? (
         <Tooltip
           content={<div className="text-xs text-gray-600 w-40">{disableReason}</div>}
           // eslint-disable-next-line react/style-prop-object
