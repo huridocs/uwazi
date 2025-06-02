@@ -100,6 +100,17 @@ describe('DatePicker', () => {
       cy.wait(300);
       cy.get('@onChange').should('not.have.been.called');
     });
+
+    it('should handle disabled state', () => {
+      mount(<Basic disabled />);
+      cy.get('input[name=dateField]').should('be.disabled');
+    });
+
+    it('should handle error state', () => {
+      mount(<Basic hasErrors={true} errorMessage="This field is required" />);
+      cy.get('input[name=dateField]').should('have.class', '!border-red-300');
+      cy.contains('This field is required').should('be.visible');
+    });
   });
 
   describe('useTimezone', () => {
@@ -221,15 +232,9 @@ describe('DatePicker', () => {
       mount(
         <Basic
           model="metadata.dateField"
-          value={null}
           onChange={onChange}
-          locale="es"
+          locale="en"
           format="dd-mm-yyyy"
-          labelToday="Hoy"
-          labelClear="Limpiar"
-          placeholder="Seleccione una fecha"
-          hideLabel={true}
-          className=""
           useTimezone={true}
         />
       );
@@ -247,26 +252,14 @@ describe('DatePicker', () => {
 
       const now = new Date();
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const formattedDate = moment(firstDay).format('DD-MM-yyyy');
+      const formattedDate = moment(firstDay).utc().format('DD-MM-yyyy');
       cy.get('input[name="metadata.dateField"]').should('have.value', formattedDate);
     });
 
     it('should handle date input correctly in form context', () => {
       const onChange = cy.stub().as('onChange');
       mount(
-        <Basic
-          model="metadata.dateField"
-          value={null}
-          onChange={onChange}
-          locale="es"
-          format="dd-mm-yyyy"
-          labelToday="Hoy"
-          labelClear="Limpiar"
-          placeholder="Seleccione una fecha"
-          hideLabel={true}
-          className=""
-          useTimezone={true}
-        />
+        <Basic model="metadata.dateField" onChange={onChange} locale="es" useTimezone={true} />
       );
 
       cy.get('input[name="metadata.dateField"]').type('01-04-2005', { delay: 0 });

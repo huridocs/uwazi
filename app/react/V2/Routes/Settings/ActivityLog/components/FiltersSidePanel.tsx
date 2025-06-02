@@ -143,7 +143,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => {}}
+                onBlur={() => { }}
               />
               <InputField
                 id="search"
@@ -156,7 +156,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => {}}
+                onBlur={() => { }}
               />
               <Controller
                 control={control}
@@ -167,8 +167,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     label={<Translate translationKey="property daterange" />}
                     locale={locale}
                     className="pt-4 -top-4"
-                    placeholderStart={t('System', 'From', null, false)}
-                    placeholderEnd={t('System', 'To', null, false)}
                     labelToday={t('System', 'Today', null, false)}
                     hasErrors={fieldState.error !== undefined}
                     labelClear={t('System', 'Clear', null, false)}
@@ -190,6 +188,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     }}
                     fromInputRef={fromInputRef}
                     toInputRef={toInputRef}
+                    horizontal={true}
                   />
                 )}
               />
