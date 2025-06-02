@@ -4,16 +4,17 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
-
+import { createStore, Provider } from 'jotai';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { TableRow } from 'app/Library/components/TableRow';
 import { EntitySchema } from 'shared/types/entityType';
 import { TableViewColumn } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
+import { deletedEntityAtom } from 'V2/atoms';
 
 describe('TableRow', () => {
   const formattedPropertyDate = 'May 20, 2019';
-
+  const testStore = createStore();
   const commonColumns: TableViewColumn[] = [
     {
       label: 'Title1',
@@ -61,6 +62,7 @@ describe('TableRow', () => {
   const timestampProperty = Math.floor(Date.UTC(2019, 4, 20).valueOf() / 1000);
   const entity: IImmutable<EntitySchema> = Immutable.fromJS({
     _id: 'selectedEntity1',
+    sharedId: 'selectedEntity1',
     title: 'entity1',
     creationDate: timestampCreation,
     template: 'idTemplate1',
@@ -124,13 +126,16 @@ describe('TableRow', () => {
   let renderResult: RenderResult;
 
   function render(multipleSelection: boolean = false) {
+    testStore.set(deletedEntityAtom, 'selectedEntity1');
     const actualProps = { ...props, multipleSelection };
     ({ renderResult } = renderConnectedContainer(
-      <table>
-        <tbody>
-          <TableRow {...actualProps} />
-        </tbody>
-      </table>,
+      <Provider store={testStore}>
+        <table>
+          <tbody>
+            <TableRow {...actualProps} />
+          </tbody>
+        </table>
+      </Provider>,
       () => storeState
     ));
   }
@@ -140,6 +145,12 @@ describe('TableRow', () => {
       render();
       const row = screen.getByRole('row');
       expect(row.className).toContain('template-idTemplate1');
+    });
+
+    it('should add deleted class when entity is marked as deleted', () => {
+      render();
+      const row = screen.getByRole('row');
+      expect(row.className).toContain('deleted');
     });
   });
 

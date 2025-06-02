@@ -2,6 +2,7 @@ import { notificationActions } from 'app/Notifications';
 import api from 'app/Entities/EntitiesAPI';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
+import { atomStore, deletedEntityAtom } from 'V2/atoms';
 
 import * as saveEntityWithFiles from 'app/Library/actions/saveEntityWithFiles';
 import * as actions from '../actions';
@@ -14,6 +15,7 @@ describe('Entities actions', () => {
     spyOn(api, 'delete').and.callFake(async () => Promise.resolve());
     spyOn(api, 'deleteMultiple').and.callFake(async () => Promise.resolve());
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
+    spyOn(atomStore, 'set');
   });
 
   describe('saveEntity', () => {
@@ -64,9 +66,11 @@ describe('Entities actions', () => {
 
   describe('deleteEntity', () => {
     it('should delete the entity and notify', done => {
+      const entity = { sharedId: 'sharedId' };
       actions
-        .deleteEntity({ sharedId: 'sharedId' })(dispatch)
+        .deleteEntity(entity)(dispatch)
         .then(() => {
+          expect(atomStore.set).toHaveBeenCalledWith(deletedEntityAtom, 'sharedId');
           expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sharedId' }));
           expect(notificationActions.notify).toHaveBeenCalledWith('Entity deleted', 'success');
           done();

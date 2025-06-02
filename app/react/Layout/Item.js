@@ -16,7 +16,7 @@ import Tip from './Tip';
 import ItemSnippet from './ItemSnippet';
 import TemplateLabel from './TemplateLabel';
 
-export class Item extends Component {
+class Item extends Component {
   getSearchSnipett(doc) {
     if (!doc.snippets || !doc.snippets.count) {
       return false;
@@ -36,7 +36,7 @@ export class Item extends Component {
         <div className="item-snippet">{additionalText}</div>
       </div>
     ) : null;
-    const baseClasName = `item-document template-${doc.template}`;
+    const baseClasName = `item-document template-${doc.template} ${this.props.markAsDeleted ? ' deleted' : ''}`;
     const itemClassName = `${baseClasName} ${this.props.className || ''}`;
     const itemProps = {
       className: itemClassName,
@@ -68,20 +68,26 @@ export class Item extends Component {
             useV2Player
           />
         </div>
-        <ItemFooter>
-          <>
-            {doc.template ? <TemplateLabel template={doc.template} /> : false}
-            {doc.published ? (
-              ''
-            ) : (
-              <Tip icon="lock">
-                <Translate>This entity is restricted from public view.</Translate>
-              </Tip>
-            )}
-          </>
-          {this.props.labels}
-          {buttons}
-        </ItemFooter>
+        {this.props.markAsDeleted ? (
+          <ItemFooter>
+            <Translate>Deleted entity</Translate>
+          </ItemFooter>
+        ) : (
+          <ItemFooter>
+            <>
+              {doc.template ? <TemplateLabel template={doc.template} /> : false}
+              {doc.published ? (
+                ''
+              ) : (
+                <Tip icon="lock">
+                  <Translate>This entity is restricted from public view.</Translate>
+                </Tip>
+              )}
+            </>
+            {this.props.labels}
+            {buttons}
+          </ItemFooter>
+        )}
         <FeatureToggle feature="favorites">
           <div className="item-favorite">
             <FavoriteBanner sharedId={doc.sharedId} />
@@ -119,17 +125,19 @@ Item.propTypes = {
   className: PropTypes.string,
   titleProperty: PropTypes.string,
   evalPublished: PropTypes.bool,
+  markAsDeleted: PropTypes.bool,
 };
 
 Item.defaultProps = {
   search: prioritySortingCriteria.get(),
   titleProperty: 'title',
+  markAsDeleted: false,
 };
 
-export const mapStateToProps = ({ templates, thesauris }, ownProps) => {
+const mapStateToProps = ({ templates, thesauris }, ownProps) => {
   const search = ownProps.searchParams;
   const _templates = ownProps.templates || templates;
   return { templates: _templates, thesauris, search };
 };
-
+export { Item, mapStateToProps };
 export default connect(mapStateToProps)(Item);

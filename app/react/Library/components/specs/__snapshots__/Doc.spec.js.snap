@@ -148,6 +148,7 @@ exports[`Doc when target reference is specified should pass the target reference
       }
     />
   }
+  markAsDeleted={false}
   onClick={[Function]}
   searchParams={
     Object {

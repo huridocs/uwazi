@@ -3,7 +3,7 @@ import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { CopyValueInput } from '../CopyValueInput';
 
-describe('CopyValueInput', () => {
+describe('CopyValueInput', { viewportWidth: 500, viewportHeight: 500 }, () => {
   const Component = () => (
     <div className="tw-content" style={{ height: '200px', paddingTop: '40px' }}>
       <CopyValueInput label="name" value="some testing value" id="my-value" />
@@ -11,7 +11,6 @@ describe('CopyValueInput', () => {
   );
 
   before(() => {
-    cy.viewport(500, 500);
     cy.wrap(
       Cypress.automation('remote:debugger:protocol', {
         command: 'Browser.grantPermissions',
