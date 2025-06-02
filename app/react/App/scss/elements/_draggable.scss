@@ -1,12 +1,14 @@
+@use "../config/colors";
+
 @mixin draggable {
   .list-group-item {
     .fa-bars,
     .fa-lock {
       margin: 0 15px 0 0;
-      color: $c-grey;
+      color: colors.$c-grey;
     }
     &:hover .fa-bars {
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
     }
   }
 }
