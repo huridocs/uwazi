@@ -93,98 +93,17 @@ const IXSuggestions = () => {
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
 
-  useMemo(() => {
-    if (property?.type === 'multiselect' || property?.type === 'relationship') {
-      const flatenedSuggestions = suggestions.map(suggestion =>
-        generateChildrenRows(suggestion as MultiValueSuggestion)
-      );
-      setCurrentSuggestions(flatenedSuggestions);
-      return;
-    }
-
-    setCurrentSuggestions(
-      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
-    );
-  }, [suggestions, property]);
-
-  useEffect(() => {
-    socket.on(
-      SuggestionEvents.ix_model_status,
-      async (extractorId: string, modelStatus: string, _: string, data: any) => {
-        if (extractorId === extractor._id) {
-          setStatus({ status: modelStatus as ixStatus, data });
-          await revalidate();
-          if ((data && data.total === data.processed) || modelStatus === 'ready') {
-            setStatus({ status: 'ready' });
-          }
-        }
-      }
-    );
-
-    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, async () => {
-      await revalidate();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Suggestion have been updated</Translate>,
-      });
-    });
-
-    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, (message: string) => {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred while updating suggestions</Translate>,
-        details: message,
-      });
-    });
-
-    return () => {
-      socket.off('ix_model_status');
-      socket.off('ACCEPT_SUGGESTION_SUCCESS');
-      socket.off('ACCEPT_SUGGESTION_ERROR');
-    };
-  }, [extractor._id, revalidate, setNotifications]);
-
-  useEffect(() => {
-    setAggregations(aggregation);
-  }, [aggregation]);
-
-  useEffect(() => {
-    const navigatePromise = async (path: string) => navigate(path, { replace: true });
-
-    if (searchParams.has('sort') && !sorting.length) {
-      navigatePromise(location.pathname).catch(_e => {});
-    }
-
-    if (sorting.length && sorting[0].id) {
-      const _property = sorting[0].id;
-
-      if (!SORTABLE_PROPERTIES.includes(_property)) {
-        return;
-      }
-
-      const order = sorting[0].desc ? 'desc' : 'asc';
-
-      navigatePromise(
-        `${location.pathname}?sort={"property":"${_property}","order":"${order}"}`
-      ).catch(_e => {});
-    }
-  }, [sorting]);
-
-  useEffect(() => {
-    const template = templates.find(t => t._id === extractor.templates[0]);
-    const _property =
-      extractor.property === 'title'
-        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
-        : template?.properties.find(prop => prop.name === extractor.property);
-    setProperty(_property);
-  }, [templates, extractor]);
+  const fetchAgregations = async () => {
+    const newAggregations = await suggestionsAPI.aggregation(extractor._id!);
+    setAggregations(newAggregations);
+  };
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
   const onEntitySave = async (updatedEntity: ClientEntitySchema) => {
     setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity, property));
-    await revalidate();
+    await fetchAgregations();
   };
 
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
@@ -238,6 +157,92 @@ const IXSuggestions = () => {
     setSidepanelSuggestion(undefined);
     setSidepanel('none');
   };
+
+  useMemo(() => {
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
+      const flatenedSuggestions = suggestions.map(suggestion =>
+        generateChildrenRows(suggestion as MultiValueSuggestion)
+      );
+      setCurrentSuggestions(flatenedSuggestions);
+      return;
+    }
+
+    setCurrentSuggestions(
+      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
+    );
+  }, [suggestions, property]);
+
+  useEffect(() => {
+    socket.on(
+      SuggestionEvents.ix_model_status,
+      async (extractorId: string, modelStatus: string, _: string, data: any) => {
+        if (extractorId === extractor._id) {
+          setStatus({ status: modelStatus as ixStatus, data });
+          await revalidate();
+          if ((data && data.total === data.processed) || modelStatus === 'ready') {
+            setStatus({ status: 'ready' });
+          }
+        }
+      }
+    );
+
+    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, async () => {
+      await fetchAgregations();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Suggestions have been updated</Translate>,
+      });
+    });
+
+    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, (message: string) => {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred while updating suggestions</Translate>,
+        details: message,
+      });
+    });
+
+    return () => {
+      socket.off('ix_model_status');
+      socket.off('ACCEPT_SUGGESTION_SUCCESS');
+      socket.off('ACCEPT_SUGGESTION_ERROR');
+    };
+  }, [extractor._id, fetchAgregations, revalidate, setNotifications]);
+
+  useEffect(() => {
+    setAggregations(aggregation);
+  }, [aggregation]);
+
+  useEffect(() => {
+    const navigatePromise = async (path: string) => navigate(path, { replace: true });
+
+    if (searchParams.has('sort') && !sorting.length) {
+      navigatePromise(location.pathname).catch(_e => {});
+    }
+
+    if (sorting.length && sorting[0].id) {
+      const _property = sorting[0].id;
+
+      if (!SORTABLE_PROPERTIES.includes(_property)) {
+        return;
+      }
+
+      const order = sorting[0].desc ? 'desc' : 'asc';
+
+      navigatePromise(
+        `${location.pathname}?sort={"property":"${_property}","order":"${order}"}`
+      ).catch(_e => {});
+    }
+  }, [sorting]);
+
+  useEffect(() => {
+    const template = templates.find(t => t._id === extractor.templates[0]);
+    const _property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
+        : template?.properties.find(prop => prop.name === extractor.property);
+    setProperty(_property);
+  }, [templates, extractor]);
 
   return (
     <div
