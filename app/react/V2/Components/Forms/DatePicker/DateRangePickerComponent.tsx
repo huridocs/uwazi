@@ -196,7 +196,7 @@ const DateRangePickerComponent = ({
               ref={fromInputRef}
               disabled={disabled}
               className={`
-                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-20 pr-8
+                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-[80px] pr-8
                 placeholder-opacity-100 placeholder-gray-500
                 ${inputClassName || ''}
                 ${hasErrors || errorMessage
@@ -248,7 +248,7 @@ const DateRangePickerComponent = ({
               ref={toInputRef}
               disabled={disabled}
               className={`
-                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-20 pr-8
+                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-[80px] pr-8
                 placeholder-opacity-100 placeholder-gray-500
                 ${inputClassName || ''}
                 ${hasErrors || errorMessage

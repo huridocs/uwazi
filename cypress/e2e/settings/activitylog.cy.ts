@@ -13,7 +13,7 @@ describe('Activity log', () => {
     cy.contains('Create entity').click();
     cy.get('#metadataForm select').select('Reporte');
     cy.contains('Title').scrollIntoView();
-    cy.get('textarea[name="library.sidepanel.metadata.ttle"]:not([disabled])').type('AL Report');
+    cy.get('textarea[name="library.sidepanel.metadata.title"]:not([disabled])').type('AL Report');
     cy.contains('aside.side-panel.metadata-sidepanel.is-active .btn-success', 'Save').click();
     cy.contains('Entity created');
   });
@@ -138,7 +138,7 @@ describe('Activity log', () => {
   };
 
   it('should filter by method', () => {
-    cy.contains('button', 'Filters').click();
+    cy.contains('button', 'Filters').click({ force: true });
     selectMethod(2);
     applyFilters();
     cy.contains('editor');
@@ -146,10 +146,10 @@ describe('Activity log', () => {
   });
 
   it('should filter by dates', () => {
-    cy.contains('button', 'Filters').click();
-    cy.contains('button', 'Clear all').click();
+    cy.contains('button', 'Filters').click({ force: true });
+    cy.contains('button', 'Clear all').click({ force: true });
     applyFilters();
-    cy.contains('button', 'Filters').click();
+    cy.contains('button', 'Filters').click({ force: true });
     cy.get('#from').type('25/04/2024', { delay: 0 });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
@@ -162,15 +162,15 @@ describe('Activity log', () => {
 
   // eslint-disable-next-line max-statements
   it('should do a composed filter with search', () => {
-    cy.contains('button', 'Filters').click();
-    cy.contains('button', 'Clear all').click();
+    cy.contains('button', 'Filters').click({ force: true });
+    cy.contains('button', 'Clear all').click({ force: true });
     cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     cy.clearAndType('input[name=search]', 'Deleted entity', { delay: 0 });
     selectMethod(2);
     cy.get('#from').type('28/05/2024', { delay: 0, force: true });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
-    cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click();
+    cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click({ force: true });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
     applyFilters();
@@ -180,14 +180,14 @@ describe('Activity log', () => {
 
   // eslint-disable-next-line max-statements
   it('should do a composed filter with today', () => {
-    cy.contains('button', 'Filters').click();
-    cy.contains('button', 'Clear all').click();
+    cy.contains('button', 'Filters').click({ force: true });
+    cy.contains('button', 'Clear all').click({ force: true });
     cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     selectMethod(0);
     cy.get('#from').type('28/05/2024', { delay: 0, force: true });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
-    cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click();
+    cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click({ force: true });
     //eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(300);
     applyFilters();

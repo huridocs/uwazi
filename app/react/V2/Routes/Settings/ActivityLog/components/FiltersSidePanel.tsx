@@ -110,10 +110,10 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
             ...data,
             dateRange: {
               from: data.dateRange?.from
-                ? moment(Number(data.dateRange.from) * 1000).format(dateFormat)
+                ? moment(Number(data.dateRange.from) * 1000).format("YYYY-MM-DD")
                 : undefined,
               to: data.dateRange?.to
-                ? moment(Number(data.dateRange.to) * 1000).format(dateFormat)
+                ? moment(Number(data.dateRange.to) * 1000).format("YYYY-MM-DD")
                 : undefined,
             },
           };
