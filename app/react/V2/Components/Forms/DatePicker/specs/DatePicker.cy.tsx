@@ -161,26 +161,52 @@ describe('DatePicker', () => {
       });
     });
 
-    describe('when using a non-latin locale', () => {
-      it('should render dates in latin format', () => {
+    describe('i18n support', () => {
+      it('should render the calendar in spanish', () => {
         const date = moment.utc('2016-07-28T00:00:00+00:00');
-        mount(<Basic value={Number(date.format('X'))} locale="ar" />);
+        mount(<Basic value={Number(date.format('X'))} language="es" />);
         cy.get('input[name=dateField]').should(
           'have.value',
           moment('2016-07-28').local().format('DD-MM-YYYY')
         );
+        cy.get('input[name=dateField]').click();
+        cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'julio 2016');
       });
 
-      it('should handle date selection correctly', () => {
-        const onChange = cy.stub().as('onChange');
-        mount(<Basic onChange={onChange} locale="ar" />);
+      it('should render the calendar in english', () => {
+        const date = moment.utc('2016-07-28T00:00:00+00:00');
+        mount(<Basic value={Number(date.format('X'))} locale="en" />);
+        cy.get('input[name=dateField]').should(
+          'have.value',
+          moment('2016-07-28').local().format('DD-MM-YYYY')
+        );
         cy.get('input[name=dateField]').click();
-        cy.get('.days')
-          .eq(0)
-          .within(() => {
-            cy.contains('12').click();
-          });
-        cy.get('@onChange').should('have.been.called');
+        cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'July 2016');
+      });
+
+      describe('when using a non-latin locale', () => {
+        it('should render dates in latin format', () => {
+          const date = moment.utc('2016-07-28T00:00:00+00:00');
+          mount(<Basic value={Number(date.format('X'))} locale="ar" />);
+          cy.get('input[name=dateField]').should(
+            'have.value',
+            moment('2016-07-28').local().format('DD-MM-YYYY')
+          );
+          cy.get('input[name=dateField]').click();
+          cy.contains('.datepicker.datepicker-dropdown', 'يوليو 2016');
+        });
+
+        it('should handle date selection correctly', () => {
+          const onChange = cy.stub().as('onChange');
+          mount(<Basic onChange={onChange} locale="ar" />);
+          cy.get('input[name=dateField]').click();
+          cy.get('.days')
+            .eq(0)
+            .within(() => {
+              cy.contains('12').click();
+            });
+          cy.get('@onChange').should('have.been.called');
+        });
       });
     });
 
@@ -197,6 +223,7 @@ describe('DatePicker', () => {
         cy.get('@onChange').should('have.been.called');
       });
     });
+
     describe('when useTimezone is true (for activity log, etc)', () => {
       it('should set the value to timestamp NOT offsetting to UTC', () => {
         const onChange = cy.stub().as('onChange');

@@ -84,61 +84,6 @@ export const validateLocale = (language: string) => {
   }
 };
 
-export interface DatePickerProps {
-  id?: string;
-  model?: string;
-  name?: string;
-  value?: string | number;
-  autoComplete?: 'on' | 'off';
-  language?: string;
-  dateFormat?: string;
-  hideLabel?: boolean;
-  inputClassName?: string;
-  className?: string;
-  labelToday?: string;
-  labelClear?: string;
-  label?: React.ReactNode;
-  disabled?: boolean;
-  placeholder?: string;
-  hasErrors?: boolean;
-  errorMessage?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  useTimezone?: boolean;
-  endOfDay?: boolean;
-  showCalendarIcon?: boolean;
-  showClearFieldIcon?: boolean;
-  required?: boolean;
-  inputRef?: React.RefObject<HTMLInputElement>;
-  innerLabel?: string;
-}
-
-export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
-  language: string;
-  dateFormat?: string;
-  hideLabel?: boolean;
-  className?: string;
-  model?: string;
-  value?: {
-    from: string | number | null;
-    to: string | number | null;
-  };
-  onSelect?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholderStart?: string;
-  placeholderEnd?: string;
-  onFromDateSelected?: any;
-  onToDateSelected?: any;
-  disabled?: boolean;
-  hasErrors?: boolean;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  showCalendarIcon?: boolean;
-  showClearFieldIcon?: boolean;
-  required?: boolean;
-  fromInputRef?: React.RefObject<HTMLInputElement>;
-  toInputRef?: React.RefObject<HTMLInputElement>;
-  horizontal?: boolean;
-}
-
 export const formatDate = (
   value: moment.Moment | null,
   dateFormat: string,

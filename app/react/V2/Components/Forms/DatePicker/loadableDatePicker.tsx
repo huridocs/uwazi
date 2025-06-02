@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import loadable from '@loadable/component';
-import { DatePickerProps, DateRangePickerProps } from './dateUtils';
+import { DatePickerProps, DateRangePickerProps } from './types';
 
 const DatePickerComponent = loadable(async () => {
   const { DatePickerComponent: Component } = await import(

@@ -6,16 +6,16 @@ import React, { useEffect, useRef } from 'react';
 import { Datepicker } from 'flowbite-datepicker';
 import 'flowbite/dist/flowbite.min.css';
 import { CalendarIcon, XCircleIcon } from '@heroicons/react/20/solid';
-import uniqueID from 'shared/uniqueID';
+import { useAtomValue } from 'jotai';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom } from 'app/V2/atoms';
+import { Translate } from 'app/I18N';
 import { debounce } from 'app/utils';
+import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { datePickerOptionsByLocale, validateLocale, handleKeyDown } from './dateUtils';
-import { DatePickerProps } from './dateUtils';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { settingsAtom } from 'app/V2/atoms';
-import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
+import { DatePickerProps } from './types';
 
 const DatePickerComponent = ({
   id = uniqueID(),
@@ -34,8 +34,8 @@ const DatePickerComponent = ({
   placeholder,
   hasErrors = false,
   errorMessage,
-  onChange = () => {},
-  onBlur = () => {},
+  onChange = () => { },
+  onBlur = () => { },
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
@@ -121,7 +121,7 @@ const DatePickerComponent = ({
           data-datepicker="true"
           data-datepicker-buttons="true"
           data-datepicker-autoselect-today="true"
-          className="relative text-gray-600"
+          className="relative text-gray-600 react-datepicker-wrapper"
         >
           {showCalendarIcon && (
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex gap-2">
@@ -150,11 +150,10 @@ const DatePickerComponent = ({
   placeholder-opacity-100 placeholder-gray-500
   ${innerLabel ? 'pl-[80px]' : 'pl-10'}
   ${inputClassName || ''}
-  ${
-    hasErrors || errorMessage
-      ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
-      : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
-  }
+  ${hasErrors || errorMessage
+                ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+              }
 `}
             placeholder={placeholder || dateFormat}
             autoComplete={autoComplete}

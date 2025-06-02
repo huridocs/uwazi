@@ -52,7 +52,7 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
               <DatePicker
                 locale={this.props.locale}
                 format={this.props.format}
-                onChange={val => this.onChange(index, val)}
+                onChange={val => this.onChange(index, val as number | null)}
                 value={value}
                 showClearFieldIcon={false}
               />

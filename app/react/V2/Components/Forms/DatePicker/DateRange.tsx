@@ -1,40 +1,13 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import moment from 'moment-timezone';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
 import { LazyDateRangePicker } from './loadableDatePicker';
 import { removeOffset, addOffset, formatDate } from './dateUtils';
+import { DateRangePickerProps } from './types';
 
-interface DateRangeProps {
-  label?: ReactNode;
-  labelToday?: string;
-  labelClear?: string;
-  disabled?: boolean;
-  hasErrors?: boolean;
-  value?: { from: string | number | null; to: string | number | null };
-  onChange?: (val: { from: number | null; to: number | null }) => void;
-  locale?: string;
-  format?: string;
-  useTimezone?: boolean;
-  endOfDay?: boolean;
-  model?: string;
-  name?: string;
-  placeholderStart?: string;
-  placeholderEnd?: string;
-  hideLabel?: boolean;
-  className?: string;
-  onBlur?: any;
-  onClear?: any;
-  errorMessage?: string;
-  required?: boolean;
-  fromInputRef?: React.RefObject<HTMLInputElement>;
-  toInputRef?: React.RefObject<HTMLInputElement>;
-  showClearFieldIcon?: boolean;
-  horizontal?: boolean;
-}
-
-const DateRange: React.FC<DateRangeProps> = ({
+const DateRange: React.FC<DateRangePickerProps> = ({
   value,
   label,
   labelToday = 'Today',
@@ -108,7 +81,8 @@ const DateRange: React.FC<DateRangeProps> = ({
 
     const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
     if (withOffset) {
-      onChange({ from: withOffset.valueOf() / 1000, to: toSeconds });
+      const fromSeconds = withOffset.valueOf() / 1000;
+      onChange({ from: fromSeconds, to: toSeconds });
       setFromInputValue(withOffset);
     }
   };
@@ -126,42 +100,43 @@ const DateRange: React.FC<DateRangeProps> = ({
       return;
     }
 
-    const withOffset = addOffset(parsedDate.valueOf(), useTimezone, endOfDay);
+    const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
     if (withOffset) {
-      onChange({ from: fromSeconds, to: withOffset.valueOf() / 1000 });
+      const toSeconds = withOffset.valueOf() / 1000;
+      onChange({ from: fromSeconds, to: toSeconds });
       setToInputValue(withOffset);
     }
   };
 
-  const formattedFrom = formatDate(fromInputValue, dateFormat, useTimezone);
-  const formattedTo = formatDate(toInputValue, dateFormat, useTimezone);
+  const formattedFromDate = formatDate(fromInputValue, dateFormat, useTimezone);
+  const formattedToDate = formatDate(toInputValue, dateFormat, useTimezone);
 
   return (
     <div className="date-range">
       <LazyDateRangePicker
+        label={label}
         language={locale}
         dateFormat={dateFormat.toLowerCase()}
-        useTimezone={useTimezone}
-        endOfDay={endOfDay}
-        hideLabel={hideLabel}
-        className={className}
         model={model || name}
-        value={{ from: formattedFrom, to: formattedTo }}
-        label={label}
-        labelToday={labelToday}
-        labelClear={labelClear}
-        placeholderStart={placeholderStart}
-        placeholderEnd={placeholderEnd}
-        disabled={disabled}
-        hasErrors={hasErrors}
-        errorMessage={errorMessage}
+        value={{ from: formattedFromDate, to: formattedToDate }}
         onFromDateSelected={handleFromChange}
         onToDateSelected={handleToChange}
         onBlur={onBlur}
+        placeholderStart={placeholderStart}
+        placeholderEnd={placeholderEnd}
+        labelToday={labelToday}
+        labelClear={labelClear}
+        hideLabel={hideLabel}
+        className={className}
+        disabled={disabled}
+        hasErrors={hasErrors}
+        errorMessage={errorMessage}
+        useTimezone={useTimezone}
+        endOfDay={endOfDay}
+        showClearFieldIcon={showClearFieldIcon}
         required={required}
         fromInputRef={fromInputRef}
         toInputRef={toInputRef}
-        showClearFieldIcon={showClearFieldIcon}
         horizontal={horizontal}
       />
     </div>

@@ -68,7 +68,7 @@ class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState>
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
-                    onChange={val => this.fromChange(index, val)}
+                    onChange={val => this.fromChange(index, val as number | null)}
                     innerLabel='Label date "From"'
                   />
                 </div>
@@ -78,7 +78,7 @@ class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState>
                     format={this.props.format}
                     value={value.to}
                     endOfDay
-                    onChange={val => this.toChange(index, val)}
+                    onChange={val => this.toChange(index, val as number | null)}
                     innerLabel='Label date "to"'
                   />
                 </div>

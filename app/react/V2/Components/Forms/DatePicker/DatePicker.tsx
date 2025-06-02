@@ -1,40 +1,13 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import moment from 'moment-timezone';
 import { settingsAtom } from 'app/V2/atoms';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { removeOffset, addOffset, formatDate } from './dateUtils';
 import { LazyDatePicker } from './loadableDatePicker';
+import { LazyDatePickerProps } from './types';
 
-interface DatePickerProps {
-  label?: ReactNode;
-  value?: string | number | null;
-  onChange?: (value: number | null) => void;
-  locale?: string;
-  format?: string;
-  labelToday?: string;
-  labelClear?: string;
-  useTimezone?: boolean;
-  endOfDay?: boolean;
-  model?: string;
-  name?: string;
-  placeholder?: string;
-  hideLabel?: boolean;
-  className?: string;
-  onBlur?: any;
-  disabled?: boolean;
-  hasErrors?: boolean;
-  errorMessage?: string;
-  showCalendarIcon?: boolean;
-  showClearFieldIcon?: boolean;
-  required?: boolean;
-  autoComplete?: 'on' | 'off';
-  inputRef?: React.RefObject<HTMLInputElement>;
-  inputClassName?: string;
-  innerLabel?: string;
-}
-
-const DatePicker: React.FC<DatePickerProps> = ({
+const DatePicker: React.FC<LazyDatePickerProps> = ({
   value,
   label,
   onChange = () => {},
@@ -94,7 +67,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
       if (withOffset) {
         setInputValue(withOffset);
-        onChange(withOffset.valueOf() / 1000); // return seconds
+        onChange(withOffset.valueOf() / 1000);
       }
     }
   };

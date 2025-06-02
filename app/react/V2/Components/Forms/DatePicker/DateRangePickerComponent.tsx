@@ -4,17 +4,18 @@ import React, { useEffect, useRef } from 'react';
 //@ts-ignore
 import { Datepicker, DateRangePicker } from 'flowbite-datepicker';
 import 'flowbite/dist/flowbite.min.css';
-import { debounce } from 'app/utils';
+import { useAtomValue } from 'jotai';
 import { CalendarDateRangeIcon, XCircleIcon } from '@heroicons/react/20/solid';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom } from 'V2/atoms';
+import { debounce } from 'app/utils';
+import { Translate } from 'app/I18N';
 import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
-import { DateRangePickerProps, handleKeyDown } from './dateUtils';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { settingsAtom } from 'app/V2/atoms';
-import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
+import { handleKeyDown } from './dateUtils';
+import { DateRangePickerProps } from './types';
 
 const DateRangePickerComponent = ({
   id = uniqueID(),
