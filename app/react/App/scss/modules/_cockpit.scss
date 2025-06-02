@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .notice {
   background-color: #FAFBFF;
   border-radius: 8px;
@@ -85,17 +88,17 @@
   th,
   td {
     padding: 7px 10px;
-    background-color: $c-white;
+    background-color: colors.$c-white;
   }
   th[scope='col'],
   td {
     text-align: center;
   }
   th:not(:last-of-type) {
-    border-right: 1px solid $c-white;
+    border-right: 1px solid colors.$c-white;
   }
   tr:not(:last-of-type) {
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   thead th:nth-child(1) {
@@ -118,18 +121,18 @@
   }
 
   .quality-icon {
-    font-size: $f-size-xs;
+    font-size: typography.$f-size-xs;
   }
 
   .quality-high {
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   .quality-med {
-    color: $c-warning;
+    color: colors.$c-warning;
   }
 
   .quality-low {
-    color: $c-danger;
+    color: colors.$c-danger;
   }
 }

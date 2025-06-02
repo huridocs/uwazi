@@ -1,8 +1,12 @@
+@use "../config/colors";
+@use "../config/materials";
+@use "../config/typography";
+
 @use "sass:color";
 
 .library-filters {
   z-index: 6;
-  top: $header-height;
+  top: materials.$header-height;
 
   @media (min-width: 1024px) {
     z-index: 4;
@@ -28,20 +32,20 @@
   }
 
   .form-control {
-    height: $header-height * 0.88;
+    height: materials.$header-height * 0.88;
     padding-left: 15px;
     padding-right: 35px;
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     border: 0;
-    border: 1px solid $c-grey-light !important;
-    box-shadow: $box-shadow;
+    border: 1px solid colors.$c-grey-light !important;
+    box-shadow: materials.$box-shadow;
     z-index: 4;
 
-    @include placeholder($c-black);
+    @include materials.placeholder(colors.$c-black);
 
     &:focus {
       box-shadow: none;
-      @include placeholder(transparent);
+      @include materials.placeholder(transparent);
     }
   }
 
@@ -49,7 +53,7 @@
   .input-group .fa-flask,
   .input-group .fa-times {
     position: absolute;
-    line-height: $header-height;
+    line-height: materials.$header-height;
     top: 50%;
     transform: translateY(-50%);
     z-index: 4;
@@ -58,7 +62,7 @@
   .input-group .fa-search,
   .input-group .fa-flask {
     right: 20px;
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     cursor: pointer;
   }
 
@@ -69,15 +73,15 @@
     height: 18px;
     line-height: 18px;
     text-align: center;
-    font-size: $f-size-sm;
-    color: $c-grey;
-    border: 1px solid $c-grey;
+    font-size: typography.$f-size-sm;
+    color: colors.$c-grey;
+    border: 1px solid colors.$c-grey;
     border-radius: 50%;
     cursor: pointer;
 
     &:hover {
-      color: $c-black;
-      border-color: $c-black;
+      color: colors.$c-black;
+      border-color: colors.$c-black;
     }
   }
 
@@ -86,9 +90,9 @@
   }
 
   .modal-tip-label {
-    font-size: $f-size-xs;
-    color: $c-primary;
-    border-bottom: 1px solid $c-primary-light;
+    font-size: typography.$f-size-xs;
+    color: colors.$c-primary;
+    border-bottom: 1px solid colors.$c-primary-light;
     cursor: pointer;
   }
 
@@ -105,9 +109,9 @@
   border-radius: 0;
   border: 0;
   float: right;
-  width: $header-height;
-  height: $header-height;
-  line-height: $header-height + 2px;
+  width: materials.$header-height;
+  height: materials.$header-height;
+  line-height: materials.$header-height + 2px;
   padding: 0;
   z-index: 3;
 
@@ -118,10 +122,10 @@
   &,
   &:hover,
   &:active {
-    @if $theme ==light {
-      color: $c-black;
+    @if colors.$theme ==light {
+      color: colors.$c-black;
     } @else {
-      color: $c-white;
+      color: colors.$c-white;
     }
 
     box-shadow: none;
@@ -129,7 +133,7 @@
 
   &.is-active {
     position: absolute;
-    width: $header-height;
+    width: materials.$header-height;
     margin-left: 0;
 
     @media (min-width: 454px) {
@@ -166,28 +170,28 @@
 .search-suggestions {
   display: none !important;
   position: absolute;
-  top: $header-height - 1px;
+  top: materials.$header-height - 1px;
   left: 0;
   width: 100%;
-  background: $c-white;
+  background: colors.$c-white;
   z-index: 40;
-  color: $c-black;
-  border-bottom: 1px solid $c-grey-light;
+  color: colors.$c-black;
+  border-bottom: 1px solid colors.$c-grey-light;
   line-height: 1em;
 
   &.is-active {
     display: block;
-    box-shadow: $box-shadow;
+    box-shadow: materials.$box-shadow;
   }
 }
 
 .search-suggestions-item {
   position: relative;
   margin: 0;
-  border-top: 1px solid $c-grey-light;
+  border-top: 1px solid colors.$c-grey-light;
 
   &:hover {
-    background: $c-grey-lighten;
+    background: colors.$c-grey-lighten;
   }
 
   a {
@@ -197,9 +201,9 @@
     align-items: center;
     padding-left: 35px;
     margin-right: 40px;
-    height: $header-height;
+    height: materials.$header-height;
     line-height: 1.3em;
-    color: $c-black;
+    color: colors.$c-black;
     text-decoration: none;
   }
 
@@ -221,16 +225,16 @@
 .search-suggestions-all {
   display: block;
   width: 100%;
-  line-height: $header-height;
+  line-height: materials.$header-height;
   padding: 0;
-  background: $c-grey-lighten;
+  background: colors.$c-grey-lighten;
   border: 0;
-  border-top: 1px solid $c-grey-light;
+  border-top: 1px solid colors.$c-grey-light;
   box-shadow: none !important;
   outline: none !important;
 
   &:hover {
-    background: $c-grey-light;
+    background: colors.$c-grey-light;
   }
 
   .fa {
@@ -245,13 +249,13 @@
 
 .filters-box {
   .empty-state {
-    color: $c-grey;
+    color: colors.$c-grey;
     text-align: center;
     padding: 30px;
 
     .fa {
       display: block;
-      font-size: $f-size-xl;
+      font-size: typography.$f-size-xl;
       margin: 0 auto 5px;
     }
   }
@@ -288,13 +292,13 @@
   list-style-type: none;
   margin: 0;
   padding: 15px;
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
   display: flex;
   flex-direction: column;
 
   &:not(:last-child),
   .form-group:not(:last-child) & {
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   > li:first-child {
@@ -303,13 +307,13 @@
     width: 100%;
     font-weight: 300;
     font-style: normal;
-    font-family: $f-special;
+    font-family: typography.$f-special;
     margin-bottom: 0;
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     line-height: inherit;
 
     label {
-      font-size: $f-size;
+      font-size: typography.$f-size;
       text-transform: none;
       letter-spacing: 0;
       font-weight: 300;
@@ -331,21 +335,21 @@
   }
 
   .fa-caret-left {
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   .fa-caret-left + span {
     margin-left: 5px;
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   .fa-times {
-    color: $c-danger;
+    color: colors.$c-danger;
   }
 
   .fa-times + span {
     margin-left: 5px;
-    color: $c-danger;
+    color: colors.$c-danger;
     cursor: pointer;
   }
 }
@@ -360,8 +364,8 @@
   }
 
   label {
-    font-family: $f-regular !important;
-    font-size: $f-size !important;
+    font-family: typography.$f-regular !important;
+    font-size: typography.$f-size !important;
     font-weight: bold;
   }
 
@@ -395,8 +399,8 @@
   ol {
     overflow-y: scroll;
     height: 130px;
-    background: $c-white;
-    border: 1px solid $c-grey;
+    background: colors.$c-white;
+    border: 1px solid colors.$c-grey;
     border-top: 0;
     list-style-type: none;
     padding: 0;
@@ -464,14 +468,14 @@
   float: right;
 
   span {
-    font-family: $f-regular;
-    font-size: $f-size-sm;
+    font-family: typography.$f-regular;
+    font-size: typography.$f-size-sm;
     letter-spacing: 0.1em;
-    color: $c-grey;
+    color: colors.$c-grey;
   }
 
   span.is-active {
-    color: $c-primary;
+    color: colors.$c-primary;
     font-weight: bold;
   }
 
@@ -491,9 +495,9 @@
   width: 20px;
   height: $switcher-height;
   margin: 0 3px;
-  background-color: color.adjust($c-primary, $lightness: 10%, $space: hsl);
+  background-color: color.adjust(colors.$c-primary, $lightness: 10%, $space: hsl);
   border-radius: calc($switcher-height / 2);
-  border: 1px solid $c-primary;
+  border: 1px solid colors.$c-primary;
   cursor: pointer;
 
   &:after {
@@ -503,7 +507,7 @@
     right: 0;
     width: $switcher-height - 2;
     height: $switcher-height - 2;
-    background-color: $c-white;
+    background-color: colors.$c-white;
     border-radius: 50%;
   }
 
@@ -533,11 +537,11 @@
   list-style-type: none;
 
   &:not(:last-child) {
-    border-bottom: 1px dotted $c-grey;
+    border-bottom: 1px dotted colors.$c-grey;
   }
 
   & > .no-options-message span {
-    color: $c-grey;
+    color: colors.$c-grey;
   }
 }
 
@@ -546,37 +550,37 @@
 }
 
 .multiselectLabel {
-  font-family: $f-special;
+  font-family: typography.$f-special;
   position: relative;
   margin-bottom: 8px;
 
   input.form-control {
     border: 0;
-    border-bottom: 1px solid $c-grey;
+    border-bottom: 1px solid colors.$c-grey;
     border-radius: 0;
     box-shadow: none;
     padding-left: 26px;
 
     &:focus {
-      border-bottom-color: $c-black;
+      border-bottom-color: colors.$c-black;
     }
   }
 
   .fa {
-    color: $c-grey;
+    color: colors.$c-grey;
     position: absolute;
     top: 9px;
     left: 6px;
   }
 
   input.form-control:focus ~ .fa {
-    color: $c-black;
+    color: colors.$c-black;
   }
 }
 
 .multiselectLabel-icon {
   float: right;
-  font-size: $f-size-lg;
+  font-size: typography.$f-size-lg;
 }
 
 .multiselectItem {
@@ -585,7 +589,7 @@
 }
 
 .multiselectItem-name {
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
   max-width: calc(100% - 50px);
   margin-bottom: 7px;
 
@@ -595,12 +599,12 @@
   }
 
   svg {
-    font-size: $f-size-xs;
+    font-size: typography.$f-size-xs;
     width: 1.1em !important;
   }
 
   a {
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     font-size: 1em;
     text-transform: none;
     letter-spacing: 0;
@@ -614,23 +618,23 @@
 
 .multiselectItem-results {
   text-align: right;
-  font-size: $f-size;
+  font-size: typography.$f-size;
   height: 24px;
   padding-right: 3px;
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
 }
 
 .multiselectItem-action {
-  font-size: $f-size-sm;
+  font-size: typography.$f-size-sm;
   width: 16px;
   height: 16px;
   line-height: 16px;
   text-align: center;
-  border: 1px solid $c-grey;
-  border-radius: $border-radius;
+  border: 1px solid colors.$c-grey;
+  border-radius: materials.$border-radius;
 
   &:hover {
-    border-color: $c-black;
+    border-color: colors.$c-black;
     cursor: pointer;
   }
 
@@ -647,20 +651,20 @@
   position: absolute;
   top: 0;
   right: 0;
-  font-size: $f-size-sm;
+  font-size: typography.$f-size-sm;
   font-weight: 700;
   width: 50px;
   line-height: 24px;
   height: 24px;
   padding: 0px 3px;
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
   text-align: center;
   vertical-align: middle;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 
   &:hover {
-    border-color: $c-black;
+    border-color: colors.$c-black;
     background: rgba(0, 0, 0, 0.2);
     cursor: pointer;
   }
@@ -672,8 +676,8 @@
 
 .multiselectItem-icon {
   width: 20px;
-  font-size: $f-size-lg;
-  color: $c-grey;
+  font-size: typography.$f-size-lg;
+  color: colors.$c-grey;
 
   &:first-of-type {
     position: relative;
@@ -693,7 +697,7 @@
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     position: relative;
     top: -1px;
   }
@@ -712,25 +716,25 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      color: $c-black;
+      color: colors.$c-black;
       cursor: pointer;
     }
   }
 
   .form-control {
-    border: 1px solid $c-grey-light;
+    border: 1px solid colors.$c-grey-light;
     border-radius: 0;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     width: auto;
     padding: 2px 30px 0 10px;
     margin-bottom: 5px;
-    @include placeholder($c-black);
+    @include materials.placeholder(colors.$c-black);
 
     &:focus {
       outline: none;
       box-shadow: none;
-      border-color: $c-grey;
-      @include placeholder(transparent);
+      border-color: colors.$c-grey;
+      @include materials.placeholder(transparent);
     }
   }
 
@@ -755,13 +759,13 @@
     border-radius: 0;
     border: 0;
     border-bottom: 1px solid transparent;
-    color: $c-black;
+    color: colors.$c-black;
     background: transparent;
     box-shadow: none !important;
 
     &:hover,
     &:focus {
-      border-color: $c-black;
+      border-color: colors.$c-black;
       background: transparent;
     }
 
@@ -786,22 +790,22 @@
 .multiselectItem-icon {
   .checkbox-empty {
     display: block;
-    color: $c-grey;
+    color: colors.$c-grey;
   }
 
   .checkbox-checked {
     display: none;
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   .checkbox-partial {
     display: none;
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   .checkbox-group {
     display: none;
-    color: $c-success;
+    color: colors.$c-success;
   }
 
   .chevron-right {
@@ -841,7 +845,7 @@
 
     .checkbox-checked {
       display: block;
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
     }
 
     .checkbox-partial {
@@ -876,7 +880,7 @@
   & ~ .multiselectItem-label .multiselectItem-name,
   & ~ .multiselectItem-results {
     font-weight: bold;
-    color: $c-black;
+    color: colors.$c-black;
   }
 }
 
@@ -898,7 +902,7 @@
   & ~ .multiselectItem-label .multiselectItem-name,
   & ~ .multiselectItem-results {
     font-weight: bold;
-    color: $c-black;
+    color: colors.$c-black;
   }
 }
 
@@ -924,13 +928,13 @@
   & ~ .multiselectItem-label .multiselectItem-name,
   & ~ .multiselectItem-results {
     font-weight: 500;
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
   }
 }
 
 .nested-selector {
   padding: 15px;
-  border-bottom: 1px solid $c-grey-light;
+  border-bottom: 1px solid colors.$c-grey-light;
 }
 
 .documentTypes-title {
@@ -939,9 +943,9 @@
   width: 100%;
   font-weight: 300;
   font-style: normal;
-  font-family: $f-special;
+  font-family: typography.$f-special;
   margin-bottom: 0;
-  color: $c-black;
+  color: colors.$c-black;
   line-height: inherit;
 }
 
@@ -960,7 +964,7 @@
   & ~ .multiselectItem-label .multiselectItem-name,
   & ~ .multiselectItem-results {
     font-weight: bold;
-    color: $c-black;
+    color: colors.$c-black;
   }
 }
 
@@ -971,7 +975,7 @@
   position: relative;
   float: left;
   width: 100%;
-  background: $c-white;
+  background: colors.$c-white;
   border-radius: 4px;
 
   > span {
@@ -979,7 +983,7 @@
     line-height: 34px;
     width: 60px;
     position: absolute;
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     padding-left: 10px;
   }
 
@@ -1035,7 +1039,7 @@
     -webkit-align-items: center;
     align-items: center;
     padding: 0;
-    font-size: $f-size;
+    font-size: typography.$f-size;
     line-height: 1.6em;
     width: 100%;
 
@@ -1047,15 +1051,15 @@
   }
 
   li:not(:last-of-type) {
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   li.snippet-list-item.fulltext-snippet:hover {
-    background-color: $c-grey-lighten;
+    background-color: colors.$c-grey-lighten;
   }
 
   li.snippet-list-item.selected {
-    background-color: $c-primary-lighten;
+    background-color: colors.$c-primary-lighten;
   }
 
   li.snippet-list-item-header {
@@ -1063,10 +1067,10 @@
     width: 100%;
     font-weight: 300;
     font-style: normal;
-    font-family: $f-special;
+    font-family: typography.$f-special;
     min-width: 30px;
     line-height: 2em;
-    font-size: $f-size;
+    font-size: typography.$f-size;
     padding: 15px 5px 0 5px;
   }
 
@@ -1075,14 +1079,14 @@
   }
 
   a .page-number {
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     font-weight: bold;
     padding-right: 5px;
   }
 
   a .snippet-text {
-    color: $c-black;
-    font-size: $f-size-sm;
+    color: colors.$c-black;
+    font-size: typography.$f-size-sm;
   }
 
   a {

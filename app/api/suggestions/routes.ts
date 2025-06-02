@@ -15,6 +15,7 @@ import {
   IXSuggestionAggregation,
   IXSuggestionsQuery,
 } from 'shared/types/suggestionType';
+import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
@@ -198,8 +199,15 @@ export const suggestionsRoutes = (app: Application) => {
     }),
     async (req, res, _next) => {
       const { suggestions } = req.body;
-      await Suggestions.accept(suggestions);
-      res.json({ success: true });
+
+      res.status(202).json({ success: true });
+
+      Suggestions.accept(suggestions)
+        .then(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'))
+        .catch(e => {
+          const error = handleError(e);
+          req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message);
+        });
     }
   );
 };

@@ -184,7 +184,7 @@ const AcceptButton = ({
         icon={getIcon(color)}
         color={color}
         disabled={isDisabled}
-        onClick={() => action && action([cell.row.original])}
+        onClick={async () => action && action([cell.row.original])}
       >
         <Translate>Accept</Translate>
       </EmbededButton>
@@ -285,7 +285,7 @@ type Color = 'red' | 'green' | 'orange';
 
 const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
-  acceptSuggestions: (suggestions: TableSuggestion[]) => void,
+  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
 ) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];

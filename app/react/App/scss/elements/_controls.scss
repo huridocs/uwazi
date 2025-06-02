@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .btn,
 .form-control,
 .input-group-addon {
@@ -15,7 +18,7 @@
 }
 
 .btn-primary {
-  @include btn($c-primary, $c-primary-dark);
+  @include btn(colors.$c-primary, colors.$c-primary-dark);
 }
 
 .btn-default.btn-disabled {
@@ -25,50 +28,50 @@
   &:active {
     pointer-events: none;
     cursor: default;
-    background: $c-white;
-    border-color: $c-grey;
-    color: $c-grey-dark;
+    background: colors.$c-white;
+    border-color: colors.$c-grey;
+    color: colors.$c-grey-dark;
   }
 }
 
 .btn-outline-success {
-  color: $c-success;
-  border-color: $c-success;
+  color: colors.$c-success;
+  border-color: colors.$c-success;
 }
 
 .btn-outline-danger {
-  color: $c-danger;
-  border-color: $c-danger;
+  color: colors.$c-danger;
+  border-color: colors.$c-danger;
 }
 
 .btn-outline-primary {
-  color: $c-primary;
-  border-color: $c-primary;
+  color: colors.$c-primary;
+  border-color: colors.$c-primary;
 }
 
 .btn-outline-secondary {
-  color: $c-black;
-  border-color: $c-black;
+  color: colors.$c-black;
+  border-color: colors.$c-black;
 }
 .btn-outline-warning {
-  color: $c-warning;
-  border-color: $c-warning;
+  color: colors.$c-warning;
+  border-color: colors.$c-warning;
 }
 .btn-hover-success:hover {
-  background-color: $c-success;
-  border-color: $c-success-dark;
-  color: $c-white;
+  background-color: colors.$c-success;
+  border-color: colors.$c-success-dark;
+  color: colors.$c-white;
 }
 
 .btn-hover-danger:hover {
-  background-color: $c-danger;
-  border-color: $c-danger-dark;
-  color: $c-white;
+  background-color: colors.$c-danger;
+  border-color: colors.$c-danger-dark;
+  color: colors.$c-white;
 }
 
 .btn-color {
-  font-size: $f-size-sm;
-  color: $c-white;
+  font-size: typography.$f-size-sm;
+  color: colors.$c-white;
   padding: 1px 5px;
   line-height: 1.5;
   border-radius: 3px;
@@ -77,119 +80,119 @@
 }
 
 .btn-color-0 {
-  background-color: $c-type-0;
+  background-color: colors.$c-type-0;
 }
 .btn-color-1 {
-  background-color: $c-type-1;
+  background-color: colors.$c-type-1;
 }
 .btn-color-2 {
-  background-color: $c-type-2;
+  background-color: colors.$c-type-2;
 }
 .btn-color-3 {
-  background-color: $c-type-3;
+  background-color: colors.$c-type-3;
 }
 .btn-color-4 {
-  background-color: $c-type-4;
+  background-color: colors.$c-type-4;
 }
 .btn-color-5 {
-  background-color: $c-type-5;
+  background-color: colors.$c-type-5;
 }
 .btn-color-6 {
-  background-color: $c-type-6;
+  background-color: colors.$c-type-6;
 }
 .btn-color-7 {
-  background-color: $c-type-7;
+  background-color: colors.$c-type-7;
 }
 .btn-color-8 {
-  background-color: $c-type-8;
+  background-color: colors.$c-type-8;
 }
 .btn-color-9 {
-  background-color: $c-type-9;
+  background-color: colors.$c-type-9;
 }
 .btn-color-10 {
-  background-color: $c-type-10;
+  background-color: colors.$c-type-10;
 }
 .btn-color-11 {
-  background-color: $c-type-11;
+  background-color: colors.$c-type-11;
 }
 .btn-color-12 {
-  background-color: $c-type-12;
+  background-color: colors.$c-type-12;
 }
 .btn-color-13 {
-  background-color: $c-type-13;
+  background-color: colors.$c-type-13;
 }
 .btn-color-14 {
-  background-color: $c-type-14;
+  background-color: colors.$c-type-14;
 }
 .btn-color-15 {
-  background-color: $c-type-15;
+  background-color: colors.$c-type-15;
 }
 .btn-color-16 {
-  background-color: $c-type-16;
+  background-color: colors.$c-type-16;
 }
 .btn-color-17 {
-  background-color: $c-type-17;
+  background-color: colors.$c-type-17;
 }
 .btn-color-18 {
-  background-color: $c-type-18;
+  background-color: colors.$c-type-18;
 }
 
 .color-0 {
-  color: $c-type-0;
+  color: colors.$c-type-0;
 }
 .color-1 {
-  color: $c-type-1;
+  color: colors.$c-type-1;
 }
 .color-2 {
-  color: $c-type-2;
+  color: colors.$c-type-2;
 }
 .color-3 {
-  color: $c-type-3;
+  color: colors.$c-type-3;
 }
 .color-4 {
-  color: $c-type-4;
+  color: colors.$c-type-4;
 }
 .color-5 {
-  color: $c-type-5;
+  color: colors.$c-type-5;
 }
 .color-6 {
-  color: $c-type-6;
+  color: colors.$c-type-6;
 }
 .color-7 {
-  color: $c-type-7;
+  color: colors.$c-type-7;
 }
 .color-8 {
-  color: $c-type-8;
+  color: colors.$c-type-8;
 }
 .color-9 {
-  color: $c-type-9;
+  color: colors.$c-type-9;
 }
 .color-10 {
-  color: $c-type-10;
+  color: colors.$c-type-10;
 }
 .color-11 {
-  color: $c-type-11;
+  color: colors.$c-type-11;
 }
 .color-12 {
-  color: $c-type-12;
+  color: colors.$c-type-12;
 }
 .color-13 {
-  color: $c-type-13;
+  color: colors.$c-type-13;
 }
 .color-14 {
-  color: $c-type-14;
+  color: colors.$c-type-14;
 }
 .color-15 {
-  color: $c-type-15;
+  color: colors.$c-type-15;
 }
 .color-16 {
-  color: $c-type-16;
+  color: colors.$c-type-16;
 }
 .color-17 {
-  color: $c-type-17;
+  color: colors.$c-type-17;
 }
 .color-18 {
-  color: $c-type-18;
+  color: colors.$c-type-18;
 }
 
 .btn-header {
@@ -201,7 +204,7 @@
 
 .form-control {
   height: 32px;
-  border-color: $c-grey;
+  border-color: colors.$c-grey;
   box-shadow: none;
 }
 
@@ -215,7 +218,7 @@ input[type='number'].form-control {
 
 .form-group {
   &.has-error .required {
-    color: $c-danger;
+    color: colors.$c-danger;
   }
 
   div.alert {
@@ -236,17 +239,17 @@ input[type='number'].form-control {
 }
 
 .form-group-label {
-  font-size: $f-size-sm;
+  font-size: typography.$f-size-sm;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
   margin-bottom: 5px;
 }
 
 .input-group {
   label {
     padding-left: 0;
-    background-color: $c-grey-light;
+    background-color: colors.$c-grey-light;
     border-left: 0;
     box-shadow: none;
     cursor: pointer;
@@ -264,23 +267,23 @@ input[type='number'].form-control {
 }
 
 .form-group-radio.has-error {
-  color: $c-danger;
+  color: colors.$c-danger;
 }
 
 .has-error {
   background: #fff1f1;
   .input-group-addon {
     position: relative;
-    background-color: $c-danger-light;
-    color: $c-danger;
-    border-color: $c-danger;
+    background-color: colors.$c-danger-light;
+    color: colors.$c-danger;
+    border-color: colors.$c-danger;
   }
 
   .form-control {
-    border-color: $c-danger;
+    border-color: colors.$c-danger;
   }
   .error-message {
-    color: $c-danger;
+    color: colors.$c-danger;
   }
 
   .error {
@@ -288,8 +291,8 @@ input[type='number'].form-control {
     position: absolute;
     top: 115%;
     left: 0%;
-    font-size: $f-size-sm;
-    color: $c-danger;
+    font-size: typography.$f-size-sm;
+    color: colors.$c-danger;
     .fa {
       margin-right: 3px;
     }
@@ -297,12 +300,12 @@ input[type='number'].form-control {
 }
 
 .validation-error {
-  color: $c-danger;
+  color: colors.$c-danger;
   position: relative;
   top: 1px;
   height: 0;
   font-weight: bold;
-  font-size: $f-size-sm;
+  font-size: typography.$f-size-sm;
 
   &-centered {
     width: 100%;
@@ -317,7 +320,7 @@ input[type='number'].form-control {
 .btn {
   outline: none !important;
   a {
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     text-decoration: none;
   }
 
@@ -329,7 +332,7 @@ input[type='number'].form-control {
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
-  background: $c-white;
+  background: colors.$c-white;
 }
 
 .form-control[disabled],
@@ -347,8 +350,8 @@ input[type='checkbox'][disabled] ~ label {
   button {
     background: none;
     border: none;
-    font-size: $f-size-xs;
-    color: $c-primary;
+    font-size: typography.$f-size-xs;
+    color: colors.$c-primary;
     display: block;
     margin: 0.2em 0 0 auto;
   }

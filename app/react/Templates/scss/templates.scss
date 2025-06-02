@@ -1,6 +1,6 @@
-@import '../../App/scss/config/_colors.scss';
-@import '../../App/scss/config/_typography.scss';
-@import '../../App/scss/config/_materials.scss';
+@use '../../App/scss/config/colors' as colors;
+@use '../../App/scss/config/typography' as typography;
+@use '../../App/scss/config/materials' as materials;
 
 .metadataTemplate-list {
   .no-properties {
@@ -70,9 +70,9 @@
 .metadataTemplate-list,
 .metadataTemplate-constructor {
   .list-group-item {
-    border-radius: $border-radius !important;
-    border: 1px solid $c-grey-light !important;
-    box-shadow: $box-shadow !important;
+    border-radius: materials.$border-radius !important;
+    border: 1px solid colors.$c-grey-light !important;
+    box-shadow: materials.$box-shadow !important;
     -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
     .fa-clone,
@@ -99,7 +99,7 @@
   -webkit-justify-content: space-between;
   justify-content: space-between;
   line-height: 23px;
-  border-color: $c-grey-light;
+  border-color: colors.$c-grey-light;
   border-left-color: transparent;
   outline: none;
   box-shadow: none;
@@ -111,7 +111,7 @@
 }
 
 .metadataTemplate-constructor {
-  border-left: 1px solid $c-grey;
+  border-left: 1px solid colors.$c-grey;
   padding-left: 30px;
 }
 
@@ -129,7 +129,7 @@
 
   .propery-form {
     .conflict {
-      color: $c-danger-dark;
+      color: colors.$c-danger-dark;
     }
 
     .suggestions-label {
