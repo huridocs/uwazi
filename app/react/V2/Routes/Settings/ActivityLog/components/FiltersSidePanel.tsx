@@ -53,7 +53,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     register,
     control,
     setValue,
-    handleSubmit,
+    handleSubmit: formSubmit,
     reset,
     formState: { errors },
   } = useForm<ActivityLogSearch>({
@@ -71,10 +71,9 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     setValue('username', '');
     setValue('method', []);
     setValue('search', '');
-    setValue('dateRange.from', null);
-    setValue('dateRange.to', null);
+    setValue('dateRange', { from: null, to: null });
 
-    // Ensure refs are available before trying to clear them
+    // Clear input refs
     if (fromInputRef?.current) {
       fromInputRef.current.value = '';
     }
@@ -96,6 +95,19 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     });
   };
 
+  const transformAndSubmit = (data: ActivityLogSearch) => {
+    const transformedData = {
+      ...data,
+      dateRange: {
+        from: data.dateRange?.from
+          ? moment(Number(data.dateRange.from)).format('YYYY-MM-DD')
+          : undefined,
+        to: data.dateRange?.to ? moment(Number(data.dateRange.to)).format('YYYY-MM-DD') : undefined,
+      },
+    };
+    onSubmit(transformedData);
+  };
+
   return (
     <Sidepanel
       withOverlay
@@ -105,20 +117,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     >
       <form
         id="activity-filters-form"
-        onSubmit={handleSubmit(async data => {
-          const transformedData = {
-            ...data,
-            dateRange: {
-              from: data.dateRange?.from
-                ? moment(Number(data.dateRange.from) * 1000).format("YYYY-MM-DD")
-                : undefined,
-              to: data.dateRange?.to
-                ? moment(Number(data.dateRange.to) * 1000).format("YYYY-MM-DD")
-                : undefined,
-            },
-          };
-          onSubmit(transformedData);
-        })}
+        onSubmit={formSubmit(transformAndSubmit)}
         style={{ width: '100%', overflowY: 'auto', scrollbarGutter: 'stable' }}
       >
         <Sidepanel.Body>
@@ -143,7 +142,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                   setValue('username', '');
                 }}
                 onChange={handleInputSubmit('username')}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <InputField
                 id="search"
@@ -156,7 +155,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 }}
                 onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
-                onBlur={() => { }}
+                onBlur={() => {}}
               />
               <Controller
                 control={control}

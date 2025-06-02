@@ -4,7 +4,6 @@ import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
-import { ClientSettings } from 'app/apiResponseTypes';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
@@ -46,10 +45,7 @@ const sortParam = (sort = '', order = '') =>
 
 const paramOrEmpty = (condition: boolean, param: {}) => (condition ? param : {});
 
-const getQueryParamsBySearchParams = (
-  searchParams: ActivityLogSearchParams,
-  dateFormat = 'YYYY-MM-DD'
-) => {
+const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
   const {
     username,
     search,
@@ -87,12 +83,11 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
 };
 
 const activityLogLoader =
-  (headers?: IncomingHttpHeaders, handlerContext?: { settings?: ClientSettings }): LoaderFunction =>
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ request }) => {
-    const { settings } = handlerContext || { dateFormat: 'YYYY-MM-DD' };
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
-    const params = getQueryParamsBySearchParams(searchParams, settings?.dateFormat);
+    const params = getQueryParamsBySearchParams(searchParams);
     const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
     if (activityLogList.message !== undefined) {
       return {

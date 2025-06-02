@@ -44,8 +44,8 @@ const ActivityLog = () => {
       return {
         ...filters,
         dateRange: {
-          from: from ? moment(from, 'YYYY-MM-DD').valueOf() : '',
-          to: to ? moment(to, 'YYYY-MM-DD').valueOf() : '',
+          from: from ? moment(from, 'YYYY-MM-DD').startOf('day').valueOf() : null,
+          to: to ? moment(to, 'YYYY-MM-DD').endOf('day').valueOf() : null,
         },
       };
     }
