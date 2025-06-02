@@ -30,6 +30,8 @@ interface DatePickerProps {
   required?: boolean;
   autoComplete?: 'on' | 'off';
   inputRef?: React.RefObject<HTMLInputElement>;
+  inputClassName?: string;
+  innerLabel?: string;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -56,6 +58,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
   required = false,
   inputRef,
   autoComplete = 'off',
+  inputClassName,
+  innerLabel,
 }) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
@@ -122,6 +126,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
         required={required}
         inputRef={inputRef}
         autoComplete={autoComplete}
+        innerLabel={innerLabel}
+        inputClassName={inputClassName}
       />
     </div>
   );

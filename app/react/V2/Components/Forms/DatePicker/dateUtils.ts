@@ -110,6 +110,7 @@ export interface DatePickerProps {
   showClearFieldIcon?: boolean;
   required?: boolean;
   inputRef?: React.RefObject<HTMLInputElement>;
+  innerLabel?: string;
 }
 
 export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
@@ -135,6 +136,7 @@ export interface DateRangePickerProps extends Omit<DatePickerProps, 'value'> {
   required?: boolean;
   fromInputRef?: React.RefObject<HTMLInputElement>;
   toInputRef?: React.RefObject<HTMLInputElement>;
+  horizontal?: boolean;
 }
 
 export const formatDate = (

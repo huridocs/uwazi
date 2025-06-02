@@ -30,6 +30,7 @@ interface DateRangeProps {
   required?: boolean;
   fromInputRef?: React.RefObject<HTMLInputElement>;
   toInputRef?: React.RefObject<HTMLInputElement>;
+  showClearFieldIcon?: boolean;
 }
 
 const DateRange: React.FC<DateRangeProps> = ({
@@ -39,7 +40,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   labelClear = 'Clear',
   disabled = false,
   hasErrors = false,
-  onChange = () => { },
+  onChange = () => {},
   locale = 'en',
   format,
   useTimezone = false,
@@ -55,6 +56,7 @@ const DateRange: React.FC<DateRangeProps> = ({
   required = false,
   fromInputRef,
   toInputRef,
+  showClearFieldIcon = true,
 }) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
@@ -157,6 +159,7 @@ const DateRange: React.FC<DateRangeProps> = ({
         required={required}
         fromInputRef={fromInputRef}
         toInputRef={toInputRef}
+        showClearFieldIcon={showClearFieldIcon}
       />
     </div>
   );

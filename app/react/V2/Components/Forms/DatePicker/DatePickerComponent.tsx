@@ -15,6 +15,7 @@ import { DatePickerProps } from './dateUtils';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
 import { useAtomValue } from 'jotai';
+import { Translate } from 'app/I18N';
 
 const DatePickerComponent = ({
   id = uniqueID(),
@@ -30,15 +31,16 @@ const DatePickerComponent = ({
   labelClear = 'Clear',
   label,
   disabled = false,
-  placeholder = 'Select date',
+  placeholder,
   hasErrors = false,
   errorMessage,
-  onChange = () => { },
-  onBlur = () => { },
+  onChange = () => {},
+  onBlur = () => {},
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
   inputRef: externalInputRef,
+  innerLabel,
 }: DatePickerProps) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
@@ -104,14 +106,15 @@ const DatePickerComponent = ({
     <div className="tw-content">
       <div
         id="tw-container"
-        className={`${className} tw-datepicker z-50 w-full inline-block p-0`}
+        className={`${className} tw-datepicker z-50 w-full p-0`}
         data-test-id={id}
       />
       <div>
-        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
-          {label}
-        </Label>
-
+        {label !== undefined && (
+          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+            {label}
+          </Label>
+        )}
         <div
           ref={divRef}
           id={id}
@@ -121,11 +124,11 @@ const DatePickerComponent = ({
           className="relative text-gray-600"
         >
           {showCalendarIcon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex gap-2">
               <CalendarIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              {innerLabel && <Translate translationKey={innerLabel}></Translate>}
             </div>
           )}
-
           <input
             id={id}
             name={name}
@@ -145,11 +148,13 @@ const DatePickerComponent = ({
             className={`
   form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-10 pr-8
   placeholder-opacity-100 placeholder-gray-500
+  ${innerLabel ? 'pl-24' : 'pl-10'}
   ${inputClassName || ''}
-  ${hasErrors || errorMessage
-                ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
-              }
+  ${
+    hasErrors || errorMessage
+      ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+      : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+  }
 `}
             placeholder={placeholder || dateFormat}
             autoComplete={autoComplete}

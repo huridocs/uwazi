@@ -14,6 +14,7 @@ import { DateRangePickerProps, handleKeyDown } from './dateUtils';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
 import { useAtomValue } from 'jotai';
+import { Translate } from 'app/I18N';
 
 const DateRangePickerComponent = ({
   id = uniqueID(),
@@ -29,18 +30,19 @@ const DateRangePickerComponent = ({
   labelClear = 'Clear',
   label,
   disabled = false,
-  placeholderStart = 'Inicio',
-  placeholderEnd = 'Fin',
+  placeholderStart,
+  placeholderEnd,
   hasErrors = false,
   errorMessage,
-  onFromDateSelected = () => { },
-  onToDateSelected = () => { },
-  onBlur = () => { },
+  onFromDateSelected = () => {},
+  onToDateSelected = () => {},
+  onBlur = () => {},
   showCalendarIcon = true,
   showClearFieldIcon = true,
   required = false,
   fromInputRef: externalFromRef,
   toInputRef: externalToRef,
+  horizontal = false,
 }: DateRangePickerProps) => {
   const { dateFormat: defaultDateFormat = 'DD/MM/YYYY' } =
     useAtomValue<ClientSettings>(settingsAtom);
@@ -149,13 +151,15 @@ const DateRangePickerComponent = ({
     <div className="tw-content">
       <div
         id="tw-container"
-        className={`${className} tw-datepicker z-50 w-full inline-block p-0`}
+        className={`${className} tw-datepicker z-50 w-full p-0`}
         data-test-id={id}
       />
       <div>
-        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
-          {label}
-        </Label>
+        {label !== undefined && (
+          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+            {label}
+          </Label>
+        )}
 
         <div
           ref={divRef}
@@ -163,12 +167,15 @@ const DateRangePickerComponent = ({
           date-rangepicker="true"
           datepicker-buttons="true"
           datepicker-autoselect-today="true"
-          className="flex items-center gap-4"
+          className={`flex items-center gap-4 ${horizontal ? 'items-center' : 'flex-col'}`}
         >
-          <div className="relative w-1/2 text-gray-600 DatePicker__From">
+          <div
+            className={`relative ${horizontal ? 'w-1/2' : 'w-full'} text-gray-600 DatePicker__From`}
+          >
             {showCalendarIcon && (
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex gap-2">
                 <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <Translate translationKey='Label date "From"'>From:</Translate>
               </div>
             )}
 
@@ -189,12 +196,13 @@ const DateRangePickerComponent = ({
               ref={fromInputRef}
               disabled={disabled}
               className={`
-                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-10 pr-8
+                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-24 pr-8
                 placeholder-opacity-100 placeholder-gray-500
                 ${inputClassName || ''}
-                ${hasErrors || errorMessage
-                  ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
-                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+                ${
+                  hasErrors || errorMessage
+                    ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+                    : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
                 }
               `}
               placeholder={placeholderStart || dateFormat}
@@ -214,10 +222,13 @@ const DateRangePickerComponent = ({
             )}
           </div>
 
-          <div className="relative w-1/2 text-gray-600 date-range-to DatePicker__To">
+          <div
+            className={`relative ${horizontal ? 'w-1/2' : 'w-full'} text-gray-600 date-range-to DatePicker__To`}
+          >
             {showCalendarIcon && (
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex gap-2">
                 <CalendarDateRangeIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <Translate translationKey='Label date "to"'>To:</Translate>
               </div>
             )}
 
@@ -238,12 +249,13 @@ const DateRangePickerComponent = ({
               ref={toInputRef}
               disabled={disabled}
               className={`
-                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-10 pr-8
+                form-control datepicker-input block w-full text-sm h-8 rounded-lg pl-24 pr-8
                 placeholder-opacity-100 placeholder-gray-500
                 ${inputClassName || ''}
-                ${hasErrors || errorMessage
-                  ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
-                  : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
+                ${
+                  hasErrors || errorMessage
+                    ? 'border-2 !border-red-300 text-red-900 bg-red-50 hover:border-red-400 focus:!border-form-error-border focus:outline-none focus:!shadow-form-error focus:!ring-0'
+                    : 'bg-gray-50 border border-gray-300 text-gray-900 hover:border-gray-400 focus:!border-[#66afe9] focus:outline-none focus:!shadow-form-focus focus:!ring-0'
                 }
               `}
               placeholder={placeholderEnd || dateFormat}

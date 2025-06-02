@@ -65,24 +65,21 @@ class MultiDateRange extends Component<MultiDateRangeProps, MultiDateRangeState>
             <div key={index} className="multidate-item">
               <div className="multidate-range">
                 <div className="DatePicker__From">
-                  <span className="truncate">
-                    <Translate translationKey='Label date "From"'>From:</Translate>
-                  </span>
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
                     onChange={val => this.fromChange(index, val)}
+                    innerLabel='Label date "From"'
                   />
                 </div>
                 <div className="DatePicker__To">
-                  <span className="truncate">
-                    <Translate translationKey='Label date "to"'>To:</Translate>
-                  </span>
                   <DatePicker
+                    inputClassName="pl-18"
                     format={this.props.format}
                     value={value.to}
                     endOfDay
                     onChange={val => this.toChange(index, val)}
+                    innerLabel='Label date "to"'
                   />
                 </div>
                 <button
