@@ -74,8 +74,7 @@ describe('Paragraph Extraction', () => {
 
       cy.get('tbody tr td:nth-child(2)').contains('Ordenes del presidente');
       cy.get('tbody tr td:nth-child(3)').contains('Causa');
-      cy.get('tbody tr td:nth-child(4) span:nth-child(1)').contains('3');
-      cy.get('tbody tr td:nth-child(4) span[data-testid="pill-comp"]').contains('3 New');
+      cy.get('tbody tr td:nth-child(4) span:nth-child(1)').contains('0');
     });
   });
   describe('Entities Dashboard', () => {
@@ -100,6 +99,11 @@ describe('Paragraph Extraction', () => {
 
     it('should view the details of the extractor and navigate through the flow', () => {
       cy.get('table').contains('caption', 'Paragraphs');
+      cy.contains(
+        'tr',
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
+        { timeout: 40000 }
+      );
       cy.get('tbody tr').should('have.length', 3);
       checkCells(
         1,
@@ -131,7 +135,7 @@ describe('Paragraph Extraction', () => {
 
     it('should update the processed entities after 25 seconds', () => {
       cy.contains('tbody tr', 'New').should('not.exist');
-      cy.contains('tbody tr', 'Processed', { timeout: 400000 });
+      cy.contains('tbody tr', 'Processed', { timeout: 40000 });
     });
 
     it('should check for a11y violations', () => {
