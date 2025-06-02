@@ -255,9 +255,9 @@ class InformationExtraction {
       };
 
       if (type === 'labeled_data') {
-        if (['multiselect', 'relationship'].includes(targetPropertyType)) {
+        if (['multiselect', 'relationship', 'select'].includes(targetPropertyType)) {
           const values = entity?.metadata?.[extractor.property]?.map(({ value, label }) => ({
-            id: value,
+            id: String(value),
             label,
           }));
 

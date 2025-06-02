@@ -132,6 +132,34 @@ describe('Information Extraction: Extracting from text source', () => {
       });
     });
 
+    it('should only send labeled data (select)', async () => {
+      const extraction3 = ExtractionKey.create({
+        entitySharedId: 'extractor_target_select_source_text_entity_3',
+        language: 'en',
+      });
+
+      const extractorId = factory.id('extractor_target_select_source_text');
+
+      await informationExtraction.trainModel(extractorId);
+
+      const suggestion3 = IXExternalService.materials.find(m => m.entity_name === extraction3.key);
+
+      expect(IXExternalService.materials.length).toBe(1);
+      expect(suggestion3).toEqual({
+        entity_name: extraction3.key,
+        language_iso: extraction3.language,
+        id: extractorId.toString(),
+        tenant: 'tenant1',
+        source_text: 'any_source_text',
+        values: [
+          {
+            id: '1',
+            label: 'A label',
+          },
+        ],
+      });
+    });
+
     it('should send labeled data (relationship)', async () => {
       const extractionKeyA21 = ExtractionKey.create({ entitySharedId: 'A21', language: 'en' });
       const extractionKeyA22 = ExtractionKey.create({ entitySharedId: 'A22', language: 'en' });
