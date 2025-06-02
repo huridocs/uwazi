@@ -77,6 +77,7 @@ describe('Paragraph Extraction', () => {
       cy.get('tbody tr td:nth-child(4) span:nth-child(1)').contains('0');
     });
   });
+
   describe('Entities Dashboard', () => {
     const checkCells = (
       row: number,
@@ -92,17 +93,18 @@ describe('Paragraph Extraction', () => {
       cy.get(`tr:nth-child(${row}) > td:nth-child(5) span`).contains(status);
     };
 
-    it('should navigate to the PX Entities List', () => {
+    it('should navigate to the PX Entities List and wait for polling', () => {
       cy.contains('tbody tr', 'Ordenes del presidente').contains('button', 'View').click();
+      cy.clock();
       cy.url().should('include', '/settings/paragraph-extraction/');
+      cy.get('table').contains('caption', 'Paragraphs');
+      cy.tick(2300);
     });
 
-    it('should view the details of the extractor and navigate through the flow', () => {
-      cy.get('table').contains('caption', 'Paragraphs');
+    it('should view the details of the extractor', () => {
       cy.contains(
         'tr',
-        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
-        { timeout: 40000 }
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
       );
       cy.get('tbody tr').should('have.length', 3);
       checkCells(
@@ -114,12 +116,13 @@ describe('Paragraph Extraction', () => {
       );
     });
 
-    it('should extract the paragraphs', () => {
+    it('should extract the paragraphs and disable the bulk extraction button', () => {
       cy.contains('button', 'Extract new paragraphs').click();
       cy.contains('The process of extracting the paragraphs has successfully started').as(
         'successMessage'
       );
       cy.contains('Dismiss').click();
+      cy.contains('button', 'Extract new paragraphs').should('be.disabled');
     });
 
     it('should change the status to processing', () => {
