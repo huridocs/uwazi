@@ -3,11 +3,12 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import relationshipTypeDS from 'api/relationtypes';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
-import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 
 type Input = {
   targetTemplateId: string;
@@ -23,10 +24,10 @@ type Output = PXExtractor;
 type Dependencies = {
   templatesDS: TemplatesDataSource;
   extractorDS: PXExtractorsDataSource;
-  entitiesStatusDS: PXEntitiesStatusDataSource;
   idGenerator: IdGenerator;
   transactionManager: TransactionManager;
   relationshipTypeDS: typeof relationshipTypeDS;
+  dispatcher: JobsDispatcher;
 };
 
 class PXCreateExtractor implements UseCase<Input, Output> {
@@ -111,10 +112,11 @@ class PXCreateExtractor implements UseCase<Input, Output> {
 
     await this.dependencies.transactionManager.run(async () => {
       await this.dependencies.extractorDS.create(extractor);
-      await this.dependencies.entitiesStatusDS.createForSourceEntities({
-        extractorId: extractor.id,
-        sourceTemplateId: extractor.sourceTemplate.id,
-      });
+    });
+
+    await this.dependencies.dispatcher.dispatch(CreateParagraphExtractionEntityStatusesJob, {
+      extractorId: extractor.id,
+      sourceTemplateId: extractor.sourceTemplate.id,
     });
 
     return extractor;

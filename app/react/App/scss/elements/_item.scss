@@ -1,8 +1,7 @@
-@use "../config/colors";
-@use "../config/materials";
-@use "../config/typography";
-
-@use "sass:color";
+@use '../config/colors';
+@use '../config/materials';
+@use '../config/typography';
+@use 'sass:color';
 
 .item-group {
   display: flex;
@@ -41,7 +40,15 @@
   &.is-active,
   &.is-selected {
     border-color: colors.$c-primary;
-    box-shadow: inset 0 1px 2px colors.$c-grey-lighten, 0 0 0 3px color.adjust(colors.$c-primary, $alpha: -0.7);
+    box-shadow:
+      inset 0 1px 2px colors.$c-grey-lighten,
+      0 0 0 3px color.adjust(colors.$c-primary, $alpha: -0.7);
+  }
+
+  &.deleted {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
   }
 
   &-source-document {
@@ -349,7 +356,9 @@ $item-padding: 15px;
     font-weight: normal;
     color: #333300;
     background-color: color.adjust(yellow, $alpha: -0.8);
-    box-shadow: -2px 0 0 0 color.adjust(yellow, $alpha: -0.4), 2px 0 0 0 color.adjust(yellow, $alpha: -0.4);
+    box-shadow:
+      -2px 0 0 0 color.adjust(yellow, $alpha: -0.4),
+      2px 0 0 0 color.adjust(yellow, $alpha: -0.4);
   }
 }
 

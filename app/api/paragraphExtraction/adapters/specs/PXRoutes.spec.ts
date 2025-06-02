@@ -1,7 +1,8 @@
 /* eslint-disable max-statements */
 import request from 'supertest';
 import { Application } from 'express';
-
+import { ObjectId } from 'mongodb';
+import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
@@ -27,6 +28,29 @@ import {
   paragraphProperty,
   paragraphNumberProperty,
 } from './fixtures';
+
+const mockDispatchMethod = jest.fn();
+
+// Mock DefaultDispatcher from the factories module
+jest.mock('api/queue.v2/configuration/factories', () => ({
+  ...jest.requireActual('api/queue.v2/configuration/factories'), // Preserve other exports
+  DefaultDispatcher: jest.fn().mockResolvedValue({
+    // Mock DefaultDispatcher export
+    // Use a getter to access mockDispatchMethod lazily, resolving the ReferenceError
+    get dispatch() {
+      return mockDispatchMethod;
+    },
+  }),
+}));
+
+// Simplify AppContext mock as it's not primarily responsible for JobsDispatcher in this flow
+jest.mock('../../../utils/AppContext.ts', () => {
+  const originalModule = jest.requireActual('../../../utils/AppContext.ts');
+  return {
+    __esModule: true,
+    appContext: originalModule.appContext,
+  };
+});
 
 const checkFlagEnabledForRoute = async (
   app: Application,
@@ -71,6 +95,43 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
   let createdExtractorId = '';
 
   describe('POST /api/paragraphExtraction/extractor', () => {
+    beforeEach(() => {
+      mockDispatchMethod.mockReset();
+    });
+
+    // Helper function to simulate the creation of entity statuses by the job
+    const simulateJobCreationOfEntityStatuses = async (jobParams: {
+      extractorId: string;
+      sourceTemplateId: string;
+    }) => {
+      const { extractorId, sourceTemplateId: reqSourceTemplateId } = jobParams;
+      const sourceTemplateObjectIdFromString = ObjectId.createFromHexString(reqSourceTemplateId);
+
+      const entitiesToConsider = [entityFixtures.entity1En, entityFixtures.entity2En];
+
+      const relevantEntities = entitiesToConsider.filter(
+        e =>
+          e.template &&
+          ObjectId.createFromHexString(e.template.toString()).equals(
+            sourceTemplateObjectIdFromString
+          )
+      );
+
+      const statusesToInsert = relevantEntities.map(entity => ({
+        _id: new ObjectId(),
+        extractorId: ObjectId.createFromHexString(extractorId),
+        entitySharedId: entity.sharedId!,
+        status: EntityStatusDTO.New,
+      }));
+
+      if (statusesToInsert.length > 0) {
+        const collection = testingEnvironment.db.getCollection(mongoPXEntitiesStatusCollection);
+        if (collection) {
+          await collection.insertMany(statusesToInsert);
+        }
+      }
+    };
+
     it('should require the feature flag enabled', async () => {
       await checkFlagEnabledForRoute(app, 'post', '/api/paragraphExtraction/extractor');
     });
@@ -79,7 +140,14 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       await checkValidationForRoute(app, 'post', '/api/paragraphExtraction/extractor');
     });
 
-    it('should create the extractor', async () => {
+    it('should create the extractor and dispatch a job to create entity statuses', async () => {
+      mockDispatchMethod.mockImplementationOnce(async (jobConstructor, jobParams) => {
+        if (jobConstructor === CreateParagraphExtractionEntityStatusesJob) {
+          await simulateJobCreationOfEntityStatuses(jobParams);
+        }
+        return Promise.resolve();
+      });
+
       const body: PXCreateExtractorRequest = {
         sourceTemplateId: templateFixtures.sourceTemplate._id.toString(),
         targetTemplateId: templateFixtures.targetTemplate._id.toString(),
@@ -93,6 +161,13 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       createdExtractorId = extractors?.[0]._id.toString() || '';
 
       expect(response.body.extractorId).toBe(createdExtractorId);
+      expect(mockDispatchMethod).toHaveBeenCalledWith(
+        CreateParagraphExtractionEntityStatusesJob,
+        expect.objectContaining({
+          extractorId: createdExtractorId,
+          sourceTemplateId: templateFixtures.sourceTemplate._id.toString(),
+        })
+      );
     });
   });
 
@@ -202,6 +277,10 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
           },
         ],
       });
+      const responseSharedIds = response.body.rows.map((r: any) => r.entity.sharedId);
+      expect(responseSharedIds).toContain(entityFixtures.entity1En.sharedId);
+      expect(responseSharedIds).toContain(entityFixtures.entity2En.sharedId);
+      expect(responseSharedIds.length).toBe(2);
     });
   });
 
@@ -256,7 +335,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       await checkValidationForRoute(app, 'delete', '/api/paragraphExtraction/extractor');
     });
 
-    it('should get the entity paragraphs', async () => {
+    it('should delete the extractor', async () => {
       const query: PXDeleteExtractorRequest = {
         id: createdExtractorId,
       };

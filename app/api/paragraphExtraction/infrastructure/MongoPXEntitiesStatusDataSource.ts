@@ -2,16 +2,13 @@
 import { Db, MongoServerError, ObjectId } from 'mongodb';
 
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
-import { EntitySchema } from 'shared/types/entityType';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import {
-  CreateForSourceEntitiesInput,
   CreateInput,
   GetExistingInput,
   PXEntitiesStatusDataSource,
@@ -40,97 +37,16 @@ export class MongoPXEntitiesStatusDataSource
     super(db, transaction, options);
   }
 
-  private static filterDocumentsWithLanguageInstalled(installedLanguages: LanguagesListSchema) {
-    return {
-      $lookup: {
-        from: 'files',
-        let: { entitySharedId: '$sharedId' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ['$entity', '$$entitySharedId'] },
-                  { $in: ['$language', installedLanguages.map(l => l.ISO639_3)] },
-                ],
-              },
-            },
-          },
-        ],
-        as: 'files',
-      },
-    };
-  }
-
-  async createForSourceEntities({
-    sourceTemplateId,
-    extractorId,
-  }: CreateForSourceEntitiesInput): Promise<void> {
-    const installedLanguages = await this.settingsDS.getInstalledLanguages();
-    const defaultLanguage = installedLanguages.find(l => l.default)?.key!;
-
-    const sourceEntities = await this.getCollection<EntitySchema>('entities')
-      .aggregate([
-        {
-          $match: {
-            template: new ObjectId(sourceTemplateId),
-            language: defaultLanguage,
-          },
-        },
-        MongoPXEntitiesStatusDataSource.filterDocumentsWithLanguageInstalled(installedLanguages),
-        {
-          $match: {
-            'files.0': { $exists: true },
-          },
-        },
-        {
-          $project: { sharedId: 1, _id: 0 },
-        },
-      ])
-      .toArray();
-
-    if (!sourceEntities.length) {
-      return;
-    }
-
-    const entityStatuses: MongoPXEntityStatusDBO[] = [];
-
-    await sourceEntities.reduce(async (prev, entity) => {
-      await prev;
-      const entityParagraphsRelationships = await this.extractorsQueryService
-        .getEntityParagraphRelationships({
-          id: entity.sharedId,
-          extractorId,
-          options: { requireEntityStatus: false },
-        })
-        .all();
-
-      const status = entityParagraphsRelationships.length
-        ? EntityStatus.Processed
-        : EntityStatus.New;
-
-      entityStatuses.push({
-        _id: undefined as any,
-        entitySharedId: entity.sharedId!,
-        extractorId: new ObjectId(extractorId),
-        status,
-      });
-    }, Promise.resolve());
-
-    await this.getCollection().insertMany(entityStatuses, { session: this.getSession() });
-  }
-
-  async createAsNew(input: CreateInput): Promise<PXEntityStatusModel> {
+  async createWithStatus(input: CreateInput): Promise<PXEntityStatusModel> {
     try {
       const dbo: MongoPXEntityStatusDBO = {
         _id: new ObjectId(),
         extractorId: new ObjectId(input.extractorId),
         entitySharedId: input.entitySharedId,
-
-        status: EntityStatus.New,
+        status: input.status,
       };
 
-      await this.getCollection().insertOne(dbo);
+      await this.getCollection().insertOne(dbo, { session: this.getSession() });
 
       return MongoPXEntitiesStatusDataSource.toDomain(dbo);
     } catch (e) {

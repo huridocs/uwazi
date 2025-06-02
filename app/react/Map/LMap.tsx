@@ -1,11 +1,13 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
+import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
 import { GeolocationSchema } from 'shared/types/commonTypes';
 import uniqueID from 'shared/uniqueID';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import { deletedEntityAtom } from 'V2/atoms';
 import {
   DataMarker,
   getClusterMarker,
@@ -45,6 +47,7 @@ const LMap = ({
   let markerGroup: L.MarkerClusterGroup;
   const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
   const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
+  const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = uniqueID();
 
   const clickHandler = (markerPoint: any) => {
@@ -62,9 +65,12 @@ const LMap = ({
   };
 
   const initMarkers = () => {
-    const markers = pointMarkers.map(pointMarker =>
-      parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo)
-    );
+    const markers = pointMarkers
+      .map(pointMarker => parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo))
+      .filter(marker => {
+        const entityId = marker.properties.entity?.sharedId;
+        return entityId !== deletedEntity;
+      });
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
     markerGroup.on('clusterclick', cluster => {

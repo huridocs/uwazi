@@ -1,10 +1,12 @@
 import React from 'react';
+import { useAtomValue } from 'jotai';
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore, TableViewColumn } from 'app/istore';
 import { Icon as PropertyIcon } from 'app/Layout';
 import formatter from 'app/Metadata/helpers/formater';
 import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
 import { EntitySchema } from 'shared/types/entityType';
+import { deletedEntityAtom } from 'V2/atoms';
 import { IImmutable } from 'shared/types/Immutable';
 
 interface TableRowProps {
@@ -64,6 +66,7 @@ const TableRowComponent = ({
   setMultipleSelection,
   zoomLevel = 2,
 }: mappedProps) => {
+  const deletedEntity = useAtomValue(deletedEntityAtom);
   const checkEntity = (e: React.MouseEvent) => {
     const { metaKey, ctrlKey, shiftKey } = e;
     clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, multipleSelection);
@@ -97,10 +100,11 @@ const TableRowComponent = ({
     return { key, value };
   });
   const [firstCell, ...rowCells] = cells;
-
   return (
     <tr
-      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}
+      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${
+        deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
+      }`}
       onClick={selectRow}
     >
       {firstCell && (
