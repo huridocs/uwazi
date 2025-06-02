@@ -34,6 +34,7 @@ import {
   formatAccepted,
 } from './components/helpers';
 import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion } from './types';
+import { SuggestionEvents } from './events';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -108,7 +109,7 @@ const IXSuggestions = () => {
 
   useEffect(() => {
     socket.on(
-      'ix_model_status',
+      SuggestionEvents.ix_model_status,
       async (extractorId: string, modelStatus: string, _: string, data: any) => {
         if (extractorId === extractor._id) {
           setStatus({ status: modelStatus as ixStatus, data });
@@ -120,7 +121,7 @@ const IXSuggestions = () => {
       }
     );
 
-    socket.on('ACCEPT_SUGGESTION_SUCCESS', async () => {
+    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, async () => {
       await revalidate();
       setNotifications({
         type: 'success',
@@ -128,7 +129,7 @@ const IXSuggestions = () => {
       });
     });
 
-    socket.on('ACCEPT_SUGGESTION_ERROR', (message: string) => {
+    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, (message: string) => {
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred while updating suggestions</Translate>,
