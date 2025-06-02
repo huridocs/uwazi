@@ -821,10 +821,11 @@ Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
 Suggestion,Suggestion
-Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,အကြံပြုချက်များ
 suggestions,suggestions
+Suggestions have been updated,Suggestions have been updated
+Suggestions sent,Suggestions sent
 Supporting files,အထောက်အကူပြုဖိုင်များ
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
