@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { waitForNavigation } from '../helpers/formActions';
 import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
@@ -89,22 +90,15 @@ describe('Metadata', () => {
 
     it('should go back to Template then delete the created template', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
-      // Wait for the table rows to be rendered
       await page.waitForSelector('tbody tr');
-      // Select the 6th row (index 5)
       const rows = await page.$$('tbody tr');
-      const targetRow = rows[5]; // 6th row
-      // Find the checkbox in that row and click it
+      const targetRow = rows[5];
       const checkbox = await targetRow.$('input[type="checkbox"]');
       if (!checkbox) throw new Error('Checkbox not found in row');
       await checkbox.click();
-      // Click the Delete button
       await expect(page).toClick('button', { text: 'Delete' });
-      // Wait for the confirmation modal
-      await page.waitForSelector('div[role="dialog"]');
-      // Confirm deletion
-      await expect(page).toClick('button', { text: 'Delete' });
-      // Ensure the template is gone
+      await page.waitForSelector('div[data-testid="modal"]');
+      await expect(page).toClick('div[data-testid="modal"] button', { text: 'Delete' });
       await expect(page).not.toMatch('My edited template');
     });
   });

@@ -70,17 +70,6 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
             <Translate>Templates</Translate>
           </I18NLink>
         </NeedAuthorization>
-        <FeatureToggle feature="templates_v2">
-          <NeedAuthorization roles={['admin']}>
-            <I18NLink
-              to="settings/templates_v2"
-              activeclassname="active"
-              className="list-group-item"
-            >
-              <Translate>Templates v2</Translate>
-            </I18NLink>
-          </NeedAuthorization>
-        </FeatureToggle>
         <FeatureToggle feature="metadataExtraction.url">
           <NeedAuthorization roles={['admin', 'editor']}>
             <I18NLink
