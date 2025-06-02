@@ -197,7 +197,7 @@ const IXSuggestions = () => {
     socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, (message: string) => {
       setNotifications({
         type: 'error',
-        text: <Translate>An error occurred while updating suggestions</Translate>,
+        text: <Translate>An error occurred</Translate>,
         details: message,
       });
     });
