@@ -175,12 +175,15 @@ function entityForTrainingQuery(
   const query: {
     [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
   } = { template: { $in: templates } };
+
   if (fromProperty) {
     query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
   }
+
   if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
     query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
   }
+
   return query;
 }
 
@@ -192,7 +195,7 @@ async function getEntitiesForTraining(
   const propertyType = await getPropertyType(templates, toProperty);
   const entities = await entitiesModel.getUnrestricted(
     entityForTrainingQuery(templates, toProperty, propertyType, fromProperty),
-    `sharedId metadata.${toProperty} metadata.${fromProperty} language`,
+    `sharedId title metadata.${toProperty} metadata.${fromProperty} language`,
     { limit: MAX_TRAINING_ENTITIES_NUMBER }
   );
   return entities;
