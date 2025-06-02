@@ -1,4 +1,3 @@
-import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
@@ -7,49 +6,11 @@ import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ge
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { FileType } from 'shared/types/fileType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
 import templates from 'api/templates';
 import { LanguageUtils } from 'shared/language';
+import { fetchEntitiesData } from './batchProcessing';
 import { Suggestions } from './suggestions';
-
-const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
-  entitiesModel.db
-    .find(query)
-    .select(['sharedId', 'language'])
-    .limit(limit)
-    .sort({ _id: 1 })
-    .lean();
-
-const fetchEntitiesData = async (
-  template: ObjectIdSchema,
-  defaultLanguage?: string,
-  batchSize = 2000
-) => {
-  const BATCH_SIZE = batchSize;
-  let query: any = {
-    template,
-    ...(defaultLanguage && { language: defaultLanguage }),
-  };
-
-  const dataList: { sharedId: string; language: string }[][] = [];
-
-  let fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
-
-  while (fetchedEntities.length) {
-    dataList.push(fetchedEntities.map(e => ({ sharedId: e.sharedId!, language: e.language! })));
-    query = {
-      ...query,
-      _id: { $gt: fetchedEntities[fetchedEntities.length - 1]._id },
-      ...(defaultLanguage && {
-        language: { $gt: fetchedEntities[fetchedEntities.length - 1].language },
-      }),
-    };
-    // eslint-disable-next-line no-await-in-loop
-    fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
-  }
-
-  return dataList.flat();
-};
+import { IXSuggestionsModel } from './IXSuggestionsModel';
 
 const getBlankSuggestionForProperty = ({
   entityId,
@@ -110,65 +71,85 @@ const getBlankSuggestionForPdf = ({
 
 const createBlankSuggestionsForPartialExtractor = async (
   extractor: IXExtractorType,
-  selectedTemplates: ObjectIdSchema[],
-  batchSize?: number
+  selectedTemplates: ObjectIdSchema[]
 ) => {
   const defaultLanguage = (await settings.getDefaultLanguage()).key;
   const extractorTemplates = new Set(extractor.templates.map(t => t.toString()));
   const sampleProperty = await templates.getPropertyByName(extractor.property);
 
-  const templatesPromises = selectedTemplates
-    .filter(template => extractorTemplates.has(template.toString()))
-    .map(async template => {
-      const suggestionsToSave: IXSuggestionType[] = [];
+  const filteredTemplates = selectedTemplates.filter(template =>
+    extractorTemplates.has(template.toString())
+  );
 
-      if (extractor.source.pdf) {
-        const entityDataForFiles = await fetchEntitiesData(template, defaultLanguage, batchSize);
+  await filteredTemplates.reduce(async (promise, template) => {
+    await promise;
 
+    if (extractor.source.pdf) {
+      await fetchEntitiesData(template, async batchData => {
         const fetchedFiles = await files.get(
-          { entity: { $in: entityDataForFiles.map(entity => entity.sharedId) }, type: 'document' },
+          {
+            entity: { $in: batchData.map(entity => entity.sharedId) },
+            type: 'document',
+          },
           '_id entity language extractedMetadata'
         );
 
-        suggestionsToSave.push(
-          ...fetchedFiles
-            .filter(file => file.entity)
-            .map(file =>
-              getBlankSuggestionForPdf({
-                file,
-                extractorId: extractor._id,
-                template,
-                propertyName: extractor.property,
-                propertyType: sampleProperty.type,
-                defaultLanguage,
-              })
-            )
-        );
-      } else if (tenants.current().featureFlags?.ixExtraSources && extractor.source.property) {
-        const entityData = await fetchEntitiesData(template, undefined, batchSize);
-
-        suggestionsToSave.push(
-          ...entityData.map(entity =>
-            getBlankSuggestionForProperty({
-              entityId: entity.sharedId,
+        const batchSuggestions = fetchedFiles
+          .filter(file => file.entity)
+          .map(file =>
+            getBlankSuggestionForPdf({
+              file,
               extractorId: extractor._id,
               template,
               propertyName: extractor.property,
               propertyType: sampleProperty.type,
-              language: entity.language,
+              defaultLanguage,
             })
-          )
-        );
-      }
+          );
 
-      await Suggestions.saveMultiple(suggestionsToSave);
-    });
+        await Suggestions.saveMultiple(batchSuggestions);
+      });
+    } else if (tenants.current().featureFlags?.ixExtraSources && extractor.source.property) {
+      await fetchEntitiesData(
+        template,
+        async (batchData: { sharedId: string; language: string }[]) => {
+          const now = new Date().getTime();
+          const templateString = template.toString();
+          const isMultiValued = propertyTypeIsMultiValued(sampleProperty.type);
 
-  await Promise.all(templatesPromises);
+          // Pre-compute common values to avoid repeated operations in the map
+          const batchSuggestions = batchData.map(entity => ({
+            language: entity.language,
+            entityId: entity.sharedId,
+            entityTemplate: templateString,
+            extractorId: extractor._id,
+            propertyName: extractor.property,
+            status: 'ready' as 'ready',
+            error: '',
+            segment: '',
+            suggestedValue: isMultiValued ? [] : '',
+            date: now,
+          }));
+
+          // Process in chunks of 1000 for better memory management 
+          const chunkSize = 1000;
+          const chunks = [];
+          for (let i = 0; i < batchSuggestions.length; i += chunkSize) {
+            chunks.push(batchSuggestions.slice(i, i + chunkSize));
+          }
+
+          // Save chunks in parallel
+          await Promise.all(chunks.map(chunk => IXSuggestionsModel.saveMultiple(chunk)));
+        }
+      );
+    }
+
+    return Promise.resolve();
+  }, Promise.resolve());
 };
 
-const createBlankSuggestionsForExtractor = async (extractor: IXExtractorType, batchSize?: number) =>
-  createBlankSuggestionsForPartialExtractor(extractor, extractor.templates, batchSize);
+const createBlankSuggestionsForExtractor = async (extractor: IXExtractorType) =>
+  createBlankSuggestionsForPartialExtractor(extractor, extractor.templates);
 
 export {
   createBlankSuggestionsForExtractor,
