@@ -1,7 +1,9 @@
+@use "../config/colors";
+
 .page-viewer {
   padding-top: 15px;
   padding-bottom: 0;
-  background: $c-white;
+  background: colors.$c-white;
 }
 
 .page-viewer .item-chart {

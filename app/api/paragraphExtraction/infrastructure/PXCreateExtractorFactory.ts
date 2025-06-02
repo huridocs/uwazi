@@ -3,15 +3,23 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import relationshipTypeDS from 'api/relationtypes';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor';
-import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
+interface PXCreateExtractorFactoryProps {
+  tenantName: string;
+}
+
 export class PXCreateExtractorFactory {
-  static createDefault() {
+  static async createDefault(props: PXCreateExtractorFactoryProps) {
     const connection = getConnection();
     const mongoTransactionManager = DefaultTransactionManager();
+
+    const dispatcher = await DefaultDispatcher(props.tenantName, {
+      lockWindow: 1000 * 60,
+    });
 
     return new PXCreateExtractor({
       relationshipTypeDS,
@@ -21,11 +29,8 @@ export class PXCreateExtractorFactory {
       }),
       idGenerator: MongoIdHandler,
       templatesDS: DefaultTemplatesDataSource(mongoTransactionManager),
-      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
-        connection,
-        mongoTransactionManager,
-      }),
       transactionManager: mongoTransactionManager,
+      dispatcher,
     });
   }
 }
