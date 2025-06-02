@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .upload-box {
   display: block;
   position: relative;
@@ -8,29 +11,29 @@
   &_wrapper {
     display: block;
     position: relative;
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     padding: 25px;
     margin-bottom: 15px;
-    color: $c-grey-dark;
-    border: 2px dashed $c-grey-light;
+    color: colors.$c-grey-dark;
+    border: 2px dashed colors.$c-grey-light;
 
     svg {
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
       margin-right: 10px;
     }
 
     a,
     button {
       border: 0;
-      border-bottom: 1px dotted $c-grey-dark;
+      border-bottom: 1px dotted colors.$c-grey-dark;
       background-color: transparent;
       padding: 0;
       cursor: pointer;
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
 
       &:hover {
-        color: $c-black;
-        border-bottom: 1px solid $c-grey-dark;
+        color: colors.$c-black;
+        border-bottom: 1px solid colors.$c-grey-dark;
         text-decoration: none;
       }
     }
@@ -58,8 +61,8 @@
   opacity: 0;
   transition: all 300ms;
   text-align: center;
-  font-size: $f-size-lg;
-  color: $c-grey-dark;
+  font-size: typography.$f-size-lg;
+  color: colors.$c-grey-dark;
   width: 600px;
 
   &.is-active {
@@ -89,20 +92,20 @@
 
   .upload-button {
     margin-left: 15px;
-    color: $c-black;
-    background-color: $c-grey-lighten;
-    border-color: $c-grey-lighten;
+    color: colors.$c-black;
+    background-color: colors.$c-grey-lighten;
+    border-color: colors.$c-grey-lighten;
 
     &.upload-failed {
-      color: $c-white;
-      background-color: $c-danger;
-      border-color: $c-danger;
+      color: colors.$c-white;
+      background-color: colors.$c-danger;
+      border-color: colors.$c-danger;
     }
 
     &.upload-success {
-      color: $c-white;
-      background-color: $c-success;
-      border-color: $c-success;
+      color: colors.$c-white;
+      background-color: colors.$c-success;
+      border-color: colors.$c-success;
     }
   }
 
@@ -136,7 +139,7 @@
     border-radius: 4px;
     display: inline-block;
     padding: 3px;
-    color: $c-danger;
+    color: colors.$c-danger;
   }
 }
 

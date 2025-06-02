@@ -254,10 +254,14 @@ class InformationExtraction {
         source_text: (entity.metadata?.[extractor.source.property]?.[0]?.value as string) || '',
       };
 
+      if (extractor.source.property === 'title') {
+        data.source_text = entity.title || '';
+      }
+
       if (type === 'labeled_data') {
-        if (['multiselect', 'relationship'].includes(targetPropertyType)) {
+        if (['multiselect', 'relationship', 'select'].includes(targetPropertyType)) {
           const values = entity?.metadata?.[extractor.property]?.map(({ value, label }) => ({
-            id: value,
+            id: String(value),
             label,
           }));
 
@@ -270,15 +274,19 @@ class InformationExtraction {
         } else {
           let labelText = entity.metadata?.[extractor.property]?.[0]?.value;
 
-          if (typeof labelText === 'undefined') {
-            return;
-          }
-
           if (targetPropertyType === 'date') {
             labelText = moment(Number(labelText) * 1000).format('YYYY-MM-DD');
           }
 
-          data.label_text = labelText;
+          if (extractor.property === 'title') {
+            labelText = entity.title;
+          }
+
+          if (typeof labelText === 'undefined') {
+            return;
+          }
+
+          data.label_text = String(labelText);
         }
       }
 

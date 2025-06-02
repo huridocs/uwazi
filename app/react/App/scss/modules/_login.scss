@@ -1,3 +1,6 @@
+@use "../config/colors";
+@use "../config/materials";
+
 /** @format */
 
 .login-content {
@@ -9,7 +12,7 @@
 
 .login-title {
   width: 60%;
-  margin: $header-height auto;
+  margin: materials.$header-height auto;
   display: block;
   img {
     width: 100%;
@@ -40,14 +43,14 @@
   span.button {
     cursor: pointer;
     text-decoration: underline;
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     opacity: 0.6;
     &:hover {
       opacity: 1;
     }
   }
   a.label-danger {
-    color: $c-danger;
+    color: colors.$c-danger;
     opacity: 1;
     font-weight: bold;
   }

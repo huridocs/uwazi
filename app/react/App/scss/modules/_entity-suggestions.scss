@@ -1,5 +1,5 @@
-@import '../../scss/config/colors';
-@import '../../scss/config/typography';
+@use '../../scss/config/colors';
+@use '../../scss/config/typography';
 
 @mixin segment-hover-styles() {
   div {
@@ -41,7 +41,7 @@
   .dashboard-link {
     a {
       text-decoration: unset;
-      color: $c-grey-dark;
+      color: colors.$c-grey-dark;
       span {
         padding: 0 0 0 5px;
       }
@@ -76,7 +76,7 @@
   .panel-subheading {
     display: block;
     position: relative;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     padding: 0;
 
     & > div {
@@ -86,7 +86,7 @@
       &.property-info-container {
         display: flex;
         flex-direction: row;
-        font-size: $f-size-xl;
+        font-size: typography.$f-size-xl;
         align-items: center;
 
         div {
@@ -157,7 +157,7 @@
   }
 
   .suggestion-header {
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
   }
 
   table {
@@ -169,7 +169,7 @@
     width: 100%;
     border: 0;
     border-collapse: separate;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     overflow-x: auto;
     height: 100%;
     overflow-y: auto;
@@ -319,7 +319,7 @@
       width: 7%;
       .modal-tip-label {
         font-size: 12px;
-        color: $c-black;
+        color: colors.$c-black;
         cursor: pointer;
         border-bottom: none;
         z-index: 1;
@@ -330,17 +330,17 @@
 
   .segment-pdf {
     margin-right: 5px;
-    border: 1px solid $c-grey-lighten;
+    border: 1px solid colors.$c-grey-lighten;
     border-radius: 7px;
     padding: 3px 6px;
-    background-color: $c-grey-lighten;
+    background-color: colors.$c-grey-lighten;
   }
 
   th {
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
     height: 30px;
     padding: 8px;
-    border-bottom: 1px solid $c-grey;
+    border-bottom: 1px solid colors.$c-grey;
 
     &.state {
       width: 7%;
@@ -348,7 +348,7 @@
       justify-content: space-between;
 
       &.filtered {
-        color: $c-primary;
+        color: colors.$c-primary;
       }
 
       select {
@@ -356,14 +356,14 @@
         border: 0;
         margin-bottom: 0;
         text-indent: 100%;
-        color: $c-grey-dark;
+        color: colors.$c-grey-dark;
 
         &.filtered {
-          color: $c-primary;
+          color: colors.$c-primary;
         }
 
         option {
-          font-size: $f-size-sm;
+          font-size: typography.$f-size-sm;
         }
       }
     }
@@ -375,7 +375,7 @@
     border-left: 2px solid #e0e0e0;
 
     button {
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
     }
 
     &.current,
@@ -402,19 +402,19 @@
       }
 
       .suggested-value {
-        color: $c-primary;
+        color: colors.$c-primary;
       }
 
       .suggestion-label {
-        color: $c-grey-dark;
-        font-family: $f-special;
+        color: colors.$c-grey-dark;
+        font-family: typography.$f-special;
         padding-top: 30px;
       }
     }
 
     &.state {
       .new-state {
-        color: $c-success;
+        color: colors.$c-success;
       }
     }
   }
