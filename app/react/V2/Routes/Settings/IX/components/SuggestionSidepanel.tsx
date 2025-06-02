@@ -14,7 +14,7 @@ import { Translate } from 'app/I18N';
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { useAtomValue, useSetAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -78,16 +78,6 @@ const SuggestionSidepanel = ({
       setInitialValue(getFormValue(suggestion, entity, property?.type));
     }
   }, [suggestion, entity, property]);
-
-  useEffect(() => {
-    if (selectAndSearch) {
-      setSelectAndSearchValue(selectedText?.text);
-    } else {
-      setSelectAndSearchValue(undefined);
-    }
-    // we don't want to trigger this effect simply by selecting text, so selectedText is removed
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectAndSearch, setSelectAndSearchValue]);
 
   const {
     register,
@@ -380,13 +370,17 @@ const SuggestionSidepanel = ({
     );
   };
 
-  const initialOptions = [...options, ...currentValueOptions].reduce((acc, option) => {
-    if (!acc.find(_option => _option.value === option.value)) {
-      acc.push(option);
-    }
+  const initialOptions = useMemo(
+    () =>
+      [...options, ...currentValueOptions].reduce((acc, option) => {
+        if (!acc.find(_option => _option.value === option.value)) {
+          acc.push(option);
+        }
 
-    return acc;
-  }, [] as MultiselectListOption[]);
+        return acc;
+      }, [] as MultiselectListOption[]),
+    [currentValueOptions, options]
+  );
 
   const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
     if (!searchTerm) {
@@ -514,7 +508,7 @@ const SuggestionSidepanel = ({
               {SELECT_TYPES.includes(property?.type || '') && (
                 <button
                   type="button"
-                  onClick={() => setSelectAndSearch(old => !old)}
+                  onClick={() => setSelectAndSearchValue(selectedText?.text)}
                   className={`${selectAndSearch ? 'bg-primary-50 border-primary-800' : 'bg-white border-gray-200'} border flex items-center gap-1 px-2 py-0 text-xs font-medium text-gray-900 rounded-md hover:border-primary-800 hover:bg-primary-50`}
                 >
                   <PlusCircleIcon className="w-3" />
