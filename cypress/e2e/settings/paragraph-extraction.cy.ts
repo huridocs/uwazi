@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers';
@@ -93,18 +94,17 @@ describe('Paragraph Extraction', () => {
       cy.get(`tr:nth-child(${row}) > td:nth-child(5) span`).contains(status);
     };
 
-    it('should navigate to the PX Entities List and wait for polling', () => {
+    it('should navigate to the PX Entities List', () => {
       cy.contains('tbody tr', 'Ordenes del presidente').contains('button', 'View').click();
-      cy.clock();
       cy.url().should('include', '/settings/paragraph-extraction/');
       cy.get('table').contains('caption', 'Paragraphs');
-      cy.tick(2300);
     });
 
-    it('should view the details of the extractor', () => {
+    it('should whait until the first entity shows and check the result', () => {
       cy.contains(
         'tr',
-        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
+        { timeout: 30000 }
       );
       cy.get('tbody tr').should('have.length', 3);
       checkCells(
@@ -148,20 +148,73 @@ describe('Paragraph Extraction', () => {
       cy.checkA11y();
     });
 
-    it('should maintain filters when triggering new extraction', () => {
+    it('should change an entity by uploading another file to generate an obsolete suggestion', () => {
+      cy.contains('a', 'Library').click();
+      cy.contains('li', 'Ordenes del presidente').click();
+      cy.contains(
+        'h2',
+        'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
+      ).click();
+      cy.get('aside.side-panel.metadata-sidepanel.is-active').within(() => {
+        cy.contains(
+          'h1',
+          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
+        );
+        cy.get('#upload-button-input').selectFile('./cypress/test_files/valid.pdf', {
+          force: true,
+        });
+        cy.contains('Success, Upload another?');
+      });
+    });
+
+    it('should return to the extractor and check the UI state', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Paragraph Extraction').click();
+      cy.get('table').contains('caption', 'Extractors');
+      cy.contains('tr', 'Ordenes del presidente').within(() => {
+        cy.contains('td', '3');
+        cy.contains('span', '1 New').should('not.exist');
+        cy.contains('button', 'View').click();
+      });
+      cy.contains(
+        'tr',
+        'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
+      ).within(() => {
+        cy.contains('Obsolete');
+      });
+    });
+
+    it('should check filtering and that the bulk extract button remains disabled', () => {
       cy.contains('button', 'Filters').click();
       cy.contains('label', 'Error').find('input[type="checkbox"]').check();
       cy.contains('button', 'Apply').click();
       cy.contains('tbody', 'NO DATA AVAILABLE');
-      cy.contains('button', 'Extract new paragraphs').click();
+      cy.contains('button', 'Filters').click();
+      cy.contains('label', 'Obsolete').find('input[type="checkbox"]').check();
+      cy.contains('label', 'Processed').find('input[type="checkbox"]').check();
+      cy.contains('button', 'Apply').click();
+      cy.contains('button', 'Extract new paragraphs').should('be.disabled');
+    });
+
+    it('should extract paragraphs for the obsolete entity and not loose filters', () => {
+      cy.contains(
+        'tr',
+        'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
+      ).within(() => {
+        cy.get('input[type="checkbox"]').click();
+      });
+      cy.contains('Extract paragraphs').click();
+      cy.contains('h1', 'Are you sure?');
+      cy.contains('button', 'Continue').click();
       cy.contains('The process of extracting the paragraphs has successfully started');
       cy.contains('Dismiss').click();
       cy.contains('button', 'Filters').click();
-      cy.contains('label', 'Error').find('input[type="checkbox"]').should('be.checked');
+      cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('be.checked');
+      cy.contains('label', 'Processed').find('input[type="checkbox"]').should('be.checked');
       cy.contains('button', 'Clear All').click();
-      cy.contains('label', 'Error').find('input[type="checkbox"]').should('not.be.checked');
+      cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('not.be.checked');
+      cy.contains('label', 'Processed').find('input[type="checkbox"]').should('not.be.checked');
       cy.contains('button', 'Apply').click();
-      cy.contains('tbody', 'NO DATA AVAILABLE').should('not.exist', { timeout: 10000 });
     });
   });
 
@@ -170,7 +223,7 @@ describe('Paragraph Extraction', () => {
   describe('Paragraphs Dashboard', () => {
     it('should navigate to the PX Paragraphs List', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(1000); //wait for loader paragraphs to finish
+      cy.wait(1000); //wait for loader paracontagraphs to finish
       cy.injectAxe();
 
       cy.contains('tbody tr', 'Processed', { timeout: 40000 })
