@@ -1,3 +1,8 @@
+@use "../config/colors";
+@use "../config/commonLayout";
+@use "../config/typography";
+@use "../elements/pill";
+
 .settings {
   display: -webkit-flex;
   display: flex;
@@ -17,21 +22,21 @@
 
 @media (min-width: 1024px) {
   .settings-navigation {
-    width: $SettingsNavigationWidth;
+    width: commonLayout.$SettingsNavigationWidth;
     height: 100%;
     overflow-y: auto;
-    border-right: 1px solid $c-grey-light;
+    border-right: 1px solid colors.$c-grey-light;
   }
 
   .settings-content {
     position: relative;
-    width: $SettingsContentWidth;
+    width: commonLayout.$SettingsContentWidth;
     overflow-y: auto;
   }
 }
 
 .settings {
-  background: $c-white;
+  background: colors.$c-white;
 
   .panel {
     border: 0;
@@ -41,7 +46,7 @@
 }
 
 .settings-navigation {
-  background: $c-background;
+  background: colors.$c-background;
 
   .panel {
     background-color: transparent;
@@ -50,11 +55,11 @@
   .panel-heading {
     background-color: transparent;
     text-transform: uppercase;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     letter-spacing: 0.1em;
     padding-left: 20px;
     border: 0;
-    border-top: 1px solid $c-grey-light;
+    border-top: 1px solid colors.$c-grey-light;
   }
   .panel-heading:first-of-type .panel-heading {
     border-top: 0;
@@ -66,14 +71,14 @@
     background-color: transparent;
     &:hover,
     &:focus {
-      color: $c-black;
+      color: colors.$c-black;
       background-color: transparent;
 
       &:before {
         content: '';
         display: block;
         width: 5px;
-        background: $c-primary;
+        background: colors.$c-primary;
         position: absolute;
         left: 0;
         top: 0;
@@ -84,16 +89,16 @@
     &.active,
     &.active:hover,
     &.active:focus {
-      color: $c-primary;
+      color: colors.$c-primary;
       font-weight: bold;
-      background: $c-grey-lighten;
+      background: colors.$c-grey-lighten;
       cursor: default;
 
       &:before {
         content: '';
         display: block;
         width: 5px;
-        background: $c-primary;
+        background: colors.$c-primary;
         position: absolute;
         left: 0;
         top: 0;
@@ -109,32 +114,32 @@
 
 .settings-content {
   padding: 15px;
-  margin-bottom: $FooterHeight;
+  margin-bottom: commonLayout.$FooterHeight;
 
   &.without-footer {
     margin-bottom: 0px;
   }
 
   &.footer-extra-row {
-    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
+    margin-bottom: calc(#{commonLayout.$FooterHeight} * 2 + 2px);
   }
 
   .panel-heading {
     background-color: transparent;
-    font-size: $f-size-xxl;
+    font-size: typography.$f-size-xxl;
     font-weight: 400;
     padding-left: 0;
     padding-right: 0;
 
     input {
-      font-size: $f-size-xl;
+      font-size: typography.$f-size-xl;
     }
   }
 
   .panel-subheading {
     display: flex;
     background-color: transparent;
-    font-size: $f-size-xl;
+    font-size: typography.$f-size-xl;
     font-weight: 400;
     padding-left: 0;
     padding-right: 0;
@@ -144,9 +149,9 @@
 
   h2 {
     padding: 16px 0;
-    font-size: $f-size-xl;
+    font-size: typography.$f-size-xl;
     font-weight: 500;
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   .list-group-item:last-of-type {
@@ -169,7 +174,7 @@
 @media (max-width: 1023px) {
   .settings-content {
     &.sm-footer-extra-row {
-      margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
+      margin-bottom: calc(#{commonLayout.$FooterHeight} * 2 + 2px);
     }
   }
 }
@@ -219,7 +224,7 @@
   // padding-bottom: 85px;
   // overflow-y: scroll;
   div {
-    @include pillItem;
+    @include pill.pillItem;
   }
   .user-details {
     div {
@@ -295,7 +300,7 @@
 
 .custom-uploads {
   .uploading {
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     position: absolute;
     margin: 0;
     top: 0;
@@ -343,7 +348,7 @@
     }
     button {
       padding: 1px 5px;
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
       line-height: 1.5;
       border-radius: 3px;
       color: #fff;
@@ -475,17 +480,17 @@
     width: 100%;
     padding: 5px;
     border-radius: 6px;
-    border: 1px solid $c-grey-light;
+    border: 1px solid colors.$c-grey-light;
   }
 
   .description {
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
   }
 
   .error {
     margin-top: 5px;
     font-weight: bold;
-    color: $c-type-0;
+    color: colors.$c-type-0;
   }
 
   .modal-footer {

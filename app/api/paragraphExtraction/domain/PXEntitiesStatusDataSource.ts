@@ -1,24 +1,19 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { PXEntityStatusModel } from './PXEntityStatusModel';
+import { PXEntityStatusModel, EntityStatus } from './PXEntityStatusModel';
 
 type CreateInput = {
   extractorId: string;
   entitySharedId: string;
+  status: EntityStatus;
 };
 
 type GetExistingInput = Partial<CreateInput>;
-
-type CreateForSourceEntitiesInput = {
-  sourceTemplateId: string;
-  extractorId: string;
-};
 
 type GetAllInput = Partial<PXEntityStatusModel>;
 
 export interface PXEntitiesStatusDataSource {
   getById(entityStatusId: string): Promise<PXEntityStatusModel | undefined>;
-  createAsNew(input: CreateInput): Promise<PXEntityStatusModel>;
-  createForSourceEntities(input: CreateForSourceEntitiesInput): Promise<void>;
+  createWithStatus(input: CreateInput): Promise<PXEntityStatusModel>;
   getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
   markAsError(entityStatusId: string): Promise<void>;
   markAsObsolete(entityStatusId: string): Promise<void>;
@@ -29,4 +24,4 @@ export interface PXEntitiesStatusDataSource {
   getAll(input: GetAllInput): ResultSet<PXEntityStatusModel>;
 }
 
-export type { GetExistingInput, CreateInput, CreateForSourceEntitiesInput };
+export type { GetExistingInput, GetAllInput, CreateInput };

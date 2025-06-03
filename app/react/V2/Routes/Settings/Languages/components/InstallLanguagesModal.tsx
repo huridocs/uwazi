@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Translate, I18NApi } from 'app/I18N';
 import { Button, Modal } from 'app/V2/Components/UI';
 import { MultiselectList } from 'app/V2/Components/Forms';
@@ -15,11 +15,15 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   const [selected, setSelected] = useState<string[]>([]);
   const { requestAction } = useApiCaller();
 
-  const items = languages.map(l => ({
-    label: `${l.translationAvailable ? ' * ' : ''}${l.label} (${l.key})`,
-    value: l.key,
-    searchLabel: l.label,
-  }));
+  const items = useMemo(
+    () =>
+      languages.map(l => ({
+        label: `${l.translationAvailable ? ' * ' : ''}${l.label} (${l.key})`,
+        value: l.key,
+        searchLabel: l.label,
+      })),
+    [languages]
+  );
 
   const install = async () => {
     setShowModal(false);

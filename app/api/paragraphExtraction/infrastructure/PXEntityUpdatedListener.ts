@@ -12,6 +12,7 @@ import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;
@@ -79,9 +80,10 @@ export class PXEntityUpdatedListener {
       return;
     }
 
-    await this.dependencies.entitiesStatusDS.createAsNew({
+    await this.dependencies.entitiesStatusDS.createWithStatus({
       entitySharedId: newEntity.sharedId!,
       extractorId: extractor.id,
+      status: EntityStatus.New,
     });
   }
 

@@ -1,3 +1,5 @@
+@use "../config/colors";
+
 .toggle-toolbar-button {
   border: transparent;
   border-radius: 0px 0px 12px 12px;
@@ -139,7 +141,7 @@
           width: 100%;
           text-align: left;
           background-color: white;
-          border: 1px solid $c-grey-light;
+          border: 1px solid colors.$c-grey-light;
           border-radius: 4px;
 
           span {

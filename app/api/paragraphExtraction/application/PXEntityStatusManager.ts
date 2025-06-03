@@ -11,6 +11,7 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
+import { EntityStatus } from '../domain/PXEntityStatusModel';
 
 type Dependencies = {
   entitiesStatusDS: PXEntitiesStatusDataSource;
@@ -128,9 +129,10 @@ export class PXEntityStatusManager {
 
       await this.dependencies.entitiesStatusDS.markAsObsolete(entityStatus.id);
     } else {
-      await this.dependencies.entitiesStatusDS.createAsNew({
+      await this.dependencies.entitiesStatusDS.createWithStatus({
         extractorId: extractor.id,
         entitySharedId: entity.sharedId!,
+        status: EntityStatus.New,
       });
     }
   }

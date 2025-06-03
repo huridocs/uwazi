@@ -818,10 +818,11 @@ Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
 Suggestion,Suggestion
-Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Предлагаемые варианты
 suggestions,suggestions
+Suggestions have been updated,Suggestions have been updated
+Suggestions sent,Suggestions sent
 Supporting files,Сопроводительные файлы
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.

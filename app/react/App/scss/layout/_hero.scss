@@ -1,14 +1,17 @@
+@use "../config/colors";
+@use "../config/typography";
+
 @use "sass:color";
 
 .hero {
   text-align: center;
   margin: -15px -15px 30px;
-  @if $hero == light {
-    color: $c-black;
-    background-color: $c-grey-light;
+  @if colors.$hero == light {
+    color: colors.$c-black;
+    background-color: colors.$c-grey-light;
   } @else {
-    color: $c-white;
-    background-color: $c-grey-dark;
+    color: colors.$c-white;
+    background-color: colors.$c-grey-dark;
   }
 
   h1 {
@@ -17,23 +20,23 @@
     margin: 0 auto;
     max-width: 900px;
 
-    @if $hero == dark {
-      text-shadow: 3px 3px 15px $c-black;
+    @if colors.$hero == dark {
+      text-shadow: 3px 3px 15px colors.$c-black;
     }
   }
 
   p {
     letter-spacing: 0.1em;
     margin-bottom: 30px;
-    @if $hero == dark {
-      text-shadow: 3px 3px 15px $c-black;
+    @if colors.$hero == dark {
+      text-shadow: 3px 3px 15px colors.$c-black;
     }
   }
 
   .btn {
-    font-size: $f-size-lg;
-    @if $hero == dark {
-      box-shadow: 3px 3px 15px rgba($c-black, .3);
+    font-size: typography.$f-size-lg;
+    @if colors.$hero == dark {
+      box-shadow: 3px 3px 15px rgba(colors.$c-black, .3);
     }
   }
   .btn:not(:first-of-type) {
@@ -50,12 +53,12 @@
 
   a {
     width: 100%;
-    border-top: 3px solid $c-white;
+    border-top: 3px solid colors.$c-white;
     padding: 60px 0;
-    background: color.adjust($c-black, $alpha: -.6);
+    background: color.adjust(colors.$c-black, $alpha: -.6);
 
     &:hover {
-      background: color.adjust($c-black, $alpha: -.5);
+      background: color.adjust(colors.$c-black, $alpha: -.5);
       cursor: pointer;
       text-decoration: none;
 
@@ -64,24 +67,24 @@
       }
     }
 
-    @if $hero == light {
-      color: $c-black;
+    @if colors.$hero == light {
+      color: colors.$c-black;
     } @else {
-      color: $c-white;
-      text-shadow: 3px 3px 15px $c-black;
+      color: colors.$c-white;
+      text-shadow: 3px 3px 15px colors.$c-black;
     }
   }
 
   h2 {
-    font-size: $f-size-xxl;
+    font-size: typography.$f-size-xxl;
     border: 0;
     padding: 0;
     margin: 0;
-    @if $hero == light {
-      color: $c-black;
+    @if colors.$hero == light {
+      color: colors.$c-black;
     } @else {
-      color: $c-white;
-      text-shadow: 3px 3px 5px $c-black;
+      color: colors.$c-white;
+      text-shadow: 3px 3px 5px colors.$c-black;
     }
   }
 }

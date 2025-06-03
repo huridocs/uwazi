@@ -1,5 +1,8 @@
+@use "../config/colors";
+@use "../config/typography";
+
 @mixin timeline-time() {
-  background: $c-grey-lighten;
+  background: colors.$c-grey-lighten;
   border: none;
   border-radius: 2px;
   border-right: none;
@@ -19,7 +22,7 @@
 
   textarea {
     padding: 15px;
-    font-family: $f-mono;
+    font-family: typography.$f-mono;
   }
 
   .tab-nav {
@@ -31,23 +34,23 @@
   .tab-link {
     display: inline-block;
     padding: 5px 5px 0;
-    font-size: $f-size-xs;
+    font-size: typography.$f-size-xs;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     cursor: pointer;
-    color: $c-grey-dark;
-    border-bottom: 1px dotted $c-white;
+    color: colors.$c-grey-dark;
+    border-bottom: 1px dotted colors.$c-white;
 
     &:hover {
       text-decoration: none;
-      color: $c-black;
-      border-bottom: 1px dotted $c-black;
+      color: colors.$c-black;
+      border-bottom: 1px dotted colors.$c-black;
     }
 
     &.tab-link-active {
-      color: $c-primary;
+      color: colors.$c-primary;
       font-weight: bold;
-      border-bottom: 1px solid $c-primary;
+      border-bottom: 1px solid colors.$c-primary;
     }
   }
 
@@ -67,7 +70,7 @@
     border: 0;
 
     p {
-      font-size: $f-size-lg;
+      font-size: typography.$f-size-lg;
     }
   }
 
@@ -75,23 +78,23 @@
     padding: 3px 6px 2px;
     position: relative;
     top: -2px;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     margin-right: 4px;
-    color: $c-primary;
-    background-color: $c-grey-lighten;
+    color: colors.$c-primary;
+    background-color: colors.$c-grey-lighten;
   }
 
   p a,
   td a {
     display: inline;
-    color: $c-primary;
-    border-bottom: 1px solid $c-primary-light;
+    color: colors.$c-primary;
+    border-bottom: 1px solid colors.$c-primary-light;
     text-decoration: none !important;
     padding: 0 2px;
 
     &:hover {
-      color: $c-primary;
-      border-color: $c-primary;
+      color: colors.$c-primary;
+      border-color: colors.$c-primary;
     }
   }
 
@@ -101,8 +104,8 @@
 
   p,
   li {
-    font-family: $f-regular;
-    font-size: $f-size-lg;
+    font-family: typography.$f-regular;
+    font-size: typography.$f-size-lg;
     line-height: 1.5em;
   }
 
@@ -121,16 +124,16 @@
   }
 
   th {
-    background-color: $c-grey-lighten;
-    border-bottom: 1px solid $c-grey-light;
+    background-color: colors.$c-grey-lighten;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   th:not(:last-of-type) {
-    border-right: 1px solid $c-white;
+    border-right: 1px solid colors.$c-white;
   }
 
   tr:not(:last-of-type) {
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   h1 {
@@ -161,7 +164,7 @@
 
   .tab-link {
     padding: 15px 15px 0;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
   }
 }
 
@@ -169,7 +172,7 @@
   .markdownViewer,
   .markdownEditor {
     p {
-      font-size: $f-size;
+      font-size: typography.$f-size;
     }
   }
 }
@@ -178,7 +181,7 @@
   .markdownViewer,
   .markdownEditor {
     p {
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
     }
   }
 }
@@ -222,7 +225,7 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: $c-grey-lighten;
+    background-color: colors.$c-grey-lighten;
     display: flex;
     gap: 4px;
     justify-content: center;
@@ -259,7 +262,7 @@
   cursor: pointer;
   padding: 4px 8px;
   margin-bottom: 5px;
-  background: $c-grey-lighten;
+  background: colors.$c-grey-lighten;
 
   .timelink-time-label {
     width: 100%;
@@ -275,7 +278,7 @@
   }
 
   &:hover {
-    background: $c-primary-lighten;
+    background: colors.$c-primary-lighten;
   }
 
   b {
@@ -284,12 +287,12 @@
   }
 
   .fa {
-    color: $c-grey-light;
+    color: colors.$c-grey-light;
     margin-right: 5px;
   }
 
   &:hover .fa {
-    color: $c-primary;
+    color: colors.$c-primary;
   }
 
   span {
@@ -325,7 +328,7 @@
   .timestamp {
     display: flex;
     width: 21%;
-    background: $c-grey-lighten;
+    background: colors.$c-grey-lighten;
     border-radius: 2px;
     border: none;
 
@@ -392,7 +395,7 @@
   .new-timestamp-btn,
   .delete-timestamp-btn {
     width: 8%;
-    background: $c-grey-lighten;
+    background: colors.$c-grey-lighten;
     border: 1px solid #ceccd6;
     border-radius: 2px;
   }
@@ -400,7 +403,7 @@
   .delete-timestamp-btn {
     background: #c95c54;
     border: 1px solid #b24138;
-    color: $c-grey-lighten;
+    color: colors.$c-grey-lighten;
   }
 }
 
@@ -419,7 +422,7 @@
   .markdown-viewer {
     p,
     li {
-      font-size: $f-size;
+      font-size: typography.$f-size;
     }
 
     h1,
@@ -436,11 +439,11 @@
     }
 
     h1 {
-      font-size: $f-size-xxl;
+      font-size: typography.$f-size-xxl;
     }
 
     h2 {
-      font-size: $f-size-xxl;
+      font-size: typography.$f-size-xxl;
     }
   }
 }

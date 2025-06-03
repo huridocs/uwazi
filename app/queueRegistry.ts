@@ -11,13 +11,9 @@ import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infras
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-// import {
-//   UpdateTemplateRelationshipPropertiesJob as createUpdateTemplateRelationshipPropertiesJob,
-//   UpdateRelationshipPropertiesJob as createUpdateRelationshipPropertiesJob,
-// } from 'api/relationships.v2/services/service_factories';
-// import { UpdateRelationshipPropertiesJob } from 'api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
-// eslint-disable-next-line max-len
-// import { UpdateTemplateRelationshipPropertiesJob } from 'api/relationships.v2/services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
+import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
+import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
+import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -54,9 +50,6 @@ export function registerJobs(
     factory: (namespace: string) => Promise<T>
   ) => void
 ) {
-  // register(UpdateRelationshipPropertiesJob, async () => createUpdateRelationshipPropertiesJob());
-  // register(UpdateTemplateRelationshipPropertiesJob, createUpdateTemplateRelationshipPropertiesJob);
-
   register(TestJob, async () => new TestJob());
 
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
@@ -68,16 +61,31 @@ export function registerJobs(
       connection,
       transactionManager,
     });
+    const settingsDS = DefaultSettingsDataSource(transactionManager);
 
     return new PXCreateParagraphsJob({
       extractionService: PXExtractionServiceFactory.createDefault(),
       useCase: PXCreateParagraphsFactory.createDefault(),
       pxEntitiesStatusDS: new MongoPXEntitiesStatusDataSource(
-        getConnection(),
+        connection,
         transactionManager,
-        DefaultSettingsDataSource(transactionManager),
+        settingsDS,
         extractorsQueryService
       ),
     });
+  });
+
+  register(CreateParagraphExtractionEntityStatusesJob, async (namespace: string) => {
+    const batchSize = 50;
+    const useCase = PXCreateEntityStatusesFactory.createDefault({ batchSize });
+    const dispatcher = await DefaultDispatcher(namespace, { lockWindow: 1000 * 60 });
+
+    return new CreateParagraphExtractionEntityStatusesJob(
+      {
+        createEntityStatusesUseCase: useCase,
+        dispatcher,
+      },
+      batchSize
+    );
   });
 }
