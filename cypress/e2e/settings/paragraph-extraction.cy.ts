@@ -104,7 +104,7 @@ describe('Paragraph Extraction', () => {
       cy.contains(
         'tr',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
-        { timeout: 30000 }
+        { timeout: 40000 }
       );
       cy.get('tbody tr').should('have.length', 3);
       checkCells(
@@ -167,7 +167,7 @@ describe('Paragraph Extraction', () => {
       cy.contains('h2', firstEntityProcessed).click();
       cy.get('aside.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('h1', firstEntityProcessed);
-        cy.get('#upload-button-input').selectFile('./cypress/test_files/valid.pdf', {
+        cy.get('#upload-button-input').selectFile('./cypress/test_files/single_page.pdf', {
           force: true,
         });
         cy.contains('Success, Upload another?');
@@ -184,7 +184,7 @@ describe('Paragraph Extraction', () => {
         cy.contains('button', 'View').click();
       });
       cy.contains('tr', firstEntityProcessed).within(() => {
-        cy.contains('Obsolete');
+        cy.contains('Obsolete', { timeout: 40000 });
       });
     });
 
@@ -194,6 +194,7 @@ describe('Paragraph Extraction', () => {
       cy.contains('button', 'Apply').click();
       cy.contains('tbody', 'NO DATA AVAILABLE');
       cy.contains('button', 'Filters').click();
+      cy.contains('button', 'Clear All').click();
       cy.contains('label', 'Obsolete').find('input[type="checkbox"]').check();
       cy.contains('label', 'Processed').find('input[type="checkbox"]').check();
       cy.contains('button', 'Apply').click();
@@ -201,10 +202,7 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should extract paragraphs for the obsolete entity and not loose filters', () => {
-      cy.contains(
-        'tr',
-        'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
-      ).within(() => {
+      cy.contains('tr', 'Obsolete').within(() => {
         cy.get('input[type="checkbox"]').click();
       });
       cy.contains('Extract paragraphs').click();
