@@ -106,6 +106,9 @@ describe('Paragraph Extraction', () => {
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
         { timeout: 40000 }
       );
+    });
+
+    it('should check the results', () => {
       cy.get('tbody tr').should('have.length', 3);
       checkCells(
         1,
@@ -183,6 +186,9 @@ describe('Paragraph Extraction', () => {
         cy.contains('span', '1 New').should('not.exist');
         cy.contains('button', 'View').click();
       });
+    });
+
+    it('should contain an obsolete extraction', () => {
       cy.contains('Obsolete', { timeout: 40000 });
     });
 
@@ -222,10 +228,6 @@ describe('Paragraph Extraction', () => {
 
   describe('Paragraphs Dashboard', () => {
     it('should navigate to the PX Paragraphs List', () => {
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(1000); //wait for loader paracontagraphs to finish
-      cy.injectAxe();
-
       cy.contains('tbody tr', 'Processed', { timeout: 40000 })
         .eq(0)
         .within(() => {
@@ -238,8 +240,6 @@ describe('Paragraph Extraction', () => {
           cy.contains('button', 'View').click();
         });
       cy.url().should('include', '/settings/paragraph-extraction/');
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(1000); //wait for loader paragraphs to finish
     });
 
     it('should check for a11y violations', () => {
