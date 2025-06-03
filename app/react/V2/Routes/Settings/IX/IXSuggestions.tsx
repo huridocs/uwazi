@@ -66,13 +66,12 @@ const IXSuggestions = () => {
     totalPages,
     activeFilters,
   } = useLoaderData() as {
-    totalPages: number;
     suggestions: TableSuggestion[];
     extractor: ClientIXExtractorType;
     templates: ClientTemplateSchema[];
     aggregation: any;
     currentStatus: ixStatus;
-    _id: string;
+    totalPages: number;
     activeFilters: number;
   };
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
