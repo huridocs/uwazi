@@ -33,7 +33,7 @@ const ThesaurusLabel = ({ cell }: any) => {
   );
 };
 
-const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const ThesaurusValueLabel = ({ getValue, cell }: CellContext<ThesaurusRow, string>) => {
   const { thesaurus } = cell.getContext().column.columnDef.meta!.data;
