@@ -15,8 +15,10 @@ const getFilterStatus = (
 
   if (availableFilters) {
     Object.entries(availableFilters).forEach(([key, value]) => {
-      const selected = Object.hasOwn(searchParams, key) || (searchParams instanceof URLSearchParams && searchParams.getAll('status').includes(key));
-      result[key] = { count: value, status: selected }
+      const selected =
+        Object.hasOwn(searchParams, key) ||
+        (searchParams instanceof URLSearchParams && searchParams.getAll('status').includes(key));
+      result[key] = { count: value, status: selected };
     });
   }
   delete result.total;
@@ -66,11 +68,11 @@ const EntityFilterSidepanel = () => {
       const keys = Object.keys(prev);
       keys.forEach(key => {
         prev[key].status = false;
-      })
+      });
 
-      return { ...prev }
-    })
-  }
+      return { ...prev };
+    });
+  };
 
   return (
     <Sidepanel
@@ -96,13 +98,7 @@ const EntityFilterSidepanel = () => {
             handleSubmit();
           }}
         >
-          <Button
-            size="small"
-            styling="outline"
-            onClick={
-              clearFilters
-            }
-          >
+          <Button size="small" styling="outline" onClick={clearFilters}>
             <Translate>Clear All</Translate>
           </Button>
           <Button size="small" type="submit" color="success">
