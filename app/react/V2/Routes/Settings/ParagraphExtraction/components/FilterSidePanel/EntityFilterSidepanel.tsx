@@ -18,7 +18,7 @@ const getFilterStatus = (
     Object.entries(availableFilters).forEach(([key, value]) => {
       result[key] = { count: value, status: false };
 
-      if (Object.hasOwn(searchParams, key)) {
+      if (Object.hasOwn(searchParams, key) || (searchParams instanceof URLSearchParams && searchParams.get('status') === key)) {
         result[key].status = true;
       }
     });
