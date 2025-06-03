@@ -101,6 +101,7 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should whait until the first entity shows and check the result', () => {
+      cy.reload();
       cy.contains(
         'tr',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
@@ -189,6 +190,7 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should contain an obsolete extraction', () => {
+      cy.reload();
       cy.contains('Obsolete', { timeout: 40000 });
     });
 
