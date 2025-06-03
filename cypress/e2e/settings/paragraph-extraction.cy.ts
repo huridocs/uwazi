@@ -154,6 +154,7 @@ describe('Paragraph Extraction', () => {
       cy.contains('label', 'Error').find('input[type="checkbox"]').should('be.checked');
       cy.contains('button', 'Clear All').click();
       cy.contains('button', 'Apply').click();
+      cy.contains('tbody tr', 'Processed', { timeout: 40000 });
     });
   });
 

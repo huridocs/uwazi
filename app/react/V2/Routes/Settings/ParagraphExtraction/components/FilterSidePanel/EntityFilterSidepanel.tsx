@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
-import { mapValues } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
@@ -16,14 +15,10 @@ const getFilterStatus = (
 
   if (availableFilters) {
     Object.entries(availableFilters).forEach(([key, value]) => {
-      result[key] = { count: value, status: false };
-
-      if (Object.hasOwn(searchParams, key) || (searchParams instanceof URLSearchParams && searchParams.get('status') === key)) {
-        result[key].status = true;
-      }
+      const selected = Object.hasOwn(searchParams, key) || (searchParams instanceof URLSearchParams && searchParams.getAll('status').includes(key));
+      result[key] = { count: value, status: selected }
     });
   }
-
   delete result.total;
   return result;
 };
@@ -66,6 +61,17 @@ const EntityFilterSidepanel = () => {
     setOpen(false);
   };
 
+  const clearFilters = () => {
+    setAppliedFilters(prev => {
+      const keys = Object.keys(prev);
+      keys.forEach(key => {
+        prev[key].status = false;
+      })
+
+      return { ...prev }
+    })
+  }
+
   return (
     <Sidepanel
       withOverlay
@@ -93,10 +99,8 @@ const EntityFilterSidepanel = () => {
           <Button
             size="small"
             styling="outline"
-            onClick={() =>
-              setAppliedFilters(prevFilters =>
-                mapValues(prevFilters, filter => ({ ...filter, status: false }))
-              )
+            onClick={
+              clearFilters
             }
           >
             <Translate>Clear All</Translate>
