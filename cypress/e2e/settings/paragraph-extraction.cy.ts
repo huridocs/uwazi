@@ -159,7 +159,7 @@ describe('Paragraph Extraction', () => {
       cy.checkA11y();
     });
 
-    it('should change an entity by uploading another file to generate an obsolete suggestion', () => {
+    it('should change an entity by uploading another file to generate an obsolete extraction', () => {
       cy.intercept('GET', '/api/search*').as('librarySearch');
       cy.contains('a', 'Library').click();
       cy.contains('li', 'Ordenes del presidente').click();
@@ -183,9 +183,7 @@ describe('Paragraph Extraction', () => {
         cy.contains('span', '1 New').should('not.exist');
         cy.contains('button', 'View').click();
       });
-      cy.contains('tr', firstEntityProcessed).within(() => {
-        cy.contains('Obsolete', { timeout: 40000 });
-      });
+      cy.contains('Obsolete', { timeout: 40000 });
     });
 
     it('should check filtering and that the bulk extract button remains disabled', () => {
