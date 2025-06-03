@@ -141,6 +141,20 @@ describe('Paragraph Extraction', () => {
     it('should check for a11y violations', () => {
       cy.checkA11y();
     });
+
+    it('should maintain filters when triggering new extraction', () => {
+      cy.contains('button', 'Filters').click();
+      cy.contains('label', 'Error').find('input[type="checkbox"]').check();
+      cy.contains('button', 'Apply').click();
+      cy.contains('tbody', 'NO DATA AVAILABLE');
+      cy.contains('button', 'Extract new paragraphs').click();
+      cy.contains('The process of extracting the paragraphs has successfully started');
+      cy.contains('Dismiss').click();
+      cy.contains('button', 'Filters').click();
+      cy.contains('label', 'Error').find('input[type="checkbox"]').should('be.checked');
+      cy.contains('button', 'Clear All').click();
+      cy.contains('button', 'Apply').click();
+    });
   });
 
   let firstEntityProcessed = '';
@@ -192,5 +206,6 @@ describe('Paragraph Extraction', () => {
       cy.contains('aside', 'Español');
       cy.contains('aside', 'For e2e paragraph 0 in en');
     });
+
   });
 });
