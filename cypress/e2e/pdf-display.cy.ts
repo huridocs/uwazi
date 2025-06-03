@@ -20,7 +20,9 @@ describe('PDF display', () => {
     it('should setup the template', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Templates').click();
-      cy.contains('li', 'Document').contains('a', 'Edit').click();
+      cy.contains('tr', 'Document').within(() => {
+        cy.contains('a', 'Edit').click();
+      });
       cy.contains('li', 'Text').within(() => {
         cy.get('button').click();
       });
