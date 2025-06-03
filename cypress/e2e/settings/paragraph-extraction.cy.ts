@@ -101,7 +101,6 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should whait until the first entity shows and check the result', () => {
-      cy.reload();
       cy.contains(
         'tr',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
@@ -164,11 +163,12 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should change an entity by uploading another file to generate an obsolete extraction', () => {
-      cy.intercept('GET', '/api/search*').as('librarySearch');
       cy.contains('a', 'Library').click();
       cy.contains('li', 'Ordenes del presidente').click();
-      cy.wait('@librarySearch');
-      cy.contains('h2', firstEntityProcessed).click();
+      cy.contains(
+        'div.item-document.template-58ada34c299e82674854505b',
+        firstEntityProcessed
+      ).click();
       cy.get('aside.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('h1', firstEntityProcessed);
         cy.get('#upload-button-input').selectFile('./cypress/test_files/single_page.pdf', {
@@ -190,7 +190,6 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should contain an obsolete extraction', () => {
-      cy.reload();
       cy.contains('Obsolete', { timeout: 40000 });
     });
 
