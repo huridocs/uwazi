@@ -72,6 +72,7 @@ export const datePickerOptionsByLocale = (
     format: dateFormat,
     titleFormat: titleFormat(language),
     rtl: isRTL,
+    timezone: 'UTC',
   };
 };
 

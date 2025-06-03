@@ -76,9 +76,11 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
     // Clear input refs
     if (fromInputRef?.current) {
       fromInputRef.current.value = '';
+      fromInputRef.current.id = 'from';
     }
     if (toInputRef?.current) {
       toInputRef.current.value = '';
+      toInputRef.current.id = 'to';
     }
 
     setCurrentFilters({
@@ -100,9 +102,11 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
       ...data,
       dateRange: {
         from: data.dateRange?.from
-          ? moment(Number(data.dateRange.from)).format('YYYY-MM-DD')
+          ? moment(Number(data.dateRange.from) * 1000).format('YYYY-MM-DD')
           : undefined,
-        to: data.dateRange?.to ? moment(Number(data.dateRange.to)).format('YYYY-MM-DD') : undefined,
+        to: data.dateRange?.to
+          ? moment(Number(data.dateRange.to) * 1000).format('YYYY-MM-DD')
+          : undefined,
       },
     };
     onSubmit(transformedData);

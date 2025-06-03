@@ -214,7 +214,6 @@ describe('Entities', () => {
     it('should create an entity filling all the props.', () => {
       cy.contains('a', 'Library').click();
       cy.get('button').contains('Create entity').click();
-      // cy.intercept('GET', '/api/thesauris').as('fetchThesauri');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
       cy.contains('#metadataForm', 'Type').get('select').eq(0).select('All props');
@@ -244,7 +243,6 @@ describe('Entities', () => {
       cy.contains('.form-group.multiselect', 'Multiselect').within(() => {
         cy.contains('Activo').click();
       });
-      // cy.wait('@fetchThesauri');
       cy.get('.form-group.multidate button.btn.add').click();
       cy.get('.form-group.multidate .multidate-item:first-of-type input').type('23/11/1963', {
         delay: 0,

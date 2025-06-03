@@ -166,7 +166,12 @@ const updateSearch = (
           value !== undefined &&
           ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))
         ) {
-          setSearchValue(prev, key, value);
+          if (key === 'from' || key === 'to') {
+            const formattedDate = moment(value).format('YYYY-MM-DD');
+            setSearchValue(prev, key, formattedDate);
+          } else {
+            setSearchValue(prev, key, value);
+          }
         } else {
           prev.delete(key);
         }

@@ -94,7 +94,7 @@ const TimeCell =
     const date = moment(cell.getValue());
     return (
       <>
-        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>
+        <span className="font-semibold">{date.format(dateFormat)}</span>
         <span className="font-medium">&nbsp;-&nbsp;{date.format('hh:mm A')}</span>
       </>
     );

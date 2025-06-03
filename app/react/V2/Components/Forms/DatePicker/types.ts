@@ -59,7 +59,6 @@ export interface DateRangePickerProps extends BaseDatePickerProps {
 export interface DatePickerComponentProps extends Omit<DatePickerProps, 'onChange' | 'value'> {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   value?: string | number | null;
-  language?: string;
 }
 
 export interface DateRangePickerComponentProps
@@ -69,5 +68,4 @@ export interface DateRangePickerComponentProps
     from: string | number | null;
     to: string | number | null;
   };
-  language?: string;
 }

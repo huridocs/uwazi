@@ -153,14 +153,30 @@ describe('Activity log', () => {
       cy.contains('button', 'Clear all').click({ force: true });
       applyFilters();
       cy.contains('button', 'Filters').click({ force: true });
-      cy.get('#from').type('25/04/2024', { delay: 0 });
+      cy.get('input[id="From"]').type('25/04/2024', { delay: 0 });
       //eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(300);
-      cy.get('#to').type('09/05/2024', { delay: 0 });
+      cy.get('input[id="To"]').type('09/05/2024', { delay: 0 });
       //eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(300);
       applyFilters();
       cy.get('tr').should('have.length.at.most', 5);
+    });
+
+    it('should include date filters in URL with correct format', () => {
+      cy.contains('button', 'Filters').click({ force: true });
+      cy.contains('button', 'Clear all').click({ force: true });
+      applyFilters();
+      cy.contains('button', 'Filters').click({ force: true });
+      cy.get('input[id="From"]').type('25/04/2024', { delay: 0 });
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
+      cy.get('input[id="To"]').type('09/05/2024', { delay: 0 });
+      //eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(300);
+      applyFilters();
+      cy.url().should('include', 'from=2024-04-25');
+      cy.url().should('include', 'to=2024-05-09');
     });
 
     // eslint-disable-next-line max-statements
@@ -187,7 +203,7 @@ describe('Activity log', () => {
       cy.contains('button', 'Clear all').click({ force: true });
       cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
       selectMethod(0);
-      cy.get('#from').type('28/05/2024', { delay: 0, force: true });
+      cy.get('input[id="from"]').type('28/05/2024', { delay: 0, force: true });
       //eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(300);
       cy.contains('.datepicker.datepicker-dropdown:not(.hidden)', 'Today').click({ force: true });

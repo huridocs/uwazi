@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import moment from 'moment-timezone';
 import { settingsAtom } from 'app/V2/atoms';
@@ -52,25 +52,28 @@ const DatePicker: React.FC<LazyDatePickerProps> = ({
     }
   }, [value, useTimezone]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const typedValue = e.target.value;
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const typedValue = e.target.value;
 
-    if (!typedValue) {
-      onChange(null);
-      return;
-    }
-
-    const parsedDate = moment(typedValue, dateFormat, true);
-    setInputValue(parsedDate);
-
-    if (parsedDate.isValid()) {
-      const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
-      if (withOffset) {
-        setInputValue(withOffset);
-        onChange(withOffset.valueOf() / 1000);
+      if (!typedValue) {
+        onChange(null);
+        return;
       }
-    }
-  };
+
+      const parsedDate = moment(typedValue, dateFormat, true);
+      setInputValue(parsedDate);
+
+      if (parsedDate.isValid()) {
+        const withOffset = addOffset(parsedDate.valueOf(), endOfDay, useTimezone);
+        if (withOffset) {
+          setInputValue(withOffset);
+          onChange(withOffset.valueOf() / 1000);
+        }
+      }
+    },
+    [dateFormat, endOfDay, onChange, useTimezone]
+  );
 
   const formattedDate = formatDate(inputValue, dateFormat, useTimezone);
 

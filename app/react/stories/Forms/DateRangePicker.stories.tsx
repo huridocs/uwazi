@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { DateRange } from 'V2/Components/Forms/DatePicker/DateRange';
+import { DateRange } from 'app/V2/Components/Forms';
 
 const meta: Meta<typeof DateRange> = {
   title: 'Forms/DateRangePicker',
@@ -41,6 +41,7 @@ const Basic: Story = {
       onBlur={args.onBlur}
       errorMessage={args.errorMessage}
       endOfDay={args.endOfDay}
+      horizontal={args.horizontal}
     />
   ),
   args: {
@@ -59,6 +60,7 @@ const Basic: Story = {
     hasErrors: false,
     onChange: action('changed'),
     onBlur: action('blurred'),
+    horizontal: true,
   },
 };
 
