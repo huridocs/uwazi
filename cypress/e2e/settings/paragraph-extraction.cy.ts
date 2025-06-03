@@ -136,9 +136,20 @@ describe('Paragraph Extraction', () => {
       );
     });
 
+    let firstEntityProcessed = '';
+
     it('should update the processed entities after 25 seconds', () => {
       cy.contains('tbody tr', 'New').should('not.exist');
-      cy.contains('tbody tr', 'Processed', { timeout: 40000 });
+      cy.contains('tbody tr', 'Processed', { timeout: 40000 })
+        .eq(0)
+        .within(() => {
+          cy.get('td:nth-child(2) > span')
+            .eq(0)
+            .invoke('text')
+            .then(text => {
+              firstEntityProcessed = text.trim();
+            });
+        });
     });
 
     it('should check for a11y violations', () => {
@@ -149,17 +160,13 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should change an entity by uploading another file to generate an obsolete suggestion', () => {
+      cy.intercept('GET', '/api/search*').as('librarySearch');
       cy.contains('a', 'Library').click();
       cy.contains('li', 'Ordenes del presidente').click();
-      cy.contains(
-        'h2',
-        'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
-      ).click();
+      cy.wait('@librarySearch');
+      cy.contains('h2', firstEntityProcessed).click();
       cy.get('aside.side-panel.metadata-sidepanel.is-active').within(() => {
-        cy.contains(
-          'h1',
-          'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
-        );
+        cy.contains('h1', firstEntityProcessed);
         cy.get('#upload-button-input').selectFile('./cypress/test_files/valid.pdf', {
           force: true,
         });
@@ -176,10 +183,7 @@ describe('Paragraph Extraction', () => {
         cy.contains('span', '1 New').should('not.exist');
         cy.contains('button', 'View').click();
       });
-      cy.contains(
-        'tr',
-        'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
-      ).within(() => {
+      cy.contains('tr', firstEntityProcessed).within(() => {
         cy.contains('Obsolete');
       });
     });
