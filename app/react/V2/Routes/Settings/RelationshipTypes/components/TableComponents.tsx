@@ -44,7 +44,7 @@ const templatesCells = ({
 );
 
 const TitleHeader = () => <Translate>Label</Translate>;
-const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
 const columnHelper = createColumnHelper<TableRelationshipType>();
