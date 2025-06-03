@@ -4,6 +4,7 @@ Key,Korean
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
@@ -68,6 +69,7 @@ Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
@@ -227,6 +229,7 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,기본 언어 변경 완료
 Default template,기본 템플릿
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,삭제
 DELETE,삭제
@@ -314,7 +317,9 @@ Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,탐색
@@ -828,6 +833,8 @@ Suggestions have been updated,Suggestions have been updated
 Suggestions sent,Suggestions sent
 Supporting files,추가 파일
 Synced template,Synced template
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,페이지 콘텐츠 생성 신택스
@@ -846,6 +853,7 @@ Template name,Template name
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,템플릿
 Templates:,Templates:
 Text,텍스트
@@ -855,6 +863,7 @@ The import process threw an error:,업로드 과정에서 오류가 발생했습
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
 The request could not be processed.,The request could not be processed.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,템플릿에 오류가 포함되어 있습니다.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
@@ -887,6 +896,7 @@ This property will be shown using all the width available.,디스플레이 가�
 This property will be shown without the label.,이 속성은 라벨 없이 표시됩니다.
 this template,this template
 This template has associated entities,This template has associated entities
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,이 템플릿을 새 엔티티의 기본값으로 사용합니다.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,임계점
@@ -910,6 +920,7 @@ total users,total users
 Training,Training
 Training model...,Training model...
 Translate,번역
+Translation,Translation
 Translations,번역
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully

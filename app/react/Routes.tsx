@@ -7,7 +7,7 @@ import LibraryRoot from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { LibraryCards } from 'app/Library/LibraryCards';
 import { LibraryTable } from 'app/Library/LibraryTable';
-import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
+import { PreserveSettings, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
@@ -68,6 +68,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+import { Templates, templatesLoader } from 'app/V2/Routes/Settings/Templates';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -142,9 +143,12 @@ const getRoutesLayout = (
         />
       </Route>
       <Route path="templates">
-        <Route index element={adminsOnlyRoute(<EntityTypesList />)} />
+        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
         <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
         <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
+      </Route>
+      <Route path="templates_v2">
+        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
       </Route>
       <Route path="metadata_extraction">
         <Route

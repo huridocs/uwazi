@@ -139,7 +139,26 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should check for a11y violations', () => {
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(500); // wait for page to settle
+      cy.injectAxe();
       cy.checkA11y();
+    });
+
+    it('should maintain filters when triggering new extraction', () => {
+      cy.contains('button', 'Filters').click();
+      cy.contains('label', 'Error').find('input[type="checkbox"]').check();
+      cy.contains('button', 'Apply').click();
+      cy.contains('tbody', 'NO DATA AVAILABLE');
+      cy.contains('button', 'Extract new paragraphs').click();
+      cy.contains('The process of extracting the paragraphs has successfully started');
+      cy.contains('Dismiss').click();
+      cy.contains('button', 'Filters').click();
+      cy.contains('label', 'Error').find('input[type="checkbox"]').should('be.checked');
+      cy.contains('button', 'Clear All').click();
+      cy.contains('label', 'Error').find('input[type="checkbox"]').should('not.be.checked');
+      cy.contains('button', 'Apply').click();
+      cy.contains('tbody', 'NO DATA AVAILABLE').should('not.exist', { timeout: 10000 });
     });
   });
 
@@ -149,8 +168,9 @@ describe('Paragraph Extraction', () => {
     it('should navigate to the PX Paragraphs List', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000); //wait for loader paragraphs to finish
+      cy.injectAxe();
 
-      cy.contains('tbody tr', 'Processed')
+      cy.contains('tbody tr', 'Processed', { timeout: 40000 })
         .eq(0)
         .within(() => {
           cy.get('td:nth-child(2) > span')
@@ -162,9 +182,14 @@ describe('Paragraph Extraction', () => {
           cy.contains('button', 'View').click();
         });
       cy.url().should('include', '/settings/paragraph-extraction/');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(1000); //wait for loader paragraphs to finish
     });
 
     it('should check for a11y violations', () => {
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(500); // wait for page to settle
+      cy.injectAxe();
       cy.checkA11y();
     });
 
@@ -174,23 +199,37 @@ describe('Paragraph Extraction', () => {
     });
 
     it('should open the PDF side panel', () => {
-      cy.get('[data-testid="settings-paragraph-extractor"]').scrollIntoView();
-      cy.contains('table caption', 'Ordenes del presidente').contains('button', 'Open PDF').click();
-      cy.contains('aside', firstEntityProcessed);
+      cy.get('[data-testid="settings-paragraph-extractor"]').first().scrollIntoView();
+      cy.contains('table caption', 'Ordenes del presidente')
+        .contains('button', 'Open PDF')
+        .should('be.visible')
+        .click();
+      cy.get('aside', { timeout: 15000 })
+        .should('be.visible')
+        .within(() => {
+          cy.contains(firstEntityProcessed);
+        });
       cy.get('#pdf-container .pdf-page').should('have.length.at.least', 2);
       cy.contains('aside button', 'Close').click();
     });
 
     it('should open the entity in the specific language', () => {
       cy.contains('tbody tr', 'For e2e paragraph 0 in en').scrollIntoView();
-      cy.contains('tbody tr', 'For e2e paragraph 0 in en').contains('span', 'Group').click();
+      cy.contains('tbody tr', 'For e2e paragraph 0 in en')
+        .contains('span', 'Group')
+        .should('be.visible')
+        .click();
       cy.contains('tbody tr', 'ar');
       cy.contains('tbody tr', 'es');
-      cy.contains('tbody tr', 'es').contains('button', 'View').click();
-      cy.contains('aside', 'Entity');
-      cy.contains('aside', firstEntityProcessed);
-      cy.contains('aside', 'Español');
-      cy.contains('aside', 'For e2e paragraph 0 in en');
+      cy.contains('tbody tr', 'es').contains('button', 'View').should('be.visible').click();
+      cy.get('aside', { timeout: 20000 })
+        .should('be.visible')
+        .within(() => {
+          cy.contains('Entity');
+          cy.contains(firstEntityProcessed);
+          cy.contains('Español');
+          cy.contains('For e2e paragraph 0 in en');
+        });
     });
   });
 });
