@@ -207,7 +207,7 @@ const IXSuggestions = () => {
       socket.off('ACCEPT_SUGGESTION_SUCCESS');
       socket.off('ACCEPT_SUGGESTION_ERROR');
     };
-  }, [extractor._id, fetchAgregations, revalidate, setNotifications]);
+  }, [extractor._id]);
 
   useEffect(() => {
     setAggregations(aggregation);
