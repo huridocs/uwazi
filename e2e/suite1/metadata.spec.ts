@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { waitForNavigation } from '../helpers/formActions';
 import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
@@ -89,17 +90,10 @@ describe('Metadata', () => {
 
     it('should go back to Template then delete the created template', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
-      await page.waitForSelector(
-        '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
-      );
-      await expect(page).toClick(
-        '.settings-content > div > ul > li:nth-child(6) > div > button.btn.btn-danger.btn-xs.template-remove'
-      );
-      await page.waitForSelector('div.modal-content');
-      await expect(page).toMatchElement('div.modal-body > h4', {
-        text: 'Confirm deletion of template: My edited template',
-      });
-      await expect(page).toClick('button', { text: 'Accept' });
+      await expect(page).toClick('tbody tr:nth-child(6) input[type="checkbox"]');
+      await expect(page).toClick('button', { text: 'Delete' });
+      await page.waitForSelector('div[data-testid="modal"]');
+      await expect(page).toClick('div[data-testid="modal"] button', { text: 'Delete' });
       await expect(page).not.toMatch('My edited template');
     });
   });
