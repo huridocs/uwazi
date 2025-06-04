@@ -20,7 +20,7 @@ import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
 
-async function processTrainFunction(
+async function processIXFunction(
   callback: (extractorId: ObjectIdSchema) => Promise<{ message: string; status: string }>,
   req: Request,
   res: Response
@@ -32,7 +32,7 @@ async function processTrainFunction(
     return;
   }
 
-  const status = await callback(new ObjectId(req.body.extractorId));
+  const status = await callback(ObjectId.createFromHexString(req.body.extractorId));
   res.json(status);
 }
 
@@ -136,7 +136,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processTrainFunction(IX.stopModel, req, res);
+      await processIXFunction(IX.stopModel, req, res);
     }
   );
 
@@ -146,7 +146,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processTrainFunction(IX.trainModel, req, res);
+      await processIXFunction(IX.trainModel, req, res);
     }
   );
 
@@ -156,7 +156,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processTrainFunction(IX.status, req, res);
+      await processIXFunction(IX.status, req, res);
     }
   );
 
