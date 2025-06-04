@@ -21,11 +21,14 @@ class TestJob implements Dispatchable {
 
   private signal: (index: string) => void;
 
-  private logger: (message: string, index: number) => void;
+  private jobResultSpy: (result: { number: number; retryCount: number; maxRetries: number }) => void;
 
-  constructor(signal: (index: string) => void, logger: (message: string, index: number) => void) {
+  constructor(
+    signal: (index: string) => void,
+    jobResultSpy: (result: { number: number; retryCount: number; maxRetries: number }) => void
+  ) {
     this.signal = signal;
-    this.logger = logger;
+    this.jobResultSpy = jobResultSpy;
   }
 
   async handleDispatch(
@@ -40,10 +43,11 @@ class TestJob implements Dispatchable {
     if (TestJob.shouldFailNonRetryable) {
       throw new NonRetryableJobError(new Error('Non retryable error'));
     }
-    this.logger(
-      `${params.aNumber}, Retry: ${jobInfo.retryCount}, MaxRetries: ${jobInfo.maxRetries}`,
-      params.aNumber
-    );
+    this.jobResultSpy({
+      number: params.aNumber,
+      retryCount: jobInfo.retryCount,
+      maxRetries: jobInfo.maxRetries,
+    });
     this.signal(`ending-${params.aNumber}`);
   }
 }
@@ -57,7 +61,8 @@ class FailJob implements Dispatchable {
 
 // eslint-disable-next-line no-empty-function
 const setUpWorker = async (onError?: () => void) => {
-  const output: string[] = [];
+  type JobResult = { namespace: string; number: number; retryCount: number; maxRetries: number };
+  const output: JobResult[] = [];
   const signals = createSignals();
   const adapter = DefaultTestingQueueAdapter();
   const logMock = createMockLogger();
@@ -65,7 +70,7 @@ const setUpWorker = async (onError?: () => void) => {
   worker.register(
     TestJob,
     async namespace =>
-      new TestJob(signals.signal, message => output.push(`${namespace} ${message}`))
+      new TestJob(signals.signal, result => output.push({ namespace, ...result }))
   );
 
   worker.register(FailJob, async () => new FailJob());
@@ -103,12 +108,12 @@ it('should process all the jobs', async () => {
   await worker.stop();
 
   expect(output).toEqual([
-    'namespace1 1, Retry: 1, MaxRetries: 5',
-    'namespace2 2, Retry: 1, MaxRetries: 5',
-    'namespace1 3, Retry: 1, MaxRetries: 5',
-    'namespace1 4, Retry: 1, MaxRetries: 5',
-    'namespace2 5, Retry: 1, MaxRetries: 5',
-    'namespace1 6, Retry: 1, MaxRetries: 5',
+    { namespace: 'namespace1', number: 1, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace2', number: 2, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace1', number: 3, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace1', number: 4, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace2', number: 5, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace1', number: 6, retryCount: 1, maxRetries: 5 },
   ]);
 });
 
@@ -130,8 +135,8 @@ it('should finish the in-progress job before stopping', async () => {
   await worker.stop();
 
   expect(output).toEqual([
-    'namespace1 1, Retry: 1, MaxRetries: 5',
-    'namespace2 2, Retry: 1, MaxRetries: 5',
+    { namespace: 'namespace1', number: 1, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace2', number: 2, retryCount: 1, maxRetries: 5 },
   ]);
 });
 
@@ -156,9 +161,9 @@ it('should retry job when it fails', async () => {
   await worker.stop();
 
   expect(output).toEqual([
-    'namespace 1, Retry: 1, MaxRetries: 5',
-    'namespace 2, Retry: 1, MaxRetries: 5',
-    'namespace 3, Retry: 2, MaxRetries: 5',
+    { namespace: 'namespace', number: 1, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace', number: 2, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace', number: 3, retryCount: 2, maxRetries: 5 },
   ]);
 });
 
@@ -235,9 +240,9 @@ it('should report error and continue if a job fails', async () => {
   );
 
   expect(output).toEqual([
-    'namespace 1, Retry: 1, MaxRetries: 5',
-    'namespace 2, Retry: 1, MaxRetries: 5',
-    'namespace 3, Retry: 1, MaxRetries: 5',
+    { namespace: 'namespace', number: 1, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace', number: 2, retryCount: 1, maxRetries: 5 },
+    { namespace: 'namespace', number: 3, retryCount: 1, maxRetries: 5 },
   ]);
 });
 
@@ -259,7 +264,7 @@ it('should log errors by default when no onError callback is passed', async () =
     expect.objectContaining({ job: expect.objectContaining({ name: FailJob.name }) })
   );
 
-  expect(output).toEqual(['namespace 1, Retry: 1, MaxRetries: 5']);
+          expect(output).toEqual([{ namespace: 'namespace', number: 1, retryCount: 1, maxRetries: 5 }]);
 });
 
 it('should double the lockWindow time on every retry', async () => {
