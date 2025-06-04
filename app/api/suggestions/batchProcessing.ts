@@ -10,7 +10,7 @@ interface BatchRange {
 const calculateBatches = async (
   template: ObjectIdSchema,
   defaultLanguage?: string,
-  batchSize = 500
+  batchSize = 100
 ): Promise<BatchRange[]> => {
   const query = {
     template,
@@ -56,9 +56,9 @@ const calculateBatches = async (
 
 const fetchEntitiesDataForBatch = async (
   template: ObjectIdSchema,
-  defaultLanguage: string | undefined,
   fromId: ObjectIdSchema,
-  toId: ObjectIdSchema
+  toId: ObjectIdSchema,
+  defaultLanguage?: string
 ): Promise<{ sharedId: string; language: string }[]> => {
   const query = {
     template,
@@ -75,49 +75,5 @@ const fetchEntitiesDataForBatch = async (
   return entities.map(e => ({ sharedId: e.sharedId!, language: e.language! }));
 };
 
-const fetchEntitiesData = async (
-  template: ObjectIdSchema,
-  callback: ((batch: { sharedId: string; language: string }[]) => Promise<void>) | undefined,
-  defaultLanguage?: string,
-  batchSize = 2000
-) => {
-  console.time('batches');
-  const batches = await calculateBatches(template, defaultLanguage, batchSize);
-  console.log(JSON.stringify(batches, null, ' '))
-  console.timeEnd('batches');
-  let allEntities: { sharedId: string; language: string }[] = [];
-
-  if (callback) {
-    await batches.reduce(async (promise, batch) => {
-      await promise;
-      console.time('batch data');
-      const batchData = await fetchEntitiesDataForBatch(
-        template,
-        defaultLanguage,
-        batch.fromId,
-        batch.toId
-      );
-      console.timeEnd('batch data');
-      console.time('batch callback');
-      await callback(batchData);
-      console.timeEnd('batch callback');
-    }, Promise.resolve());
-    return [];
-  }
-
-  await batches.reduce(async (promise, batch) => {
-    await promise;
-    const batchData = await fetchEntitiesDataForBatch(
-      template,
-      defaultLanguage,
-      batch.fromId,
-      batch.toId
-    );
-    allEntities = allEntities.concat(batchData);
-  }, Promise.resolve());
-
-  return allEntities;
-};
-
 export type { BatchRange };
-export { calculateBatches, fetchEntitiesData, fetchEntitiesDataForBatch };
+export { calculateBatches, fetchEntitiesDataForBatch };
