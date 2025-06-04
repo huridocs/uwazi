@@ -16,7 +16,7 @@ import {
 } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-import { propertyIcons } from './Icons';
+import { propertyIcons } from '../../../../Components/UI/Icons';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();

@@ -56,7 +56,12 @@ import {
 import { ParagraphExtractorDashboard } from 'V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
 import { PXEntityDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXEntities';
 import { PXParagraphDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
-import { Templates, templatesLoader, TemplatesEditor } from 'app/V2/Routes/Settings/Templates';
+import {
+  Templates,
+  templatesLoader,
+  TemplatesEditor,
+  templatesEditorLoader,
+} from 'app/V2/Routes/Settings/Templates';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -144,9 +149,18 @@ const getRoutesLayout = (
       </Route>
       <Route path="templates">
         <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
-        <Route path="new" element={adminsOnlyRoute(<TemplatesEditor />)} />
+        <Route
+          path="new"
+          element={adminsOnlyRoute(<TemplatesEditor />)}
+          loader={templatesEditorLoader(headers)}
+        />
+        <Route
+          path="edit/:templateId"
+          element={adminsOnlyRoute(<TemplatesEditor />)}
+          loader={templatesEditorLoader(headers)}
+        />
         <Route path="new2" element={adminsOnlyRoute(<NewTemplate />)} />
-        <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
+        <Route path="edit2/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
       </Route>
       <Route path="metadata_extraction">
         <Route

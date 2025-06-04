@@ -3,7 +3,11 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Table } from 'V2/Components/UI/Table/Table';
 import { Button } from 'V2/Components/UI/Button';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { ColumnDef } from '@tanstack/react-table';
+import { Translate } from 'app/I18N/Translate';
+import { IncomingHttpHeaders } from 'http';
+import { LoaderFunction, useLoaderData } from 'react-router';
+import * as templatesAPI from 'V2/api/templates';
+import { propertyColumns } from './components/TemplateEditorTableComponents';
 import { TemplateMetadata, TemplateMetadataValues } from './components/TemplateMetadata';
 
 type PropertyRow = PropertySchema & {
@@ -40,42 +44,30 @@ const defaultProperties: PropertyRow[] = [
   },
 ];
 
-const customProperties: PropertyRow[] = [
-  {
-    rowId: '3',
-    label: 'Custom property 1',
-    name: 'custom_property_1',
-    type: 'text',
-  },
-];
-
-const propertyColumns: ColumnDef<PropertyRow>[] = [
-  {
-    accessorKey: 'label',
-    header: 'Property',
-    cell: info => info.getValue(),
-  },
-  {
-    accessorKey: 'type',
-    header: 'Type',
-    cell: info => info.getValue(),
-  },
-  {
-    id: 'actions',
-    header: 'Options',
-    cell: () => <Button size="small">Edit</Button>,
-  },
-];
+// Loader function for TemplatesEditor
+const templatesEditorLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params }) => {
+    if (params.templateId) {
+      const templates = await templatesAPI.get(headers);
+      const template = templates.find((t: any) => t._id === params.templateId);
+      return template || {};
+    }
+    return {};
+  };
 
 const TemplatesEditor = () => {
+  // Use useLoaderData to get the loaded template if available
+  const loadedTemplate = useLoaderData() as any;
   const [metadata, setMetadata] = useState<TemplateMetadataValues>({
-    name: '',
-    color: '#C03B22',
-    entityViewPage: '',
+    name: loadedTemplate.name,
+    color: loadedTemplate.color,
+    entityViewPage: loadedTemplate.entityViewPage,
   });
-  const [properties, setProperties] = useState(customProperties);
+  const [properties] = useState(loadedTemplate.properties || []);
+  const [commonProperties] = useState(loadedTemplate.commonProperties || defaultProperties);
 
-  const allProperties = [...defaultProperties, ...properties];
+  const allProperties = [...commonProperties, ...properties];
 
   // Example pages list, replace with real data as needed
   const pages = [
@@ -87,7 +79,7 @@ const TemplatesEditor = () => {
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <SettingsContent>
         <SettingsContent.Header
-          title="Template name"
+          title={metadata.name}
           path={new Map([['Templates', '/settings/templates']])}
         />
         <SettingsContent.Body>
@@ -101,13 +93,23 @@ const TemplatesEditor = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <div className="flex justify-between w-full">
-            <Button color="primary" styling="outline">
-              Add property
-            </Button>
             <div className="flex gap-2">
-              <Button color="primary">Save</Button>
-              <Button color="error" styling="outline">
-                Cancel
+              <Button color="primary">
+                <Translate>Add property</Translate>
+              </Button>
+              <Button color="primary" styling="outline">
+                <Translate>Add thesaurus</Translate>
+              </Button>
+              <Button color="primary" styling="outline">
+                <Translate>Add relationship type</Translate>
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button styling="outline">
+                <Translate>Cancel</Translate>
+              </Button>
+              <Button color="success">
+                <Translate>Save</Translate>
               </Button>
             </div>
           </div>
@@ -117,4 +119,4 @@ const TemplatesEditor = () => {
   );
 };
 
-export { TemplatesEditor };
+export { TemplatesEditor, templatesEditorLoader };

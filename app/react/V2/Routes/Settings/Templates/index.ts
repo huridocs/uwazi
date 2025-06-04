@@ -1,2 +1,2 @@
 export { Templates, templatesLoader } from './Templates';
-export { TemplatesEditor } from './TemplatesEditor';
+export { TemplatesEditor, templatesEditorLoader } from './TemplatesEditor';

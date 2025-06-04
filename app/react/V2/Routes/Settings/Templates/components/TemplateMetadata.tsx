@@ -3,6 +3,7 @@ import { ColorPicker } from 'app/V2/Components/Forms/ColorPicker';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { Checkbox } from 'app/V2/Components/Forms/Checkbox';
 import { Select, OptionSchema } from 'app/V2/Components/Forms/Select';
+import { Translate } from 'app/I18N/Translate';
 
 export interface TemplateMetadataValues {
   name: string;
@@ -51,7 +52,7 @@ export const TemplateMetadata = ({ value, onChange, pages }: TemplateMetadataPro
         placeholder="Template name"
         value={value.name}
         onChange={e => onChange({ ...value, name: e.target.value })}
-        className="w-96"
+        className="flex-grow min-w-[120px]"
         clearFieldAction={value.name ? () => onChange({ ...value, name: '' }) : undefined}
       />
       <div className="flex items-center gap-2 ml-4">
@@ -59,7 +60,7 @@ export const TemplateMetadata = ({ value, onChange, pages }: TemplateMetadataPro
           name="display-as-page"
           checked={displayAsPage}
           onChange={e => handleCheckboxChange((e.target as HTMLInputElement).checked)}
-          label={<span className="text-gray-700">Display entity view from page</span>}
+          label={<Translate>Display entity view from page</Translate>}
           className="mb-0"
         />
         <Select
@@ -69,7 +70,7 @@ export const TemplateMetadata = ({ value, onChange, pages }: TemplateMetadataPro
           value={value.entityViewPage}
           onChange={e => onChange({ ...value, entityViewPage: e.target.value })}
           disabled={!displayAsPage}
-          className="min-w-[120px] w-36"
+          className="w-36"
           hideLabel
         />
       </div>
