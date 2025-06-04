@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientTemplateSchema } from 'app/istore';
+import { TemplateSchema } from 'shared/types/templateType';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<ClientTemplateSchema[]> => {
   try {
@@ -38,4 +39,10 @@ const checkTemplatesEntityCount = async (
   return counts.reduce((acc, { id, count }) => ({ ...acc, [id]: count }), {});
 };
 
-export { get, setDefault, remove, checkTemplatesEntityCount };
+const save = async (template: TemplateSchema): Promise<TemplateSchema> => {
+  const requestParams = new RequestParams(template);
+  const response = await api.post('templates', requestParams);
+  return response.json;
+};
+
+export { get, setDefault, remove, checkTemplatesEntityCount, save };

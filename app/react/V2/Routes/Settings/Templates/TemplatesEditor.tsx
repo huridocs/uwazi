@@ -1,85 +1,125 @@
-import React, { useState } from 'react';
+/* eslint-disable max-statements */
+import React, { useEffect, useMemo, useState } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table } from 'V2/Components/UI/Table/Table';
-import { Button } from 'V2/Components/UI/Button';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { Table, Button } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router';
+import { LoaderFunction, redirect, useLoaderData } from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
-import { propertyColumns } from './components/TemplateEditorTableComponents';
-import { TemplateMetadata, TemplateMetadataValues } from './components/TemplateMetadata';
+import * as pagesAPI from 'V2/api/pages';
+import { TemplateSchema } from 'shared/types/templateType';
+import { Page } from 'app/V2/shared/types';
+import { isEqual } from 'lodash';
+import { useSetAtom } from 'jotai';
+import { notificationAtom } from 'V2/atoms';
+import { I18NLink } from 'app/I18N';
+import { emptyTemplate, processDefaultProperties, processProperties } from './helpers';
+import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
+import { TemplateMetadata } from './components/TemplateMetadata';
 
-type PropertyRow = PropertySchema & {
-  rowId: string;
-  disableRowDnD?: boolean;
-  disableRowSelection?: boolean;
-};
-
-// Placeholder for property editing
-const defaultProperties: PropertyRow[] = [
-  {
-    rowId: '0',
-    label: 'Title',
-    name: 'title',
-    type: 'text',
-    disableRowDnD: true,
-    disableRowSelection: true,
-  },
-  {
-    rowId: '1',
-    label: 'Date added',
-    name: 'date_added',
-    type: 'date',
-    disableRowDnD: true,
-    disableRowSelection: true,
-  },
-  {
-    rowId: '2',
-    label: 'Date modified',
-    name: 'date_modified',
-    type: 'date',
-    disableRowDnD: true,
-    disableRowSelection: true,
-  },
-];
-
-// Loader function for TemplatesEditor
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }) => {
+    const allPages = await pagesAPI.get(headers);
+    const pages = allPages.filter((page: any) => page.entityView);
+    const pagesOptions = pages.map((page: Page) => ({
+      value: page.sharedId,
+      label: page.title,
+    }));
+
     if (params.templateId) {
       const templates = await templatesAPI.get(headers);
       const template = templates.find((t: any) => t._id === params.templateId);
-      return template || {};
+      if (!template) {
+        redirect('/404');
+      }
+
+      return { template, pagesOptions };
     }
-    return {};
+    return { template: emptyTemplate, pagesOptions };
   };
 
 const TemplatesEditor = () => {
-  // Use useLoaderData to get the loaded template if available
-  const loadedTemplate = useLoaderData() as any;
-  const [metadata, setMetadata] = useState<TemplateMetadataValues>({
-    name: loadedTemplate.name,
-    color: loadedTemplate.color,
-    entityViewPage: loadedTemplate.entityViewPage,
-  });
-  const [properties] = useState(loadedTemplate.properties || []);
-  const [commonProperties] = useState(loadedTemplate.commonProperties || defaultProperties);
+  const loadedData = useLoaderData() as {
+    template: TemplateSchema;
+    pagesOptions: { value: string; label: string }[];
+  };
+  const { template: loadedTemplate, pagesOptions } = loadedData;
+  const [template, setTemplate] = useState<TemplateSchema>(loadedTemplate);
+  const [properties, setProperties] = useState<PropertyRow[]>([]);
+  const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const setNotifications = useSetAtom(notificationAtom);
 
-  const allProperties = [...commonProperties, ...properties];
+  useEffect(() => {
+    setProperties(processProperties(loadedTemplate.properties || []));
+  }, [loadedTemplate.properties]);
 
-  // Example pages list, replace with real data as needed
-  const pages = [
-    { value: 'page1', label: 'Page 1' },
-    { value: 'page2', label: 'Page 2' },
-  ];
+  useEffect(() => {
+    setCommonProperties(processDefaultProperties(loadedTemplate.commonProperties || []));
+  }, [loadedTemplate.commonProperties]);
+
+  useEffect(() => {
+    setTemplate(loadedTemplate);
+  }, [loadedTemplate]);
+
+  const allProperties = useMemo(
+    () => [...commonProperties, ...properties],
+    [commonProperties, properties]
+  );
+
+  const handleTableChange = ({
+    selectedRows,
+    rows,
+  }: {
+    selectedRows: Record<string, boolean>;
+    rows: PropertyRow[];
+  }) => {
+    setSelected(rows.filter(row => selectedRows[row.rowId]).map(row => row.rowId));
+    const newCommonProperties = rows.filter(row => row.isCommonProperty);
+    const newProperties = rows.filter(row => !row.isCommonProperty);
+    if (!isEqual(newCommonProperties, commonProperties)) {
+      setCommonProperties(newCommonProperties);
+    }
+    if (!isEqual(newProperties, properties)) {
+      setProperties(newProperties);
+    }
+  };
+
+  const cleanProperty = (prop: PropertyRow) => {
+    const { rowId, disableRowDnD, disableRowSelection, ...rest } = prop;
+    return rest;
+  };
+
+  const handleSave = async () => {
+    try {
+      const cleanedCommonProperties = commonProperties.map(cleanProperty);
+      const cleanedProperties = properties.map(cleanProperty);
+      const templateToSave = {
+        ...template,
+        commonProperties: cleanedCommonProperties,
+        properties: cleanedProperties,
+      } as TemplateSchema;
+      const savedTemplate = await templatesAPI.save(templateToSave);
+      setTemplate(savedTemplate);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Template saved successfully.</Translate>,
+      });
+    } catch (e) {
+      setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
+    }
+  };
+
+  const handleDelete = () => {
+    setProperties(current => current.filter(row => !selected.includes(row.rowId)));
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <SettingsContent>
         <SettingsContent.Header
-          title={metadata.name}
+          title={template.name}
           path={new Map([['Templates', '/settings/templates']])}
         />
         <SettingsContent.Body>
@@ -88,27 +128,55 @@ const TemplatesEditor = () => {
             data={allProperties}
             enableSelections
             dnd={{ enable: true }}
-            header={<TemplateMetadata value={metadata} onChange={setMetadata} pages={pages} />}
+            header={
+              <TemplateMetadata
+                value={{
+                  name: template.name,
+                  color: template.color || '#C03B22',
+                  entityViewPage: template.entityViewPage || '',
+                }}
+                onChange={values => {
+                  setTemplate({ ...template, ...values });
+                }}
+                pages={pagesOptions}
+              />
+            }
+            onChange={handleTableChange}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <div className="flex justify-between w-full">
-            <div className="flex gap-2">
-              <Button color="primary">
-                <Translate>Add property</Translate>
-              </Button>
-              <Button color="primary" styling="outline">
-                <Translate>Add thesaurus</Translate>
-              </Button>
-              <Button color="primary" styling="outline">
-                <Translate>Add relationship type</Translate>
-              </Button>
+            <div className="flex gap-2 items-center">
+              {selected.length === 0 ? (
+                <>
+                  <Button color="primary">
+                    <Translate>Add property</Translate>
+                  </Button>
+                  <Button color="primary" styling="outline">
+                    <Translate>Add thesaurus</Translate>
+                  </Button>
+                  <Button color="primary" styling="outline">
+                    <Translate>Add relationship type</Translate>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button color="error" onClick={handleDelete}>
+                    <Translate>Delete</Translate>
+                  </Button>
+                  <span className="text-gray-700">
+                    <Translate>Selected</Translate> {selected.length}
+                  </span>
+                </>
+              )}
             </div>
             <div className="flex gap-2">
-              <Button styling="outline">
-                <Translate>Cancel</Translate>
-              </Button>
-              <Button color="success">
+              <I18NLink to="/settings/templates">
+                <Button styling="outline">
+                  <Translate>Cancel</Translate>
+                </Button>
+              </I18NLink>
+              <Button color="success" onClick={handleSave}>
                 <Translate>Save</Translate>
               </Button>
             </div>
