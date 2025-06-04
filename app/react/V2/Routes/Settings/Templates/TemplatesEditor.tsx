@@ -71,7 +71,6 @@ const TemplatesEditor = () => {
   const [metadata, setMetadata] = useState<TemplateMetadataValues>({
     name: '',
     color: '#C03B22',
-    displayEntityView: false,
     entityViewPage: '',
   });
   const [properties, setProperties] = useState(customProperties);

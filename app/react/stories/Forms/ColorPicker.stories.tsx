@@ -1,47 +1,49 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { fn } from '@storybook/test';
 import { ColorPicker } from 'app/V2/Components/Forms';
 
 const meta: Meta<typeof ColorPicker> = {
   title: 'Forms/ColorPicker',
   component: ColorPicker,
-  parameters: {
-    layout: 'centered',
+  args: {
+    onChange: fn(),
   },
-  tags: ['autodocs'],
+  parameters: {
+    actions: {
+      handles: ['change'],
+    },
+  },
 };
 
-export default meta;
 type Story = StoryObj<typeof ColorPicker>;
 
-export const Default: Story = {
+const Primary: Story = {
+  render: args => (
+    <div style={{ minHeight: '250px' }} className="tw-content">
+      <ColorPicker
+        name={args.name}
+        value={args.value}
+        className={args.className}
+        onChange={args.onChange}
+        hasErrors={args.hasErrors}
+      />
+    </div>
+  ),
+};
+
+const Basic: Story = {
+  ...Primary,
   args: {
     name: 'color',
     value: '#C03B22',
+    className: '',
+    hasErrors: false,
+    onChange: action('changed'),
   },
 };
 
-export const WithCustomColor: Story = {
-  args: {
-    name: 'color',
-    value: '#3F51B5',
-  },
-};
+export { Basic };
 
-export const WithError: Story = {
-  args: {
-    name: 'color',
-    value: '#C03B22',
-    hasErrors: true,
-  },
-};
-
-export const WithOnChange: Story = {
-  args: {
-    name: 'color',
-    value: '#C03B22',
-    onChange: action('color changed'),
-  },
-};
+export default meta;
