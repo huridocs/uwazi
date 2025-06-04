@@ -4,6 +4,7 @@ Key,Spanish
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
 A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
@@ -68,6 +69,7 @@ Admins,Admins
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
+All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Permitir la omisión de captcha
@@ -225,6 +227,7 @@ Default filter,Filtro predeterminado
 Default language,Idioma Predeterminado
 Default language change success,Cambio de idioma predeterminado exitoso
 Default template,Plantilla predeterminada
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,Eliminar
 DELETE,Eliminar
@@ -312,7 +315,9 @@ Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
 Exploration,Exploración
@@ -826,6 +831,8 @@ Suggestions have been updated,Suggestions have been updated
 Suggestions sent,Suggestions sent
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.
 syncedTemplateListMessage,La fuente de esta plantilla es una sincronización. Todas las opciones de edición estarán deshabilitadas.
 syntax to create page content,sintaxis para crear el contenido de la página
@@ -843,6 +850,7 @@ Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
 Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Plantillas
 Templates:,Templates:
 Text,Texto
@@ -852,6 +860,7 @@ The import process threw an error:,El proceso de importación tiene un error.
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
 The request could not be processed.,La petición no pudo ser procesada.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
@@ -884,6 +893,7 @@ This property will be shown using all the width available.,Esta propiedad se mos
 This property will be shown without the label.,Esta propiedad se mostrará sin su etiqueta.
 this template,esta plantilla
 This template has associated entities,Esta plantilla tiene entidades asociadas
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,Esta plantilla se utilizará como predeterminada para nuevas entidades
 This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
 Threshold,Límite
@@ -907,6 +917,7 @@ total users,total users
 Training,Entrenando
 Training model...,Entrenando el modelo…
 Translate,Traducir
+Translation,Translation
 Translations,Traducciones
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente
