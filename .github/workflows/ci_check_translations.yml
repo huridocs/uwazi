@@ -30,10 +30,13 @@ jobs:
           sudo apt-get install -y mongodb-mongosh
           sudo apt-get install -y mongodb-org-tools
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.12.0
-        with:
-          mongodb-version: '6.0.24'
-          mongodb-replica-set: test-rs
+        run: |
+          docker run -d \
+            --name mongodb \
+            -p 27017:27017 \
+            mongo:6.0.24 --replSet test-rs
+          sleep 10
+          docker exec mongodb mongosh --eval 'rs.initiate()'
       - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v4
