@@ -10,7 +10,7 @@ const DisplayPill = generateDisplayPill({
 const EntityCountCell = ({ cell }: CellContext<PXTable, PXTable['statusCount']>) => {
   const values = cell.getValue();
 
-  const newCount = values.new + values.obsolete;
+  const newCount = values.new;
 
   return (
     <div className="flex items-center gap-2">
