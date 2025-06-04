@@ -286,7 +286,9 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     const [{ value }] = entity.metadata[property] || [{}];
     let stringValue: string;
     if (propertyType === propertyTypes.date) {
-      stringValue = moment(<number>value * 1000).format('YYYY-MM-DD');
+      stringValue = moment(<number>value * 1000)
+        .utc()
+        .format('YYYY-MM-DD');
     } else if (propertyType === propertyTypes.numeric) {
       stringValue = value?.toString() || '';
     } else {

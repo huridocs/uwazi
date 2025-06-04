@@ -275,7 +275,9 @@ class InformationExtraction {
           let labelText = entity.metadata?.[extractor.property]?.[0]?.value;
 
           if (targetPropertyType === 'date') {
-            labelText = moment(Number(labelText) * 1000).format('YYYY-MM-DD');
+            labelText = moment(Number(labelText) * 1000)
+              .utc()
+              .format('YYYY-MM-DD');
           }
 
           if (extractor.property === 'title') {
