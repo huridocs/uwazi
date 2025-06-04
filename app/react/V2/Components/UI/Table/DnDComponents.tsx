@@ -37,6 +37,12 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
   const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
   });
+
+  const { disableRowDnD } = row.original;
+  if (disableRowDnD) {
+    return null;
+  }
+
   const [handlerStyle, setHandlerStyle] = useState(inactiveGradientStyle);
 
   const canExpand = row.originalSubRows;
@@ -60,6 +66,7 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
       }}
       type="button"
       style={isDragging ? activeGradientStyle : handlerStyle}
+      className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
     >
       <span className="sr-only">
         <Translate>Drag row</Translate>
