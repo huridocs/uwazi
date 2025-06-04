@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLink, t } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI/Table/Table';
@@ -24,26 +24,23 @@ const templatesLoader =
     return templates.map((template: ClientTemplateSchema) => {
       const reasons = [];
       if (template.default) {
-        reasons.push(<Translate>A default template cannot be deleted.</Translate>);
+        reasons.push(t('System', 'A default template cannot be deleted.', null, false));
       }
       if (entityCounts[template._id] > 0) {
         reasons.push(
-          <Translate>This template is in use by existing entities and cannot be deleted.</Translate>
+          t(
+            'System',
+            'This template is in use by existing entities and cannot be deleted.',
+            null,
+            false
+          )
         );
       }
       if (template.synced) {
-        reasons.push(<Translate>Synced templates cannot be deleted.</Translate>);
+        reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
       }
 
-      const disableRowSelection =
-        reasons.length > 0
-          ? reasons.map((reason, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <span key={index} className="inline-block">
-                {reason}
-              </span>
-            ))
-          : undefined;
+      const disableRowSelection = reasons.length > 0 ? reasons.join(' ') : undefined;
 
       return {
         ...template,
