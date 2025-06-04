@@ -214,10 +214,7 @@ const IXSuggestions = () => {
 
   useEffect(() => {
     const navigatePromise = async (path: string) => navigate(path, { replace: true });
-
-    if (searchParams.has('sort') && !sorting.length) {
-      navigatePromise(location.pathname).catch(_e => {});
-    }
+    const newSearchParams = new URLSearchParams(searchParams);
 
     if (sorting.length && sorting[0].id) {
       const _property = sorting[0].id;
@@ -227,11 +224,12 @@ const IXSuggestions = () => {
       }
 
       const order = sorting[0].desc ? 'desc' : 'asc';
-
-      navigatePromise(
-        `${location.pathname}?sort={"property":"${_property}","order":"${order}"}`
-      ).catch(_e => {});
+      newSearchParams.set('sort', JSON.stringify({ property: _property, order }));
+    } else {
+      newSearchParams.delete('sort');
     }
+
+    navigatePromise(`${location.pathname}?${newSearchParams.toString()}`).catch(_e => {});
   }, [sorting]);
 
   useEffect(() => {
