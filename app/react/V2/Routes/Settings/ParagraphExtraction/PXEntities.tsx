@@ -18,7 +18,8 @@ const DisplayPill = generateDisplayPill({
   label: 'New',
 });
 
-const PollIntervalSeconds = 25;
+const POLL_INTERVAL_SECONDS = 25;
+
 const PXEntityDashboard = () => {
   const revalidator = useRevalidator();
   const templates = useAtomValue(templatesAtom);
@@ -90,7 +91,7 @@ const PXEntityDashboard = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       await revalidator.revalidate();
-    }, PollIntervalSeconds * 1000);
+    }, POLL_INTERVAL_SECONDS * 1000);
 
     return () => clearInterval(interval);
     // Only run this effect once
@@ -125,7 +126,7 @@ const PXEntityDashboard = () => {
                 type="button"
                 className="disabled:opacity-50"
                 onClick={handleExtract}
-                disabled={isSaving}
+                disabled={!newEntitiesCount || isSaving}
               >
                 <Translate>Extract new paragraphs</Translate>
               </Button>
