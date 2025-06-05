@@ -351,14 +351,14 @@ const formatSuggestionTextSource = (
   message: InternalIXResultsMessage
 ): IXSuggestionType => ({
   ...currentSuggestion,
+  status: 'ready' as 'ready',
+  error: '',
   ...SuggestionTextSourceFormatter.format(
     targetProperty,
     rawSuggestion,
     currentSuggestion.language! as LanguageISO6391
   ),
   ...readMessageSuccess(message),
-  status: 'ready' as 'ready',
-  error: '',
   date: new Date().getTime(),
 });
 
