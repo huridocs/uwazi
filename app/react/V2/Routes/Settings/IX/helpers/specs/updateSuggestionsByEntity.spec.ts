@@ -1,4 +1,4 @@
-import { MultiValueSuggestion } from '../../../types';
+import { MultiValueSuggestion } from '../../types';
 import { updateSuggestionsByEntity } from '../helpers';
 import {
   suggestion1,

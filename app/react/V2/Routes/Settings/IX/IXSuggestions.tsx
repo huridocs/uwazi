@@ -33,7 +33,7 @@ import {
   updateSuggestions,
   formatAccepted,
   updateSortingUrl,
-} from './components/helpers';
+} from './helpers';
 import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion } from './types';
 import { SuggestionEvents } from './events';
 
