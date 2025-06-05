@@ -76,6 +76,7 @@ class DatePicker extends Component {
         isClearable
         fixedHeight
         showYearDropdown
+        dropdownMode="select"
       />
     );
   }
