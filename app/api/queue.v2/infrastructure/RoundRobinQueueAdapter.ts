@@ -1,6 +1,5 @@
-import { WithId } from 'mongodb';
-import { JobDBO, MongoQueueAdapter } from './MongoQueueAdapter';
-import { Job, QueueAdapter } from './QueueAdapter';
+import { MongoQueueAdapter } from './MongoQueueAdapter';
+import { Job } from './QueueAdapter';
 
 export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   private latestTenants: string[] = ['', ''];
@@ -26,21 +25,21 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   }
 
   async pickJob(queueName: string): Promise<Job | null> {
-    const result = (await this.findAndUpdateJob(queueName, this.latestTenants));
+    const result = await this.findAndUpdateJob(queueName, this.latestTenants);
     let job: Job | null = null;
     if (result) {
-        const { _id, ...withoutId } = result;
-        job = {
+      const { _id, ...withoutId } = result;
+      job = {
         id: _id.toHexString() || '',
         ...withoutId,
         failed: typeof withoutId.failed === 'boolean' ? withoutId.failed : false,
       } as Job;
-    }else{
-        job = await super.pickJob(queueName); 
+    } else {
+      job = await super.pickJob(queueName);
     }
-    if(job){
-        this.latestTenants.shift();
-        this.latestTenants.push(job.namespace || '');
+    if (job) {
+      this.latestTenants.shift();
+      this.latestTenants.push(job.namespace || '');
     }
     return job;
   }
