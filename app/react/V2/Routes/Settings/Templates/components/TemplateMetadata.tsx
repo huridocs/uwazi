@@ -15,9 +15,17 @@ export interface TemplateMetadataProps {
   value: TemplateMetadataValues;
   onChange: (value: TemplateMetadataValues) => void;
   pages: { value: string; label: string }[];
+  nameError?: boolean;
+  colorError?: boolean;
 }
 
-export const TemplateMetadata = ({ value, onChange, pages }: TemplateMetadataProps) => {
+export const TemplateMetadata = ({
+  value,
+  onChange,
+  pages,
+  nameError,
+  colorError,
+}: TemplateMetadataProps) => {
   const [displayAsPage, setDisplayAsPage] = useState(!!value.entityViewPage);
 
   useEffect(() => {
@@ -45,6 +53,7 @@ export const TemplateMetadata = ({ value, onChange, pages }: TemplateMetadataPro
         name="template-color"
         value={value.color}
         onChange={color => onChange({ ...value, color })}
+        hasErrors={!!colorError}
       />
       <InputField
         id="template-name"
@@ -54,25 +63,35 @@ export const TemplateMetadata = ({ value, onChange, pages }: TemplateMetadataPro
         onChange={e => onChange({ ...value, name: e.target.value })}
         className="flex-grow min-w-[120px]"
         clearFieldAction={value.name ? () => onChange({ ...value, name: '' }) : undefined}
+        hasErrors={!!nameError}
       />
       <div className="flex items-center gap-2 ml-4">
-        <Checkbox
-          name="display-as-page"
-          checked={displayAsPage}
-          onChange={e => handleCheckboxChange((e.target as HTMLInputElement).checked)}
-          label={<Translate>Display entity view from page</Translate>}
-          className="mb-0"
-        />
-        <Select
-          id="select-page"
-          label=""
-          options={[{ value: '', label: 'Select page' }, ...pages] as OptionSchema[]}
-          value={value.entityViewPage}
-          onChange={e => onChange({ ...value, entityViewPage: e.target.value })}
-          disabled={!displayAsPage}
-          className="w-36"
-          hideLabel
-        />
+        {!pages.length && (
+          <Translate className="text-sm font-medium text-gray-900">
+            There are no pages enabled for entity view
+          </Translate>
+        )}
+        {Boolean(pages.length) && (
+          <>
+            <Checkbox
+              name="display-as-page"
+              checked={displayAsPage}
+              onChange={e => handleCheckboxChange((e.target as HTMLInputElement).checked)}
+              label={<Translate>Display entity view from page</Translate>}
+              className="mb-0"
+            />
+            <Select
+              id="select-page"
+              label=""
+              options={[{ value: '', label: 'Select page' }, ...pages] as OptionSchema[]}
+              value={value.entityViewPage}
+              onChange={e => onChange({ ...value, entityViewPage: e.target.value })}
+              disabled={!displayAsPage}
+              className="w-36"
+              hideLabel
+            />
+          </>
+        )}
       </div>
     </div>
   );

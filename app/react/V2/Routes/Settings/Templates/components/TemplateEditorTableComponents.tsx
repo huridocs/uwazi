@@ -6,7 +6,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N/Translate';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 
-export type PropertyRow = PropertySchema & {
+type PropertyRow = PropertySchema & {
   rowId: string;
   disableRowDnD?: boolean;
   disableRowSelection?: boolean;
@@ -31,7 +31,7 @@ const LabelHeader = () => <Translate>Property</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
 const ActionsHeader = () => <Translate>Options</Translate>;
 
-export const propertyColumns: ColumnDef<PropertyRow, any>[] = [
+const propertyColumns: ColumnDef<PropertyRow, any>[] = [
   columnHelper.accessor('label', {
     id: 'label',
     header: LabelHeader,
@@ -53,3 +53,6 @@ export const propertyColumns: ColumnDef<PropertyRow, any>[] = [
     meta: { headerClassName: 'w-0 text-center', contentClassName: 'text-center' },
   },
 ];
+
+export { propertyColumns };
+export type { PropertyRow };

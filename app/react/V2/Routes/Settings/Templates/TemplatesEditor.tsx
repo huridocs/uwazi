@@ -9,7 +9,7 @@ import * as templatesAPI from 'V2/api/templates';
 import * as pagesAPI from 'V2/api/pages';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Page } from 'app/V2/shared/types';
-import { isEqual } from 'lodash';
+import { isEqual, template } from 'lodash';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { I18NLink } from 'app/I18N';
@@ -50,6 +50,8 @@ const TemplatesEditor = () => {
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const setNotifications = useSetAtom(notificationAtom);
+  const [nameError, setNameError] = useState(false);
+  const [colorError, setColorError] = useState(false);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -92,6 +94,12 @@ const TemplatesEditor = () => {
   };
 
   const handleSave = async () => {
+    setNameError(!template.name);
+    setColorError(!template.color);
+    if (!template.name || !template.color) {
+      return;
+    }
+
     try {
       const cleanedCommonProperties = commonProperties.map(cleanProperty);
       const cleanedProperties = properties.map(cleanProperty);
@@ -137,8 +145,12 @@ const TemplatesEditor = () => {
                 }}
                 onChange={values => {
                   setTemplate({ ...template, ...values });
+                  if (values.name) setNameError(false);
+                  if (values.color) setColorError(false);
                 }}
                 pages={pagesOptions}
+                nameError={nameError}
+                colorError={colorError}
               />
             }
             onChange={handleTableChange}

@@ -49,7 +49,7 @@ const ColorPicker = ({
 
   const changeColor = (color: string) => {
     setLocalValue(color);
-    if (onChange) {
+    if (onChange && color.match(/^#([0-9a-fA-F]{6})$/)) {
       onChange(color);
     }
   };
