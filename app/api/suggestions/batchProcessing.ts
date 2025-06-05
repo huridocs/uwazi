@@ -1,16 +1,16 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import entitiesModel from 'api/entities/entitiesModel';
 
-interface BatchRange {
-  fromId: ObjectIdSchema;
-  toId: ObjectIdSchema;
+type BatchRange = {
+  fromId: string;
+  toId: string;
   totalCount: number;
 }
 
 const calculateBatches = async (
   template: ObjectIdSchema,
   defaultLanguage?: string,
-  batchSize = 100
+  batchSize = 500
 ): Promise<BatchRange[]> => {
   const query = {
     template,
@@ -32,8 +32,8 @@ const calculateBatches = async (
     count += 1;
     if (count >= batchSize) {
       batches.push({
-        fromId: currentFromId,
-        toId: entity._id,
+        fromId: currentFromId.toString(),
+        toId: entity._id.toString(),
         totalCount: count,
       });
       currentFromId = null;

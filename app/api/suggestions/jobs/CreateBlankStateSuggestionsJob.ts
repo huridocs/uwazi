@@ -7,7 +7,7 @@ import { tenants } from 'api/tenants';
 import { BatchRange } from '../batchProcessing';
 import { createBlankStateSuggestionsBatch } from '../blankSuggestions';
 
-interface SpecificJobParams {
+type SpecificJobParams = {
   batch: BatchRange;
   templateId: string;
   extractorId: string;
@@ -25,11 +25,11 @@ class CreateBlankStateSuggestionsJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
   async handleDispatch(
     _heartbeat: HeartbeatCallback,
-    paramsFromDispatcher: Record<string, any>,
-    _jobInfo?: JobInfo
+    params: SpecificJobParams,
+    jobInfo: JobInfo
   ): Promise<void> {
     const { batch, templateId, extractorId, extractorProperty, isMultiValued, extractorSource } =
-      paramsFromDispatcher;
+      params;
     await tenants.run(async () => {
       await createBlankStateSuggestionsBatch(
         batch,
@@ -39,7 +39,7 @@ class CreateBlankStateSuggestionsJob implements Dispatchable {
         isMultiValued,
         extractorSource
       );
-    }, paramsFromDispatcher.tenantName);
+    }, jobInfo.namespace);
   }
 }
 
