@@ -10,7 +10,7 @@ import {
   TableSuggestion,
   SingleValueSuggestion,
   MultiValueSuggestion,
-} from '../types';
+} from '../../types';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };

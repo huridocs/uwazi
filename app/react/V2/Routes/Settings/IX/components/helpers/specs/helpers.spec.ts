@@ -3,8 +3,8 @@
  */
 
 import * as translate from 'app/I18N/translateFunction';
-import { formatOptions } from '../ExtractorModal';
-import { formatExtractors } from '../../IXDashboard';
+import { formatOptions } from '../../ExtractorModal';
+import { formatExtractors } from '../../../IXDashboard';
 import { getAvailableSources } from '../helpers';
 import { extractors, templates, templatesWithCommonProperties } from './fixtures';
 
