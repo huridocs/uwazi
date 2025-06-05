@@ -22,6 +22,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ensure } from 'shared/tsUtils';
 import { LanguageUtils } from 'shared/language';
 import { UwaziFilterQuery } from 'api/odm';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { Extractors } from './ixextractors';
 
 const BATCH_SIZE = 50;
@@ -155,7 +156,7 @@ function entityForTrainingQuery(
   toProperty: string,
   propertyType: PropertyTypeSchema,
   fromProperty?: string
-): UwaziFilterQuery<any> {
+): UwaziFilterQuery<Entity> {
   const query: UwaziFilterQuery<any> = { template: { $in: templates } };
 
   if (fromProperty) {
