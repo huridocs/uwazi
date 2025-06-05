@@ -154,7 +154,6 @@ async function fileQuery(
 function entityForTrainingQuery(
   templates: ObjectIdSchema[],
   toProperty: string,
-  propertyType: PropertyTypeSchema,
   fromProperty?: string
 ): UwaziFilterQuery<Entity> {
   const query: UwaziFilterQuery<any> = { template: { $in: templates } };
@@ -163,9 +162,7 @@ function entityForTrainingQuery(
     query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
   }
 
-  if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
-    query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
-  } else if (toProperty === 'title') {
+  if (toProperty === 'title') {
     query.title = { $ne: '' };
   } else {
     query[`metadata.${toProperty}`] = {
@@ -188,9 +185,8 @@ async function getEntitiesForTraining(
   toProperty: string,
   fromProperty: string
 ) {
-  const propertyType = await getPropertyType(templates, toProperty);
   const entities = await entitiesModel.getUnrestricted(
-    entityForTrainingQuery(templates, toProperty, propertyType, fromProperty),
+    entityForTrainingQuery(templates, toProperty, fromProperty),
     `sharedId title metadata.${toProperty} metadata.${fromProperty} language`,
     { limit: MAX_TRAINING_ENTITIES_NUMBER }
   );
@@ -235,7 +231,7 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const propertyType = await getPropertyType(templates, property);
   const entities = await entitiesModel.getUnrestricted(
-    entityForTrainingQuery(templates, property, propertyType),
+    entityForTrainingQuery(templates, property),
     `sharedId metadata.${property} language`
   );
   const entitiesFromTrainingTemplatesIds = entities
