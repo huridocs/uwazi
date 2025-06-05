@@ -11,6 +11,7 @@ export interface Job {
     lockWindow: number;
     maxRetries: number;
   };
+  failed?: boolean;
 }
 
 export interface QueueAdapter {
