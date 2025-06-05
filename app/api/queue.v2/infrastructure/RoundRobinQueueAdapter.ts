@@ -5,7 +5,8 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   private latestTenants: string[] = ['', ''];
 
   private async findAndUpdateJob(queueName: string, excludeTenants: string[] = []) {
-    await super.getCollection().findOneAndUpdate(
+    // eslint-disable-next-line no-await-in-loop
+    return await super.getCollection().findOneAndUpdate(
       {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },
@@ -30,7 +31,7 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
     if (result) {
       const { _id, ...withoutId } = result;
       job = {
-        id: _id.toHexString() || '',
+        id: _id?.toHexString() || '',
         ...withoutId,
         failed: typeof withoutId.failed === 'boolean' ? withoutId.failed : false,
       } as Job;
