@@ -31,8 +31,8 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
     if (result) {
       const { _id, ...withoutId } = result;
       job = {
-        id: _id?.toHexString() || '',
         ...withoutId,
+        id: _id.toHexString(),
         failed: typeof withoutId.failed === 'boolean' ? withoutId.failed : false,
       } as Job;
     } else {

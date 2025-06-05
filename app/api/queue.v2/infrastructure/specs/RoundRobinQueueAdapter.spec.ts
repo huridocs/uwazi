@@ -146,12 +146,12 @@ describe('RoundRobinQueueAdapter', () => {
       expect(pickedJobs).toEqual(['testTenant1', 'testTenant1', 'testTenant1']);
     });
 
-    it('should return a properly structured job object when result is found', async () => {
+    it('should return the found job with its id', async () => {
       adapter = TestingRoundRobinQueueAdapter();
       await pushJobsForNamespaces(adapter, [['testTenant1', 1]]);
-      const pickedJob = await adapter.pickJob('test-queue');
-      expect(pickedJob?.id).toBe(expect.any(String));
-      expect(pickedJob?.id).not.toBeEmpty();
+      const job = await adapter.pickJob('test-queue');
+      expect(typeof job?.id).toBe('string');
+      expect(job?.id.length).toBeGreaterThan(0);
     });
   });
 });
