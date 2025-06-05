@@ -5,7 +5,7 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   private latestTenants: string[] = ['', ''];
 
   private async findAndUpdateJob(queueName: string, excludeTenants: string[] = []) {
-    return await super.getCollection().findOneAndUpdate(
+    await super.getCollection().findOneAndUpdate(
       {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },

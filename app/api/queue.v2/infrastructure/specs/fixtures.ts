@@ -49,6 +49,7 @@ export const pickJobs = async (adapter: QueueAdapter): Promise<string[]> => {
 
   while (pickedJob !== null) {
     pickedJobs.push(pickedJob.namespace);
+    // eslint-disable-next-line no-await-in-loop
     pickedJob = await adapter.pickJob('test-queue');
   }
 
