@@ -164,6 +164,8 @@ function entityForTrainingQuery(
 
   if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
     query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
+  } else if (toProperty === 'title') {
+    query.title = { $ne: '' };
   } else {
     query[`metadata.${toProperty}`] = {
       $exists: true,

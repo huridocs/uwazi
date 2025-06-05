@@ -59,9 +59,7 @@ const fixtures: DBFixture = {
     factory.ixExtractor('extractorWithRelationshipToAny', 'property_relationship_to_any', [
       'templateToSegmentF',
     ]),
-    factory.ixExtractor('extractorWithoutSegmentations', 'property_numeric', [
-      'templateWithoutSegmentations',
-    ]),
+    factory.ixExtractor('extractorWithoutSegmentations', 'title', ['templateWithoutSegmentations']),
     factory.ixExtractor('selectExtractorWithoutSegmentations', 'property_select', [
       'templateWithoutSegmentations',
     ]),
@@ -257,7 +255,6 @@ const fixtures: DBFixture = {
     }),
     factory.entity('entityWithoutSegmentation', 'templateWithoutSegmentations', {
       property_select: [{ value: 'B', label: 'B' }],
-      property_numeric: [{ value: 1 }],
     }),
   ],
   files: [
@@ -1086,7 +1083,6 @@ const fixtures: DBFixture = {
       factory.property('source_property', 'text'),
     ]),
     factory.template('templateWithoutSegmentations', [
-      factory.property('property_numeric', 'numeric'),
       factory.property('property_select', 'select', {
         content: factory.id('thesauri1').toString(),
       }),
