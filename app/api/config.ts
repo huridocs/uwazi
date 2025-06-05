@@ -3,20 +3,21 @@ import { Tenant } from './tenants/tenantContext';
 import { version } from '../../package.json';
 
 const {
-  ROOT_PATH,
-  JSON_LOGS,
-  UPLOADS_FOLDER,
-  CUSTOM_UPLOADS_FOLDER,
   ACTIVITY_LOGS_FOLDER,
-  USER_SESSION_SECRET,
-  MONGO_URI,
-  ELASTICSEARCH_URL,
+  CUSTOM_UPLOADS_FOLDER,
   DBHOST,
-  SENTRY_API_DSN,
-  MONGO_CONNECTION_POOL_SIZE,
+  ELASTICSEARCH_URL,
   ENVIRONMENT,
+  FEATURE_FLAG_PARAGRAPH_EXTRACTION,
   FILES_ROOT_PATH,
+  JSON_LOGS,
+  MONGO_CONNECTION_POOL_SIZE,
+  MONGO_URI,
   QUEUE_NAME,
+  ROOT_PATH,
+  SENTRY_API_DSN,
+  UPLOADS_FOLDER,
+  USER_SESSION_SECRET,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -38,6 +39,10 @@ export const config = {
   PORT: process.env.PORT || 3000,
 
   DBHOST: MONGO_URI || onlyDBHOST(),
+  DBAUTH: {
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  },
 
   mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 5,
 
@@ -47,9 +52,13 @@ export const config = {
 
   userSessionSecret: USER_SESSION_SECRET || uniqueID(),
 
-  elasticsearch_nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
-
-  elasticsearch_requestTimeout: 60000,
+  elasticsearch: {
+    nodes: ELASTICSEARCH_URL ? ELASTICSEARCH_URL.split(',') : ['http://localhost:9200'],
+    requestTimeout: 60000,
+    auth: {
+      apiKey: process.env.ELASTICSEARCH_API_KEY || '',
+    },
+  },
 
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',
@@ -72,6 +81,8 @@ export const config = {
       s3Storage: false,
       esReplicas: 0,
       deactivateTestJob: false,
+      paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
+      ixExtraSources: true,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,

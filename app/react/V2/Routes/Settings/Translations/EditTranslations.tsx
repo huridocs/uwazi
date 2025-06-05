@@ -55,22 +55,24 @@ const editTranslationsLoader =
 
 const editTranslationsAction =
   (): ActionFunction =>
-  async ({ params, request }) => {
+  // eslint-disable-next-line max-statements
+  async ({ params, request }): Promise<ClientTranslationSchema[] | FetchResponseError> => {
     const formData = await request.formData();
     const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
     const { context } = params;
+    let response: ClientTranslationSchema[] | FetchResponseError = [];
 
     if (formIntent === 'form-submit' && context) {
       const formValues = formData.get('data') as string;
-      return translationsAPI.post(JSON.parse(formValues), context);
+      response = await translationsAPI.post(JSON.parse(formValues), context);
     }
 
     if (formIntent === 'file-upload') {
       const file = formData.get('data') as File;
-      return translationsAPI.importTranslations(file, 'System');
+      response = await translationsAPI.importTranslations(file, 'System');
     }
 
-    return null;
+    return response;
   };
 
 type formValuesType = {
@@ -179,17 +181,16 @@ const EditTranslations = () => {
     translations: ClientTranslationSchema[];
     settings: Settings;
   };
-
+  const fetcher = useFetcher<ClientTranslationSchema[] | FetchResponseError>();
   const [hideTranslated, setHideTranslated] = useState(false);
-  const fetcher = useFetcher();
-  const setNotifications = useSetAtom(notificationAtom);
   const [showModal, setShowModal] = useState(false);
+  const setNotifications = useSetAtom(notificationAtom);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+
   const tablesData = useMemo(
     () => calculateTableData(contextTerms, defaultFormValues, hideTranslated),
     [contextTerms, defaultFormValues, hideTranslated]
@@ -201,21 +202,14 @@ const EditTranslations = () => {
     setValue,
     getFieldState,
     reset,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    formState: { dirtyFields, isSubmitting: formIsSubmitting, isSubmitSuccessful },
+    formState: { dirtyFields, isSubmitting: formIsSubmitting },
   } = useForm({
     defaultValues: { formValues: defaultFormValues },
     mode: 'onSubmit',
   });
 
-  const isDirtyAlt = !!Object.keys(dirtyFields).length;
-  const blocker = useBlocker(isDirtyAlt && !formIsSubmitting);
-
-  React.useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset({}, { keepValues: true });
-    }
-  }, [isSubmitSuccessful, reset]);
+  const isDirty = !!Object.keys(dirtyFields).length;
+  const blocker = useBlocker(isDirty && !formIsSubmitting);
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -225,20 +219,6 @@ const EditTranslations = () => {
 
   useEffect(() => {
     switch (true) {
-      case fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data):
-        setNotifications({
-          type: 'success',
-          text: <Translate>Translations saved</Translate>,
-        });
-        break;
-
-      case fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data):
-        setNotifications({
-          type: 'success',
-          text: <Translate>Translations imported.</Translate>,
-        });
-        break;
-
       case fetcher.data instanceof FetchResponseError:
         setNotifications({
           type: 'error',
@@ -247,10 +227,33 @@ const EditTranslations = () => {
         });
         break;
 
+      case fetcher.formData?.get('intent') === 'form-submit':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Translations saved</Translate>,
+        });
+        break;
+
+      case fetcher.formData?.get('intent') === 'file-upload':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Translations imported.</Translate>,
+        });
+        break;
+
       default:
         break;
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
+
+  useEffect(() => {
+    if (fetcher.data) {
+      const updatedFromValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+      reset({ formValues: updatedFromValues });
+    }
+    // updater effect, should only trigger when action returns data to update the table
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [translations]);
 
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
@@ -258,7 +261,6 @@ const EditTranslations = () => {
     formData.set('intent', 'form-submit');
     formData.set('data', JSON.stringify(values));
     await fetcher.submit(formData, { method: 'post' });
-    reset({}, { keepValues: true });
   };
 
   const importFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,7 +271,6 @@ const EditTranslations = () => {
       formData.set('intent', 'file-upload');
       formData.set('data', file);
       await fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
-      reset({}, { keepValues: true });
     }
   };
 
@@ -339,7 +340,7 @@ const EditTranslations = () => {
                                 getFieldState(value.fieldKey as any)?.error
                               );
                               return (
-                                <tr>
+                                <tr key={value.fieldKey}>
                                   <td className="px-6 py-2">{value.language}</td>
                                   <td className="px-6 py-2">
                                     <LanguagePill

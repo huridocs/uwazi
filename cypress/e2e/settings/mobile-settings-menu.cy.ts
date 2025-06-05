@@ -1,13 +1,13 @@
 import { clearCookiesAndLogin } from '../helpers';
 import 'cypress-axe';
 
-describe('Settings mobile menu', () => {
+describe('Settings mobile menu', { viewportWidth: 384, viewportHeight: 768 }, () => {
   before(() => {
     cy.blankState();
   });
 
   beforeEach(() => {
-    cy.viewport(384, 768);
+    cy.intercept('GET', '/api/search*').as('search');
   });
 
   it('should login', () => {
@@ -15,9 +15,7 @@ describe('Settings mobile menu', () => {
   });
 
   it('should only show the menu', () => {
-    cy.location().should(location => {
-      expect(location.pathname).to.contain('library');
-    });
+    cy.wait('@search');
     cy.get('.menu-button').click();
     cy.contains('.only-mobile a', 'Settings').click();
     cy.location().should(location => {

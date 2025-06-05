@@ -26,12 +26,6 @@ type AtomStoreData = {
   translations: ClientTranslationSchema[];
 };
 
-declare global {
-  interface Window {
-    __atomStoreData__?: AtomStoreData;
-  }
-}
-
 const atomStore = createStore();
 
 const hydrateAtomStore = (data: AtomStoreData) => {

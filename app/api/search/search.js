@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import date from 'api/utils/date';
@@ -21,6 +22,7 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -702,7 +704,8 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
   return validationResult.body.valid ? 'query_string' : 'simple_query_string';
 }
 
-const buildQuery = async (query, language, user, resources, includeReviewAggregations) => {
+// eslint-disable-next-line max-statements
+const buildQuery = async (query, language, user, resources) => {
   const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const searchTextType = query.searchTerm
@@ -766,24 +769,18 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   query.performAggregations = query.performAggregations || true;
   if (query.performAggregations) {
     const aggregations = await aggregationProperties(properties, allProps);
-    queryBuilder.aggregations(aggregations, includeReviewAggregations);
+    queryBuilder.aggregations(aggregations);
   }
 
   return queryBuilder;
 };
 
 const search = {
+  // eslint-disable-next-line max-statements
   async search(query, language, user) {
     const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
-    const includeReviewAggregations = query.includeReviewAggregations || false;
-    const queryBuilder = await buildQuery(
-      query,
-      language,
-      user,
-      resources,
-      includeReviewAggregations
-    );
+    const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
     }
@@ -908,11 +905,13 @@ const search = {
     });
   },
 
-  async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
+  async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
     const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
       dictionariesModel.get(),
     ]);
+
+    const searchTerm = _searchTerm || '';
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
       templates,
@@ -923,6 +922,10 @@ const search = {
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
 
+    if (!property) {
+      throw new OperationalError(`Property ${propertyName} not found`);
+    }
+
     queryBuilder
       .resetAggregations()
       .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
@@ -931,7 +934,7 @@ const search = {
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
-    this.appendAutoCompleteFilters(property, searchTerm, aggregation);
+    this.appendAutoCompleteFilters(property, searchTerm || '', aggregation);
 
     const response = await elastic.search({
       body,

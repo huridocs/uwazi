@@ -1,37 +1,31 @@
 import React, { useMemo, useState } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router';
+import { useLoaderData } from 'react-router';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
-import { tableColumns, NoDataMessage } from './components/PXTableElements';
-import { PXTable, ParagraphExtractorApiResponse } from './types';
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
+import { Button } from 'app/V2/Components/UI';
+import { PXTable } from './types';
 import { formatExtractors } from './utils/formatters';
-import { PXTableFooter } from './components/PXTableFooter';
-import { usePXActionModal } from './hooks/usePXActionModal';
-import { AddExtractorModalComponent } from './components/Modals/AddExtractor';
+import { CreateDialog } from './components/extractors/CreateDialog';
+import { ExtractorsTable } from './components/extractors/Table';
+import { DeleteDialog } from './components/extractors/DeleteDialog';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
-    extractors: ParagraphExtractorApiResponse[];
+    extractors: Extractor[];
   };
-
   const templates = useAtomValue(templatesAtom);
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);
-
-  const { Modal: ConfirmDeleteModal, setShowModal: showConfirmModal } = usePXActionModal({
-    action: 'deleteExtractor',
-    actionParams: selected?.map(selection => selection._id) as string[],
-  });
+  const [deletedialogIsopen, setdeletedialogIsopen] = useState(false);
+  const [createDialogIsopen, setCreateDialogIsopen] = useState(false);
 
   const paragraphExtractorData = useMemo(
     () => formatExtractors(extractors, templates),
     [extractors, templates]
   );
-
-  const [searchParams] = useSearchParams();
 
   return (
     <div
@@ -42,60 +36,42 @@ const ParagraphExtractorDashboard = () => {
       <SettingsContent>
         <SettingsContent.Header title="Paragraph extraction" />
         <SettingsContent.Body>
-          <Table
-            data={paragraphExtractorData}
-            columns={tableColumns}
-            header={
-              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
-                Extractors
-              </Translate>
-            }
-            enableSelections
-            onChange={({ selectedRows }) => {
-              setSelected(() => paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
-            }}
-            defaultSorting={[{ id: '_id', desc: false }]}
-            noDataMessage={<NoDataMessage />}
-            footer={
-              <PXTableFooter
-                totalPages={10}
-                currentDataLength={10}
-                total={100}
-                searchParams={searchParams}
-              />
-            }
+          <ExtractorsTable
+            paragraphExtractorData={paragraphExtractorData}
+            onSelectionChange={setSelected}
           />
+          <DeleteDialog
+            setIsProcessing={setIsSaving}
+            onSuccess={() => {
+              setSelected([]);
+            }}
+            selected={selected}
+            isOpen={deletedialogIsopen}
+            setIsOpen={setdeletedialogIsopen}
+          />
+          <CreateDialog isOpen={createDialogIsopen} setIsOpen={setCreateDialogIsopen} />
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
           {selected?.length ? (
-            <div className="flex gap-2 items-center ">
-              <Button
-                type="button"
-                color="error"
-                onClick={() => showConfirmModal(true)}
-                disabled={isSaving}
-              >
+            <div className="flex items-center gap-2 ">
+              <Button color="error" type="button" onClick={() => setdeletedialogIsopen(true)}>
                 <Translate>Delete</Translate>
               </Button>
               <div className="text-gray-500">
-                <Translate>Selected</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{selected.length}</span>{' '}
-                <Translate>of</Translate>{' '}
-                <span className="text-gray-900 font-semibold">{paragraphExtractorData.length}</span>
+                <Translate>Selected</Translate>
+                <span className="font-semibold text-gray-900">{selected.length}</span>
+                <Translate>of</Translate>
+                <span className="font-semibold text-gray-900">{paragraphExtractorData.length}</span>
               </div>
             </div>
           ) : (
-            <AddExtractorModalComponent disabled={isSaving} />
+            <Button type="button" onClick={() => setCreateDialogIsopen(true)} disabled={isSaving}>
+              <Translate>Add extractor</Translate>
+            </Button>
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      <ConfirmDeleteModal
-        setIsProcessing={setIsSaving}
-        onSuccess={() => {
-          setSelected([]);
-        }}
-      />
     </div>
   );
 };

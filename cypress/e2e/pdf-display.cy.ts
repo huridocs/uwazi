@@ -20,7 +20,9 @@ describe('PDF display', () => {
     it('should setup the template', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Templates').click();
-      cy.contains('li', 'Document').contains('a', 'Edit').click();
+      cy.contains('tr', 'Document').within(() => {
+        cy.contains('a', 'Edit').click();
+      });
       cy.contains('li', 'Text').within(() => {
         cy.get('button').click();
       });
@@ -48,6 +50,8 @@ describe('PDF display', () => {
         cy.contains('span', 'Processing...').should('not.exist');
         cy.contains('a', 'View').click();
       });
+      cy.get('#pdf-container').should('be.visible');
+      cy.get('.paginator').should('be.visible');
     });
 
     it('should check the document', () => {
@@ -77,8 +81,15 @@ describe('PDF display', () => {
     });
 
     it('should check that visited pages are unmounted and that non visited pages are not rendered', () => {
+      cy.get('.paginator').within(() => {
+        cy.contains('4 / 22');
+      });
+      cy.get('#page-1').should('not.be.visible');
       cy.get('#page-1 > div').should('be.empty');
-      cy.get('#page-10').should('be.empty');
+      cy.get('#page-2').should('not.be.visible');
+      cy.get('#page-2 > div').should('be.empty');
+      cy.get('#page-6').should('not.be.visible');
+      cy.get('#page-6 > div').should('not.exist');
     });
 
     it('should paginate backwards', () => {
@@ -91,6 +102,9 @@ describe('PDF display', () => {
     });
 
     it('should show the plaintex for the page', () => {
+      cy.get('.paginator').within(() => {
+        cy.contains('3 / 22');
+      });
       cy.contains('a', 'Plain text').realClick();
       cy.get('.raw-text').should('be.visible');
       cy.get('.raw-text').within(() => {
@@ -172,7 +186,7 @@ describe('PDF display', () => {
       });
 
       it('should check that the pdf renders and scrolls to the selection', () => {
-        cy.contains('button', 'Open PDF').realClick();
+        cy.contains('button', 'Open').realClick();
         cy.contains('Loading').should('not.exist');
         cy.get('#pdf-container').within(() => {
           cy.contains(
@@ -187,9 +201,11 @@ describe('PDF display', () => {
       });
 
       it('should only render visible pages', () => {
+        cy.get('#page-2-container .page').should('be.visible');
         cy.get('#page-2-container .page').should('not.be.empty');
         cy.get('#page-3-container .page').should('be.empty');
         cy.get('#page-7-container').scrollIntoView();
+        cy.get('#page-7-container').should('be.visible');
         cy.get('#page-7-container .page').should('not.be.empty');
         cy.get('#page-2-container .page').should('be.empty');
         cy.get('#page-3-container .page').should('be.empty');
@@ -230,57 +246,15 @@ describe('PDF display', () => {
         cy.contains('Los escritos de 17 de septiembre y 17 de noviembre de 2010,').should(
           'be.visible'
         );
+      });
+
+      it('should check that can edit and cancel', () => {
         cy.get('.ContextMenu-bottom .btn').realTouch();
         cy.contains('.btn', 'Edit').realTouch();
         cy.get('.highlight-rectangle').toMatchSnapshot({ name: 'responsive selection' });
         cy.get('#root').toMatchImageSnapshot();
         cy.contains('.btn', 'Cancel').realTouch();
         cy.get('.closeSidepanel').realTouch();
-      });
-    });
-
-    describe('IX sidepanel', { viewportWidth: 375, viewportHeight: 812 }, () => {
-      it('should navigate to the extractor', () => {
-        cy.get('header').within(() => {
-          cy.get('.menu-button').realTouch();
-        });
-        cy.get('.menuActions > .menuNav-list').within(() => {
-          cy.contains('.only-mobile', 'Settings').realTouch();
-        });
-        cy.contains('a', 'Metadata Extraction').realTouch();
-        cy.contains('td', 'Extractor 1');
-        cy.contains('button', 'Review').realTouch();
-        cy.contains('td', 'Entity with pdf (es)');
-      });
-
-      it('should open the pdf sidepanel and show the correct page', () => {
-        cy.contains('button', 'Open PDF').scrollIntoView();
-        cy.contains('button', 'Open PDF').realTouch();
-        cy.contains('Loading').should('not.exist');
-        cy.get('#pdf-container').within(() => {
-          cy.contains(
-            'Los escritos de 12 de agosto, 14 y 26 de octubre y 24 de noviembre de 2010, de 3'
-          );
-          cy.get('.highlight-rectangle').should('be.visible');
-        });
-        cy.get('#root').toMatchImageSnapshot();
-      });
-
-      it('should only show visible pages', () => {
-        cy.get('#page-1-container .page').should('be.empty');
-        cy.get('#page-2-container .page').should('not.be.empty');
-        cy.get('#page-3-container .page').should('not.be.empty');
-        cy.get('#page-10-container .page').should('be.empty');
-        cy.get('#page-10-container').scrollIntoView();
-        cy.get('#page-1-container .page').should('be.empty');
-        cy.get('#page-2-container .page').should('be.empty');
-        cy.get('#page-3-container .page').should('be.empty');
-        cy.get('#page-10-container .page').should('not.be.empty');
-        cy.get('#page-11-container .page').should('not.be.empty');
-        cy.contains(
-          'span[role="presentation"]',
-          'El artículo 63.2 de la Convención exige que para que la Corte pueda disponer de'
-        ).should('be.visible');
       });
     });
   });

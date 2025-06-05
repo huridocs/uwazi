@@ -1,12 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import { store } from 'app/store';
 
-declare global {
-  interface Window {
-    updatePageDatasets: (name: string, data: any) => void;
-  }
-}
-
 const updatePageDatasets = (name: string, data: any) => {
   if (!store) {
     return;

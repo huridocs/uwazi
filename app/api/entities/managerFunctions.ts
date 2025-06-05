@@ -52,13 +52,15 @@ const prepareNewFiles = async (
   }
 
   if (newUrls && newUrls.length) {
-    newUrls.map(async (url: any) => {
-      attachments.push({
-        ...url,
-        entity: updatedEntity.sharedId,
-        type: TypeOfFile.attachment,
-      });
-    });
+    await Promise.all(
+      newUrls.map(async (url: any) => {
+        attachments.push({
+          ...url,
+          entity: updatedEntity.sharedId,
+          type: TypeOfFile.attachment,
+        });
+      })
+    );
   }
 
   return { attachments, documents };

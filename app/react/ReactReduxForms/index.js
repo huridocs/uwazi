@@ -16,7 +16,6 @@ export const MultiSelectTristate = props => (
 export const MarkDown = props => <Control.text component={forms.MarkDown} {...props} />;
 export const Nested = props => <Control.select component={forms.Nested} {...props} />;
 export const MultiDate = props => <Control.select component={forms.MultiDate} {...props} />;
-export const MultiSuggest = props => <Control.select component={forms.MultiSuggest} {...props} />;
 export const MultiDateRange = props => (
   <Control.select component={forms.MultiDateRange} {...props} />
 );

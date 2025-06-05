@@ -1,3 +1,4 @@
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { storage } from 'api/files/storage';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { dbSessionContext } from 'api/odm/sessionsContext';
@@ -45,52 +46,40 @@ const withTransaction = async <T>(
   const startTime = performance.now();
   const logNamespace = namespace ? `(${namespace})` : '';
 
-  const session = await dbSessionContext.startSession();
-  session.startTransaction();
+  const transactionManager = DefaultTransactionManager();
+
   let wasManuallyAborted = false;
-
-  const context: TransactionOperation = {
-    abort: async () => {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      wasManuallyAborted = true;
-
-      if (process.env.NODE_ENV !== 'test') {
-        const elapsedTime = performance.now() - startTime;
-        logger.info(
-          `[v1_transactions] Transactions ${logNamespace} was manually aborted,` +
-            ` session id -> ${inspect(session.id)} (${elapsedTime.toFixed(2)}ms)`
-        );
-      }
-    },
-  };
-
   try {
-    const result = await operation(context);
+    return await transactionManager.run(async () => {
+      dbSessionContext.setTransactionManager(transactionManager);
+      const context: TransactionOperation = {
+        abort: async () => {
+          await transactionManager.abort();
+          wasManuallyAborted = true;
 
+          if (process.env.NODE_ENV !== 'test') {
+            const elapsedTime = performance.now() - startTime;
+            logger.info(
+              `[v1_transactions] Transactions ${logNamespace} was manually aborted,` +
+                ` session id -> ${inspect(transactionManager.getSession()?.id)} (${elapsedTime.toFixed(2)}ms)`
+            );
+          }
+        },
+      };
+      try {
+        return await operation(context);
+      } finally {
+        if (!wasManuallyAborted) {
+          dbSessionContext.clearSession();
+          await performDelayedFileStores();
+        }
+      }
+    });
+  } finally {
     if (!wasManuallyAborted) {
-      dbSessionContext.clearSession();
-      await performDelayedFileStores();
-      await session.commitTransaction();
       await performDelayedReindexes();
     }
-    return result;
-  } catch (e) {
-    if (!wasManuallyAborted) {
-      if (process.env.NODE_ENV !== 'test') {
-        const errorTime = performance.now() - startTime;
-        logger.info(
-          `[v1_transactions] Transaction ${logNamespace} aborted due to error: ${inspect(e)},` +
-            ` session id -> ${inspect(session.id)} (${errorTime.toFixed(2)}ms)`
-        );
-      }
-      await session.abortTransaction();
-    }
-    throw e;
-  } finally {
     dbSessionContext.clearContext();
-    await session.endSession();
   }
 };
 

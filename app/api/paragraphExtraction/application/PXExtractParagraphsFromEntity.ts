@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
@@ -20,7 +22,7 @@ type PXExtractParagraphsFromEntityInput = {
   userId: string;
   extractorId: string;
   entitySharedId: string;
-  extractionId: string;
+  entityStatusId: string;
 };
 
 type Output = void;
@@ -44,10 +46,8 @@ export class PXExtractParagraphsFromEntity
   constructor(private dependencies: Dependencies) {}
 
   // eslint-disable-next-line max-statements
-  async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
+  async execute(input: PXExtractParagraphsFromEntityInput, isRetriable = false): Promise<Output> {
     try {
-      await this.dependencies.entitiesStatusDS.initProcess(input.extractionId);
-
       const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
       const documents = await this.getDocuments(entity, installedLanguages);
@@ -61,13 +61,18 @@ export class PXExtractParagraphsFromEntity
       const extractionKey = PXExtractionKey.create({
         tenantName: this.dependencies.tenantName,
         userId: input.userId,
-        extractionId: input.extractionId,
+        entityStatusId: input.entityStatusId,
       });
 
       const mainLanguage = PXExtractParagraphsFromEntity.getMainLanguage(
         documents,
         defaultLanguage
       );
+
+      await this.dependencies.extractorsDS.deleteParagraphs({
+        extractorId: extractor.id,
+        entitySharedId: input.entitySharedId,
+      });
 
       await this.dependencies.extractionService.extractParagraphs({
         documents,
@@ -84,7 +89,10 @@ export class PXExtractParagraphsFromEntity
         })}`
       );
     } catch (e) {
-      await this.dependencies.entitiesStatusDS.setAsError(input.extractionId);
+      if (!isRetriable) {
+        await this.dependencies.entitiesStatusDS.markAsError(input.entityStatusId);
+      }
+
       throw e;
     }
   }
@@ -127,6 +135,7 @@ export class PXExtractParagraphsFromEntity
         `The Entity "${entity.title}" does not have valid template configured by this Extractor`
       );
     }
+
     return { extractor, entity, installedLanguages };
   }
 
@@ -155,14 +164,35 @@ export class PXExtractParagraphsFromEntity
       installedLanguages.some(language => language.key === document.language)
     );
 
-    if (!filteredDocuments.length) {
+    const uniqueByLanguage = Object.values(
+      filteredDocuments.reduce(
+        (prev, document) => {
+          const existingDocument = prev[document.language];
+          if (!existingDocument) {
+            return { ...prev, [document.language]: document };
+          }
+
+          const existingDocumentCreationDate = new ObjectId(existingDocument.id).getTimestamp();
+          const documentCreationDate = new ObjectId(document.id).getTimestamp();
+
+          return {
+            ...prev,
+            [document.language]:
+              existingDocumentCreationDate < documentCreationDate ? existingDocument : document,
+          };
+        },
+        {} as Record<string, Document>
+      )
+    );
+
+    if (!uniqueByLanguage.length) {
       throw new PXValidationError(
         PXErrorCode.DOCUMENTS_NOT_FOUND,
         `There is no valid Documents for the Entity ${entity.title}`
       );
     }
 
-    return filteredDocuments;
+    return uniqueByLanguage;
   }
 
   private async getSegmentations(documents: Document[], entity: Entity) {

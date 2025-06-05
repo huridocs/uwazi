@@ -5,6 +5,7 @@ import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
 import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { ocrManager } from 'api/services/ocr/OcrManager';
@@ -17,19 +18,9 @@ import { syncWorker } from 'api/sync/syncWorker';
 import { tenants } from 'api/tenants';
 import { tocService } from 'api/toc_generation/tocService';
 import { sleep } from 'shared/tsUtils';
-import { handleError } from './api/utils/handleError.js';
+import { handleError } from './api/utils/handleError';
 
 const systemLogger = SystemLogger();
-
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
 
 const uncaughtError = (error: Error) => {
   handleError(error, { uncaught: true });
@@ -39,7 +30,7 @@ const uncaughtError = (error: Error) => {
 process.on('unhandledRejection', uncaughtError);
 process.on('uncaughtException', uncaughtError);
 
-DB.connect(config.DBHOST, dbAuth)
+DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     await tenants.setupTenants();
     permissionsContext.setCommandContextAsDefault();
@@ -50,7 +41,7 @@ DB.connect(config.DBHOST, dbAuth)
     const services: Record<string, any> = {
       ocr_manager: ocrManager,
       at_service: new ATServiceListener(),
-      px_paragraphs_results: new PXParagraphsResultListener(),
+      px_paragraphs_results: new PXParagraphsResultListener(DefaultDispatcher),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),
       preserve_integration: new DistributedLoop(

@@ -1,11 +1,14 @@
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { config } from 'api/config';
 import { FileNotFound } from 'api/files/FileNotFound';
 import { S3Error } from 'api/files/S3Storage';
 import { legacyLogger } from 'api/log';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
+import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
 import { appContext } from 'api/utils/AppContext';
 import { createError } from 'api/utils/index';
 import util from 'node:util';
@@ -66,6 +69,18 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
   }
 
+  if (error instanceof SyntaxError && error.type === 'entity.parse.failed') {
+    result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
+  }
+
+  if (error instanceof OperationalError) {
+    result = { code: 400, message: util.inspect(error), logLevel: 'debug' };
+  }
+
+  if (error instanceof PXValidationError || error instanceof IXValidationError) {
+    result = { code: 422, message: util.inspect(error), logLevel: 'debug' };
+  }
+
   if (error instanceof S3Error) {
     result = { code: error.httpStatusCode || 503, message: util.inspect(error), logLevel: 'debug' };
   }
@@ -111,7 +126,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   }
 
   if (uncaught) {
-    result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
+    result.message = `uncaught exception or unhandled rejection, gracefully shutting down uwazi\n ${result.message}`;
     result.logLevel = 'error';
     result.code = 500;
   }

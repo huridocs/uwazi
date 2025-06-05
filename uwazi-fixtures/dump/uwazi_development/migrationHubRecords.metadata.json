@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_e2e.migrationHubRecords"}],"uuid":"afae761b6fe14ac6b8da51558e5bff1a","collectionName":"migrationHubRecords","type":"collection"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"7aba0c32802444e486190370a7ed3a9d","collectionName":"migrationHubRecords","type":"collection"}

@@ -1,16 +1,17 @@
 /* eslint-disable camelcase, max-lines */
 
-import { preloadOptionsSearch } from 'shared/config';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { preloadOptionsSearch } from 'shared/config';
 import { UserRole } from 'shared/types/userSchema';
-import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import {
-  propertyToAggregation,
   generatedTocAggregations,
   permissionsLevelAgreggations,
-  publishingStatusAgreggations,
   permissionsUsersAgreggations,
+  propertyToAggregation,
+  publishingStatusAgreggations,
 } from './metadataAggregations';
+import filterToMatch, { multiselectFilter } from './metadataMatchers';
 
 const nested = (filters, path) => ({
   nested: {
@@ -267,16 +268,19 @@ export default function () {
     },
 
     sort(property, order = 'desc', sortByLabel = false) {
+      if (!['desc', 'asc'].includes(order)) {
+        throw new ValidationError([
+          { path: 'query.order', message: 'order must be "asc" or "desc"' },
+        ]);
+      }
       if (property === '_score') {
         return baseQuery.sort.push('_score');
       }
-      const sort = {};
       const isAMetadataProperty = property.includes('metadata');
       const sortingKey = sortByLabel ? 'label' : 'value';
       const sortKey = isAMetadataProperty ? `${property}.${sortingKey}.sort` : `${property}.sort`;
-      sort[sortKey] = { order, unmapped_type: 'boolean' };
 
-      baseQuery.sort.push(sort);
+      baseQuery.sort.push({ [sortKey]: { order, unmapped_type: 'boolean' } });
       return this;
     },
 
@@ -322,8 +326,8 @@ export default function () {
 
     filterMetadata(filters = []) {
       filters.forEach(filter => {
-        const match = filterToMatch(filter, filter.suggested ? 'suggestedMetadata' : 'metadata');
-        if (match) {
+        const match = filterToMatch(filter, 'metadata');
+        if (match && !filter.suggested) {
           addFilter(match);
         }
       });
@@ -352,23 +356,14 @@ export default function () {
       );
     },
 
-    aggregations(properties, includeReviewAggregations) {
+    aggregations(properties) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
           baseQuery
         );
       });
-      if (includeReviewAggregations) {
-        // suggested has an implied '__' as a prefix
-        properties.forEach(property => {
-          baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
-            property,
-            baseQuery,
-            true
-          );
-        });
-      }
+
       return this;
     },
 

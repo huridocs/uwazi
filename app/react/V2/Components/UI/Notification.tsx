@@ -102,7 +102,7 @@ const Notification = ({
 
   switch (type) {
     case 'info':
-      containerClass = 'text-primary-700 border-primary-300 bg-primary-100';
+      containerClass = 'text-primary-700 border-primary-300 bg-primary-100 bg-white';
       dismissClass =
         'text-primary-800 border-primary-800 hover:bg-primary-900 focus:ring-primary-200';
       viewMoreClass = 'bg-primary-700 hover:bg-primary-800';

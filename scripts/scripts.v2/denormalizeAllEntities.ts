@@ -28,16 +28,6 @@ const { tenant, allTenants } = require('yargs')
     default: false,
   }).argv;
 
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
-
 async function handleTenant(tenantName: string) {
   await tenants.run(async () => {
     const start = process.hrtime();
@@ -126,7 +116,7 @@ async function handleTenant(tenantName: string) {
 }
 
 (async function run() {
-  await DB.connect(config.DBHOST, dbAuth);
+  await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
 
   if (!allTenants) {

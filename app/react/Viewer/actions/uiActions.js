@@ -5,6 +5,20 @@ import Marker from 'app/Viewer/utils/Marker.js';
 import scroller from 'app/Viewer/utils/Scroller';
 import * as types from 'app/Viewer/actions/actionTypes';
 
+const waitForElement = (selector, callback, { timeout = 4000, frequency = 500 } = {}) => {
+  const interval = setInterval(() => {
+    const element = document.querySelector(selector);
+    if (element) {
+      clearInterval(interval);
+      callback(element);
+    }
+  }, frequency);
+
+  setTimeout(() => {
+    clearInterval(interval);
+  }, timeout);
+};
+
 export function closePanel() {
   return {
     type: types.CLOSE_PANEL,
@@ -169,12 +183,14 @@ export async function scrollTo(connection) {
 }
 
 export function selectSnippet(page, snippet) {
-  scrollToPage(page);
-  setTimeout(() => {
-    scrollTomark();
-  }, 500);
   return dispatch => {
-    dispatch({ type: types.SELECT_SNIPPET, snippet });
+    waitForElement(`.document-viewer div#page-${page}`, () => {
+      scrollToPage(page);
+      waitForElement(`.document-viewer div#page-${page} .textLayer`, () => {
+        dispatch({ type: types.SELECT_SNIPPET, snippet });
+        waitForElement('.document-viewer mark', scrollTomark);
+      });
+    });
   };
 }
 

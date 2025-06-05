@@ -18,17 +18,30 @@ export const extractorsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['name', 'property', 'templates'],
+          required: ['name', 'property', 'source', 'templates'],
           properties: {
             name: { type: 'string' },
             property: { type: 'string' },
+            source: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                pdf: { type: 'boolean' },
+                property: { type: 'string' },
+              },
+            },
             templates: { type: 'array', items: { type: 'string' } },
           },
         },
       },
     }),
     async (req, res, _next) => {
-      const created = await Extractors.create(req.body.name, req.body.property, req.body.templates);
+      const created = await Extractors.create({
+        name: req.body.name,
+        source: req.body.source,
+        property: req.body.property,
+        templates: req.body.templates,
+      });
       res.json(created);
     }
   );
@@ -43,23 +56,32 @@ export const extractorsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['name', 'property', 'templates', '_id'],
+          required: ['name', 'property', 'source', 'templates', '_id'],
           properties: {
             _id: { type: 'string' },
             name: { type: 'string' },
             property: { type: 'string' },
+            source: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                pdf: { type: 'boolean' },
+                property: { type: 'string' },
+              },
+            },
             templates: { type: 'array', items: { type: 'string' } },
           },
         },
       },
     }),
     async (req, res, _next) => {
-      const updated = await Extractors.update(
-        req.body._id,
-        req.body.name,
-        req.body.property,
-        req.body.templates
-      );
+      const updated = await Extractors.update({
+        _id: req.body._id,
+        name: req.body.name,
+        source: req.body.source,
+        property: req.body.property,
+        templates: req.body.templates,
+      });
       res.json(updated);
     }
   );

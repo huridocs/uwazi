@@ -865,4 +865,5 @@ export {
   uploadId2,
   permissions,
   entityGetTestTemplateId,
+  fixtureFactory,
 };

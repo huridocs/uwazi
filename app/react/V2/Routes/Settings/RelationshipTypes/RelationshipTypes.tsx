@@ -76,11 +76,13 @@ const RelationshipTypes = () => {
     const { rowId, ...data } = submitedData;
     try {
       await relationshipTypesAPI.save(data);
+      const updatedRelationships = await relationshipTypesAPI.get();
       setNotifications({
         type: 'success',
         text: <Translate>Updated</Translate>,
       });
       setIsSidepanelOpen(false);
+      setRelationshipTypes(updatedRelationships);
     } catch (error) {
       setNotifications({
         type: 'error',
@@ -90,7 +92,6 @@ const RelationshipTypes = () => {
       setIsSidepanelOpen(false);
     }
     await revalidator.revalidate();
-    setRelationshipTypes(relationshipTypes);
   };
 
   const deleteSelected = async () => {

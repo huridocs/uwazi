@@ -1,6 +1,9 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .settings {
   .settings-dashboard {
-    color: $c-gray-900;
+    color: colors.$c-gray-900;
 
     .panel-heading {
       margin-bottom: 30px;
@@ -13,9 +16,9 @@
       flex-wrap: wrap;
 
       .card {
-        border: 1px solid $c-grey;
+        border: 1px solid colors.$c-grey;
         border-radius: 6px;
-        box-shadow: 1px 0px 1px $c-grey-light;
+        box-shadow: 1px 0px 1px colors.$c-grey-light;
         padding: 16px;
         flex: 33%;
 
@@ -23,7 +26,7 @@
           margin: 0;
           padding: 0;
           border: unset;
-          font-size: $f-size-lg;
+          font-size: typography.$f-size-lg;
           font-weight: bold;
         }
         p {
@@ -71,12 +74,12 @@
           }
 
           .count {
-            font-size: $f-size-sl;
+            font-size: typography.$f-size-sl;
           }
 
           .translation,
           .total {
-            color: $c-gray-600;
+            color: colors.$c-gray-600;
             font-weight: 400;
           }
         }
@@ -87,21 +90,21 @@
 
           .user-info {
             .translation {
-              color: $c-gray-600;
+              color: colors.$c-gray-600;
               font-weight: 400;
             }
 
             &:not(:last-child):after {
               content: '|';
               margin-left: 10px;
-              color: $c-gray-600;
+              color: colors.$c-gray-600;
             }
           }
 
           .card-info {
             .translation {
               font-style: italic;
-              color: $c-gray-600;
+              color: colors.$c-gray-600;
               font-weight: 400;
             }
           }

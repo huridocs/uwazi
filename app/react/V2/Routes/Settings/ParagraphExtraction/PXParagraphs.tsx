@@ -1,98 +1,38 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
+import { useLoaderData, useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { LanguageSchema } from 'shared/types/commonTypes';
-import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Table, Button } from 'V2/Components/UI';
-import { Sidepanel } from 'V2/Components/UI/Sidepanel';
+import type {
+  PXParagraphLoaderResponse,
+  TablePXEntityParagraphRow,
+} from 'V2/shared/ParagraphExtractionTypes';
 import { templatesAtom } from 'V2/atoms';
-import { useLoaderData, useSearchParams } from 'react-router';
-import { Settings } from 'shared/types/settingsType';
-import { Icon } from 'app/UI';
-import { tableBuilder } from './components/PXParagraphTableElements';
-import { TableTitle } from './components/TableTitle';
-import { PXParagraphTable, PXParagraphApiResponse, PXEntityApiResponse } from './types';
-import { ViewParagraph } from './components/ViewParagraph';
-import { formatParagraphData } from './utils/formatters';
-import { PXTableFooter } from './components/PXTableFooter';
-import { getLanguageName } from './utils/getLanguageName';
-import { EntityFilterSidePanel } from './components/EntityFilterSidePanel';
+import { ParagraphsTable } from './components/paragraphs/Table';
+import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
+import { PDFSidepanel } from './components/paragraphs/PDFSidepanel';
 
 const PXParagraphDashboard = () => {
-  const {
-    paragraphs = [],
-    extractorId,
-    languages = [],
-    settings,
-  } = useLoaderData() as {
-    extractorId: string;
-    entity: PXEntityApiResponse;
-    paragraphs: PXParagraphApiResponse[];
-    languages: LanguageSchema[];
-    settings: Settings;
-  };
-
-  const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphTable>(undefined);
-  const [paragraphInfo, setParagraphInfo] = useState<undefined | PXParagraphTable>(undefined);
-  const [entityLanguages, setEntityLanguages] = useState<string[]>([]);
+  const { extractorId } = useParams();
+  const { rows, totalRows, extractor, sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
   const templates = useAtomValue(templatesAtom);
-
-  const pxParagraphData = useMemo(
-    () => formatParagraphData(paragraphs, templates, settings),
-    [paragraphs, templates, settings]
+  const [sidePanel, setSidePanel] = useState(false);
+  const [pdfSidepanel, setPdfSidepanel] = useState(false);
+  const [paragraphOnView, setParagraphOnView] = useState<undefined | TablePXEntityParagraphRow>(
+    undefined
   );
 
-  const [showFilter, setShowFilter] = useState(false);
-  const [filters, setFilters] = useState<any[]>([]);
-  const [searchParams] = useSearchParams();
+  const template = templates.find(temp => temp._id === extractor?.sourceTemplateId);
+  const paragraphEntities = rows?.flatMap(row => [
+    row,
+    ...(row.subRows || []).map(subrow => subrow),
+  ]);
 
-  useEffect(() => {
-    if (pxParagraphData.length > 0) {
-      const [pxParagraphDatum] = pxParagraphData;
-      setParagraphInfo(pxParagraphDatum);
-
-      const availableLanguages = [
-        ...pxParagraphDatum.languages.map(lang => getLanguageName(languages, lang)),
-        ...pxParagraphData
-          .filter(datum => datum.paragraphCount === pxParagraphDatum.paragraphCount)
-          .reduce((subRowLanguages: string[], curr) => {
-            if (curr.subRows) {
-              curr.subRows.forEach(subRow => {
-                subRow.languages.forEach((lang: string) => {
-                  const languageName = getLanguageName(languages, lang);
-                  subRowLanguages.push(languageName);
-                });
-              });
-            }
-            return subRowLanguages;
-          }, []),
-      ];
-      setEntityLanguages(availableLanguages);
-      setFilters([
-        {
-          label: 'Languages',
-          key: 'languages',
-          options: availableLanguages.map(lang => ({
-            key: lang,
-            label: getLanguageName(languages, lang),
-            count: 1,
-          })),
-        },
-      ]);
-    }
-  }, [pxParagraphData, languages]);
-
-  const openSidePanel = (id: string): void => {
+  const onViewEntity = (entityId: string) => {
+    const selectedParagraph = paragraphEntities?.find(paragraph => paragraph._id === entityId);
+    setParagraphOnView(selectedParagraph);
     setSidePanel(true);
-    const targetParagraph = pxParagraphData.find(paragraph => paragraph._id === id);
-    if (targetParagraph) {
-      setParagraphOnView({
-        ...targetParagraph,
-        languages: [getLanguageName(languages, targetParagraph.languages[0])],
-      });
-    }
   };
+  const entityTitle = sourceEntity?.title || '';
 
   return (
     <div
@@ -102,94 +42,33 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={paragraphInfo?.title || ''}
+          title={entityTitle}
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],
-              [
-                paragraphInfo?.template?.name || '',
-                `/settings/paragraph-extraction/${extractorId}/entities`,
-              ],
+              [`${template?.name}`, `/settings/paragraph-extraction/${extractorId}/entities`],
             ])
           }
         />
         <SettingsContent.Body>
-          <Table
-            data={pxParagraphData}
-            columns={tableBuilder({ onViewAction: openSidePanel })}
-            header={
-              paragraphInfo && (
-                <TableTitle
-                  items={[
-                    { ...paragraphInfo.template },
-                    ...entityLanguages.map(language => ({ name: language })),
-                  ]}
-                  Buttons={
-                    filters.length > 0 && (
-                      <div className="flex gap-3">
-                        <Button
-                          className="leading-4 flex gap-2 items-center text-gray-800"
-                          styling="light"
-                          onClick={() => setShowFilter(true)}
-                        >
-                          <Icon icon="filter" />
-                          <Translate>Filters</Translate>
-                        </Button>
-                        <Button
-                          styling="light"
-                          className="leading-4 flex gap-2 items-center text-gray-800"
-                        >
-                          <Translate>Open PDF</Translate>
-                        </Button>
-                      </div>
-                    )
-                  }
-                />
-              )
-            }
-            defaultSorting={[{ id: '_id', desc: false }]}
-            footer={
-              <PXTableFooter
-                totalPages={10}
-                currentDataLength={10}
-                total={100}
-                searchParams={searchParams}
-              />
-            }
-            groupColumnPosition={3}
+          <ParagraphsTable
+            pxParagraphData={rows || []}
+            viewParagraph={onViewEntity}
+            totalRows={totalRows}
+            openPDFSidepanel={setPdfSidepanel}
           />
         </SettingsContent.Body>
       </SettingsContent>
-      {filters.length > 0 && (
-        <EntityFilterSidePanel
-          availableFilters={filters}
-          show={showFilter}
-          setShow={setShowFilter}
-        />
-      )}
-      <Sidepanel
-        withOverlay
-        isOpen={sidePanel}
-        closeSidepanelFunction={() => {
-          setSidePanel(false);
-        }}
-        title={
-          <span className="text-base font-semibold text-gray-500 leading-6 uppercase">
-            <Translate>Entity</Translate>
-          </span>
-        }
-      >
-        <Sidepanel.Body>
-          {paragraphOnView && <ViewParagraph paragraphData={paragraphOnView} />}
-        </Sidepanel.Body>
-        <Sidepanel.Footer className="px-4 py-3 border-t">
-          <div className="flex gap-2 justify-end">
-            <Button size="small" styling="outline">
-              <Translate>View entity</Translate>
-            </Button>
-          </div>
-        </Sidepanel.Footer>
-      </Sidepanel>
+      <ViewParagraphSidePanel
+        isSidePanelOpen={sidePanel}
+        setIsSidePanelOpen={setSidePanel}
+        paragraphOnView={paragraphOnView}
+      />
+      <PDFSidepanel
+        entity={sourceEntity}
+        setShowSidepanel={setPdfSidepanel}
+        showSidepanel={pdfSidepanel}
+      />
     </div>
   );
 };

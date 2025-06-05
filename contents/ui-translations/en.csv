@@ -2,12 +2,12 @@ Key,English
 % of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,A generated ID will be the default title.
-A target template needs at least,A target template needs at least
+A source template must,A source template must
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,A valid email is required
 Accept,Accept
 Accept suggestion,Accept suggestion
@@ -69,6 +69,9 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
+All editing options will be disabled.,All editing options will be disabled.
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,Can view
 Cancel,Cancel
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -174,6 +178,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,Contact Form
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,Conversion failed
 Copied to clipboard,Copied to clipboard
 Copy From,Copy From
@@ -226,6 +231,7 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,Default language change success
 Default template,Default template
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,Delete
 DELETE,DELETE
@@ -261,7 +267,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Document
 Document and entity types,Document and entity types
 Document contents,Document contents
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,Document Title
 Documentation,Documentation
@@ -310,12 +315,13 @@ Entity,Entity
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Exploration
@@ -324,6 +330,7 @@ Exporting entities to CSV,Exporting entities to CSV
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -399,8 +406,6 @@ Importing data in progress,Importing data in progress
 in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
-In queue,In queue
-incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,Indexing entities may take a few minutes
 Info,Info
 Information extraction training,Information extraction training
@@ -554,7 +559,6 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
-No suggestion,No suggestion
 No Table of Contents,No Table of Contents
 No Table of Contents description,No Table of Contents description
 No text match,No text match
@@ -566,6 +570,8 @@ No Value,No Value
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,Normal view
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Nothing to see here! The selected documents are not using the selected thesaurus
@@ -582,8 +588,16 @@ OCR PDF,OCR PDF
 of,of
 Ok,Ok
 OK,OK
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
+Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
@@ -597,12 +611,13 @@ Others,Others
 out of,out of
 Page,Page
 Pages,Pages
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
 Password,Password
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -633,6 +648,7 @@ Priority sorting,Priority sorting
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,Private instance
+Processed,Processed
 Processing,Processing
 Properties,Properties
 Properties from other templates in the collection using the same label,Properties from other templates in the collection using the same label
@@ -678,7 +694,6 @@ Reject,Reject
 Relationship,Relationship
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,Relationship types
 relationships,relationships
 Relationships,Relationships
@@ -694,7 +709,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,Repeat Password
 Request id #,Request id #
 Request token,Request token
-required criteria,required criteria
 Required property,Required property
 Reset,Reset
 Reset 2FA,Reset 2FA
@@ -742,6 +756,8 @@ Select files on your device,Select files on your device
 Select from computer,Select from computer
 Select relationship type,Select relationship type
 Select target paragraph,Select target paragraph
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,Select...
 Selected,Selected
 selected,selected
@@ -794,8 +810,11 @@ Sort ascending,Sort ascending
 Sort by,Sort by
 Sort descending,Sort descending
 sorted by,sorted by
+Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -809,12 +828,15 @@ Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
 Suggestion,Suggestion
-Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Suggestions
 suggestions,suggestions
+Suggestions have been updated,Suggestions have been updated
+Suggestions sent,Suggestions sent
 Supporting files,Supporting files
 Synced template,Synced template
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,syntax to create page content
@@ -823,21 +845,27 @@ Table,Table
 Table of Contents,Table of Contents
 Table of contents,Table of contents
 Table view,Table view
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Template
 Template conflict,Template conflict
 Template name,Template name
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Templates
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,The import process threw an error:
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,The request could not be processed.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,The template contains errors
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
@@ -870,6 +898,7 @@ This property will be shown using all the width available.,This property will be
 This property will be shown without the label.,This property will be shown without the label.
 this template,this template
 This template has associated entities,This template has associated entities
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,This template will be used as default for new entities.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Threshold
@@ -893,6 +922,7 @@ total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Translate
+Translation,Translation
 Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully

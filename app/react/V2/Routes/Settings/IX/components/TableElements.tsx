@@ -58,8 +58,9 @@ const getIcon = (color: Color) => {
 
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
+const SourceHeader = () => <Translate>Source</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
-const TitleHeader = () => <Translate>Document FOR</Translate>;
+const TitleHeader = () => <Translate>Name</Translate>;
 const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
 );
@@ -171,13 +172,19 @@ const AcceptButton = ({
     return <div className="w-6 h-6 m-auto">{getIcon(color)}</div>;
   }
 
+  const isDisabled =
+    color === 'red' ||
+    !suggestionHasEntity ||
+    cell.row.original.state.obsolete ||
+    cell.row.original.state.error;
+
   return (
     <div className="m-auto">
       <EmbededButton
         icon={getIcon(color)}
         color={color}
-        disabled={color === 'red' || !suggestionHasEntity}
-        onClick={() => action && action([cell.row.original])}
+        disabled={isDisabled}
+        onClick={async () => action && action([cell.row.original])}
       >
         <Translate>Accept</Translate>
       </EmbededButton>
@@ -203,7 +210,7 @@ const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>
   </Link>
 );
 
-const OpenPDFButton = ({
+const OpenSidepanelButton = ({
   cell,
   action,
 }: {
@@ -211,7 +218,6 @@ const OpenPDFButton = ({
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
-
   return (
     <Button
       className="leading-4"
@@ -219,7 +225,7 @@ const OpenPDFButton = ({
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
-      <Translate className="whitespace-nowrap">Open PDF</Translate>
+      <Translate className="whitespace-nowrap">Open</Translate>
     </Button>
   );
 };
@@ -257,6 +263,10 @@ const extractorsTableColumns = [
     cell: PropertyCell,
     meta: { headerClassName: 'w-1/6' },
   }),
+  extractorColumnHelper.accessor('source', {
+    header: SourceHeader,
+    meta: { headerClassName: 'w-1/6' },
+  }),
   extractorColumnHelper.accessor('namedTemplates', {
     header: TemplatesHeader,
     enableSorting: false,
@@ -275,7 +285,7 @@ type Color = 'red' | 'green' | 'orange';
 
 const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
-  acceptSuggestions: (suggestions: TableSuggestion[]) => void,
+  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
 ) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
@@ -315,7 +325,7 @@ const suggestionsTableColumnsBuilder = (
       header: ActionHeader,
       cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) =>
         row.depth === 0 ? (
-          <OpenPDFButton action={openPdfSidepanel} cell={cell} />
+          <OpenSidepanelButton action={openPdfSidepanel} cell={cell} />
         ) : (
           <AcceptButton action={acceptSuggestions} cell={cell} />
         ),

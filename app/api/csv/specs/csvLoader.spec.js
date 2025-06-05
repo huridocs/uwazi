@@ -8,12 +8,12 @@ import entities from 'api/entities';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 import settings from 'api/settings';
+import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import moment from 'moment';
 import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
-import testingDB from 'api/utils/testing_db';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');

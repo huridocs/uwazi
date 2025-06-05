@@ -15,7 +15,7 @@ class LibraryMapComponent extends LibraryRootComponent {
   render() {
     trackPage();
     return (
-      <LibraryLayout className="library-map-layout">
+      <LibraryLayout className="library-map-layout" noindex>
         <LibraryModeToggleButtons mapViewMode />
         <MapView
           storeKey="library"

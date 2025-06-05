@@ -3,15 +3,7 @@ import { connect } from 'react-redux';
 import { useNavigate, NavLink, useLocation } from 'react-router';
 import { omit } from 'lodash';
 
-const defaultProps = {
-  disabled: false,
-  onClick: (_e: any) => {},
-  confirmTitle: '',
-  confirmMessage: '',
-  replaceNavigationHistory: false,
-};
-
-type I18NLinkProps = typeof defaultProps & {
+type I18NLinkProps = {
   to: string;
   disabled: boolean;
   onClick: (_e: any) => void;

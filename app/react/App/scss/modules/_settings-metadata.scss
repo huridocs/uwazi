@@ -1,8 +1,14 @@
+@use "../config/colors";
+@use "../config/materials";
+@use "../config/typography";
+@use "../elements/draggable";
+@use "../elements/tooltip";
+
 .metadataTemplate-sync {
   margin-bottom: 10px;
 
   svg:first-child {
-    color: $c-warning;
+    color: colors.$c-warning;
   }
 }
 
@@ -57,7 +63,7 @@
 }
 
 .metadata {
-  @include draggable;
+  @include draggable.draggable;
 }
 
 .property-atributes {
@@ -70,7 +76,7 @@
   }
   .fa-warning {
     display: none;
-    color: $c-warning;
+    color: colors.$c-warning;
   }
 
   .row {
@@ -84,9 +90,9 @@
     width: 100%;
     position: relative;
     padding: 0;
-    border-radius: $border-radius;
+    border-radius: materials.$border-radius;
     font-weight: normal;
-    color: $c-primary;
+    color: colors.$c-primary;
     &.is-active {
       opacity: 1;
     }
@@ -103,14 +109,14 @@
       margin: 0;
     }
     .fa-info-circle {
-      color: $c-grey;
+      color: colors.$c-grey;
       margin: 0 8px 0 0;
-      font-size: $f-size-lg;
+      font-size: typography.$f-size-lg;
       float: right;
       transition: all 300ms;
     }
     &:hover > .fa-info-circle {
-      color: $c-black;
+      color: colors.$c-black;
     }
   }
 
@@ -127,29 +133,29 @@
 .property-help {
   margin-left: 5px;
   position: relative;
-  color: $c-grey-dark;
+  color: colors.$c-grey-dark;
 }
 .no-margin {
   margin: 0 !important;
 }
 
 .property-description {
-  @include tooltip('top');
+  @include tooltip.tooltip('top');
 }
 .property-description-bottom {
-  @include tooltip('bottom');
+  @include tooltip.tooltip('bottom');
   z-index: 9999;
 }
 .property-description-top-left {
-  @include tooltip('top-left');
+  @include tooltip.tooltip('top-left');
   transform: translate(-175px, -5px);
 }
 
 .property-description-right {
-  @include tooltip('right');
+  @include tooltip.tooltip('right');
 }
 .property-description-left {
-  @include tooltip('left');
+  @include tooltip.tooltip('left');
 }
 .property-description-top-left:after {
   transform: translateX(175px);

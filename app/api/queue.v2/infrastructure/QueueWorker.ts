@@ -4,7 +4,7 @@ import { performance } from 'perf_hooks';
 import { inspect } from 'util';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { UnregisteredJobError } from './errors';
+import { NonRetryableJobError, UnregisteredJobError } from './errors';
 import { Job, QueueAdapter } from './QueueAdapter';
 
 interface WorkerOptions {
@@ -122,23 +122,35 @@ export class QueueWorker {
     return this.adapter.deleteJob(job);
   }
 
+  // eslint-disable-next-line max-statements
   private async processJob(job: Job) {
     const start = performance.now();
     const dispatchable = await this.createDispatchable(job);
-    const heartbeatCallback = async () => this.adapter.renewJobLock(job);
 
     try {
       this.logger.info('Processing job', { job });
-
       const startTime = performance.now();
-      await dispatchable.handleDispatch(heartbeatCallback, job.params);
+      await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
+        namespace: job.namespace,
+        retryCount: job.retryCount,
+        maxRetries: job.options.maxRetries,
+      });
       this.logger.info('Job processed', { job, processingTime: performance.now() - startTime });
       await this.completeJob(job);
     } catch (e) {
-      this.onError(e, { job });
+      await this.catchFailedJob(job, e);
     } finally {
       this.logProcess(start);
     }
+  }
+
+  private async catchFailedJob(job: Job, e: any) {
+    let jobToReport = job;
+    if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
+      jobToReport = await this.adapter.markJobAsFailed(job);
+    }
+    jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
+    this.onError(e, { job: jobToReport });
   }
 
   async start() {

@@ -1,7 +1,10 @@
 import path from 'path';
 
-import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
-import { createError } from 'api/utils';
+import {
+  generateFileName,
+  fileFromReadStream,
+  getMimetypeFromOriginalName,
+} from 'api/files/filesystem';
 import zipFile from 'api/utils/zipFile';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
@@ -12,7 +15,7 @@ const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
 
   if (!readStream) {
-    throw createError(`${fileName} file not found`);
+    throw new Error(`CSV import,  ${fileName} file not found on the zip file`);
   }
 
   return readStream;
@@ -37,8 +40,9 @@ class ImportFile {
     return createReadStream(this.filePath);
   }
 
-  async extractFile(fileName: string) {
-    const generatedName = generateFileName({ originalname: fileName });
+  async extractFile(fileName: string, existingGeneratedName?: string) {
+    const generatedName = existingGeneratedName || generateFileName({ originalname: fileName });
+    const mimetype = getMimetypeFromOriginalName(fileName) || 'application/octet-stream';
 
     await fileFromReadStream(generatedName, await this.readStream(fileName), '/tmp');
 
@@ -47,6 +51,7 @@ class ImportFile {
       path: `/tmp/${generatedName}`,
       originalname: fileName,
       filename: generatedName,
+      mimetype,
     };
   }
 }

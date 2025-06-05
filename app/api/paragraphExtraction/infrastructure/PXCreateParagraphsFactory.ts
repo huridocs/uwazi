@@ -2,15 +2,23 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
-import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXCreateParagraphsFactory {
   static createDefault() {
-    const db = getConnection();
-    const transactionManager = DefaultTransactionManager();
-    const extractorsDS = new MongoPXExtractorsDataSource(db, transactionManager);
-    const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transactionManager);
+    const connection = getConnection();
+    const mongoTransactionManager = DefaultTransactionManager();
+
+    const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
+
+    const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+      connection,
+      mongoTransactionManager,
+    });
 
     return new PXCreateParagraphs({
       extractorsDS,

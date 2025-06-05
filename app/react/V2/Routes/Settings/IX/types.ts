@@ -1,4 +1,4 @@
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TextHighlight } from 'V2/Components/PDFViewer/types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
@@ -7,11 +7,12 @@ interface IXProperty extends PropertySchema {
   type: 'text' | 'date' | 'numeric' | 'markdown';
 }
 
-type Extractor = IXExtractorInfo & {
+type TableExtractor = ClientIXExtractorType & {
   rowId: string;
   namedTemplates: string[];
   propertyLabel: string;
   propertyType: IXProperty['type'];
+  source: string;
 };
 
 type Highlights = { [page: string]: TextHighlight[] };
@@ -25,6 +26,7 @@ interface SingleValueSuggestion extends EntitySuggestionType {
   suggestedValue: SuggestionValue;
   currentValue?: SuggestionValue;
   isChild?: boolean;
+  extractorSource: { pdf?: boolean; property?: string };
 }
 
 interface MultiValueSuggestion extends EntitySuggestionType {
@@ -35,14 +37,12 @@ interface MultiValueSuggestion extends EntitySuggestionType {
   currentValue: SuggestionValue[];
   subRows: SingleValueSuggestion[];
   isChild?: boolean;
+  extractorSource: { pdf?: boolean; property?: string };
 }
 
 type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
 
-type TableExtractor = Extractor & { rowId: string };
-
 export type {
-  Extractor,
   TableExtractor,
   Highlights,
   TableSuggestion,

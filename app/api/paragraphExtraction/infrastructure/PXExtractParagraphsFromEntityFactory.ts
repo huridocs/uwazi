@@ -7,25 +7,31 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 
-import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
-import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';
+import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';
 
 export class PXExtractParagraphsFromEntityFactory {
   static createDefault(tenantName: string): PXExtractParagraphsFromEntity {
-    const db = getConnection();
-    const transactionManager = DefaultTransactionManager();
+    const connection = getConnection();
+    const mongoTransactionManager = DefaultTransactionManager();
 
     const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
-      entityDS: DefaultEntitiesDataSource(transactionManager),
-      entitiesStatusDS: new MongoPXEntitiesStatusDataSource(db, transactionManager),
+      entityDS: DefaultEntitiesDataSource(mongoTransactionManager),
+      entitiesStatusDS: PXEntitiesStatusDataSourceFactory.createDefault({
+        connection,
+        mongoTransactionManager,
+      }),
       extractionService: PXExtractionServiceFactory.createDefault(),
-      extractorsDS: new MongoPXExtractorsDataSource(db, transactionManager),
-      filesDS: DefaultFilesDataSource(transactionManager),
+      extractorsDS: PXExtractorsDataSourceFactory.createDefault({
+        connection,
+        mongoTransactionManager,
+      }),
+      filesDS: DefaultFilesDataSource(mongoTransactionManager),
       fileStorage: FileStorageStrategyFactory.createDefault(),
       idGenerator: MongoIdHandler,
-      settingsDS: DefaultSettingsDataSource(transactionManager),
+      settingsDS: DefaultSettingsDataSource(mongoTransactionManager),
       logger: DefaultLogger(),
       tenantName,
     });

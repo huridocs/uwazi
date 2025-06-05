@@ -1,30 +1,39 @@
-import {
-  AbstractController,
-  Dependencies as AbstractControllerDependencies,
-} from 'api/common.v2/infrastructure/AbstractController';
-
-import { InputSchema, PXCreateExtractor } from '../application/PXCreateExtractor';
+import { z } from 'zod';
+import { AbstractController, Dependencies } from 'api/common.v2/infrastructure/AbstractController';
 import { PXCreateExtractorFactory } from '../infrastructure/PXCreateExtractorFactory';
 
-type Response = {
+const RequestSchema = z.object({
+  targetTemplateId: z.string({ message: 'You should provide a target template' }),
+  sourceTemplateId: z.string({ message: 'You should provide a source template' }),
+  paragraphPropertyId: z.string(),
+  paragraphNumberPropertyId: z.string(),
+  sourceRelationshipTypeId: z.string(),
+  targetRelationshipTypeId: z.string(),
+});
+
+type RequestBodySchema = z.infer<typeof RequestSchema>;
+
+interface ResponseBody {
   extractorId: string;
-};
+}
 
-type Dependencies = AbstractControllerDependencies;
-class PXCreateExtractorController extends AbstractController {
-  private useCase: PXCreateExtractor;
+type ControllerDependencies = Dependencies<RequestBodySchema>;
 
-  constructor(dependencies: Dependencies) {
+class PXCreateExtractorController extends AbstractController<RequestBodySchema> {
+  constructor(dependencies: ControllerDependencies) {
     super(dependencies);
-    this.useCase = PXCreateExtractorFactory.createDefault();
   }
 
   protected async handle(): Promise<void> {
-    const dto = InputSchema.parse(this.request.body);
+    const dto: RequestBodySchema = RequestSchema.parse(this.request.body);
 
-    const output = await this.useCase.execute(dto);
+    const useCase = await PXCreateExtractorFactory.createDefault({
+      tenantName: this.tenantName,
+    });
 
-    const response: Response = {
+    const output = await useCase.execute(dto);
+
+    const response: ResponseBody = {
       extractorId: output.id,
     };
 

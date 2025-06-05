@@ -33,7 +33,12 @@ const testingEnvironment = {
     if (!jest.isMockFunction(appContext.get)) {
       const originalAppContextGet = appContext.get.bind(appContext);
       appContextGetMock = jest.spyOn(appContext, 'get').mockImplementation((key: string) => {
-        if (key === 'mongoSession' || key === 'fileOperations' || key === 'reindexOperations') {
+        if (
+          key === 'mongoSession' ||
+          key === 'fileOperations' ||
+          key === 'reindexOperations' ||
+          key === 'transactionManager'
+        ) {
           return undefined;
         }
         return originalAppContextGet(key);
@@ -89,6 +94,10 @@ const testingEnvironment = {
   db: {
     async getAllFrom(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName).find().toArray();
+    },
+
+    getCollection(collectionName: string) {
+      return testingDB.mongodb?.collection(collectionName);
     },
   },
 };

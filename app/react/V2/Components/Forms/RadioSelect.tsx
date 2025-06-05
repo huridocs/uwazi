@@ -54,4 +54,5 @@ const RadioSelect = ({
   </fieldset>
 );
 
+export type { RadioProps };
 export { RadioSelect };

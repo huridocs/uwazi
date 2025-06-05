@@ -8,17 +8,13 @@ interface CheckboxProps {
   name: string;
   onChange?: ReactEventHandler<HTMLInputElement>;
   checked?: boolean;
-  defaultChecked?: boolean;
   label: string | React.ReactNode;
   className?: string;
   disabled?: boolean;
 }
 
 const Checkbox = React.forwardRef(
-  (
-    { name, onChange, className, disabled, checked, label, defaultChecked }: CheckboxProps,
-    ref: Ref<any>
-  ) => (
+  ({ name, onChange, className, disabled, checked, label }: CheckboxProps, ref: Ref<any>) => (
     <fieldset className={`flex flex-wrap gap-4 ${className}`} id={`radio_${name}`}>
       <div className="flex items-center w-full gap-2 mr-4">
         <FlowbiteCheckbox
@@ -26,7 +22,6 @@ const Checkbox = React.forwardRef(
           id={name}
           name={name}
           disabled={disabled || false}
-          defaultChecked={defaultChecked || false}
           onChange={onChange}
           ref={ref}
         />

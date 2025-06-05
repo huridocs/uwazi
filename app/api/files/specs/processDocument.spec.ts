@@ -12,6 +12,7 @@ import { processDocument } from '../processDocument';
 
 describe('processDocument', () => {
   beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     await testingEnvironment.setUp({});
     await setupTestUploadedPaths();
     await writeFile(attachmentsPath('test.docx'), 'data');

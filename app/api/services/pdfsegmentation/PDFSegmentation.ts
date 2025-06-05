@@ -87,6 +87,7 @@ class PDFSegmentation {
       {
         type: 'document',
         filename: { $exists: true },
+        status: 'ready',
         _id: { $nin: segmentedFiles },
       },
       'filename',

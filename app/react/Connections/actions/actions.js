@@ -2,7 +2,7 @@ import qs from 'qs';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/utils/api';
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t } from 'app/I18N';
 

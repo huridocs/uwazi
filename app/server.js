@@ -11,7 +11,6 @@ import mongoose from 'mongoose';
 import path from 'path';
 
 import * as Sentry from '@sentry/node';
-import * as Tracing from '@sentry/tracing';
 
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -34,7 +33,7 @@ import { handleError } from './api/utils/handleError.js';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
-import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import { initSentry } from './initSentry';
 
 mongoose.Promise = Promise;
 
@@ -52,33 +51,35 @@ const metricsMiddleware = promBundle({
 });
 
 app.use(metricsMiddleware);
-if (config.sentry.dsn) {
-  Sentry.init({
-    release: config.VERSION,
-    dsn: config.sentry.dsn,
-    environment: config.ENVIRONMENT,
-    integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Tracing.Integrations.Express({ app }),
-      new Tracing.Integrations.Mongo({
-        useMongoose: true,
-      }),
-    ],
-    tracesSampleRate: config.sentry.tracesSampleRate,
-  });
-  app.use(Sentry.Handlers.requestHandler());
-  app.use(Sentry.Handlers.tracingHandler());
-}
-
+initSentry();
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 const http = Server(app);
 
+const gracefullShutdown = () => {
+  process.stdout.write('SIGINT signal received.\r\n');
+  http.close(error => {
+    process.stdout.write('Gracefully closing express connections\r\n');
+    if (error) {
+      process.stderr.write(error.toString());
+      process.exit(1);
+    }
+
+    DB.disconnect().then(() => {
+      process.stdout.write('Disconnected from database\r\n');
+
+      process.stdout.write('Server closed succesfully\r\n');
+      process.exit(0);
+    });
+  });
+  closeSockets();
+};
+
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
   Sentry.close(2000).then(() => {
-    process.exit(1);
+    gracefullShutdown();
   });
 };
 
@@ -102,18 +103,9 @@ app.use(appContextMiddleware);
 // this middleware should go just before any other that accesses to db
 app.use(multitenantMiddleware);
 app.use(requestIdMiddleware);
-let dbAuth = {};
-
-if (process.env.DBUSER) {
-  dbAuth = {
-    auth: { authSource: 'admin' },
-    user: process.env.DBUSER,
-    pass: process.env.DBPASS,
-  };
-}
 
 console.info('==> Connecting to', config.DBHOST);
-DB.connect(config.DBHOST, dbAuth).then(async () => {
+DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await tenants.setupTenants();
   authRoutes(app);
   versionRoutes(app);
@@ -142,6 +134,8 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         process.exit(1);
       }
     });
+    // eslint-disable-next-line global-require
+    require('./queueWorker');
   }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
@@ -150,7 +144,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      await startLegacyServicesNoMultiTenant();
     });
 
     console.info(
@@ -166,22 +159,5 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     }
   });
 
-  process.on('SIGINT', () => {
-    process.stdout.write('SIGINT signal received.\r\n');
-    http.close(error => {
-      process.stdout.write('Gracefully closing express connections\r\n');
-      if (error) {
-        process.stderr.write(error.toString());
-        process.exit(1);
-      }
-
-      DB.disconnect().then(() => {
-        process.stdout.write('Disconnected from database\r\n');
-
-        process.stdout.write('Server closed succesfully\r\n');
-        process.exit(0);
-      });
-    });
-    closeSockets();
-  });
+  process.on('SIGINT', gracefullShutdown);
 });

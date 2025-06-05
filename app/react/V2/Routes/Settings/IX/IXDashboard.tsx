@@ -10,47 +10,62 @@ import { ClientTemplateSchema } from 'app/istore';
 import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
-import { IXExtractorInfo } from 'V2/shared/types';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { ExtractorModal } from './components/ExtractorModal';
 import { extractorsTableColumns } from './components/TableElements';
 import { List } from './components/List';
 import { TableExtractor } from './types';
 
 const formatExtractors = (
-  extractors: IXExtractorInfo[],
+  extractors: ClientIXExtractorType[],
   templates: ClientTemplateSchema[]
 ): TableExtractor[] =>
   extractors.map(extractor => {
     let propertyType: TableExtractor['propertyType'] = 'text';
     let propertyLabel = '';
+    let sourceLabel: string | undefined =
+      extractor.source.property === 'title' ? t('System', 'Title', 'Title', false) : undefined;
 
-    const namedTemplates = extractor.templates.map(extractorTemplate => {
-      const templateName =
-        templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate;
-      return templateName;
-    });
+    const namedTemplates = extractor.templates.map(
+      extractorTemplate =>
+        templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate
+    );
 
-    templates.forEach(template => {
+    templates.some(template => {
       const property = template.properties.find(
         templateProperty => templateProperty.name === extractor.property
       );
 
-      if (!property && !propertyLabel) {
-        propertyLabel = t(template._id, 'Title', null, false);
+      if (!sourceLabel) {
+        sourceLabel =
+          template.properties.find(
+            templateProperty => templateProperty.name === extractor.source.property
+          )?.label || '';
       }
 
       if (property) {
         propertyType = property.type as TableExtractor['propertyType'];
         propertyLabel = t(template._id, property.label, null, false);
+        return true;
       }
+
+      propertyLabel = t(template._id, 'Title', null, false);
+      return false;
     });
 
-    return { ...extractor, rowId: extractor._id, namedTemplates, propertyType, propertyLabel };
+    return {
+      ...extractor,
+      rowId: extractor._id!,
+      namedTemplates,
+      propertyType,
+      propertyLabel,
+      source: sourceLabel || t('System', 'PDF', 'PDF', false),
+    };
   });
 
 const IXDashboard = () => {
   const { extractors, templates } = useLoaderData() as {
-    extractors: IXExtractorInfo[];
+    extractors: ClientIXExtractorType[];
     templates: ClientTemplateSchema[];
   };
   const [isSaving, setIsSaving] = useState(false);
@@ -87,7 +102,7 @@ const IXDashboard = () => {
     }
   };
 
-  const handleSave = async (extractor: IXExtractorInfo) => {
+  const handleSave = async (extractor: ClientIXExtractorType) => {
     setIsSaving(true);
 
     try {

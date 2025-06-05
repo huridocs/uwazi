@@ -5,12 +5,6 @@ import { useLocation } from 'react-router';
 import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
 import { isClient } from 'app/utils';
 
-declare global {
-  interface Window {
-    _paq?: [string[]];
-  }
-}
-
 const buildScript = ({
   globalUrl,
   globalId,

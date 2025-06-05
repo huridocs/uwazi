@@ -1,35 +1,27 @@
-import { PXEntityStatusModel } from './PXEntityStatusModel';
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { PXEntityStatusModel, EntityStatus } from './PXEntityStatusModel';
 
 type CreateInput = {
   extractorId: string;
   entitySharedId: string;
+  status: EntityStatus;
 };
 
-type GetExistingInput = CreateInput;
+type GetExistingInput = Partial<CreateInput>;
 
-type EnqueueInput = GetExistingInput;
-
-type InitProcessInput = GetExistingInput;
-
-type UpdateParagraphsCountInput = {
-  id: string;
-  count: number;
-};
+type GetAllInput = Partial<PXEntityStatusModel>;
 
 export interface PXEntitiesStatusDataSource {
-  getById(extractionId: string): Promise<PXEntityStatusModel | undefined>;
-  initProcess(extractionId: string): Promise<PXEntityStatusModel>;
-  incrementSuccess(extractionId: string): Promise<PXEntityStatusModel>;
-  incrementFail(extractionId: string): Promise<PXEntityStatusModel>;
-  create(input: CreateInput): Promise<PXEntityStatusModel>;
-  setAsError(extractionId: string): Promise<PXEntityStatusModel>;
-  updateParagraphsCount(input: UpdateParagraphsCountInput): Promise<PXEntityStatusModel>;
+  getById(entityStatusId: string): Promise<PXEntityStatusModel | undefined>;
+  createWithStatus(input: CreateInput): Promise<PXEntityStatusModel>;
+  getExisting(input: GetExistingInput): Promise<PXEntityStatusModel | undefined>;
+  markAsError(entityStatusId: string): Promise<void>;
+  markAsObsolete(entityStatusId: string): Promise<void>;
+  markAsProcessed(entityStatusId: string): Promise<void>;
+  markAsProcessing(entityStatusId: string): Promise<void>;
+  delete(entityStatusId: string): Promise<void>;
+  deleteBySourceEntity(entitySharedId: string): Promise<void>;
+  getAll(input: GetAllInput): ResultSet<PXEntityStatusModel>;
 }
 
-export type {
-  GetExistingInput,
-  CreateInput,
-  EnqueueInput,
-  InitProcessInput,
-  UpdateParagraphsCountInput,
-};
+export type { GetExistingInput, GetAllInput, CreateInput };

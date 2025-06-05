@@ -56,7 +56,6 @@ export const thesaurusSchema = {
       type: 'string',
       minLength: 1,
     },
-    enable_classification: { type: 'boolean' },
     values: {
       type: 'array',
       items: thesaurusValueSchema,

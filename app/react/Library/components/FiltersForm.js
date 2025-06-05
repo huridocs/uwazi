@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
-import debounce from 'app/utils/debounce';
+import { debounce } from 'app/utils';
 import libraryHelper, { prepareDefaultFilters } from 'app/Library/helpers/libraryFilters';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { Translate } from 'app/I18N';

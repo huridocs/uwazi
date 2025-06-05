@@ -1,0 +1,539 @@
+/* eslint-disable max-lines */
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable max-statements */
+import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
+import loadable from '@loadable/component';
+import { InputField, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
+import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
+import { Button, Sidepanel } from 'V2/Components/UI';
+import { lookup } from 'V2/api/search';
+import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
+import { secondsToISODate } from 'V2/shared/dateHelpers';
+import { Translate } from 'app/I18N';
+import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { useAtomValue, useSetAtom } from 'jotai';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useLoaderData } from 'react-router';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { preloadOptionsLimit } from 'shared/config';
+import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { FileType } from 'shared/types/fileType';
+import { Highlights, TableSuggestion } from '../types';
+import {
+  coerceValue,
+  getFormValue,
+  handleEntitySave,
+  loadSidepanelData,
+  loadValuesAndSuggestions,
+  SELECT_TYPES,
+} from './sidepanelFunctions';
+
+//This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
+const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
+
+interface SuggestionSidepanelProps {
+  showSidepanel: boolean;
+  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
+  suggestion?: TableSuggestion;
+  onEntitySave: (entity: ClientEntitySchema) => any;
+  property?: ClientPropertySchema;
+}
+
+enum HighlightColors {
+  CURRENT = '#B1F7A3',
+  NEW = '#F27DA5',
+}
+
+const SuggestionSidepanel = ({
+  showSidepanel,
+  setShowSidepanel,
+  suggestion,
+  onEntitySave,
+  property,
+}: SuggestionSidepanelProps) => {
+  const [pdf, setPdf] = useState<FileType | undefined>();
+  const [selectedText, setSelectedText] = useState<TextSelection>();
+  const [selectionError, setSelectionError] = useState<string>();
+  const [highlights, setHighlights] = useState<Highlights>();
+  const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
+  const [labelInputIsOpen, setLabelInputIsOpen] = useState(true);
+  const [entity, setEntity] = useState<ClientEntitySchema>();
+  const [thesaurus, setThesaurus] = useState<any>();
+  const setNotifications = useSetAtom(notificationAtom);
+  const thesauris = useAtomValue(thesauriAtom);
+  const templateId = suggestion?.entityTemplateId;
+  const [initialValue, setInitialValue] = useState<PropertyValueSchema | PropertyValueSchema[]>();
+  const [selectAndSearch, setSelectAndSearch] = useState(false);
+  const [selectAndSearchValue, setSelectAndSearchValue] = useState<string | undefined>();
+  const [options, setOptions] = useState<MultiselectListOption[]>([]);
+  const [currentValueOptions, setCurrentValueOptions] = useState<MultiselectListOption[]>([]);
+  const pdfScalingValue = useAtomValue(pdfScaleAtom);
+  const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
+
+  useEffect(() => {
+    if (suggestion) {
+      setInitialValue(getFormValue(suggestion, entity, property?.type));
+    }
+  }, [suggestion, entity, property]);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    reset,
+    control,
+    watch,
+    formState: { errors, isDirty, isSubmitting },
+  } = useForm({
+    values: {
+      field: initialValue,
+    },
+  });
+
+  const watchField = watch('field');
+
+  useEffect(() => {
+    if (
+      property?.type !== 'select' &&
+      property?.type !== 'multiselect' &&
+      property?.type !== 'relationship'
+    ) {
+      return;
+    }
+
+    const currentValues = (getValues('field') as string[]) || [];
+    const suggestions = (suggestion?.suggestedValue as string[]) || [];
+
+    const renderLabel = (value: any) => {
+      const matchingStyles = 'bg-success-50 text-success-800';
+      const nonMatchingStyles = 'bg-orange-50 text-orange-800';
+
+      const isSelected = currentValues.includes(value.id);
+      const isSuggested = suggestions.includes(value.id);
+      let styles = '';
+
+      if (isSelected && isSuggested) {
+        styles = matchingStyles;
+      }
+
+      if (!isSelected && isSuggested) {
+        styles = nonMatchingStyles;
+      }
+      return (
+        <Translate className={styles} context={property?.content}>
+          {value.label}
+        </Translate>
+      );
+    };
+
+    const _options: MultiselectListOption[] = [];
+    thesaurus?.values.forEach((value: any) => {
+      _options.push({
+        label: renderLabel(value),
+        searchLabel: value.label.toLowerCase(),
+        value: value.id,
+        suggested: (suggestion?.suggestedValue as string[])?.includes(value.id),
+        items: value.values?.map((subValue: any) => ({
+          label: renderLabel(subValue),
+          searchLabel: subValue.label.toLowerCase(),
+          value: subValue.id,
+          suggested: (suggestion?.suggestedValue as string[])?.includes(subValue.id),
+        })),
+      });
+    });
+    setOptions(_options);
+  }, [getValues, property, suggestion, thesaurus, watchField]);
+
+  useEffect(() => {
+    if (property?.content) {
+      const _thesaurus = thesauris.find(thes => thes._id === property.content);
+      setThesaurus(_thesaurus);
+    }
+
+    if (!property?.content && property) {
+      const limit = preloadOptionsLimit();
+      const thesaurusOfTypeTemplate = thesauris.filter(thes => thes.type === 'template');
+      const limitPerThesaurus = limit / thesaurusOfTypeTemplate.length;
+
+      const combinedTheasaurus = thesaurusOfTypeTemplate.reduce(
+        (acc: ClientThesaurusValue[], thes) => {
+          const values = thes.values.slice(0, limitPerThesaurus);
+          return acc.concat(values);
+        },
+        []
+      );
+      const _thesaurus = { values: combinedTheasaurus };
+      setThesaurus(_thesaurus);
+    }
+
+    return () => {
+      setThesaurus(undefined);
+    };
+  }, [property, thesauris]);
+
+  useEffect(() => {
+    if (suggestion) {
+      loadSidepanelData(suggestion)
+        .then(({ file, entity: suggestionEntity }) => {
+          setPdf(file || undefined);
+          setEntity(suggestionEntity);
+        })
+        .catch(e => {
+          throw e;
+        });
+
+      if (property?.type === 'relationship') {
+        loadValuesAndSuggestions(
+          suggestion.currentValue as string[],
+          suggestion.suggestedValue as string[],
+          suggestion.language
+        )
+          .then(entities => {
+            const preloadedOptions = entities.map(_entity => ({
+              label: _entity.title as string,
+              value: _entity.sharedId as string,
+              searchLabel: _entity.title as string,
+            }));
+
+            setCurrentValueOptions(preloadedOptions);
+          })
+          .catch(e => {
+            throw e;
+          });
+      }
+    }
+  }, [property, suggestion]);
+
+  useEffect(() => {
+    if (pdf?.extractedMetadata && suggestion && showSidepanel) {
+      setSelectedText(undefined);
+      setHighlights(
+        selectionHandlers.getHighlightsFromFile(
+          pdf.extractedMetadata,
+          suggestion.propertyName,
+          HighlightColors.CURRENT
+        )
+      );
+    }
+  }, [pdf, setValue, showSidepanel, suggestion]);
+
+  const handleClose = () => {
+    setSelectedText(undefined);
+    setSelectionError(undefined);
+    setHighlights(undefined);
+    setSelections(undefined);
+    setValue('field', undefined, { shouldDirty: false });
+    setPdf(undefined);
+    setEntity(undefined);
+    setCurrentValueOptions([]);
+    setSelectAndSearchValue('');
+    setSelectAndSearch(false);
+    reset();
+    setShowSidepanel(false);
+  };
+
+  const createOnSubmit =
+    (sourceType: 'pdf' | 'entity_property') =>
+    async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
+      if (!property) {
+        throw new Error('Property not found');
+      }
+
+      let metadata = value.field;
+
+      if (property.type === 'date' && isDirty && metadata) {
+        metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
+      }
+
+      const entityToSave = { ...entity };
+
+      if (sourceType === 'pdf') {
+        entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
+      }
+
+      const savedEntity = await handleEntitySave(entityToSave, property.name, metadata, isDirty);
+
+      if (savedEntity instanceof FetchResponseError) {
+        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+
+        setNotifications({ type: 'error', text: 'An error occurred', details });
+      } else if (savedEntity) {
+        if (savedEntity) {
+          setEntity(savedEntity);
+          onEntitySave(savedEntity);
+        }
+
+        setNotifications({ type: 'success', text: 'Saved successfully.' });
+      }
+
+      handleClose();
+    };
+
+  const handleClickToFill = async () => {
+    if (!property) {
+      throw new Error('Property not found');
+    }
+
+    if (selectedText) {
+      if (selectedText.selectionRectangles) {
+        const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
+          selectedText,
+          pdfScalingValue,
+          true
+        );
+
+        setHighlights(
+          selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
+        );
+        setSelections(
+          selectionHandlers.updateFileSelection(
+            { name: suggestion?.propertyName || '', id: property._id as string },
+            pdf?.extractedMetadata,
+            normalizedSelections
+          )
+        );
+      }
+
+      if (property.type === 'date' || property.type === 'numeric') {
+        const coercedValue = await coerceValue(property.type, selectedText.text, pdf?.language);
+
+        if (!coercedValue?.success) {
+          setSelectionError('Value cannot be transformed to the correct type');
+        }
+
+        if (coercedValue?.success) {
+          setValue('field', secondsToISODate(coercedValue.value), { shouldDirty: true });
+          setSelectionError(undefined);
+        }
+      } else {
+        setValue('field', selectedText.text, { shouldDirty: true });
+      }
+    }
+  };
+
+  const renderInputText = (type: 'text' | 'date' | 'numeric') => {
+    if (!property) {
+      return null;
+    }
+    const inputType = type === 'numeric' ? 'number' : type;
+    return (
+      <div className={`relative flex gap-2 px-4 pb-4 grow  ${labelInputIsOpen ? '' : 'hidden'}`}>
+        <div className="grow">
+          <InputField
+            clearFieldAction={() => {
+              setValue('field', '');
+            }}
+            id={property.label}
+            label={<Translate context={templateId}>{property.label}</Translate>}
+            hideLabel
+            type={inputType}
+            hasErrors={errors.field?.type === 'required' || !!selectionError}
+            {...register('field', {
+              required: property.required,
+              valueAsDate: property.type === 'date' || undefined,
+            })}
+          />
+        </div>
+        <div>
+          <Button
+            type="button"
+            styling="outline"
+            onClick={async () => handleClickToFill()}
+            disabled={isSubmitting}
+          >
+            <Translate className="">Click to fill</Translate>
+          </Button>
+        </div>
+        <div className="sm:text-right" data-testid="ix-clear-button-container">
+          <Button
+            type="button"
+            styling="outline"
+            disabled={Boolean(!highlights) || isSubmitting}
+            onClick={() => {
+              setHighlights(undefined);
+              setSelections(
+                selectionHandlers.deleteFileSelection(
+                  { name: suggestion?.propertyName || '' },
+                  pdf?.extractedMetadata
+                )
+              );
+            }}
+          >
+            <Translate>Clear</Translate>
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const initialOptions = useMemo(
+    () =>
+      [...options, ...currentValueOptions].reduce((acc, option) => {
+        if (!acc.find(_option => _option.value === option.value)) {
+          acc.push(option);
+        }
+
+        return acc;
+      }, [] as MultiselectListOption[]),
+    [currentValueOptions, options]
+  );
+
+  const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
+    if (!searchTerm) {
+      return initialOptions;
+    }
+
+    const response = await lookup(
+      searchTerm || '',
+      property?.content ? [property.content] : undefined
+    );
+
+    const newItems = response.options.map((option: any) => ({
+      label: option.label,
+      value: option.value,
+      searchLabel: option.label,
+    }));
+
+    return newItems;
+  };
+
+  const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => (
+    <div className={`px-4 pb-4 overflow-y-scroll ${labelInputIsOpen ? '' : 'hidden'}`}>
+      <Controller
+        control={control}
+        name="field"
+        rules={{ required: property?.required }}
+        render={({ field: { onChange, value } }) => (
+          <MultiselectList
+            onChange={onChange}
+            selectedValues={value as string[]}
+            items={initialOptions}
+            checkboxes
+            singleSelect={type === 'select'}
+            search={selectAndSearchValue}
+            suggestions
+            onSearch={type === 'relationship' ? _lookup : undefined}
+          />
+        )}
+      />
+    </div>
+  );
+
+  const renderForm = () => {
+    switch (property?.type) {
+      case 'text':
+      case 'date':
+      case 'numeric':
+        return renderInputText(property?.type);
+      case 'select':
+      case 'multiselect':
+      case 'relationship':
+        return renderSelect(property?.type);
+      default:
+        return '';
+    }
+  };
+
+  const sourceType = suggestion?.extractorSource.pdf ? 'pdf' : 'entity_property';
+
+  return (
+    <Sidepanel
+      isOpen={showSidepanel}
+      withOverlay
+      size="large"
+      title={entity?.title}
+      closeSidepanelFunction={handleClose}
+    >
+      <div className="flex-grow overflow-y-scroll">
+        <form
+          id="ixpdfform"
+          className="flex flex-col h-full gap-4 p-0"
+          onSubmit={handleSubmit(createOnSubmit(sourceType))}
+        >
+          <div className="grow">
+            {suggestion?.extractorSource.pdf && pdf && (
+              <PDF
+                fileUrl={`/api/files/${pdf.filename}`}
+                highlights={highlights}
+                onSelect={selection => {
+                  if (!selection.selectionRectangles.length) {
+                    setSelectionError('Could not detect the area for the selected text');
+                    setSelectedText(undefined);
+                  } else {
+                    setSelectionError(undefined);
+                    setSelectedText(selection);
+                  }
+                }}
+                onDeselect={() => {
+                  setSelectionError(undefined);
+                  setSelectedText(undefined);
+                }}
+                scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
+              />
+            )}
+            {suggestion?.extractorSource.property && (
+              <Sidepanel.Body>
+                <TextProperty
+                  propertyName={suggestion.extractorSource.property}
+                  entity={entity}
+                  template={templates.find(template => template._id.toString() === templateId)}
+                  onSelect={selection => {
+                    setSelectedText(selection);
+                  }}
+                  onDeselect={() => {
+                    setSelectedText(undefined);
+                  }}
+                />
+              </Sidepanel.Body>
+            )}
+          </div>
+        </form>
+      </div>
+      <Sidepanel.Footer
+        className={`max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+      >
+        <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+          <div className="sticky top-0 flex px-4 py-2 bg-gray-50">
+            <p className={selectionError ? 'text-pink-600 grow  flex gap-4' : 'grow flex gap-4'}>
+              <Translate
+                className="font-semibold leading-6 text-gray-500 uppercase "
+                context={templateId}
+              >
+                {property?.label}
+              </Translate>{' '}
+              {SELECT_TYPES.includes(property?.type || '') && (
+                <button
+                  type="button"
+                  onClick={() => setSelectAndSearchValue(selectedText?.text)}
+                  className={`${selectAndSearch ? 'bg-primary-50 border-primary-800' : 'bg-white border-gray-200'} border flex items-center gap-1 px-2 py-0 text-xs font-medium text-gray-900 rounded-md hover:border-primary-800 hover:bg-primary-50`}
+                >
+                  <PlusCircleIcon className="w-3" />
+                  <Translate>Select & Search</Translate>
+                </button>
+              )}
+              {selectionError && <span>{selectionError}</span>}
+            </p>
+            <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
+              {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
+            </span>
+          </div>
+          {renderForm()}
+          <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+            <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
+              <Translate>Accept</Translate>
+            </Button>
+          </div>
+        </div>
+      </Sidepanel.Footer>
+    </Sidepanel>
+  );
+};
+
+export { SuggestionSidepanel };

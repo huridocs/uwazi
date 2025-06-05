@@ -4,10 +4,12 @@ import { QueueAdapter } from '../infrastructure/QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
+  maxRetries?: number;
 }
 
 const optionsDefaults: Required<QueueOptions> = {
   lockWindow: 1000 * 60 * 10,
+  maxRetries: 5,
 };
 
 export class NamespacedDispatcher implements JobsDispatcher {
@@ -43,8 +45,10 @@ export class NamespacedDispatcher implements JobsDispatcher {
       name: dispatchable.name,
       params,
       namespace: this.namespace,
+      retryCount: 0,
       options: {
         lockWindow: this.options.lockWindow,
+        maxRetries: this.options.maxRetries,
       },
     });
   }

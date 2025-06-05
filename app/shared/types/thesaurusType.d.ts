@@ -7,7 +7,6 @@ export interface ThesaurusSchema {
   _id?: ObjectIdSchema;
   type?: 'thesauri' | 'template';
   name: string;
-  enable_classification?: boolean;
   values?: ThesaurusValueSchema[];
   [k: string]: unknown | undefined;
 }

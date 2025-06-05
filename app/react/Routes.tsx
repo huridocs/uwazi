@@ -7,7 +7,7 @@ import LibraryRoot from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { LibraryCards } from 'app/Library/LibraryCards';
 import { LibraryTable } from 'app/Library/LibraryTable';
-import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
+import { PreserveSettings, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
@@ -52,10 +52,10 @@ import {
   ParagraphExtractorLoader,
   PXEntityLoader,
   PXParagraphLoader,
-} from 'app/V2/Routes/Settings/ParagraphExtraction/PXLoaders';
-import { ParagraphExtractorDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
-import { PXEntityDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXEntities';
-import { PXParagraphDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
+} from 'V2/Routes/Settings/ParagraphExtraction/Loaders';
+import { ParagraphExtractorDashboard } from 'V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
+import { PXEntityDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXEntities';
+import { PXParagraphDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -68,6 +68,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+import { Templates, templatesLoader } from 'app/V2/Routes/Settings/Templates';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -142,9 +143,12 @@ const getRoutesLayout = (
         />
       </Route>
       <Route path="templates">
-        <Route index element={adminsOnlyRoute(<EntityTypesList />)} />
+        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
         <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
         <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
+      </Route>
+      <Route path="templates_v2">
+        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
       </Route>
       <Route path="metadata_extraction">
         <Route
@@ -170,17 +174,29 @@ const getRoutesLayout = (
         <Route
           loader={ParagraphExtractorLoader(headers)}
           index
-          element={adminsOnlyRoute(<ParagraphExtractorDashboard />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <ParagraphExtractorDashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           loader={PXEntityLoader(headers)}
           path=":extractorId/entities"
-          element={adminsOnlyRoute(<PXEntityDashboard />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <PXEntityDashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           loader={PXParagraphLoader(headers)}
-          path=":extractorId/entities/:entityId/paragraphs"
-          element={adminsOnlyRoute(<PXParagraphDashboard />)}
+          path=":extractorId/entities/:sharedId/paragraphs"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <PXParagraphDashboard />
+            </ProtectedRoute>
+          }
         />
       </Route>
       <Route path="relationship-types">
@@ -264,7 +280,11 @@ const getRoutes = (
   const layout = getRoutesLayout(settings, element, headers, defaultToLibrary);
   const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
-    <Route path="/" element={<App customParams={parameters} />}>
+    <Route
+      path="/"
+      element={<App customParams={parameters} />}
+      errorElement={<RouteErrorBoundary />}
+    >
       {layout}
       {languageKeys.map(langKey => languageLayout(langKey, layout))}
       <Route path="*" element={<GeneralError />} />

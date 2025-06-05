@@ -60,7 +60,7 @@ describe('ExternalExtractionService', () => {
       const extractionKey = PXExtractionKey.create({
         tenantName: 'tenantName',
         userId: 'userId',
-        extractionId: 'any_extraction_id',
+        entityStatusId: 'any_extraction_id',
       });
 
       await externalExtractionService.extractParagraphs({
@@ -134,7 +134,7 @@ describe('ExternalExtractionService', () => {
       const extractionId = PXExtractionKey.create({
         tenantName: 'tenantName',
         userId: 'userId',
-        extractionId: 'any_extraction_id',
+        entityStatusId: 'any_extraction_id',
       });
 
       const expectedOutput: GetParagraphsResultOutput = {

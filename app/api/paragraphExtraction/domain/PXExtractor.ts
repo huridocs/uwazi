@@ -4,6 +4,7 @@ import { Entity } from 'api/entities.v2/model/Entity';
 import { Template } from 'api/templates.v2/model/Template';
 import { EntitySchema } from 'shared/types/entityType';
 import { Property } from 'api/templates.v2/model/Property';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 import { PXValidationError, PXErrorCode } from './PXValidationError';
 import { ParagraphOutput } from './PXExtractionService';
@@ -14,10 +15,16 @@ export type PXExtractorProps = {
   targetTemplate: Template;
   paragraphPropertyId: string;
   paragraphNumberPropertyId: string;
+  sourceRelationshipTypeId: string;
+  targetRelationshipTypeId: string;
 };
 
 export class PXExtractor {
   id: string;
+
+  sourceRelationshipTypeId: string;
+
+  targetRelationshipTypeId: string;
 
   targetTemplate: Template;
 
@@ -35,6 +42,8 @@ export class PXExtractor {
     this.paragraphNumberProperty = props.targetTemplate.getPropertyById(
       props.paragraphNumberPropertyId
     )!;
+    this.sourceRelationshipTypeId = props.sourceRelationshipTypeId;
+    this.targetRelationshipTypeId = props.targetRelationshipTypeId;
 
     this.validate();
   }
@@ -47,6 +56,7 @@ export class PXExtractor {
         `Target Template does not have a Property with the id ${this.props.paragraphPropertyId}`
       );
     }
+
     if (!this.paragraphProperty) {
       throw new PXValidationError(
         PXValidationError.codes.PARAGRAPH_PROPERTY_DOES_NOT_EXIST,
@@ -94,9 +104,28 @@ export class PXExtractor {
     const translation = extractedParagraph.translations.find(
       t => t.language === sourceEntity.language
     );
+
     const mainTranslation = extractedParagraph.translations.find(t => t.isMainLanguage)!;
 
-    return translation ?? mainTranslation;
+    if (translation?.text.length) {
+      return translation;
+    }
+
+    return mainTranslation;
+  }
+
+  private static sortByMainLanguage(
+    a: EntitySchema,
+    b: EntitySchema,
+    mainLanguage: LanguageISO6391
+  ) {
+    if (a.language === mainLanguage && b.language !== mainLanguage) {
+      return -1;
+    }
+    if (a.language !== mainLanguage && b.language === mainLanguage) {
+      return 1;
+    }
+    return 0;
   }
 
   canExtract(sourceEntity: Entity) {
@@ -121,6 +150,12 @@ export class PXExtractor {
     sourceEntities: EntitySchema[],
     extractedParagraph: ParagraphOutput
   ): EntitySchema[] {
-    return sourceEntities.map(entity => this.createParagraph(entity, extractedParagraph));
+    const mainLanguage = extractedParagraph.translations.find(t => t.isMainLanguage)!.language;
+
+    const paragraphs = sourceEntities.map(entity =>
+      this.createParagraph(entity, extractedParagraph)
+    );
+
+    return paragraphs.sort((a, b) => PXExtractor.sortByMainLanguage(a, b, mainLanguage));
   }
 }

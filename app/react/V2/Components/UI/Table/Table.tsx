@@ -31,24 +31,20 @@ import { DefaultNoDataMessage } from './DefaultNoDataMessage';
 
 type TableRow<T> = {
   rowId: string;
-  disableRowSelection?: boolean;
-  subRows?: (T & { rowId: string; disableRowSelection?: boolean })[];
+  disableRowSelection?: boolean | string | React.ReactNode;
+  subRows?: T[];
 };
-
 type TableProps<T extends TableRow<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];
-  onChange?: ({
-    rows,
-    selectedRows,
-    sortingState,
-  }: {
+  onChange?: (args: {
     rows: T[];
     selectedRows: RowSelectionState;
     sortingState: SortingState;
   }) => void;
   dnd?: { enable?: boolean; disableEditingGroups?: boolean };
   enableSelections?: boolean;
+  initialSelection?: T[];
   defaultSorting?: SortingState;
   sortingFn?: (sorting: SortingState) => void;
   header?: React.ReactNode;
@@ -71,9 +67,14 @@ const Table = <T extends TableRow<T>>({
   className,
   noDataMessage = <DefaultNoDataMessage />,
   groupColumnPosition = 0,
+  initialSelection = [],
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const initialRowSelection = initialSelection.reduce(
+    (acc, item) => ({ ...acc, [item.rowId]: true }),
+    {}
+  );
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
   const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const { memoizedColumns, groupColumnIndex } = useMemo<{
@@ -112,10 +113,7 @@ const Table = <T extends TableRow<T>>({
         meta: { headerClassName: 'w-0' },
       });
     }
-    return {
-      memoizedColumns: tableColumns,
-      groupColumnIndex: calculatedIndex,
-    };
+    return { memoizedColumns: tableColumns, groupColumnIndex: calculatedIndex };
   }, [columns, data, enableSelections, dnd]);
 
   const table = useReactTable({
@@ -133,15 +131,14 @@ const Table = <T extends TableRow<T>>({
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
-      //There seems to be a problem with react table types when using a function, typing as any fixes the issue
-      enableRowSelection: (row: any) => row.original.disableRowSelection !== true,
+      enableRowSelection: (row: any) => !row.original.disableRowSelection,
       onRowSelectionChange: setRowSelection,
     }),
   });
 
   useEffect(() => {
     setDataState(data);
-    setRowSelection({});
+    setRowSelection(initialRowSelection);
   }, [data]);
 
   useEffect(() => {
@@ -214,7 +211,7 @@ const Table = <T extends TableRow<T>>({
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
-                        className={`flex ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
+                        className={`${headerSorting ? 'flex gap-2 cursor-pointer select-none' : ''}`}
                       >
                         {flexRender(hdr.column.columnDef.header, hdr.getContext())}
                         {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}

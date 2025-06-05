@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 type CreateExtractionIdInput = {
-  extractionId: string;
+  entityStatusId: string;
   tenantName: string;
   userId: string;
 };
 
 const Schema = z.object({
-  extractionId: z.string().min(1),
+  entityStatusId: z.string().min(1),
   tenantName: z.string().min(1),
   userId: z.string().min(1),
 });
@@ -17,7 +17,7 @@ export class PXExtractionKey {
 
   key: string;
 
-  extractionId: string;
+  entityStatusId: string;
 
   tenantName: string;
 
@@ -26,7 +26,7 @@ export class PXExtractionKey {
   constructor(key: string) {
     const { tenantName, extractionId, userId } = PXExtractionKey.decomposeKey(key);
     this.key = key;
-    this.extractionId = extractionId;
+    this.entityStatusId = extractionId;
     this.tenantName = tenantName;
     this.userId = userId;
 
@@ -40,7 +40,7 @@ export class PXExtractionKey {
   }
 
   private static composeKey(input: CreateExtractionIdInput): string {
-    const value = [input.tenantName, input.extractionId, input.userId];
+    const value = [input.tenantName, input.entityStatusId, input.userId];
 
     return value.join(PXExtractionKey.separator);
   }

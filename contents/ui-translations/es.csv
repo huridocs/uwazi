@@ -2,12 +2,12 @@ Key,Spanish
 % of sentences above threshold,% of sentences above threshold
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
-A target template needs at least,A target template needs at least
+A source template must,A source template must
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accept suggestion,Accept suggestion
@@ -69,6 +69,9 @@ Admins,Admins
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
+All editing options will be disabled.,All editing options will be disabled.
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Permitir la omisión de captcha
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,Puede visualizar
 Cancel,Cancelar
 Canceling...,Cancelando
 Cannot delete template:,No se puede eliminar la plantilla:
+Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
@@ -170,6 +174,7 @@ Contact email description,Aquí puedes configurar el correo electrónico de cont
 Contact Form,Formulario de contacto
 Content translations,Traducciones de contenido
 Context,Contexto
+Continue,Continue
 Conversion failed,La conversión ha fallado
 Copied to clipboard,Copiado al clipboard
 Copy From,Copiar desde
@@ -222,6 +227,7 @@ Default filter,Filtro predeterminado
 Default language,Idioma Predeterminado
 Default language change success,Cambio de idioma predeterminado exitoso
 Default template,Plantilla predeterminada
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,Eliminar
 DELETE,Eliminar
@@ -257,7 +263,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Documento
 Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
-Document FOR,Document FOR
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
 Documentation,Documentación
@@ -306,12 +311,13 @@ Entity,Entidad
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
-Entity title,Entity title
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
 Exploration,Exploración
@@ -320,6 +326,7 @@ Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -395,8 +402,6 @@ Importing data in progress,Importación de datos en curso
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
-In queue,In queue
-incorrect suggestion check,¿La sugerencia es incorrecta? Haz clic en 'Rechazar' y Uwazi mejorará las sugerencias que realiza.
 Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
 Info,Información
 Information extraction training,Entrenamiento de extracción de información
@@ -550,7 +555,6 @@ No References description,Las referencias son partes de este documento relaciona
 No relationship types warning,Los campos de relación no se pueden agregar hasta que tenga al menos un tipo de relación para seleccionar.
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
-No suggestion,No suggestion
 No Table of Contents,Sin Tabla de Contenidos
 No Table of Contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
@@ -562,6 +566,8 @@ No Value,Sin valor
 "No, cancel","No, cancelar"
 Non-labeled,Non-labeled
 Normal view,Vista normal
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,No encontrado
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
@@ -578,10 +584,18 @@ OCR PDF,ROC PDF
 of,de
 Ok,De acuerdo
 OK,OK
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,¡Cuidado! Adelante por favor
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
+Open,Open
 Open group,Open group
-Open PDF,Abrir PDF
+Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Abre la app Authenticator de tu dispositivo móvil
 or,o
 or drop your files here.,o deposita tus archivos aquí
@@ -593,12 +607,13 @@ Others,Others
 out of,fuera de
 Page,Página
 Pages,Páginas
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -629,6 +644,7 @@ Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
 Private entities description,AVISO: Las entidades seleccionadas serán **privadas**. Solo usuarios con permiso podrán visualizarlos.
 Private instance,Instancia privada
+Processed,Processed
 Processing,Procesando
 Properties,Propiedades
 Properties from other templates in the collection using the same label,Propiedades de otras plantillas de la colección que utilizan la misma etiqueta.
@@ -674,7 +690,6 @@ Reject,Rechazar
 Relationship,Relación
 relationship consistency warning,"No se puede utilizar ""cualquier entidad o documento"" si otra relación del mismo tipo está establecida con una entidad específica. "
 Relationship Type,Tipo de relación
-Relationship type:,Relationship type:
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,relaciones
@@ -690,7 +705,6 @@ Renamed attachment,Archivo adjunto eliminado
 Repeat Password,Repite la contraseña
 Request id #,Solicitar id #
 Request token,Solicitud de token
-required criteria,required criteria
 Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
@@ -738,6 +752,8 @@ Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship type,Seleccionar tipo de relación
 Select target paragraph,Seleccionar párrafo de destino
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
@@ -790,8 +806,11 @@ Sort ascending,Orden ascendente
 Sort by,Ordenar por
 Sort descending,Orden descendiente
 sorted by,ordenado por
+Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,Estado
 Stats & Filters,Stats & Filters
 Status,Status
@@ -805,12 +824,15 @@ Submitting,Enviando
 Success,Exito
 "Success, Upload another?","Exito, cargar otro?"
 Suggestion,Sugerencia
-Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Sugerencias
 suggestions,suggestions
+Suggestions have been updated,Suggestions have been updated
+Suggestions sent,Suggestions sent
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.
 syncedTemplateListMessage,La fuente de esta plantilla es una sincronización. Todas las opciones de edición estarán deshabilitadas.
 syntax to create page content,sintaxis para crear el contenido de la página
@@ -819,20 +841,26 @@ Table,Tabla
 Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
 Table view,Vista de Tabla
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Plantilla
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
 Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Plantillas
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,La petición no pudo ser procesada.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
@@ -865,6 +893,7 @@ This property will be shown using all the width available.,Esta propiedad se mos
 This property will be shown without the label.,Esta propiedad se mostrará sin su etiqueta.
 this template,esta plantilla
 This template has associated entities,Esta plantilla tiene entidades asociadas
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,Esta plantilla se utilizará como predeterminada para nuevas entidades
 This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
 Threshold,Límite
@@ -888,6 +917,7 @@ total users,total users
 Training,Entrenando
 Training model...,Entrenando el modelo…
 Translate,Traducir
+Translation,Translation
 Translations,Traducciones
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente

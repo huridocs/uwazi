@@ -1,9 +1,14 @@
+@use "../config/colors";
+@use "../config/commonLayout";
+@use "../config/materials";
+@use "../config/typography";
+
 .entity-viewer {
   position: relative;
   width: 100%;
   height: 100%;
   padding: 15px;
-  background: $c-white;
+  background: colors.$c-white;
   transition: all 500ms;
   //overflow-x: hidden;
   //overflow-y: scroll;
@@ -14,11 +19,11 @@
   }
 
   &.with-footer {
-    height: calc(100% - #{$FooterHeight});
+    height: calc(100% - #{commonLayout.$FooterHeight});
   }
 
   &.with-header.with-footer {
-    height: calc(100% - #{$FooterHeight} - 51px);
+    height: calc(100% - #{commonLayout.$FooterHeight} - 51px);
   }
 
   @media (min-width: 1024px) {
@@ -49,12 +54,12 @@
   top: 0;
   z-index: 6;
   @media (min-width: 1024px) {
-    top: $header-height + 1 !important;
+    top: materials.$header-height + 1 !important;
   }
 }
 
 .entity-attachments {
-  top: $header-height * 3;
+  top: materials.$header-height * 3;
 }
 
 .entity-content {
@@ -62,9 +67,9 @@
   max-width: 9999px;
 
   .side-panel {
-    top: $header-height;
+    top: materials.$header-height;
     @media (min-width: 1024px) {
-      top: $header-height + 1;
+      top: materials.$header-height + 1;
     }
   }
 }
@@ -82,20 +87,20 @@
     justify-content: space-between;
   }
   li:not(:last-of-type) {
-    border-bottom: 1px solid $c-grey-light;
+    border-bottom: 1px solid colors.$c-grey-light;
   }
 
   li:hover {
     cursor: pointer;
-    background-color: $c-shadow;
+    background-color: colors.$c-shadow;
   }
 
   .fa {
     position: relative;
     top: 1px;
     width: 20px;
-    font-size: $f-size;
-    color: $c-grey-light;
+    font-size: typography.$f-size;
+    color: colors.$c-grey-light;
   }
 
   .btn-color {

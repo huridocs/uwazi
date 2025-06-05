@@ -21,13 +21,10 @@ const createNewRelationshipMappingFactory = async () => {
 };
 
 export default {
-  mapping: async (templates: TemplateSchema[], topicClassification: boolean) => {
+  mapping: async (templates: TemplateSchema[]) => {
     const baseMappingObject = {
       properties: {
         metadata: {
-          properties: {} as any,
-        },
-        suggestedMetadata: {
           properties: {} as any,
         },
       },
@@ -54,19 +51,6 @@ export default {
                   ? await newRelationshipMappingFactory.create(property)
                   : propertyMappings[property.type](),
             };
-            if (
-              topicClassification &&
-              (property.type === 'select' || property.type === 'multiselect')
-            ) {
-              baseMappingObject.properties.suggestedMetadata.properties[property.name] = {
-                properties: {
-                  ...propertyMappings[property.type](),
-                  suggestion_confidence: {
-                    type: 'float',
-                  },
-                },
-              };
-            }
             if (property.inherit?.type && property.inherit.type !== 'preview') {
               baseMappingObject.properties.metadata.properties[
                 property.name

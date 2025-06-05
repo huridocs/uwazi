@@ -2,12 +2,12 @@ Key,Korean
 % of sentences above threshold,임계값 이상 문장 비율
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
-A target template needs at least,A target template needs at least
+A source template must,A source template must
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,이메일이 필요합니다.
 Accept,수락
 Accept suggestion,Accept suggestion
@@ -69,6 +69,9 @@ Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+All editing options will be disabled.,All editing options will be disabled.
+All of the paragraphs will be deleted,All of the paragraphs will be deleted
+All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
@@ -112,6 +115,7 @@ Can view,열람 가능
 Cancel,취소
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
+Cannot find extractor,Cannot find extractor
 Captcha,보안 문자
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -172,6 +176,7 @@ Contact email description,Here you can set up the contact email and the email th
 Contact Form,연락처
 Content translations,Content translations
 Context,Context
+Continue,Continue
 Conversion failed,변환 실패
 Copied to clipboard,Copied to clipboard
 Copy From,외부 복사
@@ -224,6 +229,7 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,기본 언어 변경 완료
 Default template,기본 템플릿
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,삭제
 DELETE,삭제
@@ -259,7 +265,6 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,문서
 Document and entity types,문서 및 엔티티 유형
 Document contents,문서 내용
-Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,문서 제목
 Documentation,기록
@@ -308,12 +313,13 @@ Entity,엔티티
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title,Entity title
 Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,탐색
@@ -322,6 +328,7 @@ Exporting entities to CSV,엔티티를 CSV 로 추출
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -397,8 +404,6 @@ Importing data in progress,데이터 업로드 중
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
-In queue,In queue
-incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
 Information extraction training,Information extraction training
@@ -552,7 +557,6 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
-No suggestion,No suggestion
 No Table of Contents,목차 없음
 No Table of Contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
@@ -564,6 +568,8 @@ No Value,값 없음
 "No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,일반 뷰
+Not already been use as source template in another extractor,Not already been use as source template in another extractor
+Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,검색 결과 없음. 해당 문서는 선택한 시소러스를 사용하지 않습니다.
@@ -580,8 +586,16 @@ OCR PDF,PDF OCR 읽기
 of,의
 Ok,확인
 OK,확인
+"Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
+                selected as target in this extractor are available for selection."
+"Only templates with at least one rich text property and one numeric property are
+                available for selection.","Only templates with at least one rich text property and one numeric property are
+                available for selection."
+"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Ooops... please go,Ooops...
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,편집하려는 시소러스를 찾을 수 없습니다. 설정으로 돌아가 페이지를 다시 탐색하십시오.
+Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
@@ -595,12 +609,13 @@ Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric text):,Paragraph text extraction property (numeric text):
-Paragraph text extraction property (rich text):,Paragraph text extraction property (rich text):
+Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
+Paragraphs deleted,Paragraphs deleted
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -631,6 +646,7 @@ Priority sorting,우선순위 정렬
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,비공개 인스턴스
+Processed,Processed
 Processing,처리 중
 Properties,속성
 Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
@@ -676,7 +692,6 @@ Reject,거부
 Relationship,연결
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
-Relationship type:,Relationship type:
 Relationship types,연결 유형
 relationships,연결
 Relationships,연결
@@ -692,7 +707,6 @@ Renamed attachment,Renamed attachment
 Repeat Password,암호를 재입력하십시오.
 Request id #,아이디 요청 #
 Request token,Request token
-required criteria,required criteria
 Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
@@ -740,6 +754,8 @@ Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,Select from computer
 Select relationship type,연결 유형 선택
 Select target paragraph,대상 단락 선택
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,선택
 Selected,Selected
 selected,선택 완료
@@ -792,8 +808,11 @@ Sort ascending,Sort ascending
 Sort by,정렬 기준
 Sort descending,Sort descending
 sorted by,정렬 기준
+Source,Source
+Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -807,12 +826,15 @@ Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
 Suggestion,Suggestion
-Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,자동 제안
 suggestions,suggestions
+Suggestions have been updated,Suggestions have been updated
+Suggestions sent,Suggestions sent
 Supporting files,추가 파일
 Synced template,Synced template
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,페이지 콘텐츠 생성 신택스
@@ -821,21 +843,27 @@ Table,테이블
 Table of Contents,목차
 Table of contents,목차
 Table view,테이블 뷰
+Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,템플릿
-Templates meeting,Templates meeting
 Templates:,Templates:
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,업로드 과정에서 오류가 발생했습니다:
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,The request could not be processed.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,템플릿에 오류가 포함되어 있습니다.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
@@ -868,6 +896,7 @@ This property will be shown using all the width available.,디스플레이 가�
 This property will be shown without the label.,이 속성은 라벨 없이 표시됩니다.
 this template,this template
 This template has associated entities,This template has associated entities
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,이 템플릿을 새 엔티티의 기본값으로 사용합니다.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,임계점
@@ -891,6 +920,7 @@ total users,total users
 Training,Training
 Training model...,Training model...
 Translate,번역
+Translation,Translation
 Translations,번역
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully

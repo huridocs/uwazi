@@ -36,7 +36,10 @@ class Document extends Component {
     if (prevProps && prevProps.doc.get('_id') !== this.props.doc.get('_id')) {
       this.props.unsetSelection();
     }
-    highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
+
+    if (this.props.searchTerm) {
+      highlightSnippet(this.props.selectedSnippet);
+    }
   }
 
   onTextSelected(textSelection) {

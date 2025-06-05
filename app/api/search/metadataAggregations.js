@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import commonProperties from 'shared/commonProperties';
@@ -125,9 +127,6 @@ const extractFilters = (baseQuery, path) => {
   return filters;
 };
 
-const getpath = (property, suggested) =>
-  suggested ? `suggestedMetadata.${property.name}` : `metadata.${property.name}`;
-
 const getSelectParentPath = path => {
   const parentPathSplit = path.split('.');
   parentPathSplit[parentPathSplit.length - 1] = 'parent';
@@ -147,8 +146,8 @@ const selectAggregation = (path, should, filters) => {
   };
 };
 
-export const propertyToAggregation = (property, baseQuery, suggested = false) => {
-  const path = getpath(property, suggested);
+const propertyToAggregation = (property, baseQuery) => {
+  const path = `metadata.${property.name}`;
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
 
@@ -163,7 +162,7 @@ export const propertyToAggregation = (property, baseQuery, suggested = false) =>
   return aggregation(path, should, filters);
 };
 
-export const generatedTocAggregations = baseQuery => {
+const generatedTocAggregations = baseQuery => {
   const path = 'generatedToc';
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
@@ -223,17 +222,17 @@ const permissionsAggregations = (baseQuery, path, terms) => {
   };
 };
 
-export const permissionsLevelAgreggations = baseQuery =>
+const permissionsLevelAgreggations = baseQuery =>
   permissionsAggregations(baseQuery, 'permissions.level', {
     'permissions.refId': permissionsContext.permissionsRefIds(),
   });
 
-export const permissionsUsersAgreggations = (baseQuery, level) =>
+const permissionsUsersAgreggations = (baseQuery, level) =>
   permissionsAggregations(baseQuery, 'permissions.refId', {
     'permissions.level': [level],
   });
 
-export const publishingStatusAgreggations = baseQuery => {
+const publishingStatusAgreggations = baseQuery => {
   const path = 'published';
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
@@ -302,4 +301,12 @@ export const publishingStatusAgreggations = baseQuery => {
       },
     },
   };
+};
+
+export {
+  propertyToAggregation,
+  generatedTocAggregations,
+  permissionsLevelAgreggations,
+  permissionsUsersAgreggations,
+  publishingStatusAgreggations,
 };

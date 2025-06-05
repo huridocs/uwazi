@@ -230,7 +230,7 @@ describe('Information Extraction', () => {
 
     it('should sort by the document column', () => {
       cy.get('tbody tr').eq(5).should('be.visible');
-      cy.contains('th', 'Document').click();
+      cy.contains('th', 'Name').click();
       cy.contains('Uwazi Heroes Investigation', { timeout: 100 });
       cy.get('tbody').within(() => {
         cy.get('tr').eq(5).contains('Uwazi Heroes Investigation');
@@ -259,13 +259,15 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Find suggestions').click();
       cy.wait('@trainSuggestions');
       cy.contains('Training model...');
+      cy.contains('tr', 'Obsolete').contains('button', 'Accept').should('be.disabled');
       cy.contains('2023');
     });
 
     it('should accept a single suggestion without affecting the order', () => {
       cy.contains('tr', 'Lorem Ipsum').contains('button', 'Accept').click();
 
-      cy.contains('Suggestion accepted.');
+      cy.contains('Suggestions sent');
+      cy.contains('Suggestions have been updated');
       cy.contains('button', 'Dismiss').click();
 
       const titles = [
@@ -298,7 +300,7 @@ describe('Information Extraction', () => {
 
   describe('PDF sidepanel', () => {
     it('should display the PDF sidepanel with the pdf and selection rectangle', () => {
-      cy.contains('button', 'Open PDF').click();
+      cy.contains('button', 'Open').click();
       cy.contains('h1', '2023');
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2023');
@@ -325,7 +327,7 @@ describe('Information Extraction', () => {
     });
 
     it('should click to fill with a new text', () => {
-      cy.contains('tr', 'The Spectacular Spider-Man').contains('button', 'Open PDF').click();
+      cy.contains('tr', 'The Spectacular Spider-Man').contains('button', 'Open').click();
       cy.get('aside').within(() => {
         cy.get('input').clear();
       });

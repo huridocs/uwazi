@@ -4,7 +4,7 @@ import { mount } from '@cypress/react18';
 import { notificationAtom, notificationAtomType } from 'V2/atoms';
 import { NotificationsContainer } from '../NotificationsContainer';
 
-describe('Notifications container', () => {
+describe('Notifications container', { viewportWidth: 500, viewportHeight: 500 }, () => {
   const notification: notificationAtomType = {
     type: 'info',
     text: 'This notifies the user with some information',
@@ -27,10 +27,6 @@ describe('Notifications container', () => {
       </>
     );
   };
-
-  before(() => {
-    cy.viewport(500, 500);
-  });
 
   beforeEach(() => {
     mount(

@@ -185,6 +185,7 @@ describe('withTransaction utility', () => {
       });
 
       expect(dbSessionContext.getSession()).toBeUndefined();
+      expect(dbSessionContext.getTransactionManager()).toBeUndefined();
       expect(dbSessionContext.getFileOperations()).toEqual([]);
       expect(dbSessionContext.getReindexOperations()).toEqual([]);
     });

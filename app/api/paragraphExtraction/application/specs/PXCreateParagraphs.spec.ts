@@ -1,32 +1,38 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { tenants } from 'api/tenants';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import {
-  mongoPXExtractorsCollection,
-  MongoPXExtractorsDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntitySchema } from 'shared/types/entityType';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
 
-import {
-  mongoPXEntitiesStatusCollection,
-  MongoPXEntitiesStatusDataSource,
-} from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoPXEntityStatus } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatus';
+import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
+import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
+import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
 
-import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
+import { PXCreateParagraphs, PXCreateParagraphsInput } from '../PXCreateParagraphs';
 
 const factory = getFixturesFactory();
+
+const sourceRelationshipType = {
+  _id: factory.id('sourceRelationshipType'),
+  name: 'Source Relationship Type',
+  properties: [],
+};
+
+const targetRelationshipType = {
+  _id: factory.id('targetRelationshipType'),
+  name: 'Target Relationship Type',
+  properties: [],
+};
 
 const paragraphProperty = factory.property('extracted_paragraph', 'markdown', {
   label: 'Extracted Paragraph',
@@ -34,16 +40,23 @@ const paragraphProperty = factory.property('extracted_paragraph', 'markdown', {
 const paragraphNumberProperty = factory.property('paragraph_number_property', 'numeric', {
   label: 'Paragraph number',
 });
+
 const textProperty = factory.property('text_property', 'text');
 
 const template = factory.template('default template');
 
 const sourceTemplate = factory.template('Source Template');
 
+const relationshipProperty = factory.property('paragraph_to_source_entity', 'relationship', {
+  content: sourceTemplate._id.toString(),
+  relationType: sourceRelationshipType._id.toString(),
+});
+
 const targetTemplate = factory.template('Target Template', [
   paragraphProperty,
   paragraphNumberProperty,
   textProperty,
+  relationshipProperty,
 ]);
 
 const sourceEntityThatDoesNotBelongToExtractor = factory.entity(
@@ -84,21 +97,21 @@ const extractor: MongoPXExtractorDBO = {
   targetTemplateId: targetTemplate._id,
   paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
   paragraphPropertyId: paragraphProperty._id as ObjectId,
+  sourceRelationshipTypeId: sourceRelationshipType._id,
+  targetRelationshipTypeId: targetRelationshipType._id,
 };
 
-const extractionDBO: MongoPXEntityStatus = {
-  _id: factory.id('extractionDBO'),
+const mongoEntityStatus: MongoPXEntityStatusDBO = {
+  _id: factory.id('entity_status'),
   extractorId: extractor._id,
   entitySharedId: entityEn.sharedId!,
   status: EntityStatus.Processing,
-  failedParagraphsCount: 0,
-  paragraphsCount: 0,
-  successfulParagraphsCount: 0,
 };
 
 const createFixtures = (): DBFixture => ({
+  relationtypes: [sourceRelationshipType, targetRelationshipType],
   [mongoPXExtractorsCollection]: [extractor],
-  [mongoPXEntitiesStatusCollection]: [extractionDBO],
+  [mongoPXEntitiesStatusCollection]: [mongoEntityStatus],
   templates: [sourceTemplate, targetTemplate, template],
   entities: [entityEn, entityEs, entityPt, sourceEntityThatDoesNotBelongToExtractor],
   settings: [
@@ -113,10 +126,16 @@ const createFixtures = (): DBFixture => ({
 });
 
 const setUpUseCase = () => {
-  const db = getConnection();
-  const transaction = DefaultTransactionManager();
-  const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
-  const entitiesStatusDS = new MongoPXEntitiesStatusDataSource(db, transaction);
+  const connection = getConnection();
+  const mongoTransactionManager = DefaultTransactionManager();
+  const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
+  const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
+    connection,
+    mongoTransactionManager,
+  });
 
   const createParagraphs = new PXCreateParagraphs({
     extractorsDS,
@@ -164,100 +183,12 @@ describe('PXCreateParagraphs', () => {
     await testingEnvironment.tearDown();
   });
 
-  it.todo('should inherit Properties from source Entity if target Template has inherit Properties');
-
-  it.todo('should throw if the source Entity does not belong to the Extractor');
-
-  it.todo('should change Extraction status to "error" on fail');
-
-  it('should update Paragraphs count', async () => {
-    const { createParagraphs } = setUpUseCase();
-
-    const extractionKey = PXExtractionKey.create({
-      extractionId: extractionDBO._id.toString(),
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-    });
-
-    const input: PXCreateParagraphsInput = {
-      availableLanguages: ['es', 'en', 'pt'],
-      extractionKey,
-      mainLanguage: 'es',
-      paragraphs: [
-        {
-          paragraphNumber: 1,
-          translations: [
-            {
-              isMainLanguage: false,
-              language: 'en',
-              needsUserReview: false,
-              text: 'Paragraph 1 in english',
-            },
-            {
-              isMainLanguage: true,
-              language: 'es',
-              needsUserReview: false,
-              text: 'Paragraph 1 in spanish',
-            },
-            {
-              isMainLanguage: false,
-              language: 'pt',
-              needsUserReview: false,
-              text: 'Paragraph 1 in portuguese',
-            },
-          ],
-        },
-        {
-          paragraphNumber: 2,
-          translations: [
-            {
-              isMainLanguage: false,
-              language: 'en',
-              needsUserReview: false,
-              text: 'Paragraph 2 in english',
-            },
-            {
-              isMainLanguage: true,
-              language: 'es',
-              needsUserReview: false,
-              text: 'Paragraph 2 in spanish',
-            },
-            {
-              isMainLanguage: false,
-              language: 'pt',
-              needsUserReview: false,
-              text: 'Paragraph 2 in portuguese',
-            },
-          ],
-        },
-      ],
-    };
-
-    await createParagraphs.execute(input);
-
-    const extractions = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
-
-    expect(extractions).toMatchObject([
-      {
-        _id: extractionDBO._id,
-        paragraphsCount: 2,
-      },
-    ]);
-  });
-
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
 
-    const extractionKey = PXExtractionKey.create({
-      extractionId: extractionDBO._id.toString(),
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-    });
-
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['es', 'en', 'pt'],
-      extractionKey,
-      mainLanguage: 'es',
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
       paragraphs: [
         {
           paragraphNumber: 1,
@@ -315,7 +246,7 @@ describe('PXCreateParagraphs', () => {
     const extractedSpanish = filterAndSortParagraphs(extractedParagraphs, 'es');
     const extractedPortuguese = filterAndSortParagraphs(extractedParagraphs, 'pt');
 
-    const { userId } = extractionKey;
+    const { userId } = input;
 
     expect(extractedPortuguese).toMatchObject([
       createExpectedParagraph(
@@ -343,6 +274,115 @@ describe('PXCreateParagraphs', () => {
     ]);
   });
 
+  it('should create a relationship between Paragraph and source Entity for each Paragraph', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 1 in portuguese',
+            },
+          ],
+        },
+        {
+          paragraphNumber: 2,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 2 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 2 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 2 in portuguese',
+            },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    const extractedParagraphs = await getExtractedParagraphs();
+    const [paragraphOne, paragraphTwo] = filterAndSortParagraphs(extractedParagraphs, 'en');
+
+    const relationships = await testingEnvironment.db.getAllFrom('connections');
+
+    const hubs = relationships?.reduce((_prev, relationship) => {
+      const prev = _prev;
+      if (!prev[relationship.hub.toString()]) {
+        prev[relationship.hub.toString()] = {};
+      }
+
+      let type = 'undefined';
+      if (relationship.entity === entityEn.sharedId) {
+        type = 'source';
+      }
+
+      if ([paragraphOne.sharedId, paragraphTwo.sharedId].includes(relationship.entity)) {
+        type = 'target';
+      }
+
+      prev[relationship.hub.toString()][type] = relationship;
+
+      return prev;
+    }, {} as any);
+
+    expect(Object.keys(hubs).length).toBe(2);
+
+    const [hubOne, hubTwo] = Object.values(hubs) as any;
+
+    expect(hubOne.source.template.toString()).toBe(sourceRelationshipType._id.toString());
+    expect(hubOne.target.template.toString()).toBe(targetRelationshipType._id.toString());
+    expect(hubTwo.source.template.toString()).toBe(sourceRelationshipType._id.toString());
+    expect(hubTwo.target.template.toString()).toBe(targetRelationshipType._id.toString());
+
+    expect(paragraphOne.metadata![relationshipProperty.name]).toMatchObject([
+      {
+        value: 'Source Entity',
+        label: 'Source Entity English',
+        type: 'entity',
+      },
+    ]);
+
+    expect(paragraphTwo.metadata![relationshipProperty.name]).toMatchObject([
+      {
+        value: 'Source Entity',
+        label: 'Source Entity English',
+        type: 'entity',
+      },
+    ]);
+  });
+
   it('should persist Paragraph text and number according to the Extractor configuration', async () => {
     const _targetTemplate = {
       ...targetTemplate,
@@ -367,16 +407,9 @@ describe('PXCreateParagraphs', () => {
 
     const { createParagraphs } = setUpUseCase();
 
-    const extractionKey = PXExtractionKey.create({
-      extractionId: extractionDBO._id.toString(),
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-    });
-
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['es'],
-      extractionKey,
-      mainLanguage: 'es',
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
       paragraphs: [
         {
           paragraphNumber: 1,
@@ -403,7 +436,7 @@ describe('PXCreateParagraphs', () => {
           'Source Entity Spanish.01',
           'es',
           'Paragraph 1 in spanish',
-          extractionKey.userId
+          input.userId
         ),
         metadata: {
           paragraph: [{ value: 'Paragraph 1 in spanish' }],
@@ -426,16 +459,9 @@ describe('PXCreateParagraphs', () => {
       ],
     });
 
-    const extractionKey = PXExtractionKey.create({
-      extractionId: extractionDBO._id.toString(),
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-    });
-
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['es', 'en'],
-      extractionKey,
-      mainLanguage: 'es',
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
       paragraphs: [
         {
           paragraphNumber: 1,
@@ -466,7 +492,7 @@ describe('PXCreateParagraphs', () => {
         'Source Entity Spanish.01',
         'es',
         'Paragraph 1 in spanish',
-        extractionKey.userId
+        input.userId
       ),
     ]);
   });
@@ -488,16 +514,9 @@ describe('PXCreateParagraphs', () => {
       ],
     });
 
-    const extractionKey = PXExtractionKey.create({
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-      extractionId: extractionDBO._id.toString(),
-    });
-
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['pt', 'en'],
-      extractionKey,
-      mainLanguage: 'pt',
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
       paragraphs: [
         {
           paragraphNumber: 1,
@@ -506,7 +525,7 @@ describe('PXCreateParagraphs', () => {
               isMainLanguage: false,
               language: 'en',
               needsUserReview: false,
-              text: 'Paragraph 1 in English',
+              text: '',
             },
             {
               isMainLanguage: true,
@@ -530,8 +549,8 @@ describe('PXCreateParagraphs', () => {
       createExpectedParagraph(
         'Source Entity English.01',
         'en',
-        'Paragraph 1 in English',
-        extractionKey.userId
+        'Paragraph 1 in Portuguese',
+        input.userId
       ),
     ]);
 
@@ -540,7 +559,7 @@ describe('PXCreateParagraphs', () => {
         'Source Entity Spanish.01',
         'es',
         'Paragraph 1 in Portuguese',
-        extractionKey.userId
+        input.userId
       ),
     ]);
 
@@ -549,8 +568,158 @@ describe('PXCreateParagraphs', () => {
         'Source Entity Portuguese.01',
         'pt',
         'Paragraph 1 in Portuguese',
-        extractionKey.userId
+        input.userId
       ),
+    ]);
+  });
+
+  it('should mark EntityStatus as processed after all Paragraphs created', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 1 in portuguese',
+            },
+          ],
+        },
+        {
+          paragraphNumber: 2,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 2 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 2 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 2 in portuguese',
+            },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    expect(mongoEntitiesStatus).toMatchObject([
+      {
+        _id: expect.any(ObjectId),
+        entitySharedId: mongoEntityStatus.entitySharedId,
+        extractorId: mongoEntityStatus.extractorId,
+        status: EntityStatus.Processed,
+      },
+    ]);
+  });
+
+  it('should mark EntityStatus as obsolete if previous value is processing_obsolete', async () => {
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXEntitiesStatusCollection]: [
+        { ...mongoEntityStatus, status: EntityStatus.ProcessingObsolete },
+      ],
+    });
+    const { createParagraphs } = setUpUseCase();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 1 in portuguese',
+            },
+          ],
+        },
+        {
+          paragraphNumber: 2,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 2 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 2 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 2 in portuguese',
+            },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    const mongoEntitiesStatus = await testingEnvironment.db.getAllFrom(
+      mongoPXEntitiesStatusCollection
+    );
+
+    expect(mongoEntitiesStatus).toMatchObject([
+      {
+        _id: expect.any(ObjectId),
+        entitySharedId: mongoEntityStatus.entitySharedId,
+        extractorId: mongoEntityStatus.extractorId,
+        status: EntityStatus.Obsolete,
+      },
     ]);
   });
 
@@ -562,16 +731,9 @@ describe('PXCreateParagraphs', () => {
       entities: [sourceEntityThatDoesNotBelongToExtractor],
     });
 
-    const extractionKey = PXExtractionKey.create({
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-      extractionId: extractionDBO._id.toString(),
-    });
-
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['pt'],
-      extractionKey,
-      mainLanguage: 'pt',
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
       paragraphs: [],
     };
 
@@ -590,16 +752,9 @@ describe('PXCreateParagraphs', () => {
       [mongoPXExtractorsCollection]: [],
     });
 
-    const extractionKey = PXExtractionKey.create({
-      extractionId: extractionDBO._id.toString(),
-      tenantName: tenants.current().name,
-      userId: new ObjectId().toString(),
-    });
-
     const input: PXCreateParagraphsInput = {
-      availableLanguages: ['pt'],
-      extractionKey,
-      mainLanguage: 'pt',
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
       paragraphs: [],
     };
 
@@ -608,5 +763,67 @@ describe('PXCreateParagraphs', () => {
     await expect(promise).rejects.toMatchObject({
       code: PXValidationError.codes.EXTRACTOR_NOT_FOUND,
     });
+  });
+
+  it('should execute onParagraphCreated callback on each paragraph creation', async () => {
+    const { createParagraphs } = setUpUseCase();
+
+    const input: PXCreateParagraphsInput = {
+      entityStatusId: mongoEntityStatus._id.toString(),
+      userId: new ObjectId().toString(),
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 1 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 1 in portuguese',
+            },
+          ],
+        },
+        {
+          paragraphNumber: 2,
+          translations: [
+            {
+              isMainLanguage: false,
+              language: 'en',
+              needsUserReview: false,
+              text: 'Paragraph 2 in english',
+            },
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 2 in spanish',
+            },
+            {
+              isMainLanguage: false,
+              language: 'pt',
+              needsUserReview: false,
+              text: 'Paragraph 2 in portuguese',
+            },
+          ],
+        },
+      ],
+      onParagraphCreated: jest.fn(),
+    };
+
+    await createParagraphs.execute(input);
+
+    expect(input.onParagraphCreated).toHaveBeenCalledTimes(input.paragraphs.length);
   });
 });

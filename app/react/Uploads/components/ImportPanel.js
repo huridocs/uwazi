@@ -37,7 +37,7 @@ class ImportPanel extends Component {
             <Translate>Upload a ZIP or CSV file.</Translate>&nbsp;
             <a
               rel="noopener noreferrer"
-              href="https://github.com/huridocs/uwazi/wiki/Import-CSV"
+              href="https://uwazi.readthedocs.io/en/latest/admin-docs/working-with-entities-in-your-collection.html#how-to-add-entities-in-bulk-with-csv-import"
               target="_blank"
             >
               <Translate>Import instructions</Translate>

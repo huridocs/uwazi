@@ -22,8 +22,6 @@ import LinkField from './components/LinkField';
 import FormValue from './components/FormValue';
 import MediaField from './components/MediaField';
 
-export * from './components/MultiSuggest';
-
 export {
   Select,
   FormGroup,

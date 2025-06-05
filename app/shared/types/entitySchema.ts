@@ -35,7 +35,6 @@ export const entitySchema = {
     user: objectIdSchema,
     metadata: metadataSchema,
     obsoleteMetadata: { type: 'array', items: { type: 'string' } },
-    suggestedMetadata: metadataSchema,
     permissions: {
       type: 'array',
       items: permissionSchema,

@@ -1,13 +1,16 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .breadcrumbs {
 	display: none;
 	padding: 7px 15px;
-	border-bottom: 1px dotted $c-grey;
-	color: $c-grey-dark;
-	font-size: $f-size-sm;
+	border-bottom: 1px dotted colors.$c-grey;
+	color: colors.$c-grey-dark;
+	font-size: typography.$f-size-sm;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 	b {
-		color: $c-black;
+		color: colors.$c-black;
 	}
 	.fa {
 		margin: 0 10px;
@@ -16,6 +19,6 @@
 		margin: 0;
 	}
 	a {
-		color: $c-grey-dark;
+		color: colors.$c-grey-dark;
 	}
 }

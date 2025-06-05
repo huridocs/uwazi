@@ -1,17 +1,24 @@
 import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import entities from 'api/entities';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import relationshipsDS from 'api/relationships';
 
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
-import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
-import { PXCreateParagraph } from './PXCreateParagraph';
-import { PXValidationError } from '../domain/PXValidationError';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
+import { ParagraphOutput } from '../domain/PXExtractionService';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import { PXValidationError } from '../domain/PXValidationError';
+import { PXCreateParagraph } from './PXCreateParagraph';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
-type PXCreateParagraphsInput = GetParagraphsResultOutput;
+type PXCreateParagraphsInput = {
+  userId: string;
+  entityStatusId: string;
+  paragraphs: ParagraphOutput[];
+  onParagraphCreated?: () => Promise<void>;
+};
 
 type Output = any;
 
@@ -27,22 +34,18 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     this.createParagraph = new PXCreateParagraph({
       logger: DefaultLogger(),
       entitiesStatusDS: this.dependencies.entitiesStatusDS,
+      relationshipsDS,
     });
   }
 
-  // eslint-disable-next-line max-statements
-  async execute({ extractionKey, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
-    await this.dependencies.entitiesStatusDS.updateParagraphsCount({
-      id: extractionKey.extractionId,
-      count: paragraphs.length,
-    });
-    const user = { _id: new ObjectId(extractionKey.userId) };
-    const entityStatus = await this.dependencies.entitiesStatusDS.getById(
-      extractionKey.extractionId
-    );
-    if (!entityStatus) {
-      throw new Error('Entity Status not found');
-    }
+  async execute({
+    entityStatusId,
+    paragraphs,
+    userId,
+    onParagraphCreated,
+  }: PXCreateParagraphsInput): Promise<Output> {
+    const user = { _id: new ObjectId(userId) };
+    const entityStatus = await this.getEntityStatus(entityStatusId);
 
     const [extractor, sourceEntities] = await Promise.all([
       this.dependencies.extractorsDS.getById(entityStatus.extractorId),
@@ -63,9 +66,28 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
-    await ArrayUtils.parallelFor(paragraphs, async paragraph =>
-      this.createParagraph.execute({ paragraph, extractor, sourceEntities, user, entityStatus })
-    );
+    await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
+      await this.createParagraph.execute({
+        paragraph,
+        extractor,
+        sourceEntities,
+        user,
+        entityStatus,
+      });
+      if (onParagraphCreated) {
+        await onParagraphCreated();
+      }
+    });
+
+    await this.dependencies.entitiesStatusDS.markAsProcessed(entityStatusId);
+  }
+
+  private async getEntityStatus(entityStatusId: string) {
+    const entityStatus = await this.dependencies.entitiesStatusDS.getById(entityStatusId);
+    if (!entityStatus) {
+      throw new OperationalError('Entity Status not found');
+    }
+    return entityStatus;
   }
 }
 

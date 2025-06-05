@@ -22,14 +22,14 @@ afterAll(async () => testingEnvironment.tearDown());
 
 describe('suggestions with CustomFilters', () => {
   describe('get()', () => {
-    it('should return all suggestions (except processing) when no custom filter is provided', async () => {
+    it('should return all suggestions when no custom filter is provided', async () => {
       const result = await Suggestions.get(
         {
           extractorId: f.id('test_extractor').toString(),
         },
         {}
       );
-      expect(result.suggestions.length).toBe(12);
+      expect(result.suggestions.length).toBe(14);
       expect(result.suggestions).toMatchObject([
         { sharedId: 'unlabeled-obsolete', language: 'en' },
         { sharedId: 'unlabeled-obsolete', language: 'es' },
@@ -39,6 +39,8 @@ describe('suggestions with CustomFilters', () => {
         { sharedId: 'labeled-mismatch', language: 'es' },
         { sharedId: 'unlabeled-no-context', language: 'en' },
         { sharedId: 'unlabeled-no-context', language: 'es' },
+        { sharedId: 'unlabeled-processing', language: 'en' },
+        { sharedId: 'unlabeled-processing', language: 'es' },
         { sharedId: 'unlabeled-error', language: 'en' },
         { sharedId: 'unlabeled-error', language: 'es' },
         { sharedId: 'unlabeled-no-suggestion', language: 'en' },
@@ -78,6 +80,8 @@ describe('suggestions with CustomFilters', () => {
           { sharedId: 'unlabeled-obsolete', language: 'es' },
           { sharedId: 'unlabeled-no-context', language: 'en' },
           { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-processing', language: 'en' },
+          { sharedId: 'unlabeled-processing', language: 'es' },
           { sharedId: 'unlabeled-error', language: 'en' },
           { sharedId: 'unlabeled-error', language: 'es' },
           { sharedId: 'unlabeled-no-suggestion', language: 'en' },
@@ -110,6 +114,8 @@ describe('suggestions with CustomFilters', () => {
         expectedSuggestions: [
           { sharedId: 'unlabeled-obsolete', language: 'en' },
           { sharedId: 'unlabeled-obsolete', language: 'es' },
+          { sharedId: 'unlabeled-processing', language: 'en' },
+          { sharedId: 'unlabeled-processing', language: 'es' },
         ],
       },
       {
@@ -126,6 +132,8 @@ describe('suggestions with CustomFilters', () => {
         expectedSuggestions: [
           { sharedId: 'unlabeled-obsolete', language: 'en' },
           { sharedId: 'unlabeled-obsolete', language: 'es' },
+          { sharedId: 'unlabeled-processing', language: 'en' },
+          { sharedId: 'unlabeled-processing', language: 'es' },
           { sharedId: 'unlabeled-error', language: 'en' },
           { sharedId: 'unlabeled-error', language: 'es' },
         ],
@@ -167,6 +175,8 @@ describe('suggestions with CustomFilters', () => {
           { sharedId: 'labeled-mismatch', language: 'es' },
           { sharedId: 'unlabeled-no-context', language: 'en' },
           { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-processing', language: 'en' },
+          { sharedId: 'unlabeled-processing', language: 'es' },
           { sharedId: 'unlabeled-error', language: 'en' },
           { sharedId: 'unlabeled-error', language: 'es' },
           { sharedId: 'unlabeled-no-suggestion', language: 'en' },

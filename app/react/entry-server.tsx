@@ -15,7 +15,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
-import { omit, isEmpty, sortBy } from 'lodash';
+import { omit, sortBy } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -28,12 +28,13 @@ import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
+import { ClientFeatureFlags } from './V2/shared/types';
 import { atomStore, hydrateAtomStore } from './V2/atoms';
 import { I18NUtils } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
-import { options } from './reactRouterConfig';
+import { ProtectedRoute } from './ProtectedRoute';
 
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
@@ -225,10 +226,6 @@ const setReduxState = async (
       headers
     );
 
-    if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
-      requestParams.data.q = decodeURI(requestParams.data.q);
-    }
-
     try {
       await Promise.all(
         dataLoaders.map(async loader => {
@@ -264,7 +261,7 @@ const getSSRProperties = async (
   const { fetchRequest, ssrError } = createFetchRequest(req);
   const { query } = createStaticHandler(routes);
   const staticHandleContext = await query(fetchRequest);
-  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext, options);
+  const router = createStaticRouter(routes, staticHandleContext as StaticHandlerContext);
   const reduxState = reduxStore.getState();
 
   return {
@@ -288,6 +285,17 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
+  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement;
+  const isProtectedRoute = lastRouteElement.type === ProtectedRoute;
+  if (isProtectedRoute) {
+    const userId = req.user?._id;
+    const userRole = req.user?.role || '';
+    const allowedRoles = lastRouteElement.props.allowedRoles;
+    if (!userId || (allowedRoles && !allowedRoles.includes(userRole))) {
+      res.redirect('/login');
+      return;
+    }
+  }
   //extract the language from the route pathName, i.e /en/library
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 
@@ -295,12 +303,17 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const language = languageKeys.includes(pathPossibleLanguage)
     ? pathPossibleLanguage
     : req.language;
+
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, atomStoreData, staticHandleContext, router, ssrError } =
     await getSSRProperties(req, routes, settings, language);
 
-  const { globalMatomo, ciMatomoActive } = tenants.current();
+  const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
+  const clientFeatureFlags: ClientFeatureFlags = {
+    ixExtraSources: featureFlags?.ixExtraSources,
+    paragraphExtraction: featureFlags?.paragraphExtraction,
+  };
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
@@ -335,6 +348,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       reduxData={initialState}
       assets={assets}
       loadingError={loadingError || ssrError}
+      featureFlags={clientFeatureFlags}
       atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );

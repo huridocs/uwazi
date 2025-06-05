@@ -53,13 +53,6 @@ const dynamicTemplates = [
     },
   },
   {
-    object_fields: {
-      match_mapping_type: 'object',
-      path_match: 'suggestedMetadata.*',
-      mapping: { type: 'object' },
-    },
-  },
-  {
     unmapped_objects: {
       match: '*',
       match_mapping_type: 'object',
