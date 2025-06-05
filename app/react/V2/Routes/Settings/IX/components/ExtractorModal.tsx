@@ -10,7 +10,7 @@ import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
-import { getAvailableSources } from './helpers';
+import { getAvailableSources } from '../helpers';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
 type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
