@@ -5,15 +5,18 @@ export const updateSortingUrl = (
   currentPath: string,
   currentSearchParams: URLSearchParams
 ): string => {
-  const newSearchParams = new URLSearchParams(currentSearchParams);
+  const searchParams = new URLSearchParams(currentSearchParams);
+
+  if (currentSearchParams.has('sort') && !sorting.length) {
+    searchParams.delete('sort');
+    return `${currentPath}?${searchParams.toString()}`;
+  }
 
   if (sorting.length && sorting[0].id) {
     const property = sorting[0].id;
     const order = sorting[0].desc ? 'desc' : 'asc';
-    newSearchParams.set('sort', JSON.stringify({ property, order }));
-  } else {
-    newSearchParams.delete('sort');
+    searchParams.set('sort', `{"property":"${property}","order":"${order}"}`);
   }
 
-  return `${currentPath}?${newSearchParams.toString()}`;
+  return `${currentPath}?${searchParams.toString()}`;
 };
