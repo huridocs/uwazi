@@ -99,7 +99,7 @@ describe('ExtractionUseCase', () => {
         tenantName: extractionKey.tenantName,
         userId: extractionKey.userId,
       },
-      { retryCount: 2, maxRetries: 3 }
+      { retryCount: 2, maxRetries: 3, namespace: 'tenant' }
     );
 
     expect(useCase.execute).toHaveBeenCalledWith({
@@ -119,7 +119,7 @@ describe('ExtractionUseCase', () => {
     };
 
     await expect(
-      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3 })
+      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
 
@@ -132,7 +132,7 @@ describe('ExtractionUseCase', () => {
     };
 
     await expect(
-      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3 })
+      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
   });
 
@@ -145,7 +145,7 @@ describe('ExtractionUseCase', () => {
     };
 
     await expect(
-      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3 })
+      job.handleDispatch(jest.fn(), params, { retryCount: 2, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
 
     const extractions1 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
@@ -155,7 +155,7 @@ describe('ExtractionUseCase', () => {
     ]);
 
     await expect(
-      job.handleDispatch(jest.fn(), params, { retryCount: 3, maxRetries: 3 })
+      job.handleDispatch(jest.fn(), params, { retryCount: 3, maxRetries: 3, namespace: 'tenant' })
     ).rejects.toBeInstanceOf(NonRetryableJobError);
 
     const extractions2 = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);

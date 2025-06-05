@@ -17,7 +17,7 @@ type SpecificJobParams = {
     property?: string;
   };
   isMultiValued: boolean;
-}
+};
 
 class CreateBlankStateSuggestionsJob implements Dispatchable {
   constructor() {}

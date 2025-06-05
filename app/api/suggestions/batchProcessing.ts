@@ -5,7 +5,7 @@ type BatchRange = {
   fromId: string;
   toId: string;
   totalCount: number;
-}
+};
 
 const calculateBatches = async (
   template: ObjectIdSchema,

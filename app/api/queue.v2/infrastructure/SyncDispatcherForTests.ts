@@ -1,3 +1,4 @@
+import { tenants } from 'api/tenants';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
 
@@ -24,7 +25,11 @@ export class SyncDispatcherForTests implements JobsDispatcher {
   ): Promise<void> {
     const job = await this.registry[dispatchable.name]();
     // eslint-disable-next-line no-empty-function
-    await job.handleDispatch(async () => {}, params);
+    await job.handleDispatch(async () => {}, params, {
+      retryCount: 0,
+      maxRetries: 0,
+      namespace: tenants.current().name,
+    });
   }
 }
 
