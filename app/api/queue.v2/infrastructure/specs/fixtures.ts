@@ -1,24 +1,26 @@
 import { ObjectId } from 'mongodb';
 import { Job } from '../QueueAdapter';
 import { QueueAdapter } from '../QueueAdapter';
+import { JobDBO } from '../MongoQueueAdapter';
 
-type TestJobData = Partial<Job> & { failed?: boolean; timestamp?: number };
+type TestJobData = Partial<JobDBO> & { failed?: boolean; timestamp?: number };
 
-export const createTestJob = (data: TestJobData): Job => ({
-  id: new ObjectId().toHexString(),
-  queue: data.queue || 'test-queue',
-  name: data.name || 'test-job',
-  params: data.params || {},
-  namespace: data.namespace!,
-  lockedUntil: data.lockedUntil || 0,
-  createdAt: data.timestamp || data.createdAt || Date.now(),
-  retryCount: data.retryCount || 0,
-  failed: data.failed === true,
-  options: data.options || {
-    lockWindow: 1000 * 60 * 10, // 10 minutes
-    maxRetries: 5,
-  },
-});
+export const createTestJob = (data: TestJobData): Job =>
+  ({
+    id: new ObjectId().toHexString(),
+    queue: data.queue || 'test-queue',
+    name: data.name || 'test-job',
+    params: data.params || {},
+    namespace: data.namespace!,
+    lockedUntil: data.lockedUntil || 0,
+    createdAt: data.timestamp || data.createdAt || Date.now(),
+    retryCount: data.retryCount || 0,
+    failed: data.failed === true,
+    options: data.options || {
+      lockWindow: 1000 * 60 * 10, // 10 minutes
+      maxRetries: 5,
+    },
+  }) as unknown as Job;
 
 export const generateNamespaces = (tenantCounts: (string | number)[][]): string[] => {
   return tenantCounts.flatMap(([tenant, count]) => Array(count).fill(tenant) as string[]);

@@ -18,7 +18,7 @@ export function DefaultQueueAdapter() {
   );
 }
 
-export function DefaultRoundRobinQueueAdapter() {
+export function RoundRobinQueueAdapter() {
   return new RoundRobinMongoQueueAdapter(
     getSharedConnection(),
     new MongoTransactionManager(getSharedClient(), SystemLogger())
@@ -32,7 +32,7 @@ export function DefaultTestingQueueAdapter() {
   );
 }
 
-export function DefaultTestingRoundRobinQueueAdapter() {
+export function TestingRoundRobinQueueAdapter() {
   return new RoundRobinMongoQueueAdapter(
     getConnection(),
     new MongoTransactionManager(getClient(), DefaultLogger())

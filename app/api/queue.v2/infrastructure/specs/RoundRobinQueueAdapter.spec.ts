@@ -1,6 +1,6 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { DefaultTestingRoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { TestingRoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures';
 import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter';
 
@@ -18,7 +18,7 @@ describe('RoundRobinQueueAdapter', () => {
 
   describe('Round Robin Distribution', () => {
     it('should distribute jobs across different tenants in round-robin fashion', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
 
       await pushJobsForNamespaces(adapter, [
         ['testTenant1', 3],
@@ -39,7 +39,7 @@ describe('RoundRobinQueueAdapter', () => {
     });
 
     it('should maintain round-robin order even when some tenants have no jobs', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
 
       await pushJobsForNamespaces(adapter, [
         ['testTenant1', 2],
@@ -54,7 +54,7 @@ describe('RoundRobinQueueAdapter', () => {
 
   describe('Lock and Failure States', () => {
     it('should skip locked jobs when picking next job', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
       const now = Date.now();
       const lockedJob = createTestJob({
         namespace: 'testTenant1',
@@ -72,7 +72,7 @@ describe('RoundRobinQueueAdapter', () => {
     });
 
     it('should skip failed jobs when picking next job', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
       const now = Date.now();
       const failedJob = createTestJob({
         namespace: 'testTenant1',
@@ -92,13 +92,13 @@ describe('RoundRobinQueueAdapter', () => {
 
   describe('Edge Cases', () => {
     it('should not return any jobs when queue is empty', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
       const pickedJobs: string[] = await pickJobs(adapter);
       expect(pickedJobs).toEqual([]);
     });
 
     it('should not return any jobs when all jobs are locked', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
       const now = Date.now();
       const lockedJob1 = createTestJob({
         namespace: 'testTenant1',
@@ -119,7 +119,7 @@ describe('RoundRobinQueueAdapter', () => {
     });
 
     it('should not return any jobs when all jobs are failed', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
       const now = Date.now();
       const failedJob1 = createTestJob({
         namespace: 'testTenant1',
@@ -140,7 +140,7 @@ describe('RoundRobinQueueAdapter', () => {
     });
 
     it('should pick jobs in sequence from the same tenant when no other tenants are available', async () => {
-      adapter = DefaultTestingRoundRobinQueueAdapter();
+      adapter = TestingRoundRobinQueueAdapter();
 
       await pushJobsForNamespaces(adapter, [['testTenant1', 3]]);
 
