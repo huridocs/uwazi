@@ -9,6 +9,9 @@
 .react-datepicker__header {
   background-color: colors.$c-grey-lighten;
   border-bottom: colors.$c-grey-light;
+  h2 {
+    margin-top: unset;
+  }
 }
 
 .react-datepicker__current-month {
