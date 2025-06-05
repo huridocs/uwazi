@@ -7,7 +7,7 @@ type TestJobData = Partial<JobDBO> & { failed?: boolean; timestamp?: number };
 
 export const createTestJob = (data: TestJobData): Job =>
   ({
-    id: new ObjectId().toHexString(),
+    id: new ObjectId(),
     queue: data.queue || 'test-queue',
     name: data.name || 'test-job',
     params: data.params || {},
