@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers';
@@ -77,6 +78,7 @@ describe('Paragraph Extraction', () => {
       cy.get('tbody tr td:nth-child(4) span:nth-child(1)').contains('0');
     });
   });
+
   describe('Entities Dashboard', () => {
     const checkCells = (
       row: number,
@@ -95,15 +97,18 @@ describe('Paragraph Extraction', () => {
     it('should navigate to the PX Entities List', () => {
       cy.contains('tbody tr', 'Ordenes del presidente').contains('button', 'View').click();
       cy.url().should('include', '/settings/paragraph-extraction/');
+      cy.get('table').contains('caption', 'Paragraphs');
     });
 
-    it('should view the details of the extractor and navigate through the flow', () => {
-      cy.get('table').contains('caption', 'Paragraphs');
+    it('should whait until the first entity shows and check the result', () => {
       cy.contains(
         'tr',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
         { timeout: 40000 }
       );
+    });
+
+    it('should check the results', () => {
       cy.get('tbody tr').should('have.length', 3);
       checkCells(
         1,
@@ -114,12 +119,13 @@ describe('Paragraph Extraction', () => {
       );
     });
 
-    it('should extract the paragraphs', () => {
+    it('should extract the paragraphs and disable the bulk extraction button', () => {
       cy.contains('button', 'Extract new paragraphs').click();
       cy.contains('The process of extracting the paragraphs has successfully started').as(
         'successMessage'
       );
       cy.contains('Dismiss').click();
+      cy.contains('button', 'Extract new paragraphs').should('be.disabled');
     });
 
     it('should change the status to processing', () => {
@@ -133,9 +139,20 @@ describe('Paragraph Extraction', () => {
       );
     });
 
+    let firstEntityProcessed = '';
+
     it('should update the processed entities after 25 seconds', () => {
       cy.contains('tbody tr', 'New').should('not.exist');
-      cy.contains('tbody tr', 'Processed', { timeout: 40000 });
+      cy.contains('tbody tr', 'Processed', { timeout: 40000 })
+        .eq(0)
+        .within(() => {
+          cy.get('td:nth-child(2) > span')
+            .eq(0)
+            .invoke('text')
+            .then(text => {
+              firstEntityProcessed = text.trim();
+            });
+        });
     });
 
     it('should check for a11y violations', () => {
@@ -145,20 +162,66 @@ describe('Paragraph Extraction', () => {
       cy.checkA11y();
     });
 
-    it('should maintain filters when triggering new extraction', () => {
+    it('should change an entity by uploading another file to generate an obsolete extraction', () => {
+      cy.contains('a', 'Library').click();
+      cy.contains('li', 'Ordenes del presidente').click();
+      cy.contains(
+        'div.item-document.template-58ada34c299e82674854505b',
+        firstEntityProcessed
+      ).click();
+      cy.get('aside.side-panel.metadata-sidepanel.is-active').within(() => {
+        cy.contains('h1', firstEntityProcessed);
+        cy.get('#upload-button-input').selectFile('./cypress/test_files/single_page.pdf', {
+          force: true,
+        });
+        cy.contains('Success, Upload another?');
+      });
+    });
+
+    it('should return to the extractor and check the UI state', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Paragraph Extraction').click();
+      cy.get('table').contains('caption', 'Extractors');
+      cy.contains('tr', 'Ordenes del presidente').within(() => {
+        cy.contains('td', '3');
+        cy.contains('span', '1 New').should('not.exist');
+        cy.contains('button', 'View').click();
+      });
+    });
+
+    it('should contain an obsolete extraction', () => {
+      cy.contains('Obsolete', { timeout: 40000 });
+    });
+
+    it('should check filtering and that the bulk extract button remains disabled', () => {
       cy.contains('button', 'Filters').click();
       cy.contains('label', 'Error').find('input[type="checkbox"]').check();
       cy.contains('button', 'Apply').click();
       cy.contains('tbody', 'NO DATA AVAILABLE');
-      cy.contains('button', 'Extract new paragraphs').click();
+      cy.contains('button', 'Filters').click();
+      cy.contains('button', 'Clear All').click();
+      cy.contains('label', 'Obsolete').find('input[type="checkbox"]').check();
+      cy.contains('label', 'Processed').find('input[type="checkbox"]').check();
+      cy.contains('button', 'Apply').click();
+      cy.contains('button', 'Extract new paragraphs').should('be.disabled');
+    });
+
+    it('should extract paragraphs for the obsolete entity and not loose filters', () => {
+      cy.contains('tr', 'Obsolete').within(() => {
+        cy.get('input[type="checkbox"]').click();
+      });
+      cy.contains('Extract paragraphs').click();
+      cy.contains('h1', 'Are you sure?');
+      cy.contains('button', 'Continue').click();
       cy.contains('The process of extracting the paragraphs has successfully started');
       cy.contains('Dismiss').click();
       cy.contains('button', 'Filters').click();
-      cy.contains('label', 'Error').find('input[type="checkbox"]').should('be.checked');
+      cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('be.checked');
+      cy.contains('label', 'Processed').find('input[type="checkbox"]').should('be.checked');
       cy.contains('button', 'Clear All').click();
-      cy.contains('label', 'Error').find('input[type="checkbox"]').should('not.be.checked');
+      cy.contains('label', 'Obsolete').find('input[type="checkbox"]').should('not.be.checked');
+      cy.contains('label', 'Processed').find('input[type="checkbox"]').should('not.be.checked');
       cy.contains('button', 'Apply').click();
-      cy.contains('tbody', 'NO DATA AVAILABLE').should('not.exist', { timeout: 10000 });
     });
   });
 
@@ -166,10 +229,6 @@ describe('Paragraph Extraction', () => {
 
   describe('Paragraphs Dashboard', () => {
     it('should navigate to the PX Paragraphs List', () => {
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(1000); //wait for loader paragraphs to finish
-      cy.injectAxe();
-
       cy.contains('tbody tr', 'Processed', { timeout: 40000 })
         .eq(0)
         .within(() => {
@@ -182,8 +241,6 @@ describe('Paragraph Extraction', () => {
           cy.contains('button', 'View').click();
         });
       cy.url().should('include', '/settings/paragraph-extraction/');
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(1000); //wait for loader paragraphs to finish
     });
 
     it('should check for a11y violations', () => {
