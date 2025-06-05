@@ -1,7 +1,5 @@
 import { SortingState } from '@tanstack/react-table';
 
-const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
-
 export const updateSortingUrl = (
   sorting: SortingState,
   currentPath: string,
@@ -11,11 +9,6 @@ export const updateSortingUrl = (
 
   if (sorting.length && sorting[0].id) {
     const property = sorting[0].id;
-
-    if (!SORTABLE_PROPERTIES.includes(property)) {
-      return `${currentPath}?${currentSearchParams.toString()}`;
-    }
-
     const order = sorting[0].desc ? 'desc' : 'asc';
     newSearchParams.set('sort', JSON.stringify({ property, order }));
   } else {
