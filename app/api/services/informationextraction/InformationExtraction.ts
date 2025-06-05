@@ -282,7 +282,7 @@ class InformationExtraction {
             labelText = entity.title;
           }
 
-          if (typeof labelText === 'undefined') {
+          if (!labelText?.toString().trim()?.length) {
             return;
           }
 

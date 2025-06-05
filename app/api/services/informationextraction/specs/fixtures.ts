@@ -188,6 +188,26 @@ const fixtures: DBFixture = {
       },
       { language: 'en' }
     ),
+    factory.entity('entity_without_label_data_3', 'templateToSegmentA', {
+      property1: [{ value: '  ' }],
+      property2: [{ value: 1299196800 }],
+      text: [{ value: 'any_source_text' }],
+    }),
+    factory.entity('entity_without_label_data_4', 'templateToSegmentA', {
+      property1: [{ value: null }],
+      property2: [{ value: 1299196800 }],
+      text: [{ value: 'any_source_text' }],
+    }),
+    factory.entity('entity_without_label_data_5', 'templateToSegmentA', {
+      property1: [{ value: undefined as any }],
+      property2: [{ value: 1299196800 }],
+      text: [{ value: 'any_source_text' }],
+    }),
+    factory.entity('entity_without_label_data_6', 'templateToSegmentA', {
+      property1: [],
+      property2: [{ value: 1299196800 }],
+      text: [{ value: 'any_source_text' }],
+    }),
     factory.entity('A2', 'templateToSegmentA'),
     factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),
     factory.entity('A4', 'templateToSegmentA'),
