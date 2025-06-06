@@ -34,7 +34,7 @@ jest.mock('api/queue.v2/configuration/factories', () => ({
   DefaultDispatcher: () => {
     const {
       SyncDispatcherForTests,
-    } = require('api/services/informationextraction/specs/SyncDispatcherForTest');
+    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
     const {
       InformationExtraction: InformationExtraction1,
     } = require('api/services/informationextraction/InformationExtraction');

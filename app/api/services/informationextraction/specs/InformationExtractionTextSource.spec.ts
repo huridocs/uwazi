@@ -18,7 +18,7 @@ jest.mock('api/queue.v2/configuration/factories', () => ({
   DefaultDispatcher: () => {
     const {
       SyncDispatcherForTests,
-    } = require('api/services/informationextraction/specs/SyncDispatcherForTest');
+    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
     const {
       InformationExtraction: InformationExtraction1,
     } = require('api/services/informationextraction/InformationExtraction');
@@ -29,7 +29,7 @@ jest.mock('api/queue.v2/configuration/factories', () => ({
 
     return new SyncDispatcherForTests({
       IXTrainModelJob: async () => {
-        const serviceUrl = 'http://localhost:1234/';
+        const serviceUrl = 'http://localhost:4321/';
         const tenantName = 'tenant1';
         const informationExtraction = new InformationExtraction1();
         const iXTaskService = new IXTaskService({
