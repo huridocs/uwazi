@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table, Button } from 'V2/Components/UI';
+import { Table, Button, ConfirmNavigationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useParams, redirect } from 'react-router';
+import { LoaderFunction, useLoaderData, useNavigate, useBlocker, Location } from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
 import * as pagesAPI from 'V2/api/pages';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -45,6 +45,7 @@ const templatesEditorLoader =
   };
 
 const TemplatesEditor = () => {
+  const navigate = useNavigate();
   const loadedData = useLoaderData() as {
     loadedTemplate: TemplateSchema;
     pagesOptions: { value: string; label: string }[];
@@ -58,6 +59,7 @@ const TemplatesEditor = () => {
   const setNotifications = useSetAtom(notificationAtom);
   const [nameError, setNameError] = useState(false);
   const [colorError, setColorError] = useState(false);
+  const [showNavigationModal, setShowNavigationModal] = useState(false);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -70,6 +72,30 @@ const TemplatesEditor = () => {
   useEffect(() => {
     setTemplate(loadedTemplate);
   }, [loadedTemplate]);
+
+  const getCurrentStatus = useCallback(() => {
+    const cleanedCommonProperties = commonProperties.map(cleanProperty);
+    const cleanedProperties = properties.map(cleanProperty);
+    return {
+      ...template,
+      commonProperties: cleanedCommonProperties,
+      properties: cleanedProperties,
+    };
+  }, [template, commonProperties, properties]);
+
+  const checkPendingChanges = useCallback(
+    (nextLocation?: Location<any> | undefined) =>
+      !nextLocation?.pathname.includes('edit') && !isEqual(loadedTemplate, getCurrentStatus()),
+    [getCurrentStatus, loadedTemplate]
+  );
+
+  const blocker = useBlocker(({ nextLocation }) => checkPendingChanges(nextLocation));
+
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
+      setShowNavigationModal(true);
+    }
+  }, [blocker, setShowNavigationModal]);
 
   const allProperties = useMemo(
     () => [...commonProperties, ...properties],
@@ -102,13 +128,7 @@ const TemplatesEditor = () => {
     }
 
     try {
-      const cleanedCommonProperties = commonProperties.map(cleanProperty);
-      const cleanedProperties = properties.map(cleanProperty);
-      const templateToSave = {
-        ...template,
-        commonProperties: cleanedCommonProperties,
-        properties: cleanedProperties,
-      } as TemplateSchema;
+      const templateToSave = getCurrentStatus();
       const savedTemplate = await templatesAPI.save(templateToSave);
       setTemplate(savedTemplate);
       setNotifications({
@@ -200,6 +220,9 @@ const TemplatesEditor = () => {
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
+      {showNavigationModal && (
+        <ConfirmNavigationModal setShowModal={setShowNavigationModal} onConfirm={blocker.proceed} />
+      )}
     </div>
   );
 };
