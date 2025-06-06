@@ -7,7 +7,8 @@ import { map } from 'lodash';
 import * as stories from 'app/stories/Table.stories';
 import { tableWithDisabled } from '../Table/specs/fixtures';
 
-const { Basic, Nested, Custom } = composeStories(stories);
+const { Basic, Nested, Custom, BasicWithDisabledDnD, NestedWithDisabledDnD } =
+  composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.tableData || [];
@@ -407,6 +408,63 @@ describe('Table', () => {
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 1 Entity 2 Entity 4 Entity 3 Entity 5');
       });
+    });
+  });
+
+  describe('DnD with disabled rows', () => {
+    it('should not allow dragging disabled rows', () => {
+      mount(<BasicWithDisabledDnD />);
+      checkRowContent(1, ['Empty', 'Select', 'Entity 2', data[0].description, '2']);
+    });
+
+    it('should not do anything when droping over disabled rows', () => {
+      mount(<BasicWithDisabledDnD />);
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(0),
+        cy.get('tr').eq(1)
+      );
+      checkRowContent(1, ['Empty', 'Select', 'Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Drag row', 'Select', 'Entity 1', data[1].description, '1']);
+    });
+
+    it('should not allow dragging disabled groups or children', () => {
+      mount(<NestedWithDisabledDnD />);
+      checkRowContent(1, [
+        'Empty',
+        'Select',
+        'Group',
+        'Group 1',
+        dataWithNested[0].description,
+        '10',
+      ]);
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('button', 'Open group').realClick();
+      });
+      cy.contains('tr', 'Group 2').within(() => {
+        cy.contains('button', 'Open group').realClick();
+      });
+      cy.contains('tr', 'Sub 1-1').within(() => {
+        cy.contains('button', 'Drag row');
+      });
+      cy.contains('tr', 'Sub 2-1').within(() => {
+        cy.contains('Empty');
+      });
+      cy.checkA11y();
+    });
+
+    it('should be able to drag children from not dragable parents', () => {
+      mount(<NestedWithDisabledDnD />);
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('Open group').realClick();
+      });
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(1),
+        cy.get('button[aria-roledescription="sortable"]').eq(5)
+      );
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('Open group').realClick();
+      });
+      cy.contains('tr', 'Sub 1-2');
     });
   });
 

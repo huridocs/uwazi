@@ -215,7 +215,7 @@ const StoryComponent = ({
 };
 
 const meta: Meta<StoryProps> = {
-  title: 'Components/TableV2',
+  title: 'Components/Table',
   component: StoryComponent,
 };
 
@@ -248,11 +248,45 @@ const Basic = {
   },
 };
 
+const BasicWithDisabledDnD = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    tableData: [
+      { ...basicData[0], disableRowDnD: true },
+      { ...basicData[2], disableRowDnD: true },
+      { ...basicData[1] },
+      { ...basicData[3] },
+      { ...basicData[4] },
+    ],
+  },
+};
+
 const Nested = {
   ...Primary,
   args: {
     ...Basic.args,
     tableData: dataWithGroups,
+    columnType: 'nested',
+  },
+};
+
+const NestedWithDisabledDnD = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    tableData: [
+      { ...dataWithGroups[0], disableRowDnD: true },
+      {
+        ...dataWithGroups[1],
+        subRows: dataWithGroups[1].subRows?.map(subRow => ({ ...subRow, disableRowDnD: true })),
+        disableRowDnD: true,
+      },
+      { ...dataWithGroups[2] },
+      { ...dataWithGroups[3] },
+      { ...dataWithGroups[4] },
+      { ...dataWithGroups[5] },
+    ],
     columnType: 'nested',
   },
 };
@@ -267,5 +301,5 @@ const Custom = {
   },
 };
 
-export { Basic, Nested, Custom };
+export { Basic, BasicWithDisabledDnD, Nested, NestedWithDisabledDnD, Custom };
 export default meta;
