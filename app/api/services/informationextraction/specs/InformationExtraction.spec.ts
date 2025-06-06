@@ -25,7 +25,7 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
-import { NoLabeledFiles, NoSegmentedFiles } from '../getFiles';
+import { NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -530,7 +530,7 @@ describe('InformationExtraction', () => {
         1,
         'tenant1',
         IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
-        { message: NoLabeledFiles.defaultMessage }
+        { message: NoLabeledEntities.defaultMessage }
       );
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
       expect(model.findingSuggestions).toBe(false);
@@ -543,7 +543,7 @@ describe('InformationExtraction', () => {
         2,
         'tenant1',
         IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
-        { message: NoLabeledFiles.defaultMessage }
+        { message: NoLabeledEntities.defaultMessage }
       );
       const [multiSelectModel] = await IXModelsModel.get({
         extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
@@ -558,7 +558,7 @@ describe('InformationExtraction', () => {
         3,
         'tenant1',
         IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
-        { message: NoLabeledFiles.defaultMessage }
+        { message: NoLabeledEntities.defaultMessage }
       );
       const [relationshipModel] = await IXModelsModel.get({
         extractorId: factory.id('extractorWithEmptyRelationship'),

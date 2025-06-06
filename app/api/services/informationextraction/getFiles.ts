@@ -3,7 +3,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable camelcase */
 import moment from 'moment';
-
 import {
   ExtractedMetadataSchema,
   ObjectIdSchema,
@@ -22,6 +21,8 @@ import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure } from 'shared/tsUtils';
 import { LanguageUtils } from 'shared/language';
+import { UwaziFilterQuery } from 'api/odm';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { Extractors } from './ixextractors';
 
 const BATCH_SIZE = 50;
@@ -39,10 +40,10 @@ class NoSegmentedFiles extends Error {
   }
 }
 
-class NoLabeledFiles extends Error {
+class NoLabeledEntities extends Error {
   static defaultMessage = 'There are no labeled Files for training the model';
 
-  constructor(message = NoLabeledFiles.defaultMessage) {
+  constructor(message = NoLabeledEntities.defaultMessage) {
     super(message);
   }
 }
@@ -137,22 +138,6 @@ async function getPropertyType(templates: ObjectIdSchema[], property: string) {
   return type;
 }
 
-async function anyFilesLabeled(
-  property: string,
-  propertyType: string,
-  entitiesFromTrainingTemplatesIds: string[]
-) {
-  const needsExtractedMetadata = !propertyTypeIsWithoutExtractedMetadata(propertyType);
-  const count = await filesModel.count({
-    type: 'document',
-    filename: { $exists: true },
-    language: { $exists: true },
-    entity: { $in: entitiesFromTrainingTemplatesIds },
-    ...(needsExtractedMetadata ? { 'extractedMetadata.name': property } : {}),
-  });
-  return !!count;
-}
-
 async function anyFilesSegmented(
   property: string,
   propertyType: string,
@@ -190,19 +175,27 @@ async function fileQuery(
 function entityForTrainingQuery(
   templates: ObjectIdSchema[],
   toProperty: string,
-  propertyType: PropertyTypeSchema,
   fromProperty?: string
-) {
-  const query: {
-    [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
-  } = { template: { $in: templates } };
+): UwaziFilterQuery<Entity> {
+  const query: UwaziFilterQuery<any> = { template: { $in: templates } };
 
   if (fromProperty) {
     query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
   }
 
-  if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
-    query[`metadata.${toProperty}`] = { $exists: true, $ne: [] };
+  if (toProperty === 'title') {
+    query.title = { $ne: '' };
+  } else {
+    query[`metadata.${toProperty}`] = {
+      $exists: true,
+      $not: { $eq: [] },
+      $elemMatch: {
+        value: {
+          $exists: true,
+          $nin: ['', null, undefined],
+        },
+      },
+    };
   }
 
   return query;
@@ -213,9 +206,8 @@ async function getEntitiesForTraining(
   toProperty: string,
   fromProperty: string
 ) {
-  const propertyType = await getPropertyType(templates, toProperty);
   const entities = await entitiesModel.getUnrestricted(
-    entityForTrainingQuery(templates, toProperty, propertyType, fromProperty),
+    entityForTrainingQuery(templates, toProperty, fromProperty),
     `sharedId title metadata.${toProperty} metadata.${fromProperty} language`,
     { limit: MAX_TRAINING_ENTITIES_NUMBER }
   );
@@ -260,15 +252,15 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const propertyType = await getPropertyType(templates, property);
   const entities = await entitiesModel.getUnrestricted(
-    entityForTrainingQuery(templates, property, propertyType),
+    entityForTrainingQuery(templates, property),
     `sharedId metadata.${property} language`
   );
   const entitiesFromTrainingTemplatesIds = entities
     .filter(x => x.sharedId)
     .map(x => x.sharedId) as string[];
 
-  if (!(await anyFilesLabeled(property, propertyType, entitiesFromTrainingTemplatesIds))) {
-    throw new NoLabeledFiles();
+  if (!entitiesFromTrainingTemplatesIds.length) {
+    throw new NoLabeledEntities();
   }
 
   if (!(await anyFilesSegmented(property, propertyType, entitiesFromTrainingTemplatesIds))) {
@@ -307,7 +299,9 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     const [{ value }] = entity.metadata[property] || [{}];
     let stringValue: string;
     if (propertyType === propertyTypes.date) {
-      stringValue = moment(<number>value * 1000).format('YYYY-MM-DD');
+      stringValue = moment(<number>value * 1000)
+        .utc()
+        .format('YYYY-MM-DD');
     } else if (propertyType === propertyTypes.numeric) {
       stringValue = value?.toString() || '';
     } else {
@@ -362,7 +356,7 @@ export {
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsMultiValued,
-  NoLabeledFiles,
+  NoLabeledEntities,
   NoSegmentedFiles,
   NoFilesForTraining,
 };

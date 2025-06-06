@@ -1,5 +1,5 @@
-@use "../config/colors";
-@use "../config/typography";
+@use '../config/colors';
+@use '../config/typography';
 
 .react-datepicker {
   font-size: typography.$f-size;
@@ -9,6 +9,9 @@
 .react-datepicker__header {
   background-color: colors.$c-grey-lighten;
   border-bottom: colors.$c-grey-light;
+  h2 {
+    margin-top: unset;
+  }
 }
 
 .react-datepicker__current-month {
@@ -29,29 +32,6 @@
 .react-datepicker__year-option {
   height: 24px;
   line-height: 24px;
-}
-
-.react-datepicker__navigation--years-previous,
-.react-datepicker__navigation--years-upcoming,
-.react-datepicker__navigation--previous,
-.react-datepicker__navigation--next {
-  border: 8px solid transparent;
-}
-.react-datepicker__navigation--years-upcoming {
-  top: 0;
-  border-bottom-color: colors.$c-grey;
-}
-.react-datepicker__navigation--years-previous {
-  top: 8px;
-  border-top-color: colors.$c-grey;
-}
-.react-datepicker__navigation--previous {
-  left: 0;
-  border-right-color: colors.$c-grey;
-}
-.react-datepicker__navigation--next {
-  right: 0;
-  border-left-color: colors.$c-grey;
 }
 
 .react-datepicker__day-name,
@@ -126,6 +106,14 @@
     background: colors.$c-danger;
     color: colors.$c-white;
   }
+}
+
+.react-datepicker__year-select {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  min-width: 72px;
+  text-align: center;
 }
 
 .multidate {

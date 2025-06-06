@@ -20,6 +20,7 @@ import { IXTaskService } from 'api/services/informationextraction/TaskService';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -57,6 +58,8 @@ export function registerJobs(
   ) => void
 ) {
   register(TestJob, async () => new TestJob());
+
+  register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
 
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 

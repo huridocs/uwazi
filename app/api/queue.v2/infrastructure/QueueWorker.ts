@@ -131,6 +131,7 @@ export class QueueWorker {
       this.logger.info('Processing job', { job });
       const startTime = performance.now();
       await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
+        namespace: job.namespace,
         retryCount: job.retryCount,
         maxRetries: job.options.maxRetries,
       });
