@@ -6,6 +6,12 @@ import {
   SelectPropertyIcon,
   TextPropertyIcon,
   RelationshipPropertyIcon,
+  IDPropertyIcon,
+  GeolocationPropertyIcon,
+  ImagePropertyIcon,
+  LinkPropertyIcon,
+  MediaPropertyIcon,
+  PreviewPropertyIcon,
 } from 'V2/Components/CustomIcons';
 
 const propertyIcons = {
@@ -16,6 +22,15 @@ const propertyIcons = {
   select: <SelectPropertyIcon className="w-5 h-5" />,
   multiselect: <SelectPropertyIcon className="w-5 h-5" />,
   relationship: <RelationshipPropertyIcon className="w-5 h-5" />,
+  generatedid: <IDPropertyIcon className="w-5 h-5" />,
+  geolocation: <GeolocationPropertyIcon className="w-5 h-5" />,
+  image: <ImagePropertyIcon className="w-5 h-5" />,
+  link: <LinkPropertyIcon className="w-5 h-5" />,
+  media: <MediaPropertyIcon className="w-5 h-5" />,
+  multidate: <DatePropertyIcon className="w-5 h-5" />,
+  multidaterange: <DatePropertyIcon className="w-5 h-5" />,
+  preview: <PreviewPropertyIcon className="w-5 h-5" />,
+  daterange: <DatePropertyIcon className="w-5 h-5" />,
 };
 
 export { propertyIcons };

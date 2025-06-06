@@ -10,6 +10,7 @@ type ColorPickerProps = {
   value?: string;
   className?: string;
   hasErrors?: boolean;
+  options?: string[];
 };
 
 const defaultColors = [
@@ -40,6 +41,7 @@ const ColorPicker = ({
   onChange,
   hasErrors,
   value = defaultColors[0],
+  options = defaultColors,
 }: ColorPickerProps) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -75,7 +77,7 @@ const ColorPicker = ({
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="w-10 h-10 border border-gray-200 cursor-pointer rounded-lg flex items-center justify-center shadow-sm transition hover:border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-sm transition hover:border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <div
                 data-testid="colorpicker-button"
@@ -93,7 +95,7 @@ const ColorPicker = ({
                 className="grid grid-cols-5 grid-rows-2 gap-2 mb-2 p-2"
                 data-testid="colorpicker-popover"
               >
-                {defaultColors.slice(0, 10).map((color: string) => (
+                {options.map((color: string) => (
                   <li key={color}>
                     <button
                       type="button"

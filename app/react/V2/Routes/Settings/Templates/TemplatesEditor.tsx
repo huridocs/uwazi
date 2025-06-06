@@ -4,16 +4,21 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Table, Button } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, redirect, useLoaderData } from 'react-router';
+import { LoaderFunction, useLoaderData, useParams, redirect } from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
 import * as pagesAPI from 'V2/api/pages';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Page } from 'app/V2/shared/types';
-import { isEqual, template } from 'lodash';
+import { isEqual } from 'lodash';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { I18NLink } from 'app/I18N';
-import { emptyTemplate, processDefaultProperties, processProperties } from './helpers';
+import {
+  cleanProperty,
+  emptyTemplate,
+  processDefaultProperties,
+  processProperties,
+} from './helpers';
 import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
 import { TemplateMetadata } from './components/TemplateMetadata';
 
@@ -26,25 +31,26 @@ const templatesEditorLoader =
       value: page.sharedId,
       label: page.title,
     }));
+    let loadedTemplate = emptyTemplate;
+    const templates = await templatesAPI.get(headers);
 
     if (params.templateId) {
-      const templates = await templatesAPI.get(headers);
-      const template = templates.find((t: any) => t._id === params.templateId);
-      if (!template) {
-        redirect('/404');
+      const templateToEdit = templates.find(template => template.sharedId === params.templateId);
+      if (templateToEdit) {
+        loadedTemplate = templateToEdit;
       }
-
-      return { template, pagesOptions };
     }
-    return { template: emptyTemplate, pagesOptions };
+
+    return { loadedTemplate, pagesOptions };
   };
 
 const TemplatesEditor = () => {
   const loadedData = useLoaderData() as {
-    template: TemplateSchema;
+    loadedTemplate: TemplateSchema;
     pagesOptions: { value: string; label: string }[];
   };
-  const { template: loadedTemplate, pagesOptions } = loadedData;
+
+  const { loadedTemplate, pagesOptions } = loadedData;
   const [template, setTemplate] = useState<TemplateSchema>(loadedTemplate);
   const [properties, setProperties] = useState<PropertyRow[]>([]);
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
@@ -88,11 +94,6 @@ const TemplatesEditor = () => {
     }
   };
 
-  const cleanProperty = (prop: PropertyRow) => {
-    const { rowId, disableRowDnD, disableRowSelection, ...rest } = prop;
-    return rest;
-  };
-
   const handleSave = async () => {
     setNameError(!template.name);
     setColorError(!template.color);
@@ -115,6 +116,10 @@ const TemplatesEditor = () => {
         text: <Translate>Template saved successfully.</Translate>,
       });
     } catch (e) {
+      if (e.status === 409) {
+        //TODO: show confirmation modal to reindex the entities with the new template
+        return;
+      }
       setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
     }
   };
@@ -136,6 +141,7 @@ const TemplatesEditor = () => {
             data={allProperties}
             enableSelections
             dnd={{ enable: true }}
+            onChange={handleTableChange}
             header={
               <TemplateMetadata
                 value={{
@@ -153,7 +159,6 @@ const TemplatesEditor = () => {
                 colorError={colorError}
               />
             }
-            onChange={handleTableChange}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer>

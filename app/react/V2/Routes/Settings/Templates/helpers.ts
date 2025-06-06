@@ -1,6 +1,7 @@
 import uniqueID from 'shared/uniqueID';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import { PropertyRow } from './components/TemplateEditorTableComponents';
 
 const emptyTemplate: TemplateSchema = {
   name: '',
@@ -43,4 +44,9 @@ const processProperties = (props: PropertySchema[]) =>
     rowId: uniqueID(),
   }));
 
-export { processDefaultProperties, processProperties, emptyTemplate };
+const cleanProperty = (prop: PropertyRow) => {
+  const { rowId, disableRowDnD, disableRowSelection, ...rest } = prop;
+  return rest;
+};
+
+export { processDefaultProperties, processProperties, cleanProperty, emptyTemplate };

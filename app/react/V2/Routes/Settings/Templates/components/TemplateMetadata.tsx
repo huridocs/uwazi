@@ -5,6 +5,19 @@ import { Checkbox } from 'app/V2/Components/Forms/Checkbox';
 import { Select, OptionSchema } from 'app/V2/Components/Forms/Select';
 import { Translate } from 'app/I18N/Translate';
 
+const templateColors = [
+  '#628ccf',
+  '#ff8282',
+  '#ff8a4c',
+  '#faca15',
+  '#16bdca',
+  '#31c48d',
+  '#9eb0fd',
+  '#f17eb8',
+  '#ac94fa',
+  '#9ca3af',
+];
+
 export interface TemplateMetadataValues {
   name: string;
   color: string;
@@ -54,6 +67,7 @@ export const TemplateMetadata = ({
         value={value.color}
         onChange={color => onChange({ ...value, color })}
         hasErrors={!!colorError}
+        options={templateColors}
       />
       <InputField
         id="template-name"
