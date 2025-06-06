@@ -43,6 +43,7 @@ const fixtures: DBFixture = {
     }),
     factory.ixExtractor('prop2extractor', 'property2', ['templateToSegmentA']),
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
+    factory.ixExtractor('prop5extractor', 'property5', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
     factory.ixExtractor('extractorWithSelect', 'property_select', ['templateToSegmentD']),
     factory.ixExtractor('extractorWithMultiselect', 'property_multiselect', ['templateToSegmentD']),
@@ -157,6 +158,7 @@ const fixtures: DBFixture = {
       'templateToSegmentA',
       {
         property1: [{ value: 1088985600 }],
+        property5: [{ value: '' }],
         text: [{ value: 'text 1' }],
         source_property: [{ value: 'any_source_text' }],
         date_property: [{ value: 1088985600 }],
@@ -189,7 +191,10 @@ const fixtures: DBFixture = {
       { language: 'en' }
     ),
     factory.entity('A2', 'templateToSegmentA'),
-    factory.entity('A3', 'templateToSegmentA', { property2: [{ value: 1 }] }),
+    factory.entity('A3', 'templateToSegmentA', {
+      property1: [{ value: 2 }],
+      property2: [{ value: 1 }],
+    }),
     factory.entity('A4', 'templateToSegmentA'),
     factory.entity('A5', 'templateToSegmentA', { property1: [{ value: 1 }] }),
     factory.entity('A6', 'templateToSegmentA'),
@@ -959,19 +964,13 @@ const fixtures: DBFixture = {
       findingSuggestions: true,
     },
     {
-      extractorId: factory.id('prop1extractor'),
-      creationDate: 200,
-      status: 'ready',
-      findingSuggestions: true,
-    },
-    {
-      extractorId: factory.id('prop4extractor'),
-      creationDate: 200,
-      status: 'ready',
-      findingSuggestions: true,
-    },
-    {
       extractorId: factory.id('extractorWithOneFailedSegmentation'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('prop1extractor'),
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
@@ -985,6 +984,18 @@ const fixtures: DBFixture = {
     {
       extractorId: factory.id('prop3extractor'),
       creationDate: 200,
+      status: 'processing',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('prop4extractor'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('prop5extractor'),
+      creationDate: 300,
       status: 'processing',
       findingSuggestions: true,
     },
@@ -1036,6 +1047,7 @@ const fixtures: DBFixture = {
       factory.property('property1', 'text'),
       factory.property('property2', 'date'),
       factory.property('property3', 'numeric'),
+      factory.property('property5', 'numeric'),
       factory.property('source_property', 'text'),
       factory.property('date_property', 'date'),
     ]),
