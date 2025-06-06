@@ -109,7 +109,7 @@ const handleTemplateUpdate = async (
   }
 };
 
-export const Extractors = {
+const Extractors = {
   get: model.get.bind(model),
   getById: model.getById.bind(model),
   get_all: async () => model.get({}),
@@ -173,5 +173,11 @@ export const Extractors = {
   },
 };
 
+class ExtractorNotFound extends Error {
+  constructor(extractorId: string) {
+    super(`Extractor with ID ${extractorId} not found.`);
+  }
+}
+
 export type { AllowedPropertyTypes };
-export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed };
+export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed, ExtractorNotFound, Extractors };
