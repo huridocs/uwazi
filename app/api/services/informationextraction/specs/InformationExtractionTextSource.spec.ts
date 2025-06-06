@@ -13,11 +13,12 @@ jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
 describe('Information Extraction: Extracting from text source', () => {
+  const SERVICE_PORT = 4321;
   let informationExtraction: InformationExtraction;
   let IXExternalService: ExternalDummyService;
 
   beforeAll(async () => {
-    IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
+    IXExternalService = new ExternalDummyService(SERVICE_PORT, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
@@ -30,7 +31,25 @@ describe('Information Extraction: Extracting from text source', () => {
   beforeEach(async () => {
     informationExtraction = new InformationExtraction();
 
-    await testingEnvironment.setUp(fixtures);
+    const currentSettings = fixtures.settings?.[0] || {};
+
+    const fixturesWithUnconflictingPorts = {
+      ...fixtures,
+      settings: [
+        {
+          ...currentSettings,
+          features: {
+            ...(currentSettings.features || {}),
+            metadataExtraction: {
+              ...(currentSettings.features?.metadataExtraction || {}),
+              url: `http://localhost:${SERVICE_PORT}`,
+            },
+          },
+        },
+      ],
+    };
+
+    await testingEnvironment.setUp(fixturesWithUnconflictingPorts);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
@@ -434,7 +453,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       expect(saveSuggestionsForPdfSourceSpy).not.toHaveBeenCalled();
@@ -467,7 +486,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const suggestions = await IXSuggestionsModel.get({
@@ -538,7 +557,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -586,7 +605,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -634,7 +653,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -682,7 +701,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -733,7 +752,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -784,7 +803,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({

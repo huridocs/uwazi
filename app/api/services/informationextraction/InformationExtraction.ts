@@ -36,7 +36,7 @@ import {
   propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsSelectOrMultiSelect,
   NoSegmentedFiles,
-  NoLabeledFiles,
+  NoLabeledEntities,
   getEntitiesForTraining,
   getPropertyType,
   getEntitiesForSuggestions,
@@ -275,7 +275,9 @@ class InformationExtraction {
           let labelText = entity.metadata?.[extractor.property]?.[0]?.value;
 
           if (targetPropertyType === 'date') {
-            labelText = moment(Number(labelText) * 1000).format('YYYY-MM-DD');
+            labelText = moment(Number(labelText) * 1000)
+              .utc()
+              .format('YYYY-MM-DD');
           }
 
           if (extractor.property === 'title') {
@@ -736,8 +738,14 @@ class InformationExtraction {
           },
         ];
       }
-      if (e instanceof NoLabeledFiles) {
-        return [false, { status: 'error', message: 'No labeled data' }];
+      if (e instanceof NoLabeledEntities) {
+        return [
+          false,
+          {
+            status: 'error',
+            message: "No labeled data (entities don't have values for target property)",
+          },
+        ];
       }
       throw e;
     }
