@@ -43,6 +43,7 @@ Add link,Добавить ссылку
 Add page,Добавить страницу
 Add PDF,Add PDF
 Add people or groups,Добавить людей или группы
+Add property,Add property
 Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,Добавить шаблон
@@ -314,8 +315,11 @@ Entity types,Типы объектов
 Entity updated,Entity updated
 Error,Ошибка
 Error adding thesauri.,Error adding thesauri.
+Error creating relationship type.,Error creating relationship type.
+Error creating thesaurus.,Error creating thesaurus.
 Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
@@ -546,6 +550,7 @@ No Group,No Group
 No icon / flag,Нет иконки/флажка
 No items available,No items available
 No Label,Нет метки
+No label,No label
 No options,No options
 No options found,Варианты не найдены
 No property,Нет свойства
@@ -596,6 +601,7 @@ Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Откройте приложение для двухфакторной аутентификации на вашем устройстве
+Options,Options
 or,или
 or drop your files here.,или опустите свои файлы сюда.
 Order,Последовательность
@@ -689,6 +695,9 @@ Reject,Отклонить
 Relationship,Взаимосвязь
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type created successfully.,Relationship type created successfully.
+Relationship type name,Relationship type name
+Relationship type name already exists,Relationship type name already exists
 Relationship types,Типы взаимосвязей
 relationships,Взаимосвязи
 Relationships,Взаимосвязи
@@ -704,6 +713,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,Повторите пароль
 Request id #,Запрос ID #
 Request token,Request token
+Required,Required
 Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
@@ -847,6 +857,8 @@ Target's role in the relationship Source-Target.,Target's role in the relationsh
 Template,Шаблон
 Template conflict,Template conflict
 Template name,Template name
+Template name already exists,Template name already exists
+Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
@@ -875,6 +887,9 @@ thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
+Thesaurus created successfully.,Thesaurus created successfully.
+Thesaurus name,Thesaurus name
+Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,Предметный указатель сохранен
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Эта область позволяет добавить пользовательский JavaScript на страницу. Это откроет большую сферу новых возможностей.
