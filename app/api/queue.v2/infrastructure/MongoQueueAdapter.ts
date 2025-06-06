@@ -3,7 +3,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { Job, QueueAdapter } from './QueueAdapter';
 
-interface JobDBO {
+export interface JobDBO {
   _id: ObjectId;
   queue: string;
   name: string;
