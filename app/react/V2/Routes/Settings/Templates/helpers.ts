@@ -1,9 +1,9 @@
 import uniqueID from 'shared/uniqueID';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
+import { ClientTemplateSchema } from 'V2/shared/types';
 import { PropertyRow } from './components/TemplateEditorTableComponents';
 
-const emptyTemplate: TemplateSchema = {
+const emptyTemplate: ClientTemplateSchema = {
   name: '',
   color: '#C03B22',
   entityViewPage: '',

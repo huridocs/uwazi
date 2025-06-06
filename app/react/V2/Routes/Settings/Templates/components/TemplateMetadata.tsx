@@ -61,7 +61,7 @@ export const TemplateMetadata = ({
   };
 
   return (
-    <div className="flex items-center gap-3 w-full py-2">
+    <div className="flex gap-3 w-full py-2">
       <ColorPicker
         name="template-color"
         value={value.color}
@@ -78,8 +78,11 @@ export const TemplateMetadata = ({
         className="flex-grow min-w-[120px]"
         clearFieldAction={value.name ? () => onChange({ ...value, name: '' }) : undefined}
         hasErrors={!!nameError}
+        errorMessage={
+          nameError && value.name ? <Translate>Template name already exists</Translate> : ''
+        }
       />
-      <div className="flex items-center gap-2 ml-4">
+      <div className="flex items-center h-10 gap-2 ml-4">
         {!pages.length && (
           <Translate className="text-sm font-medium text-gray-900">
             There are no pages enabled for entity view

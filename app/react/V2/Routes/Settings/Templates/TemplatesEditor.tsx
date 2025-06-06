@@ -7,11 +7,11 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useNavigate, useBlocker, Location } from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
 import * as pagesAPI from 'V2/api/pages';
-import { TemplateSchema } from 'shared/types/templateType';
-import { Page } from 'app/V2/shared/types';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { Page, ClientTemplateSchema } from 'V2/shared/types';
 import { isEqual } from 'lodash';
-import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'V2/atoms';
+import { useSetAtom, useAtomValue } from 'jotai';
+import { notificationAtom, templatesAtom } from 'V2/atoms';
 import { I18NLink } from 'app/I18N';
 import {
   cleanProperty,
@@ -21,6 +21,8 @@ import {
 } from './helpers';
 import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
 import { TemplateMetadata } from './components/TemplateMetadata';
+import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal';
+import { AddThesaurusModal } from './components/AddThesaurusModal';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -35,7 +37,7 @@ const templatesEditorLoader =
     const templates = await templatesAPI.get(headers);
 
     if (params.templateId) {
-      const templateToEdit = templates.find(template => template.sharedId === params.templateId);
+      const templateToEdit = templates.find(template => template._id === params.templateId);
       if (templateToEdit) {
         loadedTemplate = templateToEdit;
       }
@@ -47,19 +49,23 @@ const templatesEditorLoader =
 const TemplatesEditor = () => {
   const navigate = useNavigate();
   const loadedData = useLoaderData() as {
-    loadedTemplate: TemplateSchema;
+    loadedTemplate: ClientTemplateSchema;
     pagesOptions: { value: string; label: string }[];
   };
 
   const { loadedTemplate, pagesOptions } = loadedData;
-  const [template, setTemplate] = useState<TemplateSchema>(loadedTemplate);
+  const [template, setTemplate] = useState<ClientTemplateSchema>(loadedTemplate);
   const [properties, setProperties] = useState<PropertyRow[]>([]);
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const setNotifications = useSetAtom(notificationAtom);
+  const setTemplates = useSetAtom(templatesAtom);
+  const templates = useAtomValue(templatesAtom);
   const [nameError, setNameError] = useState(false);
   const [colorError, setColorError] = useState(false);
   const [showNavigationModal, setShowNavigationModal] = useState(false);
+  const [showRelationshipTypeModal, setShowRelationshipTypeModal] = useState(false);
+  const [showThesaurusModal, setShowThesaurusModal] = useState(false);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -73,12 +79,13 @@ const TemplatesEditor = () => {
     setTemplate(loadedTemplate);
   }, [loadedTemplate]);
 
-  const getCurrentStatus = useCallback(() => {
+  const getCurrentStatus = useCallback((): ClientTemplateSchema => {
     const cleanedCommonProperties = commonProperties.map(cleanProperty);
     const cleanedProperties = properties.map(cleanProperty);
+
     return {
       ...template,
-      commonProperties: cleanedCommonProperties,
+      commonProperties: cleanedCommonProperties as [PropertySchema, ...PropertySchema[]],
       properties: cleanedProperties,
     };
   }, [template, commonProperties, properties]);
@@ -121,9 +128,12 @@ const TemplatesEditor = () => {
   };
 
   const handleSave = async () => {
-    setNameError(!template.name);
+    const isDuplicateName = templates.some(
+      t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
+    );
+    setNameError(!template.name || isDuplicateName);
     setColorError(!template.color);
-    if (!template.name || !template.color) {
+    if (!template.name || !template.color || isDuplicateName) {
       return;
     }
 
@@ -131,10 +141,17 @@ const TemplatesEditor = () => {
       const templateToSave = getCurrentStatus();
       const savedTemplate = await templatesAPI.save(templateToSave);
       setTemplate(savedTemplate);
+
+      // Update templates atom
+      const updatedTemplates = template._id
+        ? templates.map(t => (t._id === template._id ? savedTemplate : t))
+        : [...templates, savedTemplate];
+      setTemplates(updatedTemplates);
       setNotifications({
         type: 'success',
         text: <Translate>Template saved successfully.</Translate>,
       });
+      await navigate('/settings/templates');
     } catch (e) {
       if (e.status === 409) {
         //TODO: show confirmation modal to reindex the entities with the new template
@@ -189,17 +206,25 @@ const TemplatesEditor = () => {
                   <Button color="primary">
                     <Translate>Add property</Translate>
                   </Button>
-                  <Button color="primary" styling="outline">
+                  <Button
+                    color="primary"
+                    styling="outline"
+                    onClick={() => setShowThesaurusModal(true)}
+                  >
                     <Translate>Add thesaurus</Translate>
                   </Button>
-                  <Button color="primary" styling="outline">
+                  <Button
+                    color="primary"
+                    styling="outline"
+                    onClick={() => setShowRelationshipTypeModal(true)}
+                  >
                     <Translate>Add relationship type</Translate>
                   </Button>
                 </>
               ) : (
                 <>
                   <Button color="error" onClick={handleDelete}>
-                    <Translate>Delete</Translate>
+                    <Translate>Remove</Translate>
                   </Button>
                   <span className="text-gray-700">
                     <Translate>Selected</Translate> {selected.length}
@@ -222,6 +247,18 @@ const TemplatesEditor = () => {
       </SettingsContent>
       {showNavigationModal && (
         <ConfirmNavigationModal setShowModal={setShowNavigationModal} onConfirm={blocker.proceed} />
+      )}
+      {showRelationshipTypeModal && (
+        <AddRelationshipTypeModal
+          isOpen={showRelationshipTypeModal}
+          onClose={() => setShowRelationshipTypeModal(false)}
+        />
+      )}
+      {showThesaurusModal && (
+        <AddThesaurusModal
+          isOpen={showThesaurusModal}
+          onClose={() => setShowThesaurusModal(false)}
+        />
       )}
     </div>
   );
