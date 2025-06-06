@@ -32,12 +32,12 @@ import {
   generateChildrenRows,
   updateSuggestions,
   formatAccepted,
-} from './components/helpers';
+  updateSortingUrl,
+} from './helpers';
 import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion } from './types';
 import { SuggestionEvents } from './events';
 
 const SUGGESTIONS_PER_PAGE = 100;
-const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
 
 type ixStatus =
   | 'ready'
@@ -214,24 +214,8 @@ const IXSuggestions = () => {
 
   useEffect(() => {
     const navigatePromise = async (path: string) => navigate(path, { replace: true });
-
-    if (searchParams.has('sort') && !sorting.length) {
-      navigatePromise(location.pathname).catch(_e => {});
-    }
-
-    if (sorting.length && sorting[0].id) {
-      const _property = sorting[0].id;
-
-      if (!SORTABLE_PROPERTIES.includes(_property)) {
-        return;
-      }
-
-      const order = sorting[0].desc ? 'desc' : 'asc';
-
-      navigatePromise(
-        `${location.pathname}?sort={"property":"${_property}","order":"${order}"}`
-      ).catch(_e => {});
-    }
+    const newUrl = updateSortingUrl(sorting, location.pathname, searchParams);
+    navigatePromise(newUrl).catch(_e => {});
   }, [sorting]);
 
   useEffect(() => {

@@ -43,6 +43,7 @@ Add link,링크 추가
 Add page,페이지 추가
 Add PDF,Add PDF
 Add people or groups,사용자 혹은 그룹 추가
+Add property,Add property
 Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,템플릿 추가
@@ -317,8 +318,11 @@ Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
 Error adding thesauri.,Error adding thesauri.
+Error creating relationship type.,Error creating relationship type.
+Error creating thesaurus.,Error creating thesaurus.
 Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
@@ -549,6 +553,7 @@ No Group,No Group
 No icon / flag,아이콘/플래그 없음
 No items available,No items available
 No Label,라벨 없음
+No label,No label
 No options,No options
 No options found,검색된 옵션 없음
 No property,속성 없음
@@ -599,6 +604,7 @@ Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
+Options,Options
 or,or
 or drop your files here.,혹은 여기에 파일을 드롭하십시오.
 Order,순서
@@ -692,6 +698,9 @@ Reject,거부
 Relationship,연결
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type created successfully.,Relationship type created successfully.
+Relationship type name,Relationship type name
+Relationship type name already exists,Relationship type name already exists
 Relationship types,연결 유형
 relationships,연결
 Relationships,연결
@@ -707,6 +716,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,암호를 재입력하십시오.
 Request id #,아이디 요청 #
 Request token,Request token
+Required,Required
 Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
@@ -850,6 +860,8 @@ Target's role in the relationship Source-Target.,Target's role in the relationsh
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name
+Template name already exists,Template name already exists
+Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
@@ -878,6 +890,9 @@ thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
+Thesaurus created successfully.,Thesaurus created successfully.
+Thesaurus name,Thesaurus name
+Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,시소러스 저장 완료
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,이 영역에 사용자 맞춤 자바스크립트를 추가할 수 있습니다.

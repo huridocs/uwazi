@@ -43,6 +43,7 @@ Add link,Ajouter un lien
 Add page,Ajouter une page
 Add PDF,Add PDF
 Add people or groups,Ajouter des personnes ou des groupes
+Add property,Add property
 Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,Ajouter un modèle
@@ -316,8 +317,11 @@ Entity types,Types d'entités
 Entity updated,Entity updated
 Error,Erreur
 Error adding thesauri.,Error adding thesauri.
+Error creating relationship type.,Error creating relationship type.
+Error creating thesaurus.,Error creating thesaurus.
 Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
@@ -548,6 +552,7 @@ No Group,No Group
 No icon / flag,No icon / flag
 No items available,No items available
 No Label,Aucune étiquettes
+No label,No label
 No options,No options
 No options found,Aucune option trouvée
 No property,Aucune propriété
@@ -598,6 +603,7 @@ Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Ouvrez l'application d'authentification à deux facteurs sur votre appareil
+Options,Options
 or,ou
 or drop your files here.,ou déposez vos fichiers ici.
 Order,Organiser par
@@ -691,6 +697,9 @@ Reject,Rejeter
 Relationship,Relation
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type created successfully.,Relationship type created successfully.
+Relationship type name,Relationship type name
+Relationship type name already exists,Relationship type name already exists
 Relationship types,Types de relations
 relationships,Relations
 Relationships,Relations
@@ -706,6 +715,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,Répéter Mot de passe
 Request id #,Numéro d'identification de la demande
 Request token,Request token
+Required,Required
 Required property,Propriété requise
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
@@ -849,6 +859,8 @@ Target's role in the relationship Source-Target.,Target's role in the relationsh
 Template,Modèle
 Template conflict,Template conflict
 Template name,Template name
+Template name already exists,Template name already exists
+Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
@@ -877,6 +889,9 @@ thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
+Thesaurus created successfully.,Thesaurus created successfully.
+Thesaurus name,Thesaurus name
+Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,Thesaurus sauvegardé
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Cette zone vous permet d'ajouter du Javascript personnalisé à la page. Cela ouvre un nouvel univers de possibilités.

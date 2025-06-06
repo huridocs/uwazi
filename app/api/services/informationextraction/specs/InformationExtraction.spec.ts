@@ -488,18 +488,22 @@ describe('InformationExtraction', () => {
       });
     });
 
-    it('should return error status and stop finding suggestions, when there is no labaled data', async () => {
-      const expectedError = { status: 'error', message: 'No labeled data' };
+    it('should return error status and stop finding suggestions, when there is no labeled data', async () => {
+      const expectedError = {
+        status: 'error',
+        message: "No labeled data (entities don't have values for target property)",
+      };
 
-      const result = await informationExtraction.trainModel(factory.id('prop3extractor'));
+      const result = await informationExtraction.trainModel(factory.id('prop5extractor'));
       expect(result).toMatchObject(expectedError);
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop5extractor') });
       expect(model.findingSuggestions).toBe(false);
 
       const multiSelectResult = await informationExtraction.trainModel(
         factory.id('extractorWithMultiselectWithoutTrainingData')
       );
       expect(multiSelectResult).toMatchObject(expectedError);
+
       const [multiSelectModel] = await IXModelsModel.get({
         extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
       });
