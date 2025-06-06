@@ -17,7 +17,6 @@ import { filesModel } from 'api/files/filesModel';
 import entities from 'api/entities/entities';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
-import dictionatiesModel from 'api/thesauri/dictionariesModel';
 import request from 'shared/JSONRequest';
 import { EntitySchema } from 'shared/types/entityType';
 import {
@@ -34,7 +33,6 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-  propertyTypeIsSelectOrMultiSelect,
   NoSegmentedFiles,
   NoLabeledFiles,
   getEntitiesForTraining,
@@ -140,16 +138,6 @@ interface PropertySourceMaterials {
   source_text: string;
   label_text?: any;
   values?: { id: string; label: string }[];
-}
-
-async function fetchCandidates(property: PropertySchema) {
-  const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
-  const query: { template?: ObjectId; language: string } = {
-    language: defaultLanguageKey,
-  };
-  if (property.content !== '') query.template = new ObjectId(property.content);
-  const candidates = await entities.getUnrestricted(query, ['title', 'sharedId']);
-  return candidates;
 }
 
 type IXTaskManager = TaskManager<TaskMessage, ResultMessage>;
@@ -596,72 +584,13 @@ class InformationExtraction {
 
   trainModel = async (extractorId: ObjectIdSchema) => {
     const tenant = tenants.current();
+    await ixmodels.startTraining(extractorId);
+
     const dispatcher = await DefaultDispatcher(tenant.name);
 
-    const [model] = await IXModelsModel.get({ extractorId });
-    if (model && !model.findingSuggestions) {
-      model.findingSuggestions = true;
-      await IXModelsModel.save(model);
-    }
-
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
-    await this.saveModelProcess(extractorId);
 
     return { status: 'processing_model', message: 'Training model' };
-
-    // const [extractor] = await Extractors.get({ _id: extractorId });
-    // const serviceUrl = await this.serviceUrl();
-    // const [materialsSent, status] = await this.materialsForModel(extractor, serviceUrl);
-    // if (!materialsSent) {
-    //   if (model) {
-    //     model.findingSuggestions = false;
-    //     await IXModelsModel.save(model);
-    //   }
-    //   return status || { status: 'error', message: 'No labeled data' };
-    // }
-
-    // const template = await templatesModel.getById(extractor.templates[0]);
-    // const property =
-    //   extractor.property === 'title'
-    //     ? template?.commonProperties?.find(p => p.name === extractor.property)
-    //     : template?.properties?.find(p => p.name === extractor.property);
-
-    // if (!property) {
-    //   return { status: 'error', message: 'Property not found' };
-    // }
-
-    // const params: TaskParameters = {
-    //   id: extractorId.toString(),
-    //   multi_value: property.type === 'multiselect' || property.type === 'relationship',
-    //   metadata: {
-    //     extractor_name: extractor.name || '',
-    //     property: extractor.property || '',
-    //     templates: extractor.templates ? extractor.templates.join(',') : '',
-    //   },
-    // };
-
-    // if (propertyTypeIsSelectOrMultiSelect(property.type)) {
-    //   const thesauri = await dictionatiesModel.getById(property.content);
-    //   const [groups, rootValues] = _.partition(thesauri?.values || [], r => r.values);
-    //   const groupedValues = groups.map(group => group.values || []).flat();
-    //   const allValues = rootValues.concat(groupedValues);
-
-    //   params.options =
-    //     allValues.map(value => ({ label: value.label, id: value.id as string })) || [];
-    // }
-    // if (property.type === 'relationship') {
-    //   const candidates = await fetchCandidates(property);
-    //   params.options = candidates.map(candidate => ({
-    //     label: candidate.title || '',
-    //     id: candidate.sharedId || '',
-    //   }));
-    // }
-
-    // await this.taskManager.startTask({
-    //   task: 'create_model',
-    //   tenant: tenants.current().name,
-    //   params,
-    // });
   };
 
   status = async (extractorId: ObjectIdSchema) => {
