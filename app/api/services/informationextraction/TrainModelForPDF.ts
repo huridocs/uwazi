@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
@@ -11,9 +12,9 @@ import { IXExtractorType } from 'shared/types/extractorType';
 import {
   FileWithAggregation,
   getFilesForTraining,
+  NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
 } from './getFiles';
-import { IXModelsModel } from './IXModelsModel';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import {
   CommonMaterialsData,
@@ -21,6 +22,7 @@ import {
   MaterialsData,
 } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
+import ixmodels from './ixmodels';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -45,51 +47,49 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
   constructor(private props: Dependencies) {}
 
   async execute({ extractor }: Input): Promise<Output> {
-    const extractorId = extractor._id.toString();
+    try {
+      const files = await getFilesForTraining(extractor?.templates, extractor?.property);
+      if (!files.length) {
+        throw new NoFilesForTraining();
+      }
+      await ArrayUtils.parallelFor(files, async file => {
+        const xmlName = file.segmentation.xmlname!;
+        const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
-    const files = await getFilesForTraining(extractor?.templates, extractor?.property);
-    if (!files.length) {
-      await IXModelsModel.save(
-        {
-          findingSuggestions: false,
-        },
-        { extractorId }
-      );
+        const propertyLabeledData = file.extractedMetadata?.find(
+          labeledData => labeledData.name === extractor.property
+        );
+        const { propertyValue, propertyType } = file;
 
-      emitToTenant(this.props.tenantName, IXWebSocketEvents.NoFilesForTraining, {
-        message: 'No files found for training.',
+        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
+          ? !propertyValue
+          : !propertyLabeledData;
+
+        if (!xmlExists || missingData) return;
+
+        await this.sendXmlToService(xmlName, extractor._id.toString());
+
+        await this.sendMaterialsToService({
+          file,
+          extractorId: extractor._id.toString(),
+          propertyLabeledData,
+          propertyValue,
+          propertyType,
+        });
       });
+
+      await this.props.iXTaskService.createModelTask({
+        extractor,
+      });
+    } catch (e) {
+      await ixmodels.stopTraining(extractor._id);
+
+      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorWhenSendingFilesForTraining, {
+        message: e.message || 'An error occurred when sending Files for training',
+      });
+
+      throw e;
     }
-
-    await ArrayUtils.parallelFor(files, async file => {
-      const xmlName = file.segmentation.xmlname!;
-      const xmlExists = await storage.fileExists(xmlName, 'segmentation');
-
-      const propertyLabeledData = file.extractedMetadata?.find(
-        labeledData => labeledData.name === extractor.property
-      );
-      const { propertyValue, propertyType } = file;
-
-      const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
-        ? !propertyValue
-        : !propertyLabeledData;
-
-      if (!xmlExists || missingData) return;
-
-      await this.sendXmlToService(xmlName, extractor._id.toString());
-
-      await this.sendMaterialsToService({
-        file,
-        extractorId: extractor._id.toString(),
-        propertyLabeledData,
-        propertyValue,
-        propertyType,
-      });
-    });
-
-    await this.props.iXTaskService.createModelTask({
-      extractor,
-    });
   }
 
   private async sendXmlToService(xmlName: string, extractorId: string) {
