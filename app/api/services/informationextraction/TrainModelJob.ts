@@ -5,7 +5,7 @@ import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
 import { ExtractorNotFound, Extractors } from './ixextractors';
 import { TrainModelForPDF } from './TrainModelForPDF';
 import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText';
-import { NoFilesForTraining, NoLabeledFiles, NoSegmentedFiles } from './getFiles';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './getFiles';
 
 type CustomParams = {
   extractorId: string;
@@ -45,7 +45,7 @@ export class IXTrainModelJob implements Dispatchable {
         if (
           [
             NoEntitiesForTraining.name,
-            NoLabeledFiles.name,
+            NoLabeledEntities.name,
             NoFilesForTraining.name,
             NoSegmentedFiles.name,
             ExtractorNotFound.name,

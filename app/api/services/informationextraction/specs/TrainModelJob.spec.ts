@@ -4,7 +4,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { IXTrainModelJob } from '../TrainModelJob';
 import { TrainModelForPDF } from '../TrainModelForPDF';
 import { NoEntitiesForTraining, TrainModelForText } from '../TrainModelForText';
-import { NoFilesForTraining, NoLabeledFiles, NoSegmentedFiles } from '../getFiles';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
 import { ExtractorNotFound, Extractors } from '../ixextractors';
 
 type Props = {
@@ -53,7 +53,7 @@ describe('TrainModelJob', () => {
       },
     },
     {
-      error: new NoLabeledFiles(),
+      error: new NoLabeledEntities(),
       extractor: {
         source: {
           pdf: true,
