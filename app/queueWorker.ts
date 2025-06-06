@@ -7,7 +7,7 @@ import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJS
 import { DB } from 'api/odm';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { RoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructure/QueueWorker';
 import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
@@ -66,7 +66,7 @@ logger.info('Starting worker');
 DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     logger.info('Connected to MongoDB');
-    const adapter = DefaultQueueAdapter();
+    const adapter = RoundRobinQueueAdapter();
     const queueWorker = new QueueWorker(config.queueName, adapter, logger, captureError);
 
     await tenants.setupTenants();
