@@ -48,6 +48,7 @@
     "elastic-set-tenant-settings": "node scripts/run.js ../database/elastic_set_tenant_settings.js",
     "import-csv": "node --no-experimental-fetch scripts/run.js ../database/import_csv.js",
     "blank-state": "node --no-experimental-fetch scripts/bash.js ./database/blank_state.sh",
+    "blank-state-shared": "node --no-experimental-fetch scripts/bash.js ./database/blank_state_shared.sh",
     "admin-user": "node --no-experimental-fetch scripts/bash.js ./database/admin_user.sh",
     "ix-config": "node --no-experimental-fetch scripts/bash.js ./database/ix_config.sh",
     "dump-db": "node --no-experimental-fetch scripts/bash.js ./database/dump_db.sh",
