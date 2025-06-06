@@ -8,11 +8,10 @@ import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 interface AddThesaurusModalProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-export const AddThesaurusModal = ({ isOpen, onClose }: AddThesaurusModalProps) => {
+export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -61,10 +60,6 @@ export const AddThesaurusModal = ({ isOpen, onClose }: AddThesaurusModalProps) =
       handleClose();
     }
   };
-
-  if (!isOpen) {
-    return null;
-  }
 
   return (
     <Modal size="md">

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table, Button, ConfirmNavigationModal } from 'V2/Components/UI';
+import { Table, ConfirmNavigationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useNavigate, useBlocker, Location } from 'react-router';
@@ -12,7 +12,6 @@ import { Page, ClientTemplateSchema } from 'V2/shared/types';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from 'V2/atoms';
-import { I18NLink } from 'app/I18N';
 import {
   cleanProperty,
   emptyTemplate,
@@ -23,6 +22,7 @@ import { propertyColumns, PropertyRow } from './components/TemplateEditorTableCo
 import { TemplateMetadata } from './components/TemplateMetadata';
 import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal';
 import { AddThesaurusModal } from './components/AddThesaurusModal';
+import { TemplatesEditorFooter } from './components/TemplatesEditorFooter';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -199,67 +199,22 @@ const TemplatesEditor = () => {
           />
         </SettingsContent.Body>
         <SettingsContent.Footer>
-          <div className="flex justify-between w-full">
-            <div className="flex gap-2 items-center">
-              {selected.length === 0 ? (
-                <>
-                  <Button color="primary">
-                    <Translate>Add property</Translate>
-                  </Button>
-                  <Button
-                    color="primary"
-                    styling="outline"
-                    onClick={() => setShowThesaurusModal(true)}
-                  >
-                    <Translate>Add thesaurus</Translate>
-                  </Button>
-                  <Button
-                    color="primary"
-                    styling="outline"
-                    onClick={() => setShowRelationshipTypeModal(true)}
-                  >
-                    <Translate>Add relationship type</Translate>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button color="error" onClick={handleDelete}>
-                    <Translate>Remove</Translate>
-                  </Button>
-                  <span className="text-gray-700">
-                    <Translate>Selected</Translate> {selected.length}
-                  </span>
-                </>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <I18NLink to="/settings/templates">
-                <Button styling="outline">
-                  <Translate>Cancel</Translate>
-                </Button>
-              </I18NLink>
-              <Button color="success" onClick={handleSave}>
-                <Translate>Save</Translate>
-              </Button>
-            </div>
-          </div>
+          <TemplatesEditorFooter
+            selected={selected}
+            onDelete={handleDelete}
+            onSave={handleSave}
+            onAddThesaurus={() => setShowThesaurusModal(true)}
+            onAddRelationshipType={() => setShowRelationshipTypeModal(true)}
+          />
         </SettingsContent.Footer>
       </SettingsContent>
       {showNavigationModal && (
         <ConfirmNavigationModal setShowModal={setShowNavigationModal} onConfirm={blocker.proceed} />
       )}
       {showRelationshipTypeModal && (
-        <AddRelationshipTypeModal
-          isOpen={showRelationshipTypeModal}
-          onClose={() => setShowRelationshipTypeModal(false)}
-        />
+        <AddRelationshipTypeModal onClose={() => setShowRelationshipTypeModal(false)} />
       )}
-      {showThesaurusModal && (
-        <AddThesaurusModal
-          isOpen={showThesaurusModal}
-          onClose={() => setShowThesaurusModal(false)}
-        />
-      )}
+      {showThesaurusModal && <AddThesaurusModal onClose={() => setShowThesaurusModal(false)} />}
     </div>
   );
 };

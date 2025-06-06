@@ -7,11 +7,10 @@ import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, relationshipTypesAtom } from 'V2/atoms';
 
 interface AddRelationshipTypeModalProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-export const AddRelationshipTypeModal = ({ isOpen, onClose }: AddRelationshipTypeModalProps) => {
+export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalProps) => {
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -56,10 +55,6 @@ export const AddRelationshipTypeModal = ({ isOpen, onClose }: AddRelationshipTyp
       handleClose();
     }
   };
-
-  if (!isOpen) {
-    return null;
-  }
 
   return (
     <Modal size="md">
