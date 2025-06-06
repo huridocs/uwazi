@@ -4,7 +4,14 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Table, ConfirmNavigationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useNavigate, useBlocker, Location } from 'react-router';
+import {
+  LoaderFunction,
+  useLoaderData,
+  useNavigate,
+  useBlocker,
+  Location,
+  useRevalidator,
+} from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
 import * as pagesAPI from 'V2/api/pages';
 import { PropertySchema } from 'shared/types/commonTypes';
@@ -48,12 +55,11 @@ const templatesEditorLoader =
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();
-  const loadedData = useLoaderData() as {
+  const revalidator = useRevalidator();
+  const { loadedTemplate, pagesOptions } = useLoaderData() as {
     loadedTemplate: ClientTemplateSchema;
     pagesOptions: { value: string; label: string }[];
   };
-
-  const { loadedTemplate, pagesOptions } = loadedData;
   const [template, setTemplate] = useState<ClientTemplateSchema>(loadedTemplate);
   const [properties, setProperties] = useState<PropertyRow[]>([]);
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
@@ -92,7 +98,8 @@ const TemplatesEditor = () => {
 
   const checkPendingChanges = useCallback(
     (nextLocation?: Location<any> | undefined) =>
-      !nextLocation?.pathname.includes('edit') && !isEqual(loadedTemplate, getCurrentStatus()),
+      !nextLocation?.pathname.includes('templates/edit') &&
+      !isEqual(loadedTemplate, getCurrentStatus()),
     [getCurrentStatus, loadedTemplate]
   );
 
@@ -127,6 +134,27 @@ const TemplatesEditor = () => {
     }
   };
 
+  const save = async (forceReindex = false) => {
+    const templateToSave = getCurrentStatus();
+    if (forceReindex) {
+      templateToSave.reindex = true;
+    }
+    const savedTemplate = await templatesAPI.save(templateToSave);
+    await revalidator.revalidate();
+
+    // Update templates atom
+    const updatedTemplates = template._id
+      ? templates.map(t => (t._id === template._id ? savedTemplate : t))
+      : [...templates, savedTemplate];
+    setTemplates(updatedTemplates);
+    setNotifications({
+      type: 'success',
+      text: <Translate>Template saved successfully.</Translate>,
+    });
+
+    await navigate(`/settings/templates/edit/${savedTemplate._id}`);
+  };
+
   const handleSave = async () => {
     const isDuplicateName = templates.some(
       t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
@@ -138,20 +166,7 @@ const TemplatesEditor = () => {
     }
 
     try {
-      const templateToSave = getCurrentStatus();
-      const savedTemplate = await templatesAPI.save(templateToSave);
-      setTemplate(savedTemplate);
-
-      // Update templates atom
-      const updatedTemplates = template._id
-        ? templates.map(t => (t._id === template._id ? savedTemplate : t))
-        : [...templates, savedTemplate];
-      setTemplates(updatedTemplates);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template saved successfully.</Translate>,
-      });
-      await navigate('/settings/templates');
+      await save();
     } catch (e) {
       if (e.status === 409) {
         //TODO: show confirmation modal to reindex the entities with the new template
