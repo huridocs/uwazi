@@ -2,14 +2,30 @@ import _ from 'lodash';
 
 import { Suggestions } from 'api/suggestions/suggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { DBFixture, testingDB } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionStateType } from 'shared/types/suggestionType';
 import { Extractors } from '../ixextractors';
 import { IXValidationError } from '../IXValidationError';
 
 const fixtureFactory = getFixturesFactory();
+
+jest.mock('api/queue.v2/configuration/factories', () => ({
+  DefaultDispatcher: jest.fn().mockImplementation(() => {
+    const {
+      SyncDispatcherForTests,
+      // eslint-disable-next-line global-require
+    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    const {
+      CreateBlankStateSuggestionsJob,
+      // eslint-disable-next-line global-require
+    } = require('api/suggestions/jobs/CreateBlankStateSuggestionsJob');
+    return new SyncDispatcherForTests({
+      CreateBlankStateSuggestionsJob: async () => new CreateBlankStateSuggestionsJob(),
+    });
+  }),
+}));
 
 const fixtures: DBFixture = {
   settings: [

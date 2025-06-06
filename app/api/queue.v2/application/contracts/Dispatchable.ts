@@ -11,6 +11,7 @@ export interface HeartbeatCallback {
 export interface JobInfo {
   retryCount: number;
   maxRetries: number;
+  namespace: string;
 }
 
 export interface Dispatchable {
