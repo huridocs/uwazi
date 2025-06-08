@@ -4,7 +4,7 @@ set -e
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit ; pwd -P )
 cd "$parent_path" || exit
 
-DB=${1:-${DATABASE_NAME:-uwazi_development}}
+DB=${1:-${DATABASE_NAME:-uwazi_shared_db}}
 HOST=${2:-${DBHOST:-127.0.0.1}}
 
 AUTH=()
