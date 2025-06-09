@@ -84,7 +84,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
     } catch (e) {
       await ixmodels.stopTraining(extractor._id);
 
-      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorWhenSendingFilesForTraining, {
+      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorTrainingModel, {
         message: e.message || 'An error occurred when sending Files for training',
       });
 

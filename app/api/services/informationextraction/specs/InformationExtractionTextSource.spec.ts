@@ -336,7 +336,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         'tenant1',
-        IXWebSocketEvents.ErrorWhenSendingEntitiesForTraining,
+        IXWebSocketEvents.ErrorTrainingModel,
         { message: NoEntitiesForTraining.defaultMessage }
       );
 

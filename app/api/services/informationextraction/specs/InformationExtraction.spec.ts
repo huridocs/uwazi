@@ -529,7 +529,7 @@ describe('InformationExtraction', () => {
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
         1,
         'tenant1',
-        IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
+        IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
       );
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
@@ -542,7 +542,7 @@ describe('InformationExtraction', () => {
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
         2,
         'tenant1',
-        IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
+        IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
       );
       const [multiSelectModel] = await IXModelsModel.get({
@@ -557,7 +557,7 @@ describe('InformationExtraction', () => {
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
         3,
         'tenant1',
-        IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
+        IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
       );
       const [relationshipModel] = await IXModelsModel.get({
@@ -576,7 +576,7 @@ describe('InformationExtraction', () => {
 
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         'tenant1',
-        IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
+        IXWebSocketEvents.ErrorTrainingModel,
         { message: NoSegmentedFiles.defaultMessage }
       );
     });
@@ -594,7 +594,7 @@ describe('InformationExtraction', () => {
 
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         'tenant1',
-        IXWebSocketEvents.ErrorWhenSendingFilesForTraining,
+        IXWebSocketEvents.ErrorTrainingModel,
         { message: NoSegmentedFiles.defaultMessage }
       );
     });

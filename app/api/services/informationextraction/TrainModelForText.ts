@@ -111,7 +111,7 @@ class TrainModelForText implements UseCase<Input, Output> {
     } catch (e) {
       await ixmodels.stopTraining(extractor._id);
 
-      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorWhenSendingEntitiesForTraining, {
+      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorTrainingModel, {
         message: e.message || 'An error occurred when sending Entities for training',
       });
 
