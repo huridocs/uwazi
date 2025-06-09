@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e
 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit ; pwd -P )
+parent_path=$(
+  cd "$(dirname "${BASH_SOURCE[0]}")" || exit
+  pwd -P
+)
 cd "$parent_path" || exit
 
 # Source the base script
