@@ -32,8 +32,29 @@ const MAX_TRAINING_ENTITIES_NUMBER = 2000;
 
 type PropertyValue = string | Array<{ value: string; label: string }>;
 
-class NoSegmentedFiles extends Error {}
-class NoLabeledEntities extends Error {}
+class NoSegmentedFiles extends Error {
+  static defaultMessage = 'There are no Segments for training the model';
+
+  constructor(message = NoSegmentedFiles.defaultMessage) {
+    super(message);
+  }
+}
+
+class NoLabeledEntities extends Error {
+  static defaultMessage = 'There are no labeled Files for training the model';
+
+  constructor(message = NoLabeledEntities.defaultMessage) {
+    super(message);
+  }
+}
+
+class NoFilesForTraining extends Error {
+  static defaultMessage = 'There are no labeled Files for training the model';
+
+  constructor(message = NoFilesForTraining.defaultMessage) {
+    super(message);
+  }
+}
 
 interface FileWithAggregation {
   _id: ObjectIdSchema;
@@ -337,5 +358,6 @@ export {
   propertyTypeIsMultiValued,
   NoLabeledEntities,
   NoSegmentedFiles,
+  NoFilesForTraining,
 };
 export type { FileWithAggregation };

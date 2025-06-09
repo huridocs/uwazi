@@ -17,7 +17,6 @@ import { filesModel } from 'api/files/filesModel';
 import entities from 'api/entities/entities';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
-import dictionatiesModel from 'api/thesauri/dictionariesModel';
 import request from 'shared/JSONRequest';
 import { EntitySchema } from 'shared/types/entityType';
 import {
@@ -34,7 +33,6 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-  propertyTypeIsSelectOrMultiSelect,
   NoSegmentedFiles,
   NoLabeledEntities,
   getEntitiesForTraining,
@@ -48,6 +46,7 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
 import moment from 'moment';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
@@ -59,6 +58,7 @@ import {
   formatSuggestionFacade,
 } from './suggestionFormatting';
 import { ExtractionKey } from './ExtractionKey';
+import { IXTrainModelJob } from './TrainModelJob';
 
 const defaultTrainingLanguage = 'en';
 
@@ -140,20 +140,12 @@ interface PropertySourceMaterials {
   values?: { id: string; label: string }[];
 }
 
-async function fetchCandidates(property: PropertySchema) {
-  const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
-  const query: { template?: ObjectId; language: string } = {
-    language: defaultLanguageKey,
-  };
-  if (property.content !== '') query.template = new ObjectId(property.content);
-  const candidates = await entities.getUnrestricted(query, ['title', 'sharedId']);
-  return candidates;
-}
+type IXTaskManager = TaskManager<TaskMessage, ResultMessage>;
 
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
-  public taskManager: TaskManager<TaskMessage, ResultMessage>;
+  public taskManager: IXTaskManager;
 
   static mock: any;
 
@@ -593,67 +585,12 @@ class InformationExtraction {
   };
 
   trainModel = async (extractorId: ObjectIdSchema) => {
-    const [model] = await IXModelsModel.get({ extractorId });
-    if (model && !model.findingSuggestions) {
-      model.findingSuggestions = true;
-      await IXModelsModel.save(model);
-    }
+    const tenant = tenants.current();
+    await ixmodels.startTraining(extractorId);
 
-    const [extractor] = await Extractors.get({ _id: extractorId });
-    const serviceUrl = await this.serviceUrl();
-    const [materialsSent, status] = await this.materialsForModel(extractor, serviceUrl);
-    if (!materialsSent) {
-      if (model) {
-        model.findingSuggestions = false;
-        await IXModelsModel.save(model);
-      }
-      return status || { status: 'error', message: 'No labeled data' };
-    }
+    const dispatcher = await DefaultDispatcher(tenant.name);
 
-    const template = await templatesModel.getById(extractor.templates[0]);
-    const property =
-      extractor.property === 'title'
-        ? template?.commonProperties?.find(p => p.name === extractor.property)
-        : template?.properties?.find(p => p.name === extractor.property);
-
-    if (!property) {
-      return { status: 'error', message: 'Property not found' };
-    }
-
-    const params: TaskParameters = {
-      id: extractorId.toString(),
-      multi_value: property.type === 'multiselect' || property.type === 'relationship',
-      metadata: {
-        extractor_name: extractor.name || '',
-        property: extractor.property || '',
-        templates: extractor.templates ? extractor.templates.join(',') : '',
-      },
-    };
-
-    if (propertyTypeIsSelectOrMultiSelect(property.type)) {
-      const thesauri = await dictionatiesModel.getById(property.content);
-      const [groups, rootValues] = _.partition(thesauri?.values || [], r => r.values);
-      const groupedValues = groups.map(group => group.values || []).flat();
-      const allValues = rootValues.concat(groupedValues);
-
-      params.options =
-        allValues.map(value => ({ label: value.label, id: value.id as string })) || [];
-    }
-    if (property.type === 'relationship') {
-      const candidates = await fetchCandidates(property);
-      params.options = candidates.map(candidate => ({
-        label: candidate.title || '',
-        id: candidate.sharedId || '',
-      }));
-    }
-
-    await this.taskManager.startTask({
-      task: 'create_model',
-      tenant: tenants.current().name,
-      params,
-    });
-
-    await this.saveModelProcess(extractorId);
+    await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
     return { status: 'processing_model', message: 'Training model' };
   };
@@ -829,7 +766,7 @@ class InformationExtraction {
   };
 }
 
-export { InformationExtraction };
+export { InformationExtraction, defaultTrainingLanguage };
 export type {
   IXResultsMessage,
   InternalIXResultsMessage,
@@ -837,4 +774,9 @@ export type {
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
   RawSuggestion,
+  MaterialsData,
+  CommonMaterialsData,
+  IXTaskManager,
+  TaskParameters,
+  PropertySourceMaterials,
 };
