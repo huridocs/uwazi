@@ -152,7 +152,7 @@ export const suggestionsRoutes = (app: Application) => {
         });
       }
 
-      const output = await IX.trainModel(req.body.extractorId);
+      const output = await IX.trainModel(ObjectId.createFromHexString(req.body.extractorId));
 
       res.status(202).json(output);
     }
