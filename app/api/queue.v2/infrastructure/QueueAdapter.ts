@@ -20,4 +20,5 @@ export interface QueueAdapter {
   markJobAsFailed(job: Job): Promise<Job>;
   updateLockWindow(job: Job, newLockWindow: number): Promise<Job>;
   deleteJob(job: Job): Promise<void>;
+  moveToFailedJobs(job: Job): Promise<void>;
 }
