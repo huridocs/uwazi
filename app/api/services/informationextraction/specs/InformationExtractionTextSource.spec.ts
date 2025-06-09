@@ -8,9 +8,43 @@ import { InformationExtraction } from '../InformationExtraction';
 import { factory, fixtures } from './fixtures';
 import { IXModelsModel } from '../IXModelsModel';
 import { ExtractionKey } from '../ExtractionKey';
+import { IXWebSocketEvents } from '../WebSocketEvents';
+import { NoEntitiesForTraining } from '../TrainModelForText';
 
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+
+jest.mock('api/queue.v2/configuration/factories', () => ({
+  DefaultDispatcher: () => {
+    const {
+      SyncDispatcherForTests,
+    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    const {
+      InformationExtraction: InformationExtraction1,
+    } = require('api/services/informationextraction/InformationExtraction');
+    const { IXTaskService } = require('api/services/informationextraction/TaskService');
+    const { TrainModelForPDF } = require('api/services/informationextraction/TrainModelForPDF');
+    const { TrainModelForText } = require('api/services/informationextraction/TrainModelForText');
+    const { IXTrainModelJob } = require('api/services/informationextraction/TrainModelJob');
+
+    return new SyncDispatcherForTests({
+      IXTrainModelJob: async () => {
+        const serviceUrl = 'http://localhost:4321/';
+        const tenantName = 'tenant1';
+        const informationExtraction = new InformationExtraction1();
+        const iXTaskService = new IXTaskService({
+          tenantName,
+          taskManager: informationExtraction.taskManager,
+        });
+        return new IXTrainModelJob({
+          tenantName,
+          trainModelForPDF: new TrainModelForPDF({ iXTaskService, serviceUrl, tenantName }),
+          trainModelForText: new TrainModelForText({ iXTaskService, serviceUrl, tenantName }),
+        });
+      },
+    });
+  },
+}));
 
 describe('Information Extraction: Extracting from text source', () => {
   const SERVICE_PORT = 4321;
@@ -288,6 +322,25 @@ describe('Information Extraction: Extracting from text source', () => {
         source_text: 'any_source_text',
         label_text: '2004-07-05',
       });
+    });
+
+    it('should emit error status and stop finding suggestions', async () => {
+      const promise = informationExtraction.trainModel(
+        factory.id('extract_source_text_no_entities')
+      );
+
+      await expect(promise).rejects.toThrow();
+      const [model] = await IXModelsModel.get({
+        extractorId: factory.id('extract_source_text_no_entities'),
+      });
+
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoEntitiesForTraining.defaultMessage }
+      );
+
+      expect(model.findingSuggestions).toBe(false);
     });
   });
 

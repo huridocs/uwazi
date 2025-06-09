@@ -146,7 +146,15 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processIXFunction(IX.trainModel, req, res);
+      if (!IX) {
+        return res.status(500).json({
+          error: 'Information Extraction service is not available',
+        });
+      }
+
+      const output = await IX.trainModel(ObjectId.createFromHexString(req.body.extractorId));
+
+      res.status(202).json(output);
     }
   );
 

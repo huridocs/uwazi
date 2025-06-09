@@ -11,6 +11,7 @@ import { RoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructure/QueueWorker';
 import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
+import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { registerJobs } from './queueRegistry';
 import { initSentry } from './initSentry';
 
@@ -71,6 +72,9 @@ DB.connect(config.DBHOST, config.DBAUTH)
 
     await tenants.setupTenants();
     logger.info('Set tenants up');
+
+    setupWorkerSockets();
+    logger.info('Set Worker Sockets');
 
     registerJobs(register.bind(queueWorker));
     logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
