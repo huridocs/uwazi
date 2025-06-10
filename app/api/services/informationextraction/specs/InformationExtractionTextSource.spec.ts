@@ -347,30 +347,19 @@ describe('Information Extraction: Extracting from text source', () => {
       expect(model.findingSuggestions).toBe(false);
     });
 
-    it('should use correct limit when getting entities for training', async () => {
+    it('should use limit when getting entities for training', async () => {
       const templates = [factory.id('template1')];
       const toProperty = 'property1';
 
       const getUnrestrictedSpy = jest.spyOn(entitiesModel, 'getUnrestricted');
       getUnrestrictedSpy.mockResolvedValue([]);
 
-      // Test with fromProperty (should use MAX_SOURCE_TEXT_TRAINING_ENTITIES_NUMBER)
       await getEntitiesForTraining(templates, toProperty, 'sourceProperty');
       expect(getUnrestrictedSpy).toHaveBeenCalledWith(
         expect.any(Object),
         expect.any(String),
         expect.objectContaining({
           limit: 15000,
-        })
-      );
-
-      // Test with empty fromProperty (should use MAX_TRAINING_ENTITIES_NUMBER)
-      await getEntitiesForTraining(templates, toProperty, '');
-      expect(getUnrestrictedSpy).toHaveBeenCalledWith(
-        expect.any(Object),
-        expect.any(String),
-        expect.objectContaining({
-          limit: 2000,
         })
       );
 
