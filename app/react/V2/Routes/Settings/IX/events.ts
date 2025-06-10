@@ -1,3 +1,5 @@
+import { ixStatus } from './types';
+
 type IXModelStatusData = {
   processed: number;
   total: number;
@@ -5,8 +7,8 @@ type IXModelStatusData = {
 
 type IXModelStatusCallback = (
   extractorId: string,
-  modelStatus: string,
-  _: string,
+  modelStatus: ixStatus,
+  message: string,
   data?: IXModelStatusData
 ) => void;
 

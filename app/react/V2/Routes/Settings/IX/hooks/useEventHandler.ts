@@ -31,11 +31,11 @@ const useEventHandler = ({
     const handleModelStatus: IXModelStatusCallback = async (
       eventExtractorId,
       modelStatus,
-      _,
+      _message,
       data
     ) => {
       if (eventExtractorId === extractorId) {
-        updateStatus(modelStatus as ixStatus, data);
+        updateStatus(modelStatus, data);
         await revalidate();
         if ((data && data.total === data.processed) || modelStatus === ixStatus.ready) {
           updateStatus(ixStatus.ready);
