@@ -30,12 +30,8 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
 import {
   FileWithAggregation,
-  getFilesForTraining,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-  NoSegmentedFiles,
-  NoLabeledEntities,
-  getEntitiesForTraining,
   getPropertyType,
   getEntitiesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
@@ -643,50 +639,6 @@ class InformationExtraction {
 
     return { status: 'error', message: 'No model found' };
   };
-
-  async materialsForModel(
-    extractor: IXExtractorType,
-    serviceUrl: string
-  ): Promise<[boolean, { status: string; message: string }?]> {
-    if (extractor.source.property) {
-      const entitiesForTraining = await getEntitiesForTraining(
-        extractor.templates,
-        extractor.property,
-        extractor.source.property
-      );
-
-      await this.sendMaterialsForProperty(entitiesForTraining, extractor, serviceUrl);
-      return [true];
-    }
-    try {
-      const files = await getFilesForTraining(extractor.templates, extractor.property);
-      if (!files.length) {
-        return [false];
-      }
-      await this.sendMaterials(files, extractor, serviceUrl);
-      return [true];
-    } catch (e) {
-      if (e instanceof NoSegmentedFiles) {
-        return [
-          false,
-          {
-            status: 'error',
-            message: 'There are no documents segmented yet, please try again later',
-          },
-        ];
-      }
-      if (e instanceof NoLabeledEntities) {
-        return [
-          false,
-          {
-            status: 'error',
-            message: "No labeled data (entities don't have values for target property)",
-          },
-        ];
-      }
-      throw e;
-    }
-  }
 
   saveModelProcess = async (
     extractorId: ObjectIdSchema,

@@ -29,6 +29,7 @@ const BATCH_SIZE = 50;
 const SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE = 1000;
 const MAX_TRAINING_FILES_NUMBER = 2000;
 const MAX_TRAINING_ENTITIES_NUMBER = 2000;
+const MAX_SOURCE_TEXT_TRAINING_ENTITIES_NUMBER = 15000;
 
 type PropertyValue = string | Array<{ value: string; label: string }>;
 
@@ -209,7 +210,9 @@ async function getEntitiesForTraining(
   const entities = await entitiesModel.getUnrestricted(
     entityForTrainingQuery(templates, toProperty, fromProperty),
     `sharedId title metadata.${toProperty} metadata.${fromProperty} language`,
-    { limit: MAX_TRAINING_ENTITIES_NUMBER }
+    {
+      limit: fromProperty ? MAX_SOURCE_TEXT_TRAINING_ENTITIES_NUMBER : MAX_TRAINING_ENTITIES_NUMBER,
+    }
   );
   return entities;
 }
