@@ -39,7 +39,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
 
   const handleSave = async () => {
     const isDuplicateName = thesauri.some(
-      thesaurus => thesaurus.name.toLowerCase() === name.toLowerCase()
+      thesaurus => thesaurus.name.toLowerCase() === name.trim().toLowerCase()
     );
 
     if (isDuplicateName) {
@@ -76,7 +76,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
             label={<Translate>Name</Translate>}
             value={name}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setName(e.target.value.trim());
+              setName(e.target.value);
               setNameError(false);
             }}
             placeholder={t('System', 'Thesaurus name', null, false)}

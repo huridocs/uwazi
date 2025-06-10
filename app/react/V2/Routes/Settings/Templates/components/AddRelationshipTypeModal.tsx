@@ -24,7 +24,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
   };
 
   const save = async () => {
-    const newRelationshipType = await relationshipTypesAPI.save({ name });
+    const newRelationshipType = await relationshipTypesAPI.save({ name: name.trim() });
     setRelationshipTypes([...relationshipTypes, newRelationshipType]);
     setNotifications({
       type: 'success',
@@ -34,7 +34,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
 
   const handleSave = async () => {
     const isDuplicateName = relationshipTypes.some(
-      relationshipType => relationshipType.name.toLowerCase() === name.toLowerCase()
+      relationshipType => relationshipType.name.toLowerCase() === name.trim().toLowerCase()
     );
 
     if (isDuplicateName) {
@@ -71,7 +71,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
             label={<Translate>Name</Translate>}
             value={name}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setName(e.target.value.trim());
+              setName(e.target.value);
               setNameError(false);
             }}
             placeholder={t('System', 'Relationship type name', null, false)}
