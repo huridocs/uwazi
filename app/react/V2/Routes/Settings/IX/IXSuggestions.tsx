@@ -35,7 +35,13 @@ import {
   updateSortingUrl,
 } from './helpers';
 import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion } from './types';
-import { SuggestionEvents } from './events';
+import { SuggestionEvents, ModelEvents } from './events';
+import type {
+  IXModelStatusCallback,
+  IXErrorTrainingModelCallback,
+  AcceptSuggestionSuccessCallback,
+  AcceptSuggestionErrorCallback,
+} from './events';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -172,39 +178,52 @@ const IXSuggestions = () => {
   }, [suggestions, property]);
 
   useEffect(() => {
-    socket.on(
-      SuggestionEvents.ix_model_status,
-      async (extractorId: string, modelStatus: string, _: string, data: any) => {
-        if (extractorId === extractor._id) {
-          setStatus({ status: modelStatus as ixStatus, data });
-          await revalidate();
-          if ((data && data.total === data.processed) || modelStatus === 'ready') {
-            setStatus({ status: 'ready' });
-          }
+    const onStatusUpdate: IXModelStatusCallback = async (extractorId, modelStatus, _, data) => {
+      if (extractorId === extractor._id) {
+        setStatus({ status: modelStatus as ixStatus, data });
+        await revalidate();
+        if ((data && data.total === data.processed) || modelStatus === 'ready') {
+          setStatus({ status: 'ready' });
         }
       }
-    );
+    };
 
-    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, async () => {
-      await fetchAgregations();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Suggestions have been updated</Translate>,
-      });
-    });
-
-    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, (message: string) => {
+    const onModelError: IXErrorTrainingModelCallback = async ({ message }) => {
+      await revalidate();
+      setStatus({ status: 'ready' });
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
         details: message,
       });
-    });
+    };
+
+    const onSuggestionAccepted: AcceptSuggestionSuccessCallback = async () => {
+      await fetchAgregations();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Suggestions have been updated</Translate>,
+      });
+    };
+
+    const onSuggestionError: AcceptSuggestionErrorCallback = message => {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: message,
+      });
+    };
+
+    socket.on(ModelEvents.MODEL_STATUS, onStatusUpdate);
+    socket.on(ModelEvents.MODEL_ERROR, onModelError);
+    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, onSuggestionAccepted);
+    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, onSuggestionError);
 
     return () => {
-      socket.off('ix_model_status');
-      socket.off('ACCEPT_SUGGESTION_SUCCESS');
-      socket.off('ACCEPT_SUGGESTION_ERROR');
+      socket.off(ModelEvents.MODEL_STATUS);
+      socket.off(ModelEvents.MODEL_ERROR);
+      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS);
+      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_ERROR);
     };
   }, [extractor._id]);
 
