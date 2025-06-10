@@ -511,6 +511,14 @@ describe('InformationExtraction', () => {
               id: 'entityWithoutSegmentation',
               label: 'entityWithoutSegmentation',
             },
+            {
+              id: 'extractor_target_rich_text_source_text_entity_1',
+              label: 'extractor_target_rich_text_source_text_entity_1',
+            },
+            {
+              id: 'extractor_target_rich_text_source_text_entity_2',
+              label: 'extractor_target_rich_text_source_text_entity_2',
+            },
           ],
           metadata: {
             extractor_name: 'extractorWithRelationshipToAny',

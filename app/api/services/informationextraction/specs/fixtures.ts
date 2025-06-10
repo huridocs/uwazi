@@ -115,6 +115,14 @@ const fixtures: DBFixture = {
         property: 'source_property',
       }
     ),
+    factory.ixExtractor(
+      'extractor_target_rich_text_source_text',
+      'target_rich_text',
+      ['extractor_target_rich_text_source_text_template'],
+      {
+        property: 'source_text',
+      }
+    ),
   ],
   entities: [
     factory.entity('P1', 'relationshipPartnerTemplate', {}, { sharedId: 'P1sharedId' }),
@@ -264,6 +272,32 @@ const fixtures: DBFixture = {
     factory.entity('entityWithoutSegmentation', 'templateWithoutSegmentations', {
       property_select: [{ value: 'B', label: 'B' }],
     }),
+    factory.entity(
+      'extractor_target_rich_text_source_text_entity_1',
+      'extractor_target_rich_text_source_text_template',
+      {
+        source_text: [{ value: 'any_source_text_1_en' }],
+        target_rich_text: [{ value: 'any_target_rich_text_1_en' }],
+      }
+    ),
+    factory.entity(
+      'extractor_target_rich_text_source_text_entity_1',
+      'extractor_target_rich_text_source_text_template',
+      {
+        source_text: [{ value: 'any_source_text_1_es' }],
+        target_rich_text: [{ value: 'any_target_rich_text_1_es' }],
+      },
+      {
+        language: 'es',
+      }
+    ),
+    factory.entity(
+      'extractor_target_rich_text_source_text_entity_2',
+      'extractor_target_rich_text_source_text_template',
+      {
+        source_text: [{ value: 'any_source_text_2_en' }],
+      }
+    ),
   ],
   files: [
     factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -1127,6 +1161,10 @@ const fixtures: DBFixture = {
     factory.template('extract_source_text_no_entities_template', [
       factory.property('source_property', 'text'),
       factory.property('target_text', 'text'),
+    ]),
+    factory.template('extractor_target_rich_text_source_text_template', [
+      factory.property('source_text', 'text'),
+      factory.property('target_rich_text', 'markdown'),
     ]),
   ],
   dictionaries: [factory.nestedThesauri('thesauri1', ['A', 'B', 'C', { 1: ['1A', '1B'] }])],

@@ -324,6 +324,47 @@ describe('Information Extraction: Extracting from text source', () => {
       });
     });
 
+    it('should only send labeled data (rich text)', async () => {
+      const extractionKey1En = ExtractionKey.create({
+        entitySharedId: 'extractor_target_rich_text_source_text_entity_1',
+        language: 'en',
+      });
+      const extractionKey1Es = ExtractionKey.create({
+        entitySharedId: 'extractor_target_rich_text_source_text_entity_1',
+        language: 'es',
+      });
+      const extractorId = factory.id('extractor_target_rich_text_source_text');
+
+      await informationExtraction.trainModel(extractorId);
+
+      const suggestion1En = IXExternalService.materials.find(
+        m => m.entity_name === extractionKey1En.key
+      );
+      const suggestion1Es = IXExternalService.materials.find(
+        m => m.entity_name === extractionKey1Es.key
+      );
+
+      expect(IXExternalService.materials.length).toBe(2);
+
+      expect(suggestion1En).toEqual({
+        entity_name: extractionKey1En.key,
+        language_iso: extractionKey1En.language,
+        id: extractorId.toString(),
+        tenant: 'tenant1',
+        source_text: 'any_source_text_1_en',
+        label_text: 'any_target_rich_text_1_en',
+      });
+
+      expect(suggestion1Es).toEqual({
+        entity_name: extractionKey1Es.key,
+        language_iso: extractionKey1Es.language,
+        id: extractorId.toString(),
+        tenant: 'tenant1',
+        source_text: 'any_source_text_1_es',
+        label_text: 'any_target_rich_text_1_es',
+      });
+    });
+
     it('should emit error status and stop finding suggestions', async () => {
       const promise = informationExtraction.trainModel(
         factory.id('extract_source_text_no_entities')
