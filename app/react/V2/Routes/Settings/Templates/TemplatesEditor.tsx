@@ -237,7 +237,7 @@ const TemplatesEditor = () => {
       <ConfigPropertyPanel
         isOpen={showConfigPropertyPanel}
         onSubmit={(propertyConfig: PropertySchema) => {
-          console.log('submit', propertyConfig);
+          
         }}
         onClose={() => setShowConfigPropertyPanel(false)}
         template={template}
