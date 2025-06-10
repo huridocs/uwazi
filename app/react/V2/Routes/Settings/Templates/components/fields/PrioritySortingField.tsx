@@ -22,11 +22,12 @@ export const PrioritySortingField = ({ control }: { control: any }) => (
               style="light"
               content={t(
                 'System',
-                'This property will be used for priority sorting in the library.',
+                'Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.',
                 null,
                 false
               )}
               placement="right"
+              className="max-w-xs"
             >
               <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
             </Tooltip>

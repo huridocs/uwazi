@@ -20,13 +20,20 @@ export const ThesaurusField = ({ control, disabled }: ThesaurusFieldProps) => {
       (thesaurus: ClientThesaurus) => thesaurus.type !== 'template'
     );
 
-    return orderBy(
+    const options = orderBy(
       filteredThesauri.map((thesaurus: ClientThesaurus) => ({
         value: thesaurus._id,
         label: t(thesaurus._id, thesaurus.name, null, false),
       })),
       'label'
     );
+
+    options.unshift({
+      value: '',
+      label: t('System', 'Select...', null, false),
+    });
+
+    return options;
   }, [thesauri]);
 
   return (

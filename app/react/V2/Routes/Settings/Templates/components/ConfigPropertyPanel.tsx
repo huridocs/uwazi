@@ -5,6 +5,7 @@ import { t, Translate } from 'app/I18N';
 import { Button } from 'V2/Components/UI/Button';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
+import { propertyIcons } from 'V2/Components/UI/Icons';
 import {
   PropertyTypeField,
   LabelField,
@@ -21,6 +22,7 @@ import { RelationshipFields } from './fields/RelationshipFields';
 import { MatchingPropertiesTable } from './MatchingPropertiesTable';
 import { translationsKeys } from '../helpers';
 import { PropertyRow } from '../types';
+import { GeneratedIdField } from './fields/GeneratedIdField';
 
 interface ConfigPropertyPanelProps {
   isOpen: boolean;
@@ -43,6 +45,7 @@ const emptyProperty = {
   content: undefined,
   relationType: undefined,
   inherit: undefined,
+  generatedId: false,
 };
 
 const filterableTypes = [
@@ -91,12 +94,15 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
           content: propertyToEdit.content,
           relationType: propertyToEdit.relationType,
           inherit: propertyToEdit.inherit,
+          generatedId: propertyToEdit.generatedId,
         }
       : { ...emptyProperty },
   });
 
   const type = watch('type');
   const filter = watch('filter');
+  const isCommonProperty = propertyToEdit?.isCommonProperty;
+  const isTitleProperty = propertyToEdit?.name === 'title';
 
   const isSelectOrMultiselect = type === 'select' || type === 'multiselect';
   const isImageOrPreview = type === 'image' || type === 'preview';
@@ -145,6 +151,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       content: data.content,
       relationType: data.relationType,
       inherit: data.inherit,
+      generatedId: data.generatedId,
     });
     onClose();
   };
@@ -163,17 +170,22 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
             <div className="flex flex-col gap-4">
               {propertyToEdit ? (
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm font-medium text-gray-700">
                     <Translate>Type</Translate>
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {t(
-                      'System',
-                      translationsKeys[type as keyof typeof translationsKeys] || type,
-                      null,
-                      false
-                    )}
-                  </p>
+                  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2 w-full">
+                    <span className="w-5 h-5 text-gray-500">
+                      {propertyIcons[type as keyof typeof propertyIcons]}
+                    </span>
+                    <span className="text-sm text-gray-700">
+                      {t(
+                        'System',
+                        translationsKeys[type as keyof typeof translationsKeys] || type,
+                        null,
+                        false
+                      )}
+                    </span>
+                  </div>
                 </div>
               ) : (
                 <PropertyTypeField control={control} />
@@ -188,10 +200,10 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
               {isSelectOrMultiselect && <ThesaurusField control={control} />}
               {isRelationship && <RelationshipFields control={control} templateId={template._id} />}
               <div className="flex flex-col gap-2 mt-2">
-                <HideLabelField control={control} />
-                <RequiredField control={control} />
-                <ShowInCardsField control={control} />
-                {filterableTypes.includes(type) && (
+                {!isCommonProperty && <HideLabelField control={control} />}
+                {!isCommonProperty && <RequiredField control={control} />}
+                {!isCommonProperty && <ShowInCardsField control={control} />}
+                {!isCommonProperty && filterableTypes.includes(type) && (
                   <>
                     <FilterField control={control} />
                     {filter && (
@@ -204,20 +216,27 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
                     )}
                   </>
                 )}
+                {isCommonProperty && <PrioritySortingField control={control} />}
+                {isCommonProperty && isTitleProperty && <GeneratedIdField control={control} />}
               </div>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                <Translate>
-                  Properties from other templates in the collection using the same label.
-                </Translate>
-              </h3>
-              <MatchingPropertiesTable
-                label={watch('label')}
-                type={watch('type') as PropertyTypeSchema}
-                template={template}
-              />
-            </div>
+            {!isCommonProperty && (
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                  <Translate>
+                    Properties from other templates in the collection using the same label.
+                  </Translate>
+                </h3>
+                <MatchingPropertiesTable
+                  label={watch('label')}
+                  type={watch('type') as PropertyTypeSchema}
+                  template={template}
+                  content={watch('content')}
+                  relationType={watch('relationType')}
+                  inherit={watch('inherit')}
+                />
+              </div>
+            )}
           </div>
         </Sidepanel.Body>
         <Sidepanel.Footer className="flex justify-end gap-2 p-4 border-t">

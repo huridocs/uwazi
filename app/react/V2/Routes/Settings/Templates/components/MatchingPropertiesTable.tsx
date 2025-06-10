@@ -1,7 +1,8 @@
+/* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'V2/atoms';
+import { templatesAtom, thesauriAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { Translate, t } from 'app/I18N';
@@ -16,6 +17,9 @@ type MatchingPropRow = {
   type: PropertyTypeSchema;
   rowId: string;
   propId?: string;
+  content?: string;
+  relationType?: string;
+  inherit?: { property: string; type: string };
 };
 
 const TypeCell =
@@ -43,19 +47,52 @@ const TemplateNameCell = (cell: CellContext<MatchingPropRow, string>) => (
 
 const TemplateNameHeader = () => <Translate>Template</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
+const ThesauriHeader = () => <Translate>Thesauri</Translate>;
+
+interface ThesauriCellProps {
+  value?: string;
+  currentContent?: string;
+  thesauri: { _id: string; name: string }[];
+}
+const ThesauriCellComponent: React.FC<ThesauriCellProps> = ({
+  value,
+  currentContent,
+  thesauri,
+}) => {
+  const matches = value === (currentContent || '');
+  const thesaurus = thesauri.find(thesaurusItem => thesaurusItem._id === value);
+  const displayName = thesaurus ? thesaurus.name : value || '-';
+  return <span className={matches ? '' : 'text-red-600'}>{displayName}</span>;
+};
+
+function thesauriCellRenderer(
+  content: string | undefined,
+  thesauri: { _id: string; name: string }[]
+) {
+  return (cell: CellContext<MatchingPropRow, string | undefined>) => (
+    <ThesauriCellComponent value={cell.getValue()} currentContent={content} thesauri={thesauri} />
+  );
+}
 
 export const MatchingPropertiesTable = ({
   label,
   _id,
   type,
   template,
+  content,
+  relationType,
+  inherit,
 }: {
   label: string;
   _id?: string;
   type: PropertyTypeSchema;
   template: ClientTemplateSchema;
+  content?: string;
+  relationType?: string;
+  inherit?: { property: string; type: string };
 }) => {
   const templates = useAtomValue(templatesAtom);
+  const thesauri = useAtomValue(thesauriAtom);
 
   const rows = useMemo(() => {
     const lowerLabel = label?.trim().toLowerCase();
@@ -69,6 +106,9 @@ export const MatchingPropertiesTable = ({
           type: prop.type,
           propId: prop._id,
           rowId: `${templ.name}-${prop.name}`,
+          content: prop.content,
+          relationType: prop.relationType,
+          inherit: prop.inherit,
         }))
     );
 
@@ -79,12 +119,15 @@ export const MatchingPropertiesTable = ({
         type,
         propId: _id,
         rowId: `${template.name}-${label}-current`,
+        content,
+        relationType,
+        inherit,
       },
       ...result,
     ];
 
     return result;
-  }, [templates, label, _id, type, template]);
+  }, [templates, label, _id, type, template, content, relationType, inherit]);
 
   const columnHelper = createColumnHelper<MatchingPropRow>();
   const columns: ColumnDef<MatchingPropRow, any>[] = [
@@ -99,6 +142,16 @@ export const MatchingPropertiesTable = ({
       cell: TypeCell(type),
     }),
   ];
+
+  if (['select', 'multiselect'].includes(type)) {
+    columns.push(
+      columnHelper.accessor('content', {
+        id: 'thesauriOrRelationship',
+        header: ThesauriHeader,
+        cell: thesauriCellRenderer(content, thesauri),
+      })
+    );
+  }
 
   return (
     <div className="mt-4">
