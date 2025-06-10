@@ -2,6 +2,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { createTestJob } from './fixtures';
 
 const OTHER_QUEUE_JOB = {
   _id: new ObjectId(),
@@ -235,4 +236,70 @@ it('should delete a job', async () => {
   await adapter.deleteJob({ ...job, id: job._id.toHexString() });
 
   expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([OTHER_QUEUE_JOB]);
+});
+
+describe('Failed Jobs', () => {
+  it('should move a job to failed jobs collection when marked as failed', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    const jobData = {
+      namespace: 'namespace',
+    };
+
+    const job = createTestJob(jobData);
+    await testingDB.mongodb!.collection('jobs').insertOne({
+      _id: new ObjectId(job.id),
+      ...jobData,
+      lockedUntil: 0,
+      retryCount: 0,
+      failed: false,
+    });
+
+    await adapter.markJobAsFailed(job);
+
+    const mainJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
+    const failedJobs = await testingDB.mongodb!.collection('jobs_failed').find({}).toArray();
+
+    expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
+    expect(failedJobs[0]).toMatchObject({
+      ...jobData,
+      lockedUntil: 0,
+      retryCount: 0,
+      failed: true,
+    });
+  });
+
+  it('should not pick failed jobs from the main collection', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    const jobData = {
+      failed: true,
+    };
+
+    const job = createTestJob(jobData);
+    await testingDB.mongodb?.collection('jobs').insertOne({
+      _id: new ObjectId(job.id),
+      ...jobData,
+      lockedUntil: 0,
+      retryCount: 0,
+    });
+
+    const result = await adapter.pickJob('queue name');
+    expect(result).toBeNull();
+  });
+
+  it('should throw error when trying to mark non-existent job as failed', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const nonExistentJob = createTestJob({
+      namespace: 'namespace',
+    });
+
+    await expect(adapter.markJobAsFailed(nonExistentJob)).rejects.toThrow(
+      'Failed to mark job as failed'
+    );
+  });
 });

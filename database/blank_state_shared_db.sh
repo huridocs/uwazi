@@ -7,5 +7,8 @@ parent_path=$(
 )
 cd "$parent_path" || exit
 
+# Set default database name for shared database
+DATABASE_NAME=uwazi_shared_db
+
 # Source the base script
 source ./blank_state_base.sh

@@ -107,6 +107,14 @@ const fixtures: DBFixture = {
         property: 'source_property',
       }
     ),
+    factory.ixExtractor(
+      'extract_source_text_no_entities',
+      'target_text',
+      ['extract_source_text_no_entities_template'],
+      {
+        property: 'source_property',
+      }
+    ),
   ],
   entities: [
     factory.entity('P1', 'relationshipPartnerTemplate', {}, { sharedId: 'P1sharedId' }),
@@ -928,6 +936,24 @@ const fixtures: DBFixture = {
       findingSuggestions: true,
     },
     {
+      extractorId: factory.id('extractorWithoutSegmentations'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: false,
+    },
+    {
+      extractorId: factory.id('extract_source_text_no_entities'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: false,
+    },
+    {
+      extractorId: factory.id('selectExtractorWithoutSegmentations'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: false,
+    },
+    {
       extractorId: factory.id('extractor_target_title_source_text'),
       creationDate: 200,
       status: 'ready',
@@ -1097,6 +1123,10 @@ const fixtures: DBFixture = {
     factory.template('extractor_target_select_source_text_template', [
       factory.property('source_property', 'text'),
       factory.property('target_select', 'select'),
+    ]),
+    factory.template('extract_source_text_no_entities_template', [
+      factory.property('source_property', 'text'),
+      factory.property('target_text', 'text'),
     ]),
   ],
   dictionaries: [factory.nestedThesauri('thesauri1', ['A', 'B', 'C', { 1: ['1A', '1B'] }])],

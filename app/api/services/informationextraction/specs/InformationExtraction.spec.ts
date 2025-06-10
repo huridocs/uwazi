@@ -24,9 +24,44 @@ import {
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
+import { IXWebSocketEvents } from '../WebSocketEvents';
+import { NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
 
+let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
+jest.mock('api/queue.v2/configuration/factories', () => ({
+  DefaultDispatcher: () => {
+    const {
+      SyncDispatcherForTests,
+    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    const {
+      InformationExtraction: InformationExtraction1,
+    } = require('api/services/informationextraction/InformationExtraction');
+    const { IXTaskService } = require('api/services/informationextraction/TaskService');
+    const { TrainModelForPDF } = require('api/services/informationextraction/TrainModelForPDF');
+    const { TrainModelForText } = require('api/services/informationextraction/TrainModelForText');
+    const { IXTrainModelJob } = require('api/services/informationextraction/TrainModelJob');
+
+    return new SyncDispatcherForTests({
+      IXTrainModelJob: async () => {
+        const serviceUrl = 'http://localhost:1234/';
+        const tenantName = 'tenant1';
+        const informationExtraction = new InformationExtraction1();
+        informationExtractionForJob = informationExtraction;
+        const iXTaskService = new IXTaskService({
+          tenantName,
+          taskManager: informationExtraction.taskManager,
+        });
+        return new IXTrainModelJob({
+          tenantName,
+          trainModelForPDF: new TrainModelForPDF({ iXTaskService, serviceUrl, tenantName }),
+          trainModelForText: new TrainModelForText({ iXTaskService, serviceUrl, tenantName }),
+        });
+      },
+    });
+  },
+}));
 
 const readDocument = async (letter: string) =>
   fs.readFile(
@@ -333,7 +368,7 @@ describe('InformationExtraction', () => {
     it('should start the task to train the model', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
-      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+      expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
           id: factory.id('prop1extractor').toString(),
           multi_value: false,
@@ -351,7 +386,7 @@ describe('InformationExtraction', () => {
     it('should start the task to train the model (multiselect)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
-      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+      expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
           id: factory.id('extractorWithMultiselect').toString(),
           multi_value: true,
@@ -391,7 +426,7 @@ describe('InformationExtraction', () => {
     it('should start the task to train the model (relationship)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
-      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+      expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
           id: factory.id('extractorWithRelationship').toString(),
           multi_value: true,
@@ -423,7 +458,7 @@ describe('InformationExtraction', () => {
     it('should start the task to train the model (relationship to any template)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithRelationshipToAny'));
 
-      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+      expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
           id: factory.id('extractorWithRelationshipToAny').toString(),
           multi_value: true,
@@ -488,59 +523,80 @@ describe('InformationExtraction', () => {
       });
     });
 
-    it('should return error status and stop finding suggestions, when there is no labeled data', async () => {
-      const expectedError = {
-        status: 'error',
-        message: "No labeled data (entities don't have values for target property)",
-      };
-
-      const result = await informationExtraction.trainModel(factory.id('prop5extractor'));
-      expect(result).toMatchObject(expectedError);
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop5extractor') });
+    it('should emit error status and stop finding suggestions, when there is no labaled data', async () => {
+      const promise1 = informationExtraction.trainModel(factory.id('prop3extractor'));
+      await expect(promise1).rejects.toThrow();
+      expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+        1,
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoLabeledEntities.defaultMessage }
+      );
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
       expect(model.findingSuggestions).toBe(false);
 
-      const multiSelectResult = await informationExtraction.trainModel(
+      const promise2 = informationExtraction.trainModel(
         factory.id('extractorWithMultiselectWithoutTrainingData')
       );
-      expect(multiSelectResult).toMatchObject(expectedError);
-
+      await expect(promise2).rejects.toThrow();
+      expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+        2,
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoLabeledEntities.defaultMessage }
+      );
       const [multiSelectModel] = await IXModelsModel.get({
         extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
       });
       expect(multiSelectModel.findingSuggestions).toBe(false);
 
-      const relationshipResult = await informationExtraction.trainModel(
+      const promise3 = informationExtraction.trainModel(
         factory.id('extractorWithEmptyRelationship')
       );
-      expect(relationshipResult).toMatchObject(expectedError);
+      await expect(promise3).rejects.toThrow();
+      expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+        3,
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoLabeledEntities.defaultMessage }
+      );
       const [relationshipModel] = await IXModelsModel.get({
         extractorId: factory.id('extractorWithEmptyRelationship'),
       });
       expect(relationshipModel.findingSuggestions).toBe(false);
     });
 
-    it('should return error status (No segmented files) and stop finding suggestions, when there are no segmented files', async () => {
-      const expectedError = {
-        status: 'error',
-        message: 'There are no documents segmented yet, please try again later',
-      };
+    it('should emit error status (No segmented files) and stop finding suggestions, when there are no segmented files', async () => {
+      const promise = informationExtraction.trainModel(factory.id('extractorWithoutSegmentations'));
+      await expect(promise).rejects.toThrow();
+      const [model] = await IXModelsModel.get({
+        extractorId: factory.id('extractorWithoutSegmentations'),
+      });
+      expect(model.findingSuggestions).toBe(false);
 
-      const result = await informationExtraction.trainModel(
-        factory.id('extractorWithoutSegmentations')
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoSegmentedFiles.defaultMessage }
       );
-      expect(result).toMatchObject(expectedError);
     });
 
-    it('should return error status (No segmented files) and stop finding suggestions, when there are no segmented files (select/multiselect/relationship)', async () => {
-      const expectedError = {
-        status: 'error',
-        message: 'There are no documents segmented yet, please try again later',
-      };
-
-      const result = await informationExtraction.trainModel(
+    it('should emit error status (No segmented files) and stop finding suggestions, when there are no segmented files (select/multiselect/relationship)', async () => {
+      const promise = informationExtraction.trainModel(
         factory.id('selectExtractorWithoutSegmentations')
       );
-      expect(result).toMatchObject(expectedError);
+      await expect(promise).rejects.toThrow();
+      const [model] = await IXModelsModel.get({
+        extractorId: factory.id('selectExtractorWithoutSegmentations'),
+      });
+
+      expect(model.findingSuggestions).toBe(false);
+
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoSegmentedFiles.defaultMessage }
+      );
     });
   });
 
