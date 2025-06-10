@@ -14,8 +14,8 @@ const testingEnvironment = {
 
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
     await this.setTenant();
-    this.setPermissions();
-    this.setFakeContext();
+    // this.setPermissions();
+    // this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
   },
