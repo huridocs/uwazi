@@ -1,12 +1,11 @@
-import { ClientTemplateSchema } from 'app/istore';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
 
 type TemplateRow = ClientTemplateSchema & {
   rowId: string;
   translation?: React.ReactNode;
 };
 
-type PropertyRow = PropertySchema & {
+type PropertyRow = ClientProperty & {
   rowId: string;
   disableRowDnD?: boolean;
   disableRowSelection?: boolean;

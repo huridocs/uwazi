@@ -36,6 +36,25 @@ const emptyTemplate: ClientTemplateSchema = {
   commonProperties: [commonPropertyTitle, commonPropertyDateAdded, commonPropertyDateModified],
 };
 
+const translationsKeys = {
+  date: 'property date',
+  daterange: 'property daterange',
+  generatedid: 'property generatedid',
+  geolocation: 'property geolocation',
+  image: 'property image',
+  link: 'property link',
+  markdown: 'property markdown',
+  media: 'property media',
+  multidate: 'property multidate',
+  multidaterange: 'property multidaterange',
+  multiselect: 'property multiselect',
+  numeric: 'property numeric',
+  preview: 'property preview',
+  relationship: 'property relationship',
+  select: 'property select',
+  text: 'property text',
+};
+
 const processDefaultProperties = (props: PropertySchema[]) =>
   props.map(prop => ({
     ...prop,
@@ -55,4 +74,10 @@ const cleanProperty = (prop: PropertyRow) => {
   return rest;
 };
 
-export { processDefaultProperties, processProperties, cleanProperty, emptyTemplate };
+export {
+  processDefaultProperties,
+  processProperties,
+  cleanProperty,
+  emptyTemplate,
+  translationsKeys,
+};

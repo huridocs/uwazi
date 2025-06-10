@@ -8,25 +8,7 @@ import { Translate, t } from 'app/I18N';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 import { ClientTemplateSchema } from 'V2/shared/types';
-
-const translationsKeys = {
-  date: 'property date',
-  daterange: 'property daterange',
-  generatedid: 'property generatedid',
-  geolocation: 'property geolocation',
-  image: 'property image',
-  link: 'property link',
-  markdown: 'property markdown',
-  media: 'property media',
-  multidate: 'property multidate',
-  multidaterange: 'property multidaterange',
-  multiselect: 'property multiselect',
-  numeric: 'property numeric',
-  preview: 'property preview',
-  relationship: 'property relationship',
-  select: 'property select',
-  text: 'property text',
-};
+import { translationsKeys } from '../helpers';
 
 type MatchingPropRow = {
   templateId: string;
@@ -76,10 +58,10 @@ export const MatchingPropertiesTable = ({
   const templates = useAtomValue(templatesAtom);
 
   const rows = useMemo(() => {
-    const lowerLabel = label.trim().toLowerCase();
+    const lowerLabel = label?.trim().toLowerCase();
     let result: MatchingPropRow[] = templates.flatMap(templ =>
       [...(templ.properties || [])]
-        .filter(prop => prop.label && prop.label.trim().toLowerCase() === lowerLabel)
+        .filter(prop => prop.label?.trim().toLowerCase() === lowerLabel)
         .filter(prop => prop._id !== _id)
         .map(prop => ({
           templateId: templ._id,

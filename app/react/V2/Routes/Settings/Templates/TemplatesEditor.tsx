@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -18,6 +19,7 @@ import { Page, ClientTemplateSchema } from 'V2/shared/types';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from 'V2/atoms';
+import uniqueID from 'shared/uniqueID';
 import {
   cleanProperty,
   emptyTemplate,
@@ -73,6 +75,7 @@ const TemplatesEditor = () => {
   const [showRelationshipTypeModal, setShowRelationshipTypeModal] = useState(false);
   const [showThesaurusModal, setShowThesaurusModal] = useState(false);
   const [showConfigPropertyPanel, setShowConfigPropertyPanel] = useState(false);
+  const [propertyToEdit, setPropertyToEdit] = useState<PropertyRow | undefined>();
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -182,6 +185,11 @@ const TemplatesEditor = () => {
     setProperties(current => current.filter(row => !selected.includes(row.rowId)));
   };
 
+  const handleEditProperty = (property: PropertyRow) => {
+    setPropertyToEdit(property);
+    setShowConfigPropertyPanel(true);
+  };
+
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <SettingsContent>
@@ -191,7 +199,7 @@ const TemplatesEditor = () => {
         />
         <SettingsContent.Body>
           <Table
-            columns={propertyColumns}
+            columns={propertyColumns(handleEditProperty)}
             data={allProperties}
             enableSelections
             dnd={{ enable: true }}
@@ -237,10 +245,22 @@ const TemplatesEditor = () => {
       <ConfigPropertyPanel
         isOpen={showConfigPropertyPanel}
         onSubmit={(propertyConfig: PropertySchema) => {
-          
+          if (propertyToEdit) {
+            setProperties(current =>
+              current.map(p =>
+                p.rowId === propertyToEdit.rowId ? { ...propertyConfig, rowId: p.rowId } : p
+              )
+            );
+          } else {
+            setProperties(current => [...current, { ...propertyConfig, rowId: uniqueID() }]);
+          }
         }}
-        onClose={() => setShowConfigPropertyPanel(false)}
-        template={template}
+        onClose={() => {
+          setShowConfigPropertyPanel(false);
+          setPropertyToEdit(undefined);
+        }}
+        template={{ ...template, properties, commonProperties } as ClientTemplateSchema}
+        propertyToEdit={propertyToEdit}
       />
     </div>
   );

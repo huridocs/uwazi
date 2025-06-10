@@ -6,6 +6,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N/Translate';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { Pill } from 'V2/Components/UI';
+import { translationsKeys } from '../helpers';
 
 type PropertyRow = PropertySchema & {
   rowId: string;
@@ -17,25 +18,6 @@ const columnHelper = createColumnHelper<PropertyRow>();
 
 const LabelCell = ({ cell }: CellContext<PropertyRow, string>) => <span>{cell.getValue()}</span>;
 
-const translationsKeys = {
-  date: 'property date',
-  daterange: 'property daterange',
-  generatedid: 'property generatedid',
-  geolocation: 'property geolocation',
-  image: 'property image',
-  link: 'property link',
-  markdown: 'property markdown',
-  media: 'property media',
-  multidate: 'property multidate',
-  multidaterange: 'property multidaterange',
-  multiselect: 'property multiselect',
-  numeric: 'property numeric',
-  preview: 'property preview',
-  relationship: 'property relationship',
-  select: 'property select',
-  text: 'property text',
-};
-
 const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
   <div className="flex items-center gap-2">
     {propertyIcons[cell.getValue() as keyof typeof propertyIcons]}
@@ -44,11 +26,14 @@ const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
     </Translate>
   </div>
 );
-const ActionsCell = () => (
-  <Button size="small" styling="light">
-    <Translate>Edit</Translate>
-  </Button>
-);
+
+const ActionsCell =
+  (handleEditProperty: (property: PropertyRow) => void) =>
+  ({ cell }: CellContext<PropertyRow, any>) => (
+    <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
+      <Translate>Edit</Translate>
+    </Button>
+  );
 
 const LabelHeader = () => <Translate>Property</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
@@ -105,7 +90,9 @@ const OptionsCell = ({ row }: CellContext<PropertyRow, any>) => {
   return <div className="flex flex-wrap gap-2">{pills}</div>;
 };
 
-const propertyColumns: ColumnDef<PropertyRow, any>[] = [
+const propertyColumns: (
+  handleEditProperty: (property: PropertyRow) => void
+) => ColumnDef<PropertyRow, any>[] = handleEditProperty => [
   columnHelper.accessor('label', {
     id: 'label',
     header: LabelHeader,
@@ -127,7 +114,7 @@ const propertyColumns: ColumnDef<PropertyRow, any>[] = [
   {
     id: 'actions',
     header: ActionsHeader,
-    cell: ActionsCell,
+    cell: ActionsCell(handleEditProperty),
     meta: { headerClassName: 'w-0 text-center', contentClassName: 'text-center' },
   },
 ];
