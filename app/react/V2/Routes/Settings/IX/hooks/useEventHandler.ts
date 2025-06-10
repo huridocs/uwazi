@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
+import { useRevalidator } from 'react-router';
 import { socket } from 'app/socket';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
+import { t } from 'app/I18N';
 import { ModelEvents, SuggestionEvents } from '../events';
 import type {
   IXModelStatusCallback,
@@ -13,18 +15,17 @@ import { ixStatus } from '../types';
 
 type useEventHandlerProps = {
   extractorId: string;
-  statusUpdater: (status: ixStatus, data?: { processed: number; total: number }) => void;
-  revalidator: () => Promise<void>;
+  updateStatus: (status: ixStatus, data?: { processed: number; total: number }) => void;
   fetchAggregations: () => Promise<void>;
 };
 
 const useEventHandler = ({
   extractorId,
-  statusUpdater,
-  revalidator,
+  updateStatus,
   fetchAggregations,
 }: useEventHandlerProps) => {
   const setNotifications = useSetAtom(notificationAtom);
+  const { revalidate } = useRevalidator();
 
   useEffect(() => {
     const handleModelStatus: IXModelStatusCallback = async (
@@ -34,19 +35,19 @@ const useEventHandler = ({
       data
     ) => {
       if (eventExtractorId === extractorId) {
-        statusUpdater(modelStatus as ixStatus, data);
-        await revalidator();
+        updateStatus(modelStatus as ixStatus, data);
+        await revalidate();
         if ((data && data.total === data.processed) || modelStatus === ixStatus.ready) {
-          statusUpdater(ixStatus.ready);
+          updateStatus(ixStatus.ready);
         }
       }
     };
 
     const handleModelError: IXErrorTrainingModelCallback = ({ message }) => {
-      statusUpdater(ixStatus.error);
+      updateStatus(ixStatus.error);
       setNotifications({
         type: 'error',
-        text: 'An error occurred',
+        text: t('System', 'An error occurred', null, false),
         details: message,
       });
     };
@@ -55,14 +56,14 @@ const useEventHandler = ({
       await fetchAggregations();
       setNotifications({
         type: 'success',
-        text: 'Suggestions have been updated',
+        text: t('System', 'Suggestions have been updated', null, false),
       });
     };
 
     const handleSuggestionError: AcceptSuggestionErrorCallback = message => {
       setNotifications({
         type: 'error',
-        text: 'An error occurred',
+        text: t('System', 'An error occurred', null, false),
         details: message,
       });
     };

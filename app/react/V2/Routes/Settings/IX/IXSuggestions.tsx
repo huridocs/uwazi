@@ -183,8 +183,7 @@ const IXSuggestions = () => {
 
   useEventHandler({
     extractorId: extractor._id!,
-    statusUpdater: (newStatus, data) => setStatus({ status: newStatus, data }),
-    revalidator: revalidate,
+    updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
     fetchAggregations: fetchAgregations,
   });
 
