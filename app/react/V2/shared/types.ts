@@ -1,7 +1,7 @@
 import { Tenant } from 'api/tenants/tenantContext';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { SettingsLinkSchema } from 'shared/types/settingsType';
-import { TemplateSchema } from 'shared/types/templateType';
+import { Property, Template } from 'app/apiResponseTypes';
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;
@@ -61,8 +61,14 @@ type FeatureFlags = Tenant['featureFlags'] & {};
 
 type ClientFeatureFlags = Pick<FeatureFlags, 'ixExtraSources' | 'paragraphExtraction'>;
 
-type ClientTemplateSchema = TemplateSchema & {
+type ClientProperty = Property & {
   _id?: string;
+};
+
+type ClientTemplateSchema = Template & {
+  _id?: string;
+  commonProperties?: [ClientProperty, ...ClientProperty[]];
+  properties?: ClientProperty[];
 };
 
 export { ItemTypes };
@@ -76,4 +82,5 @@ export type {
   TranslationValue,
   ClientFeatureFlags,
   ClientTemplateSchema,
+  ClientProperty,
 };

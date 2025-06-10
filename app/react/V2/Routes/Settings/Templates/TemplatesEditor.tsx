@@ -9,7 +9,6 @@ import {
   useLoaderData,
   useNavigate,
   useBlocker,
-  Location,
   useRevalidator,
 } from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
@@ -30,6 +29,7 @@ import { TemplateMetadata } from './components/TemplateMetadata';
 import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal';
 import { AddThesaurusModal } from './components/AddThesaurusModal';
 import { TemplatesEditorFooter } from './components/TemplatesEditorFooter';
+import { ConfigPropertyPanel } from './components/ConfigPropertyPanel';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -46,7 +46,7 @@ const templatesEditorLoader =
     if (params.templateId) {
       const templateToEdit = templates.find(template => template._id === params.templateId);
       if (templateToEdit) {
-        loadedTemplate = templateToEdit;
+        loadedTemplate = templateToEdit as ClientTemplateSchema;
       }
     }
 
@@ -72,6 +72,7 @@ const TemplatesEditor = () => {
   const [showNavigationModal, setShowNavigationModal] = useState(false);
   const [showRelationshipTypeModal, setShowRelationshipTypeModal] = useState(false);
   const [showThesaurusModal, setShowThesaurusModal] = useState(false);
+  const [showConfigPropertyPanel, setShowConfigPropertyPanel] = useState(false);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -97,13 +98,14 @@ const TemplatesEditor = () => {
   }, [template, commonProperties, properties]);
 
   const checkPendingChanges = useCallback(
-    (nextLocation?: Location<any> | undefined) =>
-      !nextLocation?.pathname.includes('templates/edit') &&
-      !isEqual(loadedTemplate, getCurrentStatus()),
+    () => !isEqual(loadedTemplate, getCurrentStatus()),
     [getCurrentStatus, loadedTemplate]
   );
 
-  const blocker = useBlocker(({ nextLocation }) => checkPendingChanges(nextLocation));
+  const blocker = useBlocker(
+    ({ nextLocation }) =>
+      !nextLocation?.pathname.includes('templates/edit') && checkPendingChanges()
+  );
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -220,6 +222,7 @@ const TemplatesEditor = () => {
             onSave={handleSave}
             onAddThesaurus={() => setShowThesaurusModal(true)}
             onAddRelationshipType={() => setShowRelationshipTypeModal(true)}
+            onAddProperty={() => setShowConfigPropertyPanel(true)}
           />
         </SettingsContent.Footer>
       </SettingsContent>
@@ -230,6 +233,15 @@ const TemplatesEditor = () => {
         <AddRelationshipTypeModal onClose={() => setShowRelationshipTypeModal(false)} />
       )}
       {showThesaurusModal && <AddThesaurusModal onClose={() => setShowThesaurusModal(false)} />}
+
+      <ConfigPropertyPanel
+        isOpen={showConfigPropertyPanel}
+        onSubmit={(propertyConfig: PropertySchema) => {
+          console.log('submit', propertyConfig);
+        }}
+        onClose={() => setShowConfigPropertyPanel(false)}
+        template={template}
+      />
     </div>
   );
 };

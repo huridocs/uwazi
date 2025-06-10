@@ -8,6 +8,7 @@ interface TemplatesEditorFooterProps {
   onSave: () => void;
   onAddThesaurus: () => void;
   onAddRelationshipType: () => void;
+  onAddProperty: () => void;
 }
 
 export const TemplatesEditorFooter = ({
@@ -16,12 +17,13 @@ export const TemplatesEditorFooter = ({
   onSave,
   onAddThesaurus,
   onAddRelationshipType,
+  onAddProperty,
 }: TemplatesEditorFooterProps) => (
   <div className="flex justify-between w-full">
     <div className="flex gap-2 items-center">
       {selected.length === 0 ? (
         <>
-          <Button color="primary">
+          <Button color="primary" onClick={onAddProperty}>
             <Translate>Add property</Translate>
           </Button>
           <Button color="primary" styling="outline" onClick={onAddThesaurus}>

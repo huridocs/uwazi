@@ -5,7 +5,7 @@ import { Translate } from 'app/I18N';
 import { Option } from './SelectTypes';
 
 interface RadioProps {
-  legend?: string;
+  legend?: string | React.ReactNode;
   name: string;
   onChange?: ReactEventHandler<HTMLInputElement>;
   options: (Option & {
@@ -13,6 +13,7 @@ interface RadioProps {
   })[];
   className?: string;
   orientation?: 'vertical' | 'horizontal';
+  value?: string;
 }
 
 const RadioSelect = ({
@@ -22,6 +23,7 @@ const RadioSelect = ({
   onChange,
   className,
   orientation = 'vertical',
+  value,
 }: RadioProps) => (
   <fieldset
     className={`flex flex-wrap gap-4 ${
@@ -29,7 +31,7 @@ const RadioSelect = ({
     } ${className}`}
     id={`radio_${name}`}
   >
-    {legend && <legend className="mb-4">{legend}</legend>}
+    {legend && <legend className="mb-2 text-sm font-medium text-gray-700">{legend}</legend>}
     {options.map(option => (
       <div
         className={`flex items-center gap-2 ${orientation === 'vertical' ? '' : 'mr-4'}`}
@@ -42,6 +44,7 @@ const RadioSelect = ({
           disabled={option.disabled || false}
           defaultChecked={option.defaultChecked}
           onChange={onChange}
+          checked={value === option.value}
         />
         <Label
           htmlFor={`${name}_${option.value}`}
