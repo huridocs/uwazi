@@ -74,7 +74,7 @@ Modal.CloseButton = ({
     onClick={onClick}
     aria-label="Close modal"
     className={`${className} ml-auto inline-flex items-center rounded-lg bg-transparent 
-    p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 `}
+    p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 disabled:hover:bg-transparent disabled:text-gray-400`}
     type="button"
     disabled={disabled}
   >
