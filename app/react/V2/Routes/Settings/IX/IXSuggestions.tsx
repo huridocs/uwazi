@@ -22,7 +22,6 @@ import { Translate } from 'app/I18N';
 import { ClientIXExtractorType } from 'app/V2/shared/types';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
-import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -34,24 +33,10 @@ import {
   formatAccepted,
   updateSortingUrl,
 } from './helpers';
-import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion } from './types';
-import { SuggestionEvents, ModelEvents } from './events';
-import type {
-  IXModelStatusCallback,
-  IXErrorTrainingModelCallback,
-  AcceptSuggestionSuccessCallback,
-  AcceptSuggestionErrorCallback,
-} from './events';
+import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion, ixStatus } from './types';
+import { useEventHandler } from './hooks/useEventHandler';
 
 const SUGGESTIONS_PER_PAGE = 100;
-
-type ixStatus =
-  | 'ready'
-  | 'sending_labeled_data'
-  | 'processing_model'
-  | 'processing_suggestions'
-  | 'cancel'
-  | 'error';
 
 const ixmessages = {
   ready: 'Find suggestions',
@@ -136,16 +121,16 @@ const IXSuggestions = () => {
 
   const trainModelOrCancelAction = async () => {
     try {
-      if (status.status === 'ready') {
-        setStatus({ status: 'sending_labeled_data' });
+      if (status.status === ixStatus.ready) {
+        setStatus({ status: ixStatus.sending_labeled_data });
         const response = await suggestionsAPI.findSuggestions(extractor._id!);
         setStatus(response);
       } else {
         await suggestionsAPI.cancel(extractor._id!);
-        if (status.status === 'error') {
-          setStatus({ status: 'ready' });
+        if (status.status === ixStatus.error) {
+          setStatus({ status: ixStatus.ready });
         } else {
-          setStatus({ status: 'cancel' });
+          setStatus({ status: ixStatus.cancel });
         }
         await revalidate();
       }
@@ -178,56 +163,6 @@ const IXSuggestions = () => {
   }, [suggestions, property]);
 
   useEffect(() => {
-    const onStatusUpdate: IXModelStatusCallback = async (extractorId, modelStatus, _, data) => {
-      if (extractorId === extractor._id) {
-        setStatus({ status: modelStatus as ixStatus, data });
-        await revalidate();
-        if ((data && data.total === data.processed) || modelStatus === 'ready') {
-          setStatus({ status: 'ready' });
-        }
-      }
-    };
-
-    const onModelError: IXErrorTrainingModelCallback = async ({ message }) => {
-      await revalidate();
-      setStatus({ status: 'ready' });
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: message,
-      });
-    };
-
-    const onSuggestionAccepted: AcceptSuggestionSuccessCallback = async () => {
-      await fetchAgregations();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Suggestions have been updated</Translate>,
-      });
-    };
-
-    const onSuggestionError: AcceptSuggestionErrorCallback = message => {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: message,
-      });
-    };
-
-    socket.on(ModelEvents.MODEL_STATUS, onStatusUpdate);
-    socket.on(ModelEvents.MODEL_ERROR, onModelError);
-    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS, onSuggestionAccepted);
-    socket.on(SuggestionEvents.ACCEPT_SUGGESTION_ERROR, onSuggestionError);
-
-    return () => {
-      socket.off(ModelEvents.MODEL_STATUS);
-      socket.off(ModelEvents.MODEL_ERROR);
-      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_SUCCESS);
-      socket.off(SuggestionEvents.ACCEPT_SUGGESTION_ERROR);
-    };
-  }, [extractor._id]);
-
-  useEffect(() => {
     setAggregations(aggregation);
   }, [aggregation]);
 
@@ -245,6 +180,13 @@ const IXSuggestions = () => {
         : template?.properties.find(prop => prop.name === extractor.property);
     setProperty(_property);
   }, [templates, extractor]);
+
+  useEventHandler({
+    extractorId: extractor._id!,
+    statusUpdater: (newStatus, data) => setStatus({ status: newStatus, data }),
+    revalidator: revalidate,
+    fetchAggregations: fetchAgregations,
+  });
 
   return (
     <div
@@ -341,20 +283,20 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                disabled={status.status === 'cancel'}
-                styling={status.status === 'ready' ? 'solid' : 'outline'}
+                disabled={status.status === ixStatus.cancel}
+                styling={status.status === ixStatus.ready ? 'solid' : 'outline'}
                 onClick={trainModelOrCancelAction}
               >
-                {status.status === 'ready' ? (
+                {status.status === ixStatus.ready ? (
                   <Translate>Find suggestions</Translate>
                 ) : (
                   <Translate>Cancel</Translate>
                 )}
               </Button>
-              {status.status !== 'ready' ? (
+              {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
-                  {status.message && status.status === 'error' ? ` : ${status.message}` : ''}
+                  {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
                   {status.data ? (
                     <span className="ml-2">
                       {status.data.processed} / {status.data.total}
