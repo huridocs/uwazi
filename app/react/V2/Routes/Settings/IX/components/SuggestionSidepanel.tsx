@@ -423,6 +423,8 @@ const SuggestionSidepanel = ({
     </div>
   );
 
+  const renderMarkdown = () => <textarea name="" id=""></textarea>;
+
   const renderForm = () => {
     switch (property?.type) {
       case 'text':
@@ -433,6 +435,8 @@ const SuggestionSidepanel = ({
       case 'multiselect':
       case 'relationship':
         return renderSelect(property?.type);
+      case 'markdown':
+        return renderMarkdown();
       default:
         return '';
     }
