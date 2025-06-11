@@ -9,6 +9,7 @@ import { DefaultLogger, SystemLogger } from 'api/log.v2/infrastructure/StandardL
 import { JobsRouter } from '../infrastructure/JobsRouter';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
 import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
+import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter';
 
 export function DefaultQueueAdapter() {
   return new MongoQueueAdapter(
@@ -17,8 +18,22 @@ export function DefaultQueueAdapter() {
   );
 }
 
+export function RoundRobinQueueAdapter() {
+  return new RoundRobinMongoQueueAdapter(
+    getSharedConnection(),
+    new MongoTransactionManager(getSharedClient(), SystemLogger())
+  );
+}
+
 export function DefaultTestingQueueAdapter() {
   return new MongoQueueAdapter(
+    getConnection(),
+    new MongoTransactionManager(getClient(), DefaultLogger())
+  );
+}
+
+export function TestingRoundRobinQueueAdapter() {
+  return new RoundRobinMongoQueueAdapter(
     getConnection(),
     new MongoTransactionManager(getClient(), DefaultLogger())
   );

@@ -12,8 +12,15 @@ import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contra
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
+import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
+import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelForPDF';
+import { TrainModelForText } from 'api/services/informationextraction/TrainModelForText';
+import settings from 'api/settings';
+import { IXTaskService } from 'api/services/informationextraction/TaskService';
+import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -52,6 +59,8 @@ export function registerJobs(
 ) {
   register(TestJob, async () => new TestJob());
 
+  register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
+
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
 
   register(PXCreateParagraphsJob, async () => {
@@ -87,5 +96,25 @@ export function registerJobs(
       },
       batchSize
     );
+  });
+
+  const informationExtraction = new InformationExtraction();
+  register(IXTrainModelJob, async (tenantName: string) => {
+    const settingsValues = await settings.get();
+    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const iXTaskService = new IXTaskService({
+      tenantName,
+      taskManager: informationExtraction.taskManager,
+    });
+
+    if (!serviceUrl) {
+      throw new Error('Metadata extraction service URL is not configured.');
+    }
+
+    return new IXTrainModelJob({
+      tenantName,
+      trainModelForPDF: new TrainModelForPDF({ tenantName, serviceUrl, iXTaskService }),
+      trainModelForText: new TrainModelForText({ iXTaskService, tenantName, serviceUrl }),
+    });
   });
 }

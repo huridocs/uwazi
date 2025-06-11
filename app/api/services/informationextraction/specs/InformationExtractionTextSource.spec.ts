@@ -1,23 +1,61 @@
 /* eslint-disable max-statements */
+import moment from 'moment';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import entitiesModel from 'api/entities/entitiesModel';
 import { InformationExtraction } from '../InformationExtraction';
 import { factory, fixtures } from './fixtures';
 import { IXModelsModel } from '../IXModelsModel';
 import { ExtractionKey } from '../ExtractionKey';
+import { IXWebSocketEvents } from '../WebSocketEvents';
+import { NoEntitiesForTraining } from '../TrainModelForText';
+import { getEntitiesForTraining } from '../getFiles';
 
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
+jest.mock('api/queue.v2/configuration/factories', () => ({
+  DefaultDispatcher: () => {
+    const {
+      SyncDispatcherForTests,
+    } = require('api/queue.v2/infrastructure/SyncDispatcherForTests');
+    const {
+      InformationExtraction: InformationExtraction1,
+    } = require('api/services/informationextraction/InformationExtraction');
+    const { IXTaskService } = require('api/services/informationextraction/TaskService');
+    const { TrainModelForPDF } = require('api/services/informationextraction/TrainModelForPDF');
+    const { TrainModelForText } = require('api/services/informationextraction/TrainModelForText');
+    const { IXTrainModelJob } = require('api/services/informationextraction/TrainModelJob');
+
+    return new SyncDispatcherForTests({
+      IXTrainModelJob: async () => {
+        const serviceUrl = 'http://localhost:4321/';
+        const tenantName = 'tenant1';
+        const informationExtraction = new InformationExtraction1();
+        const iXTaskService = new IXTaskService({
+          tenantName,
+          taskManager: informationExtraction.taskManager,
+        });
+        return new IXTrainModelJob({
+          tenantName,
+          trainModelForPDF: new TrainModelForPDF({ iXTaskService, serviceUrl, tenantName }),
+          trainModelForText: new TrainModelForText({ iXTaskService, serviceUrl, tenantName }),
+        });
+      },
+    });
+  },
+}));
+
 describe('Information Extraction: Extracting from text source', () => {
+  const SERVICE_PORT = 4321;
   let informationExtraction: InformationExtraction;
   let IXExternalService: ExternalDummyService;
 
   beforeAll(async () => {
-    IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
+    IXExternalService = new ExternalDummyService(SERVICE_PORT, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
@@ -30,7 +68,25 @@ describe('Information Extraction: Extracting from text source', () => {
   beforeEach(async () => {
     informationExtraction = new InformationExtraction();
 
-    await testingEnvironment.setUp(fixtures);
+    const currentSettings = fixtures.settings?.[0] || {};
+
+    const fixturesWithUnconflictingPorts = {
+      ...fixtures,
+      settings: [
+        {
+          ...currentSettings,
+          features: {
+            ...(currentSettings.features || {}),
+            metadataExtraction: {
+              ...(currentSettings.features?.metadataExtraction || {}),
+              url: `http://localhost:${SERVICE_PORT}`,
+            },
+          },
+        },
+      ],
+    };
+
+    await testingEnvironment.setUp(fixturesWithUnconflictingPorts);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
@@ -251,6 +307,7 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       expect(IXExternalService.materials.length).toBe(2);
+      const testDate = moment.utc('2004-07-05T00:00:00+00:00');
 
       expect(suggestion1).toEqual({
         entity_name: extractionKeyEn.key,
@@ -258,7 +315,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: '2004-07-05',
+        label_text: moment(testDate).local().format('YYYY-MM-DD'),
       });
 
       expect(suggestion2).toEqual({
@@ -267,8 +324,46 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: '2004-07-05',
+        label_text: moment(testDate).local().format('YYYY-MM-DD'),
       });
+    });
+
+    it('should emit error status and stop finding suggestions', async () => {
+      const promise = informationExtraction.trainModel(
+        factory.id('extract_source_text_no_entities')
+      );
+
+      await expect(promise).rejects.toThrow();
+      const [model] = await IXModelsModel.get({
+        extractorId: factory.id('extract_source_text_no_entities'),
+      });
+
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'tenant1',
+        IXWebSocketEvents.ErrorTrainingModel,
+        { message: NoEntitiesForTraining.defaultMessage }
+      );
+
+      expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should use limit when getting entities for training', async () => {
+      const templates = [factory.id('template1')];
+      const toProperty = 'property1';
+
+      const getUnrestrictedSpy = jest.spyOn(entitiesModel, 'getUnrestricted');
+      getUnrestrictedSpy.mockResolvedValue([]);
+
+      await getEntitiesForTraining(templates, toProperty, 'sourceProperty');
+      expect(getUnrestrictedSpy).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(String),
+        expect.objectContaining({
+          limit: 15000,
+        })
+      );
+
+      getUnrestrictedSpy.mockRestore();
     });
   });
 
@@ -434,7 +529,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       expect(saveSuggestionsForPdfSourceSpy).not.toHaveBeenCalled();
@@ -467,7 +562,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const suggestions = await IXSuggestionsModel.get({
@@ -538,7 +633,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -586,7 +681,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -634,7 +729,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -682,7 +777,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -733,7 +828,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({
@@ -784,7 +879,7 @@ describe('Information Extraction: Extracting from text source', () => {
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
       const [suggestion] = await IXSuggestionsModel.get({

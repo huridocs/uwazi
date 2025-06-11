@@ -193,6 +193,8 @@ describe('Information Extraction', () => {
       cy.getByTestId('modal').within(() => {
         cy.contains('li', 'Titles from all templates');
         cy.contains('button', 'Accept').click();
+        cy.contains('button', 'Accept').should('be.disabled');
+        cy.contains('button', 'Cancel').should('be.disabled');
       });
 
       cy.contains('td', 'Titles from all templates').should('not.exist');

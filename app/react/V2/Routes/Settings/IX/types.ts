@@ -42,6 +42,15 @@ interface MultiValueSuggestion extends EntitySuggestionType {
 
 type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
 
+export enum ixStatus {
+  ready = 'ready',
+  sending_labeled_data = 'sending_labeled_data',
+  processing_model = 'processing_model',
+  processing_suggestions = 'processing_suggestions',
+  cancel = 'cancel',
+  error = 'error',
+}
+
 export type {
   TableExtractor,
   Highlights,
