@@ -33,6 +33,7 @@ const Primary: Story = {
           usePassword={args.usePassword}
           onAcceptClick={args.onAcceptClick}
           onCancelClick={args.onCancelClick}
+          disabled={args.disabled}
         />
       </div>
     </div>

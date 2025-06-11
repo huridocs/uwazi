@@ -131,6 +131,7 @@ export class QueueWorker {
       this.logger.info('Processing job', { job });
       const startTime = performance.now();
       await dispatchable.handleDispatch(async () => this.adapter.renewJobLock(job), job.params, {
+        namespace: job.namespace,
         retryCount: job.retryCount,
         maxRetries: job.options.maxRetries,
       });
@@ -145,10 +146,10 @@ export class QueueWorker {
 
   private async catchFailedJob(job: Job, e: any) {
     let jobToReport = job;
+    jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
     if (job.retryCount === job.options.maxRetries || e instanceof NonRetryableJobError) {
       jobToReport = await this.adapter.markJobAsFailed(job);
     }
-    jobToReport = await this.adapter.updateLockWindow(job, job.options.lockWindow * 2);
     this.onError(e, { job: jobToReport });
   }
 
