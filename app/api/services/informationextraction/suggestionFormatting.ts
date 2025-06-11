@@ -128,6 +128,7 @@ const FORMATTERS: Record<
   ) => Partial<IXSuggestionType>
 > = {
   title: textFormatter,
+  markdown: textFormatter,
   text: textFormatter,
   numeric: (
     rawSuggestion: RawSuggestion,
