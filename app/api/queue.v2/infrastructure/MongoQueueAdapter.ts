@@ -21,6 +21,7 @@ export interface JobDBO {
 
 export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueAdapter {
   protected collectionName = 'jobs';
+  private failedJobsCollectionName = 'jobs_failed';
 
   constructor(db: Db, transactionManager: MongoTransactionManager) {
     super(db, transactionManager, { useSyncedCollection: false });
@@ -70,6 +71,16 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     return null;
   }
 
+  async moveToFailedJobs(job: Job) {
+    const jobToMove = await this.getCollection().findOne({ _id: new ObjectId(job.id) });
+    if (!jobToMove) {
+      throw new Error(`Job not found: ${job.id}`);
+    }
+
+    await this.getCollection(this.failedJobsCollectionName).insertOne(jobToMove);
+    await this.deleteJob(job);
+  }
+
   async markJobAsFailed(job: Job) {
     const result = await this.getCollection().findOneAndUpdate(
       {
@@ -83,10 +94,13 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       throw new Error(`Failed to mark job as failed: ${job.id}`);
     }
 
-    return {
+    const updatedJob = {
       id: result._id.toHexString(),
       ...result,
     };
+
+    await this.moveToFailedJobs(updatedJob);
+    return updatedJob;
   }
 
   async updateLockWindow(job: Job, newLockWindow: number) {
