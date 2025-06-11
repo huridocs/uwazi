@@ -23,6 +23,7 @@ const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => {} }) => {
           onPageChange(prevPage, true);
         }}
         {...disableButton(page, 1)}
+        replace
       >
         <Translate>Previous</Translate>
       </CurrentLocationLink>
@@ -34,6 +35,7 @@ const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => {} }) => {
           onPageChange(nextPage, true);
         }}
         {...disableButton(page, totalPages)}
+        replace
       >
         <Translate>Next</Translate>
       </CurrentLocationLink>

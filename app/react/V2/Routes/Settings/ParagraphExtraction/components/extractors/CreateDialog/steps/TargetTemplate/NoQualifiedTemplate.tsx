@@ -8,17 +8,17 @@ const NoQualifiedTemplatesMessage = () => (
     </p>
     <p className="flex flex-col items-center gap-5 text-gray-500">
       <div id="label-template-requirements">
-        <Translate>A target template needs at least</Translate>:
+        <Translate>A target template needs to have the following properties</Translate>:
       </div>
       <ul
         className="flex flex-col gap-1 list-disc list-inside"
         aria-labelledby="label-template-requirements"
       >
         <li>
-          <Translate>1 Rich text property</Translate>
+          1 <Translate translationKey="property markdown">Rich text</Translate>
         </li>
         <li>
-          <Translate>1 Numeric Property</Translate>
+          1 <Translate translationKey="property numeric">Numeric</Translate>
         </li>
       </ul>
     </p>

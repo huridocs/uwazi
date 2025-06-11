@@ -11,6 +11,7 @@ import {
 import { Subset } from 'shared/tsUtils';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXExtractorModel as model } from './IXExtractorModel';
+import { IXErrorCode, IXValidationError } from './IXValidationError';
 
 type AllowedPropertyTypes =
   | Subset<
@@ -42,7 +43,10 @@ const typeIsAllowed = (type: string): type is AllowedPropertyTypes => allowedTyp
 
 const checkTypeIsAllowed = (type: string) => {
   if (!typeIsAllowed(type)) {
-    throw new Error('Property type not allowed.');
+    throw new IXValidationError(
+      IXErrorCode.PROPERTY_TYPE_NOT_ALLOWED,
+      `property type "${type}" is not allowed`
+    );
   }
   return type;
 };
@@ -56,7 +60,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
   );
   templateIds.forEach(id => {
     if (!(id in usedTemplates)) {
-      throw Error('Missing template.');
+      throw new IXValidationError(IXErrorCode.TEMPLATE_MISSING, `template "${id}" does not exists`);
     }
   });
 
@@ -68,7 +72,10 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
 
     if (!property) {
-      throw new Error('Missing property.');
+      throw new IXValidationError(
+        IXErrorCode.PROPERTY_MISSING,
+        `property "${propertyName}" does not exist in template "${id}"`
+      );
     }
 
     checkTypeIsAllowed(property.type);
@@ -102,7 +109,7 @@ const handleTemplateUpdate = async (
   }
 };
 
-export const Extractors = {
+const Extractors = {
   get: model.get.bind(model),
   getById: model.getById.bind(model),
   get_all: async () => model.get({}),
@@ -166,5 +173,11 @@ export const Extractors = {
   },
 };
 
+class ExtractorNotFound extends Error {
+  constructor(extractorId: string) {
+    super(`Extractor with ID ${extractorId} not found.`);
+  }
+}
+
 export type { AllowedPropertyTypes };
-export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed };
+export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed, ExtractorNotFound, Extractors };

@@ -1,22 +1,24 @@
 @use 'sass:color';
 
-@import '../config/colors';
-@import '../elements/tooltip';
+@use '../config/colors';
+@use '../elements/tooltip';
+@use "../config/materials";
+@use "../config/typography";
 
 header {
   width: 100%;
   z-index: 6;
   position: fixed;
   top: 0;
-  min-height: $header-height;
+  min-height: materials.$header-height;
   justify-content: space-between;
-  background: $c-theme;
-  border-bottom: 1px solid $c-grey-light;
+  background: colors.$c-theme;
+  border-bottom: 1px solid colors.$c-grey-light;
 
   h1 {
     float: left;
-    font-size: $f-size;
-    font-family: $f-mono;
+    font-size: typography.$f-size;
+    font-family: typography.$f-mono;
     font-weight: 300;
     margin: 0;
     width: calc(100% - 2 * 54px);
@@ -31,12 +33,12 @@ header {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: $header-height;
-      height: $header-height;
-      @if $theme == light {
-        color: $c-black !important;
+      line-height: materials.$header-height;
+      height: materials.$header-height;
+      @if colors.$theme == light {
+        color: colors.$c-black !important;
       } @else {
-        color: $c-white !important;
+        color: colors.$c-white !important;
       }
     }
   }
@@ -44,20 +46,20 @@ header {
   .menu-button {
     z-index: 1;
     float: left;
-    width: $header-height;
-    height: $header-height;
-    line-height: $header-height;
+    width: materials.$header-height;
+    height: materials.$header-height;
+    line-height: materials.$header-height;
     background: transparent;
     border: 0;
     padding: 0 15px;
     text-align: center;
-    font-size: $f-size-lg;
+    font-size: typography.$f-size-lg;
     cursor: pointer;
 
-    @if $theme == light {
-      color: $c-black;
+    @if colors.$theme == light {
+      color: colors.$c-black;
     } @else {
-      color: $c-white;
+      color: colors.$c-white;
     }
 
     @media (min-width: 1024px) {
@@ -85,7 +87,7 @@ header {
     height: calc(100% - 50px);
     background-color: var(--c-bg-menu-mobile);
     color: var(--c-text-menu-mobile);
-    border-top: 1px solid color.adjust($c-black, $alpha: -0.6);
+    border-top: 1px solid color.adjust(colors.$c-black, $alpha: -0.6);
     overflow: auto;
     transition: all 225ms;
     flex-direction: column;
@@ -102,20 +104,20 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: $header-height;
+    height: materials.$header-height;
 
     .Dropdown:not(.is-active) {
       .Dropdown-label {
-        @if $theme != light {
-          color: $c-white;
+        @if colors.$theme != light {
+          color: colors.$c-white;
         }
       }
 
       a {
-        @if $theme == light {
-          color: $c-black;
+        @if colors.$theme == light {
+          color: colors.$c-black;
         } @else {
-          color: $c-white;
+          color: colors.$c-white;
         }
       }
     }
@@ -173,8 +175,8 @@ header {
     @media (min-width: 1024px) {
       float: left;
       border-top: 0;
-      border-right: 1px solid color.adjust($c-black, $alpha: -0.6);
-      border-left: 1px solid color.adjust($c-black, $alpha: -0.6);
+      border-right: 1px solid color.adjust(colors.$c-black, $alpha: -0.6);
+      border-left: 1px solid color.adjust(colors.$c-black, $alpha: -0.6);
     }
 
     @media (max-width: 1023px) {
@@ -183,7 +185,7 @@ header {
     }
 
     .menuNav-btn {
-      font-size: $f-size-sm;
+      font-size: typography.$f-size-sm;
     }
 
     .menuNav-language {
@@ -195,7 +197,7 @@ header {
       gap: 10px;
 
       @media (min-width: 1024px) {
-        height: $header-height;
+        height: materials.$header-height;
       }
 
       @media (max-width: 1023px) {
@@ -266,7 +268,7 @@ header {
         justify-content: space-between;
         align-items: center;
         @media (min-width: 1024px) {
-          height: $header-height;
+          height: materials.$header-height;
         }
       }
 
@@ -286,7 +288,7 @@ header {
 
       .singleItem {
         @media (min-width: 1024px) {
-          color: $c-white;
+          color: colors.$c-white;
           align-self: center;
         }
       }
@@ -310,7 +312,7 @@ header {
     height: 100vh;
     object-fit: cover;
     position: fixed;
-    background-color: $c-filter-film;
+    background-color: colors.$c-filter-film;
     -webkit-filter: contrast(125%) brightness(75%);
     filter: contrast(125%) brightness(75%);
   }
@@ -373,10 +375,10 @@ header {
   @media (min-width: 1024px) {
     display: inline-block;
     width: auto;
-    min-width: $header-height;
+    min-width: materials.$header-height;
 
     .tab-link-label {
-      @include tooltip('bottom');
+      @include tooltip.tooltip('bottom');
     }
 
     &:hover {
@@ -462,17 +464,17 @@ header {
   border: 0;
   border-bottom: 4px solid transparent;
   border-radius: 0;
-  min-width: $header-height;
-  height: $header-height;
+  min-width: materials.$header-height;
+  height: materials.$header-height;
   padding: 0 15px;
   background-color: transparent;
 
   @media (min-width: 1024px) {
-    line-height: $header-height + 2px;
-    @if $theme == light {
-      color: $c-black;
+    line-height: materials.$header-height + 2px;
+    @if colors.$theme == light {
+      color: colors.$c-black;
     } @else {
-      color: $c-white;
+      color: colors.$c-white;
     }
   }
 
@@ -503,12 +505,12 @@ header {
   .menuNav-item.is-active & {
     @media (min-width: 1024px) {
       background-color: transparent;
-      @if $theme == light {
-        color: $c-black;
-        border-color: $c-black;
+      @if colors.$theme == light {
+        color: colors.$c-black;
+        border-color: colors.$c-black;
       } @else {
-        border-color: $c-white;
-        color: $c-white;
+        border-color: colors.$c-white;
+        color: colors.$c-white;
       }
     }
     @media (max-width: 1023px) {

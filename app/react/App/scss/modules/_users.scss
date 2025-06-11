@@ -1,6 +1,6 @@
-@import '../../scss/config/colors';
-@import '../../scss/config/typography';
-@import '../../scss/elements/pill';
+@use '../../scss/config/colors';
+@use '../../scss/config/typography';
+@use '../../scss/elements/pill';
 
 .user-list {
   table {
@@ -10,13 +10,13 @@
     border: 1px;
     th {
       font-weight: bold;
-      border-bottom: 2px solid $c-grey-light;
+      border-bottom: 2px solid colors.$c-grey-light;
     }
     td {
       width: 20%;
       padding: 7px 10px;
-      font-size: $f-size;
-      @include pillItem;
+      font-size: typography.$f-size;
+      @include pill.pillItem;
     }
     tbody tr {
       &:hover > td {
@@ -28,7 +28,7 @@
       }
     }
     tbody td {
-      border-bottom: 1px solid $c-grey-light;
+      border-bottom: 1px solid colors.$c-grey-light;
     }
   }
   table.edition-mode {
@@ -61,11 +61,11 @@
 
     td {
       padding: 7px 10px;
-      font-size: $f-size;
+      font-size: typography.$f-size;
     }
 
     th {
-      border-bottom: 2px solid $c-grey-light;
+      border-bottom: 2px solid colors.$c-grey-light;
     }
 
     th:nth-child(n + 2) {
@@ -81,7 +81,7 @@
     }
 
     tbody td {
-      border-bottom: 1px solid $c-grey-light;
+      border-bottom: 1px solid colors.$c-grey-light;
     }
 
     td:not(:first-of-type) {
@@ -101,7 +101,7 @@
       }
 
       span {
-        font-size: $f-size-sm;
+        font-size: typography.$f-size-sm;
         font-weight: normal;
       }
     }

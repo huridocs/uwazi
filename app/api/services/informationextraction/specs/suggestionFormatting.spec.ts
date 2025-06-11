@@ -2,7 +2,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
-import { formatSuggestion } from '../suggestionFormatting';
+import { formatSuggestionFacade } from '../suggestionFormatting';
 import { InternalIXResultsMessage } from '../InformationExtraction';
 
 const fixtureFactory = getFixturesFactory();
@@ -370,7 +370,7 @@ describe('formatSuggestion', () => {
     'should throw error if $case',
     async ({ property, rawSuggestion, currentSuggestion, entity, expectedErrorMessage }) => {
       const cb = async () =>
-        formatSuggestion(
+        formatSuggestionFacade.formatSuggestionPdfSource(
           property,
           // @ts-expect-error
           rawSuggestion,
@@ -388,7 +388,7 @@ describe('formatSuggestion', () => {
       ...validRawSuggestions.text,
       extra: 'extra',
     };
-    const result = await formatSuggestion(
+    const result = await formatSuggestionFacade.formatSuggestionPdfSource(
       property,
       rawSuggestion,
       currentSuggestions.text,
@@ -544,7 +544,7 @@ describe('formatSuggestion', () => {
   ])(
     'should return formatted suggestion for $case',
     async ({ property, rawSuggestion, currentSuggestion, entity, expectedResult }) => {
-      const result = await formatSuggestion(
+      const result = await formatSuggestionFacade.formatSuggestionPdfSource(
         property,
         rawSuggestion,
         currentSuggestion,

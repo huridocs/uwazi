@@ -16,7 +16,7 @@ import {
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { ClientEntitySchema } from 'app/istore';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 30;
 
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -79,8 +79,8 @@ const getPXProperties = (
     language: entity.language!,
     template: entity.template?.toString()!,
     rowId: entity._id!.toString(),
-    paragraphText: entity.metadata?.[textProperty]?.[0].value?.toString() || '',
-    paragraphNumber: Number(entity.metadata?.[paragraphNumberProperty]?.[0].value) || 0,
+    paragraphText: entity.metadata?.[textProperty]?.[0]?.value?.toString() || '',
+    paragraphNumber: Number(entity.metadata?.[paragraphNumberProperty]?.[0]?.value) || 0,
     _id: entity._id?.toString() || '',
   };
   return extractedParagraph;
@@ -134,7 +134,10 @@ const PXParagraphLoader =
         getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );
 
-      return { ...defaultLanguageEntity, subRows: otherLanguagesEntities };
+      return {
+        ...defaultLanguageEntity,
+        subRows: otherLanguagesEntities.length ? otherLanguagesEntities : undefined,
+      };
     });
 
     return {
@@ -146,4 +149,4 @@ const PXParagraphLoader =
     };
   };
 
-export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader };
+export { ParagraphExtractorLoader, PXEntityLoader, PXParagraphLoader, PAGE_SIZE };

@@ -15,11 +15,12 @@ import {
   IXSuggestionAggregation,
   IXSuggestionsQuery,
 } from 'shared/types/suggestionType';
+import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
 
-async function processTrainFunction(
+async function processIXFunction(
   callback: (extractorId: ObjectIdSchema) => Promise<{ message: string; status: string }>,
   req: Request,
   res: Response
@@ -31,7 +32,7 @@ async function processTrainFunction(
     return;
   }
 
-  const status = await callback(new ObjectId(req.body.extractorId));
+  const status = await callback(ObjectId.createFromHexString(req.body.extractorId));
   res.json(status);
 }
 
@@ -135,7 +136,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processTrainFunction(IX.stopModel, req, res);
+      await processIXFunction(IX.stopModel, req, res);
     }
   );
 
@@ -145,7 +146,15 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processTrainFunction(IX.trainModel, req, res);
+      if (!IX) {
+        return res.status(500).json({
+          error: 'Information Extraction service is not available',
+        });
+      }
+
+      const output = await IX.trainModel(ObjectId.createFromHexString(req.body.extractorId));
+
+      res.status(202).json(output);
     }
   );
 
@@ -155,7 +164,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      await processTrainFunction(IX.status, req, res);
+      await processIXFunction(IX.status, req, res);
     }
   );
 
@@ -198,8 +207,15 @@ export const suggestionsRoutes = (app: Application) => {
     }),
     async (req, res, _next) => {
       const { suggestions } = req.body;
-      await Suggestions.accept(suggestions);
-      res.json({ success: true });
+
+      res.status(202).json({ success: true });
+
+      Suggestions.accept(suggestions)
+        .then(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'))
+        .catch(e => {
+          const error = handleError(e);
+          req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message);
+        });
     }
   );
 };

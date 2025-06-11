@@ -1,11 +1,14 @@
+@use "../config/colors";
+@use "../config/typography";
+
 .protip {
 
   i {
     position: relative;
     top: 2px;
     margin-right: 10px;
-    font-size: $f-size-lg;
-    color: $c-grey-dark;
+    font-size: typography.$f-size-lg;
+    color: colors.$c-grey-dark;
   }
 
   b {
@@ -19,9 +22,9 @@
   font-family: monospace;
   border-radius: 4px;
   padding: 2px 2px 0;
-  background: $c-white;
-  border: 1px solid $c-grey;
-  box-shadow: inset 0 -1px 0 $c-grey;
+  background: colors.$c-white;
+  border: 1px solid colors.$c-grey;
+  box-shadow: inset 0 -1px 0 colors.$c-grey;
 }
 
 .metadataTemplate {

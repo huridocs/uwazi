@@ -15,7 +15,8 @@ import {
 } from 'api/suggestions/specs/fixtures';
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
+import { iosocket, setUpApp, TestEmitSources } from 'api/utils/testingRoutes';
+import waitForExpect from 'wait-for-expect';
 import { Suggestions } from '../suggestions';
 
 jest.mock(
@@ -71,6 +72,25 @@ describe('suggestions routes', () => {
         })
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
+        {
+          propertyName: 'super_powers',
+          suggestedValue: 'NOT_READY',
+          segment: 'Red Robin, a variation on the traditional Robin persona.',
+          language: 'en',
+          date: 2,
+          page: 3,
+          error: '',
+          state: {
+            labeled: false,
+            withValue: true,
+            withSuggestion: true,
+            match: null,
+            hasContext: true,
+            obsolete: true,
+            processing: true,
+            error: false,
+          },
+        },
         {
           entityId: shared2enId.toString(),
           sharedId: 'shared2',
@@ -135,7 +155,7 @@ describe('suggestions routes', () => {
       expect(response.body.totalPages).toBe(1);
     });
 
-    it('should include failed suggestions but not processing ones', async () => {
+    it('should include failed suggestions', async () => {
       const response = await request(app)
         .get('/api/suggestions')
         .query({
@@ -157,10 +177,6 @@ describe('suggestions routes', () => {
         },
         suggestedValue: null,
       });
-      const alfred = response.body.suggestions.find(
-        (suggestion: any) => suggestion.segment === 'Alfred 67 years old processing'
-      );
-      expect(alfred).toBeUndefined();
     });
 
     describe('pagination', () => {
@@ -256,6 +272,12 @@ describe('suggestions routes', () => {
         });
 
         expect(response.body.suggestions[2]).toMatchObject({
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+          language: 'en',
+        });
+
+        expect(response.body.suggestions[3]).toMatchObject({
           sharedId: 'shared3',
           entityTitle: 'Alfred',
           language: 'en',
@@ -324,13 +346,26 @@ describe('suggestions routes', () => {
       const response = await request(app)
         .post('/api/suggestions/train')
         .send({ extractorId: factory.id('super_powers_extractor').toString() })
-        .expect(200);
+        .expect(202);
 
       expect(response.body).toMatchObject({ status: 'processing' });
     });
   });
 
   describe('POST /api/suggestions/accept', () => {
+    const suggestionsSuccess = async () =>
+      waitForExpect(() => {
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'ACCEPT_SUGGESTION_SUCCESS',
+          TestEmitSources.session
+        );
+        expect(iosocket.emit).toHaveBeenCalledTimes(1);
+      });
+
+    afterEach(() => {
+      iosocket.emit.mockClear();
+    });
+
     it('should update the suggestion for title in one language', async () => {
       await request(app)
         .post('/api/suggestions/accept')
@@ -343,7 +378,9 @@ describe('suggestions routes', () => {
             },
           ],
         })
-        .expect(200);
+        .expect(202);
+
+      await suggestionsSuccess();
 
       const actualEntities = await entities.get({ sharedId: 'shared6' });
       expect(actualEntities).toMatchObject([
@@ -374,7 +411,9 @@ describe('suggestions routes', () => {
             },
           ],
         })
-        .expect(200);
+        .expect(202);
+
+      await suggestionsSuccess();
 
       const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
       expect(entity.metadata.property_multiselect).toEqual([
@@ -385,6 +424,48 @@ describe('suggestions routes', () => {
         { sharedId: 'entityWithSelects2' },
         '+fullText'
       );
+    });
+
+    it('should emit ACCEPT_SUGGESTION_SUCCESS event after accept suggestion finish with success', async () => {
+      await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          suggestions: [
+            {
+              _id: suggestionSharedId6Title,
+              sharedId: 'shared6',
+              entityId: shared6enId,
+            },
+          ],
+        })
+        .expect(202);
+
+      await suggestionsSuccess();
+    });
+
+    it('should emit ACCEPT_SUGGESTION_ERROR event after accept suggestion finish with error', async () => {
+      await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          suggestions: [
+            {
+              _id: 'any',
+              sharedId: 'any',
+              entityId: 'any',
+            },
+          ],
+        })
+        .expect(202);
+
+      await waitForExpect(() => {
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'ACCEPT_SUGGESTION_ERROR',
+          TestEmitSources.session,
+          expect.any(String)
+        );
+
+        expect(iosocket.emit).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });

@@ -172,13 +172,19 @@ const AcceptButton = ({
     return <div className="w-6 h-6 m-auto">{getIcon(color)}</div>;
   }
 
+  const isDisabled =
+    color === 'red' ||
+    !suggestionHasEntity ||
+    cell.row.original.state.obsolete ||
+    cell.row.original.state.error;
+
   return (
     <div className="m-auto">
       <EmbededButton
         icon={getIcon(color)}
         color={color}
-        disabled={color === 'red' || !suggestionHasEntity}
-        onClick={() => action && action([cell.row.original])}
+        disabled={isDisabled}
+        onClick={async () => action && action([cell.row.original])}
       >
         <Translate>Accept</Translate>
       </EmbededButton>
@@ -279,7 +285,7 @@ type Color = 'red' | 'green' | 'orange';
 
 const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
-  acceptSuggestions: (suggestions: TableSuggestion[]) => void,
+  acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
 ) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];

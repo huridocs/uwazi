@@ -40,7 +40,12 @@ const ExtractEntitiesDialog = ({
         setIsOpen(false);
         setNotifications({
           type: 'success',
-          text: <Translate>Paragraphs extracted</Translate>,
+          text: (
+            <Translate>
+              The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.
+            </Translate>
+          ),
         });
         onSuccess();
       }

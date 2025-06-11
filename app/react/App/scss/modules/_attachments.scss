@@ -1,15 +1,19 @@
+@use "../config/colors";
+@use "../config/materials";
+@use "../config/typography";
+
 .attachment {
   display: flex;
   align-items: center;
   min-height: 64px;
   padding: 0 15px;
   margin-bottom: 10px;
-  background: $c-white;
-  color: $c-grey-dark;
+  background: colors.$c-white;
+  color: colors.$c-grey-dark;
   border-radius: 0;
   width: 100%;
   &:not(:first-of-type) {
-    border-top: 1px solid $c-grey-lighten;
+    border-top: 1px solid colors.$c-grey-lighten;
   }
 }
 
@@ -29,25 +33,25 @@
 }
 
 .attachment-thumbnail {
-  height: $header-height;
-  width: $header-height;
-  min-width: $header-height;
+  height: materials.$header-height;
+  width: materials.$header-height;
+  min-width: materials.$header-height;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $c-grey-lighten;
-  color: $c-grey-dark !important;
+  background: colors.$c-grey-lighten;
+  color: colors.$c-grey-dark !important;
   margin-right: 15px;
-  border: 1px solid $c-grey-light !important;
+  border: 1px solid colors.$c-grey-light !important;
 
   .attachment-link:hover & {
-    border-color: $c-primary-light !important;
-    box-shadow: 0 0 0 2px $c-primary-light;
+    border-color: colors.$c-primary-light !important;
+    box-shadow: 0 0 0 2px colors.$c-primary-light;
   }
 
   .fa {
-    font-size: $f-size;
+    font-size: typography.$f-size;
   }
   img {
     max-width: 100%;
@@ -61,17 +65,17 @@
   width: 0; // flex overflow-hidden hack
   span {
     font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
-    font-size: $f-size-sm;
-    color: $c-primary;
-    border-bottom: 1px solid $c-primary-light;
+    font-size: typography.$f-size-sm;
+    color: colors.$c-primary;
+    border-bottom: 1px solid colors.$c-primary-light;
 
     .attachment-link:hover & {
-      border-color: $c-primary;
+      border-color: colors.$c-primary;
     }
 
     &.attachment-size {
       display: block;
-      color: $c-grey;
+      color: colors.$c-grey;
       border-bottom: none;
       margin-top: 5px;
     }
@@ -137,7 +141,7 @@
     }
 
     .attachment {
-      border: 1px solid $c-grey-lighten;
+      border: 1px solid colors.$c-grey-lighten;
       width: 50%;
       padding: 0 12px;
     }
@@ -160,8 +164,8 @@
 .upload-button:focus-within,
 label.add:focus,
 label.add:focus-within {
-  background: $c-type-19;
-  border-color: $c-black;
+  background: colors.$c-type-19;
+  border-color: colors.$c-black;
 }
 
 .attachments {

@@ -118,6 +118,10 @@ const MultiselectList = ({
   );
 
   useEffect(() => {
+    setAvailableItems(items);
+  }, [items]);
+
+  useEffect(() => {
     if (selectedValues) {
       setSelections(selectedValues);
     }

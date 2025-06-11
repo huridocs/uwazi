@@ -1,3 +1,7 @@
+@use "../config/colors";
+@use "../config/materials";
+@use "../config/typography";
+
 @use "sass:color";
 
 .ContextMenu {
@@ -28,10 +32,10 @@
   .btn {
     position: relative;
     border-radius: 50%;
-    width: $header-height;
-    height: $header-height;
-    line-height: $header-height;
-    font-size: $f-size-xl;
+    width: materials.$header-height;
+    height: materials.$header-height;
+    line-height: materials.$header-height;
+    font-size: typography.$f-size-xl;
     padding: 0;
     margin: 0 6px;
     opacity: 0.9;
@@ -65,17 +69,17 @@
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     padding: 5px;
-    background-color: color.adjust($c-black, $alpha: -0.25);
-    color: $c-white;
-    border-radius: $border-radius;
+    background-color: color.adjust(colors.$c-black, $alpha: -0.25);
+    color: colors.$c-white;
+    border-radius: materials.$border-radius;
     text-align: center;
     white-space: nowrap;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     &:after {
       content: '';
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
-      border-top: 5px solid color.adjust($c-black, $alpha: -0.25);
+      border-top: 5px solid color.adjust(colors.$c-black, $alpha: -0.25);
       position: absolute;
       top: 100%;
       left: 50%;
@@ -87,10 +91,10 @@
   }
 
   .btn-label {
-    color: $c-grey-dark;
+    color: colors.$c-grey-dark;
     position: absolute;
     top: 100%;
-    font-size: $f-size-sm;
+    font-size: typography.$f-size-sm;
     line-height: 1.5em;
     left: 50%;
     transform: translateX(-50%) translateY(2px);
@@ -98,7 +102,7 @@
     padding: 0 5px;
   }
   &:hover .btn-label {
-    color: $c-black;
+    color: colors.$c-black;
   }
 
   .disable-click {

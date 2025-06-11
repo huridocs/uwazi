@@ -2,13 +2,12 @@ Key,Burmese
 % of sentences above threshold,အနိမ့်ဆုံး သတ်မှတ်ချက် အထက်ရှိ ဝါကျ % (ရာခိုင်နှုန်း)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-1 Numeric Property,1 Numeric Property
-1 Rich text property,1 Rich text property
 2FA,2FA
 2FA Enabled,2FA Enabled
+A default template cannot be deleted.,A default template cannot be deleted.
 A generated ID will be the default title.,ထုတ်ပေးသည့် ID သည် ပုံသေမူလ ခေါင်းစဉ် ဖြစ်ပါမည်။
 A source template must,A source template must
-A target template needs at least,A target template needs at least
+A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,အီးမေးလ် လိုအပ်သည်
 Accept,လက်ခံမည်
 Accept suggestion,Accept suggestion
@@ -70,6 +69,7 @@ Admins,Admins
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
+All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
@@ -229,6 +229,7 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,ပုံသေမူလ ဘာသာစကား ပြောင်းလဲမှု အောင်မြင်ပါသည်
 Default template,ပုံသေမူလ ပုံစံပြား
+Default template set successfully.,Default template set successfully.
 Default View,Default View
 Delete,ဖျက်ရန်
 DELETE,ဖျက်ရန်
@@ -316,7 +317,9 @@ Entity types,ဖြည့်သွင်းချက် အမျိုးအစ
 Entity updated,Entity updated
 Error,ချွတ်ယွင်းချက်
 Error adding thesauri.,Error adding thesauri.
+Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,စူးစမ်းလေ့လာခြင်း
@@ -325,6 +328,7 @@ Exporting entities to CSV,ဖြည့်သွင်းချက်များ
 Extension Token,Extension Token
 Extract new paragraphs,Extract new paragraphs
 Extract paragraphs,Extract paragraphs
+Extraction configuration,Extraction configuration
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -605,14 +609,13 @@ Others,Others
 out of,မှ
 Page,စာမျက်နှာ
 Pages,စာမျက်နှာများ
+Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (numeric),Paragraph text extraction property (numeric)
 Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
 Paragraphs,Paragraphs
 Paragraphs deleted,Paragraphs deleted
-Paragraphs extracted,Paragraphs extracted
 Password,စကားဝှက်
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -643,6 +646,7 @@ Priority sorting,ဦးစားပေးမှု ခွဲခြားခြ�
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,လျှို့ဝှက် အကြောင်းကိစ္စ
+Processed,Processed
 Processing,စီမံဆောင်ရွက်နေသည်
 Properties,ထူးခြားချက်များ
 Properties from other templates in the collection using the same label,တူညီသော တံဆိပ်ကို သုံးထားသည့် စုစည်းမှုများရှိ အခြားပုံစံပြားများမှ ထူးခြားချက်များ
@@ -750,6 +754,8 @@ Select files on your device,သင့်စက်ပေါ်ရှိ ဖို
 Select from computer,Select from computer
 Select relationship type,ဆက်နွှယ်မှု အမျိုးအစား ရွေးချယ်ရန်
 Select target paragraph,ပစ်မှတ်ထား စာပိုဒ်ကို ရွေးချယ်ရန်
+Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
+Select the template with the source documents.,Select the template with the source documents.
 Select...,ရွေးချယ်ရန်...
 Selected,Selected
 selected,ရွေးချယ်ပြီး
@@ -806,6 +812,7 @@ Source,Source
 Source relationship type,Source relationship type
 Source template,Source template
 Source Template,Source Template
+Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -819,12 +826,15 @@ Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
 Suggestion,Suggestion
-Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,အကြံပြုချက်များ
 suggestions,suggestions
+Suggestions have been updated,Suggestions have been updated
+Suggestions sent,Suggestions sent
 Supporting files,အထောက်အကူပြုဖိုင်များ
 Synced template,Synced template
+Synced Template,Synced Template
+Synced templates cannot be deleted.,Synced templates cannot be deleted.
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,စာမျက်နှာ အကြောင်းအရာ ဖန်တီးရန် ဝါကျတည်ဆောက်ပုံ
@@ -836,18 +846,24 @@ Table view,ဇယားမြင်ကွင်း
 Target relationship type,Target relationship type
 Target Template,Target Template
 Target template,Target template
+Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,ပုံစံပြား
 Template conflict,Template conflict
 Template name,Template name
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
+Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,ပုံစံပြားများ
 Templates:,Templates:
 Text,စာသား
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,ထည့်သွင်းသည့် လုပ်ငန်းစဉ်တွင် ချွတ်ယွင်းချက် ဖြစ်ပေါ်ခဲ့သည်-
+"The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
+              column for updates on the process."
 The request could not be processed.,The request could not be processed.
+The source of this template is a sync.,The source of this template is a sync.
 The template contains errors,ပုံစံပြားတွင် ချွတ်ယွင်းချက်များ ရှိနေသည်
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
@@ -880,6 +896,7 @@ This property will be shown using all the width available.,ဤထူးခြာ
 This property will be shown without the label.,ဤထူးခြားချက်ကို တံဆိပ်မှတ်သားမှုမပါဘဲ ပြသပါမည်။
 this template,this template
 This template has associated entities,This template has associated entities
+This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
 This template will be used as default for new entities.,ဤပုံစံပြားကို ဖြည့်သွင်းချက်အသစ်များအတွက် နဂိုမူလအဖြစ် သုံးပါမည်။
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,အနိမ့်ဆုံးသတ်မှတ်ချက်
@@ -903,6 +920,7 @@ total users,total users
 Training,Training
 Training model...,Training model...
 Translate,ဘာသာပြန်ရန်
+Translation,Translation
 Translations,ဘာသာပြန်ဆိုချက်များ
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully

@@ -187,6 +187,7 @@ const IXDashboard = () => {
           }}
           onCancelClick={() => setConfirmModal(false)}
           dangerStyle
+          disabled={isSaving}
         />
       )}
 

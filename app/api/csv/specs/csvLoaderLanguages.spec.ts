@@ -20,6 +20,7 @@ describe('csvLoader languages', () => {
   let imported: EntitySchema[];
   const loader = new CSVLoader();
 
+  // eslint-disable-next-line max-statements
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoader');
@@ -34,6 +35,8 @@ describe('csvLoader languages', () => {
         path.join(__dirname, 'zipData/languages/import.csv'),
         path.join(__dirname, '/zipData/1.pdf'),
         path.join(__dirname, '/zipData/2.pdf'),
+        path.join(__dirname, '/zipData/file1.txt'),
+        path.join(__dirname, '/zipData/att1.doc'),
       ],
       'testLanguages.zip'
     );
@@ -53,6 +56,8 @@ describe('csvLoader languages', () => {
     await filesystem.deleteFiles([
       uploadsPath('generatedLang1.pdf'),
       uploadsPath('generatedLang2.pdf'),
+      uploadsPath('generatedLangfile1.txt'),
+      uploadsPath('generatedLangatt1.doc'),
       uploadsPath(`${generatedImages[0]}.jpg`),
       uploadsPath(`${generatedImages[1]}.jpg`),
       uploadsPath(`${generatedImages[2]}.jpg`),
@@ -105,19 +110,19 @@ describe('csvLoader languages', () => {
 
     expect(enAttachments).toEqual([
       expect.objectContaining({
-        filename: 'generatedLang1.pdf',
+        filename: 'generatedLangfile1.txt',
       }),
       expect.objectContaining({
-        filename: 'generatedLang2.pdf',
+        filename: 'generatedLangatt1.doc',
       }),
     ]);
 
     expect(esAttachments).toEqual([
       expect.objectContaining({
-        filename: 'generatedLang1.pdf',
+        filename: 'generatedLangfile1.txt',
       }),
       expect.objectContaining({
-        filename: 'generatedLang2.pdf',
+        filename: 'generatedLangatt1.doc',
       }),
     ]);
   });

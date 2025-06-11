@@ -22,33 +22,21 @@ import { Translate } from 'app/I18N';
 import { ClientIXExtractorType } from 'app/V2/shared/types';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
-import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { SuggestionSidepanel } from './components/SuggestionSidepanel';
 import {
-  updateSuggestions,
   updateSuggestionsByEntity,
   generateChildrenRows,
-} from './components/helpers';
-import {
-  SuggestionValue,
-  TableSuggestion,
-  MultiValueSuggestion,
-  SingleValueSuggestion,
-} from './types';
+  updateSuggestions,
+  formatAccepted,
+  updateSortingUrl,
+} from './helpers';
+import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion, ixStatus } from './types';
+import { useEventHandler } from './hooks/useEventHandler';
 
 const SUGGESTIONS_PER_PAGE = 100;
-const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
-
-type ixStatus =
-  | 'ready'
-  | 'sending_labeled_data'
-  | 'processing_model'
-  | 'processing_suggestions'
-  | 'cancel'
-  | 'error';
 
 const ixmessages = {
   ready: 'Find suggestions',
@@ -69,42 +57,16 @@ const IXSuggestions = () => {
     totalPages,
     activeFilters,
   } = useLoaderData() as {
-    totalPages: number;
     suggestions: TableSuggestion[];
     extractor: ClientIXExtractorType;
     templates: ClientTemplateSchema[];
     aggregation: any;
     currentStatus: ixStatus;
-    _id: string;
+    totalPages: number;
     activeFilters: number;
   };
-
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
-
-  useEffect(() => {
-    const template = templates.find(t => t._id === extractor.templates[0]);
-    const _property =
-      extractor.property === 'title'
-        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
-        : template?.properties.find(prop => prop.name === extractor.property);
-    setProperty(_property);
-  }, [templates, extractor]);
-
-  useMemo(() => {
-    if (property?.type === 'multiselect' || property?.type === 'relationship') {
-      const flatenedSuggestions = suggestions.map(suggestion =>
-        generateChildrenRows(suggestion as MultiValueSuggestion)
-      );
-      setCurrentSuggestions(flatenedSuggestions);
-      return;
-    }
-
-    setCurrentSuggestions(
-      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
-    );
-  }, [suggestions, property]);
-
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -121,58 +83,13 @@ const IXSuggestions = () => {
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
 
-  useEffect(() => {
-    socket.on(
-      'ix_model_status',
-      async (extractorId: string, modelStatus: string, _: string, data: any) => {
-        if (extractorId === extractor._id) {
-          setStatus({ status: modelStatus as ixStatus, data });
-          await revalidate();
-          if ((data && data.total === data.processed) || modelStatus === 'ready') {
-            setStatus({ status: 'ready' });
-          }
-        }
-      }
-    );
-
-    return () => {
-      socket.off('ix_model_status');
-    };
-  }, [extractor._id, revalidate]);
-
-  useEffect(() => {
-    setAggregations(aggregation);
-  }, [aggregation]);
-
-  useEffect(() => {
-    const navigatePromise = async (path: string) => navigate(path, { replace: true });
-
-    if (searchParams.has('sort') && !sorting.length) {
-      navigatePromise(location.pathname).catch(_e => {});
-    }
-
-    if (sorting.length && sorting[0].id) {
-      const _property = sorting[0].id;
-
-      if (!SORTABLE_PROPERTIES.includes(_property)) {
-        return;
-      }
-
-      const order = sorting[0].desc ? 'desc' : 'asc';
-
-      navigatePromise(
-        `${location.pathname}?sort={"property":"${_property}","order":"${order}"}`
-      ).catch(_e => {});
-    }
-  }, [sorting]);
-
-  const filteredTemplates = () =>
-    templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
-
   const fetchAgregations = async () => {
     const newAggregations = await suggestionsAPI.aggregation(extractor._id!);
     setAggregations(newAggregations);
   };
+
+  const filteredTemplates = () =>
+    templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
   const onEntitySave = async (updatedEntity: ClientEntitySchema) => {
     setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity, property));
@@ -180,37 +97,20 @@ const IXSuggestions = () => {
   };
 
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
+    const preparedSuggestions = formatAccepted(acceptedSuggestions);
+
     try {
-      const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
-        let addedValues: SuggestionValue[] | undefined;
-        let removedValues: SuggestionValue[] | undefined;
-
-        if (acceptedSuggestion.isChild) {
-          addedValues = acceptedSuggestion.suggestedValue
-            ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
-            : undefined;
-          removedValues = acceptedSuggestion.currentValue
-            ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
-            : undefined;
-        }
-
-        return {
-          _id: acceptedSuggestion._id,
-          sharedId: acceptedSuggestion.sharedId,
-          entityId: acceptedSuggestion.entityId,
-          addedValues,
-          removedValues,
-        };
-      });
-
       await suggestionsAPI.accept(preparedSuggestions);
-      await fetchAgregations();
-      setCurrentSuggestions(current => updateSuggestions(current, acceptedSuggestions));
+      setCurrentSuggestions(prevSuggestions =>
+        updateSuggestions(prevSuggestions, acceptedSuggestions)
+      );
+      setSelected([]);
       setNotifications({
-        type: 'success',
-        text: <Translate>Suggestion accepted.</Translate>,
+        type: 'info',
+        text: <Translate>Suggestions sent</Translate>,
       });
     } catch (error) {
+      setCurrentSuggestions(suggestions);
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
@@ -221,16 +121,16 @@ const IXSuggestions = () => {
 
   const trainModelOrCancelAction = async () => {
     try {
-      if (status.status === 'ready') {
-        setStatus({ status: 'sending_labeled_data' });
+      if (status.status === ixStatus.ready) {
+        setStatus({ status: ixStatus.sending_labeled_data });
         const response = await suggestionsAPI.findSuggestions(extractor._id!);
         setStatus(response);
       } else {
         await suggestionsAPI.cancel(extractor._id!);
-        if (status.status === 'error') {
-          setStatus({ status: 'ready' });
+        if (status.status === ixStatus.error) {
+          setStatus({ status: ixStatus.ready });
         } else {
-          setStatus({ status: 'cancel' });
+          setStatus({ status: ixStatus.cancel });
         }
         await revalidate();
       }
@@ -247,6 +147,45 @@ const IXSuggestions = () => {
     setSidepanelSuggestion(undefined);
     setSidepanel('none');
   };
+
+  useMemo(() => {
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
+      const flatenedSuggestions = suggestions.map(suggestion =>
+        generateChildrenRows(suggestion as MultiValueSuggestion)
+      );
+      setCurrentSuggestions(flatenedSuggestions);
+      return;
+    }
+
+    setCurrentSuggestions(
+      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
+    );
+  }, [suggestions, property]);
+
+  useEffect(() => {
+    setAggregations(aggregation);
+  }, [aggregation]);
+
+  useEffect(() => {
+    const navigatePromise = async (path: string) => navigate(path, { replace: true });
+    const newUrl = updateSortingUrl(sorting, location.pathname, searchParams);
+    navigatePromise(newUrl).catch(_e => {});
+  }, [sorting]);
+
+  useEffect(() => {
+    const template = templates.find(t => t._id === extractor.templates[0]);
+    const _property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
+        : template?.properties.find(prop => prop.name === extractor.property);
+    setProperty(_property);
+  }, [templates, extractor]);
+
+  useEventHandler({
+    extractorId: extractor._id!,
+    updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
+    fetchAggregations: fetchAgregations,
+  });
 
   return (
     <div
@@ -343,20 +282,20 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                disabled={status.status === 'cancel'}
-                styling={status.status === 'ready' ? 'solid' : 'outline'}
+                disabled={status.status === ixStatus.cancel}
+                styling={status.status === ixStatus.ready ? 'solid' : 'outline'}
                 onClick={trainModelOrCancelAction}
               >
-                {status.status === 'ready' ? (
+                {status.status === ixStatus.ready ? (
                   <Translate>Find suggestions</Translate>
                 ) : (
                   <Translate>Cancel</Translate>
                 )}
               </Button>
-              {status.status !== 'ready' ? (
+              {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
-                  {status.message && status.status === 'error' ? ` : ${status.message}` : ''}
+                  {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
                   {status.data ? (
                     <span className="ml-2">
                       {status.data.processed} / {status.data.total}
@@ -424,6 +363,8 @@ const IXSuggestionsLoader =
     const suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,
       rowId: suggestion._id,
+      disableRowSelection:
+        suggestion.state.obsolete || suggestion.state.processing || suggestion.state.error,
       extractorSource: extractors[0].source,
     }));
 

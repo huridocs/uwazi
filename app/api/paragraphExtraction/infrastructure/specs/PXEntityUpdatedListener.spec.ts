@@ -213,12 +213,17 @@ describe('PXEntityUpdatedListener', () => {
 
   describe('given template was not updated', () => {
     it('should no nothing', async () => {
+      await testingEnvironment.setFixtures({
+        ...createFixtures(),
+        [mongoPXEntitiesStatusCollection]: [entityStatus1],
+      });
+
       const { eventsBus } = createSut();
 
       await eventsBus.emit(
         new EntityUpdatedEvent({
           after: entity1,
-          before: entity1,
+          before: entity1.map(e => ({ ...e, template: new ObjectId(e.template?.toString()) })),
           targetLanguageKey: 'en',
         })
       );
@@ -227,7 +232,7 @@ describe('PXEntityUpdatedListener', () => {
         mongoPXEntitiesStatusCollection
       );
 
-      expect(entitiesStatus).toHaveLength(0);
+      expect(entitiesStatus).toEqual([entityStatus1]);
     });
   });
 });

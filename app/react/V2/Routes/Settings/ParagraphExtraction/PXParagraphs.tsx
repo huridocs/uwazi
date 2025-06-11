@@ -32,6 +32,7 @@ const PXParagraphDashboard = () => {
     setParagraphOnView(selectedParagraph);
     setSidePanel(true);
   };
+  const entityTitle = sourceEntity?.title || '';
 
   return (
     <div
@@ -41,7 +42,7 @@ const PXParagraphDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title="Paragraphs"
+          title={entityTitle}
           path={
             new Map([
               ['Paragraph extraction', '/settings/paragraph-extraction'],

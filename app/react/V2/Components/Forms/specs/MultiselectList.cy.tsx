@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/MultiselectList.stories';
 import { remoteLookupFunction } from 'app/stories/Forms/MultiselectListSotoryFixtures';
-import { MultiselectList } from '../MultiselectList/MultiselectList';
+import { MultiselectList, MultiselectListOption } from '../MultiselectList/MultiselectList';
 import { specialCharacters, pizzas, salads } from './fixtures';
 
-describe('MultiselectList.cy.tsx', () => {
+describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, () => {
   describe('general', () => {
     beforeEach(() => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList items={pizzas} />
@@ -65,7 +64,6 @@ describe('MultiselectList.cy.tsx', () => {
     let selected: string[] = [];
 
     beforeEach(() => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -107,7 +105,6 @@ describe('MultiselectList.cy.tsx', () => {
     it('should allow selecting all items', () => {
       const selections: string[] = [];
 
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -139,7 +136,6 @@ describe('MultiselectList.cy.tsx', () => {
     it('should allow selecting all items within groups', () => {
       const selections: string[] = [];
 
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -169,7 +165,6 @@ describe('MultiselectList.cy.tsx', () => {
 
   describe('blank state property', () => {
     it('should show blank state property if there is no items passed to the component', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList onChange={() => {}} items={[]} />
@@ -179,7 +174,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should accept a blank state string', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList onChange={() => {}} items={[]} blankState="nada" />
@@ -189,7 +183,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should accept a blank state component', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList onChange={() => {}} items={[]} blankState={<div>no items string</div>} />
@@ -201,7 +194,6 @@ describe('MultiselectList.cy.tsx', () => {
 
   describe('hide filters property', () => {
     it('should load/show filters when hideFilters is not set', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList onChange={() => {}} items={[]} />
@@ -211,7 +203,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should not load/show filters when hideFilters is true', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList onChange={() => {}} items={[]} hideFilters />
@@ -223,7 +214,6 @@ describe('MultiselectList.cy.tsx', () => {
 
   describe('custom class name properties', () => {
     it('should apply a custom class name to each item', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -248,7 +238,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should apply the default class name to each item if no custom class name is provided', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -272,7 +261,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should apply a custom class name to each checkbox item', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -298,7 +286,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should apply the default class name to each checkbox item if no custom class name is provided', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -323,7 +310,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should apply a custom class name to the items container', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList
@@ -338,7 +324,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
 
     it('should apply the default class name to the items container if no custom class name for the container is provided', () => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList onChange={() => {}} items={[]} />
@@ -350,7 +335,6 @@ describe('MultiselectList.cy.tsx', () => {
 
   describe('search function', () => {
     beforeEach(() => {
-      cy.viewport(450, 650);
       mount(
         <div className="p-2 tw-content">
           <MultiselectList items={specialCharacters} />
@@ -382,7 +366,7 @@ describe('MultiselectList.cy.tsx', () => {
 
     beforeEach(() => {
       const searchSpy = cy.spy(remoteLookupFunction).as('searchSpy');
-      cy.viewport(450, 650);
+
       mount(<RemoteSearch onSearch={searchSpy} />);
     });
 
@@ -410,6 +394,69 @@ describe('MultiselectList.cy.tsx', () => {
       cy.contains('Another').then(() => {
         cy.get('@searchSpy').should('have.been.calledOnce');
       });
+    });
+  });
+
+  describe('items prop updates', () => {
+    const ParentComponent = ({ initialItems }: { initialItems: MultiselectListOption[] }) => {
+      const [items, setItems] = useState(initialItems);
+
+      return (
+        <div className="p-2 tw-content">
+          <MultiselectList items={items} />
+          <button
+            type="button"
+            onClick={() => {
+              setItems([
+                {
+                  label: 'Updated Item 1',
+                  searchLabel: 'Updated Item 1',
+                  value: 'item3',
+                },
+                {
+                  label: 'Updated Item 2',
+                  searchLabel: 'Updated Item 2',
+                  value: 'item4',
+                },
+              ]);
+            }}
+          >
+            Update Items
+          </button>
+        </div>
+      );
+    };
+
+    it('should update rendered items when items prop changes from parent', () => {
+      const initialItems = [
+        {
+          label: 'Initial Item 1',
+          searchLabel: 'Initial Item 1',
+          value: 'item1',
+        },
+        {
+          label: 'Initial Item 2',
+          searchLabel: 'Initial Item 2',
+          value: 'item2',
+        },
+      ];
+
+      mount(<ParentComponent initialItems={initialItems} />);
+
+      // Verify initial items are rendered
+      cy.contains('Initial Item 1').should('be.visible');
+      cy.contains('Initial Item 2').should('be.visible');
+
+      // Click button to update items
+      cy.contains('button', 'Update Items').click();
+
+      // Verify updated items are rendered
+      cy.contains('Updated Item 1').should('be.visible');
+      cy.contains('Updated Item 2').should('be.visible');
+
+      // Verify old items are no longer visible
+      cy.contains('Initial Item 1').should('not.exist');
+      cy.contains('Initial Item 2').should('not.exist');
     });
   });
 });
