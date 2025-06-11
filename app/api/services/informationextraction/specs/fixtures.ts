@@ -1049,6 +1049,28 @@ const fixtures: DBFixture = {
       status: 'ready',
       date: 100,
     },
+    {
+      extractorId: factory.id('extractor_target_rich_text_source_text'),
+      entityId: 'extractor_target_rich_text_source_text_entity_1',
+      entityTemplate: factory.idString('extractor_target_rich_text_source_text_template'),
+      language: 'en',
+      propertyName: 'target_rich_text',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
+    {
+      extractorId: factory.id('extractor_target_rich_text_source_text'),
+      entityId: 'extractor_target_rich_text_source_text_entity_1',
+      entityTemplate: factory.idString('extractor_target_rich_text_source_text_template'),
+      language: 'es',
+      propertyName: 'target_rich_text',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+    },
   ],
   ixmodels: [
     {
@@ -1179,6 +1201,12 @@ const fixtures: DBFixture = {
     },
     {
       extractorId: factory.id('extractorWithRelationshipToAny'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractor_target_rich_text_source_text'),
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,

@@ -924,5 +924,91 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       });
     });
+
+    it('should save suggestion for rich text target property', async () => {
+      const extractorId = factory.id('extractor_target_rich_text_source_text');
+      const extractionKeyEn = ExtractionKey.create({
+        entitySharedId: 'extractor_target_rich_text_source_text_entity_1',
+        language: 'en',
+      });
+      const extractionKeyEs = ExtractionKey.create({
+        entitySharedId: 'extractor_target_rich_text_source_text_entity_1',
+        language: 'es',
+      });
+
+      IXExternalService.setResults([
+        {
+          text: 'any_text_suggestion_english',
+          segment_text: 'any_text_segment_english',
+          entity_name: extractionKeyEn.key,
+        },
+        {
+          text: 'any_text_suggestion_other',
+          segment_text: 'any_text_segment_other',
+          entity_name: extractionKeyEs.key,
+        },
+      ]);
+
+      await informationExtraction.processResults({
+        params: { id: extractorId.toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId,
+      });
+
+      const suggestion1 = suggestions.find(
+        s =>
+          s.entityId === extractionKeyEn.entitySharedId && s.language === extractionKeyEn.language
+      );
+      const suggestion2 = suggestions.find(
+        s =>
+          s.entityId === extractionKeyEs.entitySharedId && s.language === extractionKeyEs.language
+      );
+
+      expect(suggestion1).toMatchObject({
+        extractorId,
+        entityId: extractionKeyEn.entitySharedId,
+        language: extractionKeyEn.language,
+        suggestedValue: 'any_text_suggestion_english',
+        segment: 'any_text_segment_english',
+        status: 'ready',
+        error: '',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
+      expect(suggestion2).toMatchObject({
+        extractorId,
+        entityId: extractionKeyEn.entitySharedId,
+        language: extractionKeyEs.language,
+        suggestedValue: 'any_text_suggestion_other',
+        segment: 'any_text_segment_other',
+        status: 'ready',
+        error: '',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+    });
   });
 });
