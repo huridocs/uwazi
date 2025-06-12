@@ -300,7 +300,7 @@ const Suggestions = {
   },
 
   createMultiple: async (_suggestions: IXSuggestionType[]) =>
-    IXSuggestionsModel.saveMultiple(_suggestions),
+    IXSuggestionsModel.db.createMany(_suggestions),
 
   accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
     const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));

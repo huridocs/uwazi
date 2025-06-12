@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { files } from 'api/files';
 import { EnforcedWithId } from 'api/odm';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
@@ -10,6 +11,9 @@ import { LanguageUtils } from 'shared/language';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { FileType } from 'shared/types/fileType';
+import { getSuggestionState } from 'shared/getIXSuggestionState';
+import { IXServices } from 'api/services/informationextraction/IXServices';
+import { ExtractorNotFound, Extractors } from 'api/services/informationextraction/ixextractors';
 import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from './batchProcessing';
 import { CreateBlankStateSuggestionsJob } from './jobs/CreateBlankStateSuggestionsJob';
 import { Suggestions } from './suggestions';
@@ -57,6 +61,13 @@ async function createBlankStateSuggestionsBatch(
   }
 ) {
   const defaultLanguage = (await settings.getDefaultLanguage()).key;
+  const extractor = await Extractors.getById(extractorId);
+  if (!extractor) {
+    throw new ExtractorNotFound(extractorId);
+  }
+
+  const targetProperty = await IXServices.getTargetProperty({ extractor });
+
   if (extractorSource.pdf) {
     const batchData = await fetchEntitiesDataForBatch(templateId, batch.fromId, batch.toId);
     const fetchedFiles = await files.get(
@@ -69,40 +80,91 @@ async function createBlankStateSuggestionsBatch(
 
     const batchSuggestions = fetchedFiles
       .filter(file => file.entity)
-      .map(file => ({
-        language:
-          LanguageUtils.fromISO639_3(file.language as string, false)?.ISO639_1 || defaultLanguage,
-        fileId: file._id,
-        entityId: file.entity!,
+      .map(file => {
+        const blank = {
+          language:
+            LanguageUtils.fromISO639_3(file.language as string, false)?.ISO639_1 || defaultLanguage,
+          fileId: file._id,
+          entityId: file.entity!,
+          entityTemplate: templateId,
+          extractorId: ObjectId.createFromHexString(extractorId),
+          propertyName: extractorProperty,
+          status: 'ready' as 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: isMultiValued ? [] : '',
+          date: new Date().getTime(),
+        };
+
+        const entity = batchData.find(
+          e => e.language === blank.language && e.sharedId === file.entity
+        );
+        const defaultEntity = batchData.find(
+          e => e.sharedId === file.entity && e.language === defaultLanguage
+        )!;
+
+        const state = getSuggestionState(
+          {
+            date: blank.date,
+            error: blank.error,
+            status: blank.status,
+            segment: blank.segment,
+            suggestedValue: blank.suggestedValue,
+            currentValue: IXServices.extractCurrentValue({
+              entity: entity || defaultEntity,
+              targetProperty,
+            }),
+            labeledValue: IXServices.extractLabeledValueFromFile({ file, targetProperty }),
+            modelCreationDate: undefined as any,
+            state: undefined as any,
+          },
+          targetProperty.type
+        );
+
+        return { ...blank, state };
+      });
+
+    return Suggestions.createMultiple(batchSuggestions);
+  }
+  const batchData = await fetchEntitiesDataForBatch(templateId, batch.fromId, batch.toId);
+
+  if (tenants.current().featureFlags?.ixExtraSources && extractorSource.property) {
+    const batchSuggestions = batchData.map(entity => {
+      const blank = {
+        language: entity.language,
+        entityId: entity.sharedId,
         entityTemplate: templateId,
-        extractorId: ObjectId.createFromHexString(extractorId),
+        extractorId: new ObjectId(extractorId),
         propertyName: extractorProperty,
         status: 'ready' as 'ready',
         error: '',
         segment: '',
         suggestedValue: isMultiValued ? [] : '',
         date: new Date().getTime(),
-      }));
+      };
 
-    return Suggestions.saveMultiple(batchSuggestions);
-  }
-  const batchData = await fetchEntitiesDataForBatch(templateId, batch.fromId, batch.toId);
+      const currentValue = IXServices.extractCurrentValue({ entity, targetProperty });
+      const labeledValue = IXServices.extractLabeledValueFromEntity({ entity, targetProperty });
 
-  if (tenants.current().featureFlags?.ixExtraSources && extractorSource.property) {
-    const batchSuggestions = batchData.map(entity => ({
-      language: entity.language,
-      entityId: entity.sharedId,
-      entityTemplate: templateId,
-      extractorId: new ObjectId(extractorId),
-      propertyName: extractorProperty,
-      status: 'ready' as 'ready',
-      error: '',
-      segment: '',
-      suggestedValue: isMultiValued ? [] : '',
-      date: new Date().getTime(),
-    }));
+      const state = getSuggestionState(
+        {
+          date: blank.date,
+          error: blank.error,
+          status: blank.status,
+          suggestedValue: blank.suggestedValue,
+          segment: blank.segment,
+          currentValue,
+          labeledValue,
+          modelCreationDate: undefined as any,
+          state: undefined as any,
+        },
+        targetProperty.type
+      );
 
-    await Suggestions.saveMultiple(batchSuggestions);
+      return { ...blank, state };
+    });
+
+    await Suggestions.createMultiple(batchSuggestions);
   }
 }
 
