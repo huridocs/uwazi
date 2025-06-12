@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -9,7 +8,6 @@ import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
-import { Extractors } from '../ixextractors';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;
@@ -60,7 +58,7 @@ describe('InformationExtraction Error Handling', () => {
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
-        creationDate: Date.now()
+        creationDate: Date.now(),
       });
 
       await IXSuggestionsModel.delete({ extractorId });
@@ -70,7 +68,7 @@ describe('InformationExtraction Error Handling', () => {
         task: 'create_model',
         params: { id: extractorId.toString() },
         success: false,
-        error_message: errorMessage
+        error_message: errorMessage,
       });
 
       const [model] = await IXModelsModel.get({ extractorId });
@@ -89,7 +87,7 @@ describe('InformationExtraction Error Handling', () => {
         extractorId,
         status: ModelStatus.ready,
         findingSuggestions: true,
-        creationDate: Date.now()
+        creationDate: Date.now(),
       });
 
       await IXSuggestionsModel.save({
@@ -107,8 +105,8 @@ describe('InformationExtraction Error Handling', () => {
           hasContext: false,
           obsolete: false,
           processing: true,
-          error: false
-        }
+          error: false,
+        },
       });
 
       await informationExtraction.processResults({
@@ -116,7 +114,7 @@ describe('InformationExtraction Error Handling', () => {
         task: 'suggestions',
         params: { id: extractorId.toString() },
         success: false,
-        error_message: errorMessage
+        error_message: errorMessage,
       });
 
       const [model] = await IXModelsModel.get({ extractorId });
@@ -140,7 +138,7 @@ describe('InformationExtraction Error Handling', () => {
         extractorId,
         status: ModelStatus.ready,
         findingSuggestions: true,
-        creationDate: Date.now()
+        creationDate: Date.now(),
       });
 
       const initialState = {
@@ -151,7 +149,7 @@ describe('InformationExtraction Error Handling', () => {
         hasContext: true,
         obsolete: false,
         processing: true,
-        error: false
+        error: false,
       };
 
       await IXSuggestionsModel.save({
@@ -161,7 +159,7 @@ describe('InformationExtraction Error Handling', () => {
         propertyName: 'property2',
         status: 'processing',
         date: Date.now(),
-        state: initialState
+        state: initialState,
       });
 
       await informationExtraction.processResults({
@@ -169,7 +167,7 @@ describe('InformationExtraction Error Handling', () => {
         task: 'suggestions',
         params: { id: extractorId.toString() },
         success: false,
-        error_message: errorMessage
+        error_message: errorMessage,
       });
 
       const allSuggestions = await IXSuggestionsModel.get({ extractorId });
@@ -190,7 +188,7 @@ describe('InformationExtraction Error Handling', () => {
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
-        creationDate: Date.now()
+        creationDate: Date.now(),
       });
 
       await informationExtraction.processResults({
@@ -198,7 +196,7 @@ describe('InformationExtraction Error Handling', () => {
         task: 'create_model',
         params: { id: extractorId.toString() },
         success: false,
-        error_message: errorMessage
+        error_message: errorMessage,
       });
 
       expect(emitToTenantSpy).toHaveBeenCalledWith(
@@ -217,7 +215,7 @@ describe('InformationExtraction Error Handling', () => {
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
-        creationDate: Date.now()
+        creationDate: Date.now(),
       });
 
       await IXSuggestionsModel.save({
@@ -235,15 +233,15 @@ describe('InformationExtraction Error Handling', () => {
           hasContext: false,
           obsolete: false,
           processing: true,
-          error: false
-        }
+          error: false,
+        },
       });
 
       await informationExtraction.processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
-        success: false
+        success: false,
       });
 
       const allSuggestions = await IXSuggestionsModel.get({ extractorId });

@@ -606,7 +606,7 @@ class InformationExtraction {
       return { status: 'cancel', message: 'Canceling...' };
     }
 
-    if (currentModel.status === ModelStatus.failed ) {
+    if (currentModel.status === ModelStatus.failed) {
       return { status: 'failed', message: 'Failed' };
     }
 
@@ -699,7 +699,10 @@ class InformationExtraction {
     }, _message.tenant);
   };
 
-  private async handleTaskFailure(message: InternalIXResultsMessage, currentModel: IXModelType | undefined) {
+  private async handleTaskFailure(
+    message: InternalIXResultsMessage,
+    currentModel: IXModelType | undefined
+  ) {
     const errorMessage = message.error_message || 'Task failed';
 
     await this.saveModelProcess(message.params!.id, ModelStatus.failed, false);
@@ -715,7 +718,7 @@ class InformationExtraction {
             status: 'failed',
             error: errorMessage,
             'state.processing': false,
-            'state.error': true
+            'state.error': true,
           },
         }
       );

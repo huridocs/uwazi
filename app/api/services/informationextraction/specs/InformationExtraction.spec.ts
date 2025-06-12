@@ -184,7 +184,9 @@ describe('InformationExtraction', () => {
       expect(resp.status).toEqual('ready');
     });
     it('should return status: failed', async () => {
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('extractorWithFailedModel') });
+      const [model] = await IXModelsModel.get({
+        extractorId: factory.id('extractorWithFailedModel'),
+      });
       model.status = ModelStatus.failed;
       await IXModelsModel.save(model);
 
