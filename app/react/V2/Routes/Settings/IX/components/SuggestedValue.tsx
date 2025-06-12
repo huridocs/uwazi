@@ -86,10 +86,10 @@ const SuggestedValue = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <TruncatedText maxLength={30}>
+      <TruncatedText maxLength={40}>
         <span className="text-gray-500">{getCurrentValue()}</span>
       </TruncatedText>
-      <TruncatedText maxLength={30}>
+      <TruncatedText maxLength={40}>
         <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
       </TruncatedText>
     </div>

@@ -100,7 +100,6 @@ const TruncatedText = ({ children, maxLength = 20 }: TruncatedTextProps) => {
           onTouchStart={() => setPopoverOpen(true)}
           onTouchEnd={handleClose}
           ref={setReferenceElement}
-          as="span"
           className={`pointer-events-auto cursor-pointer font-bold px-2 ${childClassName || ''}`}
         >
           [...]
