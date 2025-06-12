@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 type TruncatedTextProps = {
   children: React.ReactNode;
   maxLength?: number;
+  tooltipClassname?: string;
 };
 
 const truncateText = (text: string, maxLength: number): [start: string, end: string] => {
@@ -49,7 +50,7 @@ const getClassName = (node: React.ReactNode): string => {
 };
 
 // eslint-disable-next-line max-statements
-const TruncatedText = ({ children, maxLength = 20 }: TruncatedTextProps) => {
+const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: TruncatedTextProps) => {
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout>();
@@ -117,7 +118,9 @@ const TruncatedText = ({ children, maxLength = 20 }: TruncatedTextProps) => {
               as="div"
               className="tw-content"
             >
-              <div className="bg-white overflow-y-auto px-2 py-3 rounded mb-3 text-xs font-normal text-gray-500 shadow-md max-h-[60vh] max-w-56 lg:max-w-4xl">
+              <div
+                className={`bg-white overflow-y-auto px-4 py-6 rounded-md shadow-lg max-h-[60vh] max-w-56 lg:max-w-4xl ${tooltipClassname || ''}`}
+              >
                 {text}
               </div>
             </Popover.Panel>,
