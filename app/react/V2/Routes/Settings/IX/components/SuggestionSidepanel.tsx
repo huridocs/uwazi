@@ -348,24 +348,26 @@ const SuggestionSidepanel = ({
             <Translate className="">Click to fill</Translate>
           </Button>
         </div>
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
+        {suggestion?.extractorSource.pdf && (
+          <div className="sm:text-right" data-testid="ix-clear-button-container">
+            <Button
+              type="button"
+              styling="outline"
+              disabled={Boolean(!highlights) || isSubmitting}
+              onClick={() => {
+                setHighlights(undefined);
+                setSelections(
+                  selectionHandlers.deleteFileSelection(
+                    { name: suggestion?.propertyName || '' },
+                    pdf?.extractedMetadata
+                  )
+                );
+              }}
+            >
+              <Translate>Clear</Translate>
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -457,24 +459,26 @@ const SuggestionSidepanel = ({
             <Translate className="">Click to fill</Translate>
           </Button>
         </div>
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
+        {suggestion?.extractorSource.pdf && (
+          <div className="sm:text-right" data-testid="ix-clear-button-container">
+            <Button
+              type="button"
+              styling="outline"
+              disabled={Boolean(!highlights) || isSubmitting}
+              onClick={() => {
+                setHighlights(undefined);
+                setSelections(
+                  selectionHandlers.deleteFileSelection(
+                    { name: suggestion?.propertyName || '' },
+                    pdf?.extractedMetadata
+                  )
+                );
+              }}
+            >
+              <Translate>Clear</Translate>
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
