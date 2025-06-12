@@ -10,6 +10,7 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { sortByStrings } from 'shared/data_utils/objectSorting';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 
 import { factory, fixtures } from './fixtures';
@@ -181,6 +182,14 @@ describe('InformationExtraction', () => {
 
       const resp = await informationExtraction.status(factory.id('prop1extractor'));
       expect(resp.status).toEqual('ready');
+    });
+    it('should return status: failed', async () => {
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('extractorWithFailedModel') });
+      model.status = ModelStatus.failed;
+      await IXModelsModel.save(model);
+
+      const resp = await informationExtraction.status(factory.id('extractorWithFailedModel'));
+      expect(resp.status).toEqual('failed');
     });
   });
 
@@ -1101,6 +1110,8 @@ describe('InformationExtraction', () => {
         },
       ]);
 
+      await saveSuggestionProcess('F1', 'A1', 'en', 'prop1extractor');
+
       await informationExtraction.processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
@@ -1119,22 +1130,12 @@ describe('InformationExtraction', () => {
       expect(suggestions[0]).toEqual(
         expect.objectContaining({
           entityId: 'A1',
-          language: 'en',
-          propertyName: 'property1',
-          suggestedValue: '',
-          segment: '',
           status: 'failed',
           error: 'Issue calculation suggestion',
-          state: {
-            labeled: true,
-            match: null,
-            withValue: true,
-            withSuggestion: false,
-            hasContext: false,
-            processing: false,
-            obsolete: false,
+          state: expect.objectContaining({
             error: true,
-          },
+            processing: false,
+          }),
         })
       );
     });

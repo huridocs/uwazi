@@ -1061,6 +1061,12 @@ const fixtures: DBFixture = {
       status: 'ready',
       findingSuggestions: true,
     },
+    {
+      extractorId: factory.id('extractorWithFailedModel'),
+      creationDate: 200,
+      status: 'failed',
+      findingSuggestions: false,
+    },
   ],
   relationtypes: [
     factory.relationType('related'),

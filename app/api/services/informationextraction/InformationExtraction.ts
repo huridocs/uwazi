@@ -606,6 +606,10 @@ class InformationExtraction {
       return { status: 'cancel', message: 'Canceling...' };
     }
 
+    if (currentModel.status === ModelStatus.failed ) {
+      return { status: 'failed', message: 'Failed' };
+    }
+
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(
         extractorId,
@@ -666,6 +670,11 @@ class InformationExtraction {
         extractorId: message.params!.id,
       });
 
+      if (!message.success) {
+        await this.handleTaskFailure(message, currentModel);
+        return;
+      }
+
       if (message.task === 'create_model' && message.success) {
         await this.saveModelProcess(message.params!.id, ModelStatus.ready);
         await this.updateSuggestionStatus(message, currentModel);
@@ -689,6 +698,37 @@ class InformationExtraction {
       await this.getSuggestions(message.params!.id);
     }, _message.tenant);
   };
+
+  private async handleTaskFailure(message: InternalIXResultsMessage, currentModel: IXModelType | undefined) {
+    const errorMessage = message.error_message || 'Task failed';
+
+    await this.saveModelProcess(message.params!.id, ModelStatus.failed, false);
+
+    if (currentModel?.findingSuggestions) {
+      await IXSuggestionsModel.updateMany(
+        {
+          extractorId: message.params!.id,
+          status: 'processing',
+        },
+        {
+          $set: {
+            status: 'failed',
+            error: errorMessage,
+            'state.processing': false,
+            'state.error': true
+          },
+        }
+      );
+    }
+
+    emitToTenant(
+      message.tenant,
+      'ix_model_status',
+      message.params!.id.toString(),
+      'error',
+      errorMessage
+    );
+  }
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
     const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
