@@ -316,7 +316,7 @@ const suggestionsTableColumnsBuilder = (
         return null;
       },
       meta: {
-        headerClassName: '0',
+        headerClassName: 'w-0',
         contentClassName: 'text-center',
       },
     }),
@@ -330,7 +330,7 @@ const suggestionsTableColumnsBuilder = (
           <AcceptButton action={acceptSuggestions} cell={cell} />
         ),
       meta: {
-        headerClassName: '0',
+        headerClassName: 'w-0',
         contentClassName: 'text-center',
       },
     }),
