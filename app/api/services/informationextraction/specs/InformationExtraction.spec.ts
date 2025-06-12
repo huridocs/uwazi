@@ -2,16 +2,13 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-
 import { ObjectId } from 'mongodb';
-
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { sortByStrings } from 'shared/data_utils/objectSorting';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
-
 import { factory, fixtures } from './fixtures';
 import {
   CommonSuggestion,
@@ -186,7 +183,7 @@ describe('InformationExtraction', () => {
 
   describe('trainModel', () => {
     it('should send xmls', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
+      await InformationExtraction.trainModel(factory.id('prop1extractor'));
 
       const xmlA = await readDocument('A');
 
@@ -205,7 +202,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send xmls (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await InformationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
       const xmlG = await readDocument('G');
       const xmlH = await readDocument('H');
@@ -224,7 +221,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send xmls (relationship)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      await InformationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
       const xmlK = await readDocument('K');
       const xmlL = await readDocument('L');
@@ -243,7 +240,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
+      await InformationExtraction.trainModel(factory.id('prop1extractor'));
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
@@ -269,7 +266,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await InformationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentG.xml')).toEqual({
@@ -299,7 +296,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data (relationship)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      await InformationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentL.xml')).toEqual({
@@ -341,7 +338,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should sanitize dates before sending', async () => {
-      await informationExtraction.trainModel(factory.id('prop2extractor'));
+      await InformationExtraction.trainModel(factory.id('prop2extractor'));
 
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
         xml_file_name: 'documentA.xml',
@@ -366,7 +363,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
+      await InformationExtraction.trainModel(factory.id('prop1extractor'));
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -384,7 +381,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (multiselect)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      await InformationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -424,7 +421,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (relationship)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      await InformationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -456,7 +453,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should start the task to train the model (relationship to any template)', async () => {
-      await informationExtraction.trainModel(factory.id('extractorWithRelationshipToAny'));
+      await InformationExtraction.trainModel(factory.id('extractorWithRelationshipToAny'));
 
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -524,7 +521,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should emit error status and stop finding suggestions, when there is no labaled data', async () => {
-      const promise1 = informationExtraction.trainModel(factory.id('prop3extractor'));
+      const promise1 = InformationExtraction.trainModel(factory.id('prop3extractor'));
       await expect(promise1).rejects.toThrow();
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
         1,
@@ -535,7 +532,7 @@ describe('InformationExtraction', () => {
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
       expect(model.findingSuggestions).toBe(false);
 
-      const promise2 = informationExtraction.trainModel(
+      const promise2 = InformationExtraction.trainModel(
         factory.id('extractorWithMultiselectWithoutTrainingData')
       );
       await expect(promise2).rejects.toThrow();
@@ -550,7 +547,7 @@ describe('InformationExtraction', () => {
       });
       expect(multiSelectModel.findingSuggestions).toBe(false);
 
-      const promise3 = informationExtraction.trainModel(
+      const promise3 = InformationExtraction.trainModel(
         factory.id('extractorWithEmptyRelationship')
       );
       await expect(promise3).rejects.toThrow();
@@ -567,7 +564,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should emit error status (No segmented files) and stop finding suggestions, when there are no segmented files', async () => {
-      const promise = informationExtraction.trainModel(factory.id('extractorWithoutSegmentations'));
+      const promise = InformationExtraction.trainModel(factory.id('extractorWithoutSegmentations'));
       await expect(promise).rejects.toThrow();
       const [model] = await IXModelsModel.get({
         extractorId: factory.id('extractorWithoutSegmentations'),
@@ -582,7 +579,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should emit error status (No segmented files) and stop finding suggestions, when there are no segmented files (select/multiselect/relationship)', async () => {
-      const promise = informationExtraction.trainModel(
+      const promise = InformationExtraction.trainModel(
         factory.id('selectExtractorWithoutSegmentations')
       );
       await expect(promise).rejects.toThrow();
@@ -597,6 +594,41 @@ describe('InformationExtraction', () => {
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoSegmentedFiles.defaultMessage }
       );
+    });
+  });
+
+  describe('testModel', () => {
+    it('should throw an error if there are no segmentations', async () => {
+      const promise = InformationExtraction.testModel(factory.id('extractorWithoutSegmentations'));
+      await expect(promise).rejects.toThrow(NoSegmentedFiles.defaultMessage);
+    });
+
+    it('should throw an error if there are no labeled entities', async () => {
+      const promise = InformationExtraction.testModel(
+        factory.id('extractorWithMultiselectWithoutTrainingData')
+      );
+      await expect(promise).rejects.toThrow(NoLabeledEntities.defaultMessage);
+    });
+
+    it('should set test to true on the model', async () => {
+      await InformationExtraction.testModel(factory.id('prop1extractor'));
+
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+
+      expect(model.testRun).toBe(true);
+    });
+
+    it('should set findingSuggestions to true on the model', async () => {
+      await IXModelsModel.save({
+        extractorId: factory.id('prop1extractor'),
+        findingSuggestions: false,
+      });
+
+      await InformationExtraction.testModel(factory.id('prop1extractor'));
+
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+
+      expect(model.findingSuggestions).toBe(true);
     });
   });
 

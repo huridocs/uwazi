@@ -576,25 +576,35 @@ class InformationExtraction {
 
   materialsForSuggestions = async (files: FileWithAggregation[], extractor: IXExtractorType) => {
     const serviceUrl = await this.serviceUrl();
-
     await this.sendMaterials(files, extractor, serviceUrl, 'prediction_data');
   };
 
-  trainModel = async (extractorId: ObjectIdSchema) => {
+  private static async train(extractorId: ObjectIdSchema, testRun = false) {
+    await ixmodels.startTraining(extractorId, testRun);
     const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId);
-
     const dispatcher = await DefaultDispatcher(tenant.name);
+    try {
+      await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
+    } catch (e) {
+      await ixmodels.stopTraining(extractorId);
+      throw e;
+    }
+  }
 
-    await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
+  static trainModel = async (extractorId: ObjectIdSchema) =>
+    InformationExtraction.train(extractorId, false);
 
-    return { status: 'processing_model', message: 'Training model' };
-  };
+  static testModel = async (extractorId: ObjectIdSchema) =>
+    InformationExtraction.train(extractorId, true);
 
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });
 
-    if (!currentModel) {
+    if (!currentModel || !currentModel.status) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    if (currentModel.status === 'ready' && !currentModel.findingSuggestions) {
       return { status: 'ready', message: 'Ready' };
     }
 
@@ -606,7 +616,7 @@ class InformationExtraction {
       return { status: 'cancel', message: 'Canceling...' };
     }
 
-    if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
+    if (currentModel.status === 'ready' && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(
         extractorId,
         currentModel.creationDate
@@ -627,17 +637,8 @@ class InformationExtraction {
   };
 
   stopModel = async (extractorId: ObjectIdSchema) => {
-    const res = await IXModelsModel.db.findOneAndUpdate(
-      { extractorId },
-      { $set: { findingSuggestions: false } },
-      {}
-    );
-
-    if (res) {
-      return { status: 'ready', message: 'Ready' };
-    }
-
-    return { status: 'error', message: 'No model found' };
+    await ixmodels.stopTraining(extractorId);
+    return { status: 'ready' as const, message: 'Model stopped' };
   };
 
   saveModelProcess = async (
@@ -674,16 +675,25 @@ class InformationExtraction {
       if (message.task === 'suggestions') {
         await this.saveSuggestionsManager(message);
         await this.updateSuggestionStatus(message, currentModel);
+        const [model] = await IXModelsModel.get({
+          extractorId: message.params!.id,
+        });
+        if (model.testRun) {
+          await this.stopModel(message.params!.id);
+          emitToTenant(
+            message.tenant,
+            'ix_model_status',
+            _message.params!.id,
+            'ready',
+            'Test completed'
+          );
+          return;
+        }
       }
 
       if (!currentModel.findingSuggestions) {
-        return emitToTenant(
-          message.tenant,
-          'ix_model_status',
-          _message.params!.id,
-          'ready',
-          'Canceled'
-        );
+        emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
+        return;
       }
 
       await this.getSuggestions(message.params!.id);

@@ -220,15 +220,19 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
   const [currentModel] = await ixmodels.get({ extractorId });
   const [extractor] = await Extractors.get({ _id: extractorId });
 
-  const suggestions = await IXSuggestionsModel.get(
-    {
-      extractorId,
-      date: { $lt: currentModel.creationDate },
-      'state.error': { $ne: true },
-    },
-    '',
-    { limit: SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE }
-  );
+  const query: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: currentModel.creationDate },
+    'state.error': { $ne: true },
+  };
+
+  if (currentModel.testRun) {
+    query.trainSampleTimestamp = { $ne: currentModel.creationDate };
+  }
+
+  const suggestions = await IXSuggestionsModel.get(query, '', {
+    limit: currentModel.testRun ? 1000 : SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE,
+  });
 
   if (!extractor.property || !extractor) {
     return [];
@@ -319,15 +323,19 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   const [currentModel] = await ixmodels.get({ extractorId });
 
-  const suggestions = await IXSuggestionsModel.get(
-    {
-      extractorId,
-      date: { $lt: currentModel.creationDate },
-      'state.error': { $ne: true },
-    },
-    'fileId',
-    { limit: BATCH_SIZE }
-  );
+  const query: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: currentModel.creationDate },
+    'state.error': { $ne: true },
+  };
+
+  if (currentModel.testRun) {
+    query.trainSampleTimestamp = { $ne: currentModel.creationDate };
+  }
+
+  const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
+    limit: currentModel.testRun ? 1000 : BATCH_SIZE,
+  });
 
   const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
 

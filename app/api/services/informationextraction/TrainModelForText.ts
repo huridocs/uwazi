@@ -16,6 +16,7 @@ import { IXServices } from './IXServices';
 import { ExtractionKey } from './ExtractionKey';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import ixmodels from './ixmodels';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -42,6 +43,7 @@ class TrainModelForText implements UseCase<Input, Output> {
 
   async execute({ extractor }: Input): Promise<Output> {
     try {
+      const [model] = await ixmodels.get({ extractorId: extractor._id });
       const entities = await getEntitiesForTraining(
         extractor.templates,
         extractor.property,
@@ -51,6 +53,11 @@ class TrainModelForText implements UseCase<Input, Output> {
       if (!entities.length) {
         throw new NoEntitiesForTraining();
       }
+
+      await IXSuggestionsModel.updateMany(
+        { entityId: { $in: entities.map(e => e.sharedId) } },
+        { $set: { trainSampleTimestamp: model.creationDate } }
+      );
 
       const targetProperty = await IXServices.getTargetProperty({ extractor });
 

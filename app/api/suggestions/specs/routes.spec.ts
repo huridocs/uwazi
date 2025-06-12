@@ -13,12 +13,13 @@ import {
   stateFilterFixtures,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
-import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp, TestEmitSources } from 'api/utils/testingRoutes';
 import waitForExpect from 'wait-for-expect';
+import { suggestionsRoutes } from 'api/suggestions/routes';
 import { Suggestions } from '../suggestions';
 
+// Mock modules before imports
 jest.mock(
   '../../utils/languageMiddleware.ts',
   () => (req: Request, _res: Response, next: NextFunction) => {
@@ -27,18 +28,24 @@ jest.mock(
   }
 );
 
-jest.mock('api/services/informationextraction/InformationExtraction', () => ({
-  InformationExtraction: class IXMock {
-    status = jest.fn().mockResolvedValue({ status: 'ready' });
+// Mock InformationExtraction as a class constructor
+jest.mock('api/services/informationextraction/InformationExtraction', () => {
+  const mockConstructor = jest.fn().mockImplementation(() => ({
+    status: jest.fn().mockResolvedValue({ status: 'ready' }),
+    stopModel: jest.fn().mockResolvedValue({ status: 'ready' }),
+  }));
 
-    trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
-  },
-}));
+  // Add static methods with type assertions
+  (mockConstructor as any).trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
+  (mockConstructor as any).testModel = jest.fn().mockResolvedValue({ status: 'processing' });
+
+  return { InformationExtraction: mockConstructor };
+});
 
 let user: { username: string; role: string } | undefined;
 const getUser = () => user;
 
-beforeEach(async () => {
+beforeEach(() => {
   user = { username: 'user 1', role: 'admin' };
   jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 });
@@ -329,26 +336,41 @@ describe('suggestions routes', () => {
   });
 
   describe('POST /api/suggestions/status', () => {
-    it('should return the status of the IX process', async () => {
+    it('should return status information of the extractor', async () => {
       const response = await request(app)
         .post('/api/suggestions/status')
-        .send({
-          extractorId: factory.id('super_powers_extractor').toString(),
-        })
+        .set('Accept', 'application/json')
+        .set('content-type', 'application/json')
+        .send({ extractorId: factory.id('super_powers_extractor').toString() })
         .expect(200);
 
-      expect(response.body).toMatchObject({ status: 'ready' });
+      expect(response.body).toEqual({ status: 'ready' });
     });
   });
 
   describe('POST /api/suggestions/train', () => {
-    it('should return the status of the IX process', async () => {
+    it('should train a model for an extractor', async () => {
       const response = await request(app)
         .post('/api/suggestions/train')
+        .set('Accept', 'application/json')
+        .set('content-type', 'application/json')
         .send({ extractorId: factory.id('super_powers_extractor').toString() })
         .expect(202);
 
-      expect(response.body).toMatchObject({ status: 'processing' });
+      expect(response.body).toEqual({ status: 'processing' });
+    });
+  });
+
+  describe('POST /api/suggestions/test_model', () => {
+    it('should test a model for an extractor', async () => {
+      const response = await request(app)
+        .post('/api/suggestions/test_model')
+        .set('Accept', 'application/json')
+        .set('content-type', 'application/json')
+        .send({ extractorId: factory.id('super_powers_extractor').toString() })
+        .expect(202);
+
+      expect(response.body).toEqual({ status: 'processing' });
     });
   });
 
