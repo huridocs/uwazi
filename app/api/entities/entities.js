@@ -33,6 +33,7 @@ import {
 import { validateEntity } from './validateEntity';
 import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
+import { bulkUpdateMetadataFromRelationships } from './bulkUpdateMetadataFromRelationships';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -470,21 +471,7 @@ export default {
 
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
   async bulkUpdateMetadataFromRelationships(query, language, limit = 200, reindex = true) {
-    const process = async (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return;
-      }
-
-      const entities = await this.get(query, 'sharedId', { skip: offset, limit });
-      await this.updateMetdataFromRelationships(
-        entities.map(entity => entity.sharedId),
-        language,
-        reindex
-      );
-      await process(offset + limit, totalRows);
-    };
-    const totalRows = await this.count(query);
-    await process(0, totalRows);
+    await bulkUpdateMetadataFromRelationships(query, language, limit, reindex);
   },
 
   async getWithoutDocuments(query, select, options = {}) {
@@ -617,10 +604,6 @@ export default {
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
   async updateMetdataFromRelationships(entities, language, reindex = true) {
-    if (appContext.get('use_patched')) {
-      await this.updateMetdataFromRelationships_patched(entities, language, reindex);
-      return;
-    }
     const entitiesToReindex = [];
     const _templates = await templates.get();
     await Promise.all(

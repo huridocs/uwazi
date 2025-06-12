@@ -1,21 +1,17 @@
 /* eslint-disable max-lines */
+import { config } from 'api/config';
 import { DB, models } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
-import config from 'app/config';
 import { Db } from 'mongodb';
 import templates from '../../app/api/templates';
 import { getFixturesFactory } from '../../app/api/utils/fixturesFactory';
 import testingDB, { DBFixture } from '../../app/api/utils/testing_db';
-import { instrumentObject, printPerformanceStats } from 'api/utils/instrumentPerformance';
-import entitiesModel from 'api/entities/entitiesModel';
-import templatesModel from 'api/templates/templatesModel';
-import { search } from 'superagent';
 
 const testing_db_name = 'templates_save_perf';
 
-const compareRuns = async (callback, patchedCallback) => {
+const compareRuns = async (callback: () => Promise<void>, patchedCallback: () => Promise<void>): Promise<void> => {
   let start = performance.now();
   appContext.set('use_patched', false);
   await callback();
@@ -24,10 +20,11 @@ const compareRuns = async (callback, patchedCallback) => {
   appContext.set('use_patched', true);
   await patchedCallback();
   const patchedPerf = performance.now() - start;
-  const diff = normalPerf - patchedPerf;
-  const diffColor = diff < 0 ? '\x1b[31m' : '\x1b[32m'; // Red if negative, green if positive
+  const diff = patchedPerf - normalPerf;
+  const percentageDiff = ((patchedPerf - normalPerf) / normalPerf) * 100;
+  const diffColor = diff > 0 ? '\x1b[31m' : '\x1b[32m'; // Red if negative, green if positive
   console.log(
-    `normal: ${normalPerf.toFixed(2)}, patched: ${patchedPerf.toFixed(2)}, diff: ${diffColor}${diff.toFixed(2)}\x1b[0m`
+    `normal: ${normalPerf.toFixed(2)}, patched: ${patchedPerf.toFixed(2)}, diff: ${diffColor}${diff.toFixed(2)} (${percentageDiff.toFixed(2)}%)\x1b[0m`
   );
   console.log('');
 };
@@ -74,7 +71,7 @@ const generateTemplate = () => {
   ]);
 };
 
-const generateEntity = (template, num: number, languages = ['en']) =>
+const generateEntity = (template: string, num: number, languages = ['en']) =>
   factory.entityInMultipleLanguages(languages, `Entity ${num}`, template, {
     field1: [{ value: `Value 1 for entity ${num}` }],
     field2: [{ value: `Value 2 for entity ${num}` }],
@@ -83,7 +80,7 @@ const generateEntity = (template, num: number, languages = ['en']) =>
     field5: [{ value: `Value 5 for entity ${num}` }],
   });
 
-const generateEntities = (template, count, languages = ['en']) => {
+const generateEntities = (template: string, count: number, languages = ['en']) => {
   const result = [];
   for (let i = 0; i < count; i += 1) {
     result.push(generateEntity(template, i, languages));
@@ -91,21 +88,15 @@ const generateEntities = (template, count, languages = ['en']) => {
   return result.flat();
 };
 
-async function onlyTextProperties() {
-  console.log('Text properties performance test...');
+async function onlyTextProperties(numberOfEntities: number) {
+  console.log(`Text properties performance test (${numberOfEntities} entities)... `);
   const template = generateTemplate();
 
   await fixturer.clearAllAndLoad(DB.mongodb_Db(testing_db_name), {
     templates: [template],
-    entities: generateEntities('test performance', 100),
+    entities: generateEntities('test performance', numberOfEntities),
     settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   });
-
-  // Instrument both templates and entities objects
-  // instrumentObject(templates, 'templates');
-  // instrumentObject(entities, 'entities');
-  // instrumentObject(templatesModel, 'templatesModel');
-  // instrumentObject(entitiesModel, 'entitiesModel');
 
   await compareRuns(
     async () => {
@@ -115,16 +106,15 @@ async function onlyTextProperties() {
       await templates.save(template, 'en');
     }
   );
-  // console.info(printPerformanceStats());
 }
 
-async function onlyTextPropertiesMultipleLanguages() {
-  console.log('Text properties performance test (multilanguage)...');
+async function onlyTextPropertiesMultipleLanguages(numberOfEntities: number) {
+  console.log(`Text properties performance test (multilanguage, ${numberOfEntities} entities)...`);
   const template = generateTemplate();
 
   await fixturer.clearAllAndLoad(DB.mongodb_Db(testing_db_name), {
     templates: [template],
-    entities: generateEntities('test performance', 100, ['en', 'es', 'pt']),
+    entities: generateEntities('test performance', numberOfEntities, ['en', 'es', 'pt']),
     settings: [
       {
         languages: [
@@ -146,15 +136,15 @@ async function onlyTextPropertiesMultipleLanguages() {
   );
 }
 
-async function allEntitiesSameHub() {
-  console.log('Changing template prop name test...');
+async function allEntitiesSameHub(numberOfEntities: number) {
+  console.log(`Changing template prop name test (${numberOfEntities} entities)...`);
   const template1 = factory.template('template1');
   const template2 = factory.template('template2', [factory.relationshipProp('rel1', 'template1')]);
   const hub1 = testingDB.id();
 
   const entitiesFixtures = [];
   const connections = [];
-  for (let i = 0; i < 100; i += 1) {
+  for (let i = 0; i < numberOfEntities; i += 1) {
     entitiesFixtures.push(factory.entity(`template1.entity${i}`, 'template1'));
     entitiesFixtures.push(
       factory.entity(`template2.entity${i}`, 'template2', {
@@ -182,12 +172,6 @@ async function allEntitiesSameHub() {
     settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   });
 
-  // Instrument objects for performance monitoring
-  // instrumentObject(templates, 'templates');
-  // instrumentObject(templatesModel, 'templatesModel');
-  // instrumentObject(entitiesModel, 'entitiesModel');
-  // instrumentObject(search, 'search');
-
   await compareRuns(
     async () => {
       template2.properties[0].label = 'rel1 renamed';
@@ -198,22 +182,22 @@ async function allEntitiesSameHub() {
       await templates.save(template2, 'en');
     }
   );
-
-  // console.info(printPerformanceStats());
 }
 
-async function allEntitiesSameHubMultiLanguage() {
-  console.log('Changing template prop name test (multilanguage)...');
+async function allEntitiesSameHubMultiLanguage(numberOfEntities: number) {
+  console.log(`Changing template prop name test (multilanguage ${numberOfEntities} entities)...`);
   const template1 = factory.template('template1');
   const template2 = factory.template('template2', [factory.relationshipProp('rel1', 'template1')]);
   const hub1 = testingDB.id();
 
   const entitiesFixtures = [];
   const connections = [];
-  for (let i = 0; i < 100; i += 1) {
-    entitiesFixtures.push(factory.entityInMultipleLanguages(['en', 'es', 'pt'],`template1.entity${i}`, 'template1'));
+  for (let i = 0; i < numberOfEntities; i += 1) {
     entitiesFixtures.push(
-      factory.entityInMultipleLanguages(['en', 'es', 'pt'],`template2.entity${i}`, 'template2', {
+      factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template1.entity${i}`, 'template1')
+    );
+    entitiesFixtures.push(
+      factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template2.entity${i}`, 'template2', {
         rel1: [factory.metadataValue(`template1.entity${i}`)],
       })
     );
@@ -258,19 +242,21 @@ async function allEntitiesSameHubMultiLanguage() {
   );
 }
 
-async function allEntitiesSameHubChangingInheritedMultilanguage() {
-  console.log('Changing template relationship prop inheritedProp test (multilingual)...');
+async function allEntitiesSameHubChangingInheritedMultilanguage(numberOfEntities: number) {
+  console.log(`Changing template relationship prop inheritedProp test (multilingual, ${numberOfEntities} entities )...`);
 
-  const template1 = factory.template('template1');
+  const template1 = factory.template('template1', [factory.property('text property')]);
   const template2 = factory.template('template2', [factory.relationshipProp('rel1', 'template1')]);
   const hub1 = testingDB.id();
 
   const entitiesFixtures = [];
   const connections = [];
-  for (let i = 0; i < 100; i += 1) {
-    entitiesFixtures.push(factory.entityInMultipleLanguages(['en', 'es', 'pt'],`template1.entity${i}`, 'template1'));
+  for (let i = 0; i < numberOfEntities; i += 1) {
     entitiesFixtures.push(
-      factory.entityInMultipleLanguages(['en', 'es', 'pt'],`template2.entity${i}`, 'template2', {
+      factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template1.entity${i}`, 'template1')
+    );
+    entitiesFixtures.push(
+      factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template2.entity${i}`, 'template2', {
         rel1: [factory.metadataValue(`template1.entity${i}`)],
       })
     );
@@ -305,17 +291,17 @@ async function allEntitiesSameHubChangingInheritedMultilanguage() {
 
   await compareRuns(
     async () => {
-      template2.properties[0].label = 'rel1 renamed';
+      template2.properties[0].inherit = { property: factory.idString('text property') };
       await templates.save(template2, 'en');
     },
     async () => {
-      template2.properties[0].label = 'rel1 re renamed';
+      template2.properties[0].inherit = { type: 'text' };
       await templates.save(template2, 'en');
     }
   );
 }
 
-async function main() {
+async function run() {
   await DB.connect(config.DBHOST, config.DBAUTH);
   try {
     console.log('Starting performance tests...');
@@ -325,11 +311,16 @@ async function main() {
 
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      await onlyTextProperties();
-      await onlyTextPropertiesMultipleLanguages();
-      await allEntitiesSameHub();
-      await allEntitiesSameHubMultiLanguage();
-      await allEntitiesSameHubChangingInheritedMultilanguage();
+      await onlyTextProperties(100);
+      await onlyTextProperties(300);
+      await onlyTextPropertiesMultipleLanguages(100);
+      await onlyTextPropertiesMultipleLanguages(300);
+      await allEntitiesSameHub(100);
+      await allEntitiesSameHub(300);
+      await allEntitiesSameHubMultiLanguage(100);
+      await allEntitiesSameHubMultiLanguage(300);
+      await allEntitiesSameHubChangingInheritedMultilanguage(100);
+      await allEntitiesSameHubChangingInheritedMultilanguage(300);
     }, testing_db_name);
 
     console.log('Tests completed successfully.');
@@ -341,5 +332,4 @@ async function main() {
   }
 }
 
-// Run the script
-main();
+run();
