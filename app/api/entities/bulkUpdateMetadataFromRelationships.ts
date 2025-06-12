@@ -3,6 +3,7 @@ import { appContext } from 'api/utils/AppContext';
 import { EntitySchema } from 'shared/types/entityType';
 import { search } from 'superagent';
 import entities from './entities';
+import { tenants } from 'api/tenants';
 
 const updateMetdataFromRelationships_patched = async (
   entitiesSharedIds: string[],
@@ -47,30 +48,23 @@ export const bulkUpdateMetadataFromRelationships = async (
     await entities.updateMetdataFromRelationships(entitiesSharedIds, language, reindex);
     await process(offset + limit, totalRows);
   };
-  let usePatched = false;
-  try {
-    usePatched = appContext.get('use_patched') as boolean;
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  usePatched = true;
-  if (!usePatched) {
+  if (!tenants.current().featureFlags?.improvedTemplatesSave) {
     const totalRows = await entities.count(query);
     await process(0, totalRows);
   } else {
-    // console.log("SHIT ?")
-    // const process2 = async (offset: number, totalRows: number) => {
-    //   if (offset >= totalRows) {
-    //     return;
-    //   }
-    //
-    //   const entitiesSharedIds = (
-    //     await entities.get(query, 'sharedId', { skip: offset, limit })
-    //   ).map((entity: EntitySchema) => entity.sharedId);
-    //
-    //   await entities.updateMetdataFromRelationships_patched(entitiesSharedIds, language, reindex);
-    //   await process2(offset + limit, totalRows);
-    // };
-    // const totalRows = await entities.count(query);
-    // await process2(0, totalRows);
+    const process2 = async (offset: number, totalRows: number) => {
+      if (offset >= totalRows) {
+        return;
+      }
+
+      const entitiesSharedIds = (
+        await entities.get(query, 'sharedId', { skip: offset, limit })
+      ).map((entity: EntitySchema) => entity.sharedId);
+
+      await entities.updateMetdataFromRelationships_patched(entitiesSharedIds, language, reindex);
+      await process2(offset + limit, totalRows);
+    };
+    const totalRows = await entities.count(query);
+    await process2(0, totalRows);
   }
 };

@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
 import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes';
 
+const templateChangingNamesId = db.id();
 const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const thesaurusTemplateId = db.id();
@@ -46,8 +47,34 @@ const createEntitiesInAllLanguages = (
     sharedId: `${baseTitle}-sharedId`,
   }));
 
+const templateChangingNames = {
+  _id: templateChangingNamesId,
+  name: 'template_changing_names',
+  default: false,
+  commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  properties: [
+    { _id: db.id(), type: 'text', label: 'property1', name: 'property1' },
+    { _id: db.id(), type: 'text', label: 'property2', name: 'property2' },
+    { _id: db.id(), type: 'text', label: 'property3', name: 'property3' },
+  ],
+};
+
+const templateNotChangingNames = {
+  _id: db.id(),
+  name: 'template_not_changing_names',
+  default: false,
+  commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  properties: [
+    { _id: db.id(), type: 'text', label: 'property1', name: 'property1' },
+    { _id: db.id(), type: 'text', label: 'property2', name: 'property2' },
+    { _id: db.id(), type: 'text', label: 'property3', name: 'property3' },
+  ],
+};
+
 const fixtures: DBFixture = {
   templates: [
+    templateChangingNames,
+    templateNotChangingNames,
     {
       _id: templateToBeEditedId,
       name: 'template to be edited',
@@ -300,12 +327,24 @@ const fixtures: DBFixture = {
       select2: [],
       relationshipToBeDeleted: [],
     }),
+    ...createEntitiesInAllLanguages('templateChangingNames', templateChangingNamesId, {
+      property1: [{ value: 'value1' }],
+      property2: [{ value: 'value2' }],
+      property3: [{ value: 'value3' }],
+    }),
+    ...createEntitiesInAllLanguages('templateNotChangingNames', templateNotChangingNames._id, {
+      property1: [{ value: 'value1' }],
+      property2: [{ value: 'value2' }],
+      property3: [{ value: 'value3' }],
+    }),
   ],
 };
 
 export default fixtures;
 
 export {
+  templateChangingNames,
+  templateNotChangingNames,
   templateToBeEditedId,
   templateToBeDeleted,
   thesaurusTemplateId,

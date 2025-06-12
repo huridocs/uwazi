@@ -3,7 +3,6 @@ import { config } from 'api/config';
 import { DB, models } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
-import { appContext } from 'api/utils/AppContext';
 import { Db } from 'mongodb';
 import templates from '../../app/api/templates';
 import { getFixturesFactory } from '../../app/api/utils/fixturesFactory';
@@ -11,13 +10,20 @@ import testingDB, { DBFixture } from '../../app/api/utils/testing_db';
 
 const testing_db_name = 'templates_save_perf';
 
-const compareRuns = async (callback: () => Promise<void>, patchedCallback: () => Promise<void>): Promise<void> => {
+const compareRuns = async (
+  callback: () => Promise<void>,
+  patchedCallback: () => Promise<void>
+): Promise<void> => {
   let start = performance.now();
-  appContext.set('use_patched', false);
+  tenants.add({ name: testing_db_name, dbName: testing_db_name });
   await callback();
   const normalPerf = performance.now() - start;
   start = performance.now();
-  appContext.set('use_patched', true);
+  tenants.add({
+    name: testing_db_name,
+    dbName: testing_db_name,
+    featureFlags: { improvedTemplatesSave: true },
+  });
   await patchedCallback();
   const patchedPerf = performance.now() - start;
   const diff = patchedPerf - normalPerf;
@@ -243,7 +249,9 @@ async function allEntitiesSameHubMultiLanguage(numberOfEntities: number) {
 }
 
 async function allEntitiesSameHubChangingInheritedMultilanguage(numberOfEntities: number) {
-  console.log(`Changing template relationship prop inheritedProp test (multilingual, ${numberOfEntities} entities )...`);
+  console.log(
+    `Changing template relationship prop inheritedProp test (multilingual, ${numberOfEntities} entities )...`
+  );
 
   const template1 = factory.template('template1', [factory.property('text property')]);
   const template2 = factory.template('template2', [factory.relationshipProp('rel1', 'template1')]);

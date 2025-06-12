@@ -33,7 +33,7 @@ import {
 import { validateEntity } from './validateEntity';
 import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
-import { bulkUpdateMetadataFromRelationships } from './bulkUpdateMetadataFromRelationships';
+import { bulkUpdateMetadataFromRelationships as bulkDenormalizeEntities } from './bulkUpdateMetadataFromRelationships';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -470,8 +470,8 @@ export default {
   },
 
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async bulkUpdateMetadataFromRelationships(query, language, limit = 200, reindex = true) {
-    await bulkUpdateMetadataFromRelationships(query, language, limit, reindex);
+  async bulkDenormalizeEntities(query, language, limit = 200, reindex = true) {
+    await bulkDenormalizeEntities(query, language, limit, reindex);
   },
 
   async getWithoutDocuments(query, select, options = {}) {
@@ -681,7 +681,7 @@ export default {
     }
 
     await reindexEntitiesByTemplate(template, options);
-    return this.bulkUpdateMetadataFromRelationships(
+    return this.bulkDenormalizeEntities(
       { template: template._id, language },
       language,
       200,

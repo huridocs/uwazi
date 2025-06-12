@@ -25,6 +25,9 @@ const testingEnvironment = {
       name: name || testingDB.dbName || 'defaultDB',
       dbName: testingDB.dbName || name || 'defaultDB',
       indexName: 'index',
+      featureFlags: {
+        improvedTemplatesSave: true,
+      },
     });
     await setupTestUploadedPaths(subPath);
   },
