@@ -45,8 +45,8 @@ const emptyProperty = {
   defaultfilter: false,
   prioritySorting: false,
   style: '',
-  content: '',
-  relationType: '',
+  content: undefined,
+  relationType: undefined,
   inherit: undefined,
   generatedId: false,
 };

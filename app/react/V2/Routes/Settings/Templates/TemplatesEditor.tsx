@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table, ConfirmNavigationModal } from 'V2/Components/UI';
+import { Table, ConfirmNavigationModal, ConfirmationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
 import {
@@ -25,6 +25,7 @@ import {
   emptyTemplate,
   processDefaultProperties,
   processProperties,
+  confirmationMessages,
 } from './helpers';
 import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
 import { TemplateMetadata } from './components/TemplateMetadata';
@@ -76,6 +77,9 @@ const TemplatesEditor = () => {
   const [showThesaurusModal, setShowThesaurusModal] = useState(false);
   const [showConfigPropertyPanel, setShowConfigPropertyPanel] = useState(false);
   const [propertyToEdit, setPropertyToEdit] = useState<PropertyRow | undefined>();
+  const [showReindexModal, setShowReindexModal] = useState(false);
+  const [showLargeEntityCountModal, setShowLargeEntityCountModal] = useState(false);
+  const ENTITY_COUNT_THRESHOLD = 100;
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -141,23 +145,32 @@ const TemplatesEditor = () => {
 
   const save = async (forceReindex = false) => {
     const templateToSave = getCurrentStatus();
+
     if (forceReindex) {
       templateToSave.reindex = true;
     }
-    const savedTemplate = await templatesAPI.save(templateToSave);
-    await revalidator.revalidate();
+    try {
+      const savedTemplate = await templatesAPI.save(templateToSave);
+      await revalidator.revalidate();
 
-    // Update templates atom
-    const updatedTemplates = template._id
-      ? templates.map(t => (t._id === template._id ? savedTemplate : t))
-      : [...templates, savedTemplate];
-    setTemplates(updatedTemplates);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Template saved successfully.</Translate>,
-    });
+      // Update templates atom
+      const updatedTemplates = template._id
+        ? templates.map(t => (t._id === template._id ? savedTemplate : t))
+        : [...templates, savedTemplate];
+      setTemplates(updatedTemplates);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Template saved successfully.</Translate>,
+      });
 
-    await navigate(`/settings/templates/edit/${savedTemplate._id}`);
+      await navigate(`/settings/templates/edit/${savedTemplate._id}`);
+    } catch (e) {
+      if (e.status === 409) {
+        setShowReindexModal(true);
+        return;
+      }
+      setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
+    }
   };
 
   const handleSave = async () => {
@@ -170,11 +183,21 @@ const TemplatesEditor = () => {
       return;
     }
 
+    if (template._id) {
+      const entityCounts = await templatesAPI.checkTemplatesEntityCount(undefined, [template._id]);
+      const entityCount = entityCounts[template._id] || 0;
+
+      if (entityCount > ENTITY_COUNT_THRESHOLD && checkPendingChanges()) {
+        setShowLargeEntityCountModal(true);
+        return;
+      }
+    }
+
     try {
       await save();
     } catch (e) {
       if (e.status === 409) {
-        //TODO: show confirmation modal to reindex the entities with the new template
+        setShowReindexModal(true);
         return;
       }
       setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
@@ -260,6 +283,44 @@ const TemplatesEditor = () => {
         template={{ ...template, properties, commonProperties } as ClientTemplateSchema}
         propertyToEdit={propertyToEdit}
       />
+      {showLargeEntityCountModal && (
+        <ConfirmationModal
+          size="lg"
+          header={confirmationMessages.largeNumberOfEntities.title}
+          body={
+            <Translate translationKey={confirmationMessages.largeNumberOfEntities.key}>
+              {confirmationMessages.largeNumberOfEntities.text}
+            </Translate>
+          }
+          onAcceptClick={async () => {
+            setShowLargeEntityCountModal(false);
+            await save(true);
+          }}
+          onCancelClick={() => setShowLargeEntityCountModal(false)}
+          acceptButton={<Translate>Yes, reindex entities</Translate>}
+          cancelButton={<Translate>Cancel</Translate>}
+          dangerStyle
+        />
+      )}
+      {showReindexModal && (
+        <ConfirmationModal
+          size="lg"
+          header={confirmationMessages.templateConflict.title}
+          body={
+            <Translate translationKey={confirmationMessages.templateConflict.key}>
+              {confirmationMessages.templateConflict.text}
+            </Translate>
+          }
+          onAcceptClick={async () => {
+            setShowReindexModal(false);
+            await save(true);
+          }}
+          onCancelClick={() => setShowReindexModal(false)}
+          acceptButton={<Translate>Yes, reindex entities</Translate>}
+          cancelButton={<Translate>Cancel</Translate>}
+          dangerStyle
+        />
+      )}
     </div>
   );
 };
