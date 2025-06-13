@@ -14,6 +14,7 @@ const select3id = db.id();
 const select4id = db.id();
 const swapTemplate = db.id();
 const relatedTo = db.id();
+const relatedToAnother = db.id();
 const templateToBeInherited = db.id();
 const templateInheritingFromAnother = db.id();
 const propertyToBeInherited = db.id();
@@ -26,6 +27,7 @@ const propertyB = db.id();
 const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
+const thesaurusTemplateRelationshipPropId = db.id();
 
 const languages: LanguagesListSchema = [
   { key: 'en', label: 'English', default: true },
@@ -106,7 +108,7 @@ const fixtures: DBFixture = {
           name: 'select',
         },
         {
-          _id: db.id(),
+          _id: thesaurusTemplateRelationshipPropId,
           type: propertyTypes.relationship,
           relationType: relatedTo.toString(),
           content: templateToBeDeleted,
@@ -252,7 +254,10 @@ const fixtures: DBFixture = {
       ],
     },
   ],
-  relationtypes: [{ _id: relatedTo, name: 'related to' }],
+  relationtypes: [
+    { _id: relatedTo, name: 'related to' },
+    { _id: relatedToAnother, name: 'related to another' },
+  ],
   settings: [
     {
       _id: db.id(),
@@ -360,6 +365,7 @@ export {
   propertyToBeInherited,
   propertyToBeInherited2,
   relatedTo,
+  relatedToAnother,
   thesauriId1,
   thesauriId2,
   templateWithExtractedMetadata,
@@ -370,4 +376,5 @@ export {
   select3id,
   select4id,
   pageSharedId,
+  thesaurusTemplateRelationshipPropId,
 };

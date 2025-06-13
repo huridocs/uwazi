@@ -255,7 +255,9 @@ export default {
       }
 
       await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
-      if (!(await v2.newRelationshipsAllowed())) {
+      const relationshipPropsWithChangedRelData =
+        currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
+      if (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) {
         await bulkDenormalizeEntities({ template: template._id, language }, language, 200, reindex);
       }
     }

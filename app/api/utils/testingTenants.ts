@@ -9,6 +9,10 @@ const testingTenants = {
   mockCurrentTenant(tenant: Partial<Tenant>) {
     mockedTenant = tenant;
     mockedTenant.featureFlags = mockedTenant.featureFlags || config.defaultTenant.featureFlags;
+    mockedTenant.featureFlags = {
+      ...mockedTenant.featureFlags,
+      improvedTemplatesSave: true,
+    };
     tenants.current = () => <Tenant>mockedTenant;
   },
 
