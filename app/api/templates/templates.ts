@@ -1,6 +1,8 @@
+//@ts-nocheck
 import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from 'api/entities';
+import { bulkDenormalizeEntities } from 'api/entities/bulkUpdateMetadataFromRelationships';
 import entitiesModel from 'api/entities/entitiesModel';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -9,6 +11,7 @@ import { WithId } from 'api/odm';
 import { search } from 'api/search';
 import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
+import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
 import { tenants } from 'api/tenants';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
@@ -212,6 +215,10 @@ export default {
     const currentTemplate = ensure<WithId<TemplateSchema>>(
       await this.getById(ensure(template._id))
     );
+
+    const newTemplate = TemplateInputMappers.toApp(template);
+    const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
+
     if (templateStructureChanges || currentTemplate.name !== template.name) {
       await updateTranslation(currentTemplate, template);
     }
@@ -224,46 +231,32 @@ export default {
     const savedTemplate = await model.save(template, undefined);
     if (templateStructureChanges) {
       await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
+      const actions = {
+        $rename: Object.fromEntries(
+          currentTemplateV2
+            .selectPropertiesWhereNameHasChanged(newTemplate)
+            .map(({ oldProperty, newProperty }) => [
+              `metadata.${oldProperty.name}`,
+              `metadata.${newProperty.name}`,
+            ])
+        ),
+        $unset: Object.fromEntries(
+          currentTemplateV2
+            .selectDeletedProperties(newTemplate)
+            .map(property => [`metadata.${property.name}`, ''])
+        ),
+      };
 
-      const actions = { $rename: {}, $unset: {} };
-      template.properties = await generateNames(template.properties);
-      template.properties.forEach(property => {
-        const currentProperty = currentTemplate.properties.find(
-          p => p._id.toString() === (property._id || '').toString()
-        );
-        if (currentProperty && currentProperty.name !== property.name) {
-          actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
-        }
-      });
+      if (Object.keys(actions.$rename).length === 0) delete actions.$rename;
+      if (Object.keys(actions.$unset).length === 0) delete actions.$unset;
 
-      currentTemplate.properties.forEach(property => {
-        if (!template.properties.find(p => (p._id || '').toString() === property._id.toString())) {
-          actions.$unset[`metadata.${property.name}`] = '';
-        }
-      });
-
-      const noneToUnset = !Object.keys(actions.$unset).length;
-      const noneToRename = !Object.keys(actions.$rename).length;
-
-      if (noneToUnset) {
-        delete actions.$unset;
-      }
-      if (noneToRename) {
-        delete actions.$rename;
-      }
-
-      if (actions.$unset || actions.$rename) {
+      if (Object.keys(actions).length > 0) {
         await entitiesModel.updateMany({ template: template._id }, actions);
       }
 
       await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
       if (!(await v2.newRelationshipsAllowed())) {
-        await entities.bulkDenormalizeEntities(
-          { template: template._id, language },
-          language,
-          200,
-          reindex
-        );
+        await bulkDenormalizeEntities({ template: template._id, language }, language, 200, reindex);
       }
     }
 

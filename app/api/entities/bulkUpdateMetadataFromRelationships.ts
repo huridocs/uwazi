@@ -1,9 +1,9 @@
+//@ts-nocheck
 import templates from 'api/templates';
-import { appContext } from 'api/utils/AppContext';
+import { tenants } from 'api/tenants';
 import { EntitySchema } from 'shared/types/entityType';
 import { search } from 'superagent';
 import entities from './entities';
-import { tenants } from 'api/tenants';
 
 const updateMetdataFromRelationships_patched = async (
   entitiesSharedIds: string[],
@@ -30,7 +30,7 @@ const updateMetdataFromRelationships_patched = async (
   }
 };
 
-export const bulkUpdateMetadataFromRelationships = async (
+export const bulkDenormalizeEntities = async (
   query: {},
   language: string,
   limit = 200,

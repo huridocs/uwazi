@@ -108,6 +108,7 @@ const fixtures: DBFixture = {
         {
           _id: db.id(),
           type: propertyTypes.relationship,
+          relationType: relatedTo.toString(),
           content: templateToBeDeleted,
           label: 'relationshipToBeDeleted',
           name: 'relationshipToBeDeleted',
@@ -129,6 +130,7 @@ const fixtures: DBFixture = {
         {
           _id: db.id(),
           type: propertyTypes.relationship,
+          relationType: relatedTo.toString(),
           content: templateToBeDeleted,
           label: 'relationshipToBeDeleted',
           name: 'relationshipToBeDeleted',
@@ -145,6 +147,7 @@ const fixtures: DBFixture = {
         {
           _id: db.id(),
           type: propertyTypes.relationship,
+          relationType: relatedTo.toString(),
           content: templateToBeDeleted,
           label: 'relationshipToBeDeleted',
           name: 'relationshipToBeDeleted',

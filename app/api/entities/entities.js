@@ -17,6 +17,7 @@ import ID from 'shared/uniqueID';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import settings from '../settings';
+import { bulkDenormalizeEntities } from './bulkUpdateMetadataFromRelationships';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent';
@@ -31,9 +32,6 @@ import {
   updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
-import { tenants } from 'api/tenants';
-import { appContext } from 'api/utils/AppContext';
-import { bulkUpdateMetadataFromRelationships as bulkDenormalizeEntities } from './bulkUpdateMetadataFromRelationships';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
