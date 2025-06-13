@@ -37,7 +37,7 @@ import fixtures, {
 } from './fixtures/fixtures';
 
 jest.mock('api/entities/bulkUpdateMetadataFromRelationships', () => ({
-  bulkDenormalizeEntities: jest.fn().mockImplementation(async function () {}),
+  bulkDenormalizeEntities: jest.fn().mockImplementation(async () => true),
 }));
 
 describe('templates', () => {

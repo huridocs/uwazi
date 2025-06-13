@@ -29,7 +29,6 @@ import fixtures, {
   fixtureFactory,
   syncPropertiesEntityId,
   templateChangingNames,
-  templateChangingNamesProps,
   templateId,
   templateWithEntityAsThesauri,
   unpublishedDocId,

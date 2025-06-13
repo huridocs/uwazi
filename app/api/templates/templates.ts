@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from 'api/entities';
@@ -51,7 +50,10 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const reindexEntitiesByTemplate = async (template, options) => {
+const reindexEntitiesByTemplate = async (
+  template: TemplateSchema,
+  options: { reindex: boolean; generatedIdAdded: boolean }
+) => {
   const templateHasRelationShipProperty = template.properties?.find(
     p => p.type === propertyTypes.relationship
   );
@@ -216,9 +218,6 @@ export default {
       await this.getById(ensure(template._id))
     );
 
-    const newTemplate = TemplateInputMappers.toApp(template);
-    const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
-
     if (templateStructureChanges || currentTemplate.name !== template.name) {
       await updateTranslation(currentTemplate, template);
     }
@@ -231,6 +230,10 @@ export default {
     const savedTemplate = await model.save(template, undefined);
     if (templateStructureChanges) {
       await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
+
+      const newTemplate = TemplateInputMappers.toApp(template);
+      const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
+
       const actions = {
         $rename: Object.fromEntries(
           currentTemplateV2
@@ -247,11 +250,14 @@ export default {
         ),
       };
 
-      if (Object.keys(actions.$rename).length === 0) delete actions.$rename;
-      if (Object.keys(actions.$unset).length === 0) delete actions.$unset;
-
-      if (Object.keys(actions).length > 0) {
-        await entitiesModel.updateMany({ template: template._id }, actions);
+      if (Object.keys(actions.$rename).length || Object.keys(actions.$unset).length) {
+        await entitiesModel.updateMany(
+          { template: template._id },
+          {
+            ...(Object.keys(actions.$unset).length ? { $unset: actions.$unset } : {}),
+            ...(Object.keys(actions.$rename).length ? { $rename: actions.$rename } : {}),
+          }
+        );
       }
 
       await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
