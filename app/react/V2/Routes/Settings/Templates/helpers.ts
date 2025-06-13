@@ -53,6 +53,7 @@ const translationsKeys = {
   relationship: 'property relationship',
   select: 'property select',
   text: 'property text',
+  nested: 'property nested',
 };
 
 const processDefaultProperties = (props: PropertySchema[]) =>

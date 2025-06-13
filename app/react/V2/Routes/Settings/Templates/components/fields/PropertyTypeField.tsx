@@ -2,6 +2,8 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 import { Select } from 'V2/Components/Forms';
 import { Translate } from 'app/I18N';
+import { useAtomValue } from 'jotai';
+import { settingsAtom } from 'V2/atoms';
 
 interface PropertyTypeFieldProps {
   control: any;
@@ -9,6 +11,8 @@ interface PropertyTypeFieldProps {
 }
 
 export const PropertyTypeField = ({ control, disabled }: PropertyTypeFieldProps) => {
+  const settings = useAtomValue(settingsAtom);
+
   const propertyTypeOptions = [
     { value: 'text', label: 'Text' },
     { value: 'numeric', label: 'Numeric' },
@@ -27,6 +31,11 @@ export const PropertyTypeField = ({ control, disabled }: PropertyTypeFieldProps)
     { value: 'link', label: 'Link' },
     { value: 'generatedid', label: 'Generated ID' },
   ];
+
+  //i shall not fear walking through the valley of death
+  if (settings.project === 'cejil') {
+    propertyTypeOptions.push({ value: 'nested', label: 'Violated articles' });
+  }
 
   return (
     <Controller

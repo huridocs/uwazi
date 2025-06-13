@@ -147,21 +147,27 @@ const getRoutesLayout = (
           loader={pageEditorLoader(headers)}
         />
       </Route>
-      <Route path="templates">
-        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
-        <Route
-          path="new"
-          element={adminsOnlyRoute(<TemplatesEditor />)}
-          loader={templatesEditorLoader(headers)}
-        />
-        <Route
-          path="edit/:templateId"
-          element={adminsOnlyRoute(<TemplatesEditor />)}
-          loader={templatesEditorLoader(headers)}
-        />
-        <Route path="new2" element={adminsOnlyRoute(<NewTemplate />)} />
-        <Route path="edit2/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
-      </Route>
+      {settings?.features?.testing ? (
+        <Route path="templates">
+          <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+          <Route
+            path="new"
+            element={adminsOnlyRoute(<TemplatesEditor />)}
+            loader={templatesEditorLoader(headers)}
+          />
+          <Route
+            path="edit/:templateId"
+            element={adminsOnlyRoute(<TemplatesEditor />)}
+            loader={templatesEditorLoader(headers)}
+          />
+        </Route>
+      ) : (
+        <Route path="templates">
+          <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+          <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
+          <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
+        </Route>
+      )}
       <Route path="metadata_extraction">
         <Route
           index

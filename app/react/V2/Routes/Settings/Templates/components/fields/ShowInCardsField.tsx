@@ -7,11 +7,11 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 
 export const ShowInCardsField = ({ control }: { control: any }) => (
   <Controller
-    name="showInCards"
+    name="showInCard"
     control={control}
     render={({ field }) => (
       <Checkbox
-        name="showInCards"
+        name="showInCard"
         checked={field.value}
         onChange={e => field.onChange((e.target as HTMLInputElement).checked)}
         label={

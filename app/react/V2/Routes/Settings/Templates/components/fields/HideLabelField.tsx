@@ -7,11 +7,11 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 
 export const HideLabelField = ({ control }: { control: any }) => (
   <Controller
-    name="hideLabel"
+    name="noLabel"
     control={control}
     render={({ field }) => (
       <Checkbox
-        name="hideLabel"
+        name="noLabel"
         checked={field.value}
         onChange={e => field.onChange((e.target as HTMLInputElement).checked)}
         label={

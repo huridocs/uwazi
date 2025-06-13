@@ -2,6 +2,7 @@
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
+import { Tooltip } from 'flowbite-react';
 
 const parseMarkdownMarker = (
   line: string,
@@ -33,9 +34,16 @@ type TranslateProps = {
   children?: string;
   context?: string;
   translationKey?: string;
+  truncate?: number;
 };
 
-const Translate = ({ className, children, context = 'System', translationKey }: TranslateProps) => {
+const Translate = ({
+  className,
+  children,
+  context = 'System',
+  translationKey,
+  truncate,
+}: TranslateProps) => {
   const translations = useAtomValue(translationsAtom);
   const locale = useAtomValue(localeAtom);
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
@@ -46,6 +54,30 @@ const Translate = ({ className, children, context = 'System', translationKey }: 
   const translationContext = language?.contexts.find(ctx => ctx.id === context) || { values: {} };
   const text = translationContext.values[(translationKey || children)!] || children;
   const lines = text ? text.split('\n') : [];
+
+  const requiresTruncation = truncate && lines.some(line => line.length > truncate);
+
+  const renderText = () =>
+    lines.map((line, index) => {
+      const boldMatches = parseMarkdownBoldMarker(line);
+      const italicMatches = parseMarkdownItalicMarker(line);
+      return (
+        <Fragment key={`${line}-${index.toString()}`}>
+          {boldMatches ||
+            italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
+              <>{line}</>
+            )}
+          {index < lines.length - 1 && <br />}
+        </Fragment>
+      );
+    });
+
+  const renderTruncatedText = () => (
+    // eslint-disable-next-line react/style-prop-object
+    <Tooltip id="translate-tooltip" content={renderText()} style="light">
+      {lines[0].slice(0, truncate)}...
+    </Tooltip>
+  );
 
   return (
     <span
@@ -62,19 +94,7 @@ const Translate = ({ className, children, context = 'System', translationKey }: 
       }}
       className={`${activeClassName} ${className || ''}`}
     >
-      {lines.map((line, index) => {
-        const boldMatches = parseMarkdownBoldMarker(line);
-        const italicMatches = parseMarkdownItalicMarker(line);
-        return (
-          <Fragment key={`${line}-${index.toString()}`}>
-            {boldMatches ||
-              italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
-                <>{line}</>
-              )}
-            {index < lines.length - 1 && <br />}
-          </Fragment>
-        );
-      })}
+      {requiresTruncation ? renderTruncatedText() : renderText()}
     </span>
   );
 };

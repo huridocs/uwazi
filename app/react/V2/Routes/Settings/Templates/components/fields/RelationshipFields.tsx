@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
-import { Controller, useWatch } from 'react-hook-form';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useMemo, useEffect } from 'react';
+import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from 'V2/Components/Forms';
 import { t, Translate } from 'app/I18N';
@@ -16,6 +17,11 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const content = useWatch({ control, name: 'content' });
+  const { setValue } = useFormContext();
+
+  useEffect(() => {
+    setValue('inherit', undefined);
+  }, [content, setValue]);
 
   const relationshipTypeOptions = useMemo(
     () =>
@@ -33,10 +39,17 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
     const options = orderBy(
       templates
         .filter(template => template._id !== templateId)
-        .map(template => ({
-          value: template._id,
-          label: t(template._id, template.name, null, false),
-        })),
+        .map(template => {
+          const name =
+            template.name.length > 30 ? `${template.name.slice(0, 30)}...` : template.name;
+          const translatedName = t(template._id, template.name, null, false, 30);
+
+          const label = `${name === translatedName ? name : `${name} (${translatedName})`}`;
+          return {
+            value: template._id,
+            label,
+          };
+        }),
       'label'
     );
 
@@ -54,7 +67,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
     const options: { value: string; label: string; type?: string }[] = orderBy(
       selectedTemplate.properties.map(prop => ({
         value: String(prop._id || ''),
-        label: t(String(prop._id || ''), prop.label, null, false),
+        label: t(selectedTemplate._id, prop.label, null, false, 100),
         type: prop.type,
       })),
       'label'
@@ -125,7 +138,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
                   field.onChange(undefined);
                 }
               }}
-              value={field.value?.property}
+              value={field.value?.property || ''}
             />
           )}
         />

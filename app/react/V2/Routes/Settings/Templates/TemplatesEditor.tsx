@@ -247,9 +247,7 @@ const TemplatesEditor = () => {
         onSubmit={(propertyConfig: PropertySchema) => {
           if (propertyToEdit) {
             setProperties(current =>
-              current.map(p =>
-                p.rowId === propertyToEdit.rowId ? { ...propertyConfig, rowId: p.rowId } : p
-              )
+              current.map(p => (p.rowId === propertyToEdit.rowId ? { ...p, ...propertyConfig } : p))
             );
           } else {
             setProperties(current => [...current, { ...propertyConfig, rowId: uniqueID() }]);
