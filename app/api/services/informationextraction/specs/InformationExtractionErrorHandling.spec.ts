@@ -253,4 +253,188 @@ describe('InformationExtraction Error Handling', () => {
       expect(failedSuggestion!.state && failedSuggestion!.state.error).toBe(true);
     });
   });
+
+  describe('External service communication error handling', () => {
+    it('should handle connection refused errors', async () => {
+      const extractorId = factory.id('prop1extractor');
+      const errorMessage = 'Failed to connect to external service: connect ECONNREFUSED';
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      IXExternalService.simulateConnectionError('ECONNREFUSED');
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: false,
+        error_message: errorMessage,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should handle timeout errors', async () => {
+      const extractorId = factory.id('prop1extractor');
+      const errorMessage = 'Failed to connect to external service: connect ETIMEDOUT';
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      IXExternalService.simulateConnectionError('ETIMEDOUT');
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: false,
+        error_message: errorMessage,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should handle service unavailable errors', async () => {
+      const extractorId = factory.id('prop1extractor');
+      const errorMessage = 'External service is currently unavailable';
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      IXExternalService.simulateServiceError(503);
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: false,
+        error_message: errorMessage,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should retry on transient failures', async () => {
+      const extractorId = factory.id('prop1extractor');
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      // Simulate two transient failures followed by success
+      IXExternalService.simulateServiceError(503);
+      IXExternalService.simulateServiceError(503);
+      IXExternalService.simulateSuccess();
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: true,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.ready);
+    });
+
+    it('should not retry on non-retryable errors', async () => {
+      const extractorId = factory.id('prop1extractor');
+      const errorMessage = 'File size exceeds maximum allowed limit';
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      IXExternalService.simulateServiceError(413);
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: false,
+        error_message: errorMessage,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should handle file not found errors', async () => {
+      const extractorId = factory.id('prop1extractor');
+      const errorMessage = 'File not found';
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      IXExternalService.simulateServiceError(404);
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: false,
+        error_message: errorMessage,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should handle bad request errors', async () => {
+      const extractorId = factory.id('prop1extractor');
+      const errorMessage = 'Invalid request';
+
+      await IXModelsModel.save({
+        extractorId,
+        status: ModelStatus.processing,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      IXExternalService.simulateServiceError(400);
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'create_model',
+        params: { id: extractorId.toString() },
+        success: false,
+        error_message: errorMessage,
+      });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.findingSuggestions).toBe(false);
+    });
+  });
 });
