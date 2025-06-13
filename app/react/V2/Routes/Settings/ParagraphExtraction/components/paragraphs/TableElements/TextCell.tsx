@@ -9,8 +9,8 @@ const TextCell = ({
   const text = cell.getValue();
 
   return (
-    <TruncatedText maxLength={120} tooltipClassname="text-xs text-gray-900">
-      <span className="relative max-w-full text-xs font-normal text-gray-900">{text}</span>
+    <TruncatedText maxLength={200} tooltipClassname="text-xs text-gray-900">
+      {text}
     </TruncatedText>
   );
 };

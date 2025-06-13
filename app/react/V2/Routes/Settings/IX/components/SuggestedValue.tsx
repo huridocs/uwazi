@@ -86,10 +86,10 @@ const SuggestedValue = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <TruncatedText maxLength={40} tooltipClassname="text-xs text-gray-900">
+      <TruncatedText maxLength={100} tooltipClassname="text-xs text-gray-500">
         <span className="text-gray-500">{getCurrentValue()}</span>
       </TruncatedText>
-      <TruncatedText maxLength={40} tooltipClassname="text-xs text-gray-900">
+      <TruncatedText maxLength={100} tooltipClassname="text-xs">
         <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
       </TruncatedText>
     </div>

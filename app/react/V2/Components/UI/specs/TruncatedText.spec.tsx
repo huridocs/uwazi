@@ -61,7 +61,7 @@ describe('TruncatedText', () => {
     });
 
     expect(screen.getByText('[...]')).toBeInTheDocument();
-    const element = screen.getByText('This is a very long');
+    const element = screen.getByText('This is a');
     expect(element).toHaveClass(...className.split(' '));
   });
 
