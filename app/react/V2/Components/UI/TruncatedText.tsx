@@ -56,9 +56,9 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
-  const closeTimeoutRef = useRef<NodeJS.Timeout>();
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+  const closeTimeoutRef = useRef<NodeJS.Timeout>();
+  const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
     placement: 'bottom',
     strategy: 'absolute',
     modifiers: [
@@ -66,6 +66,18 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
         name: 'arrow',
         options: {
           element: arrowElement,
+          padding: 5,
+        },
+      },
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 8],
+        },
+      },
+      {
+        name: 'preventOverflow',
+        options: {
           padding: 5,
         },
       },
@@ -98,6 +110,26 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
     },
     []
   );
+
+  useEffect(() => {
+    let resizeObserver: ResizeObserver;
+
+    if (referenceElement && update) {
+      resizeObserver = new ResizeObserver(async () => {
+        if (popoverOpen) {
+          await update();
+        }
+      });
+
+      resizeObserver.observe(referenceElement);
+    }
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [referenceElement, update, popoverOpen]);
 
   if (!shouldEllipsize) {
     return <>{children}</>;
@@ -145,12 +177,14 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
             >
               <div
                 ref={setArrowElement}
+                {...attributes.arrow}
                 style={{
                   ...styles.arrow,
-                  marginTop: '-8px',
-                  zIndex: 1,
+                  width: 12,
+                  height: 12,
+                  background: 'red',
+                  transform: 'rotate(45deg)',
                 }}
-                className="absolute w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"
               />
               <div
                 className={`overflow-y-auto px-4 py-6 max-h-[60vh] max-w-56 lg:max-w-4xl ${tooltipClassname || ''}`}
