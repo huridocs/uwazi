@@ -114,6 +114,8 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
           onTouchEnd={handleClose}
           ref={setReferenceElement}
           className={`pointer-events-auto cursor-pointer font-bold px-2 ${childClassName || ''}`}
+          aria-expanded={popoverOpen}
+          aria-haspopup="dialog"
         >
           [...]
         </Popover.Button>
@@ -137,6 +139,8 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
               onMouseLeave={handleClose}
               {...attributes.popper}
               as="div"
+              role="dialog"
+              aria-label="Tooltip for truncated text"
               className="tw-content"
             >
               <div
