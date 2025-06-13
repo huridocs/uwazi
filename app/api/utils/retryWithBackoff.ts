@@ -20,50 +20,61 @@ const DEFAULT_OPTIONS: Required<RetryOptions> = {
   },
 };
 
+async function delayPromise(ms: number) {
+  // eslint-disable-next-line no-promise-executor-return
+  return new Promise<void>(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function retryWithBackoffHelper<T>(
+  operation: () => Promise<T>,
+  config: Required<RetryOptions>,
+  attempt: number,
+  delay: number
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (!config.shouldRetry(error)) {
+      throw error;
+    }
+    if (attempt < config.maxRetries - 1) {
+      await delayPromise(delay);
+      return retryWithBackoffHelper(
+        operation,
+        config,
+        attempt + 1,
+        Math.min(delay * 2, config.maxDelay)
+      );
+    }
+    throw error;
+  }
+}
+
 export async function retryWithBackoff<T>(
   operation: () => Promise<T>,
   options: RetryOptions = {}
 ): Promise<T> {
   const config = { ...DEFAULT_OPTIONS, ...options };
-  let lastError: Error;
-  let delay = config.initialDelay;
+  return retryWithBackoffHelper(operation, config, 0, config.initialDelay);
+}
 
-  for (let attempt = 0; attempt < config.maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error as Error;
-
-      if (!config.shouldRetry(lastError)) {
-        throw lastError;
-      }
-
-      if (attempt < config.maxRetries - 1) {
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay = Math.min(delay * 2, config.maxDelay);
-        continue;
-      }
-    }
+export const descriptiveError = (error: { code: string; message: any; status: number }) => {
+  if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+    throw new Error(`Failed to connect to external service: ${error.message}`);
   }
-
-  throw lastError!;
-}
-
-export const descriptiveError = (error: { code: string; message: any; status: number; })=> {
-    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
-        throw new Error(`Failed to connect to external service: ${error.message}`);
-      }
-      if (error.status === 404) {
-        throw new Error('Results data not found');
-      }
-      if (error.status === 413) {
-        throw new Error('File size exceeds maximum allowed limit');
-      }
-      if (error.status === 400) {
-        throw new Error('Invalid request');
-      }
-      if (error.status >= 500) {
-        throw new Error('External service is currently unavailable');
-      }
-      throw new Error(`Failed to fetch results: ${error.message}`);
-}
+  if (error.status === 404) {
+    throw new Error('Results data not found');
+  }
+  if (error.status === 413) {
+    throw new Error('File size exceeds maximum allowed limit');
+  }
+  if (error.status === 400) {
+    throw new Error('Invalid request');
+  }
+  if (error.status >= 500) {
+    throw new Error('External service is currently unavailable');
+  }
+  throw new Error(`Failed to fetch results: ${error.message}`);
+};

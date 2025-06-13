@@ -728,8 +728,8 @@ class InformationExtraction {
         }
 
         if (message.task === 'suggestions') {
-            await this.saveSuggestionsManager(message);
-            await this.updateSuggestionStatus(message, currentModel);
+          await this.saveSuggestionsManager(message);
+          await this.updateSuggestionStatus(message, currentModel);
         }
       } catch (error) {
         await this.handleFailedStatus(message, currentModel);
@@ -737,7 +737,7 @@ class InformationExtraction {
 
       await this.getSuggestions(message.params!.id);
     }, _message.tenant);
-  }
+  };
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
     const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
