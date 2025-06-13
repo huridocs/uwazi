@@ -113,7 +113,7 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
           onTouchStart={() => setPopoverOpen(true)}
           onTouchEnd={handleClose}
           ref={setReferenceElement}
-          className={`pointer-events-auto cursor-pointer font-bold px-2 ${childClassName || ''}`}
+          className={`pointer-events-auto cursor-pointer font-bold px-2 my-2 ${childClassName || ''}`}
           aria-expanded={popoverOpen}
           aria-haspopup="dialog"
         >
