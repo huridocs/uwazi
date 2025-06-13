@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, useEffect, isValidElement } from 'react';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { createPortal } from 'react-dom';
+import { isClient } from 'app/utils';
 
 type TruncatedTextProps = {
   children: React.ReactNode;
@@ -53,12 +55,22 @@ const getClassName = (node: React.ReactNode): string => {
 const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: TruncatedTextProps) => {
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
+  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout>();
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom',
     strategy: 'absolute',
+    modifiers: [
+      {
+        name: 'arrow',
+        options: {
+          element: arrowElement,
+          padding: 5,
+        },
+      },
+    ],
   });
-  const [popoverOpen, setPopoverOpen] = useState(false);
 
   const text = getTextContent(children);
   const childClassName = getClassName(children);
@@ -69,7 +81,7 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
   const handleClose = () => {
     closeTimeoutRef.current = setTimeout(() => {
       setPopoverOpen(false);
-    }, 200);
+    }, 100);
   };
 
   const handleMouseEnter = () => {
@@ -105,21 +117,39 @@ const TruncatedText = ({ children, maxLength = 20, tooltipClassname }: Truncated
         >
           [...]
         </Popover.Button>
-        {popoverOpen &&
+        {isClient &&
+          document.body &&
           createPortal(
             <Popover.Panel
               static
               ref={setPopperElement}
-              style={styles.popper}
+              style={{
+                ...styles.popper,
+                opacity: popoverOpen ? 1 : 0,
+                transform: `${styles.popper.transform} ${popoverOpen ? 'scale(1)' : 'scale(0.95)'}`,
+                transition: 'opacity 300ms ease-out, transform 300ms ease-out',
+                pointerEvents: popoverOpen ? 'auto' : 'none',
+                background: 'white',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                borderRadius: '0.75rem',
+              }}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleClose}
-              // eslint-disable-next-line react/jsx-props-no-spreading
               {...attributes.popper}
               as="div"
               className="tw-content"
             >
               <div
-                className={`bg-white overflow-y-auto px-4 py-6 rounded-md shadow-lg max-h-[60vh] max-w-56 lg:max-w-4xl ${tooltipClassname || ''}`}
+                ref={setArrowElement}
+                style={{
+                  ...styles.arrow,
+                  marginTop: '-8px',
+                  zIndex: 1,
+                }}
+                className="absolute w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"
+              />
+              <div
+                className={`overflow-y-auto px-4 py-6 max-h-[60vh] max-w-56 lg:max-w-4xl ${tooltipClassname || ''}`}
               >
                 {text}
               </div>

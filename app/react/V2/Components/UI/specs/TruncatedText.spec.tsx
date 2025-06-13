@@ -48,18 +48,19 @@ describe('TruncatedText', () => {
     expect(element).toHaveClass(...className.split(' '));
   });
 
-  it('preserves styles when text is truncated', () => {
+  it('preserves styles when text is truncated', async () => {
     const longText = 'This is a very long text that should be truncated';
     const className = 'px-1 bg-primary-400 text-white';
 
-    render(
-      <TruncatedText maxLength={20}>
-        <div className={className}>{longText}</div>
-      </TruncatedText>
-    );
+    await act(async () => {
+      render(
+        <TruncatedText maxLength={20}>
+          <div className={className}>{longText}</div>
+        </TruncatedText>
+      );
+    });
 
     expect(screen.getByText('[...]')).toBeInTheDocument();
-
     const element = screen.getByText('This is a very long');
     expect(element).toHaveClass(...className.split(' '));
   });
