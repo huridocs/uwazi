@@ -679,7 +679,7 @@ class InformationExtraction {
   stopModel = async (extractorId: ObjectIdSchema) => {
     const res = await IXModelsModel.db.findOneAndUpdate(
       { extractorId },
-      { $set: { findingSuggestions: false } },
+      { $set: { findingSuggestions: false, status: ModelStatus.ready } },
       {}
     );
 
@@ -731,6 +731,16 @@ class InformationExtraction {
           await this.saveSuggestionsManager(message);
           await this.updateSuggestionStatus(message, currentModel);
         }
+
+        if (!currentModel.findingSuggestions) {
+          return emitToTenant(
+            message.tenant,
+            'ix_model_status',
+            _message.params!.id,
+            'ready',
+            'Canceled'
+          );
+        }
       } catch (error) {
         await this.handleFailedStatus(message, currentModel);
       }
@@ -744,8 +754,7 @@ class InformationExtraction {
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
       date: { $gt: modelCreationDate },
-    });
-    return {
+    });return {
       total: totalSuggestions,
       processed: processedSuggestions,
     };

@@ -20,24 +20,35 @@ const DEFAULT_OPTIONS: Required<RetryOptions> = {
   },
 };
 
-async function delayPromise(ms: number) {
+const delayPromise = async (ms: number) => {
   // eslint-disable-next-line no-promise-executor-return
   return new Promise<void>(resolve => {
     setTimeout(resolve, ms);
   });
-}
+};
 
-async function retryWithBackoffHelper<T>(
+const wrapError = (error: unknown): Error => {
+  if (error instanceof Error) {
+    return error;
+  }
+  if (typeof error === 'object' && error !== null) {
+    return error as Error;
+  }
+  return new Error(String(error));
+};
+
+const retryWithBackoffHelper = async <T>(
   operation: () => Promise<T>,
   config: Required<RetryOptions>,
   attempt: number,
   delay: number
-): Promise<T> {
+): Promise<T> => {
   try {
     return await operation();
   } catch (error) {
-    if (!config.shouldRetry(error)) {
-      throw error;
+    const wrappedError = wrapError(error);
+    if (!config.shouldRetry(wrappedError)) {
+      throw wrappedError;
     }
     if (attempt < config.maxRetries - 1) {
       await delayPromise(delay);
@@ -48,9 +59,9 @@ async function retryWithBackoffHelper<T>(
         Math.min(delay * 2, config.maxDelay)
       );
     }
-    throw error;
+    throw wrappedError;
   }
-}
+};
 
 export async function retryWithBackoff<T>(
   operation: () => Promise<T>,

@@ -1,11 +1,17 @@
 /* eslint-disable max-statements */
-import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+import {
+  Dispatchable,
+  HeartbeatCallback,
+  JobInfo,
+} from 'api/queue.v2/application/contracts/Dispatchable';
 import { tenants } from 'api/tenants';
 import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 import { ExtractorNotFound, Extractors } from './ixextractors';
 import { TrainModelForPDF } from './TrainModelForPDF';
 import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText';
 import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './getFiles';
+import ixmodels from './ixmodels';
 
 type CustomParams = {
   extractorId: string;
@@ -25,7 +31,11 @@ export class IXTrainModelJob implements Dispatchable {
     this.props = { ...props, extractorsDS: props.extractorsDS ?? Extractors };
   }
 
-  async handleDispatch(_: HeartbeatCallback, { extractorId }: CustomParams): Promise<void> {
+  async handleDispatch(
+    _: HeartbeatCallback,
+    { extractorId }: CustomParams,
+    jobInfo?: JobInfo
+  ): Promise<void> {
     await tenants.run(async () => {
       try {
         const extractor = await this.props.extractorsDS.getById(extractorId);
@@ -52,6 +62,16 @@ export class IXTrainModelJob implements Dispatchable {
           ].includes(e.constructor.name)
         ) {
           throw new NonRetryableJobError(e);
+        }
+
+        const isNotRetriable =
+          jobInfo?.retryCount && jobInfo.maxRetries && jobInfo?.retryCount >= jobInfo.maxRetries;
+        if (isNotRetriable) {
+          const [currentModel] = await ixmodels.get({ extractorId });
+          if (currentModel) {
+            currentModel.status = ModelStatus.failed;
+            await ixmodels.save(currentModel);
+          }
         }
 
         throw e;
