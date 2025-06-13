@@ -8,9 +8,9 @@ import { Table } from 'V2/Components/UI/Table/Table';
 import { Button } from 'V2/Components/UI/Button';
 import * as templatesApi from 'V2/api/templates';
 import { RequestParams } from 'app/utils/RequestParams';
-import { ClientTemplateSchema } from 'app/istore';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { ColumnDef } from '@tanstack/react-table';
+import { Template } from 'app/apiResponseTypes';
 import { columns } from './components/TemplatesTableComponents';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
 import { TemplateRow } from './types';
@@ -19,9 +19,9 @@ const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
   async () => {
     const templates = await templatesApi.get(headers);
-    const templateIds = templates.map((template: ClientTemplateSchema) => template._id);
+    const templateIds = templates.map((template: Template) => template._id);
     const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
-    return templates.map((template: ClientTemplateSchema) => {
+    return templates.map((template: Template) => {
       const reasons = [];
       if (template.default) {
         reasons.push(t('System', 'A default template cannot be deleted.', null, false));
