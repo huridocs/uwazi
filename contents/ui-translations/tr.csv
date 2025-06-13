@@ -81,6 +81,8 @@ An error has occurred during data export,An error has occurred during data expor
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+Any entity,Any entity
+Any entity,Any entity
 Any entity or document,Any entity or document
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
@@ -372,6 +374,7 @@ Full edit mode,Tam düzenleme modu
 Full width,Full width
 General,Genel
 General Information,General Information
+Generated ID,Generated ID
 Global CSS,Genel CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -413,6 +416,7 @@ Info,Bilgi
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Inherit property
+Inherit type,Inherit type
 Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
@@ -656,6 +660,8 @@ Processed,Processed
 Processing,İşleniyor
 Properties,Özellikler
 Properties from other templates in the collection using the same label,Koleksiyondaki aynı etiketi kullanan diğer şablonlardaki özellikler
+Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
 Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
 Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
@@ -676,6 +682,7 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
+Property type,Property type
 Protection,Koruma
 ProTip!,Uzman İpucu!
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
@@ -695,9 +702,11 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,Referanslar
 Reject,Reddet
+Relation type,Relation type
 Relationship,İlişki
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
 Relationship type name,Relationship type name
 Relationship type name already exists,Relationship type name already exists
@@ -904,11 +913,15 @@ This entity is restricted from public view.,Bu varlığın genel görünümü k�
 This field is required,This field is required
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
 This property will appear in the library cards as part of the basic info.,"Bu özellik, temel bilgilerin bir parçası olarak kütüphane fişlerinde görünecektir."
 This property will be inherited from the related entities and shown as metadata of this type of entities.,"Bu özellik, ilgili varlıklardan devralınacak ve bu tür varlıkların meta verileri olarak gösterilecektir."
 This property will be shown using all the width available.,"Bu özellik, mevcut tüm genişlik kullanılarak gösterilecektir."
+This property will be shown without the label,This property will be shown without the label
 This property will be shown without the label.,Bu özellik etiketsiz olarak gösterilecektir.
+This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,this template
 This template has associated entities,This template has associated entities
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1018,7 +1031,9 @@ Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden 
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Uwazi'ye hoş geldiniz
 "Well, this is awkward...","Peki, bu garip bir durum..."
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,aynı değerle güncellenecektir.
+Will show the entire media inside the container.,Will show the entire media inside the container.
 with,ile
 With great power comes great responsibility!,Büyük güç büyük sorumluluk getirir!
 x less,daha az
@@ -1033,6 +1048,7 @@ You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirmelisiniz
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,Yakınlaştır
 Zoom in library view,Kütüphane görünümünü yakınlaştır
