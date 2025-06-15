@@ -183,7 +183,7 @@ class InformationExtraction {
             'state.error': true,
             'state.match': null,
             'state.withSuggestion': false,
-            'state.hasContext': false
+            'state.hasContext': false,
           },
         }
       );
@@ -580,6 +580,9 @@ class InformationExtraction {
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
     const [extractor] = await Extractors.get({ _id: extractorId });
+    if (!extractor) {
+      return;
+    }
     if (extractor.source.pdf) {
       const files = await getFilesForSuggestions(extractorId);
 

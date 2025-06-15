@@ -51,7 +51,9 @@ describe('retryWithBackoff', () => {
     const error = { code: 'ECONNREFUSED' };
     const operation = jest.fn().mockRejectedValue(error);
 
-    await expect(retryWithBackoff(operation, { maxRetries: 2, initialDelay: 10 })).rejects.toEqual(error);
+    await expect(retryWithBackoff(operation, { maxRetries: 2, initialDelay: 10 })).rejects.toEqual(
+      error
+    );
     expect(operation).toHaveBeenCalledTimes(2);
   });
 
@@ -63,7 +65,11 @@ describe('retryWithBackoff', () => {
       .mockRejectedValueOnce({ code: 'ECONNREFUSED' })
       .mockResolvedValueOnce('success');
 
-    const result = await retryWithBackoff(operation, { maxRetries: 4, maxDelay: 20, initialDelay: 10 });
+    const result = await retryWithBackoff(operation, {
+      maxRetries: 4,
+      maxDelay: 20,
+      initialDelay: 10,
+    });
     expect(result).toBe('success');
     expect(operation).toHaveBeenCalledTimes(4);
   });

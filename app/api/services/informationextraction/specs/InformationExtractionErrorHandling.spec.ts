@@ -45,7 +45,9 @@ describe('InformationExtraction Error Handling', () => {
 
   afterEach(async () => {
     await IXExternalService.stop();
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
   });
 
   afterAll(async () => {

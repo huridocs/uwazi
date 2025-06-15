@@ -40,7 +40,7 @@ export class ExternalDummyService {
 
   resultsFileParams: any;
 
-  private errorSimulation: { type?: string; status?: number } = {};
+  private errorSimulation: { type?: string; status?: number; code?: string } = {};
 
   public actualPort: number | undefined;
 
@@ -58,7 +58,7 @@ export class ExternalDummyService {
       ...urlOptions,
     };
 
-    this.app.post(urls.materialsData, async (req, res) => {
+    this.app.post(urls.materialsData, multer().any(), async (req, res) => {
       try {
         if (this.errorSimulation.type) {
           const error = new Error(`Simulated ${this.errorSimulation.type} error`);
@@ -75,9 +75,9 @@ export class ExternalDummyService {
 
         this.materials.push(req.body);
         this.materialsDataParams = req.params;
-        res.send('ok');
-      } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+        res.json({ success: true });
+      } catch (e) {
+        res.status(500).json({ error: e.message });
       }
     });
 
@@ -98,13 +98,13 @@ export class ExternalDummyService {
 
         if (req.files?.length) {
           const files = req.files as { buffer: Buffer; originalname: string }[];
-          this.files.push(files[0].buffer);
-          this.filesNames.push(files[0].originalname);
+          this.files.push(...files.map(f => f.buffer));
+          this.filesNames.push(...files.map(f => f.originalname));
         }
         this.materialsFileParams = req.params;
-        res.send('received');
-      } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+        res.json({ success: true });
+      } catch (e) {
+        res.status(500).json({ error: e.message });
       }
     });
 
@@ -125,8 +125,8 @@ export class ExternalDummyService {
 
         this.resultsDataParams = req.params;
         res.json(JSON.stringify(this.results));
-      } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+      } catch (e) {
+        res.status(500).json({ error: e.message });
       }
     });
 
@@ -263,6 +263,7 @@ export class ExternalDummyService {
     this.files = [];
     this.filesNames = [];
     this.materials = [];
+    this.errorSimulation = {};
   }
 
   simulateConnectionError(type: string) {
