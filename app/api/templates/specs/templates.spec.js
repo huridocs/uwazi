@@ -248,6 +248,29 @@ describe('templates', () => {
       );
     });
 
+    it('should updateMetadataProperties', async () => {
+      await testingEnvironment.setUp(fixtures, elasticIndex);
+      testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: false } });
+      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
+      const template = {
+        _id: templateToBeEditedId,
+        name: 'template to be edited',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [],
+        default: true,
+      };
+      const toSave = {
+        _id: templateToBeEditedId,
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        name: 'changed name',
+      };
+      await templates.save(toSave, 'en');
+      expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
+        reindex: true,
+        generatedIdAdded: false,
+      });
+    });
+
     it('should update translations when name of the template changes', async () => {
       const testTemplate = await resetTemplateToBeEdited();
       jest.spyOn(translations, 'updateContext').mockImplementationOnce(() => {});
