@@ -233,7 +233,11 @@ export class ExternalDummyService {
 
   async stop() {
     await this.redisClient?.end(true);
-    await this.server?.close();
+    if (this.server) {
+      await new Promise(resolve => this.server!.close(resolve));
+      this.server = undefined;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
   }
 
   async sendFinishedMessage(task: ResultsMessage) {
