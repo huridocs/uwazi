@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { MultiSelect } from 'V2/Components/Forms';
 
 const meta: Meta<typeof MultiSelect> = {

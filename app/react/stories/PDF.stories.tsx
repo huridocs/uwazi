@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { fn } from 'storybook/test';
 import { PDF } from 'V2/Components/PDFViewer';
 import { highlights } from './fixtures/PDFStoryFixtures';
 

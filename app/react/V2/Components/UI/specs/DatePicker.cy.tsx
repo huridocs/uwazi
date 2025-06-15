@@ -1,7 +1,7 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { composeStories } from '@storybook/react';
+import { composeStories } from '@storybook/react-webpack5';
 import * as stories from 'app/stories/Forms/DatePicker.stories';
 
 const { Basic } = composeStories(stories);

@@ -2,7 +2,7 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { composeStories } from '@storybook/react';
+import { composeStories } from '@storybook/react-webpack5';
 import { map } from 'lodash';
 import * as stories from 'app/stories/Table.stories';
 import { tableWithDisabled } from '../Table/specs/fixtures';

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { action } from 'storybook/actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
 import { Button, Table } from 'V2/Components/UI';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';

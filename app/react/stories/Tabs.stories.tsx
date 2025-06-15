@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Tabs } from 'V2/Components/UI/Tabs';
 
 const meta: Meta<typeof Tabs> = {

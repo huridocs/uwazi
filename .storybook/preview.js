@@ -1,4 +1,4 @@
-import { configureActions } from '@storybook/addon-actions';
+import { configureActions } from 'storybook/actions';
 import '../app/react/App/styles/globals.css';
 
 configureActions({
@@ -14,3 +14,4 @@ export const parameters = {
     },
   },
 }
+export const tags = ['autodocs'];

@@ -10,12 +10,9 @@ module.exports = {
 
   addons: [
     '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-viewport',
-    '@storybook/addon-actions',
     '@storybook/addon-webpack5-compiler-babel',
-    '@chromatic-com/storybook'
+    '@chromatic-com/storybook',
+    '@storybook/addon-docs'
   ],
 
   framework: {
@@ -43,10 +40,6 @@ module.exports = {
         rules: custom.module.rules,
       },
     };
-  },
-
-  docs: {
-    autodocs: true,
   },
 
   typescript: {

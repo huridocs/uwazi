@@ -1,7 +1,7 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import { action } from '@storybook/addon-actions';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { fn } from 'storybook/test';
+import { action } from 'storybook/actions';
 import { ColorPicker } from 'app/V2/Components/Forms';
 
 const meta: Meta<typeof ColorPicker> = {
