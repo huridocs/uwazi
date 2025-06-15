@@ -27,6 +27,7 @@ export default {
       ...current,
       extractorId,
       findingSuggestions: true,
+      status: ModelStatus.processing,
     });
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {

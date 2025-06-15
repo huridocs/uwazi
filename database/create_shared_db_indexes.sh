@@ -13,10 +13,9 @@ AUTH=()
 
 echo "Creating indexes for database: $DB"
 
-# Create indexes for jobs collection
 echo "Creating indexes for jobs collection..."
+# Create indexes for jobs collection if they don't exist
 mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
-    // Create indexes for jobs collection if they don't exist
     if (!db.jobs.getIndexes().some(index => index.name === "queue_1_lockedUntil_1")) {
         db.jobs.createIndex({ "queue": 1, "lockedUntil": 1 }, { background: true });
         print("Created index: queue_1_lockedUntil_1");
@@ -31,10 +30,9 @@ mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
     }
 '
 
-# Create indexes for jobs_failed collection
 echo "Creating indexes for jobs_failed collection..."
+# Create indexes for jobs_failed collection if they don't exist
 mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
-    // Create indexes for jobs_failed collection if they don't exist
     if (!db.jobs_failed.getIndexes().some(index => index.name === "queue_1")) {
         db.jobs_failed.createIndex({ "queue": 1 }, { background: true });
         print("Created index: queue_1");
@@ -51,8 +49,8 @@ mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
 
 # Create indexes for tenants collection
 echo "Creating indexes for tenants collection..."
+# Create indexes for tenants collection if they don't exist
 mongosh --quiet "${AUTH[@]}" -host "$HOST" "$DB" --eval '
-    // Create indexes for tenants collection if they don't exist
     if (!db.tenants.getIndexes().some(index => index.name === "name_1")) {
         db.tenants.createIndex({ "name": 1 }, { unique: true, background: true });
         print("Created index: name_1");

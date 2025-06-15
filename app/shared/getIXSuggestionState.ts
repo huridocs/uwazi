@@ -157,5 +157,5 @@ const getSuggestionState = (
   return state;
 };
 
-export { getSuggestionState };
+export { getSuggestionState, propertyIsMultiValued };
 export type { CurrentValue, SuggestionValues };
