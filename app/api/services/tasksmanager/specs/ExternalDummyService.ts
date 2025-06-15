@@ -42,6 +42,8 @@ export class ExternalDummyService {
 
   private errorSimulation: { type?: string; status?: number } = {};
 
+  public actualPort: number | undefined;
+
   constructor(port = 1234, serviceName = 'dummy', urlOptions = {}) {
     this.port = port;
     this.serviceName = serviceName;
@@ -217,26 +219,32 @@ export class ExternalDummyService {
   async start(redisUrl?: string) {
     if (redisUrl) {
       this.redisClient = await Redis.createClient(redisUrl);
-
       this.redisSMQ = await new RedisSMQ({ client: this.redisClient });
       await this.resetQueue();
     }
-
     const start = new Promise<void>(resolve => {
       this.server = this.app.listen(this.port, () => {
+        this.actualPort = (this.server!.address() as any).port;
         resolve();
       });
     });
-
     return start;
   }
 
   async stop() {
     await this.redisClient?.end(true);
     if (this.server) {
-      await new Promise(resolve => this.server!.close(resolve));
-      this.server = undefined;
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise<void>((resolve, reject) => {
+        this.server!.close(err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          this.server = undefined;
+          // Give the OS time to fully release the port
+          setTimeout(resolve, 500);
+        });
+      });
     }
   }
 

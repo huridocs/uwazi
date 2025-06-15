@@ -4,7 +4,7 @@ import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 
-import { factory, fixtures } from './fixtures';
+import { factory, fixtures, patchFixturesWithPort } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
@@ -24,14 +24,16 @@ jest.setTimeout(30000);
 
 describe('InformationExtraction Error Handling', () => {
   beforeEach(async () => {
-    IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
+    jest.setTimeout(30000);
+    IXExternalService = new ExternalDummyService(0, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
     });
     await IXExternalService.start();
     informationExtraction = new InformationExtraction();
-    await testingEnvironment.setUp(fixtures);
+    const patchedFixtures = patchFixturesWithPort(fixtures, IXExternalService.actualPort!);
+    await testingEnvironment.setUp(patchedFixtures);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
@@ -39,10 +41,11 @@ describe('InformationExtraction Error Handling', () => {
     IXExternalService.reset();
     jest.resetAllMocks();
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
-  });
+  }, 30000);
 
   afterEach(async () => {
     await IXExternalService.stop();
+    await new Promise(resolve => setTimeout(resolve, 1000));
   });
 
   afterAll(async () => {

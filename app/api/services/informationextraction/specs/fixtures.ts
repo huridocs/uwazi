@@ -1132,4 +1132,27 @@ const fixtures: DBFixture = {
   dictionaries: [factory.nestedThesauri('thesauri1', ['A', 'B', 'C', { 1: ['1A', '1B'] }])],
 };
 
+export function patchFixturesWithPort(fixtures: DBFixture, port: number): DBFixture {
+  const currentSettings = fixtures.settings?.[0] || {};
+  return {
+    ...fixtures,
+    settings: [
+      {
+        ...currentSettings,
+        features: {
+          ...(currentSettings.features || {}),
+          metadataExtraction: {
+            ...(currentSettings.features?.metadataExtraction || {}),
+            url: `http://localhost:${port}/`,
+          },
+          segmentation: {
+            ...(currentSettings.features?.segmentation || {}),
+            url: `http://localhost:${port}/files`,
+          },
+        },
+      },
+    ],
+  };
+}
+
 export { fixtures, factory };
