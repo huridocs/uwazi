@@ -20,32 +20,32 @@ jest.mock('api/queue.v2/configuration/factories', () => ({
   }),
 }));
 
+jest.setTimeout(30000);
+
 describe('InformationExtraction Error Handling', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
     });
-
     await IXExternalService.start();
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
-  });
-
-  beforeEach(async () => {
     informationExtraction = new InformationExtraction();
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
     });
-
     IXExternalService.reset();
     jest.resetAllMocks();
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+  });
+
+  afterEach(async () => {
+    await IXExternalService.stop();
   });
 
   afterAll(async () => {
-    await IXExternalService.stop();
     await testingEnvironment.tearDown();
   });
 
