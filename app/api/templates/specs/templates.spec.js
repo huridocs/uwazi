@@ -35,6 +35,7 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
+import { testingTenants } from 'api/utils/testingTenants';
 
 jest.mock('api/entities/bulkUpdateMetadataFromRelationships', () => ({
   bulkDenormalizeEntities: jest.fn().mockImplementation(async () => true),
@@ -707,6 +708,9 @@ describe('templates', () => {
   });
 
   describe('when template properties change name', () => {
+    beforeAll(() => {
+      testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: true } });
+    });
     it('should do nothing when there is no changed or deleted properties', async () => {
       jest.spyOn(entitiesModel, 'updateMany');
 
@@ -801,6 +805,7 @@ describe('templates', () => {
   describe('bulkDenormalizeEntities', () => {
     it('should not denormalize when relationship related data has not changed', async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
+      testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: true } });
       const template = {
         _id: templateToBeEditedId,
         name: 'template to be edited',
@@ -829,6 +834,7 @@ describe('templates', () => {
       'should denormalize when relationship related data has changed ($propChanges)',
       async ({ propChanges }) => {
         await testingEnvironment.setUp(fixtures, elasticIndex);
+        testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: true } });
         const template = {
           _id: thesaurusTemplateId,
           name: 'thesauri template',

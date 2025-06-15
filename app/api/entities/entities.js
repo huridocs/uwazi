@@ -579,27 +579,6 @@ export default {
     return entities;
   },
 
-  async updateMetdataFromRelationships_patched(entities, language, reindex = true) {
-    const entitiesToReindex = [];
-    const _templates = await templates.get();
-    await Promise.all(
-      entities.map(async entityId => {
-        const entity = await this.getById(entityId, language);
-
-        if (entity && entity.template) {
-          const template = _templates.find(t => t._id.toString() === entity.template.toString());
-
-          entitiesToReindex.push(entity.sharedId);
-          await this.updateEntity(this.sanitize(entity, template), template, true);
-        }
-      })
-    );
-
-    if (reindex) {
-      await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
-    }
-  },
-
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
   async updateMetdataFromRelationships(entities, language, reindex = true) {
     const entitiesToReindex = [];

@@ -1,31 +1,33 @@
+import { search } from 'api/search';
+import templates from 'api/templates/templates';
 import { tenants } from 'api/tenants';
 import { EntitySchema } from 'shared/types/entityType';
 import entities from './entities';
 
-// const improvedUpdateMetdataFromRelationships = async (
-//   entitiesSharedIds: string[],
-//   language: string,
-//   reindex = true
-// ) => {
-//   const entitiesToReindex: string[] = [];
-//   const _templates = await templates.get();
-//   await Promise.all(
-//     entitiesSharedIds.map(async entityId => {
-//       const entity = await entities.getById(entityId, language);
-//
-//       if (entity && entity.template) {
-//         const template = _templates.find(t => t._id.toString() === entity.template.toString());
-//
-//         entitiesToReindex.push(entity.sharedId);
-//         await entities.updateEntity(entities.sanitize(entity, template), template, true);
-//       }
-//     })
-//   );
-//
-//   if (reindex) {
-//     await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
-//   }
-// };
+const improvedUpdateMetdataFromRelationships = async (
+  entitiesSharedIds: string[],
+  language: string,
+  reindex = true
+) => {
+  const entitiesToReindex: string[] = [];
+  const _templates = await templates.get();
+  await Promise.all(
+    entitiesSharedIds.map(async entityId => {
+      const entity = await entities.getById(entityId, language);
+
+      if (entity && entity.template && entity.sharedId) {
+        const template = _templates.find(t => t._id.toString() === entity.template?.toString());
+
+        entitiesToReindex.push(entity.sharedId);
+        await entities.updateEntity(entities.sanitize(entity, template), template, true);
+      }
+    })
+  );
+
+  if (reindex) {
+    await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
+  }
+};
 
 export const bulkDenormalizeEntities = async (
   query: {},
@@ -58,7 +60,7 @@ export const bulkDenormalizeEntities = async (
         await entities.get(query, 'sharedId', { skip: offset, limit })
       ).map((entity: EntitySchema) => entity.sharedId);
 
-      await entities.updateMetdataFromRelationships_patched(entitiesSharedIds, language, reindex);
+      await improvedUpdateMetdataFromRelationships(entitiesSharedIds, language, reindex);
       await process2(offset + limit, totalRows);
     };
     const totalRows = await entities.count(query);
