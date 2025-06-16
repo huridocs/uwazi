@@ -254,7 +254,7 @@
     "@4tw/cypress-drag-drop": "^2.3.0",
     "@babel/cli": "7.27.2",
     "@babel/core": "7.27.4",
-    "@babel/eslint-parser": "7.27.1",
+    "@babel/eslint-parser": "7.27.5",
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/helper-get-function-arity": "^7.16.7",
     "@babel/helper-string-parser": "^7.27.1",
