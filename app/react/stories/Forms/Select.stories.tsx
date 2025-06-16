@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Meta, StoryObj } from '@storybook/react';
 import { Select, SelectProps } from 'V2/Components/Forms';
 
 const meta: Meta<typeof Select> = {

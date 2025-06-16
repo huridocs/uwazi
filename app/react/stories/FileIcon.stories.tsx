@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { FileIcon } from 'V2/Components/UI';
 
 const meta: Meta<typeof FileIcon> = {

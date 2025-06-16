@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Meta, StoryObj } from '@storybook/react';
 import { Modal } from 'V2/Components/UI/Modal';
 import { Button } from 'V2/Components/UI/Button';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';

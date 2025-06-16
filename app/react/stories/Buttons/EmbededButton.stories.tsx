@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { Translate } from 'app/I18N';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Meta, StoryObj } from '@storybook/react';
 import { EnableButtonCheckbox } from 'app/V2/Components/Forms';
 
 const meta: Meta<typeof EnableButtonCheckbox> = {

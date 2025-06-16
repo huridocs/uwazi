@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Meta, StoryObj } from '@storybook/react';
 import { Pill } from 'V2/Components/UI/Pill';
 
 const meta: Meta<typeof Pill> = {

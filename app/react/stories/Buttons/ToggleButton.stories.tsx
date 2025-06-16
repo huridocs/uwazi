@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { Meta, StoryObj } from '@storybook/react';
 import { ToggleButton, ToggleButtonProps } from 'V2/Components/UI/ToggleButton';
 
 const meta: Meta<typeof ToggleButton> = {

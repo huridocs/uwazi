@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react';
 import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/CodeEditor';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
