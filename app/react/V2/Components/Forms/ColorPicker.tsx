@@ -77,7 +77,7 @@ const ColorPicker = ({
           <>
             <Popover.Button
               ref={setReferenceElement}
-              className="w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-sm transition hover:border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className={`w-[42px] h-[42px] border border-gray-300 cursor-pointer rounded-lg flex items-center justify-center shadow-sm transition hover:border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 ${hasErrors ? 'border-error-500' : ''}`}
             >
               <div
                 data-testid="colorpicker-button"

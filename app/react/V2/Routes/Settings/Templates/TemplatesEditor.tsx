@@ -71,7 +71,6 @@ const TemplatesEditor = () => {
   const setTemplates = useSetAtom(templatesAtom);
   const templates = useAtomValue(templatesAtom);
   const [nameError, setNameError] = useState(false);
-  const [colorError, setColorError] = useState(false);
   const [showNavigationModal, setShowNavigationModal] = useState(false);
   const [showRelationshipTypeModal, setShowRelationshipTypeModal] = useState(false);
   const [showThesaurusModal, setShowThesaurusModal] = useState(false);
@@ -178,8 +177,7 @@ const TemplatesEditor = () => {
       t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
     );
     setNameError(!template.name || isDuplicateName);
-    setColorError(!template.color);
-    if (!template.name || !template.color || isDuplicateName) {
+    if (!template.name || isDuplicateName) {
       return;
     }
 
@@ -237,11 +235,9 @@ const TemplatesEditor = () => {
                 onChange={values => {
                   setTemplate({ ...template, ...values });
                   if (values.name) setNameError(false);
-                  if (values.color) setColorError(false);
                 }}
                 pages={pagesOptions}
                 nameError={nameError}
-                colorError={colorError}
               />
             }
           />

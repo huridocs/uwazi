@@ -29,16 +29,9 @@ export interface TemplateMetadataProps {
   onChange: (value: TemplateMetadataValues) => void;
   pages: { value: string; label: string }[];
   nameError?: boolean;
-  colorError?: boolean;
 }
 
-export const TemplateMetadata = ({
-  value,
-  onChange,
-  pages,
-  nameError,
-  colorError,
-}: TemplateMetadataProps) => {
+export const TemplateMetadata = ({ value, onChange, pages, nameError }: TemplateMetadataProps) => {
   const [displayAsPage, setDisplayAsPage] = useState(!!value.entityViewPage);
 
   useEffect(() => {
@@ -66,7 +59,7 @@ export const TemplateMetadata = ({
         name="template-color"
         value={value.color}
         onChange={color => onChange({ ...value, color })}
-        hasErrors={!!colorError}
+        hasErrors={!!nameError}
         options={templateColors}
       />
       <InputField
