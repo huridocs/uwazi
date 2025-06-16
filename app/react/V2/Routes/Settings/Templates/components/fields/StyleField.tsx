@@ -12,11 +12,11 @@ export const StyleField = ({ control }: { control: any }) => (
     render={({ field }) => (
       <RadioSelect
         legend={<Translate>Style</Translate>}
-        value={field.value}
         name="style"
         options={[
           {
             value: 'fill',
+            defaultChecked: field.value === 'fill',
             label: (
               <span className="flex items-center gap-1" key="fill">
                 <Translate>Fill</Translate>{' '}
@@ -38,6 +38,7 @@ export const StyleField = ({ control }: { control: any }) => (
           },
           {
             value: 'fit',
+            defaultChecked: field.value === 'fit',
             label: (
               <span className="flex items-center gap-1" key="fit">
                 <Translate>Fit</Translate>{' '}

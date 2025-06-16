@@ -13,7 +13,6 @@ interface RadioProps {
   })[];
   className?: string;
   orientation?: 'vertical' | 'horizontal';
-  value?: string;
 }
 
 const RadioSelect = ({
@@ -23,7 +22,6 @@ const RadioSelect = ({
   onChange,
   className,
   orientation = 'vertical',
-  value,
 }: RadioProps) => (
   <fieldset
     className={`flex flex-wrap gap-4 ${
@@ -42,9 +40,8 @@ const RadioSelect = ({
           name={name}
           value={option.value}
           disabled={option.disabled || false}
-          defaultChecked={option.defaultChecked}
           onChange={onChange}
-          checked={value === option.value}
+          defaultChecked={option.defaultChecked}
         />
         <Label
           htmlFor={`${name}_${option.value}`}
