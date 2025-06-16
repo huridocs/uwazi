@@ -8,9 +8,9 @@ import { Table } from 'V2/Components/UI/Table/Table';
 import { Button } from 'V2/Components/UI/Button';
 import * as templatesApi from 'V2/api/templates';
 import { RequestParams } from 'app/utils/RequestParams';
-import { ClientTemplateSchema } from 'app/istore';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { ColumnDef } from '@tanstack/react-table';
+import { Template } from 'app/apiResponseTypes';
 import { columns } from './components/TemplatesTableComponents';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
 import { TemplateRow } from './types';
@@ -19,9 +19,9 @@ const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
   async () => {
     const templates = await templatesApi.get(headers);
-    const templateIds = templates.map((template: ClientTemplateSchema) => template._id);
+    const templateIds = templates.map((template: Template) => template._id);
     const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
-    return templates.map((template: ClientTemplateSchema) => {
+    return templates.map((template: Template) => {
       const reasons = [];
       if (template.default) {
         reasons.push(t('System', 'A default template cannot be deleted.', null, false));
@@ -124,11 +124,10 @@ const Templates = () => {
         <SettingsContent.Footer>
           <div className="flex justify-between w-full">
             {selected.length === 0 && (
-              <I18NLink
-                to="/settings/templates/new"
-                className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-primary-700 rounded-lg shadow hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-indigo-200 transition-colors"
-              >
-                <Translate>Add template</Translate>
+              <I18NLink to="/settings/templates/new">
+                <Button color="primary">
+                  <Translate>Add template</Translate>
+                </Button>
               </I18NLink>
             )}
             {selected.length > 0 && (

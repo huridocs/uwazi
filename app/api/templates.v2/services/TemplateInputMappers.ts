@@ -8,6 +8,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
+import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>
@@ -38,6 +39,19 @@ const propertyToApp = (property: PropertySchema, templateId: string): Property =
       (query as TraverseQuery[]).map(BuildQuery.traverse),
       templateId,
       property.denormalizedProperty
+    );
+  }
+  if (property.type === propertyTypes.relationship) {
+    if (!property.relationType) throw new Error('Relation type is required');
+    if (!property.content) throw new Error('Content is required');
+    return new V1RelationshipProperty(
+      propertyId,
+      property.name,
+      property.label,
+      property.relationType,
+      templateId,
+      property.content,
+      property.inherit?.property
     );
   }
   return new Property(propertyId, property.type, property.name, property.label, templateId);

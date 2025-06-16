@@ -4,7 +4,7 @@
 import { ChevronDownIcon, ChevronUpIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import loadable from '@loadable/component';
-import { InputField, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
+import { InputField, MultiselectList, MultiselectListOption, Textarea } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { lookup } from 'V2/api/search';
@@ -348,24 +348,26 @@ const SuggestionSidepanel = ({
             <Translate className="">Click to fill</Translate>
           </Button>
         </div>
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
+        {suggestion?.extractorSource.pdf && (
+          <div className="sm:text-right" data-testid="ix-clear-button-container">
+            <Button
+              type="button"
+              styling="outline"
+              disabled={Boolean(!highlights) || isSubmitting}
+              onClick={() => {
+                setHighlights(undefined);
+                setSelections(
+                  selectionHandlers.deleteFileSelection(
+                    { name: suggestion?.propertyName || '' },
+                    pdf?.extractedMetadata
+                  )
+                );
+              }}
+            >
+              <Translate>Clear</Translate>
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -423,6 +425,64 @@ const SuggestionSidepanel = ({
     </div>
   );
 
+  const renderMarkdown = () => {
+    if (!property) {
+      return null;
+    }
+    return (
+      <div className={`relative flex gap-2 px-4 pb-4 ${labelInputIsOpen ? '' : 'hidden'}`}>
+        <Controller
+          control={control}
+          name="field"
+          rules={{ required: property?.required }}
+          render={({ field: { onChange, value } }) => (
+            <Textarea
+              id={property.name}
+              label={<Translate context={templateId}>{property.label}</Translate>}
+              hideLabel
+              value={value as string}
+              onChange={onChange}
+              className="grow"
+              disabled={isSubmitting}
+              hasErrors={errors.field?.type === 'required' || !!selectionError}
+              clearFieldAction={() => setValue('field', '')}
+            />
+          )}
+        />
+        <div>
+          <Button
+            type="button"
+            styling="outline"
+            onClick={async () => handleClickToFill()}
+            disabled={isSubmitting}
+          >
+            <Translate className="">Click to fill</Translate>
+          </Button>
+        </div>
+        {suggestion?.extractorSource.pdf && (
+          <div className="sm:text-right" data-testid="ix-clear-button-container">
+            <Button
+              type="button"
+              styling="outline"
+              disabled={Boolean(!highlights) || isSubmitting}
+              onClick={() => {
+                setHighlights(undefined);
+                setSelections(
+                  selectionHandlers.deleteFileSelection(
+                    { name: suggestion?.propertyName || '' },
+                    pdf?.extractedMetadata
+                  )
+                );
+              }}
+            >
+              <Translate>Clear</Translate>
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderForm = () => {
     switch (property?.type) {
       case 'text':
@@ -433,6 +493,8 @@ const SuggestionSidepanel = ({
       case 'multiselect':
       case 'relationship':
         return renderSelect(property?.type);
+      case 'markdown':
+        return renderMarkdown();
       default:
         return '';
     }

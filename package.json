@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.218.0-rc7",
+  "version": "1.218.0-rc11",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -37,7 +37,7 @@
     "update-translations-db": "node --no-experimental-fetch scripts/run.js ../scripts/updateTranslationsDB.js",
     "update-translations-csv": "node --no-experimental-fetch ./scripts/updateTranslationsCSV.mjs",
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
-    "tailwind-watch": "yarn run tailwind --watch",
+    "tailwind-watch": "yarn tailwind --watch",
     "tailwind": " touch ./app/react/App/styles/globals.css && npx tailwindcss -i ./app/react/App/styles/main.css -o ./app/react/App/styles/globals.css",
     "hot": "export HOT=true; export BABEL_ENV=debug; concurrently \"yarn run watch-types\" \"yarn tailwind-watch\" \"yarn run dev-server\" \"yarn run webpack-server\"",
     "hot-e2e": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e EXTERNAL_SERVICES=true yarn hot",

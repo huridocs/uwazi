@@ -9,7 +9,7 @@ import * as settingsAPI from 'V2/api/settings';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, Tabs } from 'app/V2/Components/UI';
 import { CodeEditor } from 'app/V2/Components/CodeEditor';
-import { ConfirmNavigationModal } from 'V2/Components/Forms';
+import { ConfirmNavigationModal } from 'V2/Components/UI';
 import { notificationAtom } from 'app/V2/atoms';
 
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;

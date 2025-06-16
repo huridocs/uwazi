@@ -64,6 +64,7 @@ const fetchSelectResources = async (property: PropertySchema) => {
 
 const resourceFetchers = {
   title: fetchNoResources,
+  markdown: fetchNoResources,
   text: fetchNoResources,
   numeric: fetchNoResources,
   date: fetchNoResources,
@@ -216,6 +217,7 @@ const getRawValueAsArray = (
 
 const valueGetters = {
   text: getRawValueAsArray,
+  markdown: getRawValueAsArray,
   date: getRawValueAsArray,
   numeric: getRawValueAsArray,
   select: (
