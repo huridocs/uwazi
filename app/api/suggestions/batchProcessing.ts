@@ -1,5 +1,6 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import entitiesModel from 'api/entities/entitiesModel';
+import { EntitySchema } from 'shared/types/entityType';
 
 type BatchRange = {
   fromId: string;
@@ -59,7 +60,7 @@ const fetchEntitiesDataForBatch = async (
   fromId: ObjectIdSchema,
   toId: ObjectIdSchema,
   defaultLanguage?: string
-): Promise<{ sharedId: string; language: string }[]> => {
+) => {
   const query = {
     template,
     ...(defaultLanguage && { language: defaultLanguage }),
@@ -68,11 +69,13 @@ const fetchEntitiesDataForBatch = async (
 
   const entities = await entitiesModel.db
     .find(query)
-    .select(['sharedId', 'language'])
+    .select(['sharedId', 'title', 'language', 'metadata'])
     .sort({ _id: 1 })
     .lean();
 
-  return entities.map(e => ({ sharedId: e.sharedId!, language: e.language! }));
+  return entities as Required<
+    Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title'>
+  >[];
 };
 
 export type { BatchRange };

@@ -299,6 +299,9 @@ const Suggestions = {
     if (toUpdate.length > 0) await updateStates({ _id: { $in: toUpdate.map(s => s._id) } });
   },
 
+  createMultiple: async (_suggestions: IXSuggestionType[]) =>
+    IXSuggestionsModel.db.createMany(_suggestions),
+
   accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
     const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));
     const suggestions = await IXSuggestionsModel.get({ _id: { $in: acceptedIds } });

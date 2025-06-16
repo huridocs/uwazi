@@ -36,13 +36,15 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
       );
     case propertyTypes.relationship:
       if (!property.relationType) throw new Error('Relation type is required');
+      if (!property.content) throw new Error('Content is required');
       return new V1RelationshipProperty(
         propertyId,
         property.name,
         property.label,
         property.relationType,
         templateId,
-        property.content
+        property.content,
+        property.inherit?.property
       );
     default:
       return new Property(propertyId, property.type, property.name, property.label, templateId);

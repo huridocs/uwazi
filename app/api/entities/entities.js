@@ -17,6 +17,7 @@ import ID from 'shared/uniqueID';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import settings from '../settings';
+import { bulkDenormalizeEntities } from './bulkUpdateMetadataFromRelationships';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent';
@@ -467,22 +468,8 @@ export default {
   },
 
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async bulkUpdateMetadataFromRelationships(query, language, limit = 200, reindex = true) {
-    const process = async (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return;
-      }
-
-      const entities = await this.get(query, 'sharedId', { skip: offset, limit });
-      await this.updateMetdataFromRelationships(
-        entities.map(entity => entity.sharedId),
-        language,
-        reindex
-      );
-      await process(offset + limit, totalRows);
-    };
-    const totalRows = await this.count(query);
-    await process(0, totalRows);
+  async bulkDenormalizeEntities(query, language, limit = 200, reindex = true) {
+    await bulkDenormalizeEntities(query, language, limit, reindex);
   },
 
   async getWithoutDocuments(query, select, options = {}) {
@@ -671,7 +658,7 @@ export default {
     }
 
     await reindexEntitiesByTemplate(template, options);
-    return this.bulkUpdateMetadataFromRelationships(
+    return this.bulkDenormalizeEntities(
       { template: template._id, language },
       language,
       200,
