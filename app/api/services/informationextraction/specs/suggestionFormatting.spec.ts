@@ -20,6 +20,7 @@ const successMessage: InternalIXResultsMessage = {
 
 const properties: Record<string, PropertySchema> = {
   text: fixtureFactory.property('text_property', 'text'),
+  rich_text: fixtureFactory.property('rich_text', 'markdown'),
   numeric: fixtureFactory.property('numeric_property', 'numeric'),
   date: fixtureFactory.property('date_property', 'date'),
   select: fixtureFactory.property('select_property', 'select'),
@@ -31,6 +32,9 @@ const entities: Record<string, EntitySchema> = {
   title: fixtureFactory.entity('entity_id', 'entity_template', {}),
   text: fixtureFactory.entity('entity_id', 'entity_template', {
     text_property: [{ value: 'previous_value' }],
+  }),
+  rich_text: fixtureFactory.entity('entity_id', 'entity_template', {
+    rich_text: [{ value: 'previous_value' }],
   }),
   numeric: fixtureFactory.entity('entity_id', 'entity_template', {
     numeric_property: [{ value: 0 }],
@@ -89,6 +93,11 @@ const currentSuggestions: Record<string, IXSuggestionType> = {
     propertyName: 'text_property',
     suggestedValue: 'previous_value',
   },
+  rich_text: {
+    ...currentSuggestionBase,
+    propertyName: 'text_property',
+    suggestedValue: 'previous_value',
+  },
   numeric: {
     ...currentSuggestionBase,
     propertyName: 'numeric_property',
@@ -141,6 +150,19 @@ const validRawSuggestions = {
     ],
   },
   text: {
+    ...rawSuggestionBase,
+    text: 'recommended_value',
+    segments_boxes: [
+      {
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+        page_number: 1,
+      },
+    ],
+  },
+  rich_text: {
     ...rawSuggestionBase,
     text: 'recommended_value',
     segments_boxes: [
@@ -539,6 +561,28 @@ describe('formatSuggestion', () => {
         date: expect.any(Number),
         suggestedValue: ['related_1_id', 'related_3_id'],
         segment: 'new context',
+      },
+    },
+    {
+      case: 'valid rich text suggestions',
+      property: properties.rich_text,
+      rawSuggestion: validRawSuggestions.rich_text,
+      currentSuggestion: currentSuggestions.rich_text,
+      entity: entities.rich_text,
+      expectedResult: {
+        ...currentSuggestions.rich_text,
+        date: expect.any(Number),
+        suggestedValue: 'recommended_value',
+        segment: 'new context',
+        selectionRectangles: [
+          {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            page: '1',
+          },
+        ],
       },
     },
   ])(

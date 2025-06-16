@@ -294,17 +294,17 @@ const suggestionsTableColumnsBuilder = (
     suggestionColumnHelper.accessor('entityTitle', {
       header: TitleHeader,
       cell: TitleCell,
-      meta: { headerClassName: 'w-1/4' },
+      meta: { headerClassName: 'w-1/5' },
     }),
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
-      meta: { headerClassName: 'w-1/4' },
+      meta: { headerClassName: 'w-1/5' },
     }),
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
-      meta: { headerClassName: 'w-1/4' },
+      meta: { headerClassName: 'w-2/5' },
     }),
     suggestionColumnHelper.display({
       id: 'accept-actions',
@@ -316,7 +316,7 @@ const suggestionsTableColumnsBuilder = (
         return null;
       },
       meta: {
-        headerClassName: 'w-2/12',
+        headerClassName: 'w-0',
         contentClassName: 'text-center',
       },
     }),
@@ -330,7 +330,7 @@ const suggestionsTableColumnsBuilder = (
           <AcceptButton action={acceptSuggestions} cell={cell} />
         ),
       meta: {
-        headerClassName: 'w-2/12',
+        headerClassName: 'w-0',
         contentClassName: 'text-center',
       },
     }),
