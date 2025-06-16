@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
 import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes';
 
+const templateChangingNamesId = db.id();
 const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const thesaurusTemplateId = db.id();
@@ -13,6 +14,7 @@ const select3id = db.id();
 const select4id = db.id();
 const swapTemplate = db.id();
 const relatedTo = db.id();
+const relatedToAnother = db.id();
 const templateToBeInherited = db.id();
 const templateInheritingFromAnother = db.id();
 const propertyToBeInherited = db.id();
@@ -25,6 +27,7 @@ const propertyB = db.id();
 const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
+const thesaurusTemplateRelationshipPropId = db.id();
 
 const languages: LanguagesListSchema = [
   { key: 'en', label: 'English', default: true },
@@ -46,8 +49,34 @@ const createEntitiesInAllLanguages = (
     sharedId: `${baseTitle}-sharedId`,
   }));
 
+const templateChangingNames = {
+  _id: templateChangingNamesId,
+  name: 'template_changing_names',
+  default: false,
+  commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  properties: [
+    { _id: db.id(), type: 'text', label: 'property1', name: 'property1' },
+    { _id: db.id(), type: 'text', label: 'property2', name: 'property2' },
+    { _id: db.id(), type: 'text', label: 'property3', name: 'property3' },
+  ],
+};
+
+const templateNotChangingNames = {
+  _id: db.id(),
+  name: 'template_not_changing_names',
+  default: false,
+  commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+  properties: [
+    { _id: db.id(), type: 'text', label: 'property1', name: 'property1' },
+    { _id: db.id(), type: 'text', label: 'property2', name: 'property2' },
+    { _id: db.id(), type: 'text', label: 'property3', name: 'property3' },
+  ],
+};
+
 const fixtures: DBFixture = {
   templates: [
+    templateChangingNames,
+    templateNotChangingNames,
     {
       _id: templateToBeEditedId,
       name: 'template to be edited',
@@ -79,8 +108,9 @@ const fixtures: DBFixture = {
           name: 'select',
         },
         {
-          _id: db.id(),
+          _id: thesaurusTemplateRelationshipPropId,
           type: propertyTypes.relationship,
+          relationType: relatedTo.toString(),
           content: templateToBeDeleted,
           label: 'relationshipToBeDeleted',
           name: 'relationshipToBeDeleted',
@@ -102,6 +132,7 @@ const fixtures: DBFixture = {
         {
           _id: db.id(),
           type: propertyTypes.relationship,
+          relationType: relatedTo.toString(),
           content: templateToBeDeleted,
           label: 'relationshipToBeDeleted',
           name: 'relationshipToBeDeleted',
@@ -118,6 +149,7 @@ const fixtures: DBFixture = {
         {
           _id: db.id(),
           type: propertyTypes.relationship,
+          relationType: relatedTo.toString(),
           content: templateToBeDeleted,
           label: 'relationshipToBeDeleted',
           name: 'relationshipToBeDeleted',
@@ -222,7 +254,10 @@ const fixtures: DBFixture = {
       ],
     },
   ],
-  relationtypes: [{ _id: relatedTo, name: 'related to' }],
+  relationtypes: [
+    { _id: relatedTo, name: 'related to' },
+    { _id: relatedToAnother, name: 'related to another' },
+  ],
   settings: [
     {
       _id: db.id(),
@@ -300,12 +335,24 @@ const fixtures: DBFixture = {
       select2: [],
       relationshipToBeDeleted: [],
     }),
+    ...createEntitiesInAllLanguages('templateChangingNames', templateChangingNamesId, {
+      property1: [{ value: 'value1' }],
+      property2: [{ value: 'value2' }],
+      property3: [{ value: 'value3' }],
+    }),
+    ...createEntitiesInAllLanguages('templateNotChangingNames', templateNotChangingNames._id, {
+      property1: [{ value: 'value1' }],
+      property2: [{ value: 'value2' }],
+      property3: [{ value: 'value3' }],
+    }),
   ],
 };
 
 export default fixtures;
 
 export {
+  templateChangingNames,
+  templateNotChangingNames,
   templateToBeEditedId,
   templateToBeDeleted,
   thesaurusTemplateId,
@@ -318,6 +365,7 @@ export {
   propertyToBeInherited,
   propertyToBeInherited2,
   relatedTo,
+  relatedToAnother,
   thesauriId1,
   thesauriId2,
   templateWithExtractedMetadata,
@@ -328,4 +376,5 @@ export {
   select3id,
   select4id,
   pageSharedId,
+  thesaurusTemplateRelationshipPropId,
 };

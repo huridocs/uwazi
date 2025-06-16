@@ -38,6 +38,9 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
   return { ...template, properties: mappedProperties };
 };
 
+const newRelationshipsAllowed = async () =>
+  DefaultSettingsDataSource(DefaultTransactionManager()).readNewRelationshipsAllowed();
+
 const processNewRelationshipPropertiesOnUpdate = async (
   _oldTemplate: TemplateSchema,
   _newTemplate: TemplateSchema
@@ -68,6 +71,7 @@ const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSche
 };
 
 export {
+  newRelationshipsAllowed,
   processNewRelationshipProperties,
   processNewRelationshipPropertiesOnDelete,
   processNewRelationshipPropertiesOnUpdate,

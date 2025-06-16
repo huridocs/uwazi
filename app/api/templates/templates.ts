@@ -1,12 +1,17 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from 'api/entities';
+import { bulkDenormalizeEntities } from 'api/entities/bulkUpdateMetadataFromRelationships';
+import entitiesModel from 'api/entities/entitiesModel';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
+import { search } from 'api/search';
 import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
+import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
+import { tenants } from 'api/tenants';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -43,6 +48,19 @@ const createTranslationContext = (template: TemplateSchema) => {
   context[template.name] = template.name;
   context[titleProperty.label] = titleProperty.label;
   return context;
+};
+
+const reindexEntitiesByTemplate = async (
+  template: TemplateSchema,
+  options: { reindex: boolean; generatedIdAdded: boolean }
+) => {
+  const templateHasRelationShipProperty = template.properties?.find(
+    p => p.type === propertyTypes.relationship
+  );
+  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
+    return search.indexEntities({ template: template._id });
+  }
+  return Promise.resolve();
 };
 
 const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
@@ -193,7 +211,77 @@ export default {
     });
   },
 
+  async improvedUpdate(template: TemplateSchema, language: string, _reindex = true) {
+    const reindex = _reindex && !template.synced;
+    const templateStructureChanges = await checkIfReindex(template);
+    const currentTemplate = ensure<WithId<TemplateSchema>>(
+      await this.getById(ensure(template._id))
+    );
+
+    if (templateStructureChanges || currentTemplate.name !== template.name) {
+      await updateTranslation(currentTemplate, template);
+    }
+    if (templateStructureChanges) {
+      await removeExcludedPropertiesValues(currentTemplate, template);
+      await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
+    }
+
+    const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    const savedTemplate = await model.save(template, undefined);
+    if (templateStructureChanges) {
+      await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
+
+      const newTemplate = TemplateInputMappers.toApp(template);
+      const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
+
+      const actions = {
+        $rename: Object.fromEntries(
+          currentTemplateV2
+            .selectPropertiesWhereNameHasChanged(newTemplate)
+            .map(({ oldProperty, newProperty }) => [
+              `metadata.${oldProperty.name}`,
+              `metadata.${newProperty.name}`,
+            ])
+        ),
+        $unset: Object.fromEntries(
+          currentTemplateV2
+            .selectDeletedProperties(newTemplate)
+            .map(property => [`metadata.${property.name}`, ''])
+        ),
+      };
+
+      if (Object.keys(actions.$rename).length || Object.keys(actions.$unset).length) {
+        await entitiesModel.updateMany(
+          { template: template._id },
+          {
+            ...(Object.keys(actions.$unset).length ? { $unset: actions.$unset } : {}),
+            ...(Object.keys(actions.$rename).length ? { $rename: actions.$rename } : {}),
+          }
+        );
+      }
+
+      await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
+      const relationshipPropsWithChangedRelData =
+        currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
+      if (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) {
+        await bulkDenormalizeEntities({ template: template._id, language }, language, 200, reindex);
+      }
+    }
+
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: currentTemplate,
+        after: savedTemplate,
+      })
+    );
+
+    return savedTemplate;
+  },
+
   async _update(template: TemplateSchema, language: string, _reindex = true) {
+    if (tenants.current().featureFlags?.improvedTemplatesSave) {
+      return this.improvedUpdate(template, language, _reindex);
+    }
     const reindex = _reindex && !template.synced;
     const templateStructureChanges = await checkIfReindex(template);
     const currentTemplate = ensure<WithId<TemplateSchema>>(
