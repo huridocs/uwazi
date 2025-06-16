@@ -1251,6 +1251,101 @@ describe('entities', () => {
 
       expect(updated.find(e => e.title !== 'test title')).toBeUndefined();
     });
+
+    it('should be able to change template', async () => {
+      const templateA = fixtureFactory.template('templateA', [
+        fixtureFactory.property('textA', 'text'),
+      ]);
+      const templateB = fixtureFactory.template('templateB', [
+        fixtureFactory.property('textB', 'text'),
+        fixtureFactory.property('numericB', 'numeric'),
+      ]);
+
+      const entitiesA = fixtureFactory.entityInMultipleLanguages(
+        ['es', 'pt', 'en'],
+        'entityA',
+        templateA.name,
+        { textA: [{ value: 'any_text_1' }] }
+      );
+
+      const entitiesB = fixtureFactory.entityInMultipleLanguages(
+        ['es', 'pt', 'en'],
+        'entityB',
+        templateA.name,
+        { textA: [{ value: 'any_text_2' }] }
+      );
+
+      await testingEnvironment.setUp({
+        ...fixtures,
+        entities: [...entitiesA, ...entitiesB],
+        templates: [templateA, templateB],
+      });
+
+      const newMetadata = {
+        textB: [{ value: 'any_value_b' }],
+        numericB: [{ value: 2 }],
+      };
+      await entities.multipleUpdate(
+        [entitiesA[0].sharedId, entitiesB[0].sharedId],
+        {
+          template: templateB._id.toString(),
+          metadata: newMetadata,
+        },
+        { language: 'en' }
+      );
+
+      const changedEntities = await testingEnvironment.db.getAllFrom('entities');
+      const newEntitiesA = changedEntities.filter(e => e.sharedId === 'entityA');
+      const newEntitiesB = changedEntities.filter(e => e.sharedId === 'entityB');
+
+      expect(newEntitiesA).toMatchObject([
+        {
+          sharedId: 'entityA',
+          title: 'entityA',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'es',
+        },
+        {
+          sharedId: 'entityA',
+          title: 'entityA',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'pt',
+        },
+        {
+          sharedId: 'entityA',
+          title: 'entityA',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'en',
+        },
+      ]);
+
+      expect(newEntitiesB).toMatchObject([
+        {
+          sharedId: 'entityB',
+          title: 'entityB',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'es',
+        },
+        {
+          sharedId: 'entityB',
+          title: 'entityB',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'pt',
+        },
+        {
+          sharedId: 'entityB',
+          title: 'entityB',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'en',
+        },
+      ]);
+    });
   });
 
   describe('removeValuesFromEntities', () => {

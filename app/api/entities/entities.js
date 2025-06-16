@@ -32,6 +32,7 @@ import {
   updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
+import { MetadataUtils } from './MetadataUtils';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -526,8 +527,14 @@ export default {
 
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
-
     const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } }, '+permissions');
+
+    const templateChanged = !!values.template;
+    let newTemplate;
+    if (templateChanged) {
+      newTemplate = await templates.getById(values.template);
+    }
+
     validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {
@@ -536,14 +543,20 @@ export default {
         );
 
         if (entity) {
+          let metadata = updateMetadataWithDiff(
+            { ...entity.metadata, ...pureValues.metadata },
+            diffMetadata
+          );
+
+          if (templateChanged) {
+            metadata = MetadataUtils.sanitize({ metadata, template: newTemplate });
+          }
+
           await this.save(
             {
               ...entity,
               ...pureValues,
-              metadata: updateMetadataWithDiff(
-                { ...entity.metadata, ...pureValues.metadata },
-                diffMetadata
-              ),
+              metadata,
               permissions: entity.permissions || [],
             },
             params,
