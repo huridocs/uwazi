@@ -279,6 +279,7 @@
     "@storybook/addon-links": "^9.0.10",
     "@storybook/addon-webpack5-compiler-babel": "^3.0.6",
     "@storybook/react-webpack5": "^9.0.10",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
