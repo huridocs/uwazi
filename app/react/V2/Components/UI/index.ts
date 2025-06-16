@@ -16,11 +16,8 @@ export { PaginationState } from './PaginationState';
 export { MediaPlayer } from './MediaPlayer';
 export { FileIcon } from './FileIcon';
 export { NeedAuthorization } from './NeedAuthorization';
-<<<<<<< 8059-templates-editor-v2
 export { ConfirmNavigationModal } from './ConfirmNavigationModal';
-=======
 export { TruncatedText } from './TruncatedText';
->>>>>>> production
 
 export type { PillColor } from './Pill';
 export type { TableProps, TableRow } from './Table';
