@@ -1,15 +1,18 @@
 /* eslint-disable max-statements */
+import moment from 'moment';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import entitiesModel from 'api/entities/entitiesModel';
 import { InformationExtraction } from '../InformationExtraction';
 import { factory, fixtures } from './fixtures';
 import { IXModelsModel } from '../IXModelsModel';
 import { ExtractionKey } from '../ExtractionKey';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { NoEntitiesForTraining } from '../TrainModelForText';
+import { getEntitiesForTraining } from '../getFiles';
 
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -304,6 +307,7 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       expect(IXExternalService.materials.length).toBe(2);
+      const testDate = moment.utc('2004-07-05T00:00:00+00:00');
 
       expect(suggestion1).toEqual({
         entity_name: extractionKeyEn.key,
@@ -311,7 +315,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: '2004-07-05',
+        label_text: moment(testDate).local().format('YYYY-MM-DD'),
       });
 
       expect(suggestion2).toEqual({
@@ -320,7 +324,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: '2004-07-05',
+        label_text: moment(testDate).local().format('YYYY-MM-DD'),
       });
     });
 
@@ -341,6 +345,25 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       expect(model.findingSuggestions).toBe(false);
+    });
+
+    it('should use limit when getting entities for training', async () => {
+      const templates = [factory.id('template1')];
+      const toProperty = 'property1';
+
+      const getUnrestrictedSpy = jest.spyOn(entitiesModel, 'getUnrestricted');
+      getUnrestrictedSpy.mockResolvedValue([]);
+
+      await getEntitiesForTraining(templates, toProperty, 'sourceProperty');
+      expect(getUnrestrictedSpy).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(String),
+        expect.objectContaining({
+          limit: 15000,
+        })
+      );
+
+      getUnrestrictedSpy.mockRestore();
     });
   });
 

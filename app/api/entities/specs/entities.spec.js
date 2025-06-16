@@ -29,7 +29,6 @@ import fixtures, {
   fixtureFactory,
   syncPropertiesEntityId,
   templateChangingNames,
-  templateChangingNamesProps,
   templateId,
   templateWithEntityAsThesauri,
   unpublishedDocId,
@@ -1251,115 +1250,6 @@ describe('entities', () => {
       );
 
       expect(updated.find(e => e.title !== 'test title')).toBeUndefined();
-    });
-  });
-
-  describe('updateMetadataProperties', () => {
-    let currentTemplate;
-    beforeEach(() => {
-      currentTemplate = {
-        _id: templateChangingNames,
-        properties: [
-          { _id: templateChangingNamesProps.prop1id, type: 'text', name: 'property1' },
-          { _id: templateChangingNamesProps.prop2id, type: 'text', name: 'property2' },
-          { _id: templateChangingNamesProps.prop3id, type: 'text', name: 'property3' },
-        ],
-      };
-    });
-
-    it('should do nothing when there is no changed or deleted properties', async () => {
-      jest.spyOn(entitiesModel, 'updateMany');
-
-      await entities.updateMetadataProperties(currentTemplate, currentTemplate);
-      expect(entitiesModel.updateMany).not.toHaveBeenCalled();
-    });
-
-    it('should update property names on entities based on the changes to the template', async () => {
-      const template = {
-        _id: templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNamesProps.prop1id,
-            type: 'text',
-            name: 'property1',
-            label: 'new name1',
-          },
-          {
-            _id: templateChangingNamesProps.prop2id,
-            type: 'text',
-            name: 'property2',
-            label: 'new name2',
-          },
-          {
-            _id: templateChangingNamesProps.prop3id,
-            type: 'text',
-            name: 'property3',
-            label: 'property3',
-          },
-        ],
-      };
-
-      await entities.updateMetadataProperties(template, currentTemplate);
-      const [docs, docDiferentTemplate] = await Promise.all([
-        entities.get({ template: templateChangingNames }),
-        entities.getById('shared', 'en'),
-      ]);
-      expect(docs[0].metadata.new_name1).toEqual([{ value: 'value1' }]);
-      expect(docs[0].metadata.new_name2).toEqual([{ value: 'value2' }]);
-      expect(docs[0].metadata.property3).toEqual([{ value: 'value3' }]);
-      expect(docs[1].metadata.new_name1).toEqual([{ value: 'value1' }]);
-      expect(docs[1].metadata.new_name2).toEqual([{ value: 'value2' }]);
-      expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
-      expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
-      expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id });
-    });
-
-    it('should delete and rename properties passed', async () => {
-      const template = {
-        _id: templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNamesProps.prop2id,
-            type: 'text',
-            name: 'property2',
-            label: 'new name',
-          },
-        ],
-      };
-
-      await entities.updateMetadataProperties(template, currentTemplate);
-      const docs = await entities.get({ template: templateChangingNames });
-      expect(docs[0].metadata.property1).not.toBeDefined();
-      expect(docs[0].metadata.new_name).toEqual([{ value: 'value2' }]);
-      expect(docs[0].metadata.property2).not.toBeDefined();
-      expect(docs[0].metadata.property3).not.toBeDefined();
-      expect(docs[1].metadata.property1).not.toBeDefined();
-      expect(docs[1].metadata.new_name).toEqual([{ value: 'value2' }]);
-      expect(docs[1].metadata.property2).not.toBeDefined();
-      expect(docs[1].metadata.property3).not.toBeDefined();
-    });
-
-    it('should delete missing properties', async () => {
-      const template = {
-        _id: templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNamesProps.prop2id,
-            type: 'text',
-            name: 'property2',
-            label: 'property2',
-          },
-        ],
-      };
-
-      await entities.updateMetadataProperties(template, currentTemplate);
-      const docs = await entities.get({ template: templateChangingNames });
-      expect(docs[0].metadata.property1).not.toBeDefined();
-      expect(docs[0].metadata.property2).toBeDefined();
-      expect(docs[0].metadata.property3).not.toBeDefined();
-      expect(docs[1].metadata.property1).not.toBeDefined();
-      expect(docs[1].metadata.property2).toBeDefined();
-      expect(docs[1].metadata.property3).not.toBeDefined();
     });
   });
 

@@ -41,6 +41,13 @@ describe('Confirmation modals', () => {
     cy.get('@cancel').should('have.been.called');
   });
 
+  it('should be able to disable buttons regardless of confirmation', () => {
+    mount(<PasswordConfirm disabled />);
+    cy.get('input').type('currentPassword');
+    cy.contains('Accept').should('be.disabled');
+    cy.contains('Cancel').should('be.disabled');
+  });
+
   describe('Text confirmation', () => {
     it('should check confirmation text to accept action', () => {
       mount(<TextConfirmation />);
