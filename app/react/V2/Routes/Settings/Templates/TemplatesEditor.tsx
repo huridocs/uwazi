@@ -297,7 +297,7 @@ const TemplatesEditor = () => {
             await save(true);
           }}
           onCancelClick={() => setShowLargeEntityCountModal(false)}
-          acceptButton={<Translate>Yes, reindex entities</Translate>}
+          acceptButton={<Translate>Continue</Translate>}
           cancelButton={<Translate>Cancel</Translate>}
           dangerStyle
         />
@@ -316,7 +316,7 @@ const TemplatesEditor = () => {
             await save(true);
           }}
           onCancelClick={() => setShowReindexModal(false)}
-          acceptButton={<Translate>Yes, reindex entities</Translate>}
+          acceptButton={<Translate>Continue</Translate>}
           cancelButton={<Translate>Cancel</Translate>}
           dangerStyle
         />
