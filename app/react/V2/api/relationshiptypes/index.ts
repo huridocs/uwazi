@@ -1,14 +1,23 @@
 import { IncomingHttpHeaders } from 'http';
-import { ClientRelationshipType } from 'app/apiResponseTypes';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
-const get = async (headers?: IncomingHttpHeaders): Promise<ClientRelationshipType[]> => {
+type RelationshipType = {
+  name: string;
+  _id: string;
+};
+
+type ClientRelationshipType = {
+  _id?: string;
+  name: string;
+};
+
+const get = async (headers?: IncomingHttpHeaders): Promise<RelationshipType[]> => {
   const requestParams = new RequestParams({}, headers);
   return api.get('relationtypes', requestParams).then((response: any) => response.json.rows);
 };
 
-const save = async (relationshipType: ClientRelationshipType): Promise<ClientRelationshipType> => {
+const save = async (relationshipType: ClientRelationshipType): Promise<RelationshipType> => {
   const requestParams = new RequestParams(relationshipType);
   return api.post('relationtypes', requestParams).then((response: any) => response.json);
 };

@@ -1,9 +1,10 @@
 import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientTemplateSchema } from 'V2/shared/types';
+import { Template } from 'app/apiResponseTypes';
 
-const get = async (headers?: IncomingHttpHeaders): Promise<ClientTemplateSchema[]> => {
+const get = async (headers?: IncomingHttpHeaders): Promise<Template[]> => {
   try {
     const requestParams = new RequestParams({}, headers);
     const response = await api.get('templates', requestParams);
@@ -38,4 +39,10 @@ const checkTemplatesEntityCount = async (
   return counts.reduce((acc, { id, count }) => ({ ...acc, [id]: count }), {});
 };
 
-export { get, setDefault, remove, checkTemplatesEntityCount };
+const save = async (template: ClientTemplateSchema): Promise<Template> => {
+  const requestParams = new RequestParams(template);
+  const response = await api.post('templates', requestParams);
+  return response.json;
+};
+
+export { get, setDefault, remove, checkTemplatesEntityCount, save };

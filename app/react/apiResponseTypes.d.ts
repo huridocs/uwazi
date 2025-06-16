@@ -50,10 +50,15 @@ export interface ClientPreserveConfig extends Omit<PreserveConfig, 'config'> {
 export interface ClientLanguageSchema extends Omit<LanguageSchema, '_id'> {
   _id?: string;
 }
-
-export interface Template extends TemplateSchema, Omit<TemplateSchema, '_id'> {
+export type Property = PropertySchema & {
   _id: string;
-}
+};
+
+export type Template = TemplateSchema & {
+  _id: string;
+  commonProperties?: [Property, ...Property[]];
+  properties?: Property[];
+};
 
 export interface ClientSettings
   extends Omit<Settings, '_id | filters | links | features | languages'> {
