@@ -109,10 +109,14 @@ class TrainModelForText implements UseCase<Input, Output> {
         processedEntityIds.push(entity.sharedId!);
       });
 
-      await IXSuggestionsModel.updateMany(
-        { entityId: { $in: processedEntityIds } },
-        { $set: { trainSampleTimestamp: model.creationDate } }
-      );
+      const chunks = ArrayUtils.splitInChunks(processedEntityIds, 1000);
+      await chunks.reduce(async (promise, chunk) => {
+        await promise;
+        await IXSuggestionsModel.updateMany(
+          { entityId: { $in: chunk } },
+          { $set: { trainSampleTimestamp: model.creationDate } }
+        );
+      }, Promise.resolve());
 
       await this.props.iXTaskService.createModelTask({
         extractor,
