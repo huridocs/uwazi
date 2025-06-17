@@ -55,9 +55,9 @@ const Sidepanel = ({
       break;
 
     case 'large':
-      transitionRight = 'md:-translate-x-[768px] lg:-translate-x-1/2';
-      transitionLeft = 'md:-translate-x-[-768px] lg:-translate-x-[-50%]';
-      width = 'md:w-[768px] lg:w-1/2';
+      transitionRight = 'md:-translate-x-[600px] lg:-translate-x-[40%]';
+      transitionLeft = 'md:-translate-x-[-600px] lg:-translate-x-[-60%]';
+      width = 'md:w-[600px] lg:w-[40%]';
       break;
 
     default:

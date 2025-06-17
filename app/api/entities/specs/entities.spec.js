@@ -29,7 +29,6 @@ import fixtures, {
   fixtureFactory,
   syncPropertiesEntityId,
   templateChangingNames,
-  templateChangingNamesProps,
   templateId,
   templateWithEntityAsThesauri,
   unpublishedDocId,
@@ -1252,114 +1251,100 @@ describe('entities', () => {
 
       expect(updated.find(e => e.title !== 'test title')).toBeUndefined();
     });
-  });
 
-  describe('updateMetadataProperties', () => {
-    let currentTemplate;
-    beforeEach(() => {
-      currentTemplate = {
-        _id: templateChangingNames,
-        properties: [
-          { _id: templateChangingNamesProps.prop1id, type: 'text', name: 'property1' },
-          { _id: templateChangingNamesProps.prop2id, type: 'text', name: 'property2' },
-          { _id: templateChangingNamesProps.prop3id, type: 'text', name: 'property3' },
-        ],
-      };
-    });
-
-    it('should do nothing when there is no changed or deleted properties', async () => {
-      jest.spyOn(entitiesModel, 'updateMany');
-
-      await entities.updateMetadataProperties(currentTemplate, currentTemplate);
-      expect(entitiesModel.updateMany).not.toHaveBeenCalled();
-    });
-
-    it('should update property names on entities based on the changes to the template', async () => {
-      const template = {
-        _id: templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNamesProps.prop1id,
-            type: 'text',
-            name: 'property1',
-            label: 'new name1',
-          },
-          {
-            _id: templateChangingNamesProps.prop2id,
-            type: 'text',
-            name: 'property2',
-            label: 'new name2',
-          },
-          {
-            _id: templateChangingNamesProps.prop3id,
-            type: 'text',
-            name: 'property3',
-            label: 'property3',
-          },
-        ],
-      };
-
-      await entities.updateMetadataProperties(template, currentTemplate);
-      const [docs, docDiferentTemplate] = await Promise.all([
-        entities.get({ template: templateChangingNames }),
-        entities.getById('shared', 'en'),
+    it('should be able to change template', async () => {
+      const templateA = fixtureFactory.template('templateA', [
+        fixtureFactory.property('textA', 'text'),
       ]);
-      expect(docs[0].metadata.new_name1).toEqual([{ value: 'value1' }]);
-      expect(docs[0].metadata.new_name2).toEqual([{ value: 'value2' }]);
-      expect(docs[0].metadata.property3).toEqual([{ value: 'value3' }]);
-      expect(docs[1].metadata.new_name1).toEqual([{ value: 'value1' }]);
-      expect(docs[1].metadata.new_name2).toEqual([{ value: 'value2' }]);
-      expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
-      expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
-      expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id });
-    });
+      const templateB = fixtureFactory.template('templateB', [
+        fixtureFactory.property('textB', 'text'),
+        fixtureFactory.property('numericB', 'numeric'),
+      ]);
 
-    it('should delete and rename properties passed', async () => {
-      const template = {
-        _id: templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNamesProps.prop2id,
-            type: 'text',
-            name: 'property2',
-            label: 'new name',
-          },
-        ],
+      const entitiesA = fixtureFactory.entityInMultipleLanguages(
+        ['es', 'pt', 'en'],
+        'entityA',
+        templateA.name,
+        { textA: [{ value: 'any_text_1' }] }
+      );
+
+      const entitiesB = fixtureFactory.entityInMultipleLanguages(
+        ['es', 'pt', 'en'],
+        'entityB',
+        templateA.name,
+        { textA: [{ value: 'any_text_2' }] }
+      );
+
+      await testingEnvironment.setUp({
+        ...fixtures,
+        entities: [...entitiesA, ...entitiesB],
+        templates: [templateA, templateB],
+      });
+
+      const newMetadata = {
+        textB: [{ value: 'any_value_b' }],
+        numericB: [{ value: 2 }],
       };
+      await entities.multipleUpdate(
+        [entitiesA[0].sharedId, entitiesB[0].sharedId],
+        {
+          template: templateB._id.toString(),
+          metadata: newMetadata,
+        },
+        { language: 'en' }
+      );
 
-      await entities.updateMetadataProperties(template, currentTemplate);
-      const docs = await entities.get({ template: templateChangingNames });
-      expect(docs[0].metadata.property1).not.toBeDefined();
-      expect(docs[0].metadata.new_name).toEqual([{ value: 'value2' }]);
-      expect(docs[0].metadata.property2).not.toBeDefined();
-      expect(docs[0].metadata.property3).not.toBeDefined();
-      expect(docs[1].metadata.property1).not.toBeDefined();
-      expect(docs[1].metadata.new_name).toEqual([{ value: 'value2' }]);
-      expect(docs[1].metadata.property2).not.toBeDefined();
-      expect(docs[1].metadata.property3).not.toBeDefined();
-    });
+      const changedEntities = await testingEnvironment.db.getAllFrom('entities');
+      const newEntitiesA = changedEntities.filter(e => e.sharedId === 'entityA');
+      const newEntitiesB = changedEntities.filter(e => e.sharedId === 'entityB');
 
-    it('should delete missing properties', async () => {
-      const template = {
-        _id: templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNamesProps.prop2id,
-            type: 'text',
-            name: 'property2',
-            label: 'property2',
-          },
-        ],
-      };
+      expect(newEntitiesA).toMatchObject([
+        {
+          sharedId: 'entityA',
+          title: 'entityA',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'es',
+        },
+        {
+          sharedId: 'entityA',
+          title: 'entityA',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'pt',
+        },
+        {
+          sharedId: 'entityA',
+          title: 'entityA',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'en',
+        },
+      ]);
 
-      await entities.updateMetadataProperties(template, currentTemplate);
-      const docs = await entities.get({ template: templateChangingNames });
-      expect(docs[0].metadata.property1).not.toBeDefined();
-      expect(docs[0].metadata.property2).toBeDefined();
-      expect(docs[0].metadata.property3).not.toBeDefined();
-      expect(docs[1].metadata.property1).not.toBeDefined();
-      expect(docs[1].metadata.property2).toBeDefined();
-      expect(docs[1].metadata.property3).not.toBeDefined();
+      expect(newEntitiesB).toMatchObject([
+        {
+          sharedId: 'entityB',
+          title: 'entityB',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'es',
+        },
+        {
+          sharedId: 'entityB',
+          title: 'entityB',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'pt',
+        },
+        {
+          sharedId: 'entityB',
+          title: 'entityB',
+          template: templateB._id,
+          metadata: newMetadata,
+          language: 'en',
+        },
+      ]);
     });
   });
 

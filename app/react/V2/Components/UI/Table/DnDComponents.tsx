@@ -25,11 +25,11 @@ const activeGradientStyle: CSSProperties = {
   background: 'radial-gradient(circle, #303f9f 25%, transparent 26%) 0% 0% / 8px 10px',
 };
 
-const getSytles = (expanded: boolean, isOver: boolean) => {
+const getSytles = (expanded: boolean, isOver: boolean, isDndDisable: boolean) => {
   const expandedGroupStyles = expanded
     ? 'bg-indigo-100 border-indigo-100 hover:bg-indigo-200 hover:border-indigo-200'
     : '';
-  const dndHoverStyles = isOver ? dndHoverClass : '';
+  const dndHoverStyles = isOver && !isDndDisable ? dndHoverClass : '';
   return `${expandedGroupStyles} ${dndHoverStyles}`;
 };
 
@@ -37,6 +37,7 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
   const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
   });
+
   const [handlerStyle, setHandlerStyle] = useState(inactiveGradientStyle);
 
   const canExpand = row.originalSubRows;
@@ -47,6 +48,14 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
       row.toggleExpanded();
     }
   }, [isDragging]);
+
+  if (row.original.disableRowDnD) {
+    return (
+      <span className="sr-only">
+        <Translate>Empty</Translate>
+      </span>
+    );
+  }
 
   return (
     <button
@@ -60,6 +69,7 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
       }}
       type="button"
       style={isDragging ? activeGradientStyle : handlerStyle}
+      className={`${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
     >
       <span className="sr-only">
         <Translate>Drag row</Translate>
@@ -80,6 +90,7 @@ const DraggableRow = <T extends TableRow<T>>({
   dndEnabled: boolean;
 }) => {
   const expanded = row.getIsExpanded();
+  const { disableRowDnD = false } = row.original;
   const isEmpty = row.originalSubRows?.length === 0;
   const isChild = row.depth > 0;
 
@@ -107,7 +118,7 @@ const DraggableRow = <T extends TableRow<T>>({
     backgroundColor: 'white',
   };
 
-  const rowStyles = getSytles(expanded, isOver);
+  const rowStyles = getSytles(expanded, isOver, disableRowDnD);
 
   return (
     <>

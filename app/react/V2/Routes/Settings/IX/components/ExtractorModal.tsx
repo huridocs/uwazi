@@ -9,10 +9,19 @@ import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
-import { propertyIcons } from './Icons';
+import { propertyIcons } from '../../../../Components/UI/Icons';
 import { getAvailableSources } from '../helpers';
 
-const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
+const SUPPORTED_PROPERTIES = [
+  'text',
+  'numeric',
+  'date',
+  'select',
+  'multiselect',
+  'relationship',
+  'markdown',
+];
+
 type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
   type: 'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship';
 };

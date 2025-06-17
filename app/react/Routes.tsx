@@ -57,6 +57,12 @@ import { ParagraphExtractorDashboard } from 'V2/Routes/Settings/ParagraphExtract
 import { PXEntityDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXEntities';
 import { PXParagraphDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
 import {
+  Templates,
+  templatesLoader,
+  TemplatesEditor,
+  templatesEditorLoader,
+} from 'app/V2/Routes/Settings/Templates';
+import {
   loggedInUsersRoute,
   adminsOnlyRoute,
   privateRoute,
@@ -68,7 +74,6 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
-import { Templates, templatesLoader } from 'app/V2/Routes/Settings/Templates';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -142,14 +147,27 @@ const getRoutesLayout = (
           loader={pageEditorLoader(headers)}
         />
       </Route>
-      <Route path="templates">
-        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
-        <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
-        <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
-      </Route>
-      <Route path="templates_v2">
-        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
-      </Route>
+      {settings?.features?.testing ? (
+        <Route path="templates">
+          <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+          <Route
+            path="new"
+            element={adminsOnlyRoute(<TemplatesEditor />)}
+            loader={templatesEditorLoader(headers)}
+          />
+          <Route
+            path="edit/:templateId"
+            element={adminsOnlyRoute(<TemplatesEditor />)}
+            loader={templatesEditorLoader(headers)}
+          />
+        </Route>
+      ) : (
+        <Route path="templates">
+          <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+          <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
+          <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
+        </Route>
+      )}
       <Route path="metadata_extraction">
         <Route
           index

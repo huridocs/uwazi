@@ -43,6 +43,7 @@ Add link,เพิ่มลิงค์
 Add page,เพิ่มหน้า
 Add PDF,Add PDF
 Add people or groups,เพิ่มผู้คนหรือกลุ่ม
+Add property,Add property
 Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,เพิ่มเทมเพลต
@@ -80,6 +81,7 @@ An error has occurred during data export,An error has occurred during data expor
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+Any entity,Any entity
 Any entity or document,Any entity or document
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
@@ -210,7 +212,6 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
-Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
@@ -317,8 +318,11 @@ Entity types,ประเภทรายการ
 Entity updated,Entity updated
 Error,ข้อผิดพลาด
 Error adding thesauri.,Error adding thesauri.
+Error creating relationship type.,Error creating relationship type.
+Error creating thesaurus.,Error creating thesaurus.
 Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
@@ -368,6 +372,7 @@ Full edit mode,โหมดการแก้ไขแบบสมบูรณ�
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
+Generated ID,Generated ID
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -409,6 +414,7 @@ Info,ข้อมูล
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,ก็อปปี้คุณสมบัตินี้
+Inherit type,Inherit type
 Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
@@ -549,6 +555,7 @@ No Group,No Group
 No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถูกคั่นหน้า
 No items available,No items available
 No Label,ไม่มีลาเบล
+No label,No label
 No options,No options
 No options found,ไม่พบตัวเลือก
 No property,ไม่เจอพร๊อพเพอร์ตี้
@@ -599,6 +606,7 @@ Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
+Options,Options
 or,หรือ
 or drop your files here.,หรือวางไฟล์ของคุณที่นี่
 Order,คำสั่ง
@@ -650,6 +658,8 @@ Processed,Processed
 Processing,กำลังประมวลผล
 Properties,คุณสมบัติ
 Properties from other templates in the collection using the same label,คุณสมบัติจากเทมเพลตอื่นๆในคอลเลกชันที่อยู่ในประเภทเดียวกัน
+Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
 Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
 Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
@@ -670,6 +680,7 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
+Property type,Property type
 Protection,การป้องกัน
 ProTip!,โปรทิป!
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
@@ -689,9 +700,14 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,การอ้างอิง
 Reject,ปฏิเสธ
+Relation type,Relation type
 Relationship,ความสัมพันธ์
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type,Relationship type
+Relationship type created successfully.,Relationship type created successfully.
+Relationship type name,Relationship type name
+Relationship type name already exists,Relationship type name already exists
 Relationship types,ประเภทความสัมพันธ์
 relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
@@ -707,6 +723,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,ใส่รหัสผ่านอีกครั้ง
 Request id #,ขอรหัส #
 Request token,Request token
+Required,Required
 Required property,คุณสมบัติที่จำเป็น
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
@@ -850,6 +867,8 @@ Target's role in the relationship Source-Target.,Target's role in the relationsh
 Template,แม่แบบ
 Template conflict,Template conflict
 Template name,Template name
+Template name already exists,Template name already exists
+Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
@@ -878,6 +897,9 @@ thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
+Thesaurus created successfully.,Thesaurus created successfully.
+Thesaurus name,Thesaurus name
+Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,กลุ่มคำอธิบายที่บันทึกแล้ว
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,พื้นที่นี้อนุญาตให้คุณใส่โค้ดจาว่าสคริปได้ มันจะช่วยให้คุณสามารถค้นพบความเป็นไปได้ใหม่ๆ
@@ -889,11 +911,15 @@ This entity is restricted from public view.,รายการนี้ถูก
 This field is required,This field is required
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
 This property will appear in the library cards as part of the basic info.,คุณสมบัตินี้จะถูกแสดงในการ์ดไลบรารีและเป็นส่วนหนึ่งของข้อมูลพื้นฐาน
 This property will be inherited from the related entities and shown as metadata of this type of entities.,คุณสมบัตินี้จะถูกโอนย้ายมาจากรายการที่เกี่ยวข้องและจะถูกแสดงเป็นเมตาดาต้าสำหรับประเภทรายการนี้
 This property will be shown using all the width available.,คุณสมบัตินี้จะถูกแสดงโดยใช้พื้นที่ทั้งหมดที่มีอยู่
+This property will be shown without the label,This property will be shown without the label
 This property will be shown without the label.,คุณสมบัตินี้จะถูกแสดงโดยไม่มีการจำแนกประเภท
+This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,this template
 This template has associated entities,This template has associated entities
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1003,7 +1029,9 @@ Warning: you are editing multiple entities. Fields marked with a,คำเตื
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 "Well, this is awkward...",แย่หน่อยนะ...
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,จะถูกอัปเดทด้วยค่าเดียวกัน
+Will show the entire media inside the container.,Will show the entire media inside the container.
 with,กับ
 With great power comes great responsibility!,พลังที่ยิ่งใหญ่มากับความรับผิดชอบที่ใหญ่ยิ่ง!
 x less,ลดขนาดลง
@@ -1018,6 +1046,7 @@ You can create metadata templates in,คุณสามารถสร้าง�
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
