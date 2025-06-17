@@ -697,17 +697,19 @@ class InformationExtraction {
 
   saveModelProcess = async (
     extractorId: ObjectIdSchema,
-    status: ModelStatus = ModelStatus.processing,
-    findingSuggestions = true
+    status?: ModelStatus,
+    findingSuggestions?: boolean
   ) => {
     const [currentModel] = await ixmodels.get({ extractorId });
+    const modelStatus = status || ModelStatus.processing;
 
     await ixmodels.save({
       ...currentModel,
-      status,
+      status: modelStatus,
       creationDate: new Date().getTime(),
       extractorId,
-      findingSuggestions,
+      findingSuggestions:
+        findingSuggestions !== undefined ? findingSuggestions : currentModel?.findingSuggestions,
     });
   };
 
@@ -717,28 +719,43 @@ class InformationExtraction {
         ..._message,
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
-      const [currentModel] = await IXModelsModel.get({
+      const [model] = await IXModelsModel.get({
         extractorId: message.params!.id,
       });
 
       try {
-        if (message.task === 'create_model' && message.success) {
-          await this.saveModelProcess(message.params!.id, ModelStatus.ready);
-          await this.updateSuggestionStatus(message, currentModel);
+        if (!message.success) {
+          await this.handleFailedStatus(message, model);
+          return;
         }
 
-        if (!message.success) {
-          await this.handleFailedStatus(message, currentModel);
+        if (message.task === 'create_model') {
+          await this.saveModelProcess(message.params!.id, ModelStatus.ready);
+
+          const [refreshedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+          if (!refreshedModel.findingSuggestions) {
+            emitToTenant(
+              message.tenant,
+              'ix_model_status',
+              _message.params!.id,
+              'ready',
+              'Canceled'
+            );
+            return;
+          }
+
+          await this.updateSuggestionStatus(message, refreshedModel);
+          await this.getSuggestions(message.params!.id);
           return;
         }
 
         if (message.task === 'suggestions') {
           await this.saveSuggestionsManager(message);
-          await this.updateSuggestionStatus(message, currentModel);
-          const [model] = await IXModelsModel.get({
-            extractorId: message.params!.id,
-          });
-          if (model.testRun) {
+          await this.updateSuggestionStatus(message, model);
+
+          const [refreshedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+
+          if (refreshedModel.testRun) {
             await this.stopModel(message.params!.id);
             emitToTenant(
               message.tenant,
@@ -749,17 +766,23 @@ class InformationExtraction {
             );
             return;
           }
-        }
 
-        if (!currentModel.findingSuggestions) {
-          emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
-          return;
+          if (refreshedModel.findingSuggestions) {
+            await this.getSuggestions(message.params!.id);
+          } else {
+            emitToTenant(
+              message.tenant,
+              'ix_model_status',
+              _message.params!.id,
+              'ready',
+              'Canceled'
+            );
+          }
         }
       } catch (error) {
-        await this.handleFailedStatus(message, currentModel);
+        await this.handleFailedStatus(message, model);
+        throw error;
       }
-
-      await this.getSuggestions(message.params!.id);
     }, _message.tenant);
   };
 
