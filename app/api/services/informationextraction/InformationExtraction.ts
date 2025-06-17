@@ -43,6 +43,7 @@ import { ParagraphSchema } from 'shared/types/segmentationType';
 import moment from 'moment';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
@@ -136,17 +137,17 @@ interface PropertySourceMaterials {
   values?: { id: string; label: string }[];
 }
 
-type IXTaskManager = TaskManager<TaskMessage, ResultMessage>;
+type IXTaskManager = TaskManager<TaskMessage, IXResultsMessage>;
 
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
-  public taskManager: IXTaskManager;
+  public taskManager: TaskManager<TaskMessage, IXResultsMessage>;
 
   static mock: any;
 
   constructor() {
-    this.taskManager = new TaskManager({
+    this.taskManager = new TaskManager<TaskMessage, IXResultsMessage>({
       serviceName: InformationExtraction.SERVICE_NAME,
       processResults: this.processResults,
     });
@@ -160,10 +161,52 @@ class InformationExtraction {
     await this.taskManager.stop();
   }
 
-  requestResults = async (message: InternalIXResultsMessage) => {
-    const response = await request.get(message.data_url);
+  private async handleFailedStatus(
+    message: InternalIXResultsMessage,
+    currentModel: IXModelType | undefined
+  ) {
+    const errorMessage = message.error_message || 'Task failed';
 
-    return JSON.parse(response.json);
+    await this.saveModelProcess(message.params!.id, ModelStatus.failed, false);
+
+    if (currentModel?.findingSuggestions) {
+      await IXSuggestionsModel.updateMany(
+        {
+          extractorId: message.params!.id,
+          status: 'processing',
+        },
+        {
+          $set: {
+            status: 'failed',
+            error: errorMessage,
+            'state.processing': false,
+            'state.error': true,
+            'state.match': null,
+            'state.withSuggestion': false,
+            'state.hasContext': false,
+          },
+        }
+      );
+    }
+
+    emitToTenant(
+      message.tenant,
+      'ix_model_status',
+      message.params!.id.toString(),
+      'error',
+      errorMessage
+    );
+  }
+
+  requestResults = async (message: InternalIXResultsMessage) => {
+    return retryWithBackoff(async () => {
+      try {
+        const response = await request.get(message.data_url);
+        return JSON.parse(response.json);
+      } catch (error) {
+        throw descriptiveError(error);
+      }
+    });
   };
 
   static sendXmlToService = async (
@@ -172,10 +215,16 @@ class InformationExtraction {
     extractorId: ObjectIdSchema,
     type: string
   ) => {
-    const fileContent = await storage.fileContents(xmlName, 'segmentation');
-    const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
-    const url = urljoin(serviceUrl, endpoint, tenants.current().name, extractorId.toString());
-    return request.uploadFile(url, xmlName, fileContent);
+    return retryWithBackoff(async () => {
+      try {
+        const fileContent = await storage.fileContents(xmlName, 'segmentation');
+        const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
+        const url = urljoin(serviceUrl, endpoint, tenants.current().name, extractorId.toString());
+        return await request.uploadFile(url, xmlName, fileContent);
+      } catch (error) {
+        throw descriptiveError(error);
+      }
+    });
   };
 
   extendMaterialsWithLabeledData = (
@@ -531,6 +580,9 @@ class InformationExtraction {
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
     const [extractor] = await Extractors.get({ _id: extractorId });
+    if (!extractor) {
+      return;
+    }
     if (extractor.source.pdf) {
       const files = await getFilesForSuggestions(extractorId);
 
@@ -606,6 +658,10 @@ class InformationExtraction {
       return { status: 'cancel', message: 'Canceling...' };
     }
 
+    if (currentModel.status === ModelStatus.failed) {
+      return { status: 'failed', message: 'Failed' };
+    }
+
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(
         extractorId,
@@ -629,7 +685,7 @@ class InformationExtraction {
   stopModel = async (extractorId: ObjectIdSchema) => {
     const res = await IXModelsModel.db.findOneAndUpdate(
       { extractorId },
-      { $set: { findingSuggestions: false } },
+      { $set: { findingSuggestions: false, status: ModelStatus.ready } },
       {}
     );
 
@@ -666,24 +722,33 @@ class InformationExtraction {
         extractorId: message.params!.id,
       });
 
-      if (message.task === 'create_model' && message.success) {
-        await this.saveModelProcess(message.params!.id, ModelStatus.ready);
-        await this.updateSuggestionStatus(message, currentModel);
-      }
+      try {
+        if (message.task === 'create_model' && message.success) {
+          await this.saveModelProcess(message.params!.id, ModelStatus.ready);
+          await this.updateSuggestionStatus(message, currentModel);
+        }
 
-      if (message.task === 'suggestions') {
-        await this.saveSuggestionsManager(message);
-        await this.updateSuggestionStatus(message, currentModel);
-      }
+        if (!message.success) {
+          await this.handleFailedStatus(message, currentModel);
+          return;
+        }
 
-      if (!currentModel.findingSuggestions) {
-        return emitToTenant(
-          message.tenant,
-          'ix_model_status',
-          _message.params!.id,
-          'ready',
-          'Canceled'
-        );
+        if (message.task === 'suggestions') {
+          await this.saveSuggestionsManager(message);
+          await this.updateSuggestionStatus(message, currentModel);
+        }
+
+        if (!currentModel.findingSuggestions) {
+          return emitToTenant(
+            message.tenant,
+            'ix_model_status',
+            _message.params!.id,
+            'ready',
+            'Canceled'
+          );
+        }
+      } catch (error) {
+        await this.handleFailedStatus(message, currentModel);
       }
 
       await this.getSuggestions(message.params!.id);
