@@ -5,7 +5,7 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { secondsToDate } from 'V2/shared/dateHelpers';
-import { TruncatedText } from 'V2/Components/UI';
+import { Truncate } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
 import { SuggestionValue } from '../types';
@@ -86,12 +86,12 @@ const SuggestedValue = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <TruncatedText maxLength={100} tooltipClassname="text-xs text-gray-500">
+      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
         <span className="text-gray-500">{getCurrentValue()}</span>
-      </TruncatedText>
-      <TruncatedText maxLength={100} tooltipClassname="text-xs">
+      </Truncate>
+      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs">
         <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
-      </TruncatedText>
+      </Truncate>
     </div>
   );
 };

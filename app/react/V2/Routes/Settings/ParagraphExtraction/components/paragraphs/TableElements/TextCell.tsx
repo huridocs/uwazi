@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { TablePXEntityParagraphRow } from 'V2/shared/ParagraphExtractionTypes';
-import { TruncatedText } from 'app/V2/Components/UI';
+import { Truncate } from 'app/V2/Components/UI';
 
 const TextCell = ({
   cell,
@@ -9,9 +9,9 @@ const TextCell = ({
   const text = cell.getValue();
 
   return (
-    <TruncatedText maxLength={200} tooltipClassname="text-xs text-gray-900">
+    <Truncate maxLength={200} ellipsisPosition="center" tooltipClassname="text-xs text-gray-900">
       {text}
-    </TruncatedText>
+    </Truncate>
   );
 };
 

@@ -1,31 +1,54 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { TruncatedText } from 'V2/Components/UI';
+import { Truncate } from 'V2/Components/UI';
 
-const meta: Meta<typeof TruncatedText> = {
-  title: 'Components/TruncatedText',
-  component: TruncatedText,
+const meta: Meta<typeof Truncate> = {
+  title: 'Components/Truncate',
+  component: Truncate,
 };
 
-type Story = StoryObj<typeof TruncatedText>;
+type Story = StoryObj<typeof Truncate>;
 
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <div className="flex gap-4 flex-col">
-        <TruncatedText maxLength={args.maxLength}>{args.children}</TruncatedText>
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
+          {args.children}
+        </Truncate>
 
-        <TruncatedText maxLength={args.maxLength}>Short text with not wrapping</TruncatedText>
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
+          Short text with not wrapping
+        </Truncate>
 
-        <TruncatedText maxLength={args.maxLength}>
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           <div className="px-1 bg-primary-400 text-white">
             Short text with no wrapping and custom styles
           </div>
-        </TruncatedText>
+        </Truncate>
 
-        <TruncatedText maxLength={args.maxLength}>
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           <div className="px-1 bg-orange-400 text-white">{args.children}</div>
-        </TruncatedText>
+        </Truncate>
+
+        <Truncate maxLength={args.maxLength}>
+          <div className="px-1 bg-orange-400 text-white">
+            The following text is a nested tag -&gt; {args.children}
+          </div>
+        </Truncate>
+
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
+          <div>
+            This has a variety{' '}
+            <span>
+              of nested <b>elements</b>
+            </span>{' '}
+            some nested{' '}
+            <div>
+              <i>some inside a div {args.children}</i>
+            </div>
+          </div>
+        </Truncate>
       </div>
     </div>
   ),
