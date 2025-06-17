@@ -581,6 +581,23 @@ class InformationExtraction {
     if (!extractor) {
       return;
     }
+
+    const [model] = await IXModelsModel.get({ extractorId });
+    if (model.testRun) {
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
+      if (suggestionsStatus.processed > 0) {
+        await this.stopModel(extractorId);
+        emitToTenant(
+          tenants.current().name,
+          'ix_model_status',
+          extractorId,
+          'ready',
+          'Test completed'
+        );
+        return;
+      }
+    }
+
     if (extractor.source.pdf) {
       const files = await getFilesForSuggestions(extractorId);
 
@@ -754,18 +771,6 @@ class InformationExtraction {
           await this.updateSuggestionStatus(message, model);
 
           const [refreshedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-
-          if (refreshedModel.testRun) {
-            await this.stopModel(message.params!.id);
-            emitToTenant(
-              message.tenant,
-              'ix_model_status',
-              _message.params!.id,
-              'ready',
-              'Test completed'
-            );
-            return;
-          }
 
           if (refreshedModel.findingSuggestions) {
             await this.getSuggestions(message.params!.id);
