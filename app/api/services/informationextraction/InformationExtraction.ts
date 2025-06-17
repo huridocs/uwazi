@@ -585,7 +585,8 @@ class InformationExtraction {
     const [model] = await IXModelsModel.get({ extractorId });
     if (model.testRun) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      if (suggestionsStatus.processed > 0) {
+      const testSuggestionsLimit = 1000;
+      if (suggestionsStatus.processed >= testSuggestionsLimit) {
         await this.stopModel(extractorId);
         emitToTenant(
           tenants.current().name,
@@ -598,10 +599,15 @@ class InformationExtraction {
       }
     }
 
+    let files: FileWithAggregation[] | undefined;
     if (extractor.source.pdf) {
-      const files = await getFilesForSuggestions(extractorId);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
+      const testSuggestionsLimit = 1000;
+      const remaining = testSuggestionsLimit - suggestionsStatus.processed;
 
-      if (files.length === 0) {
+      files = await getFilesForSuggestions(extractorId, model.testRun ? remaining : undefined);
+
+      if (!files || files.length === 0) {
         await this.stopModel(extractorId);
         emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
         return;
@@ -610,10 +616,17 @@ class InformationExtraction {
       await this.materialsForSuggestions(files, extractor);
     }
 
+    let entitiesForSuggestions: EntitySchema[] | undefined;
     if (extractor.source.property) {
-      const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
+      const testSuggestionsLimit = 1000;
+      const remaining = testSuggestionsLimit - suggestionsStatus.processed;
+      entitiesForSuggestions = await getEntitiesForSuggestions(
+        extractorId,
+        model.testRun ? remaining : undefined
+      );
 
-      if (!entitiesForSuggestions.length) {
+      if (!entitiesForSuggestions || !entitiesForSuggestions.length) {
         await this.stopModel(extractorId);
         emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
         return;

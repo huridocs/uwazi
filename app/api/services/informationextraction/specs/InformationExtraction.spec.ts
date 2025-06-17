@@ -24,6 +24,7 @@ import { Extractors } from '../ixextractors';
 import { IXExtractorModel } from '../IXExtractorModel';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
+import * as getFiles from '../getFiles';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -132,6 +133,7 @@ describe('InformationExtraction', () => {
 
   afterEach(async () => {
     await IXExternalService.stop();
+    jest.restoreAllMocks();
   });
 
   afterAll(async () => {
@@ -855,6 +857,55 @@ describe('InformationExtraction', () => {
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
 
       expect(model.findingSuggestions).toBe(true);
+    });
+
+    it('should stop after processing the test sample limit', async () => {
+      await InformationExtraction.testModel(factory.id('prop1extractor'));
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+
+      const suggestions = [];
+      for (let i = 0; i < 1001; i += 1) {
+        suggestions.push({
+          extractorId: factory.id('prop1extractor'),
+          date: model.creationDate + 1,
+        });
+      }
+      await IXSuggestionsModel.saveMultiple(suggestions);
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      const updatedModel = await IXModelsModel.getById(model._id);
+      expect(updatedModel?.findingSuggestions).toBe(false);
+
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        factory.id('prop1extractor'),
+        'ready',
+        'Test completed'
+      );
+    });
+
+    it('should call get suggestions with the remaining limit', async () => {
+      const getFilesForSuggestionsSpy = jest
+        .spyOn(getFiles, 'getFilesForSuggestions')
+        .mockResolvedValue([]);
+
+      await InformationExtraction.testModel(factory.id('prop1extractor'));
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+
+      const suggestions = [];
+      for (let i = 0; i < 500; i += 1) {
+        suggestions.push({
+          extractorId: factory.id('prop1extractor'),
+          date: model.creationDate + 1,
+        });
+      }
+      await IXSuggestionsModel.saveMultiple(suggestions);
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      expect(getFilesForSuggestionsSpy).toHaveBeenCalledWith(factory.id('prop1extractor'), 500);
     });
   });
 

@@ -216,7 +216,7 @@ async function getEntitiesForTraining(
   return entities;
 }
 
-async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
+async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const [currentModel] = await ixmodels.get({ extractorId });
   const [extractor] = await Extractors.get({ _id: extractorId });
 
@@ -231,7 +231,7 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
   }
 
   const suggestions = await IXSuggestionsModel.get(query, '', {
-    limit: currentModel.testRun ? 1000 : SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE,
+    limit: limit || SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE,
   });
 
   if (!extractor.property || !extractor) {
@@ -320,7 +320,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
-async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
+async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const [currentModel] = await ixmodels.get({ extractorId });
 
   const query: UwaziFilterQuery<any> = {
@@ -334,7 +334,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   }
 
   const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-    limit: currentModel.testRun ? 1000 : BATCH_SIZE,
+    limit: limit || BATCH_SIZE,
   });
 
   const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
