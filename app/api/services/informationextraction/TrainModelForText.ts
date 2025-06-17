@@ -9,6 +9,7 @@ import moment from 'moment';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { getEntitiesForTraining } from './getFiles';
 import { PropertySourceMaterials } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
@@ -16,7 +17,6 @@ import { IXServices } from './IXServices';
 import { ExtractionKey } from './ExtractionKey';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import ixmodels from './ixmodels';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -54,11 +54,7 @@ class TrainModelForText implements UseCase<Input, Output> {
         throw new NoEntitiesForTraining();
       }
 
-      await IXSuggestionsModel.updateMany(
-        { entityId: { $in: entities.map(e => e.sharedId) } },
-        { $set: { trainSampleTimestamp: model.creationDate } }
-      );
-
+      const processedEntityIds: string[] = [];
       const targetProperty = await IXServices.getTargetProperty({ extractor });
 
       await ArrayUtils.sequentialFor(entities, async entity => {
@@ -110,7 +106,13 @@ class TrainModelForText implements UseCase<Input, Output> {
         }
 
         await request.post(urljoin(this.props.serviceUrl, 'labeled_data'), data);
+        processedEntityIds.push(entity.sharedId!);
       });
+
+      await IXSuggestionsModel.updateMany(
+        { entityId: { $in: processedEntityIds } },
+        { $set: { trainSampleTimestamp: model.creationDate } }
+      );
 
       await this.props.iXTaskService.createModelTask({
         extractor,

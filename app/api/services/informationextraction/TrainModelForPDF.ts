@@ -9,6 +9,7 @@ import { LanguageUtils } from 'shared/language';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import {
   FileWithAggregation,
   getFilesForTraining,
@@ -48,10 +49,14 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
   async execute({ extractor }: Input): Promise<Output> {
     try {
+      const [model] = await ixmodels.get({ extractorId: extractor._id });
       const files = await getFilesForTraining(extractor?.templates, extractor?.property);
       if (!files.length) {
         throw new NoFilesForTraining();
       }
+
+      const processedEntityIds: string[] = [];
+
       await ArrayUtils.parallelFor(files, async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
@@ -76,7 +81,16 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
           propertyValue,
           propertyType,
         });
+
+        if (file.entity) {
+          processedEntityIds.push(file.entity);
+        }
       });
+
+      await IXSuggestionsModel.updateMany(
+        { entityId: { $in: processedEntityIds } },
+        { $set: { trainSampleTimestamp: model.creationDate } }
+      );
 
       await this.props.iXTaskService.createModelTask({
         extractor,

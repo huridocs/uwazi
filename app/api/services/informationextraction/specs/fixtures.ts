@@ -1071,6 +1071,34 @@ const fixtures: DBFixture = {
       status: 'ready',
       date: 100,
     },
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_target_multiselect_source_text'),
+      entityId: 'A18',
+      fileId: factory.id('F18'),
+      propertyName: 'property_multiselect',
+      status: 'ready',
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_target_multiselect_source_text'),
+      entityId: 'A19',
+      fileId: factory.id('F19'),
+      propertyName: 'property_multiselect',
+      status: 'ready',
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_target_relationship_source_text'),
+      entityId: 'A22',
+      fileId: factory.id('F22'),
+      propertyName: 'property_relationship',
+      status: 'ready',
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_target_relationship_source_text'),
+      entityId: 'A23',
+      fileId: factory.id('F23'),
+      propertyName: 'property_relationship',
+      status: 'ready',
+    }),
   ],
   ixmodels: [
     {

@@ -21,6 +21,7 @@ import {
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
+import { IXExtractorModel } from '../IXExtractorModel';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
 
@@ -240,12 +241,15 @@ describe('InformationExtraction', () => {
     });
 
     it('should send labeled data', async () => {
-      await InformationExtraction.trainModel(factory.id('prop1extractor'));
+      const extractorId = factory.id('prop1extractor');
+      await InformationExtraction.trainModel(extractorId);
 
       expect(IXExternalService.materials.length).toBe(2);
-      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
+      expect(
+        IXExternalService.materials.find((m: any) => m.xml_file_name === 'documentA.xml')
+      ).toEqual({
         xml_file_name: 'documentA.xml',
-        id: factory.id('prop1extractor').toString(),
+        id: extractorId.toString(),
         tenant: 'tenant1',
         xml_segments_boxes: [
           {
@@ -263,15 +267,27 @@ describe('InformationExtraction', () => {
         label_text: 'labeled text',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      const suggestions = await IXSuggestionsModel.get({
+        entityId: { $in: ['A1', 'A3'] },
+        extractorId,
+      });
+
+      expect(suggestions).toHaveLength(2);
+      expect(suggestions.every(s => s.trainSampleTimestamp === model.creationDate)).toBe(true);
     });
 
     it('should send labeled data (multiselect)', async () => {
-      await InformationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+      const extractorId = factory.id('extractorWithMultiselect');
+      await InformationExtraction.trainModel(extractorId);
 
       expect(IXExternalService.materials.length).toBe(2);
-      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentG.xml')).toEqual({
+      expect(
+        IXExternalService.materials.find((m: any) => m.xml_file_name === 'documentG.xml')
+      ).toEqual({
         xml_file_name: 'documentG.xml',
-        id: factory.id('extractorWithMultiselect').toString(),
+        id: extractorId.toString(),
         tenant: 'tenant1',
         xml_segments_boxes: [
           {
@@ -293,16 +309,37 @@ describe('InformationExtraction', () => {
           },
         ],
       });
+
+      expect(
+        sortByStrings(IXExternalService.materials, [(m: any) => m.xml_file_name])[1].values
+      ).toEqual([
+        { id: 'B', label: 'B' },
+        { id: 'C', label: 'C' },
+      ]);
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      const suggestions = await IXSuggestionsModel.get({
+        entityId: { $in: ['A17', 'A18'] },
+        extractorId,
+      });
+
+      expect(suggestions).toHaveLength(2);
+      expect(suggestions.every(s => s.trainSampleTimestamp === model.creationDate)).toBe(true);
     });
 
     it('should send labeled data (relationship)', async () => {
-      await InformationExtraction.trainModel(factory.id('extractorWithRelationship'));
+      const extractorId = factory.id('extractorWithRelationship');
+      await InformationExtraction.trainModel(extractorId);
 
       expect(IXExternalService.materials.length).toBe(2);
-      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentL.xml')).toEqual({
-        xml_file_name: 'documentL.xml',
-        id: factory.id('extractorWithRelationship').toString(),
+
+      expect(
+        IXExternalService.materials.find((m: any) => m.xml_file_name === 'documentK.xml')
+      ).toEqual({
+        xml_file_name: 'documentK.xml',
+        id: extractorId.toString(),
         tenant: 'tenant1',
+        language_iso: 'en',
         xml_segments_boxes: [
           {
             left: 1,
@@ -312,29 +349,159 @@ describe('InformationExtraction', () => {
             page_number: 1,
             text: 'P1',
           },
-          {
-            left: 1,
-            top: 1,
-            width: 1,
-            height: 1,
-            page_number: 1,
-            text: 'P2',
-          },
         ],
         page_width: 13,
         page_height: 13,
-        language_iso: 'en',
-        values: [
-          {
-            id: 'P1sharedId',
-            label: 'P1',
-          },
-          {
-            id: 'P3sharedId',
-            label: 'P3',
-          },
-        ],
+        values: [{ id: 'P1sharedId', label: 'P1' }],
       });
+      expect(
+        sortByStrings(IXExternalService.materials, [(m: any) => m.xml_file_name])[1].values
+      ).toEqual([
+        { id: 'P1sharedId', label: 'P1' },
+        { id: 'P3sharedId', label: 'P3' },
+      ]);
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      const suggestions = await IXSuggestionsModel.get({
+        entityId: { $in: ['A21', 'A22'] },
+        extractorId,
+      });
+
+      expect(suggestions).toHaveLength(2);
+      expect(suggestions.every(s => s.trainSampleTimestamp === model.creationDate)).toBe(true);
+    });
+
+    it('should train a text based model', async () => {
+      const extractorId = factory.id('sourceTextExtractor1');
+      const [extractor] = await Extractors.get({ _id: extractorId });
+      extractor.source.property = 'source_property';
+      await IXExtractorModel.save(extractor);
+      await InformationExtraction.trainModel(extractorId);
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(sortByStrings(IXExternalService.materials, [(m: any) => m.entity_name])).toEqual([
+        {
+          id: extractorId.toString(),
+          tenant: 'tenant1',
+          language_iso: 'en',
+          entity_name: 'A1___en',
+          source_text: 'any_source_text',
+          label_text: 'labeled text',
+        },
+        {
+          id: extractorId.toString(),
+          tenant: 'tenant1',
+          language_iso: 'other',
+          entity_name: 'A1___other',
+          source_text: 'any_source_text',
+          label_text: '1088985600',
+        },
+      ]);
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      const suggestions = await IXSuggestionsModel.get({ extractorId });
+
+      const suggestionsForTraining = suggestions.filter(s => ['A1'].includes(s.entityId!));
+
+      const suggestionsNotForTraining = suggestions.filter(s => !['A1'].includes(s.entityId!));
+
+      expect(suggestionsForTraining.length).toBe(2);
+      expect(suggestionsForTraining.every(s => s.trainSampleTimestamp === model.creationDate)).toBe(
+        true
+      );
+
+      expect(suggestionsNotForTraining.length).toBe(1);
+      expect(suggestionsNotForTraining.every(s => !s.trainSampleTimestamp)).toBe(true);
+    });
+
+    it('should train a text based model (multiselect)', async () => {
+      const extractorId = factory.id('extractor_target_multiselect_source_text');
+      const [extractor] = await Extractors.get({ _id: extractorId });
+      extractor.source.property = 'source_property';
+      await IXExtractorModel.save(extractor);
+      await InformationExtraction.trainModel(extractorId);
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(sortByStrings(IXExternalService.materials, [(m: any) => m.entity_name])).toEqual([
+        {
+          id: extractorId.toString(),
+          tenant: 'tenant1',
+          language_iso: 'en',
+          entity_name: 'A17___en',
+          source_text: 'any_source_text_1',
+          values: [{ id: 'A', label: 'A' }],
+        },
+        {
+          id: extractorId.toString(),
+          tenant: 'tenant1',
+          language_iso: 'en',
+          entity_name: 'A18___en',
+          source_text: 'any_source_text_2',
+          values: [
+            { id: 'B', label: 'B' },
+            { id: 'C', label: 'C' },
+          ],
+        },
+      ]);
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId,
+      });
+
+      const processedSuggestions = suggestions.filter(s => ['A17', 'A18'].includes(s.entityId!));
+      const unprocessedSuggestion = suggestions.find(s => s.entityId === 'A19');
+
+      expect(processedSuggestions).toHaveLength(2);
+      expect(processedSuggestions.every(s => s.trainSampleTimestamp === model.creationDate)).toBe(
+        true
+      );
+      expect(unprocessedSuggestion?.trainSampleTimestamp).toBeUndefined();
+    });
+
+    it('should train a text based model (relationship)', async () => {
+      const extractorId = factory.id('extractor_target_relationship_source_text');
+      const [extractor] = await Extractors.get({ _id: extractorId });
+      extractor.source.property = 'source_property';
+      await IXExtractorModel.save(extractor);
+      await InformationExtraction.trainModel(extractorId);
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(sortByStrings(IXExternalService.materials, [(m: any) => m.entity_name])).toEqual([
+        {
+          id: extractorId.toString(),
+          tenant: 'tenant1',
+          language_iso: 'en',
+          entity_name: 'A21___en',
+          source_text: 'any_source_text',
+          values: [{ id: 'P1sharedId', label: 'P1' }],
+        },
+        {
+          id: extractorId.toString(),
+          tenant: 'tenant1',
+          language_iso: 'en',
+          entity_name: 'A22___en',
+          source_text: 'any_source_text',
+          values: [
+            { id: 'P1sharedId', label: 'P1' },
+            { id: 'P3sharedId', label: 'P3' },
+          ],
+        },
+      ]);
+
+      const [model] = await IXModelsModel.get({ extractorId });
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId,
+      });
+
+      const processedSuggestions = suggestions.filter(s => ['A21', 'A22'].includes(s.entityId!));
+      const unprocessedSuggestion = suggestions.find(s => s.entityId === 'A23');
+
+      expect(processedSuggestions).toHaveLength(2);
+      expect(processedSuggestions.every(s => s.trainSampleTimestamp === model.creationDate)).toBe(
+        true
+      );
+      expect(unprocessedSuggestion?.trainSampleTimestamp).toBeUndefined();
     });
 
     it('should sanitize dates before sending', async () => {
