@@ -691,23 +691,8 @@ class InformationExtraction {
   };
 
   stopModel = async (extractorId: ObjectIdSchema) => {
-    // Change from AI
     await ixmodels.stopTraining(extractorId);
-
-    // Change from Mercy
-    const res = await IXModelsModel.db.findOneAndUpdate(
-      { extractorId },
-      { $set: { findingSuggestions: false } },
-      {}
-    );
-
-    if (res) {
-      return { status: 'ready', message: 'Ready' };
-    }
-
-    return { status: 'error', message: 'No model found' };
-    // AI return
-    // return { status: 'ready' as const, message: 'Model stopped' };
+    return { status: 'ready' as const, message: 'Model stopped' };
   };
 
   saveModelProcess = async (
