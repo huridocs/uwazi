@@ -82,7 +82,6 @@ export const config = {
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
-      ixExtraSources: true,
       improvedTemplatesSave: false,
     },
   },

@@ -243,10 +243,6 @@ const getAvailableSources = (
     baseOptions[0].defaultChecked = true;
   }
 
-  if (!window.__featureFlags__?.ixExtraSources) {
-    return baseOptions;
-  }
-
   const commonProperty = selectedTemplatesIdsAndProperties[0]
     ? selectedTemplatesIdsAndProperties[0].split('-', 2)[1]
     : '';

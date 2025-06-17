@@ -18,7 +18,6 @@ type Tenant = {
     esReplicas?: number;
     sync?: boolean;
     deactivateTestJob?: boolean;
-    ixExtraSources?: boolean;
     paragraphExtraction?: boolean;
     improvedTemplatesSave?: boolean;
   };

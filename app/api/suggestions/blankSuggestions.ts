@@ -128,7 +128,7 @@ async function createBlankStateSuggestionsBatch(
   }
   const batchData = await fetchEntitiesDataForBatch(templateId, batch.fromId, batch.toId);
 
-  if (tenants.current().featureFlags?.ixExtraSources && extractorSource.property) {
+  if (extractorSource.property) {
     const batchSuggestions = batchData.map(entity => {
       const blank = {
         language: entity.language,
