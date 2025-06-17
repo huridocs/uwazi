@@ -220,7 +220,6 @@ describe('ixextractors', () => {
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       name: 'ixTenant',
-      featureFlags: { ixExtraSources: true },
     });
   });
 
