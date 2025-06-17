@@ -670,7 +670,7 @@ class InformationExtraction {
       return { status: 'failed', message: 'Failed' };
     }
 
-    if (currentModel.status === 'ready' && currentModel.findingSuggestions) {
+    if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(
         extractorId,
         currentModel.creationDate
