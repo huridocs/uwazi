@@ -1,7 +1,16 @@
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ClientIXExtractorType, ClientTemplateSchema } from 'V2/shared/types';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { TextHighlight } from 'V2/Components/PDFViewer/types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+
+type SuggestionValue = null | string | number;
+
+type EntitySuggestion = Omit<EntitySuggestionType, '_id' | 'suggestedValue' | 'currentValue'> & {
+  _id: string;
+  suggestedValue: SuggestionValue | SuggestionValue[];
+  currentValue?: SuggestionValue | SuggestionValue[];
+  extractorSource: { pdf?: boolean; property?: string };
+};
 
 interface IXProperty extends PropertySchema {
   type: 'text' | 'date' | 'numeric' | 'markdown';
@@ -17,30 +26,32 @@ type TableExtractor = ClientIXExtractorType & {
 
 type Highlights = { [page: string]: TextHighlight[] };
 
-type SuggestionValue = string | number;
-
-interface SingleValueSuggestion extends EntitySuggestionType {
-  _id: ObjectIdSchema;
+interface SingleValueSuggestion extends EntitySuggestion {
   rowId: string;
   disableRowSelection?: boolean;
-  suggestedValue: SuggestionValue;
-  currentValue?: SuggestionValue;
   isChild?: boolean;
   extractorSource: { pdf?: boolean; property?: string };
 }
 
-interface MultiValueSuggestion extends EntitySuggestionType {
-  _id: ObjectIdSchema;
+interface MultiValueSuggestion extends EntitySuggestion {
   rowId: string;
   disableRowSelection?: boolean;
-  suggestedValue: SuggestionValue[];
-  currentValue: SuggestionValue[];
-  subRows: SingleValueSuggestion[];
+  subRows?: SingleValueSuggestion[];
   isChild?: boolean;
   extractorSource: { pdf?: boolean; property?: string };
 }
 
 type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
+
+type IXSuggestionsLoaderResponse = {
+  suggestions: TableSuggestion[];
+  extractor: ClientIXExtractorType;
+  templates: ClientTemplateSchema[];
+  aggregation: any;
+  currentStatus: ixStatus;
+  totalPages: number;
+  activeFilters: number;
+};
 
 export enum ixStatus {
   ready = 'ready',
@@ -52,10 +63,12 @@ export enum ixStatus {
 }
 
 export type {
+  EntitySuggestion,
   TableExtractor,
   Highlights,
   TableSuggestion,
-  SuggestionValue,
   SingleValueSuggestion,
   MultiValueSuggestion,
+  IXSuggestionsLoaderResponse,
+  SuggestionValue,
 };

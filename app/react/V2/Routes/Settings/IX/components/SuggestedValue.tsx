@@ -1,14 +1,13 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { secondsToDate } from 'V2/shared/dateHelpers';
 import { Truncate } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
-import { SuggestionValue } from '../types';
+import { EntitySuggestion } from '../types';
 
 // eslint-disable-next-line max-statements
 const SuggestedValue = ({
@@ -16,8 +15,8 @@ const SuggestedValue = ({
   suggestion,
   templateProperties,
 }: {
-  value: SuggestionValue | SuggestionValue[] | undefined;
-  suggestion: EntitySuggestionType;
+  value?: EntitySuggestion['suggestedValue'];
+  suggestion: EntitySuggestion;
   templateProperties: ClientTemplateSchema['properties'];
 }) => {
   const locale = useParams().lang;
@@ -67,7 +66,7 @@ const SuggestedValue = ({
       return <Translate context={content}>{label}</Translate>;
     }
 
-    return value.toString();
+    return value?.toString();
   };
 
   const getSuggestedValue = () => {

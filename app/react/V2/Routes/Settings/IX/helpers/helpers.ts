@@ -149,8 +149,10 @@ const updateMultiValueSuggestions = (
     ? parentSuggestion.currentValue.concat(value)
     : parentSuggestion.currentValue.filter(v => v !== value);
 
-  parentSuggestion.state.match = parentSuggestion.currentValue.every(v =>
-    parentSuggestion.suggestedValue.includes(v)
+  parentSuggestion.state.match = parentSuggestion.currentValue.every(
+    v =>
+      Array.isArray(parentSuggestion.suggestedValue) &&
+      parentSuggestion.suggestedValue.includes(v as SuggestionValue)
   );
 
   parentSuggestion = generateChildrenRows(parentSuggestion);
