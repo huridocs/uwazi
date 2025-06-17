@@ -19,7 +19,7 @@ describe('Truncate', () => {
     'renders text "%s" with maxLength %i (should truncate: %s)',
     async (text, maxLength, shouldTruncate, expectedTruncatedText) => {
       render(
-        <Truncate maxLength={maxLength} method="center">
+        <Truncate maxLength={maxLength} ellipsisPosition="center">
           {text}
         </Truncate>
       );
@@ -42,7 +42,7 @@ describe('Truncate', () => {
     ['Text with orange background', 'bg-orange-400 text-white'],
   ])('renders styled text "%s" with classes %s', (text, className) => {
     render(
-      <Truncate maxLength={40} method="center">
+      <Truncate maxLength={40} ellipsisPosition="center">
         <div className={className}>{text}</div>
       </Truncate>
     );
@@ -58,7 +58,7 @@ describe('Truncate', () => {
 
     await act(async () => {
       render(
-        <Truncate maxLength={20} method="center">
+        <Truncate maxLength={20} ellipsisPosition="center">
           <div className={className}>{longText}</div>
         </Truncate>
       );
@@ -72,7 +72,7 @@ describe('Truncate', () => {
   it('handles text with special characters', async () => {
     const textWithSpecialChars = 'Text with dots... and more text that should be truncated';
     render(
-      <Truncate maxLength={20} method="center">
+      <Truncate maxLength={20} ellipsisPosition="center">
         {textWithSpecialChars}
       </Truncate>
     );
@@ -80,7 +80,7 @@ describe('Truncate', () => {
     expect(screen.getByText(textWithSpecialChars)).toBeInTheDocument();
   });
 
-  it('should add the ellipse at the end by default', () => {
+  it('should add the ellipsis at the end by default', () => {
     const longText = 'This is a very long text that should be truncated at the end';
     render(<Truncate maxLength={20}>{longText}</Truncate>);
 

@@ -5,17 +5,17 @@ type TruncateProps = {
   children: React.ReactNode;
   maxLength?: number;
   tooltipClassname?: string;
-  method?: 'center' | 'end';
+  ellipsisPosition?: 'center' | 'end';
 };
 
 const truncateText = (
   text: string,
   maxLength: number,
-  method: TruncateProps['method']
+  ellipsisPosition: TruncateProps['ellipsisPosition']
 ): [string, string] => {
   if (text.length <= maxLength) return [text, ''];
 
-  if (method === 'end') {
+  if (ellipsisPosition === 'end') {
     return [text.slice(0, maxLength).trim(), ''];
   }
 
@@ -54,18 +54,18 @@ const Truncate = ({
   children,
   maxLength = 40,
   tooltipClassname,
-  method = 'end',
+  ellipsisPosition = 'end',
 }: TruncateProps) => {
   const text = getTextContent(children);
   const childClassName = getClassName(children);
   const shouldEllipsize = text.length > maxLength;
-  const [startText, endText] = truncateText(text, maxLength, method);
+  const [startText, endText] = truncateText(text, maxLength, ellipsisPosition);
 
   if (!shouldEllipsize) {
     return <>{children}</>;
   }
 
-  if (method === 'end') {
+  if (ellipsisPosition === 'end') {
     return (
       <span>
         <span className={childClassName}>{startText}</span>

@@ -13,21 +13,21 @@ const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <div className="flex gap-4 flex-col">
-        <Truncate maxLength={args.maxLength} method="center">
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           {args.children}
         </Truncate>
 
-        <Truncate maxLength={args.maxLength} method="center">
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           Short text with not wrapping
         </Truncate>
 
-        <Truncate maxLength={args.maxLength} method="center">
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           <div className="px-1 bg-primary-400 text-white">
             Short text with no wrapping and custom styles
           </div>
         </Truncate>
 
-        <Truncate maxLength={args.maxLength} method="center">
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           <div className="px-1 bg-orange-400 text-white">{args.children}</div>
         </Truncate>
 
@@ -37,7 +37,7 @@ const Primary: Story = {
           </div>
         </Truncate>
 
-        <Truncate maxLength={args.maxLength} method="center">
+        <Truncate maxLength={args.maxLength} ellipsisPosition="center">
           <div>
             This has a variety{' '}
             <span>

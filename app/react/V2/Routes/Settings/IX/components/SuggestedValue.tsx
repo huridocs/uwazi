@@ -86,10 +86,10 @@ const SuggestedValue = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <Truncate maxLength={100} method="center" tooltipClassname="text-xs text-gray-500">
+      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
         <span className="text-gray-500">{getCurrentValue()}</span>
       </Truncate>
-      <Truncate maxLength={100} method="center" tooltipClassname="text-xs">
+      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs">
         <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
       </Truncate>
     </div>
