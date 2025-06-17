@@ -367,7 +367,7 @@ describe('InformationExtraction', () => {
       const xml1 = 'extractor_target_rich_text_source_pdf_entity_1_f1_en.xml';
       const xml2 = 'extractor_target_rich_text_source_pdf_entity_1_f1_es.xml';
 
-      await informationExtraction.trainModel(extractorId);
+      await InformationExtraction.trainModel(extractorId);
 
       const [seg1, seg2] = await Promise.all([readDocument('', xml1), readDocument('', xml2)]);
 

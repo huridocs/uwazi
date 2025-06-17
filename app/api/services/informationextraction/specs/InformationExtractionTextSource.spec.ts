@@ -339,7 +339,7 @@ describe('Information Extraction: Extracting from text source', () => {
       });
       const extractorId = factory.id('extractor_target_rich_text_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await InformationExtraction.trainModel(extractorId);
 
       const suggestion1En = IXExternalService.materials.find(
         m => m.entity_name === extractionKey1En.key
