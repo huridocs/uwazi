@@ -40,6 +40,10 @@ export class ExternalDummyService {
 
   resultsFileParams: any;
 
+  private errorSimulation: { type?: string; status?: number; code?: string } = {};
+
+  public actualPort: number | undefined;
+
   constructor(port = 1234, serviceName = 'dummy', urlOptions = {}) {
     this.port = port;
     this.serviceName = serviceName;
@@ -54,25 +58,76 @@ export class ExternalDummyService {
       ...urlOptions,
     };
 
-    this.app.post(urls.materialsData, (req, res) => {
-      this.materials.push(req.body);
-      this.materialsDataParams = req.params;
-      res.send('ok');
-    });
+    this.app.post(urls.materialsData, multer().any(), async (req, res) => {
+      try {
+        if (this.errorSimulation.type) {
+          const error = new Error(`Simulated ${this.errorSimulation.type} error`);
+          (error as any).code = this.errorSimulation.type;
+          throw error;
+        }
 
-    this.app.post(urls.materialsFiles, multer().any(), (req, res) => {
-      if (req.files?.length) {
-        const files = req.files as { buffer: Buffer; originalname: string }[];
-        this.files.push(files[0].buffer);
-        this.filesNames.push(files[0].originalname);
+        if (this.errorSimulation.status) {
+          res.status(this.errorSimulation.status).json({
+            error: `Simulated ${this.errorSimulation.status} error`,
+          });
+          return;
+        }
+
+        this.materials.push(req.body);
+        this.materialsDataParams = req.params;
+        res.json({ success: true });
+      } catch (e) {
+        res.status(500).json({ error: e.message });
       }
-      this.materialsFileParams = req.params;
-      res.send('received');
     });
 
-    this.app.get(urls.resultsData, (req, res) => {
-      this.resultsDataParams = req.params;
-      res.json(JSON.stringify(this.results));
+    this.app.post(urls.materialsFiles, multer().any(), async (req, res) => {
+      try {
+        if (this.errorSimulation.type) {
+          const error = new Error(`Simulated ${this.errorSimulation.type} error`);
+          (error as any).code = this.errorSimulation.type;
+          throw error;
+        }
+
+        if (this.errorSimulation.status) {
+          res.status(this.errorSimulation.status).json({
+            error: `Simulated ${this.errorSimulation.status} error`,
+          });
+          return;
+        }
+
+        if (req.files?.length) {
+          const files = req.files as { buffer: Buffer; originalname: string }[];
+          this.files.push(...files.map(f => f.buffer));
+          this.filesNames.push(...files.map(f => f.originalname));
+        }
+        this.materialsFileParams = req.params;
+        res.json({ success: true });
+      } catch (e) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+
+    this.app.get(urls.resultsData, async (req, res) => {
+      try {
+        if (this.errorSimulation.type) {
+          const error = new Error(`Simulated ${this.errorSimulation.type} error`);
+          (error as any).code = this.errorSimulation.type;
+          throw error;
+        }
+
+        if (this.errorSimulation.status) {
+          res.status(this.errorSimulation.status).json({
+            error: `Simulated ${this.errorSimulation.status} error`,
+          });
+          return;
+        }
+
+        this.resultsDataParams = req.params;
+        res.json(JSON.stringify(this.results));
+      } catch (e) {
+        res.status(500).json({ error: e.message });
+      }
     });
 
     this.app.get(urls.resultsFile, (req, res) => {
@@ -164,23 +219,33 @@ export class ExternalDummyService {
   async start(redisUrl?: string) {
     if (redisUrl) {
       this.redisClient = await Redis.createClient(redisUrl);
-
       this.redisSMQ = await new RedisSMQ({ client: this.redisClient });
       await this.resetQueue();
     }
-
     const start = new Promise<void>(resolve => {
       this.server = this.app.listen(this.port, () => {
+        this.actualPort = (this.server!.address() as any).port;
         resolve();
       });
     });
-
     return start;
   }
 
   async stop() {
     await this.redisClient?.end(true);
-    await this.server?.close();
+    if (this.server) {
+      await new Promise<void>((resolve, reject) => {
+        this.server!.close(err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          this.server = undefined;
+          // Give the OS time to fully release the port
+          setTimeout(resolve, 500);
+        });
+      });
+    }
   }
 
   async sendFinishedMessage(task: ResultsMessage) {
@@ -198,5 +263,18 @@ export class ExternalDummyService {
     this.files = [];
     this.filesNames = [];
     this.materials = [];
+    this.errorSimulation = {};
+  }
+
+  simulateConnectionError(type: string) {
+    this.errorSimulation = { type };
+  }
+
+  simulateServiceError(status: number) {
+    this.errorSimulation = { status };
+  }
+
+  simulateSuccess() {
+    this.errorSimulation = {};
   }
 }

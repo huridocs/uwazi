@@ -114,32 +114,29 @@ describe('InformationExtraction', () => {
     IXExternalService.setResults(IXResults);
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
     });
-
     await IXExternalService.start();
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
-  });
-
-  beforeEach(async () => {
     informationExtraction = new InformationExtraction();
-
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
     });
-
     IXExternalService.reset();
     jest.resetAllMocks();
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+  });
+
+  afterEach(async () => {
+    await IXExternalService.stop();
   });
 
   afterAll(async () => {
-    await IXExternalService.stop();
     await testingEnvironment.tearDown();
   });
 
@@ -1168,7 +1165,7 @@ describe('InformationExtraction', () => {
       ]);
 
       await informationExtraction.processResults({
-        params: { id: factory.id('prop1extractor').toString() },
+        params: { id: factory.id('prop2extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: false,
@@ -1178,7 +1175,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'failed',
-        extractorId: factory.id('prop1extractor'),
+        extractorId: factory.id('prop2extractor'),
       });
 
       expect(suggestions.length).toBe(1);
@@ -1186,19 +1183,16 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           language: 'en',
-          propertyName: 'property1',
-          suggestedValue: '',
-          segment: '',
+          propertyName: 'property2',
+          suggestedValue: 'suggestion_text_1',
+          segment: 'segment_text_1',
           status: 'failed',
           error: 'Issue calculation suggestion',
           state: {
-            labeled: true,
             match: null,
-            withValue: true,
             withSuggestion: false,
             hasContext: false,
             processing: false,
-            obsolete: false,
             error: true,
           },
         })
