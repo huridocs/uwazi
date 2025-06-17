@@ -128,6 +128,7 @@ const FORMATTERS: Record<
   ) => Partial<IXSuggestionType>
 > = {
   title: textFormatter,
+  markdown: textFormatter,
   text: textFormatter,
   numeric: (
     rawSuggestion: RawSuggestion,
@@ -245,6 +246,13 @@ class SuggestionTextSourceFormatter {
     };
   }
 
+  private static markdown({ text, segment_text }: RawSuggestion) {
+    return {
+      suggestedValue: text,
+      segment: segment_text,
+    };
+  }
+
   private static numeric({ text, segment_text }: RawSuggestion) {
     return {
       suggestedValue: Number(text),
@@ -317,6 +325,9 @@ class SuggestionTextSourceFormatter {
 
       case 'title':
         return SuggestionTextSourceFormatter.title(rawSuggestion);
+
+      case 'markdown':
+        return SuggestionTextSourceFormatter.markdown(rawSuggestion);
 
       default: {
         throw new Error(`Unsupported property type for format suggestion: ${type}`);

@@ -60,10 +60,13 @@ jest.mock('api/queue.v2/configuration/factories', () => ({
   },
 }));
 
-const readDocument = async (letter: string) =>
-  fs.readFile(
-    `app/api/services/informationextraction/specs/uploads/segmentation/document${letter}.xml`
+const readDocument = async (letter: string, xmlName?: string) => {
+  const _xmlName = xmlName ?? `document${letter}.xml`;
+
+  return fs.readFile(
+    `app/api/services/informationextraction/specs/uploads/segmentation/${_xmlName}`
   );
+};
 
 let informationExtraction: InformationExtraction;
 describe('InformationExtraction', () => {
@@ -108,32 +111,29 @@ describe('InformationExtraction', () => {
     IXExternalService.setResults(IXResults);
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
     });
-
     await IXExternalService.start();
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
-  });
-
-  beforeEach(async () => {
     informationExtraction = new InformationExtraction();
-
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
     });
-
     IXExternalService.reset();
     jest.resetAllMocks();
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+  });
+
+  afterEach(async () => {
+    await IXExternalService.stop();
   });
 
   afterAll(async () => {
-    await IXExternalService.stop();
     await testingEnvironment.tearDown();
   });
 
@@ -362,6 +362,53 @@ describe('InformationExtraction', () => {
       });
     });
 
+    it('should only send labeled data (rich text)', async () => {
+      const extractorId = factory.id('extractor_target_rich_text_source_pdf');
+      const xml1 = 'extractor_target_rich_text_source_pdf_entity_1_f1_en.xml';
+      const xml2 = 'extractor_target_rich_text_source_pdf_entity_1_f1_es.xml';
+
+      await informationExtraction.trainModel(extractorId);
+
+      const [seg1, seg2] = await Promise.all([readDocument('', xml1), readDocument('', xml2)]);
+
+      const suggestion1 = IXExternalService.materials.find(m => m.xml_file_name === xml1);
+      const suggestion2 = IXExternalService.materials.find(m => m.xml_file_name === xml2);
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_train/tenant1/${extractorId}`,
+        id: extractorId.toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.files.length).toBe(2);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([seg1, seg2]));
+      expect(IXExternalService.filesNames.sort()).toEqual([xml1, xml2].sort());
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(suggestion1).toEqual({
+        id: extractorId.toString(),
+        xml_file_name: xml1,
+        tenant: 'tenant1',
+        xml_segments_boxes: [{ left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' }],
+        page_width: 13,
+        page_height: 13,
+        language_iso: 'en',
+        label_text: 'any_rich_text_value_english',
+        label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+      });
+      expect(suggestion2).toEqual({
+        id: extractorId.toString(),
+        xml_file_name: xml2,
+        tenant: 'tenant1',
+        xml_segments_boxes: [{ left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' }],
+        page_width: 13,
+        page_height: 13,
+        language_iso: 'es',
+        label_text: 'any_rich_text_value_spanish',
+        label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+      });
+    });
+
     it('should start the task to train the model', async () => {
       await InformationExtraction.trainModel(factory.id('prop1extractor'));
 
@@ -507,6 +554,18 @@ describe('InformationExtraction', () => {
             {
               id: 'entityWithoutSegmentation',
               label: 'entityWithoutSegmentation',
+            },
+            {
+              id: 'extractor_target_rich_text_source_text_entity_1',
+              label: 'extractor_target_rich_text_source_text_entity_1',
+            },
+            {
+              id: 'extractor_target_rich_text_source_text_entity_2',
+              label: 'extractor_target_rich_text_source_text_entity_2',
+            },
+            {
+              id: 'extractor_target_rich_text_source_pdf_entity_1',
+              label: 'extractor_target_rich_text_source_pdf_entity_1',
             },
           ],
           metadata: {
@@ -705,7 +764,9 @@ describe('InformationExtraction', () => {
     it('should send the materials for the suggestions (multiselect)', async () => {
       await informationExtraction.getSuggestions(factory.id('extractorWithMultiselect'));
 
-      const [xmlG, xmlH, xmlI] = await Promise.all(['G', 'H', 'I'].map(readDocument));
+      const [xmlG, xmlH, xmlI] = await Promise.all(
+        ['G', 'H', 'I'].map(async letter => readDocument(letter))
+      );
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_predict/tenant1/${factory.id('extractorWithMultiselect')}`,
@@ -782,7 +843,9 @@ describe('InformationExtraction', () => {
     it('should send the materials for the suggestions (relationship)', async () => {
       await informationExtraction.getSuggestions(factory.id('extractorWithRelationship'));
 
-      const [xmlK, xmlL, xmlM] = await Promise.all(['K', 'L', 'M'].map(readDocument));
+      const [xmlK, xmlL, xmlM] = await Promise.all(
+        ['K', 'L', 'M'].map(async letter => readDocument(letter))
+      );
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_predict/tenant1/${factory.id('extractorWithRelationship')}`,
@@ -1134,7 +1197,7 @@ describe('InformationExtraction', () => {
       ]);
 
       await informationExtraction.processResults({
-        params: { id: factory.id('prop1extractor').toString() },
+        params: { id: factory.id('prop2extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: false,
@@ -1144,7 +1207,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'failed',
-        extractorId: factory.id('prop1extractor'),
+        extractorId: factory.id('prop2extractor'),
       });
 
       expect(suggestions.length).toBe(1);
@@ -1152,19 +1215,16 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           language: 'en',
-          propertyName: 'property1',
-          suggestedValue: '',
-          segment: '',
+          propertyName: 'property2',
+          suggestedValue: 'suggestion_text_1',
+          segment: 'segment_text_1',
           status: 'failed',
           error: 'Issue calculation suggestion',
           state: {
-            labeled: true,
             match: null,
-            withValue: true,
             withSuggestion: false,
             hasContext: false,
             processing: false,
-            obsolete: false,
             error: true,
           },
         })

@@ -122,10 +122,10 @@ const PXParagraphLoader =
     ]);
 
     const template = templates.find(temp => temp._id === extractor.targetTemplateId);
-    const textProperty = template?.properties.find(
+    const textProperty = template?.properties?.find(
       property => property._id === extractor.paragraphPropertyId
     );
-    const numberProperty = template?.properties.find(
+    const numberProperty = template?.properties?.find(
       property => property._id === extractor.paragraphNumberPropertyId
     );
 

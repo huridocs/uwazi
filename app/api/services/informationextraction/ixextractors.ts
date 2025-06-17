@@ -16,7 +16,7 @@ import { IXErrorCode, IXValidationError } from './IXValidationError';
 type AllowedPropertyTypes =
   | Subset<
       PropertyTypeSchema,
-      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
+      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship' | 'markdown'
     >
   | 'title';
 
@@ -35,6 +35,7 @@ const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
   'select',
   'multiselect',
   'relationship',
+  'markdown',
 ];
 
 const allowedTypeSet = new Set<string>(ALLOWED_PROPERTY_TYPES);

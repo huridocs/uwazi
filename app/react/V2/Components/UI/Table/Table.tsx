@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   useReactTable,
@@ -32,6 +33,7 @@ import { DefaultNoDataMessage } from './DefaultNoDataMessage';
 type TableRow<T> = {
   rowId: string;
   disableRowSelection?: boolean | string | React.ReactNode;
+  disableRowDnD?: boolean;
   subRows?: T[];
 };
 type TableProps<T extends TableRow<T>> = {
@@ -161,6 +163,12 @@ const Table = <T extends TableRow<T>>({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    const overRow = dataState.find(row => row.rowId === over?.id);
+    const activeRow = dataState.find(row => row.rowId === active.id);
+
+    if (overRow?.disableRowDnD || activeRow?.disableRowDnD) {
+      return;
+    }
 
     if (active && over && active.id !== over.id) {
       setDataState(() => {

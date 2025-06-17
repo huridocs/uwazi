@@ -70,6 +70,13 @@ const fixtures: DBFixture = {
       fixtureFactory.property('kind', 'text'),
       fixtureFactory.property('location', 'geolocation'),
     ]),
+    fixtureFactory.template('extractor_target_rich_text_source_text_t', [
+      fixtureFactory.property('target_rich_text', 'markdown'),
+      fixtureFactory.property('source_text', 'text'),
+    ]),
+    fixtureFactory.template('extractor_target_rich_text_source_pdf_t', [
+      fixtureFactory.property('target_rich_text', 'markdown'),
+    ]),
   ],
   entities: [
     fixtureFactory.entity('shared1', 'animalTemplate', {}, { language: 'es' }),
@@ -80,6 +87,20 @@ const fixtures: DBFixture = {
     fixtureFactory.entity('shared3', 'plantTemplate', {}, { language: 'en' }),
     fixtureFactory.entity('shared4', 'fungusTemplate', {}, { language: 'es' }),
     fixtureFactory.entity('shared4', 'fungusTemplate', {}, { language: 'en' }),
+    fixtureFactory.entity(
+      'extractor_target_rich_text_source_text_e_1',
+      'extractor_target_rich_text_source_text_t'
+    ),
+    fixtureFactory.entity(
+      'extractor_target_rich_text_source_text_e_1',
+      'extractor_target_rich_text_source_text_t',
+      {},
+      { language: 'es' }
+    ),
+    fixtureFactory.entity(
+      'extractor_target_rich_text_source_pdf_e_1',
+      'extractor_target_rich_text_source_pdf_t'
+    ),
   ],
   files: [
     fixtureFactory.fileDeprecated('F1', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
@@ -106,6 +127,13 @@ const fixtures: DBFixture = {
     fixtureFactory.fileDeprecated('F6', 'shared3', 'document', 'documentF.pdf', 'spa'),
     fixtureFactory.fileDeprecated('F7', 'shared4', 'document', 'documentG.pdf', 'eng'),
     fixtureFactory.fileDeprecated('F8', 'shared4', 'document', 'documentH.pdf', 'spa'),
+    fixtureFactory.fileDeprecated(
+      'F9',
+      'extractor_target_rich_text_source_pdf_e_1',
+      'document',
+      'documentI.pdf',
+      'eng'
+    ),
   ],
   ixextractors: [
     fixtureFactory.ixExtractor('existingExtractor', 'kind', ['animalTemplate', 'plantTemplate']),
@@ -437,6 +465,62 @@ describe('ixextractors', () => {
             suggestedValue: '',
             state: emptyState,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+        ],
+      },
+      {
+        case: 'rich text as target and text as source',
+        name: 'rich_text_target_source_text',
+        source: { property: 'source_text' },
+        property: 'target_rich_text',
+        templates: [fixtureFactory.id('extractor_target_rich_text_source_text_t').toString()],
+        expectedSuggestions: [
+          {
+            status: 'ready',
+            entityId: 'extractor_target_rich_text_source_text_e_1',
+            language: 'en',
+            propertyName: 'target_rich_text',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: emptyState,
+            entityTemplate: fixtureFactory
+              .id('extractor_target_rich_text_source_text_t')
+              .toString(),
+          },
+          {
+            status: 'ready',
+            entityId: 'extractor_target_rich_text_source_text_e_1',
+            language: 'es',
+            propertyName: 'target_rich_text',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: emptyState,
+            entityTemplate: fixtureFactory
+              .id('extractor_target_rich_text_source_text_t')
+              .toString(),
+          },
+        ],
+      },
+      {
+        case: 'rich text as target and PDF as source',
+        name: 'rich_text_target_source_pdf',
+        source: { pdf: true },
+        property: 'target_rich_text',
+        templates: [fixtureFactory.id('extractor_target_rich_text_source_pdf_t').toString()],
+        expectedSuggestions: [
+          {
+            status: 'ready',
+            entityId: 'extractor_target_rich_text_source_pdf_e_1',
+            language: 'en',
+            fileId: fixtureFactory.id('F9'),
+            propertyName: 'target_rich_text',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: { ...expectedStates.onlyContext, hasContext: false },
+            entityTemplate: fixtureFactory.id('extractor_target_rich_text_source_pdf_t').toString(),
           },
         ],
       },

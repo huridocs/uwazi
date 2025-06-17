@@ -43,6 +43,7 @@ Add link,링크 추가
 Add page,페이지 추가
 Add PDF,Add PDF
 Add people or groups,사용자 혹은 그룹 추가
+Add property,Add property
 Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,템플릿 추가
@@ -80,6 +81,7 @@ An error has occurred during data export,An error has occurred during data expor
 An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+Any entity,Any entity
 Any entity or document,Any entity or document
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
@@ -210,7 +212,6 @@ Created relationship,Created relationship
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
-Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
@@ -317,8 +318,11 @@ Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
 Error adding thesauri.,Error adding thesauri.
+Error creating relationship type.,Error creating relationship type.
+Error creating thesaurus.,Error creating thesaurus.
 Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
+Error saving template.,Error saving template.
 Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
@@ -368,6 +372,7 @@ Full edit mode,전체 편집 모드
 Full width,Full width
 General,일반
 General Information,General Information
+Generated ID,Generated ID
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -409,6 +414,7 @@ Info,정보
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,속성 이어받기
+Inherit type,Inherit type
 Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
@@ -549,6 +555,7 @@ No Group,No Group
 No icon / flag,아이콘/플래그 없음
 No items available,No items available
 No Label,라벨 없음
+No label,No label
 No options,No options
 No options found,검색된 옵션 없음
 No property,속성 없음
@@ -599,6 +606,7 @@ Open,Open
 Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
+Options,Options
 or,or
 or drop your files here.,혹은 여기에 파일을 드롭하십시오.
 Order,순서
@@ -650,6 +658,8 @@ Processed,Processed
 Processing,처리 중
 Properties,속성
 Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
+Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
 Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
 Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
@@ -670,6 +680,7 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
+Property type,Property type
 Protection,보호
 ProTip!,프로 팁
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
@@ -689,9 +700,14 @@ Receiving email description,"If you have a contact form, this is the email addre
 Reference,Reference
 References,참고문헌
 Reject,거부
+Relation type,Relation type
 Relationship,연결
 relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
+Relationship type,Relationship type
+Relationship type created successfully.,Relationship type created successfully.
+Relationship type name,Relationship type name
+Relationship type name already exists,Relationship type name already exists
 Relationship types,연결 유형
 relationships,연결
 Relationships,연결
@@ -707,6 +723,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,암호를 재입력하십시오.
 Request id #,아이디 요청 #
 Request token,Request token
+Required,Required
 Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
@@ -850,6 +867,8 @@ Target's role in the relationship Source-Target.,Target's role in the relationsh
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name
+Template name already exists,Template name already exists
+Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
@@ -878,6 +897,9 @@ thesauri new group desc,thesauri new group desc
 thesauri new item desc,thesauri new item desc
 Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
+Thesaurus created successfully.,Thesaurus created successfully.
+Thesaurus name,Thesaurus name
+Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,시소러스 저장 완료
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,이 영역에 사용자 맞춤 자바스크립트를 추가할 수 있습니다.
@@ -889,11 +911,15 @@ This entity is restricted from public view.,이 엔티티는 공개 모드에서
 This field is required,This field is required
 This file type is not supported on media fields,This file type is not supported on media fields
 This group is empty,This group is empty
+This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
 This property will appear in the library cards as part of the basic info.,이 속성은 카드의 기본 정보에 포함되며 라이브러리에서 볼 수 있습니다.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,관련 엔티티에서 속성을 이어받아 현재 엔티티의 메타데이터에 포함시킵니다.
 This property will be shown using all the width available.,디스플레이 가능한 너비 내에서 이 속성을 표시합니다.
+This property will be shown without the label,This property will be shown without the label
 This property will be shown without the label.,이 속성은 라벨 없이 표시됩니다.
+This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,this template
 This template has associated entities,This template has associated entities
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1003,7 +1029,9 @@ Warning: you are editing multiple entities. Fields marked with a,경고: 여러 
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
 "Well, this is awkward...",알 수 없는 에러 발생
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 will be updated with the same value.,동일 값으로 업데이트됩니다.
+Will show the entire media inside the container.,Will show the entire media inside the container.
 with,with
 With great power comes great responsibility!,큰 일에는 큰 책임이 따르는 법!
 x less,덜 보기
@@ -1018,6 +1046,7 @@ You can create metadata templates in,메타데이터 템플릿을 작성할 수 
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,확대
 Zoom in library view,라이브러리 뷰 확대

@@ -27,7 +27,7 @@ class Template {
     return newTemplate.properties.filter(p => !oldIdSet.has(p.id));
   }
 
-  selectUpdatedProperties = (newTemplate: Template): PropertyUpdateInfo[] => {
+  selectUpdatedProperties(newTemplate: Template): PropertyUpdateInfo[] {
     const oldPropertiesById = objectIndex(
       this.properties,
       p => p.id,
@@ -39,12 +39,32 @@ class Template {
       p => p.id,
       p => p
     );
-    const updateInfo = Object.entries(newPropertiesById).map(([id, newProperty]) => {
-      const oldProperty = oldPropertiesById[id];
-      return oldProperty.updatedAttributes(newProperty);
-    });
+    const updateInfo = Object.entries(newPropertiesById)
+      .map(([id, newProperty]) => {
+        const oldProperty = oldPropertiesById[id];
+        return oldProperty.updatedAttributes(newProperty);
+      })
+      .filter(info => info.updatedAttributes.length > 0);
     return updateInfo;
-  };
+  }
+
+  selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): PropertyUpdateInfo[] {
+    const v1Props = ['relationType', 'content', 'inheritedPropertyId'];
+    return this.selectUpdatedProperties(newTemplate).filter(update =>
+      update.updatedAttributes.some(attr => v1Props.includes(attr))
+    );
+  }
+
+  selectPropertiesWhereNameHasChanged(newTemplate: Template): PropertyUpdateInfo[] {
+    return this.selectUpdatedProperties(newTemplate).filter(update =>
+      update.updatedAttributes.includes('name')
+    );
+  }
+
+  selectDeletedProperties(newTemplate: Template): Property[] {
+    const newPropertyIds = new Set(newTemplate.properties.map(p => p.id));
+    return this.properties.filter(p => !newPropertyIds.has(p.id));
+  }
 
   getPropertyById(propertyId: string) {
     const property = this.properties.find(p => p.id === propertyId);

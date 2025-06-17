@@ -17,6 +17,7 @@ import ID from 'shared/uniqueID';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import settings from '../settings';
+import { bulkDenormalizeEntities } from './bulkUpdateMetadataFromRelationships';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent';
@@ -31,6 +32,7 @@ import {
   updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
+import { MetadataUtils } from './MetadataUtils';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -467,22 +469,8 @@ export default {
   },
 
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async bulkUpdateMetadataFromRelationships(query, language, limit = 200, reindex = true) {
-    const process = async (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return;
-      }
-
-      const entities = await this.get(query, 'sharedId', { skip: offset, limit });
-      await this.updateMetdataFromRelationships(
-        entities.map(entity => entity.sharedId),
-        language,
-        reindex
-      );
-      await process(offset + limit, totalRows);
-    };
-    const totalRows = await this.count(query);
-    await process(0, totalRows);
+  async bulkDenormalizeEntities(query, language, limit = 200, reindex = true) {
+    await bulkDenormalizeEntities(query, language, limit, reindex);
   },
 
   async getWithoutDocuments(query, select, options = {}) {
@@ -539,8 +527,14 @@ export default {
 
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
-
     const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } }, '+permissions');
+
+    const templateChanged = !!values.template;
+    let newTemplate;
+    if (templateChanged) {
+      newTemplate = await templates.getById(values.template);
+    }
+
     validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {
@@ -549,14 +543,20 @@ export default {
         );
 
         if (entity) {
+          let metadata = updateMetadataWithDiff(
+            { ...entity.metadata, ...pureValues.metadata },
+            diffMetadata
+          );
+
+          if (templateChanged) {
+            metadata = MetadataUtils.sanitize({ metadata, template: newTemplate });
+          }
+
           await this.save(
             {
               ...entity,
               ...pureValues,
-              metadata: updateMetadataWithDiff(
-                { ...entity.metadata, ...pureValues.metadata },
-                diffMetadata
-              ),
+              metadata,
               permissions: entity.permissions || [],
             },
             params,
@@ -671,7 +671,7 @@ export default {
     }
 
     await reindexEntitiesByTemplate(template, options);
-    return this.bulkUpdateMetadataFromRelationships(
+    return this.bulkDenormalizeEntities(
       { template: template._id, language },
       language,
       200,

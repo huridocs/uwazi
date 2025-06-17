@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'V2/Components/UI';
