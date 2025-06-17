@@ -728,14 +728,14 @@ class InformationExtraction {
           await this.updateSuggestionStatus(message, currentModel);
         }
 
-        if (message.task === 'suggestions') {
-          await this.saveSuggestionsManager(message);
-          await this.updateSuggestionStatus(message, currentModel);
-        }
-
         if (!message.success) {
           await this.handleFailedStatus(message, currentModel);
           return;
+        }
+
+        if (message.task === 'suggestions') {
+          await this.saveSuggestionsManager(message);
+          await this.updateSuggestionStatus(message, currentModel);
         }
 
         if (!currentModel.findingSuggestions) {
