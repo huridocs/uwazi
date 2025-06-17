@@ -58,6 +58,7 @@ import { ExtractionKey } from './ExtractionKey';
 import { IXTrainModelJob } from './TrainModelJob';
 
 const defaultTrainingLanguage = 'en';
+const TEST_SUGGESTIONS_SAMPLE_SIZE = 1000;
 
 type TaskTypes = 'suggestions' | 'create_model';
 
@@ -585,8 +586,7 @@ class InformationExtraction {
     const [model] = await IXModelsModel.get({ extractorId });
     if (model.testRun) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      const testSuggestionsLimit = 1000;
-      if (suggestionsStatus.processed >= testSuggestionsLimit) {
+      if (suggestionsStatus.processed >= (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE)) {
         await this.stopModel(extractorId);
         emitToTenant(
           tenants.current().name,
@@ -602,8 +602,8 @@ class InformationExtraction {
     let files: FileWithAggregation[] | undefined;
     if (extractor.source.pdf) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      const testSuggestionsLimit = 1000;
-      const remaining = testSuggestionsLimit - suggestionsStatus.processed;
+      const remaining =
+        (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE) - suggestionsStatus.processed;
 
       files = await getFilesForSuggestions(extractorId, model.testRun ? remaining : undefined);
 
@@ -619,8 +619,8 @@ class InformationExtraction {
     let entitiesForSuggestions: EntitySchema[] | undefined;
     if (extractor.source.property) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      const testSuggestionsLimit = 1000;
-      const remaining = testSuggestionsLimit - suggestionsStatus.processed;
+      const remaining =
+        (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE) - suggestionsStatus.processed;
       entitiesForSuggestions = await getEntitiesForSuggestions(
         extractorId,
         model.testRun ? remaining : undefined
@@ -659,8 +659,11 @@ class InformationExtraction {
     await this.sendMaterials(files, extractor, serviceUrl, 'prediction_data');
   };
 
-  private static async train(extractorId: ObjectIdSchema, testRun = false) {
-    await ixmodels.startTraining(extractorId, testRun);
+  private static async train(
+    extractorId: ObjectIdSchema,
+    options: { testRun?: boolean; testSampleSize?: number } = {}
+  ) {
+    await ixmodels.startTraining(extractorId, options);
     const tenant = tenants.current();
     const dispatcher = await DefaultDispatcher(tenant.name);
     try {
@@ -672,10 +675,10 @@ class InformationExtraction {
   }
 
   static trainModel = async (extractorId: ObjectIdSchema) =>
-    InformationExtraction.train(extractorId, false);
+    InformationExtraction.train(extractorId, { testRun: false });
 
-  static testModel = async (extractorId: ObjectIdSchema) =>
-    InformationExtraction.train(extractorId, true);
+  static testModel = async (extractorId: ObjectIdSchema, testSampleSize?: number) =>
+    InformationExtraction.train(extractorId, { testRun: true, testSampleSize });
 
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });

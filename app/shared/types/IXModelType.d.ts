@@ -10,4 +10,5 @@ export interface IXModelType {
   status?: 'processing' | 'failed' | 'ready';
   findingSuggestions?: boolean;
   testRun?: boolean;
+  testSampleSize?: number;
 }

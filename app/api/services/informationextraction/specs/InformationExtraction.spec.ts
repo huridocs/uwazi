@@ -860,11 +860,12 @@ describe('InformationExtraction', () => {
     });
 
     it('should stop after processing the test sample limit', async () => {
-      await InformationExtraction.testModel(factory.id('prop1extractor'));
+      const testSuggestionsLimit = 10;
+      await InformationExtraction.testModel(factory.id('prop1extractor'), testSuggestionsLimit);
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
 
       const suggestions = [];
-      for (let i = 0; i < 1001; i += 1) {
+      for (let i = 0; i < testSuggestionsLimit + 1; i += 1) {
         suggestions.push({
           extractorId: factory.id('prop1extractor'),
           date: model.creationDate + 1,
@@ -887,15 +888,16 @@ describe('InformationExtraction', () => {
     });
 
     it('should call get suggestions with the remaining limit', async () => {
+      const testSuggestionsLimit = 10;
       const getFilesForSuggestionsSpy = jest
         .spyOn(getFiles, 'getFilesForSuggestions')
         .mockResolvedValue([]);
 
-      await InformationExtraction.testModel(factory.id('prop1extractor'));
+      await InformationExtraction.testModel(factory.id('prop1extractor'), testSuggestionsLimit);
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
 
       const suggestions = [];
-      for (let i = 0; i < 500; i += 1) {
+      for (let i = 0; i < testSuggestionsLimit / 2; i += 1) {
         suggestions.push({
           extractorId: factory.id('prop1extractor'),
           date: model.creationDate + 1,
@@ -905,7 +907,10 @@ describe('InformationExtraction', () => {
 
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
 
-      expect(getFilesForSuggestionsSpy).toHaveBeenCalledWith(factory.id('prop1extractor'), 500);
+      expect(getFilesForSuggestionsSpy).toHaveBeenCalledWith(
+        factory.id('prop1extractor'),
+        testSuggestionsLimit / 2
+      );
     });
   });
 

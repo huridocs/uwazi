@@ -20,7 +20,10 @@ export default {
     }
     return saved;
   },
-  startTraining: async (extractorId: ObjectIdSchema, testRun = false) => {
+  startTraining: async (
+    extractorId: ObjectIdSchema,
+    { testRun = false, testSampleSize }: { testRun?: boolean; testSampleSize?: number } = {}
+  ) => {
     const [current] = await model.get({ extractorId });
 
     await model.save({
@@ -30,6 +33,7 @@ export default {
       status: ModelStatus.processing,
       creationDate: new Date().getTime(),
       testRun,
+      testSampleSize,
     });
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
