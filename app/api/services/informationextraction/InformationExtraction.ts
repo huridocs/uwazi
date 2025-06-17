@@ -607,7 +607,7 @@ class InformationExtraction {
 
       files = await getFilesForSuggestions(extractorId, model.testRun ? remaining : undefined);
 
-      if (!files || files.length === 0) {
+      if (files.length === 0) {
         await this.stopModel(extractorId);
         emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
         return;
@@ -626,7 +626,7 @@ class InformationExtraction {
         model.testRun ? remaining : undefined
       );
 
-      if (!entitiesForSuggestions || !entitiesForSuggestions.length) {
+      if (entitiesForSuggestions.length === 0) {
         await this.stopModel(extractorId);
         emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
         return;
