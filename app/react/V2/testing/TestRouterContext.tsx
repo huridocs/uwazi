@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { ReactNode } from 'react';
 import { createRoutesStub } from 'react-router';
+import { Translate } from 'app/I18N';
 
 type TestRouterProps = {
   children: ReactNode;
@@ -9,7 +10,11 @@ type TestRouterProps = {
   initialEntries?: string[];
 };
 
-const HydrateFallback = () => <div data-testid="hydrate-fallback">Loading...</div>;
+const HydrateFallback = () => (
+  <div data-testid="hydrate-fallback">
+    <Translate>Loading</Translate>
+  </div>
+);
 
 const TestRouterContext = ({
   children,
