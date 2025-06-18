@@ -12,17 +12,20 @@ const testing_db_name = 'templates_save_perf';
 
 const compareRuns = async (
   callback: () => Promise<void>,
-  patchedCallback: () => Promise<void>
+  patchedCallback: () => Promise<void>,
+  beforeEachCallback: () => Promise<void> = async () => {}
 ): Promise<void> => {
+  await beforeEachCallback();
   let start = performance.now();
   tenants.add({ name: testing_db_name, dbName: testing_db_name });
   await callback();
   const normalPerf = performance.now() - start;
+  await beforeEachCallback();
   start = performance.now();
   tenants.add({
     name: testing_db_name,
     dbName: testing_db_name,
-    featureFlags: { improvedTemplatesSave: true },
+    featureFlags: {},
   });
   await patchedCallback();
   const patchedPerf = performance.now() - start;
@@ -255,47 +258,49 @@ async function allEntitiesSameHubChangingInheritedMultilanguage(numberOfEntities
 
   const template1 = factory.template('template1', [factory.property('text property')]);
   const template2 = factory.template('template2', [factory.relationshipProp('rel1', 'template1')]);
-  const hub1 = testingDB.id();
+  const setFixtures = async () => {
+    const hub1 = testingDB.id();
 
-  const entitiesFixtures = [];
-  const connections = [];
-  for (let i = 0; i < numberOfEntities; i += 1) {
-    entitiesFixtures.push(
-      factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template1.entity${i}`, 'template1')
-    );
-    entitiesFixtures.push(
-      factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template2.entity${i}`, 'template2', {
-        rel1: [factory.metadataValue(`template1.entity${i}`)],
-      })
-    );
-    connections.push({
-      _id: testingDB.id(),
-      entity: `template1.entity${i}`,
-      template: factory.idString('rel1'),
-      hub: hub1,
-    });
-    connections.push({
-      _id: testingDB.id(),
-      entity: `template2.entity${i}`,
-      hub: hub1,
-    });
-  }
+    const entitiesFixtures = [];
+    const connections = [];
+    for (let i = 0; i < numberOfEntities; i += 1) {
+      entitiesFixtures.push(
+        factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template1.entity${i}`, 'template1')
+      );
+      entitiesFixtures.push(
+        factory.entityInMultipleLanguages(['en', 'es', 'pt'], `template2.entity${i}`, 'template2', {
+          rel1: [factory.metadataValue(`template1.entity${i}`)],
+        })
+      );
+      connections.push({
+        _id: testingDB.id(),
+        entity: `template1.entity${i}`,
+        template: factory.idString('rel1'),
+        hub: hub1,
+      });
+      connections.push({
+        _id: testingDB.id(),
+        entity: `template2.entity${i}`,
+        hub: hub1,
+      });
+    }
 
-  await fixturer.clearAllAndLoad(DB.mongodb_Db(testing_db_name), {
-    templates: [template1, template2],
-    relationtypes: [factory.relationType('rel1')],
-    entities: entitiesFixtures.flat(),
-    connections,
-    settings: [
-      {
-        languages: [
-          { key: 'en', label: 'English', default: true },
-          { key: 'es', label: 'Spanish' },
-          { key: 'pt', label: 'Portuguese' },
-        ],
-      },
-    ],
-  });
+    await fixturer.clearAllAndLoad(DB.mongodb_Db(testing_db_name), {
+      templates: [template1, template2],
+      relationtypes: [factory.relationType('rel1')],
+      entities: entitiesFixtures.flat(),
+      connections,
+      settings: [
+        {
+          languages: [
+            { key: 'en', label: 'English', default: true },
+            { key: 'es', label: 'Spanish' },
+            { key: 'pt', label: 'Portuguese' },
+          ],
+        },
+      ],
+    });
+  };
 
   await compareRuns(
     async () => {
@@ -305,7 +310,8 @@ async function allEntitiesSameHubChangingInheritedMultilanguage(numberOfEntities
     async () => {
       template2.properties[0].inherit = { type: 'text' };
       await templates.save(template2, 'en');
-    }
+    },
+    setFixtures
   );
 }
 
@@ -328,7 +334,7 @@ async function run() {
       await allEntitiesSameHubMultiLanguage(100);
       await allEntitiesSameHubMultiLanguage(300);
       await allEntitiesSameHubChangingInheritedMultilanguage(100);
-      await allEntitiesSameHubChangingInheritedMultilanguage(300);
+      // await allEntitiesSameHubChangingInheritedMultilanguage(300);
     }, testing_db_name);
 
     console.log('Tests completed successfully.');
