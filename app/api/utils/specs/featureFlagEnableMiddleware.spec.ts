@@ -16,10 +16,6 @@ const testingRoutes = (app: Application) => {
       next();
     }
   );
-  app.get('/api/ixExtraSourcesTest', featureFlagEnabled('ixExtraSources'), (_req, res, next) => {
-    res.json({ success: true });
-    next();
-  });
 };
 
 const prepareScenarioForFlag = async (flagKey: TenantFeatureFlags, flagValue: boolean) => {
@@ -39,12 +35,5 @@ describe('Feature Flag Enabled middleware', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.success).toBe(true);
-  });
-
-  it('should return a 403 if flag not enabled', async () => {
-    const response = await prepareScenarioForFlag('ixExtraSources', false);
-
-    expect(response.statusCode).toBe(403);
-    expect(response.body.error).toBe('Feature not available');
   });
 });
