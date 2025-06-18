@@ -35,7 +35,6 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
-import { testingTenants } from 'api/utils/testingTenants';
 
 jest.mock('api/entities/bulkUpdateMetadataFromRelationships', () => ({
   bulkDenormalizeEntities: jest.fn().mockImplementation(async () => true),
@@ -246,29 +245,6 @@ describe('templates', () => {
         expectedValues,
         'Entity'
       );
-    });
-
-    it('should updateMetadataProperties', async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
-      testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: false } });
-      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-      const template = {
-        _id: templateToBeEditedId,
-        name: 'template to be edited',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [],
-        default: true,
-      };
-      const toSave = {
-        _id: templateToBeEditedId,
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        name: 'changed name',
-      };
-      await templates.save(toSave, 'en');
-      expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
-        reindex: true,
-        generatedIdAdded: false,
-      });
     });
 
     it('should update translations when name of the template changes', async () => {
@@ -731,9 +707,6 @@ describe('templates', () => {
   });
 
   describe('when template properties change name', () => {
-    beforeAll(() => {
-      testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: true } });
-    });
     it('should do nothing when there is no changed or deleted properties', async () => {
       jest.spyOn(entitiesModel, 'updateMany');
 
@@ -828,7 +801,6 @@ describe('templates', () => {
   describe('bulkDenormalizeEntities', () => {
     it('should not denormalize when relationship related data has not changed', async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
-      testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: true } });
       const template = {
         _id: templateToBeEditedId,
         name: 'template to be edited',
@@ -857,7 +829,6 @@ describe('templates', () => {
       'should denormalize when relationship related data has changed ($propChanges)',
       async ({ propChanges }) => {
         await testingEnvironment.setUp(fixtures, elasticIndex);
-        testingTenants.changeCurrentTenant({ featureFlags: { improvedTemplatesSave: true } });
         const template = {
           _id: thesaurusTemplateId,
           name: 'thesauri template',

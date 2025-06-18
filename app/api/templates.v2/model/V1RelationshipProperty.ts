@@ -3,7 +3,7 @@ import { Property, PropertyUpdateInfo } from './Property';
 class V1RelationshipProperty extends Property {
   readonly relationType: string;
 
-  readonly content: string;
+  readonly content?: string;
 
   readonly inheritedPropertyId?: string;
 
@@ -13,7 +13,7 @@ class V1RelationshipProperty extends Property {
     label: string,
     relationType: string,
     template: string,
-    content: string,
+    content?: string,
     inheritedPropertyId?: string
   ) {
     super(id, 'relationship', name, label, template);
