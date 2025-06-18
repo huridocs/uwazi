@@ -12,16 +12,14 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
-import * as extractorsAPI from 'V2/api/ix/extractors';
-import * as suggestionsAPI from 'V2/api/ix/suggestions';
+import * as extractorsAPI from 'app/V2/api/ix/extractors';
+import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { notificationAtom } from 'V2/atoms';
+import { Translate } from 'app/I18N';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import { notificationAtom } from 'app/V2/atoms';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -33,7 +31,14 @@ import {
   formatAccepted,
   updateSortingUrl,
 } from './helpers';
-import { TableSuggestion, MultiValueSuggestion, SingleValueSuggestion, ixStatus } from './types';
+import {
+  TableSuggestion,
+  MultiValueSuggestion,
+  SingleValueSuggestion,
+  ixStatus,
+  IXSuggestionsLoaderResponse,
+  EntitySuggestion,
+} from './types';
 import { useEventHandler } from './hooks/useEventHandler';
 
 const SUGGESTIONS_PER_PAGE = 100;
@@ -57,15 +62,7 @@ const IXSuggestions = () => {
     currentStatus,
     totalPages,
     activeFilters,
-  } = useLoaderData() as {
-    suggestions: TableSuggestion[];
-    extractor: ClientIXExtractorType;
-    templates: ClientTemplateSchema[];
-    aggregation: any;
-    currentStatus: ixStatus;
-    totalPages: number;
-    activeFilters: number;
-  };
+  } = useLoaderData() as IXSuggestionsLoaderResponse;
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
   const location = useLocation();
@@ -184,7 +181,7 @@ const IXSuggestions = () => {
     const _property =
       extractor.property === 'title'
         ? template?.commonProperties?.find(prop => prop.name === extractor.property)
-        : template?.properties.find(prop => prop.name === extractor.property);
+        : template?.properties?.find(prop => prop.name === extractor.property);
     setProperty(_property);
   }, [templates, extractor]);
 
@@ -339,7 +336,7 @@ const IXSuggestions = () => {
 
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId }, request }) => {
+  async ({ params: { extractorId }, request }): Promise<IXSuggestionsLoaderResponse> => {
     if (!extractorId) throw new Error('extractorId is required');
     const searchParams = new URLSearchParams(request.url.split('?')[1]);
     const filter: any = { extractorId };
@@ -351,9 +348,7 @@ const IXSuggestionsLoader =
     const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
     const suggestionsList: {
-      suggestions: [
-        EntitySuggestionType & { extractorSource: { pdf?: boolean; property?: string } },
-      ];
+      suggestions: EntitySuggestion[];
       totalPages: number;
     } = await suggestionsAPI.get(
       {

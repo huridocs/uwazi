@@ -6,17 +6,19 @@ import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
-import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientPropertySchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
+import { ClientTemplateSchema } from 'V2/shared/types';
+import { propertyIcons } from 'V2/Components/UI/Icons';
 import {
   TableExtractor,
   TableSuggestion,
   SingleValueSuggestion,
   MultiValueSuggestion,
+  SuggestionValue,
 } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-import { propertyIcons } from '../../../../Components/UI/Icons';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -34,8 +36,12 @@ const statusColor = (suggestion: TableSuggestion): Color => {
     Array.isArray(suggestion.currentValue) &&
     Array.isArray(suggestion.suggestedValue) &&
     suggestion.currentValue.length === suggestion.suggestedValue.length &&
-    suggestion.currentValue.every(
-      value => Array.isArray(suggestion.suggestedValue) && suggestion.suggestedValue.includes(value)
+    (suggestion.currentValue as SuggestionValue[]).every(
+      (value: SuggestionValue) =>
+        suggestion.suggestedValue &&
+        (suggestion.suggestedValue as SuggestionValue[]).some(
+          (suggested: SuggestionValue) => suggested === value
+        )
     )
   ) {
     return 'green';
@@ -80,9 +86,9 @@ const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['prop
 
 const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
   const suggestions = suggestion.subRows;
-  const ammountOfSuggestions = suggestions.length;
-  const amountOfValues = suggestions.filter(s => s.currentValue).length;
-  const amountOfMatches = suggestions.filter(s => s.currentValue === s.suggestedValue).length;
+  const ammountOfSuggestions = suggestions?.length || 0;
+  const amountOfValues = suggestions?.filter(s => s.currentValue).length || 0;
+  const amountOfMatches = suggestions?.filter(s => s.currentValue === s.suggestedValue).length || 0;
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
   return (
@@ -120,10 +126,7 @@ const CurrentValueCell = ({
   cell,
   allProperties,
 }: {
-  cell: CellContext<
-    TableSuggestion,
-    SingleValueSuggestion['currentValue'] | MultiValueSuggestion['currentValue']
-  >;
+  cell: CellContext<TableSuggestion, TableSuggestion['currentValue']>;
   allProperties: ClientPropertySchema[];
 }) => {
   if (cell.row.original.state.obsolete) {
@@ -149,6 +152,7 @@ const CurrentValueCell = ({
   if ('subRows' in cell.row.original) {
     return <RenderParent suggestion={cell.row.original as MultiValueSuggestion} />;
   }
+
   return (
     <SuggestedValue
       value={cell.getValue()}
@@ -288,7 +292,10 @@ const suggestionsTableColumnsBuilder = (
   acceptSuggestions: (suggestions: TableSuggestion[]) => Promise<void>,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
 ) => {
-  const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
+  const allProperties = [
+    ...(templates[0].commonProperties || []),
+    ...(templates[0].properties || []),
+  ];
 
   return [
     suggestionColumnHelper.accessor('entityTitle', {
