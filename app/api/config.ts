@@ -83,7 +83,6 @@ export const config = {
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
       ixExtraSources: true,
-      improvedTemplatesSave: false,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
