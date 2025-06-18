@@ -11,7 +11,6 @@ import { search } from 'api/search';
 import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
-import { tenants } from 'api/tenants';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -211,7 +210,7 @@ export default {
     });
   },
 
-  async improvedUpdate(template: TemplateSchema, language: string, _reindex = true) {
+  async _update(template: TemplateSchema, language: string, _reindex = true) {
     const reindex = _reindex && !template.synced;
     const templateStructureChanges = await checkIfReindex(template);
     const currentTemplate = ensure<WithId<TemplateSchema>>(
@@ -266,44 +265,6 @@ export default {
       if (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) {
         await bulkDenormalizeEntities({ template: template._id, language }, language, 200, reindex);
       }
-    }
-
-    await applicationEventsBus.emit(
-      new TemplateUpdatedEvent({
-        before: currentTemplate,
-        after: savedTemplate,
-      })
-    );
-
-    return savedTemplate;
-  },
-
-  async _update(template: TemplateSchema, language: string, _reindex = true) {
-    if (tenants.current().featureFlags?.improvedTemplatesSave) {
-      return this.improvedUpdate(template, language, _reindex);
-    }
-    const reindex = _reindex && !template.synced;
-    const templateStructureChanges = await checkIfReindex(template);
-    const currentTemplate = ensure<WithId<TemplateSchema>>(
-      await this.getById(ensure(template._id))
-    );
-    if (templateStructureChanges || currentTemplate.name !== template.name) {
-      await updateTranslation(currentTemplate, template);
-    }
-    if (templateStructureChanges) {
-      await removeExcludedPropertiesValues(currentTemplate, template);
-      await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
-    }
-
-    const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
-    const savedTemplate = await model.save(template, undefined);
-    if (templateStructureChanges) {
-      await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
-
-      await entities.updateMetadataProperties(template, currentTemplate, language, {
-        reindex,
-        generatedIdAdded,
-      });
     }
 
     await applicationEventsBus.emit(
