@@ -28,37 +28,34 @@ const suggestion1: TableSuggestion = {
   extractorSource: { pdf: true },
 };
 
-const property1: ClientPropertySchema = {
-  _id: 'property1',
+const textProperty: ClientPropertySchema = {
+  _id: 'textProperty',
   label: 'Test Property',
-  name: 'testProperty',
+  name: 'text_property',
   type: 'text',
+};
+
+const numericProperty: ClientPropertySchema = {
+  _id: 'numericProperty',
+  label: 'Numeric Property',
+  name: 'numeric_property',
+  type: 'numeric',
+};
+
+const dateProperty: ClientPropertySchema = {
+  _id: 'dateProperty',
+  label: 'Date Property',
+  name: 'date_property',
+  type: 'date',
 };
 
 const template1: ClientTemplateSchema = {
   _id: 'template1',
   name: 'Test Template',
-  properties: [
-    {
-      _id: 'property1',
-      label: 'Test Property',
-      name: 'testProperty',
-      type: 'text',
-    },
-  ],
-  commonProperties: [
-    {
-      _id: 'commonProperty1',
-      label: 'Common Property',
-      name: 'commonProperty',
-      type: 'text',
-    },
-  ],
-  color: '#000000',
-  isEntity: true,
+  properties: [numericProperty, textProperty, dateProperty],
 };
 
-const defaultData: IXSuggestionsLoaderResponse = {
+const loaderData: IXSuggestionsLoaderResponse = {
   suggestions: [],
   extractor: {
     _id: 'extractor1',
@@ -76,4 +73,4 @@ const defaultData: IXSuggestionsLoaderResponse = {
   activeFilters: 0,
 };
 
-export { defaultData, suggestion1, property1, template1 };
+export { loaderData, suggestion1, textProperty, numericProperty, dateProperty };
