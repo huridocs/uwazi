@@ -17,8 +17,4 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new PXEntityUpdatedListener(eventsBus).start();
 };
 
-const eventListeners = {
-  suggestions: Suggestions.registerEventListeners,
-};
-
-export { registerEventListeners, eventListeners };
+export { registerEventListeners };

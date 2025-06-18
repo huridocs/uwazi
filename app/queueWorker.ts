@@ -12,7 +12,7 @@ import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructur
 import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
 import { setupWorkerSockets } from 'api/socketio/setupSockets';
-import { eventListeners } from 'api/eventListeners';
+import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
 import { registerJobs } from './queueRegistry';
 import { initSentry } from './initSentry';
@@ -81,7 +81,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
     registerJobs(register.bind(queueWorker));
     logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
-    eventListeners.suggestions(applicationEventsBus);
+    registerEventListeners(applicationEventsBus);
     logger.info('Registered event listeners');
 
     process.on('SIGINT', async () => {
