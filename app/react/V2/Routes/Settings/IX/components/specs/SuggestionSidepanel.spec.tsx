@@ -20,11 +20,9 @@ jest.mock('V2/api/entities', () => ({
       metadata: {},
     } as ClientEntitySchema,
   ]),
-  getBySharedId: jest.fn().mockResolvedValue([]),
   formatter: {
     update: jest.fn().mockImplementation((entity, data) => ({ ...entity, ...data })),
   },
-  save: jest.fn().mockResolvedValue({}),
   coerceValue: jest.fn().mockResolvedValue({ success: true, value: 'test' }),
 }));
 
@@ -33,21 +31,6 @@ jest.mock('V2/api/files', () => ({
     {
       _id: 'file1',
       filename: 'test.pdf',
-      extractedMetadata: [
-        {
-          name: 'testProperty',
-          id: 'property1',
-          selectionRectangles: [
-            {
-              page: 1,
-              left: 100,
-              top: 100,
-              width: 200,
-              height: 20,
-            },
-          ],
-        },
-      ],
     },
   ]),
   update: jest.fn().mockResolvedValue({}),
@@ -98,8 +81,6 @@ jest.mock('V2/Components/PDFViewer', () => ({
         ],
       },
     ]),
-    getHighlightsFromFile: jest.fn().mockReturnValue({}),
-    deleteFileSelection: jest.fn().mockReturnValue([]),
   },
 }));
 
@@ -135,7 +116,7 @@ describe('SuggestionSidepanel', () => {
   });
 
   describe('Click to fill', () => {
-    it('should populate field when text is selected and click to fill is pressed', async () => {
+    it('should populate the field when selecting plain text', async () => {
       renderComponent();
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
       expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
