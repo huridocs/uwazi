@@ -205,7 +205,7 @@ describe('templates denormalization scenarios', () => {
     });
   });
 
-  describe('when "content" (target template) is empty (any template) AND ALL CONNECTIONS HAVE TEMPLATE (even the parent)', () => {
+  describe('when "content" (target template) is empty (any template) AND ALL CONNECTIONS HAVE RelationType (even the parent)', () => {
     it('should the values created include itself ????? (this is the current behaviour)', async () => {
       await setUpFixtures({
         ...fixtures,

@@ -25,7 +25,9 @@ const compareRuns = async (
   tenants.add({
     name: testing_db_name,
     dbName: testing_db_name,
-    featureFlags: {},
+    featureFlags: {
+      templatesDenormalizationPerfImprovements: true,
+    },
   });
   await patchedCallback();
   const patchedPerf = performance.now() - start;
@@ -325,16 +327,16 @@ async function run() {
 
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      await onlyTextProperties(100);
-      await onlyTextProperties(300);
-      await onlyTextPropertiesMultipleLanguages(100);
-      await onlyTextPropertiesMultipleLanguages(300);
-      await allEntitiesSameHub(100);
-      await allEntitiesSameHub(300);
-      await allEntitiesSameHubMultiLanguage(100);
-      await allEntitiesSameHubMultiLanguage(300);
+      // await onlyTextProperties(100);
+      // await onlyTextProperties(300);
+      // await onlyTextPropertiesMultipleLanguages(100);
+      // await onlyTextPropertiesMultipleLanguages(300);
+      // await allEntitiesSameHub(100);
+      // await allEntitiesSameHub(300);
+      // await allEntitiesSameHubMultiLanguage(100);
+      // await allEntitiesSameHubMultiLanguage(300);
       await allEntitiesSameHubChangingInheritedMultilanguage(100);
-      // await allEntitiesSameHubChangingInheritedMultilanguage(300);
+      await allEntitiesSameHubChangingInheritedMultilanguage(300);
     }, testing_db_name);
 
     console.log('Tests completed successfully.');
