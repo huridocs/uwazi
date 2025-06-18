@@ -311,7 +311,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
-    ixExtraSources: featureFlags?.ixExtraSources,
     paragraphExtraction: featureFlags?.paragraphExtraction,
   };
   const { initialStore, initialState, loadingError } = await setReduxState(
