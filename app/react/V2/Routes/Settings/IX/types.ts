@@ -49,6 +49,7 @@ export enum ixStatus {
   processing_suggestions = 'processing_suggestions',
   cancel = 'cancel',
   error = 'error',
+  processing_test_run = 'processing_test_run',
 }
 
 export type {

@@ -12,16 +12,16 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import * as extractorsAPI from 'app/V2/api/ix/extractors';
-import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { ClientIXExtractorType } from 'app/V2/shared/types';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { notificationAtom } from 'app/V2/atoms';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
+import * as extractorsAPI from 'V2/api/ix/extractors';
+import * as suggestionsAPI from 'V2/api/ix/suggestions';
+import * as templatesAPI from 'V2/api/templates';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
+import { ClientIXExtractorType } from 'V2/shared/types';
+import { notificationAtom } from 'V2/atoms';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -43,6 +43,7 @@ const ixmessages = {
   sending_labeled_data: 'Sending labeled data...',
   processing_model: 'Training model...',
   processing_suggestions: 'Finding suggestions...',
+  processing_test_run: 'Finding suggestions on subset...',
   cancel: 'Canceling...',
   error: 'Error',
 };
@@ -123,8 +124,7 @@ const IXSuggestions = () => {
     try {
       if (status.status === ixStatus.ready) {
         setStatus({ status: ixStatus.sending_labeled_data });
-        const response = await suggestionsAPI.findSuggestions(extractor._id!);
-        setStatus(response);
+        await suggestionsAPI.findSuggestions(extractor._id!);
       } else {
         await suggestionsAPI.cancel(extractor._id!);
         if (status.status === ixStatus.error) {
@@ -134,6 +134,13 @@ const IXSuggestions = () => {
         }
         await revalidate();
       }
+    } catch (error) {}
+  };
+
+  const testRun = async () => {
+    try {
+      setStatus({ status: ixStatus.processing_test_run });
+      await suggestionsAPI.testRun(extractor._id!);
     } catch (error) {}
   };
 
@@ -292,6 +299,11 @@ const IXSuggestions = () => {
                   <Translate>Cancel</Translate>
                 )}
               </Button>
+              {status.status === ixStatus.ready && (
+                <Button size="small" type="button" styling="light" onClick={testRun}>
+                  <Translate>Test run</Translate>
+                </Button>
+              )}
               {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
