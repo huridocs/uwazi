@@ -43,7 +43,6 @@ const propertyToApp = (property: PropertySchema, templateId: string): Property =
   }
   if (property.type === propertyTypes.relationship) {
     if (!property.relationType) throw new Error('Relation type is required');
-    if (!property.content) throw new Error('Content is required');
     return new V1RelationshipProperty(
       propertyId,
       property.name,

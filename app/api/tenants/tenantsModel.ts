@@ -35,7 +35,6 @@ const mongoSchema = new mongoose.Schema({
     deactivateTestJob: Boolean,
     ixExtraSources: Boolean,
     paragraphExtraction: Boolean,
-    improvedTemplatesSave: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
