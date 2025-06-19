@@ -747,4 +747,139 @@ describe('Table', () => {
       cy.contains('NO DATA AVAILABLE');
     });
   });
+
+  describe('Persistent row order', () => {
+    it('should maintain row order when data changes without sorting', () => {
+      // Start with initial data
+      const initialData = [
+        { rowId: '1', title: 'Entity A', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'Third item', created: '3' },
+      ];
+
+      Basic.args.tableData = initialData;
+      Basic.args.persistentRowOrder = true;
+      mount(<Basic />);
+
+      // Verify initial order
+      checkRowContent(1, ['Entity A', 'First item', '1']);
+      checkRowContent(2, ['Entity B', 'Second item', '2']);
+      checkRowContent(3, ['Entity C', 'Third item', '3']);
+
+      // Update data - change first item's title
+      const updatedData = [
+        { rowId: '1', title: 'Entity Z', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'Third item', created: '3' },
+      ];
+
+      Basic.args.tableData = updatedData;
+      mount(<Basic />);
+
+      // Verify order is maintained (Entity Z should still be first)
+      checkRowContent(1, ['Entity Z', 'First item', '1']);
+      checkRowContent(2, ['Entity B', 'Second item', '2']);
+      checkRowContent(3, ['Entity C', 'Third item', '3']);
+    });
+
+    it('should maintain row order when data changes with sorting', () => {
+      // Start with initial data
+      const initialData = [
+        { rowId: '1', title: 'Entity A', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'Third item', created: '3' },
+      ];
+
+      Basic.args.tableData = initialData;
+      Basic.args.persistentRowOrder = true;
+      mount(<Basic />);
+
+      // Sort by title
+      cy.get('th').contains('Title').click();
+      cy.contains('button', 'Save changes').click();
+
+      // Verify sorted order
+      checkRowContent(1, ['Entity A', 'First item', '1']);
+      checkRowContent(2, ['Entity B', 'Second item', '2']);
+      checkRowContent(3, ['Entity C', 'Third item', '3']);
+
+      // Update data - change first item's title to something that would sort differently
+      const updatedData = [
+        { rowId: '1', title: 'Entity Z', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'Third item', created: '3' },
+      ];
+
+      Basic.args.tableData = updatedData;
+      mount(<Basic />);
+
+      // Verify order is maintained despite the title change (Entity Z should still be first)
+      checkRowContent(1, ['Entity Z', 'First item', '1']);
+      checkRowContent(2, ['Entity B', 'Second item', '2']);
+      checkRowContent(3, ['Entity C', 'Third item', '3']);
+    });
+
+    it('should add new items to the end when persistentRowOrder is enabled', () => {
+      // Start with initial data
+      const initialData = [
+        { rowId: '1', title: 'Entity A', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+      ];
+
+      Basic.args.tableData = initialData;
+      Basic.args.persistentRowOrder = true;
+      mount(<Basic />);
+
+      // Verify initial order
+      checkRowContent(1, ['Entity A', 'First item', '1']);
+      checkRowContent(2, ['Entity B', 'Second item', '2']);
+
+      // Add new item
+      const updatedData = [
+        { rowId: '1', title: 'Entity A', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'New item', created: '3' },
+      ];
+
+      Basic.args.tableData = updatedData;
+      mount(<Basic />);
+
+      // Verify new item is added to the end
+      checkRowContent(1, ['Entity A', 'First item', '1']);
+      checkRowContent(2, ['Entity B', 'Second item', '2']);
+      checkRowContent(3, ['Entity C', 'New item', '3']);
+    });
+
+    it('should allow normal sorting when persistentRowOrder is disabled', () => {
+      // Start with initial data
+      const initialData = [
+        { rowId: '1', title: 'Entity A', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'Third item', created: '3' },
+      ];
+
+      Basic.args.tableData = initialData;
+      Basic.args.persistentRowOrder = false;
+      mount(<Basic />);
+
+      // Update data - change first item's title
+      const updatedData = [
+        { rowId: '1', title: 'Entity Z', description: 'First item', created: '1' },
+        { rowId: '2', title: 'Entity B', description: 'Second item', created: '2' },
+        { rowId: '3', title: 'Entity C', description: 'Third item', created: '3' },
+      ];
+
+      Basic.args.tableData = updatedData;
+      mount(<Basic />);
+
+      // Sort by title - should now put Entity Z at the end
+      cy.get('th').contains('Title').click();
+      cy.contains('button', 'Save changes').click();
+
+      // Verify normal sorting behavior
+      checkRowContent(1, ['Entity B', 'Second item', '2']);
+      checkRowContent(2, ['Entity C', 'Third item', '3']);
+      checkRowContent(3, ['Entity Z', 'First item', '1']);
+    });
+  });
 });

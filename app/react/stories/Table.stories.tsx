@@ -14,6 +14,7 @@ type StoryProps = {
   defaultSorting?: SortingState;
   sortingFn?: () => void;
   actionFn?: () => void;
+  persistentRowOrder?: boolean;
 };
 
 const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
@@ -92,6 +93,7 @@ const StoryComponent = ({
   defaultSorting,
   sortingFn,
   actionFn,
+  persistentRowOrder,
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
@@ -124,6 +126,7 @@ const StoryComponent = ({
             </div>
           }
           footer={<p className="">My table footer</p>}
+          persistentRowOrder={persistentRowOrder}
         />
         <div className="flex gap-2 mt-4">
           <Button
@@ -231,6 +234,7 @@ const Primary: Story = {
       defaultSorting={args.defaultSorting}
       sortingFn={args.sortingFn}
       actionFn={args.actionFn}
+      persistentRowOrder={args.persistentRowOrder}
     />
   ),
 };
@@ -245,6 +249,7 @@ const Basic = {
     columnType: 'basic',
     sortingFn: undefined,
     actionFn: undefined,
+    persistentRowOrder: true,
   },
 };
 

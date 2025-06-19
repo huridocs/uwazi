@@ -54,6 +54,7 @@ type TableProps<T extends TableRow<T>> = {
   noDataMessage?: string | React.ReactNode;
   className?: string;
   groupColumnPosition?: number;
+  persistentRowOrder?: boolean;
 };
 
 const Table = <T extends TableRow<T>>({
@@ -70,6 +71,7 @@ const Table = <T extends TableRow<T>>({
   noDataMessage = <DefaultNoDataMessage />,
   groupColumnPosition = 0,
   initialSelection = [],
+  persistentRowOrder = true,
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
   const initialRowSelection = initialSelection.reduce(
@@ -139,9 +141,18 @@ const Table = <T extends TableRow<T>>({
   });
 
   useEffect(() => {
-    setDataState(data);
+    if (true) {
+      const currentRowIds = table.getRowModel().rows.map(row => row.id);
+      const newDataMap = new Map(data.map(item => [item.rowId, item]));
+      const newDataState = currentRowIds.map(rowId => newDataMap.get(rowId)).filter(Boolean) as T[];
+      const existingIds = new Set(currentRowIds);
+      const newItems = data.filter(item => !existingIds.has(item.rowId));
+      setDataState([...newDataState, ...newItems]);
+    } else {
+      setDataState(data);
+    }
     setRowSelection(initialRowSelection);
-  }, [data]);
+  }, [data, persistentRowOrder]);
 
   useEffect(() => {
     if (onChange) {
@@ -152,7 +163,6 @@ const Table = <T extends TableRow<T>>({
         onChange({ rows: dataState, selectedRows: rowSelection, sortingState });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataState, rowSelection, sortingState]);
 
   useEffect(() => {
