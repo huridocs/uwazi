@@ -10,7 +10,9 @@ export const PrioritySortingField = ({ control }: { control: any }) => {
   const filter = watch('filter');
 
   useEffect(() => {
-    setValue('prioritySorting', false);
+    if (!filter) {
+      setValue('prioritySorting', false);
+    }
   }, [filter, setValue]);
 
   return (

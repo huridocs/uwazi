@@ -10,7 +10,9 @@ export const DefaultFilterField = ({ control }: { control: any }) => {
   const filter = watch('filter');
 
   useEffect(() => {
-    setValue('defaultfilter', false);
+    if (!filter) {
+      setValue('defaultfilter', false);
+    }
   }, [filter, setValue]);
 
   return (

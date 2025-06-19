@@ -19,6 +19,7 @@ import {
   PrioritySortingField,
   FilterField,
   StyleField,
+  FullWidthField,
 } from './fields';
 import { ThesaurusField } from './fields/ThesaurusField';
 import { RelationshipFields } from './fields/RelationshipFields';
@@ -67,6 +68,7 @@ const filterableTypes = [
 ];
 
 const prioritySortingTypes = ['text', 'numeric', 'select', 'date'];
+const fullWidthTypes = ['image', 'preview', 'media'];
 
 export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   isOpen,
@@ -204,7 +206,11 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       isOpen={isOpen}
       withOverlay
       size="large"
-      title={<Translate>{propertyToEdit ? 'Edit property' : 'New property'}</Translate>}
+      title={
+        <Translate className="uppercase">
+          {propertyToEdit ? 'Edit property' : 'New property'}
+        </Translate>
+      }
       closeSidepanelFunction={onClose}
     >
       <FormProvider {...form}>
@@ -241,11 +247,13 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
                   propertyToEdit={propertyToEdit}
                 />
                 {isImageOrPreview && <StyleField control={control} />}
+
                 {isSelectOrMultiselect && <ThesaurusField control={control} />}
                 {isRelationship && (
                   <RelationshipFields control={control} templateId={template._id} />
                 )}
                 <div className="flex flex-col gap-2 mt-2">
+                  {fullWidthTypes.includes(type) && <FullWidthField control={control} />}
                   {!isCommonProperty && <HideLabelField control={control} />}
                   {!isCommonProperty && <RequiredField control={control} />}
                   {!isCommonProperty && <ShowInCardsField control={control} />}
@@ -291,7 +299,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
               <Translate>Cancel</Translate>
             </Button>
             <Button type="submit" color="success" disabled={!validateMatchingProperties()}>
-              <Translate>{propertyToEdit ? 'Save changes' : 'Add property'}</Translate>
+              <Translate>{propertyToEdit ? 'Save' : 'Add property'}</Translate>
             </Button>
           </Sidepanel.Footer>
         </form>

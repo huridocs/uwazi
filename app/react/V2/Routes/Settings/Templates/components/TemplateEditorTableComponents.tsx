@@ -6,6 +6,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N/Translate';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { Pill } from 'V2/Components/UI';
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { translationsKeys } from '../helpers';
 
 type PropertyRow = PropertySchema & {
@@ -16,7 +17,32 @@ type PropertyRow = PropertySchema & {
 
 const columnHelper = createColumnHelper<PropertyRow>();
 
-const LabelCell = ({ cell }: CellContext<PropertyRow, string>) => <span>{cell.getValue()}</span>;
+const LabelCell =
+  (handleEditProperty: (property: PropertyRow) => void) =>
+  ({ cell }: CellContext<PropertyRow, string>) => {
+    const property = cell.row.original;
+    if (property.disableRowDnD) {
+      return (
+        <button
+          type="button"
+          onClick={() => handleEditProperty(property)}
+          className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+        >
+          <LockClosedIcon className="w-4 h-4 text-primary-700" />
+          {cell.getValue()}
+        </button>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => handleEditProperty(property)}
+        className="text-left text-primary-700 cursor-pointer font-medium"
+      >
+        {cell.getValue()}
+      </button>
+    );
+  };
 
 const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
   <div className="flex items-center gap-2">
@@ -43,50 +69,26 @@ const OptionsHeader = () => <Translate>Options</Translate>;
 // eslint-disable-next-line max-statements
 const OptionsCell = ({ row }: CellContext<PropertyRow, any>) => {
   const property = row.original;
-  const pills: React.ReactNode[] = [];
-  if (property.prioritySorting) {
-    pills.push(
-      <Pill key="priority" color="gray">
-        <Translate>Priority sorting</Translate>
+
+  const propertyFlags = [
+    { key: 'show-in-cards', condition: property.showInCard, label: 'Show in cards' },
+    { key: 'no-label', condition: property.noLabel, label: 'No label' },
+    { key: 'use-as-filter', condition: property.filter, label: 'Use as filter' },
+    { key: 'priority', condition: property.prioritySorting, label: 'Priority sorting' },
+    { key: 'required', condition: property.required, label: 'Required' },
+    { key: 'defaultfilter', condition: property.defaultfilter, label: 'Default filter' },
+    { key: 'generated-id', condition: property.generatedId, label: 'Generated ID' },
+    { key: 'full-width', condition: property.fullWidth, label: 'Full width' },
+  ];
+
+  const pills = propertyFlags
+    .filter(flag => flag.condition)
+    .map(flag => (
+      <Pill key={flag.key} color="gray">
+        <Translate>{flag.label}</Translate>
       </Pill>
-    );
-  }
-  if (property.showInCard) {
-    pills.push(
-      <Pill key="show-in-cards" color="gray">
-        <Translate>Show in cards</Translate>
-      </Pill>
-    );
-  }
-  if (property.noLabel) {
-    pills.push(
-      <Pill key="no-label" color="gray">
-        <Translate>No label</Translate>
-      </Pill>
-    );
-  }
-  if (property.filter) {
-    pills.push(
-      <Pill key="use-as-filter" color="gray">
-        <Translate>Use as filter</Translate>
-      </Pill>
-    );
-  }
-  if (property.required) {
-    pills.push(
-      <Pill key="required" color="gray">
-        <Translate>Required</Translate>
-      </Pill>
-    );
-  }
-  if (property.defaultfilter) {
-    pills.push(
-      <Pill key="defaultfilter" color="gray">
-        <Translate>Default filter</Translate>
-      </Pill>
-    );
-  }
-  // Add more pills as needed for other property configs
+    ));
+
   return <div className="flex flex-wrap gap-2">{pills}</div>;
 };
 
@@ -96,7 +98,7 @@ const propertyColumns: (
   columnHelper.accessor('label', {
     id: 'label',
     header: LabelHeader,
-    cell: LabelCell,
+    cell: LabelCell(handleEditProperty),
     enableSorting: false,
   }),
   columnHelper.accessor('type', {
