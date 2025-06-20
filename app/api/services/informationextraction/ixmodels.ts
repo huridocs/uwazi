@@ -5,6 +5,8 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel as model } from './IXModelsModel';
 import { IXExtractorModel } from './IXExtractorModel';
 
+const TEST_SUGGESTIONS_SAMPLE_SIZE = 1000;
+
 export default {
   get: model.get.bind(model),
   delete: model.delete.bind(model),
@@ -27,7 +29,7 @@ export default {
     const [current] = await model.get({ extractorId });
     let totalSuggestionsToFind;
     if (testRun) {
-      totalSuggestionsToFind = testSampleSize || 1000;
+      totalSuggestionsToFind = testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE;
     }
 
     await model.save({
