@@ -140,29 +140,33 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
     }
   }, [reset, isOpen]);
 
+  useEffect(() => {
+    const isTitle = propertyToEdit?.isCommonProperty && propertyToEdit?.name === 'title';
+    if (!filter && !isTitle) {
+      setValue('defaultfilter', false);
+      setValue('prioritySorting', false);
+    }
+  }, [filter, setValue, propertyToEdit]);
+
   // eslint-disable-next-line max-statements
   const validateMatchingProperties = () => {
     const lowerLabel = label.trim().toLowerCase();
 
-    // Find all properties with the same label across templates
     const matchingProperties = templates.flatMap((templ: ClientTemplateSchema) =>
       [...(templ.properties || [])]
         .filter((prop: ClientProperty) => prop.label?.trim().toLowerCase() === lowerLabel)
         .filter((prop: ClientProperty) => prop._id !== propertyToEdit?._id)
     );
 
-    // If no matching properties found, validation passes
     if (matchingProperties.length === 0) {
       return true;
     }
 
-    // Check if all properties have the same type
     const hasTypeMismatch = matchingProperties.some((prop: ClientProperty) => prop.type !== type);
     if (hasTypeMismatch) {
       return false;
     }
 
-    // For select/multiselect types, check if content (thesaurus) matches
     if (type === 'select' || type === 'multiselect') {
       const hasContentMismatch = matchingProperties.some(
         (prop: ClientProperty) => prop.content !== content
@@ -172,7 +176,6 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       }
     }
 
-    // For relationship type, check content, relationType and inherit
     if (type === 'relationship') {
       const hasRelationshipMismatch = matchingProperties.some(
         (prop: ClientProperty) =>
@@ -189,12 +192,10 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   };
 
   const submitForm = (data: ClientProperty) => {
-    //check for any errors
     if (Object.keys(errors).length > 0) {
       return;
     }
 
-    // Validate matching properties
     if (validateMatchingProperties()) {
       onSubmit(data);
       onClose();

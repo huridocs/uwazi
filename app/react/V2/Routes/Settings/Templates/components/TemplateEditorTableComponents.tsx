@@ -7,6 +7,8 @@ import { Translate } from 'app/I18N/Translate';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { Pill } from 'V2/Components/UI';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
+import { thesauriAtom, templatesAtom, relationshipTypesAtom } from 'V2/atoms';
 import { translationsKeys } from '../helpers';
 
 type PropertyRow = PropertySchema & {
@@ -68,24 +70,83 @@ const OptionsHeader = () => <Translate>Options</Translate>;
 
 // eslint-disable-next-line max-statements
 const OptionsCell = ({ row }: CellContext<PropertyRow, any>) => {
+  const thesauri = useAtomValue(thesauriAtom);
+  const templates = useAtomValue(templatesAtom);
+  const relationTypes = useAtomValue(relationshipTypesAtom);
+
   const property = row.original;
 
+  const content = [...templates, ...thesauri].find(c => c._id === property.content);
+  const relationType = relationTypes.find(rt => rt._id === property.relationType);
+
   const propertyFlags = [
-    { key: 'show-in-cards', condition: property.showInCard, label: 'Show in cards' },
-    { key: 'no-label', condition: property.noLabel, label: 'No label' },
-    { key: 'use-as-filter', condition: property.filter, label: 'Use as filter' },
-    { key: 'priority', condition: property.prioritySorting, label: 'Priority sorting' },
-    { key: 'required', condition: property.required, label: 'Required' },
-    { key: 'defaultfilter', condition: property.defaultfilter, label: 'Default filter' },
-    { key: 'generated-id', condition: property.generatedId, label: 'Generated ID' },
-    { key: 'full-width', condition: property.fullWidth, label: 'Full width' },
+    {
+      key: 'show-in-cards',
+      condition: property.showInCard,
+      label: <Translate>Show in cards</Translate>,
+    },
+    {
+      key: 'no-label',
+      condition: property.noLabel,
+      label: <Translate>No label</Translate>,
+    },
+    {
+      key: 'use-as-filter',
+      condition: property.filter,
+      label: <Translate>Use as filter</Translate>,
+    },
+    {
+      key: 'priority',
+      condition: property.prioritySorting,
+      label: <Translate>Priority sorting</Translate>,
+    },
+    {
+      key: 'required',
+      condition: property.required,
+      label: <Translate>Required</Translate>,
+    },
+    {
+      key: 'defaultfilter',
+      condition: property.defaultfilter,
+      label: <Translate>Default filter</Translate>,
+    },
+    {
+      key: 'generated-id',
+      condition: property.generatedId,
+      label: <Translate>Generated ID</Translate>,
+    },
+    {
+      key: 'full-width',
+      condition: property.fullWidth,
+      label: <Translate>Full width</Translate>,
+    },
+    {
+      key: 'style-cover',
+      condition: property.style === 'cover',
+      label: <Translate>Fill</Translate>,
+    },
+    {
+      key: 'style-contain',
+      condition: property.style === 'contain',
+      label: <Translate>Fit</Translate>,
+    },
+    {
+      key: 'relation-type',
+      condition: relationType?.name,
+      label: <Translate context={relationType?._id}>{relationType?.name}</Translate>,
+    },
+    {
+      key: 'content',
+      condition: content?.name,
+      label: <Translate context={content?._id}>{content?.name}</Translate>,
+    },
   ];
 
   const pills = propertyFlags
     .filter(flag => flag.condition)
     .map(flag => (
       <Pill key={flag.key} color="gray">
-        <Translate>{flag.label}</Translate>
+        {flag.label}
       </Pill>
     ));
 
