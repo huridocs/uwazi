@@ -1,3 +1,4 @@
+// Kevin------------------------------------------------------------------
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable camelcase */
@@ -9,7 +10,7 @@ import { storage } from 'api/files';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
+import { EnforcedWithId } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { filesModel } from 'api/files/filesModel';
@@ -584,7 +585,7 @@ class InformationExtraction {
 
     const [model] = await IXModelsModel.get({ extractorId });
     if (model.testRun) {
-      const suggestionsStatus = await this.getSuggestionsStatus(model);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
       if (suggestionsStatus.processed >= (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE)) {
         await this.stopModel(extractorId);
         emitToTenant(
@@ -600,7 +601,7 @@ class InformationExtraction {
 
     let files: FileWithAggregation[] | undefined;
     if (extractor.source.pdf) {
-      const suggestionsStatus = await this.getSuggestionsStatus(model);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
       const remaining =
         (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE) - suggestionsStatus.processed;
 
@@ -617,7 +618,7 @@ class InformationExtraction {
 
     let entitiesForSuggestions: EntitySchema[] | undefined;
     if (extractor.source.property) {
-      const suggestionsStatus = await this.getSuggestionsStatus(model);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
       const remaining =
         (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE) - suggestionsStatus.processed;
       entitiesForSuggestions = await getEntitiesForSuggestions(
@@ -703,7 +704,10 @@ class InformationExtraction {
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
-      const suggestionStatus = await this.getSuggestionsStatus(currentModel);
+      const suggestionStatus = await this.getSuggestionsStatus(
+        extractorId,
+        currentModel.creationDate
+      );
 
       if (suggestionStatus.processed === suggestionStatus.total) {
         return { status: 'ready', message: 'Ready' };
@@ -803,26 +807,11 @@ class InformationExtraction {
     }, _message.tenant);
   };
 
-  getSuggestionsStatus = async (model: IXModelType) => {
-    const suggestionCandidatesQuery: UwaziFilterQuery<IXSuggestionType> = {
-      extractorId: model.extractorId,
-      date: { $lt: model.creationDate },
-      'state.error': { $ne: true },
-    };
-
-    if (model.testRun) {
-      suggestionCandidatesQuery.trainSampleTimestamp = { $ne: model.creationDate };
-    }
-
-    const candidateCount = await IXSuggestionsModel.count(suggestionCandidatesQuery);
-
-    const totalSuggestions = model.testRun
-      ? Math.min(candidateCount, model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE)
-      : candidateCount;
-
+  getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
+    const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
     const processedSuggestions = await IXSuggestionsModel.count({
-      extractorId: model.extractorId,
-      date: { $gt: model.creationDate },
+      extractorId,
+      date: { $gt: modelCreationDate },
     });
     return {
       total: totalSuggestions,
@@ -831,7 +820,10 @@ class InformationExtraction {
   };
 
   updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
-    const suggestionsStatus = await this.getSuggestionsStatus(currentModel);
+    const suggestionsStatus = await this.getSuggestionsStatus(
+      message.params!.id,
+      currentModel.creationDate
+    );
     emitToTenant(
       message.tenant,
       'ix_model_status',

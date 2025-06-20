@@ -171,7 +171,7 @@ describe('InformationExtraction', () => {
     it('should return status: fetching suggestion', async () => {
       const resp = await informationExtraction.status(factory.id('prop2extractor'));
       expect(resp.status).toEqual('processing_suggestions');
-      expect(resp.data).toEqual({ total: 3, processed: 2 });
+      expect(resp.data).toEqual({ total: 5, processed: 2 });
     });
 
     it('should return status: ready', async () => {
