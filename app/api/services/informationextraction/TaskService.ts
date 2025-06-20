@@ -7,7 +7,7 @@ import dictionatiesModel from 'api/thesauri/dictionariesModel';
 import _ from 'lodash';
 import { EnforcedWithId } from 'api/odm';
 import { IXTaskManager, TaskParameters } from './InformationExtraction';
-import { propertyTypeIsSelectOrMultiSelect } from './getFiles';
+import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials';
 import { IXServices } from './IXServices';
 
 type Props = {

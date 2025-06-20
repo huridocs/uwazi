@@ -22,5 +22,6 @@ export const IXModelSchema = {
     findingSuggestions: { type: 'boolean', optional: true },
     testRun: { type: 'boolean', optional: true },
     testSampleSize: { type: 'number', optional: true },
+    totalSuggestionsToFind: { type: 'number', optional: true },
   },
 };

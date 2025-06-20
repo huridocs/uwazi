@@ -2,7 +2,7 @@
 import { files } from 'api/files';
 import { EnforcedWithId } from 'api/odm';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { propertyTypeIsMultiValued } from 'api/services/informationextraction/getFiles';
+import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { tenants } from 'api/tenants';

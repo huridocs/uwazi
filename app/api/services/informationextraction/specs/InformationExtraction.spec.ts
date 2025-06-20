@@ -23,8 +23,8 @@ import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXExtractorModel } from '../IXExtractorModel';
 import { IXWebSocketEvents } from '../WebSocketEvents';
-import { NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
-import * as getFiles from '../getFiles';
+import { NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
+import * as ixMaterials from '../ixMaterials';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -890,7 +890,7 @@ describe('InformationExtraction', () => {
     it('should call get suggestions with the remaining limit', async () => {
       const testSuggestionsLimit = 10;
       const getFilesForSuggestionsSpy = jest
-        .spyOn(getFiles, 'getFilesForSuggestions')
+        .spyOn(ixMaterials, 'getFilesForSuggestions')
         .mockResolvedValue([]);
 
       await InformationExtraction.testModel(factory.id('prop1extractor'), testSuggestionsLimit);

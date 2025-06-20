@@ -25,7 +25,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
-} from 'api/services/informationextraction/getFiles';
+} from 'api/services/informationextraction/ixMaterials';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
 import {

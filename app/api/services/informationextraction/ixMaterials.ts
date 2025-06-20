@@ -356,18 +356,41 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
   return getFilesWithAggregations(files);
 }
 
+async function countSuggestionsToFind(extractorId: ObjectIdSchema) {
+  const [model] = await ixmodels.get({ extractorId });
+
+  const query: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: model.creationDate },
+    status: 'processing',
+    'state.error': { $ne: true },
+  };
+
+  if (model.testRun) {
+    query.trainSampleTimestamp = { $ne: model.creationDate };
+  }
+
+  const count = await IXSuggestionsModel.count(query);
+  return count;
+}
+
 export {
   getFilesForTraining,
   getEntitiesForTraining,
   getFilesForSuggestions,
   getEntitiesForSuggestions,
+  countSuggestionsToFind,
   getSegmentedFilesIds,
+  anyFilesSegmented,
   getPropertyType,
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsMultiValued,
-  NoLabeledEntities,
+  fileQuery,
+  entityForTrainingQuery,
   NoSegmentedFiles,
+  NoLabeledEntities,
   NoFilesForTraining,
 };
+
 export type { FileWithAggregation };

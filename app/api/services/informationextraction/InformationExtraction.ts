@@ -1,4 +1,3 @@
-// Kevin------------------------------------------------------------------
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable camelcase */
@@ -31,10 +30,11 @@ import { FileType } from 'shared/types/fileType';
 import {
   FileWithAggregation,
   getFilesForSuggestions,
-  propertyTypeIsWithoutExtractedMetadata,
   getPropertyType,
   getEntitiesForSuggestions,
-} from 'api/services/informationextraction/getFiles';
+  countSuggestionsToFind,
+  propertyTypeIsWithoutExtractedMetadata,
+} from 'api/services/informationextraction/ixMaterials';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { LanguageUtils } from 'shared/language';
@@ -58,7 +58,6 @@ import { ExtractionKey } from './ExtractionKey';
 import { IXTrainModelJob } from './TrainModelJob';
 
 const defaultTrainingLanguage = 'en';
-const TEST_SUGGESTIONS_SAMPLE_SIZE = 1000;
 
 type TaskTypes = 'suggestions' | 'create_model';
 
@@ -585,8 +584,8 @@ class InformationExtraction {
 
     const [model] = await IXModelsModel.get({ extractorId });
     if (model.testRun) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      if (suggestionsStatus.processed >= (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE)) {
+      const suggestionsStatus = await this.getSuggestionsStatus(model);
+      if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
         await this.stopModel(extractorId);
         emitToTenant(
           tenants.current().name,
@@ -601,10 +600,8 @@ class InformationExtraction {
 
     let files: FileWithAggregation[] | undefined;
     if (extractor.source.pdf) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      const remaining =
-        (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE) - suggestionsStatus.processed;
-
+      const suggestionsStatus = await this.getSuggestionsStatus(model);
+      const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
       files = await getFilesForSuggestions(extractorId, model.testRun ? remaining : undefined);
 
       if (files.length === 0) {
@@ -618,9 +615,8 @@ class InformationExtraction {
 
     let entitiesForSuggestions: EntitySchema[] | undefined;
     if (extractor.source.property) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model.creationDate);
-      const remaining =
-        (model.testSampleSize || TEST_SUGGESTIONS_SAMPLE_SIZE) - suggestionsStatus.processed;
+      const suggestionsStatus = await this.getSuggestionsStatus(model);
+      const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
       entitiesForSuggestions = await getEntitiesForSuggestions(
         extractorId,
         model.testRun ? remaining : undefined
@@ -704,10 +700,7 @@ class InformationExtraction {
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
-      const suggestionStatus = await this.getSuggestionsStatus(
-        extractorId,
-        currentModel.creationDate
-      );
+      const suggestionStatus = await this.getSuggestionsStatus(currentModel);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
         return { status: 'ready', message: 'Ready' };
@@ -777,6 +770,12 @@ class InformationExtraction {
             return;
           }
 
+          const totalSuggestions = await countSuggestionsToFind(message.params!.id);
+          refreshedModel.totalSuggestionsToFind = refreshedModel.testRun
+            ? Math.min(totalSuggestions, refreshedModel.testSampleSize || 1000)
+            : totalSuggestions;
+          await ixmodels.save(refreshedModel);
+
           await this.updateSuggestionStatus(message, refreshedModel);
           await this.getSuggestions(message.params!.id);
           return;
@@ -807,11 +806,11 @@ class InformationExtraction {
     }, _message.tenant);
   };
 
-  getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
-    const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
+  getSuggestionsStatus = async (model: IXModelType) => {
+    const totalSuggestions = model.totalSuggestionsToFind || 0;
     const processedSuggestions = await IXSuggestionsModel.count({
-      extractorId,
-      date: { $gt: modelCreationDate },
+      extractorId: model.extractorId,
+      date: { $gt: model.creationDate },
     });
     return {
       total: totalSuggestions,
@@ -820,10 +819,7 @@ class InformationExtraction {
   };
 
   updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
-    const suggestionsStatus = await this.getSuggestionsStatus(
-      message.params!.id,
-      currentModel.creationDate
-    );
+    const suggestionsStatus = await this.getSuggestionsStatus(currentModel);
     emitToTenant(
       message.tenant,
       'ix_model_status',

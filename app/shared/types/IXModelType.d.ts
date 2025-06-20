@@ -11,4 +11,5 @@ export interface IXModelType {
   findingSuggestions?: boolean;
   testRun?: boolean;
   testSampleSize?: number;
+  totalSuggestionsToFind?: number;
 }

@@ -11,11 +11,11 @@ import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import {
-  FileWithAggregation,
   getFilesForTraining,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
-} from './getFiles';
+  FileWithAggregation,
+} from './ixMaterials';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import {
   CommonMaterialsData,
@@ -27,6 +27,7 @@ import ixmodels from './ixmodels';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
+  iXTaskService: IXTaskService;
 };
 type Output = any;
 

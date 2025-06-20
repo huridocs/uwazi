@@ -25,6 +25,10 @@ export default {
     { testRun = false, testSampleSize }: { testRun?: boolean; testSampleSize?: number } = {}
   ) => {
     const [current] = await model.get({ extractorId });
+    let totalSuggestionsToFind;
+    if (testRun) {
+      totalSuggestionsToFind = testSampleSize || 1000;
+    }
 
     await model.save({
       ...current,
@@ -34,6 +38,7 @@ export default {
       creationDate: new Date().getTime(),
       testRun,
       testSampleSize,
+      totalSuggestionsToFind,
     });
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
