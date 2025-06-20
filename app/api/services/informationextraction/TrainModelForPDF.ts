@@ -27,7 +27,6 @@ import ixmodels from './ixmodels';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
-  iXTaskService: IXTaskService;
 };
 type Output = any;
 
