@@ -6,6 +6,9 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N/Translate';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { Pill } from 'V2/Components/UI';
+import { LockClosedIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
+import { thesauriAtom, templatesAtom, relationshipTypesAtom } from 'V2/atoms';
 import { translationsKeys } from '../helpers';
 
 type PropertyRow = PropertySchema & {
@@ -16,7 +19,32 @@ type PropertyRow = PropertySchema & {
 
 const columnHelper = createColumnHelper<PropertyRow>();
 
-const LabelCell = ({ cell }: CellContext<PropertyRow, string>) => <span>{cell.getValue()}</span>;
+const LabelCell =
+  (handleEditProperty: (property: PropertyRow) => void) =>
+  ({ cell }: CellContext<PropertyRow, string>) => {
+    const property = cell.row.original;
+    if (property.disableRowDnD) {
+      return (
+        <button
+          type="button"
+          onClick={() => handleEditProperty(property)}
+          className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+        >
+          <LockClosedIcon className="w-4 h-4 text-primary-700" />
+          {cell.getValue()}
+        </button>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => handleEditProperty(property)}
+        className="text-left text-primary-700 cursor-pointer font-medium"
+      >
+        {cell.getValue()}
+      </button>
+    );
+  };
 
 const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
   <div className="flex items-center gap-2">
@@ -42,51 +70,86 @@ const OptionsHeader = () => <Translate>Options</Translate>;
 
 // eslint-disable-next-line max-statements
 const OptionsCell = ({ row }: CellContext<PropertyRow, any>) => {
+  const thesauri = useAtomValue(thesauriAtom);
+  const templates = useAtomValue(templatesAtom);
+  const relationTypes = useAtomValue(relationshipTypesAtom);
+
   const property = row.original;
-  const pills: React.ReactNode[] = [];
-  if (property.prioritySorting) {
-    pills.push(
-      <Pill key="priority" color="gray">
-        <Translate>Priority sorting</Translate>
+
+  const content = [...templates, ...thesauri].find(c => c._id === property.content);
+  const relationType = relationTypes.find(rt => rt._id === property.relationType);
+
+  const propertyFlags = [
+    {
+      key: 'show-in-cards',
+      condition: property.showInCard,
+      label: <Translate>Show in cards</Translate>,
+    },
+    {
+      key: 'no-label',
+      condition: property.noLabel,
+      label: <Translate>No label</Translate>,
+    },
+    {
+      key: 'use-as-filter',
+      condition: property.filter,
+      label: <Translate>Use as filter</Translate>,
+    },
+    {
+      key: 'priority',
+      condition: property.prioritySorting,
+      label: <Translate>Priority sorting</Translate>,
+    },
+    {
+      key: 'required',
+      condition: property.required,
+      label: <Translate>Required</Translate>,
+    },
+    {
+      key: 'defaultfilter',
+      condition: property.defaultfilter,
+      label: <Translate>Default filter</Translate>,
+    },
+    {
+      key: 'generated-id',
+      condition: property.generatedId,
+      label: <Translate>Generated ID</Translate>,
+    },
+    {
+      key: 'full-width',
+      condition: property.fullWidth,
+      label: <Translate>Full width</Translate>,
+    },
+    {
+      key: 'style-cover',
+      condition: property.style === 'cover',
+      label: <Translate>Fill</Translate>,
+    },
+    {
+      key: 'style-contain',
+      condition: property.style === 'contain',
+      label: <Translate>Fit</Translate>,
+    },
+    {
+      key: 'relation-type',
+      condition: relationType?.name,
+      label: <Translate context={relationType?._id}>{relationType?.name}</Translate>,
+    },
+    {
+      key: 'content',
+      condition: content?.name,
+      label: <Translate context={content?._id}>{content?.name}</Translate>,
+    },
+  ];
+
+  const pills = propertyFlags
+    .filter(flag => flag.condition)
+    .map(flag => (
+      <Pill key={flag.key} color="gray">
+        {flag.label}
       </Pill>
-    );
-  }
-  if (property.showInCard) {
-    pills.push(
-      <Pill key="show-in-cards" color="gray">
-        <Translate>Show in cards</Translate>
-      </Pill>
-    );
-  }
-  if (property.noLabel) {
-    pills.push(
-      <Pill key="no-label" color="gray">
-        <Translate>No label</Translate>
-      </Pill>
-    );
-  }
-  if (property.filter) {
-    pills.push(
-      <Pill key="use-as-filter" color="gray">
-        <Translate>Use as filter</Translate>
-      </Pill>
-    );
-  }
-  if (property.required) {
-    pills.push(
-      <Pill key="required" color="gray">
-        <Translate>Required</Translate>
-      </Pill>
-    );
-  }
-  if (property.defaultfilter) {
-    pills.push(
-      <Pill key="defaultfilter" color="gray">
-        <Translate>Default filter</Translate>
-      </Pill>
-    );
-  }
-  // Add more pills as needed for other property configs
+    ));
+
   return <div className="flex flex-wrap gap-2">{pills}</div>;
 };
 
@@ -96,7 +159,7 @@ const propertyColumns: (
   columnHelper.accessor('label', {
     id: 'label',
     header: LabelHeader,
-    cell: LabelCell,
+    cell: LabelCell(handleEditProperty),
     enableSorting: false,
   }),
   columnHelper.accessor('type', {

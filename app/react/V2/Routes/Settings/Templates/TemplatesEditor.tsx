@@ -79,7 +79,8 @@ const TemplatesEditor = () => {
   const [propertyToEdit, setPropertyToEdit] = useState<PropertyRow | undefined>();
   const [showReindexModal, setShowReindexModal] = useState(false);
   const [showLargeEntityCountModal, setShowLargeEntityCountModal] = useState(false);
-  const ENTITY_COUNT_THRESHOLD = 100;
+  const [isSaving, setIsSaving] = useState(false);
+  const ENTITY_COUNT_THRESHOLD = 3000;
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -149,31 +150,42 @@ const TemplatesEditor = () => {
     if (forceReindex) {
       templateToSave.reindex = true;
     }
-    try {
-      const savedTemplate = await templatesAPI.save(templateToSave);
-      await revalidator.revalidate();
 
-      // Update templates atom
-      const updatedTemplates = template._id
-        ? templates.map(t => (t._id === template._id ? savedTemplate : t))
-        : [...templates, savedTemplate];
-      setTemplates(updatedTemplates);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template saved successfully.</Translate>,
-      });
+    const savedTemplate = await templatesAPI.save(templateToSave);
+    await revalidator.revalidate();
 
-      await navigate(`/settings/templates/edit/${savedTemplate._id}`);
-    } catch (e) {
-      if (e.status === 409) {
-        setShowReindexModal(true);
-        return;
-      }
-      setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
-    }
+    // Update templates atom
+    const updatedTemplates = template._id
+      ? templates.map(t => (t._id === template._id ? savedTemplate : t))
+      : [...templates, savedTemplate];
+    setTemplates(updatedTemplates);
+    setNotifications({
+      type: 'success',
+      text: <Translate>Template saved successfully.</Translate>,
+    });
+
+    await navigate(`/settings/templates/edit/${savedTemplate._id}`);
   };
 
-  const handleSave = async () => {
+  const handlePropertySave = (propertyConfig: PropertySchema) => {
+    if (propertyToEdit && propertyConfig.isCommonProperty) {
+      setCommonProperties(current =>
+        current.map(p => (p.rowId === propertyToEdit.rowId ? { ...p, ...propertyConfig } : p))
+      );
+      return;
+    }
+
+    if (propertyToEdit) {
+      setProperties(current =>
+        current.map(p => (p.rowId === propertyToEdit.rowId ? { ...p, ...propertyConfig } : p))
+      );
+      return;
+    }
+
+    setProperties(current => [...current, { ...propertyConfig, rowId: uniqueID() }]);
+  };
+
+  const handleSave = async (ignoreEntityCount = false) => {
     const isDuplicateName = templates.some(
       t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
     );
@@ -187,13 +199,14 @@ const TemplatesEditor = () => {
       const entityCounts = await templatesAPI.checkTemplatesEntityCount(undefined, [template._id]);
       const entityCount = entityCounts[template._id] || 0;
 
-      if (entityCount > ENTITY_COUNT_THRESHOLD && checkPendingChanges()) {
+      if (entityCount > ENTITY_COUNT_THRESHOLD && !ignoreEntityCount) {
         setShowLargeEntityCountModal(true);
         return;
       }
     }
 
     try {
+      setIsSaving(true);
       await save();
     } catch (e) {
       if (e.status === 409) {
@@ -201,6 +214,8 @@ const TemplatesEditor = () => {
         return;
       }
       setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -254,6 +269,7 @@ const TemplatesEditor = () => {
             onAddThesaurus={() => setShowThesaurusModal(true)}
             onAddRelationshipType={() => setShowRelationshipTypeModal(true)}
             onAddProperty={() => setShowConfigPropertyPanel(true)}
+            disableSave={!checkPendingChanges() || isSaving}
           />
         </SettingsContent.Footer>
       </SettingsContent>
@@ -267,15 +283,7 @@ const TemplatesEditor = () => {
 
       <ConfigPropertyPanel
         isOpen={showConfigPropertyPanel}
-        onSubmit={(propertyConfig: PropertySchema) => {
-          if (propertyToEdit) {
-            setProperties(current =>
-              current.map(p => (p.rowId === propertyToEdit.rowId ? { ...p, ...propertyConfig } : p))
-            );
-          } else {
-            setProperties(current => [...current, { ...propertyConfig, rowId: uniqueID() }]);
-          }
-        }}
+        onSubmit={handlePropertySave}
         onClose={() => {
           setShowConfigPropertyPanel(false);
           setPropertyToEdit(undefined);
@@ -294,7 +302,7 @@ const TemplatesEditor = () => {
           }
           onAcceptClick={async () => {
             setShowLargeEntityCountModal(false);
-            await save(true);
+            await handleSave(true);
           }}
           onCancelClick={() => setShowLargeEntityCountModal(false)}
           acceptButton={<Translate>Continue</Translate>}
@@ -313,7 +321,21 @@ const TemplatesEditor = () => {
           }
           onAcceptClick={async () => {
             setShowReindexModal(false);
-            await save(true);
+            try {
+              setIsSaving(true);
+              await save(true);
+            } catch (e) {
+              if (e.status === 409) {
+                setShowReindexModal(true);
+                return;
+              }
+              setNotifications({
+                type: 'error',
+                text: <Translate>Error saving template.</Translate>,
+              });
+            } finally {
+              setIsSaving(false);
+            }
           }}
           onCancelClick={() => setShowReindexModal(false)}
           acceptButton={<Translate>Continue</Translate>}
