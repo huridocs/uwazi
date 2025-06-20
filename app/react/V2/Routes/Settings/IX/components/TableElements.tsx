@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { useState } from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
@@ -169,7 +169,7 @@ const AcceptButton = ({
   cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
-  const color = statusColor(cell.row.original);
+  const [color, setColor] = useState(() => statusColor(cell.row.original));
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   if (color === 'green') {
@@ -188,7 +188,10 @@ const AcceptButton = ({
         icon={getIcon(color)}
         color={color}
         disabled={isDisabled}
-        onClick={async () => action && action([cell.row.original])}
+        onClick={async () => {
+          setColor('green');
+          return action && action([cell.row.original]);
+        }}
       >
         <Translate>Accept</Translate>
       </EmbededButton>

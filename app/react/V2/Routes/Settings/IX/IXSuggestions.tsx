@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -62,52 +62,45 @@ const IXSuggestions = () => {
     totalPages,
     activeFilters,
   } = useLoaderData() as IXSuggestionsLoaderResponse;
+  const prevSuggestions = useRef(suggestions);
+  const keepRowOrder = useRef(true);
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
-  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
-  const [selected, setSelected] = useState<TableSuggestion[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [aggregations, setAggregations] = useState<any>(aggregation);
-  const { revalidate } = useRevalidator();
-  const setNotifications = useSetAtom(notificationAtom);
   const [status, setStatus] = useState<{
     status: ixStatus;
     message?: string;
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
-
-  const fetchAgregations = async () => {
-    const newAggregations = await suggestionsAPI.aggregation(extractor._id!);
-    setAggregations(newAggregations);
-  };
+  const [selected, setSelected] = useState<TableSuggestion[]>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
+  const { revalidate } = useRevalidator();
+  const setNotifications = useSetAtom(notificationAtom);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const onEntitySave = async (updatedEntity: ClientEntitySchema) => {
-    setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity, property));
-    await fetchAgregations();
+  const onEntitySave = async (_updatedEntity: ClientEntitySchema) => {
+    keepRowOrder.current = true;
+    await revalidate();
   };
 
   const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
     const preparedSuggestions = formatAccepted(acceptedSuggestions);
 
     try {
+      keepRowOrder.current = true;
       await suggestionsAPI.accept(preparedSuggestions);
-      setCurrentSuggestions(prevSuggestions =>
-        updateSuggestions(prevSuggestions, acceptedSuggestions)
-      );
       setSelected([]);
       setNotifications({
         type: 'info',
         text: <Translate>Suggestions sent</Translate>,
       });
     } catch (error) {
-      setCurrentSuggestions(suggestions);
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
@@ -145,29 +138,12 @@ const IXSuggestions = () => {
     setSidepanel('none');
   };
 
-  useMemo(() => {
-    if (property?.type === 'multiselect' || property?.type === 'relationship') {
-      const flatenedSuggestions = suggestions.map(suggestion =>
-        generateChildrenRows(suggestion as MultiValueSuggestion)
-      );
-      setCurrentSuggestions(flatenedSuggestions);
-      return;
-    }
-
-    setCurrentSuggestions(
-      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
-    );
-  }, [suggestions, property]);
-
   useEffect(() => {
-    setAggregations(aggregation);
-  }, [aggregation]);
-
-  useEffect(() => {
+    keepRowOrder.current = false;
     const navigatePromise = async (path: string) => navigate(path, { replace: true });
     const newUrl = updateSortingUrl(sorting, location.pathname, searchParams);
     navigatePromise(newUrl).catch(_e => {});
-  }, [sorting]);
+  }, [sorting, searchParams]);
 
   useEffect(() => {
     const template = templates.find(t => t._id === extractor.templates[0]);
@@ -178,10 +154,41 @@ const IXSuggestions = () => {
     setProperty(_property);
   }, [templates, extractor]);
 
+  useEffect(() => {
+    let newSuggestions = suggestions;
+    const updateByProperty =
+      extractor.property === 'title' || property?.type === 'text' || property?.type === 'markdown'
+        ? 'sharedId'
+        : '_id';
+
+    if (keepRowOrder.current) {
+      newSuggestions = prevSuggestions.current.map(suggestion => {
+        const updatedSuggestion = suggestions.find(
+          s => s[updateByProperty] === suggestion[updateByProperty]
+        );
+        return updatedSuggestion || suggestion;
+      });
+    }
+
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
+      const flatenedSuggestions = newSuggestions.map(suggestion =>
+        generateChildrenRows(suggestion as MultiValueSuggestion)
+      );
+      setCurrentSuggestions(flatenedSuggestions);
+    } else {
+      setCurrentSuggestions(
+        newSuggestions.map(
+          suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion
+        )
+      );
+    }
+
+    prevSuggestions.current = newSuggestions;
+  }, [suggestions, property, extractor]);
+
   useEventHandler({
     extractorId: extractor._id!,
     updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
-    fetchAggregations: fetchAgregations,
   });
 
   return (
@@ -227,7 +234,7 @@ const IXSuggestions = () => {
                 <PaginationState
                   page={Number(searchParams.get('page') || 1)}
                   size={SUGGESTIONS_PER_PAGE}
-                  total={aggregations.total || totalPages * SUGGESTIONS_PER_PAGE}
+                  total={aggregation.total || totalPages * SUGGESTIONS_PER_PAGE}
                   currentLength={currentSuggestions.length}
                 />
                 <div>
@@ -308,7 +315,7 @@ const IXSuggestions = () => {
       <FiltersSidepanel
         showSidepanel={sidepanel === 'filters'}
         setShowSidepanel={closeSidepanel}
-        aggregation={aggregations}
+        aggregation={aggregation}
       />
 
       <SuggestionSidepanel

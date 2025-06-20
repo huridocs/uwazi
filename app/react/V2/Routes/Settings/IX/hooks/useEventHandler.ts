@@ -16,14 +16,9 @@ import { ixStatus } from '../types';
 type useEventHandlerProps = {
   extractorId: string;
   updateStatus: (status: ixStatus, data?: { processed: number; total: number }) => void;
-  fetchAggregations: () => Promise<void>;
 };
 
-const useEventHandler = ({
-  extractorId,
-  updateStatus,
-  fetchAggregations,
-}: useEventHandlerProps) => {
+const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) => {
   const setNotifications = useSetAtom(notificationAtom);
   const { revalidate } = useRevalidator();
 
@@ -53,7 +48,7 @@ const useEventHandler = ({
     };
 
     const handleSuggestionSuccess: AcceptSuggestionSuccessCallback = async () => {
-      await fetchAggregations();
+      await revalidate();
       setNotifications({
         type: 'success',
         text: t('System', 'Suggestions have been updated', null, false),
