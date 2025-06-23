@@ -1,7 +1,7 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
 import entities from 'api/entities';
-import { bulkDenormalizeEntities } from 'api/entities/bulkUpdateMetadataFromRelationships';
+import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
 import entitiesModel from 'api/entities/entitiesModel';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -259,12 +259,12 @@ export default {
         );
       }
 
-      await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
       const relationshipPropsWithChangedRelData =
         currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
       if (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) {
-        await bulkDenormalizeEntities({ template: template._id, language }, language, 200, reindex);
+        await bulkDenormalizeEntitiesFromTemplateSave(savedTemplate, language, 50, reindex);
       }
+      await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
     }
 
     await applicationEventsBus.emit(

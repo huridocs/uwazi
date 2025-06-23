@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import documents from 'api/documents/documents.js';
-import { bulkDenormalizeEntities } from 'api/entities/bulkUpdateMetadataFromRelationships';
+import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
 import entities from 'api/entities/entities.js';
 import entitiesModel from 'api/entities/entitiesModel';
 import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
@@ -36,8 +36,8 @@ import fixtures, {
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
 
-jest.mock('api/entities/bulkUpdateMetadataFromRelationships', () => ({
-  bulkDenormalizeEntities: jest.fn().mockImplementation(async () => true),
+jest.mock('api/entities/bulkUpdateMetadataFromTemplateSave', () => ({
+  bulkDenormalizeEntitiesFromTemplateSave: jest.fn().mockImplementation(async () => true),
 }));
 
 describe('templates', () => {
@@ -165,9 +165,6 @@ describe('templates', () => {
       it('should remove the values from the entities and update them', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         jest.spyOn(entities, 'removeValuesFromEntities');
-        jest
-          .spyOn(entities, 'updateMetadataProperties')
-          .mockImplementation(async () => Promise.resolve());
         const changedTemplate = {
           _id: templateWithContents,
           name: 'changed',
@@ -333,9 +330,6 @@ describe('templates', () => {
     describe('when passing _id', () => {
       beforeAll(async () => {
         await testingEnvironment.setUp(fixtures, elasticIndex);
-        jest
-          .spyOn(entities, 'updateMetadataProperties')
-          .mockImplementation(async () => Promise.resolve());
       });
 
       it('should edit an existing one', async () => {
@@ -798,7 +792,7 @@ describe('templates', () => {
     });
   });
 
-  describe('bulkDenormalizeEntities', () => {
+  describe('bulkDenormalizeEntitiesFromTemplateSave', () => {
     it('should not denormalize when relationship related data has not changed', async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
       const template = {
@@ -815,9 +809,9 @@ describe('templates', () => {
         default: true,
       };
 
-      bulkDenormalizeEntities.mockReset();
+      bulkDenormalizeEntitiesFromTemplateSave.mockReset();
       await templates.save(template);
-      expect(bulkDenormalizeEntities).not.toHaveBeenCalled();
+      expect(bulkDenormalizeEntitiesFromTemplateSave).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -846,9 +840,9 @@ describe('templates', () => {
           ],
         };
 
-        bulkDenormalizeEntities.mockReset();
+        bulkDenormalizeEntitiesFromTemplateSave.mockReset();
         await templates.save(template);
-        expect(bulkDenormalizeEntities).toHaveBeenCalled();
+        expect(bulkDenormalizeEntitiesFromTemplateSave).toHaveBeenCalled();
       }
     );
   });
