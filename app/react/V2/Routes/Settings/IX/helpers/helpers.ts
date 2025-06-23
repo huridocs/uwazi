@@ -5,11 +5,7 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { t } from 'app/I18N';
 import { RadioProps } from 'V2/Components/Forms';
 import { ClientIXExtractorType } from 'V2/shared/types';
-import {
-  SuggestionValue,
-  TableSuggestion,
-  MultiValueSuggestion,
-} from '../types';
+import { SuggestionValue, TableSuggestion, MultiValueSuggestion } from '../types';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,

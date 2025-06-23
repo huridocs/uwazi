@@ -38,7 +38,7 @@ interface SuggestionSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion?: TableSuggestion;
-  onEntitySave: (entity: ClientEntitySchema) => any;
+  onEntitySave: () => any;
   property?: ClientPropertySchema;
 }
 
@@ -240,46 +240,46 @@ const SuggestionSidepanel = ({
 
   const createOnSubmit =
     (sourceType: 'pdf' | 'entity_property') =>
-    async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
-      if (!property) {
-        throw new Error('Property not found');
-      }
-
-      let metadata = value.field;
-
-      if (property.type === 'date' && isDirty && metadata) {
-        metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
-      }
-
-      const entityToSave = { ...entity };
-
-      if (sourceType === 'pdf') {
-        entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
-      }
-
-      const savedEntity = await handleEntitySave(
-        entityToSave,
-        property,
-        metadata,
-        template,
-        isDirty
-      );
-
-      if (savedEntity instanceof FetchResponseError) {
-        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
-
-        setNotifications({ type: 'error', text: 'An error occurred', details });
-      } else if (savedEntity) {
-        if (savedEntity) {
-          setEntity(savedEntity);
-          onEntitySave(savedEntity);
+      async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
+        if (!property) {
+          throw new Error('Property not found');
         }
 
-        setNotifications({ type: 'success', text: 'Saved successfully.' });
-      }
+        let metadata = value.field;
 
-      handleClose();
-    };
+        if (property.type === 'date' && isDirty && metadata) {
+          metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
+        }
+
+        const entityToSave = { ...entity };
+
+        if (sourceType === 'pdf') {
+          entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
+        }
+
+        const savedEntity = await handleEntitySave(
+          entityToSave,
+          property,
+          metadata,
+          template,
+          isDirty
+        );
+
+        if (savedEntity instanceof FetchResponseError) {
+          const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+
+          setNotifications({ type: 'error', text: 'An error occurred', details });
+        } else if (savedEntity) {
+          if (savedEntity) {
+            setEntity(savedEntity);
+            onEntitySave();
+          }
+
+          setNotifications({ type: 'success', text: 'Saved successfully.' });
+        }
+
+        handleClose();
+      };
 
   const handleClickToFill = async () => {
     if (!property) {
