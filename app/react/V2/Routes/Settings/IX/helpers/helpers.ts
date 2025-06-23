@@ -11,7 +11,10 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
 } from '../types';
-import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from '../components/sidepanelFunctions';
+import {
+  getPropertyNameFromExtractPair,
+  getTemplateFromExtractPair,
+} from '../components/sidepanelFunctions';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
