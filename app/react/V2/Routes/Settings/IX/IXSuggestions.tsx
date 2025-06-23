@@ -12,14 +12,14 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import * as extractorsAPI from 'app/V2/api/ix/extractors';
-import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
+import * as extractorsAPI from 'V2/api/ix/extractors';
+import * as suggestionsAPI from 'V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
+import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import { notificationAtom } from 'app/V2/atoms';
+import { ClientPropertySchema } from 'app/istore';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -34,6 +34,7 @@ import {
   EntitySuggestion,
 } from './types';
 import { useEventHandler } from './hooks/useEventHandler';
+import { ixAcceptedSuggestions } from './components/ixSuggestionsAtom';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -74,21 +75,29 @@ const IXSuggestions = () => {
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
+  const setAcceptedSuggestionsAtom = useSetAtom(ixAcceptedSuggestions);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const onEntitySave = async (_updatedEntity: ClientEntitySchema) => {
+  const onEntitySave = async () => {
     keepRowOrder.current = true;
     await revalidate();
   };
 
-  const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
-    const preparedSuggestions = formatAccepted(acceptedSuggestions);
+  const acceptSuggestions = async (suggestionsToAccept: TableSuggestion[]) => {
+    const preparedSuggestions = formatAccepted(suggestionsToAccept);
 
     try {
       keepRowOrder.current = true;
       await suggestionsAPI.accept(preparedSuggestions);
+      const newAcceptedIds = suggestionsToAccept.map(s => s._id);
+      setAcceptedSuggestionsAtom(prev => {
+        const newSet = new Set(prev || []);
+        newAcceptedIds.forEach(id => newSet.add(id));
+        return newSet;
+      });
+
       setSelected([]);
       setNotifications({
         type: 'info',
@@ -117,6 +126,7 @@ const IXSuggestions = () => {
           setStatus({ status: ixStatus.cancel });
         }
         await revalidate();
+        setAcceptedSuggestionsAtom(new Set());
       }
     } catch (error) {}
   };
@@ -175,6 +185,8 @@ const IXSuggestions = () => {
 
     prevSuggestions.current = newSuggestions;
   }, [suggestions, property, extractor]);
+
+  useEffect(() => () => setAcceptedSuggestionsAtom(new Set()), [setAcceptedSuggestionsAtom]);
 
   useEventHandler({
     extractorId: extractor._id!,

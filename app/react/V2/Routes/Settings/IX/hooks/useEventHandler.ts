@@ -12,6 +12,7 @@ import type {
   AcceptSuggestionErrorCallback,
 } from '../events';
 import { ixStatus } from '../types';
+import { ixAcceptedSuggestions } from '../components/ixSuggestionsAtom';
 
 type useEventHandlerProps = {
   extractorId: string;
@@ -20,6 +21,7 @@ type useEventHandlerProps = {
 
 const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) => {
   const setNotifications = useSetAtom(notificationAtom);
+  const setAcceptedSuggestionsAtom = useSetAtom(ixAcceptedSuggestions);
   const { revalidate } = useRevalidator();
 
   useEffect(() => {
@@ -32,6 +34,7 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       if (eventExtractorId === extractorId) {
         updateStatus(modelStatus, data);
         await revalidate();
+        setAcceptedSuggestionsAtom(new Set());
       }
     };
 
