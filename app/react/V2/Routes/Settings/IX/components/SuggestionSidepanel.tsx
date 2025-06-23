@@ -236,6 +236,8 @@ const SuggestionSidepanel = ({
     setShowSidepanel(false);
   };
 
+  const template = templates.find(tpl => tpl._id.toString() === templateId);
+
   const createOnSubmit =
     (sourceType: 'pdf' | 'entity_property') =>
     async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
@@ -255,7 +257,13 @@ const SuggestionSidepanel = ({
         entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
       }
 
-      const savedEntity = await handleEntitySave(entityToSave, property.name, metadata, isDirty);
+      const savedEntity = await handleEntitySave(
+        entityToSave,
+        property,
+        metadata,
+        template,
+        isDirty
+      );
 
       if (savedEntity instanceof FetchResponseError) {
         const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
@@ -542,7 +550,7 @@ const SuggestionSidepanel = ({
                 <TextProperty
                   propertyName={suggestion.extractorSource.property}
                   entity={entity}
-                  template={templates.find(template => template._id.toString() === templateId)}
+                  template={template}
                   onSelect={selection => {
                     setSelectedText(selection);
                   }}

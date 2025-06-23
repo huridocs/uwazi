@@ -11,6 +11,7 @@ import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from '../../../../Components/UI/Icons';
 import { getAvailableSources } from '../helpers';
+import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions';
 
 const SUPPORTED_PROPERTIES = [
   'text',
@@ -55,7 +56,7 @@ const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
 };
 
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
-  const propertyName = values.length ? values[0].split('-', 2)[1] : null;
+  const propertyName = values.length ? getPropertyNameFromExtractPair(values[0]) : null;
   return templates
     .map(template => {
       const option = {
@@ -153,11 +154,11 @@ const ExtractorModal = ({
 
     const result: null | ClientIXExtractorType = values.length
       ? ({
-          name,
-          source: extractorSource,
-          property: values[0].split('-', 2)[1],
-          templates: uniq(values.map(value => value.split('-', 2)[0])),
-        } as ClientIXExtractorType)
+        name,
+        source: extractorSource,
+        property: getPropertyNameFromExtractPair(values[0]),
+        templates: uniq(values.map(value => getTemplateFromExtractPair(value[0]))),
+      } as ClientIXExtractorType)
       : null;
 
     if (result && extractor) {
@@ -216,7 +217,7 @@ const ExtractorModal = ({
             </h6>
             <div className="flex flex-wrap p-3">
               {values.map(value => {
-                const templateId = value?.split('-', 2)[0];
+                const templateId = getTemplateFromExtractPair(value);
                 const template = templates.find(temp => temp._id === templateId);
                 return (
                   <Pill color="gray" className="m-1" key={templateId}>
