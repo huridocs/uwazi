@@ -11,7 +11,7 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
 } from '../types';
-import { getTemplateFromExtractPair } from '../components/sidepanelFunctions';
+import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from '../components/sidepanelFunctions';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
@@ -247,7 +247,7 @@ const getAvailableSources = (
   }
 
   const commonProperty = selectedTemplatesIdsAndProperties[0]
-    ? getTemplateFromExtractPair(selectedTemplatesIdsAndProperties[0])
+    ? getPropertyNameFromExtractPair(selectedTemplatesIdsAndProperties[0])
     : '';
   const templateIds = selectedTemplatesIdsAndProperties.map(selected =>
     getTemplateFromExtractPair(selected)
