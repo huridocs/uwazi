@@ -30,8 +30,8 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       data
     ) => {
       if (eventExtractorId === extractorId) {
-        await revalidate();
         updateStatus(modelStatus, data);
+        await revalidate();
       }
     };
 

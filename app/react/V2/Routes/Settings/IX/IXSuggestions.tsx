@@ -107,8 +107,8 @@ const IXSuggestions = () => {
     try {
       keepRowOrder.current = false;
       if (status.status === ixStatus.ready) {
-        setStatus({ status: ixStatus.sending_labeled_data });
         await suggestionsAPI.findSuggestions(extractor._id!);
+        setStatus({ status: ixStatus.sending_labeled_data });
       } else {
         await suggestionsAPI.cancel(extractor._id!);
         if (status.status === ixStatus.error) {
