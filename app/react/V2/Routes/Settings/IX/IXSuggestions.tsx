@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -24,13 +24,7 @@ import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { SuggestionSidepanel } from './components/SuggestionSidepanel';
-import {
-  updateSuggestionsByEntity,
-  generateChildrenRows,
-  updateSuggestions,
-  formatAccepted,
-  updateSortingUrl,
-} from './helpers';
+import { generateChildrenRows, formatAccepted, updateSortingUrl } from './helpers';
 import {
   TableSuggestion,
   MultiValueSuggestion,
@@ -111,10 +105,10 @@ const IXSuggestions = () => {
 
   const trainModelOrCancelAction = async () => {
     try {
+      keepRowOrder.current = false;
       if (status.status === ixStatus.ready) {
         setStatus({ status: ixStatus.sending_labeled_data });
-        const response = await suggestionsAPI.findSuggestions(extractor._id!);
-        setStatus(response);
+        await suggestionsAPI.findSuggestions(extractor._id!);
       } else {
         await suggestionsAPI.cancel(extractor._id!);
         if (status.status === ixStatus.error) {
@@ -156,17 +150,13 @@ const IXSuggestions = () => {
 
   useEffect(() => {
     let newSuggestions = suggestions;
-    const updateByProperty =
-      extractor.property === 'title' || property?.type === 'text' || property?.type === 'markdown'
-        ? 'sharedId'
-        : '_id';
 
     if (keepRowOrder.current) {
-      newSuggestions = prevSuggestions.current.map(suggestion => {
+      newSuggestions = prevSuggestions.current.map(currentSuggestion => {
         const updatedSuggestion = suggestions.find(
-          s => s[updateByProperty] === suggestion[updateByProperty]
+          newSuggestion => newSuggestion._id === currentSuggestion._id
         );
-        return updatedSuggestion || suggestion;
+        return updatedSuggestion || currentSuggestion;
       });
     }
 
