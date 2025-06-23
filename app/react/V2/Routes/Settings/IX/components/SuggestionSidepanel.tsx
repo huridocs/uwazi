@@ -240,46 +240,46 @@ const SuggestionSidepanel = ({
 
   const createOnSubmit =
     (sourceType: 'pdf' | 'entity_property') =>
-      async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
-        if (!property) {
-          throw new Error('Property not found');
+    async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
+      if (!property) {
+        throw new Error('Property not found');
+      }
+
+      let metadata = value.field;
+
+      if (property.type === 'date' && isDirty && metadata) {
+        metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
+      }
+
+      const entityToSave = { ...entity };
+
+      if (sourceType === 'pdf') {
+        entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
+      }
+
+      const savedEntity = await handleEntitySave(
+        entityToSave,
+        property,
+        metadata,
+        template,
+        isDirty
+      );
+
+      if (savedEntity instanceof FetchResponseError) {
+        const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
+
+        setNotifications({ type: 'error', text: 'An error occurred', details });
+      } else if (savedEntity) {
+        if (savedEntity) {
+          setEntity(savedEntity);
+          onEntitySave();
         }
 
-        let metadata = value.field;
+        setNotifications({ type: 'success', text: 'Saved successfully.' });
+      }
 
-        if (property.type === 'date' && isDirty && metadata) {
-          metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
-        }
-
-        const entityToSave = { ...entity };
-
-        if (sourceType === 'pdf') {
-          entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
-        }
-
-        const savedEntity = await handleEntitySave(
-          entityToSave,
-          property,
-          metadata,
-          template,
-          isDirty
-        );
-
-        if (savedEntity instanceof FetchResponseError) {
-          const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
-
-          setNotifications({ type: 'error', text: 'An error occurred', details });
-        } else if (savedEntity) {
-          if (savedEntity) {
-            setEntity(savedEntity);
-            onEntitySave();
-          }
-
-          setNotifications({ type: 'success', text: 'Saved successfully.' });
-        }
-
-        handleClose();
-      };
+      handleClose();
+    };
 
   const handleClickToFill = async () => {
     if (!property) {
