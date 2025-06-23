@@ -154,11 +154,11 @@ const ExtractorModal = ({
 
     const result: null | ClientIXExtractorType = values.length
       ? ({
-        name,
-        source: extractorSource,
-        property: getPropertyNameFromExtractPair(values[0]),
-        templates: uniq(values.map(value => getTemplateFromExtractPair(value[0]))),
-      } as ClientIXExtractorType)
+          name,
+          source: extractorSource,
+          property: getPropertyNameFromExtractPair(values[0]),
+          templates: uniq(values.map(value => getTemplateFromExtractPair(value[0]))),
+        } as ClientIXExtractorType)
       : null;
 
     if (result && extractor) {
