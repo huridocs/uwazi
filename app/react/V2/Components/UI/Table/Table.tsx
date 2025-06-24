@@ -228,7 +228,7 @@ const Table = <T extends TableRow<T>>({
       sensors={sensors}
     >
       <div className="w-full overflow-auto rounded-md shadow">
-        <div className="flex justify-between items-center p-4 gap-4">
+        <div data-testid="table-header" className="flex justify-between items-center p-4 gap-4">
           {header && <div className="flex-grow">{header}</div>}
           <div className="flex gap-2">
             {hasGroups && (
