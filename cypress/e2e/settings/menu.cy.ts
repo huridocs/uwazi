@@ -57,7 +57,7 @@ describe('Menu configuration', () => {
   it('should not show the unsaved changes alert', () => {
     cy.contains('a', 'Account').click();
     cy.contains('a', 'Menu').click();
-    cy.contains('caption', 'Menu');
+    cy.contains('Menu');
   });
 
   it('it should add groups', () => {
