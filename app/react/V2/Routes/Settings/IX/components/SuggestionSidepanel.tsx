@@ -38,7 +38,7 @@ interface SuggestionSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion?: TableSuggestion;
-  onEntitySave: (entity: ClientEntitySchema) => any;
+  onEntitySave: () => any;
   property?: ClientPropertySchema;
 }
 
@@ -264,7 +264,7 @@ const SuggestionSidepanel = ({
       } else if (savedEntity) {
         if (savedEntity) {
           setEntity(savedEntity);
-          onEntitySave(savedEntity);
+          onEntitySave();
         }
 
         setNotifications({ type: 'success', text: 'Saved successfully.' });

@@ -2,14 +2,15 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
+import { useAtom } from 'jotai';
 import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
-import { ClientPropertySchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import { propertyIcons } from 'V2/Components/UI/Icons';
+import { ClientPropertySchema } from 'app/istore';
+import { Translate } from 'app/I18N';
 import {
   TableExtractor,
   TableSuggestion,
@@ -19,6 +20,7 @@ import {
 } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
+import { ixAcceptedSuggestions } from './ixSuggestionsAtom';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -169,7 +171,11 @@ const AcceptButton = ({
   cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
-  const color = statusColor(cell.row.original);
+  const [accepted, setAccepted] = useAtom(ixAcceptedSuggestions);
+  const { rowId } = cell.row.original;
+  const isGreen = accepted?.has(rowId) || statusColor(cell.row.original) === 'green';
+  const color = isGreen ? 'green' : statusColor(cell.row.original);
+
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   if (color === 'green') {
@@ -188,7 +194,14 @@ const AcceptButton = ({
         icon={getIcon(color)}
         color={color}
         disabled={isDisabled}
-        onClick={async () => action && action([cell.row.original])}
+        onClick={async () => {
+          setAccepted(prev => {
+            const newSet = new Set(prev || []);
+            newSet.add(rowId);
+            return newSet;
+          });
+          return action && action([cell.row.original]);
+        }}
       >
         <Translate>Accept</Translate>
       </EmbededButton>

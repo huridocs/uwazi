@@ -1,6 +1,4 @@
 export {
-  updateSuggestions,
-  updateSuggestionsByEntity,
   generateChildrenRows,
   getAvailableSources,
   getMetadataFromProperty,
