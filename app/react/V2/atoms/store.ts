@@ -13,6 +13,7 @@ import { translationsAtom, localeAtom } from './translationsAtoms';
 import { userAtom } from './userAtom';
 import { thesauriAtom } from './thesauriAtom';
 import { pdfScaleAtom } from './pdfScaleAtom';
+import { ixAcceptedSuggestions } from '../Routes/Settings/IX/components/ixSuggestionsAtom';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
@@ -24,6 +25,7 @@ type AtomStoreData = {
   user?: ClientUserSchema;
   ciMatomoActive?: boolean;
   translations: ClientTranslationSchema[];
+  acceptedSuggestions?: Set<string>;
 };
 
 const atomStore = createStore();
@@ -38,6 +40,7 @@ const hydrateAtomStore = (data: AtomStoreData) => {
   atomStore.set(userAtom, data.user);
   atomStore.set(translationsAtom, data.translations);
   atomStore.set(localeAtom, data.locale || 'en');
+  atomStore.set(ixAcceptedSuggestions, new Set<string>());
 };
 
 if (isClient && window.__atomStoreData__) {

@@ -29,6 +29,10 @@ updates:
       - dependency-name: recharts
       - dependency-name: '@headlessui/react'
       - dependency-name: react-player
+      - dependency-name: '@socket.io/redis-adapter'
+      - dependency-name: '@elastic/elasticsearch' #7721
+      - dependency-name: 'pdfjs-dist' #8057
+
     open-pull-requests-limit: 5
     labels:
       - dependencies

@@ -1,10 +1,10 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import entities from 'api/entities/entities.js';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from '../templates';
-import { testingTenants } from 'api/utils/testingTenants';
 
 const f = getFixturesFactory();
 

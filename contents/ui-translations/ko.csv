@@ -913,6 +913,7 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This label already exists in this template,This label already exists in this template
 This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
+This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,이 속성은 카드의 기본 정보에 포함되며 라이브러리에서 볼 수 있습니다.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,관련 엔티티에서 속성을 이어받아 현재 엔티티의 메타데이터에 포함시킵니다.
 This property will be shown using all the width available.,디스플레이 가능한 너비 내에서 이 속성을 표시합니다.

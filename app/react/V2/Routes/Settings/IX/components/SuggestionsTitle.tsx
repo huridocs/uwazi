@@ -1,8 +1,8 @@
 import React from 'react';
 import { FunnelIcon } from '@heroicons/react/24/solid';
 import { Translate, t } from 'app/I18N';
-import { Pill, Button } from 'app/V2/Components/UI';
-import { ClientTemplateSchema } from 'app/istore';
+import { Pill, Button } from 'V2/Components/UI';
+import { ClientTemplateSchema } from 'V2/shared/types';
 import {
   DatePropertyIcon,
   MarkdownPropertyIcon,
@@ -10,7 +10,7 @@ import {
   TextPropertyIcon,
   SelectPropertyIcon,
   RelationshipPropertyIcon,
-} from 'app/V2/Components/CustomIcons';
+} from 'V2/Components/CustomIcons';
 
 const SuggestionsTitle = ({
   property,
@@ -23,7 +23,10 @@ const SuggestionsTitle = ({
   onFiltersButtonClicked: () => void;
   activeFilters: number;
 }) => {
-  const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
+  const allProperties = [
+    ...(templates[0].commonProperties || []),
+    ...(templates[0].properties || []),
+  ];
   const template = allProperties.find(prop => prop.name === property);
 
   let propGraphics: string | React.ReactNode = '_';

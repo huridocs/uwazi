@@ -2,6 +2,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import request from 'supertest';
 import { UserRole } from 'shared/types/userSchema';
+import { legacyLogger } from 'api/log';
 import documentRoutes from '../deprecatedRoutes.js';
 import documents from '../documents';
 import { fixtures } from './fixtures';
@@ -92,6 +93,7 @@ describe('documents', () => {
       expect(response.body.error).toBe('validation failed');
     });
     it('should return count of documents using a specific template', async () => {
+      jest.spyOn(legacyLogger, 'info').mockImplementation(() => ({}));
       const response = await request(app)
         .get('/api/documents/count_by_template')
         .query({ templateId: 'templateId' });

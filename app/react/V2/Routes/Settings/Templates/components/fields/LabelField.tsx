@@ -25,6 +25,7 @@ export const LabelField = ({
     }
     placeholder="Text"
     hasErrors={!!errors.label || !!errors.duplicateLabel}
+    disabled={propertyToEdit?.isCommonProperty && propertyToEdit.type === 'date'}
     errorMessage={
       (errors.label?.type === 'required' && <Translate>This field is required</Translate>) ||
       (errors.label?.type === 'duplicateLabel' && (

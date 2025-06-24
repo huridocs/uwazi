@@ -259,12 +259,19 @@ export default {
         );
       }
 
+      await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
+
       const relationshipPropsWithChangedRelData =
         currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
-      if (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) {
+      const newRelationshipProps = currentTemplateV2
+        .selectNewProperties(newTemplate)
+        .filter(p => p.type === 'relationship');
+      if (
+        (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
+        newRelationshipProps.length
+      ) {
         await bulkDenormalizeEntitiesFromTemplateSave(savedTemplate, language, 50, reindex);
       }
-      await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
     }
 
     await applicationEventsBus.emit(

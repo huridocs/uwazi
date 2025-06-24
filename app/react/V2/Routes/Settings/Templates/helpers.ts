@@ -2,6 +2,7 @@ import uniqueID from 'shared/uniqueID';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
 
+import { t } from 'app/I18N';
 import { PropertyRow } from './components/TemplateEditorTableComponents';
 
 const commonPropertyTitle: ClientProperty = {
@@ -80,7 +81,7 @@ const processDefaultProperties = (props: PropertySchema[]) =>
     ...prop,
     rowId: uniqueID(),
     disableRowDnD: true,
-    disableRowSelection: true,
+    disableRowSelection: t('System', 'This property can not be deleted', null, false),
   }));
 
 const processProperties = (props: PropertySchema[]) =>
