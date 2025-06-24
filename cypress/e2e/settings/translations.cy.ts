@@ -32,7 +32,7 @@ describe('Translations', () => {
     it('should sort the tables', () => {
       const checkOrder = (items: string[]) => {
         items.forEach(item => {
-          cy.contains('[data-testid=table-header]', item).scrollIntoView();
+          cy.contains('caption', item).scrollIntoView();
         });
       };
 
