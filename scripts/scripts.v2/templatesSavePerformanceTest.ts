@@ -10,30 +10,110 @@ import testingDB, { DBFixture } from '../../app/api/utils/testing_db';
 
 const testing_db_name = 'templates_save_perf';
 
+const formatMemory = function (bytes: number) {
+  return `${(bytes / 1024 / 1024).toFixed(2)}MB`;
+};
+
+const getMemoryUsage = () => {
+  const usage = process.memoryUsage();
+  return {
+    heapUsed: usage.heapUsed,
+    heapTotal: usage.heapTotal,
+    rss: usage.rss,
+  };
+};
+
+const forceGC = async () => {
+  if (global.gc) {
+    // Run GC multiple times to ensure better cleanup
+    for (let i = 0; i < 5; i++) {
+      global.gc();
+      // Small delay to allow GC to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+};
+
+const getMeasurements = async (
+  callback: () => Promise<void>,
+  withFeatureFlag: boolean = false
+): Promise<{ perf: number; memoryDelta: ReturnType<typeof getMemoryUsage> }> => {
+  await forceGC();
+
+  // Get baseline
+  const memBefore = getMemoryUsage();
+
+  // Setup tenant
+  tenants.add({
+    name: testing_db_name,
+    dbName: testing_db_name,
+    ...(withFeatureFlag
+      ? { featureFlags: { templatesDenormalizationPerfImprovements: true } }
+      : {}),
+  });
+
+  const start = performance.now();
+  await callback();
+  const perf = performance.now() - start;
+
+  // Force GC before measuring final memory
+  await forceGC();
+  const memAfter = getMemoryUsage();
+
+  return {
+    perf,
+    memoryDelta: {
+      heapUsed: memAfter.heapUsed - memBefore.heapUsed,
+      heapTotal: memAfter.heapTotal - memBefore.heapTotal,
+      rss: memAfter.rss - memBefore.rss,
+    },
+  };
+};
+
 const compareRuns = async (
   callback: () => Promise<void>,
   patchedCallback: () => Promise<void>,
   beforeEachCallback: () => Promise<void> = async () => {}
 ): Promise<void> => {
+  // //warmup
+  // await beforeEachCallback();
+  // await forceGC();
+  // await callback();
+  // //warmup
+
+  // Normal run
   await beforeEachCallback();
-  let start = performance.now();
-  tenants.add({ name: testing_db_name, dbName: testing_db_name });
-  await callback();
-  const normalPerf = performance.now() - start;
+  const normal = await getMeasurements(callback);
+
+  // Patched run
   await beforeEachCallback();
-  start = performance.now();
-  tenants.add({
-    name: testing_db_name,
-    dbName: testing_db_name,
-    featureFlags: {},
-  });
-  await patchedCallback();
-  const patchedPerf = performance.now() - start;
-  const diff = patchedPerf - normalPerf;
-  const percentageDiff = ((patchedPerf - normalPerf) / normalPerf) * 100;
-  const diffColor = diff > 0 ? '\x1b[31m' : '\x1b[32m'; // Red if negative, green if positive
+  const patched = await getMeasurements(patchedCallback, true);
+
+  // Calculate diffs
+  const timeDiff = patched.perf - normal.perf;
+  const timePercentageDiff = ((patched.perf - normal.perf) / normal.perf) * 100;
+
+  const heapUsedDiff = patched.memoryDelta.heapUsed - normal.memoryDelta.heapUsed;
+  const heapTotalDiff = patched.memoryDelta.heapTotal - normal.memoryDelta.heapTotal;
+  const rssDiff = patched.memoryDelta.rss - normal.memoryDelta.rss;
+
+  // Color coding
+  const timeColor = timeDiff > 0 ? '\x1b[31m' : '\x1b[32m'; // Red if slower, green if faster
+  const memColor = heapUsedDiff > 0 ? '\x1b[31m' : '\x1b[32m'; // Red if more memory, green if less
+
   console.log(
-    `normal: ${normalPerf.toFixed(2)}, patched: ${patchedPerf.toFixed(2)}, diff: ${diffColor}${diff.toFixed(2)} (${percentageDiff.toFixed(2)}%)\x1b[0m`
+    `normal: ${normal.perf.toFixed(2)}ms, patched: ${patched.perf.toFixed(2)}ms, diff: ${timeColor}${timeDiff.toFixed(2)}ms (${timePercentageDiff.toFixed(2)}%)\x1b[0m`
+  );
+
+  // Calculate memory percentage diffs based on absolute values
+  const baselineMemory = process.memoryUsage();
+  
+  const heapUsedPercentageDiff = ((heapUsedDiff / baselineMemory.heapUsed) * 100).toFixed(2);
+  const heapTotalPercentageDiff = ((heapTotalDiff / baselineMemory.heapTotal) * 100).toFixed(2);
+  const rssPercentageDiff = ((rssDiff / baselineMemory.rss) * 100).toFixed(2);
+
+  console.log(
+    `  Heap Used: ${memColor}${formatMemory(heapUsedDiff)} (${heapUsedPercentageDiff}%)\x1b[0m, Heap Total: ${memColor}${formatMemory(heapTotalDiff)} (${heapTotalPercentageDiff}%)\x1b[0m, RSS: ${memColor}${formatMemory(rssDiff)} (${rssPercentageDiff}%)\x1b[0m`
   );
   console.log('');
 };
@@ -304,12 +384,32 @@ async function allEntitiesSameHubChangingInheritedMultilanguage(numberOfEntities
 
   await compareRuns(
     async () => {
-      template2.properties[0].inherit = { property: factory.idString('text property') };
-      await templates.save(template2, 'en');
+      await templates.save(
+        {
+          ...template2,
+          properties: [
+            {
+              ...template2.properties[0],
+              inherit: { property: factory.idString('text property') },
+            },
+          ],
+        },
+        'en'
+      );
     },
     async () => {
-      template2.properties[0].inherit = { type: 'text' };
-      await templates.save(template2, 'en');
+      await templates.save(
+        {
+          ...template2,
+          properties: [
+            {
+              ...template2.properties[0],
+              inherit: { property: factory.idString('text property') },
+            },
+          ],
+        },
+        'en'
+      );
     },
     setFixtures
   );
@@ -325,16 +425,16 @@ async function run() {
 
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      await onlyTextProperties(100);
-      await onlyTextProperties(300);
-      await onlyTextPropertiesMultipleLanguages(100);
-      await onlyTextPropertiesMultipleLanguages(300);
-      await allEntitiesSameHub(100);
-      await allEntitiesSameHub(300);
-      await allEntitiesSameHubMultiLanguage(100);
-      await allEntitiesSameHubMultiLanguage(300);
+      // await onlyTextProperties(100);
+      // await onlyTextProperties(300);
+      // await onlyTextPropertiesMultipleLanguages(100);
+      // await onlyTextPropertiesMultipleLanguages(300);
+      // await allEntitiesSameHub(100);
+      // await allEntitiesSameHub(300);
+      // await allEntitiesSameHubMultiLanguage(100);
+      // await allEntitiesSameHubMultiLanguage(300);
       await allEntitiesSameHubChangingInheritedMultilanguage(100);
-      // await allEntitiesSameHubChangingInheritedMultilanguage(300);
+      await allEntitiesSameHubChangingInheritedMultilanguage(300);
     }, testing_db_name);
 
     console.log('Tests completed successfully.');

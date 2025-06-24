@@ -8,7 +8,6 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import templates from 'api/templates/templates';
-import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -17,7 +16,6 @@ import ID from 'shared/uniqueID';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import settings from '../settings';
-import { bulkDenormalizeEntities } from './bulkUpdateMetadataFromRelationships';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityCreatedEvent } from './events/EntityCreatedEvent';
@@ -360,16 +358,6 @@ const withDocuments = async (entities, documentsFullText) => {
   return result;
 };
 
-const reindexEntitiesByTemplate = async (template, options) => {
-  const templateHasRelationShipProperty = template.properties?.find(
-    p => p.type === propertyTypes.relationship
-  );
-  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
-    return search.indexEntities({ template: template._id });
-  }
-  return Promise.resolve();
-};
-
 const extendSelect = select => {
   if (!select) {
     return select;
@@ -466,11 +454,6 @@ export default {
     entity.metadata = await denormalizeMetadata(entity.metadata, entity.language, docTemplate);
 
     return entity;
-  },
-
-  /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async bulkDenormalizeEntities(query, language, limit = 200, reindex = true) {
-    await bulkDenormalizeEntities(query, language, limit, reindex);
   },
 
   async getWithoutDocuments(query, select, options = {}) {
@@ -633,52 +616,6 @@ export default {
   },
 
   /** Handle property deletion and renames. */
-  async updateMetadataProperties(
-    template,
-    currentTemplate,
-    language,
-    options = { reindex: true, generatedIdAdded: false }
-  ) {
-    const actions = { $rename: {}, $unset: {} };
-    template.properties = await generateNames(template.properties);
-    template.properties.forEach(property => {
-      const currentProperty = currentTemplate.properties.find(
-        p => p._id.toString() === (property._id || '').toString()
-      );
-      if (currentProperty && currentProperty.name !== property.name) {
-        actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
-      }
-    });
-
-    currentTemplate.properties.forEach(property => {
-      if (!template.properties.find(p => (p._id || '').toString() === property._id.toString())) {
-        actions.$unset[`metadata.${property.name}`] = '';
-      }
-    });
-
-    const noneToUnset = !Object.keys(actions.$unset).length;
-    const noneToRename = !Object.keys(actions.$rename).length;
-
-    if (noneToUnset) {
-      delete actions.$unset;
-    }
-    if (noneToRename) {
-      delete actions.$rename;
-    }
-
-    if (actions.$unset || actions.$rename) {
-      await model.updateMany({ template: template._id }, actions);
-    }
-
-    await reindexEntitiesByTemplate(template, options);
-    return this.bulkDenormalizeEntities(
-      { template: template._id, language },
-      language,
-      200,
-      options.reindex
-    );
-  },
-
   async deleteIndexes(sharedIds) {
     const deleteIndexBatch = (offset, totalRows) => {
       const limit = 200;

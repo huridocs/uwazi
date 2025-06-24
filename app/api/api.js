@@ -25,6 +25,7 @@ export default (app, server) => {
   require('./documents/routes').documentRoutes(app);
   require('./contact/routes').default(app);
   require('./entities/routes').default(app);
+  require('./entities.v2/routes').entitiesRoutes(app);
   require('./pages/routes').default(app);
   require('./files/jsRoutes.js').default(app);
   require('./files/routes').default(app);
