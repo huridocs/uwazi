@@ -4,7 +4,6 @@ import UsersAPI from 'app/Users/UsersAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
-import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import api from 'app/Search/SearchAPI';
 import SettingsAPI from '../SettingsAPI';
 import { SettingsComponent as Settings } from '../Settings';
@@ -14,7 +13,6 @@ describe('Settings', () => {
   const dictionaries = [{ _id: 1, name: 'Countries' }];
   const models = [];
   const translations = [{ _id: 1, locale: 'es', values: {} }];
-  const templates = [];
   const settings = { siteName: 'BatCave' };
   const suggestions = {};
 
@@ -26,7 +24,6 @@ describe('Settings', () => {
     spyOn(I18NApi, 'get').and.callFake(async () => Promise.resolve(translations));
     spyOn(SettingsAPI, 'get').and.callFake(async () => Promise.resolve(settings));
     spyOn(SettingsAPI, 'stats').and.callFake(async () => Promise.resolve({ files: 3, users: 2 }));
-    spyOn(TemplatesAPI, 'get').and.callFake(async () => Promise.resolve(templates));
     spyOn(api, 'search').and.callFake(async () => Promise.resolve(suggestions));
   });
 

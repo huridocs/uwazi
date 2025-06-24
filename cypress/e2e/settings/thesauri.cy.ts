@@ -114,15 +114,14 @@ describe('Thesauri configuration', () => {
   it('should use the thesaurus in a template', () => {
     cy.contains('a', 'Templates').click();
     cy.contains('a', 'País').click();
-    cy.contains('.property-options-list li', 'Select').within(() => {
-      cy.get('button').click();
-    });
-    cy.contains('.metadataTemplate-list li', 'Select').within(() => {
-      cy.contains('Edit').click();
-      cy.contains('select', 'Select...').select('New Thesaurus');
-    });
+    cy.contains('button', 'Add property').click();
+
+    cy.get('select[id="property-type"]').select('Select');
+    cy.get('select[name="content"]').select('New Thesaurus');
+
+    cy.contains('aside button', 'Add property').click();
     cy.contains('Save').click();
-    cy.contains('Saved successfully.');
+    cy.contains('success');
   });
 
   it('should list the thesauri', () => {

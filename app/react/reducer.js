@@ -3,7 +3,6 @@
 import { combineReducers } from 'redux';
 import createReducer from 'app/BasicReducer';
 
-import template from 'app/Templates/reducers/reducer';
 import page from 'app/Pages/reducers/reducer';
 import notifications from 'app/Notifications/reducers/notificationsReducer';
 
@@ -26,7 +25,6 @@ import settings from 'app/Settings/reducers/reducer';
 import metadata from 'app/Metadata/reducer';
 import locale from 'app/I18N/reducer';
 import inlineEdit from 'app/I18N/inlineEditReducer';
-import oneUpReview from 'app/Review/reducers/reducer';
 import exportSearchResults from 'app/Library/reducers/exportReducer';
 
 import { modelReducer, formReducer } from 'react-redux-form';
@@ -42,7 +40,6 @@ export default combineReducers({
   semanticSearch,
   inlineEditForm: formReducer('inlineEditModel', {}),
   inlineEditModel: modelReducer('inlineEditModel', {}),
-  template,
   page,
   thesauri,
   entityView,
@@ -69,7 +66,6 @@ export default combineReducers({
   user,
   settings,
   metadata,
-  oneUpReview,
   exportSearchResults,
   userGroups: createReducer('userGroups', []),
   ixExtractors: createReducer('ixExtractors', []),

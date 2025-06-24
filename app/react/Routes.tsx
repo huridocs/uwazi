@@ -8,8 +8,6 @@ import { LibraryMap } from 'app/Library/LibraryMap';
 import { LibraryCards } from 'app/Library/LibraryCards';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { PreserveSettings, Settings } from 'app/Settings';
-import { EditTemplate } from 'app/Templates/EditTemplate';
-import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
@@ -72,7 +70,6 @@ import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
-import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
 const getRoutesLayout = (
@@ -114,7 +111,6 @@ const getRoutesLayout = (
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
-    <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route
@@ -147,27 +143,19 @@ const getRoutesLayout = (
           loader={pageEditorLoader(headers)}
         />
       </Route>
-      {settings?.features?.testing ? (
-        <Route path="templates">
-          <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
-          <Route
-            path="new"
-            element={adminsOnlyRoute(<TemplatesEditor />)}
-            loader={templatesEditorLoader(headers)}
-          />
-          <Route
-            path="edit/:templateId"
-            element={adminsOnlyRoute(<TemplatesEditor />)}
-            loader={templatesEditorLoader(headers)}
-          />
-        </Route>
-      ) : (
-        <Route path="templates">
-          <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
-          <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
-          <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
-        </Route>
-      )}
+      <Route path="templates">
+        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+        <Route
+          path="new"
+          element={adminsOnlyRoute(<TemplatesEditor />)}
+          loader={templatesEditorLoader(headers)}
+        />
+        <Route
+          path="edit/:templateId"
+          element={adminsOnlyRoute(<TemplatesEditor />)}
+          loader={templatesEditorLoader(headers)}
+        />
+      </Route>
       <Route path="metadata_extraction">
         <Route
           index

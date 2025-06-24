@@ -190,8 +190,7 @@ const TemplatesEditor = () => {
       t => t.name.toLowerCase() === template.name.toLowerCase() && t._id !== template._id
     );
     setNameError(!template.name || isDuplicateName);
-    setColorError(!template.color);
-    if (!template.name || !template.color || isDuplicateName) {
+    if (!template.name || isDuplicateName) {
       return;
     }
 

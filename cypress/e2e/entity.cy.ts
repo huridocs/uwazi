@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import { clearCookiesAndLogin } from './helpers/login';
 import { changeLanguage, clickOnEditEntity, saveEntity } from './helpers';
 
@@ -130,89 +132,63 @@ describe('Entities', () => {
     it('should test number of available properties.', () => {
       cy.get('a').contains('Templates').click();
       cy.get('a').contains('Add template').click();
-      cy.get('.property-options-list li').should('have.length', 13);
+      cy.contains('button', 'Add property').should('exist');
     });
 
     it('should create a template with all the properties', () => {
       cy.get('a').contains('Templates').click();
       cy.get('a').contains('Add template').click();
-      cy.get('input[name="template.data.name"]').type('All props', { delay: 0 });
 
-      cy.get('.property-options-list li button').each(($btn, index) => {
-        //intentionaly leaving the last fields out of the test: violated articles (nested), generated id.
-        if (index < 11) {
-          cy.wrap($btn).click();
+      cy.get('input[id="template-name"]').type('All props', { delay: 0 });
+
+      const propertyTypes = [
+        'Text',
+        'Rich text',
+        'Numeric',
+        'Date',
+        'Multiple dates',
+        'Date range',
+        'Multiple date ranges',
+        'Select',
+        'Multiple select',
+        'Relationship',
+        'Link',
+        'Image',
+        'Preview',
+        'Media',
+        'Geolocation',
+        'Generated ID',
+      ];
+
+      cy.wrap(propertyTypes).each((propertyType: string) => {
+        cy.contains('button', 'Add property').click();
+
+        cy.get('select[id="property-type"]').select(propertyType);
+
+        if (propertyType === 'Select' || propertyType === 'Multiple select') {
+          cy.get('select[name="content"]').select(3);
         }
+
+        if (propertyType === 'Relationship') {
+          cy.get('select[name="relationType"]').select(2);
+          cy.get('select[name="content"]').select(5);
+        } else if (propertyType === 'media') {
+          cy.get('input[name="showInCard"]').check();
+        }
+
+        cy.contains('aside button', 'Add property').click();
       });
-      cy.contains('.metadataTemplate span', /^Date$/)
-        .siblings()
-        .contains('button', 'Edit')
-        .click();
-      cy.clearAndType('#property-label', 'Single Date', { delay: 0 });
 
-      cy.contains('.metadataTemplate span', 'Relationship')
-        .siblings()
-        .contains('button', 'Edit')
-        .click();
-      cy.contains('Any entity or document');
-      cy.contains('.metadataTemplate', 'Relationship').get('select').eq(1).select(1);
-      cy.contains('span', 'Media').siblings().contains('button', 'Edit').click();
-      cy.contains('span', 'Show in cards').click();
-    });
-
-    it('should add another select of type multiselect', () => {
-      cy.get('li.list-group-item:nth-child(3) > button:nth-child(1)').click();
-      cy.get(
-        '.metadataTemplate-list > li:nth-child(15) > div:nth-child(1) > div:nth-child(2) > button'
-      )
-        .contains('Edit')
-        .click();
-      cy.clearAndType('#property-label', 'Multiselect', { delay: 0 });
-      cy.get('#property-type').select('Multiple select');
-    });
-
-    it('should add multidate, date range and multidate range', () => {
-      for (let index = 0; index < 4; index += 1) {
-        cy.get('li.list-group-item:nth-child(5) > button:nth-child(1)').click();
-      }
-
-      cy.get('.metadataTemplate-list > li:nth-child(10)').scrollIntoView();
-      cy.contains('.metadataTemplate-list > li:nth-child(16) span', 'Date').scrollIntoView();
-      cy.contains('.metadataTemplate-list > li:nth-child(16) span', 'Date')
-        .siblings()
-        .contains('button', 'Edit')
-        .click();
-      cy.clearAndType('#property-label', 'Multi Date', { delay: 0 });
-      cy.get('#property-type').select('Multiple date');
-
-      cy.contains('.metadataTemplate-list > li:nth-child(17) span', 'Date')
-        .siblings()
-        .contains('button', 'Edit')
-        .click();
-      cy.clearAndType('#property-label', 'Date Range', { delay: 0 });
-      cy.get('#property-type').select('Single date range');
-
-      cy.contains('.metadataTemplate-list > li:nth-child(18) span', 'Date')
-        .siblings()
-        .contains('button', 'Edit')
-        .click();
-      cy.clearAndType('#property-label', 'Multi Date Range', { delay: 0 });
-      cy.get('#property-type').select('Multiple date range');
-
-      cy.get('button').contains('Save').click();
-      cy.get('div.alert-success').should('exist');
-    });
-
-    it('should not allow duplicated properties', () => {
-      cy.get('.property-options-list li:first-child button').click();
-      cy.get('button').contains('Save').click();
-      cy.get('.alert.alert-danger').should('exist');
+      cy.contains('button', 'Save').click();
+      cy.contains('success').should('exist');
+      cy.contains('Dismiss').click();
     });
   });
 
   describe('Entity Metadata', () => {
     it('should create an entity filling all the props.', () => {
       cy.contains('a', 'Library').click();
+      cy.get('button').contains('Create entity').should('be.visible');
       cy.get('button').contains('Create entity').click();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').should('not.be.disabled');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type(entityTitle, { delay: 0 });
@@ -229,7 +205,7 @@ describe('Entities', () => {
         cy.contains('19 Comerciantes').click();
       });
 
-      cy.contains('.form-group.date', 'Single Date').within(() => {
+      cy.contains('.form-group.date', 'Date').within(() => {
         cy.get('input').type('08/09/1966', { delay: 0 });
       });
 
@@ -282,15 +258,9 @@ describe('Entities', () => {
       cy.get('.metadata-type-multiselect').should('contain.text', 'Activo');
       cy.get('.metadata-type-relationship').should('contain.text', '19 Comerciantes');
       cy.get('.metadata-type-date').should('contain.text', 'Sep 8, 1966');
-      cy.get('.metadata-type-daterange').should(
-        'contain.text',
-        'Date RangeNov 23, 1963 ~ Sep 12, 1964'
-      );
-      cy.get('.metadata-type-multidate').should(
-        'contain.text',
-        'Multi DateNov 23, 1963Sep 12, 1964'
-      );
-      cy.contains('.metadata-type-multidaterange', 'Multi Date RangeNov 23, 1963 ~ Sep 12, 1964');
+      cy.get('.metadata-type-daterange').should('contain', 'Nov 23, 1963 ~ Sep 12, 1964');
+      cy.get('.metadata-type-multidate').should('contain', 'Nov 23, 1963Sep 12, 1964');
+      cy.contains('.metadata-type-multidaterange', 'Nov 23, 1963 ~ Sep 12, 1964');
       cy.get('.metadata-type-link a')
         .should('have.text', 'Huridocs')
         .and('have.attr', 'href', 'https://www.huridocs.org/');

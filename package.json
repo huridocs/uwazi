@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.219.4",
+  "version": "1.219.5",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -25,6 +25,7 @@
     "emitSocketEvent": "node --no-experimental-fetch ./scripts/run.js ./emitSocketEvent.js",
     "preproduction-build": "yarn run tailwind",
     "production-build": "./webpack/build.sh",
+    "build-production": "yarn production-build",
     "run-production": "NODE_ENV=production node --no-experimental-fetch server.js",
     "dev-server": "nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",

@@ -23,17 +23,17 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
     setValue('inherit', undefined);
   }, [content, setValue]);
 
-  const relationshipTypeOptions = useMemo(
-    () =>
-      orderBy(
-        relationshipTypes.map(type => ({
-          value: type._id,
-          label: t(type._id, type.name, null, false),
-        })),
-        'label'
-      ),
-    [relationshipTypes]
-  );
+  const relationshipTypeOptions = useMemo(() => {
+    const options = orderBy(
+      relationshipTypes.map(type => ({
+        value: type._id,
+        label: t(type._id, type.name, null, false),
+      })),
+      'label'
+    );
+    options.unshift({ value: '', label: t('System', 'Select...', null, false) });
+    return options;
+  }, [relationshipTypes]);
 
   const entityOptions = useMemo(() => {
     const options = orderBy(
@@ -102,14 +102,13 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
       <Controller
         name="content"
         control={control}
-        rules={{ required: true }}
+        rules={{ required: false }}
         render={({ field }) => (
           <Select
             id="property-entity"
             label={
               <div className="flex items-center gap-1">
                 <Translate>Entities</Translate>
-                <span>*</span>
               </div>
             }
             options={entityOptions}
