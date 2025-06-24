@@ -358,16 +358,6 @@ const withDocuments = async (entities, documentsFullText) => {
   return result;
 };
 
-const reindexEntitiesByTemplate = async (template, options) => {
-  const templateHasRelationShipProperty = template.properties?.find(
-    p => p.type === propertyTypes.relationship
-  );
-  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
-    return search.indexEntities({ template: template._id });
-  }
-  return Promise.resolve();
-};
-
 const extendSelect = select => {
   if (!select) {
     return select;

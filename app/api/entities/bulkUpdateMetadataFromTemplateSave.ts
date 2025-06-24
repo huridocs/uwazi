@@ -1,15 +1,19 @@
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { DB } from 'api/odm';
+import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import entities from './entities';
-import entitiesModel from './entitiesModel';
-import relationships from 'api/relationships';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { DB } from 'api/odm';
 
-const updateMetdataFromTemplateSave = async (entityIds, language, template, reindex = true) => {
-  const entitiesToReindex = [];
+const updateMetdataFromTemplateSave = async (
+  entityIds: string[],
+  language: string,
+  template: TemplateSchema,
+  reindex = true
+) => {
+  const entitiesToReindex: string[] = [];
   await Promise.all(
     entityIds.map(async entityId => {
       const entity = await entities.getById(entityId, language);
@@ -19,21 +23,24 @@ const updateMetdataFromTemplateSave = async (entityIds, language, template, rein
         entity.metadata = entity.metadata || {};
         // const template = _templates.find(t => t._id.toString() === entity.template.toString());
 
-        const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+        const relationshipProperties = (template.properties || []).filter(
+          p => p.type === 'relationship'
+        );
         relationshipProperties.forEach(property => {
           const relationshipsGoingToThisProperty = relations.filter(
-            r =>
+            (r: any) =>
               r.template &&
-              r.template.toString() === property.relationType.toString() &&
+              r.template.toString() === property.relationType?.toString() &&
               (!property.content || r.entityData.template.toString() === property.content)
           );
 
+          //@ts-ignore
           entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
             value: r.entity,
             label: r.entityData.title,
           }));
         });
-        if (relationshipProperties.length) {
+        if (relationshipProperties.length && entity.sharedId) {
           entitiesToReindex.push(entity.sharedId);
           await entities.updateEntity(entities.sanitize(entity, template), template, true);
         }
