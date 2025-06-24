@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table, TableRef } from 'V2/Components/UI';
+import { Button, Table } from 'V2/Components/UI';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {

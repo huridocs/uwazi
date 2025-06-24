@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,7 +9,6 @@ import {
   SortingState,
   getSortedRowModel,
   RowSelectionState,
-  ExpandedState,
 } from '@tanstack/react-table';
 import {
   DragEndEvent,
@@ -38,13 +37,6 @@ type TableRow<T> = {
   disableRowSelection?: boolean | string | React.ReactNode;
   disableRowDnD?: boolean;
   subRows?: T[];
-};
-
-type TableRef = {
-  collapseAll: () => void;
-  expandAll: () => void;
-  canExpand: boolean;
-  canCollapse: boolean;
 };
 
 type TableProps<T extends TableRow<T>> = {
@@ -304,5 +296,5 @@ const Table = <T extends TableRow<T>>({
   );
 };
 
-export type { TableProps, TableRow, TableRef };
+export type { TableProps, TableRow };
 export { Table };
