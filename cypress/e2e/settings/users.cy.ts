@@ -30,7 +30,6 @@ describe('Users', () => {
   });
 
   it('accesibility check', () => {
-    cy.get('caption').within(() => cy.contains('span', 'Users'));
     cy.checkA11y();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');

@@ -63,7 +63,6 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
 Adding items to the thesauri,Adding items to the thesauri
-Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
 Administrators and Editors,Administrators and Editors
 Admins,Admins
@@ -82,7 +81,6 @@ An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity,Any entity
-Any entity or document,Any entity or document
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
@@ -97,15 +95,12 @@ Attachment uploaded,Attachment uploaded
 Attachments,Attachments
 Authentication code,Authentication code
 auto-created,auto-created
-Auto-save,Auto-save
 Automatic Table of Contents,Automatic Table of Contents
 Automatically generated,Automatically generated
 Available default translation,Available default translation
 Back,Back
 Back to,Back to
 Back to search,Back to search
-Back to thesauri,Back to thesauri
-Back to thesaurus,Back to thesaurus
 Bad Request,Bad Request
 Basic,Basic
 Body,Body
@@ -116,7 +111,6 @@ Can see,Can see
 Can view,Can view
 Cancel,Cancel
 Canceling...,Canceling...
-Cannot delete template:,Cannot delete template:
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -127,8 +121,6 @@ Cards,Cards
 Cards view,Cards view
 Change password,Change password
 Change Password,Change Password
-Change will take effect after saving the template,Change will take effect after saving the template
-Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,"This option enhances support for non-Latin languages as the default languages of your collection.
@@ -162,16 +154,11 @@ CONFIRM,CONFIRM
 Confirm action,Confirm action
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,Are you sure you want to delete all the selected items?
-confirm delete template,"Are you sure you want to delete this entity type?
-        This will delete the template and all relationship properties from other templates pointing to this one."
 Confirm deletion,Confirm deletion
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of template:,Confirm deletion of template:
-Confirm discard changes,Confirm discard changes
 Confirm new password,Confirm new password
-Confirm publish multiple items,Confirm publish multiple items
 Connect to a paragraph,Connect to a paragraph
 Connect to an entity,Connect to an entity
 Connected to server,Connected to server
@@ -273,13 +260,10 @@ Document Title,Document Title
 Documentation,Documentation
 documents,documents
 Documents,Documents
-Documents for custom filter,Documents for custom filter
-Documents including suggestion:,Documents including suggestion:
 documents.,documents.
 Download,Download
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Drag and drop file in this window to upload
-Drag properties here,Drag properties here
 Drag row,Drag row
 Drop your files here to upload or,Drop your files here to upload or
 Duplicate values not allowed.,Duplicate values not allowed.
@@ -311,7 +295,6 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,Entities
 entities,entities
 Entities across all languages,Entities across all languages
-"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here."
 Entity,Entity
 Entity deleted,Entity deleted
 Entity Page,Entity Page
@@ -370,7 +353,6 @@ for,for
 Forgot Password?,Forgot Password?
 Forms and email configuration,Forms and email configuration
 From,From
-Full edit mode,Full edit mode
 Full width,Full width
 General,General
 General Information,General Information
@@ -399,7 +381,6 @@ ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type","If you want to continue, please type"
-Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
 Import,Import
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -433,12 +414,10 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Items:,Items:
 Javascript,Javascript
-Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,key
 Label,Label
 "Label date ""From""",From:
 "Label date ""to""",To:
-Label your collection note,"Note: Make the sample set of documents for each topic diverse and representative. For example, use various methods to find sample documents and don't just search for the term ""education"" to find documents for the topic ""Education""."
 Labeled,Labeled
 Landing page,Landing page
 Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
@@ -505,7 +484,6 @@ Menu,Menu
 Message,Message
 Message sent,Message sent
 Metadata,Metadata
-Metadata creator,Metadata creator
 Metadata Extraction,Metadata Extraction
 MIGRATE,MIGRATE
 Minimum,Minimum
@@ -517,8 +495,6 @@ ML TOC,ML TOC
 Month,Month
 Months,Months
 more options.,more options.
-Multimedia fill description,"will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
-Multimedia fit description,will show the entire media inside the container.
 Multiple date,Multiple date
 Multiple date range,Multiple date range
 Multiple inherited properties warning ([property 1] affects [property 2]),affects
@@ -550,7 +526,6 @@ No Connections,No Connections
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
 NO DATA AVAILABLE,NO DATA AVAILABLE
-No Documents found,No Documents found
 NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
@@ -563,7 +538,6 @@ No options found,No options found
 No property,Item does not have this property
 No References,No References
 No References description,References are parts of this document related with other documents and entities.
-No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
 No Table of Contents,No Table of Contents
@@ -581,7 +555,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Nothing to see here! The selected documents are not using the selected thesaurus,Nothing to see here! The selected documents are not using the selected thesaurus
 Number of sentences above threshold,Number of sentences above threshold
 Obsolete,Obsolete
 OCR,OCR
@@ -602,8 +575,6 @@ OK,OK
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Ooops... please go,Ooops... please go
-Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
 Open,Open
 Open group,Open group
 Open PDF,Open PDF
@@ -663,20 +634,18 @@ Properties from other templates in the collection using the same label,Propertie
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
 "Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
-Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
 Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 property date,Date
-property daterange,Date Range
-Property delete warning,Deleting a template property will delete this metadata information on all entities using this template.
+property daterange,Date range
 property generatedid,Generated ID
 property geolocation,Geolocation
 property image,Image
 property link,Link
-property markdown,Rich Text
+property markdown,Rich text
 property media,Media
-property multidate,Multi Date
-property multidaterange,Multi Date Range
-property multiselect,Multiselect
+property multidate,Multiple date
+property multidaterange,Multiple date range
+property multiselect,Multiple select
 property numeric,Numeric
 property preview,Preview
 property relationship,Relationship
@@ -694,7 +663,6 @@ Publish,Publish
 Published,Published
 QR Code,QR Code
 Query,Query
-Quick labeling for,Quick labeling for
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
@@ -704,7 +672,6 @@ References,References
 Reject,Reject
 Relation type,Relation type
 Relationship,Relationship
-relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -735,7 +702,6 @@ Reset Password,Reset Password
 Reset passwords,Reset passwords
 Restricted,Restricted
 Return to login,Return to login
-Return to the thesaurus page when you finished labeling to start learning.,Return to the thesaurus page when you finished labeling to start learning.
 Review,Review
 Reviewed,Reviewed
 Role,Role
@@ -744,10 +710,7 @@ Sample,Sample
 Satellite,Satellite
 Save,Save
 Save & Preview,Save & Preview
-Save and go to next,Save and go to next
 Save changes,Save changes
-Save document,Save document
-Save document(s),Save document(s)
 Save password,Save password
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
@@ -816,10 +779,7 @@ Show toolbar,Show toolbar
 Showing,Showing
 shown of,shown of
 Sign in,Sign in
-Single date,Single date
-Single date range,Single date range
 Single relationships must have a hub,Single relationships must have a hub
-Single select,Single select
 Size,Size
 Something went wrong,Something went wrong
 Sort,Sort
@@ -854,8 +814,6 @@ Supporting files,Supporting files
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
-syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,syntax to create page content
 System translations,System translations
 Table,Table
@@ -885,12 +843,10 @@ The import process threw an error:,The import process threw an error:
               column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
-The template contains errors,The template contains errors
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,There are no pages enabled for entity view
 There are no untranslated terms,There are no untranslated terms
-There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
 Thesauri added.,Thesauri added.
 Thesauri deleted,Thesauri deleted
@@ -905,10 +861,8 @@ Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,Thesaurus saved
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.
-This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,This content is automatically generated
 "This entity has no document, you probably want to see the metadata","This entity has no document, you probably want to see the metadata"
-This entity is not public.,This entity is not public.
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required
 This file type is not supported on media fields,This file type is not supported on media fields
@@ -917,17 +871,12 @@ This label already exists in this template,This label already exists in this tem
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,This property will appear in the library cards as part of the basic info.
-This property will be inherited from the related entities and shown as metadata of this type of entities.,This property will be inherited from the related entities and shown as metadata of this type of entities.
 This property will be shown using all the width available.,This property will be shown using all the width available.
 This property will be shown without the label,This property will be shown without the label
-This property will be shown without the label.,This property will be shown without the label.
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,this template
-This template has associated entities,This template has associated entities
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-This template will be used as default for new entities.,This template will be used as default for new entities.
-This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Threshold
 Time,Time
 Timelinks,Timelinks
@@ -954,7 +903,6 @@ Translations,Translations
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Translations saved
-Try selecting other documents.,Try selecting other documents.
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

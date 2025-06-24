@@ -63,7 +63,6 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
 Adding items to the thesauri,Adding items to the thesauri
-Adjacent geolocation properties will render on the same map,คุณสมบัติของตำแหน่งทางภูมิศาสตร์ที่อยู่ติดกันจะแสดงบนแผนที่เดียวกัน
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
 Admins,Admins
@@ -82,7 +81,6 @@ An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity,Any entity
-Any entity or document,Any entity or document
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
@@ -97,15 +95,12 @@ Attachment uploaded,Attachment uploaded
 Attachments,สิ่งที่แนบมา
 Authentication code,รหัสผ่าน
 auto-created,สร้างขึ้นอัตโนมัติ
-Auto-save,บันทึกอัตโนมัติ
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
 Available default translation,Available default translation
 Back,ย้อนกลับ
 Back to,กลับไปยัง
 Back to search,กลับไปที่การค้นหา
-Back to thesauri,กลับไปที่กลุ่มคำอธิบาย
-Back to thesaurus,กลับไปที่กลุ่มคำอธิบาย
 Bad Request,Bad Request
 Basic,Basic
 Body,เนื้อหา
@@ -116,7 +111,6 @@ Can see,มองเห็นได้
 Can view,มองเห็นได้
 Cancel,ยกเลิก
 Canceling...,Canceling...
-Cannot delete template:,Cannot delete template:
 Cannot find extractor,Cannot find extractor
 Captcha,captcha
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
@@ -127,8 +121,6 @@ Cards,บัตร
 Cards view,มุมมองการ์ด
 Change password,เปลี่ยนรหัสผ่าน
 Change Password,Change Password
-Change will take effect after saving the template,การเปลี่ยนแปลงจะมีผลหลังจากบันทึกเทมเพลต
-Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
@@ -160,16 +152,11 @@ CONFIRM,ยืนยัน
 Confirm action,Confirm action
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,ยืนยันลบหลายรายการ
-confirm delete template,"Are you sure you want to delete this entity type?
-        This will delete the template and all relationship properties from other templates pointing to this one."
 Confirm deletion,ยืนยันการลบ
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of template:,Confirm deletion of template:
-Confirm discard changes,Confirm discard changes
 Confirm new password,ยืนยันรหัสผ่านใหม่
-Confirm publish multiple items,ยืนยันเผยแพร่หลายรายการ
 Connect to a paragraph,เชื่อมต่อย่อหน้า
 Connect to an entity,Connect to an entity
 Connected to server,Connected to server
@@ -271,13 +258,10 @@ Document Title,ชื่อเอกสาร
 Documentation,เอกสาร
 documents,เอกสาร
 Documents,เอกสาร
-Documents for custom filter,เอกสารสำหรับตัวกรองที่กำหนดค่าเอง
-Documents including suggestion:,เอกสารที่รวมข้อเสนอแนะ
 documents.,เอกสาร.
 Download,ดาวน์โหลด
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
-Drag properties here,นำคุณสมบัติมาวางที่นี่
 Drag row,Drag row
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
 Duplicate values not allowed.,Duplicate values not allowed.
@@ -309,7 +293,6 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,รายการ
 entities,รายการ
 Entities across all languages,Entities across all languages
-"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",รายการสามารถถูกแสดงในหน้าที่สร้างเอง ในกรณีนี้ จะต้องสร้างหน้าขึ้นมาเองในเพจและเลือกที่นี่
 Entity,รายการ
 Entity deleted,Entity deleted
 Entity Page,Entity Page
@@ -368,7 +351,6 @@ for,for
 Forgot Password?,ลืมรหัสผ่าน?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
 From,From
-Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
@@ -397,7 +379,6 @@ ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
-Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,นำเข้า
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -431,12 +412,10 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Items:,รายการ:
 Javascript,Javascript
-Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Thai
 Label,ประเภท
 "Label date ""From""","ลาเบลวันที่ ""ตั้งแต่"""
 "Label date ""to""","ลาเบลวันที่ ""ถึง"""
-Label your collection note,กำหนดประเภทการจัดกลุ่มของคุณ
 Labeled,Labeled
 Landing page,หน้าแลนดิ้งเพจ
 Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
@@ -503,7 +482,6 @@ Menu,เมนู
 Message,ข้อความ
 Message sent,Message sent
 Metadata,เมทาดาทา
-Metadata creator,ผู้สร้างเมตาดาต้า
 Metadata Extraction,ค้นหาเมตาดาต้า
 MIGRATE,MIGRATE
 Minimum,ขั้นต่ำ
@@ -515,8 +493,6 @@ ML TOC,ML TOC
 Month,เดือน
 Months,Months
 more options.,ตัวเลือกเพิ่มเติม
-Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
-Multimedia fit description,will show the entire media inside the container.
 Multiple date,Multiple date
 Multiple date range,Multiple date range
 Multiple inherited properties warning ([property 1] affects [property 2]),affects
@@ -548,7 +524,6 @@ No Connections,ไม่มีการเชื่อมต่อ
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
 NO DATA AVAILABLE,NO DATA AVAILABLE
-No Documents found,ไม่พบเอกสาร
 NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
@@ -561,7 +536,6 @@ No options found,ไม่พบตัวเลือก
 No property,ไม่เจอพร๊อพเพอร์ตี้
 No References,ไม่มีการอ้างอิง
 No References description,References are parts of this document related with other documents and entities.
-No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
 No Table of Contents,ไม่มีสารบัญ
@@ -579,7 +553,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Nothing to see here! The selected documents are not using the selected thesaurus,ไม่พบข้อมูล! เอกสารที่ถูกเลือกไม่ได้ใช้คำอธิบายกลุ่มคำ
 Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
 Obsolete,Obsolete
 OCR,OCR
@@ -600,8 +573,6 @@ OK,ตกลง
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Ooops... please go,กรุณาดำเนินการต่อ
-Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,เราไม่พบคำอธิบายกลุ่มคำที่คุณต้องการแก้ไข กรุณากลับมาที่หน้านี้ใหม่โดยเลือกการตั้งค่า
 Open,Open
 Open group,Open group
 Open PDF,Open PDF
@@ -661,20 +632,18 @@ Properties from other templates in the collection using the same label,คุณ
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
 "Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
-Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
 Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 property date,Date
-property daterange,Date Range
-Property delete warning,Deleting a template property will delete this metadata information on all entities using this template.
+property daterange,Date range
 property generatedid,Generated ID
 property geolocation,Geolocation
 property image,Image
 property link,Link
-property markdown,Rich Text
+property markdown,Rich text
 property media,Media
-property multidate,Multi Date
-property multidaterange,Multi Date Range
-property multiselect,Multiselect
+property multidate,Multiple date
+property multidaterange,Multiple date range
+property multiselect,Multiple select
 property numeric,Numeric
 property preview,Preview
 property relationship,Relationship
@@ -692,7 +661,6 @@ Publish,เผยแพร่
 Published,ตีพิมพ์แล้ว
 QR Code,QR Code
 Query,สืบค้น
-Quick labeling for,จัดประเภททันที
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Receiving email
@@ -702,7 +670,6 @@ References,การอ้างอิง
 Reject,ปฏิเสธ
 Relation type,Relation type
 Relationship,ความสัมพันธ์
-relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -733,7 +700,6 @@ Reset Password,สร้าง รหัสผ่าน ใหม่
 Reset passwords,Reset passwords
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ
-Return to the thesaurus page when you finished labeling to start learning.,กลับไปที่หน้าคำอธิบายกลุ่มคำเมื่อคุณแยกประเภทเสร็จสิ้นเพื่อเริ่มการเรียนรู้
 Review,Review
 Reviewed,ตรวจสอบแล้ว
 Role,บทบาท
@@ -742,10 +708,7 @@ Sample,ตัวอย่าง
 Satellite,Satellite
 Save,บันทึก
 Save & Preview,Save & Preview
-Save and go to next,บันทึกและดำเนินการต่อ
 Save changes,บันทึกการเปลี่ยนแปลง
-Save document,บันทึกเอกสาร
-Save document(s),บันทึกเอกสาร
 Save password,บันทึกรหัสผ่าน
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
@@ -814,10 +777,7 @@ Show toolbar,Show toolbar
 Showing,Showing
 shown of,แสดงโดย
 Sign in,เข้าสู่ระบบ
-Single date,Single date
-Single date range,Single date range
 Single relationships must have a hub,Single relationships must have a hub
-Single select,Single select
 Size,ขนาด
 Something went wrong,มีสิ่งผิดปกติเกิดขึ้น
 Sort,เรียงลำดับ
@@ -852,8 +812,6 @@ Supporting files,รองรับไฟล์
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
-syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,ไวยากรณ์เพื่อสร้างเนื้อหาของหน้า
 System translations,System translations
 Table,ตาราง
@@ -883,12 +841,10 @@ The import process threw an error:,กระบวนการนำเข้า
               column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
-The template contains errors,มีข้อผิดพลาดที่แม่แบบ
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,ไม่มีหน้าที่ถูกตั้งค่าสำหรับมุมมองรายการ
 There are no untranslated terms,There are no untranslated terms
-There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,thesauri
 Thesauri added.,Thesauri added.
 Thesauri deleted,Thesauri deleted
@@ -903,10 +859,8 @@ Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,กลุ่มคำอธิบายที่บันทึกแล้ว
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,พื้นที่นี้อนุญาตให้คุณใส่โค้ดจาว่าสคริปได้ มันจะช่วยให้คุณสามารถค้นพบความเป็นไปได้ใหม่ๆ
-This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,เนื้อหานี้ถูกสร้างขึ้นโดยอัตโนมัติ
 "This entity has no document, you probably want to see the metadata",รายการนี้ไม่มีเอกสาร คุณอาจจะอยากดูข้อมูลเมตาดาตาเพิ่มเติม
-This entity is not public.,รายการนี้ไม่ได้เปิดการเข้าถึงแบบสาธารณะ
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
 This field is required,This field is required
 This file type is not supported on media fields,This file type is not supported on media fields
@@ -915,17 +869,12 @@ This label already exists in this template,This label already exists in this tem
 This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,คุณสมบัตินี้จะถูกแสดงในการ์ดไลบรารีและเป็นส่วนหนึ่งของข้อมูลพื้นฐาน
-This property will be inherited from the related entities and shown as metadata of this type of entities.,คุณสมบัตินี้จะถูกโอนย้ายมาจากรายการที่เกี่ยวข้องและจะถูกแสดงเป็นเมตาดาต้าสำหรับประเภทรายการนี้
 This property will be shown using all the width available.,คุณสมบัตินี้จะถูกแสดงโดยใช้พื้นที่ทั้งหมดที่มีอยู่
 This property will be shown without the label,This property will be shown without the label
-This property will be shown without the label.,คุณสมบัตินี้จะถูกแสดงโดยไม่มีการจำแนกประเภท
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,this template
-This template has associated entities,This template has associated entities
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-This template will be used as default for new entities.,แม่แบบนี้จะถูกตั้งเป็นค่าเริ่มต้นสำหรับรายการใหม่
-This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,เกณฑ์
 Time,เวลา
 Timelinks,Timelinks
@@ -952,7 +901,6 @@ Translations,การแปล
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,บันทึกการแปล
-Try selecting other documents.,ลองเลือกเอกสารอื่น ๆ
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

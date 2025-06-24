@@ -174,13 +174,15 @@ describe('Pages', () => {
     it('should set the entity as entity view', () => {
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Medida Provisional').click();
-      cy.get('.slider').click();
-      cy.contains('Select...');
-      cy.get('select.form-control').select('My entity view page');
-      cy.get('.property-edit').eq(0).click();
-      cy.clearAndType('input[name="template.data.commonProperties[0].label"]', 'Custom Title');
-      cy.contains('Save').click();
-      cy.contains('Saved successfully.');
+      cy.contains('Display entity view from page').click();
+      cy.contains('Select page');
+      cy.get('#select-page').select('My entity view page');
+      cy.contains('button', 'Title').click();
+      cy.clearAndType('input[name="label"]', 'Custom Title');
+      cy.contains('aside button', 'Save').click();
+      cy.contains('[data-testid="settings-content-footer"] button', 'Save').click();
+      cy.contains('successfully');
+      cy.contains('Dismiss').click();
     });
 
     it('display the entity in custom page', () => {

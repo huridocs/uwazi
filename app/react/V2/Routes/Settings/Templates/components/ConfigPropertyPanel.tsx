@@ -128,6 +128,10 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       if (type === 'image' || type === 'preview') {
         setValue('style', 'fill');
       }
+      if (type === 'relationship') {
+        setValue('relationType', '');
+        setValue('content', 'any');
+      }
     }
     if (propertyToEdit) {
       reset(propertyToEdit);

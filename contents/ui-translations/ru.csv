@@ -63,7 +63,6 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
 Adding items to the thesauri,Adding items to the thesauri
-Adjacent geolocation properties will render on the same map,Смежные свойства геолокации будут отражаться на той же карте
 Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
 Admins,Admins
@@ -82,7 +81,6 @@ An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity,Any entity
-Any entity or document,Any entity or document
 Apply,Apply
 Are you sure you want to continue?,Are you sure you want to continue?
 Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
@@ -97,15 +95,12 @@ Attachment uploaded,Attachment uploaded
 Attachments,Вложения
 Authentication code,Код аутентификации
 auto-created,автоматически созданный
-Auto-save,Автосохранение
 Automatic Table of Contents,Автоматическое оглавление
 Automatically generated,Генерируется автоматически
 Available default translation,Available default translation
 Back,Назад
 Back to,Назад к
 Back to search,Назад к поиску
-Back to thesauri,Назад к предметным указателям
-Back to thesaurus,Назад к предметному указателю
 Bad Request,Bad Request
 Basic,Basic
 Body,Основная часть
@@ -116,7 +111,6 @@ Can see,Может видеть
 Can view,Может просматривать
 Cancel,Отмена
 Canceling...,Canceling...
-Cannot delete template:,Cannot delete template:
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,Обход Captcha
@@ -124,8 +118,6 @@ Cards,Карточки
 Cards view,Просмотр в виде карточек
 Change password,Изменить пароль
 Change Password,Change Password
-Change will take effect after saving the template,Изменение вступит в силу после сохранения шаблона
-Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
@@ -157,16 +149,11 @@ CONFIRM,Подтвердить
 Confirm action,Confirm action
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,Подтвердить удаление нескольких элементов
-confirm delete template,"Are you sure you want to delete this entity type?
-        This will delete the template and all relationship properties from other templates pointing to this one."
 Confirm deletion,Подтвердить удаление
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of template:,Confirm deletion of template:
-Confirm discard changes,Confirm discard changes
 Confirm new password,Подтвердите новый пароль
-Confirm publish multiple items,Подтвердить публикацию нескольких элементов
 Connect to a paragraph,Подключиться к абзацу
 Connect to an entity,Connect to an entity
 Connected to server,Connected to server
@@ -268,13 +255,10 @@ Document Title,Название документа
 Documentation,Документация
 documents,Документы
 Documents,Документы
-Documents for custom filter,Документы для пользовательского фильтра
-Documents including suggestion:,"Документы, включая предлагаемый вариант"
 documents.,документы.
 Download,Скачать
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,"Перетащите и опустите файл в это окно, чтобы загрузить"
-Drag properties here,Перетащите свойства сюда
 Drag row,Drag row
 Drop your files here to upload or,"Опустите свои файлы сюда, чтобы загрузить или"
 Duplicate values not allowed.,Duplicate values not allowed.
@@ -306,7 +290,6 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,Объекты
 entities,Объекты
 Entities across all languages,Entities across all languages
-"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Объекты могут быть отображены на пользовательской странице. Для этого пользовательская страница должна быть создана в Страницах, а затем выбрана здесь."
 Entity,Объект
 Entity deleted,Entity deleted
 Entity Page,Entity Page
@@ -365,7 +348,6 @@ for,for
 Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
 From,From
-Full edit mode,Режим полного редактирования
 Full width,Full width
 General,Общий
 General Information,General Information
@@ -394,7 +376,6 @@ ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Если это внешний URL, используйте полностью сформированный URL. Т. е. http://www.uwazi.io."
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
-Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Импортировать
 Import asset,Import asset
 Import completed,Import completed. Number of entities created:
@@ -428,12 +409,10 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Items:,Элементы
 Javascript,Javascript
-Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Russian
 Label,Метка
 "Label date ""From""","Метка даты ""от"""
 "Label date ""to""","Метка даты ""до"""
-Label your collection note,Отметьте вашу примечание к коллекции
 Labeled,Labeled
 Landing page,Целевая страница
 Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
@@ -500,7 +479,6 @@ Menu,Меню
 Message,Сообщение
 Message sent,Message sent
 Metadata,Метаданные
-Metadata creator,Создатель метаданных
 Metadata Extraction,Извлечение метаданных
 MIGRATE,MIGRATE
 Minimum,Минимум
@@ -512,8 +490,6 @@ ML TOC,Оглавление для машинного обучения
 Month,Месяц
 Months,Months
 more options.,больше опций.
-Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
-Multimedia fit description,will show the entire media inside the container.
 Multiple date,Multiple date
 Multiple date range,Multiple date range
 Multiple inherited properties warning ([property 1] affects [property 2]),влияет
@@ -545,7 +521,6 @@ No Connections,Нет связей
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
 NO DATA AVAILABLE,NO DATA AVAILABLE
-No Documents found,Документы не найдены
 NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
@@ -558,7 +533,6 @@ No options found,Варианты не найдены
 No property,Нет свойства
 No References,Нет ссылок
 No References description,References are parts of this document related with other documents and entities.
-No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
 No Table of Contents,Нет содержания
@@ -576,7 +550,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,Not Found
 Nothing selected,Nothing selected
-Nothing to see here! The selected documents are not using the selected thesaurus,Здесь ничего нет! Выбранный предметный указатель не задействован для выбранных документов
 Number of sentences above threshold,Количество предложений выше порога
 Obsolete,Obsolete
 OCR,Оптическое распознавание символов
@@ -597,8 +570,6 @@ OK,Окей
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Ooops... please go,Упс... Просим вас уйти
-Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,"Упс! Мы не смогли найти предметный указатель, который вы пытаетесь отредактировать. Попробуйте обратную навигацию вплоть до этой страницы через Настройки."
 Open,Open
 Open group,Open group
 Open PDF,Open PDF
@@ -658,20 +629,18 @@ Properties from other templates in the collection using the same label,"Свой
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
 "Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
-Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
 Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 property date,Date
-property daterange,Date Range
-Property delete warning,Deleting a template property will delete this metadata information on all entities using this template.
+property daterange,Date range
 property generatedid,Generated ID
 property geolocation,Geolocation
 property image,Image
 property link,Link
-property markdown,Rich Text
+property markdown,Rich text
 property media,Media
-property multidate,Multi Date
-property multidaterange,Multi Date Range
-property multiselect,Multiselect
+property multidate,Multiple date
+property multidaterange,Multiple date range
+property multiselect,Multiple select
 property numeric,Numeric
 property preview,Preview
 property relationship,Relationship
@@ -689,7 +658,6 @@ Publish,Опубликовать
 Published,В открытом доступе
 QR Code,QR Code
 Query,Запрос
-Quick labeling for,Быстрая маркировка для
 RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Электронная почта получателя
@@ -699,7 +667,6 @@ References,Ссылки
 Reject,Отклонить
 Relation type,Relation type
 Relationship,Взаимосвязь
-relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
 Relationship Type,Relationship Type
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -730,7 +697,6 @@ Reset Password,Сбросить пароль
 Reset passwords,Reset passwords
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
-Return to the thesaurus page when you finished labeling to start learning.,"После завершения маркировки, вернитесь на страницу с предметными указателями, чтобы начать обучение."
 Review,Review
 Reviewed,Просмотрено
 Role,Роль
@@ -739,10 +705,7 @@ Sample,Образец
 Satellite,Satellite
 Save,Сохранить
 Save & Preview,Save & Preview
-Save and go to next,Сохранить и перейти к следующему
 Save changes,Сохранить изменения
-Save document,Сохранить документ
-Save document(s),Сохранить документ(ы)
 Save password,Сохранить пароль
 Save your work to make change permanent,Save your work to make change permanent
 Saved successfully.,Saved successfully.
@@ -811,10 +774,7 @@ Show toolbar,Show toolbar
 Showing,Showing
 shown of,показано от
 Sign in,Войти
-Single date,Single date
-Single date range,Single date range
 Single relationships must have a hub,Single relationships must have a hub
-Single select,Single select
 Size,Размер
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
@@ -849,8 +809,6 @@ Supporting files,Сопроводительные файлы
 Synced template,Synced template
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
-syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
 syntax to create page content,синтаксис для создания содержимого страницы
 System translations,System translations
 Table,Таблица
@@ -880,12 +838,10 @@ The import process threw an error:,Процесс импорта выдал ош
               column for updates on the process."
 The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
-The template contains errors,Шаблон содержит ошибки
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,"Нет страниц с возможностями, предоставляемыми для просмотра объекта"
 There are no untranslated terms,There are no untranslated terms
-There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Предметный указатель
 Thesauri added.,Thesauri added.
 Thesauri deleted,Thesauri deleted
@@ -900,10 +856,8 @@ Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,Предметный указатель сохранен
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Эта область позволяет добавить пользовательский JavaScript на страницу. Это откроет большую сферу новых возможностей.
-This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Этот контент генерируется автоматически
 "This entity has no document, you probably want to see the metadata","У этого объекта нет документов, вы наверняка хотите увидеть метаданные"
-This entity is not public.,Этот объект не является общедоступным.
 This entity is restricted from public view.,Этот объект ограничен для общедоступного просмотра.
 This field is required,This field is required
 This file type is not supported on media fields,This file type is not supported on media fields
@@ -912,17 +866,12 @@ This label already exists in this template,This label already exists in this tem
 This option will show a notification about the use of cookies in your instance.,Эта опция покажет уведомление об использовании файлов cookie в вашей базе данных.
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,Этот объект появится в карточках библиотеки как часть основной информации.
-This property will be inherited from the related entities and shown as metadata of this type of entities.,Это свойство будет приобретено от взаимосвязанных объектов и отображаться как метаданные для этого типа объектов.
 This property will be shown using all the width available.,Это свойство будет отображаться с использованием всей доступной ширины.
 This property will be shown without the label,This property will be shown without the label
-This property will be shown without the label.,Это свойство будет отображаться без метки.
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,this template
-This template has associated entities,This template has associated entities
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-This template will be used as default for new entities.,Этот шаблон будет использоваться по умолчанию для новых объектов.
-This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Порог
 Time,Время
 Timelinks,Timelinks
@@ -949,7 +898,6 @@ Translations,Переводы
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,Переводы сохранены
-Try selecting other documents.,Попробуйте выбрать другие документы.
 Turn off inline translation,Turn off inline translation
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled

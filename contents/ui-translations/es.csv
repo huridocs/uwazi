@@ -63,7 +63,6 @@ added to hub with the following errors:,añadido al nodo con los siguientes erro
 added to hub.,añadido al nodo.
 Adding a group and its items.,Adding a group and its items.
 Adding items to the thesauri,Adding items to the thesauri
-Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
 Admins,Admins
@@ -82,7 +81,6 @@ An error occurred,Se ha producido un error
 Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 Any entity,Any entity
-Any entity or document,Cualquier entidad o documento
 Apply,Apply
 Are you sure you want to continue?,Estás seguro que quieres continuar?
 Are you sure you want to delete this attachment?,Estás seguro que quieres eliminar este archivo adjunto?
@@ -97,15 +95,12 @@ Attachment uploaded,Archivo adjunto subido
 Attachments,Archivos adjuntos
 Authentication code,Código de autenticación
 auto-created,autogenerado
-Auto-save,Guardado automático
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
 Back,Volver
 Back to,Volver a
 Back to search,Volver a la búsqueda
-Back to thesauri,Volver al Thesauri
-Back to thesaurus,Volver al Tesauro
 Bad Request,Petición incorrecta
 Basic,Básico
 Body,Cuerpo
@@ -116,7 +111,6 @@ Can see,Puede visualizar
 Can view,Puede visualizar
 Cancel,Cancelar
 Canceling...,Cancelando
-Cannot delete template:,No se puede eliminar la plantilla:
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
@@ -125,8 +119,6 @@ Cards,Tarjetas
 Cards view,Vista de tarjetas
 Change password,Cambiar la contraseña
 Change Password,Change Password
-Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
-Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Los cambios no pueden deshacerse después de guardar. Cambiar campos de texto pueden invalidar las sugerencias.
 Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
 Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección. Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar. Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la  propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
@@ -158,16 +150,11 @@ CONFIRM,CONFIRMAR
 Confirm action,Confirmar acción
 Confirm delete connection,Confirmar eliminación de relación
 Confirm delete multiple items,Confirmar eliminación de múltiples elementos
-confirm delete template,"Estás seguro que quieres eliminar este tipo de entidad?
-        Esto eliminar la plantilla de todas las propiedades de tipo relación desde otras plantillas que apunte al tipo eliminado."
 Confirm deletion,Confirmar la eliminación
 Confirm deletion of,Confirmar la eliminación de
 Confirm deletion of entity,Confirmar eliminación de entidad
 Confirm deletion of file,Confirmar eliminación de archivo
-Confirm deletion of template:,Confirmar eliminación de plantilla:
-Confirm discard changes,Confirmar descartar cambios
 Confirm new password,Confirmar nueva contraseña
-Confirm publish multiple items,Confirmar la publicación de varios elementos
 Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
 Connected to server,Conectado al servidor
@@ -269,13 +256,10 @@ Document Title,Título del documento
 Documentation,Documentación
 documents,Documentos
 Documents,Documentos
-Documents for custom filter,Documentos para filtro personalizado
-Documents including suggestion:,Documentos que incluyen sugerencias:
 documents.,documentos.
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
-Drag properties here,Arrastra las propiedades aquí
 Drag row,Drag row
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
 Duplicate values not allowed.,No se permiten valores duplicados.
@@ -307,7 +291,6 @@ Enter your current password to confirm,Enter your current password to confirm
 Entities,Entidades
 entities,Entidades
 Entities across all languages,Entidades en todos los idiomas
-"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Las entidades se pueden mostrar en una página personalizada. Para eso, una página personalizada debe crearse en Páginas y luego seleccionarse aquí."
 Entity,Entidad
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
@@ -366,7 +349,6 @@ for,for
 Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
-Full edit mode,Modo de edición completa
 Full width,Ancho completo
 General,General
 General Information,General Information
@@ -395,7 +377,6 @@ ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
-Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
 Import,Importar
 Import asset,Import asset
 Import completed,Importación completada. Número de entidades creadas:
@@ -429,12 +410,10 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Elemento
 Items:,Elementos:
 Javascript,Javascript
-Keep this in mind if you want to edit:,Ten en cuenta esto si quieres editar:
 key,clave
 Label,Etiqueta
 "Label date ""From""",De:
 "Label date ""to""",A:
-Label your collection note,"Nota: Haz el conjunto de muestra de documentos para cada tema diverso y representativo. Por ejemplo, usa varios métodos para buscar documentos de muestra y no busques sólo el término “educación” para encontrar documentos para el tema “Educación”"
 Labeled,Labeled
 Landing page,Página de inicio
 Landing page description,"La página de inicio es la primera página que los visitantes ven cuando entran a tu colección. La página de inicio predeterminada es la librería de tu colección. Puedes configurar una página de inicio diferente añadiendo su URL relativa aquí. Por ejemplo:
@@ -501,7 +480,6 @@ Menu,Menú
 Message,Mensaje
 Message sent,Mensaje enviado
 Metadata,Metadatos
-Metadata creator,Creador de metadatos
 Metadata Extraction,Extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
@@ -513,8 +491,6 @@ ML TOC,ML TdC
 Month,Mes
 Months,Months
 more options.,más opciones.
-Multimedia fill description,"intentará llenar el contenedor, utilizando todo su ancho. En las tarjetas, es probable que se produzcan recortes."
-Multimedia fit description,mostrará todo el contenido multimedia dentro del contenedor.
 Multiple date,Fecha múltiple
 Multiple date range,Rango de fechas múltiple
 Multiple inherited properties warning ([property 1] affects [property 2]),afecta
@@ -546,7 +522,6 @@ No Connections,No existen relaciones
 No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
 No context,No context
 NO DATA AVAILABLE,NO DATA AVAILABLE
-No Documents found,No se encontraron documentos
 NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
 No Group,No Group
@@ -559,7 +534,6 @@ No options found,Opciones no encontradas
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
-No relationship types warning,Los campos de relación no se pueden agregar hasta que tenga al menos un tipo de relación para seleccionar.
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
 No Table of Contents,Sin Tabla de Contenidos
@@ -577,7 +551,6 @@ Not already been use as source template in another extractor,Not already been us
 Not already been use as target template,Not already been use as target template
 Not Found,No encontrado
 Nothing selected,Nothing selected
-Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
 Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
 OCR,ROC
@@ -598,8 +571,6 @@ OK,OK
                 available for selection.","Only templates with at least one rich text property and one numeric property are
                 available for selection."
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Ooops... please go,¡Cuidado! Adelante por favor
-Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
 Open,Open
 Open group,Open group
 Open PDF,Open PDF
@@ -659,11 +630,9 @@ Properties from other templates in the collection using the same label,Propiedad
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
 "Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Property,Property
-Property as default filter description,"Utiliza esta propiedad como filtro predeterminado en la colección. Cuando no haya ningún tipo de entidad seleccionado, esta propiedad se mostrará como un filtro predeterminado para tu colección."
 Property as filter description,"Esta propiedad se utilizará para filtrar los resultados de la colección. Cuando las propiedades coincidan en el mismo nombre y tipo de campo con otros tipos de entidades, se combinarán para el filtrado."
 property date,Fecha
 property daterange,Rango de fechas
-Property delete warning,"Eliminar una propiedad de la plantilla, eliminará su información de metadatos en todas las entidades que usan esta plantilla."
 property generatedid,ID Auto generado
 property geolocation,Geolocalización
 property image,Imagen
@@ -690,7 +659,6 @@ Publish,Publicar
 Published,Publicado
 QR Code,QR Code
 Query,Consulta
-Quick labeling for,Etiquetado rápido para
 RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
 Receiving email,Correo electrónico de recepción
@@ -700,7 +668,6 @@ References,Referencias
 Reject,Rechazar
 Relation type,Relation type
 Relationship,Relación
-relationship consistency warning,"No se puede utilizar ""cualquier entidad o documento"" si otra relación del mismo tipo está establecida con una entidad específica. "
 Relationship Type,Tipo de relación
 Relationship type,Relationship type
 Relationship type created successfully.,Relationship type created successfully.
@@ -731,7 +698,6 @@ Reset Password,Restablecer contraseña
 Reset passwords,Reset passwords
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
-Return to the thesaurus page when you finished labeling to start learning.,Regresa a la página del tesauro cuando termines de etiquetar para comenzar el aprendizaje.
 Review,Revisar
 Reviewed,Revisados
 Role,Rol
@@ -740,10 +706,7 @@ Sample,Ejemplo
 Satellite,Satélite
 Save,Guardar
 Save & Preview,Guardar & Previsualizar
-Save and go to next,Guardar e Ir al siguiente
 Save changes,Guardar cambios
-Save document,Guardar documento
-Save document(s),Guardar documento(s)
 Save password,Guardar contraseña
 Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
 Saved successfully.,Guardado exitoso.
@@ -812,10 +775,7 @@ Show toolbar,Mostrar la barra de herramientas
 Showing,Showing
 shown of,listados de
 Sign in,Registrarse
-Single date,Fecha única
-Single date range,Rango de fechas únicas
 Single relationships must have a hub,Las relaciones simples deben tener un nodo
-Single select,Selección única
 Size,Tamaño
 Something went wrong,Algo salió mal
 Sort,Ordenar
@@ -850,8 +810,6 @@ Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 Synced Template,Synced Template
 Synced templates cannot be deleted.,Synced templates cannot be deleted.
-syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.
-syncedTemplateListMessage,La fuente de esta plantilla es una sincronización. Todas las opciones de edición estarán deshabilitadas.
 syntax to create page content,sintaxis para crear el contenido de la página
 System translations,Traducciones del sistema
 Table,Tabla
@@ -880,12 +838,10 @@ The import process threw an error:,El proceso de importación tiene un error.
               column for updates on the process."
 The request could not be processed.,La petición no pudo ser procesada.
 The source of this template is a sync.,The source of this template is a sync.
-The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
 There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
 There are no untranslated terms,No hay términos sin traducir
-There are unsaved changes. Are you sure you want to discard them and switch to a different document?,Hay cambios sin guardar. Estas seguro que quieres descartarlos y cambiar a un documento diferente?
 Thesauri,Tesauros
 Thesauri added.,Thesauri added.
 Thesauri deleted,Thesauri deleted
@@ -900,10 +856,8 @@ Thesaurus name already exists,Thesaurus name already exists
 Thesaurus saved,Tesauro guardado
 This action may take some time while we add the extra language to the entire collection.,Esta acción puede tomar algún tiempo mientras añadimos el idioma a la colección.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Esta área permite Añadir Javascript para personalizar la página. Esto abre un nuevo universo de posibilidades.
-This cannot be changed after saving,Esto no puede ser cambiado después de guardar
 This content is automatically generated,Este contenido se genera automáticamente.
 "This entity has no document, you probably want to see the metadata","Esta entidad no tiene ningún documento, es probable que quieras ver los metadatos."
-This entity is not public.,Esta entidad no es pública.
 This entity is restricted from public view.,Esta entidad está restringida de la vista pública.
 This field is required,Este campo es obligatorio
 This file type is not supported on media fields,This file type is not supported on media fields
@@ -912,17 +866,12 @@ This label already exists in this template,This label already exists in this tem
 This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
 This property can not be deleted,This property can not be deleted
 This property will appear in the library cards as part of the basic info.,Esta propiedad aparecerá en las tarjetas de la biblioteca como parte de la información básica.
-This property will be inherited from the related entities and shown as metadata of this type of entities.,Esta propiedad será heredada desde las entidades relacionadas y se mostrará como metadato de este tipo de entidad.
 This property will be shown using all the width available.,Esta propiedad se mostrará utilizando todo el espacio disponible.
 This property will be shown without the label,This property will be shown without the label
-This property will be shown without the label.,Esta propiedad se mostrará sin su etiqueta.
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 this template,esta plantilla
-This template has associated entities,Esta plantilla tiene entidades asociadas
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-This template will be used as default for new entities.,Esta plantilla se utilizará como predeterminada para nuevas entidades
-This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
 Threshold,Límite
 Time,Tiempo
 Timelinks,Líneas de tiempo
@@ -949,7 +898,6 @@ Translations,Traducciones
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente
 Translations saved,Traducciones guardadas
-Try selecting other documents.,Por favor intenta seleccionar otros documentos.
 Turn off inline translation,Desactivar la traducción en línea
 Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Doble factor de autenticación habilitado
