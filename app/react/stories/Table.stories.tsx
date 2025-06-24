@@ -101,25 +101,58 @@ const StoryComponent = ({
   const [itemCounter, setItemCounter] = useState(1);
 
   const columns = getColumns(columnType, actionFn);
-  const hasGroups = dataState.some(row => row.subRows);
-  const tableRef = useRef<TableRef>(null);
-  const [canExpand, setCanExpand] = useState(false);
-  const [canCollapse, setCanCollapse] = useState(false);
 
-  useEffect(() => {
-    console.log('tableRef.current?.canCollapse', tableRef.current?.canCollapse);
-    console.log('tableRef.current?.canExpand', tableRef.current?.canExpand);
-    if (tableRef.current) {
-      setCanExpand(tableRef.current.canExpand);
-      setCanCollapse(tableRef.current.canCollapse);
-    }
-  }, [tableRef.current?.canExpand, tableRef.current?.canCollapse]);
+  const actions = (
+    <div className="flex gap-2">
+      <Button
+        styling="outline"
+        onClick={() => {
+          setDataState([
+            ...currentDataState.current,
+            {
+              rowId: `new-${itemCounter}`,
+              title: `New item ${itemCounter}`,
+              description: `Description for ${itemCounter}`,
+              created: Date.now(),
+            },
+          ]);
+          setItemCounter(itemCounter + 1);
+        }}
+      >
+        Add new item
+      </Button>
+      <Button
+        styling="outline"
+        onClick={() => {
+          setDataState(currentDataState.current.slice(0, dataState.length - 1));
+        }}
+      >
+        Remove last item
+      </Button>
+      <Button
+        styling="outline"
+        onClick={() => {
+          setDataState(tableData);
+        }}
+      >
+        Reset data
+      </Button>
+      <Button
+        styling="solid"
+        onClick={() => {
+          setDataState(currentDataState.current);
+          setSelected(currentSelections.current);
+        }}
+      >
+        Save changes
+      </Button>
+    </div>
+  );
 
   return (
     <div className="tw-content">
       <div className="w-full">
         <Table
-          ref={tableRef}
           data={dataState}
           columns={columns}
           defaultSorting={defaultSorting}
@@ -137,70 +170,9 @@ const StoryComponent = ({
               <p>{sorting.length ? `Sorted by ${sorting[0].id}` : 'No sorting'}</p>
             </div>
           }
+          actions={actions}
           footer={<p className="">My table footer</p>}
         />
-        <div className="flex gap-2 mt-4">
-          {hasGroups && (
-            <div className="flex gap-2">
-              <Button
-                styling="outline"
-                disabled={!canCollapse}
-                onClick={() => tableRef.current?.collapseAll()}
-              >
-                Collapse all
-              </Button>
-              <Button
-                styling="outline"
-                disabled={!canExpand}
-                onClick={() => tableRef.current?.expandAll()}
-              >
-                Expand all
-              </Button>
-            </div>
-          )}
-          <Button
-            styling="outline"
-            onClick={() => {
-              setDataState([
-                ...currentDataState.current,
-                {
-                  rowId: `new-${itemCounter}`,
-                  title: `New item ${itemCounter}`,
-                  description: `Description for ${itemCounter}`,
-                  created: Date.now(),
-                },
-              ]);
-              setItemCounter(itemCounter + 1);
-            }}
-          >
-            Add new item
-          </Button>
-          <Button
-            styling="outline"
-            onClick={() => {
-              setDataState(currentDataState.current.slice(0, dataState.length - 1));
-            }}
-          >
-            Remove last item
-          </Button>
-          <Button
-            styling="outline"
-            onClick={() => {
-              setDataState(tableData);
-            }}
-          >
-            Reset data
-          </Button>
-          <Button
-            styling="solid"
-            onClick={() => {
-              setDataState(currentDataState.current);
-              setSelected(currentSelections.current);
-            }}
-          >
-            Save changes
-          </Button>
-        </div>
       </div>
       <hr className="my-4" />
       <div data-testid="sorted-items">
