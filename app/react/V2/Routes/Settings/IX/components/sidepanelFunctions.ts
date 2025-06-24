@@ -1,4 +1,4 @@
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import {
   ExtractedMetadataSchema,
   MetadataObjectSchema,
@@ -9,6 +9,7 @@ import { FileType } from 'shared/types/fileType';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import * as entitiesAPI from 'V2/api/entities';
 import * as filesAPI from 'V2/api/files';
+import { TemplateSchema } from 'shared/types/templateType';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 
@@ -86,10 +87,12 @@ const loadValuesAndSuggestions = async (
 
 const handleEntitySave = async (
   entity?: ClientEntitySchema,
-  propertyName?: string,
+  property?: ClientPropertySchema,
   metadata?: PropertyValueSchema | PropertyValueSchema[] | undefined,
+  template?: TemplateSchema,
   fieldHasChanged?: boolean
 ) => {
+  const propertyName = property?.name;
   if (!fieldHasChanged || !entity || !propertyName) {
     return undefined;
   }
@@ -100,6 +103,19 @@ const handleEntitySave = async (
     data = { title: metadata };
   } else {
     data = { properties: [{ [propertyName]: metadata }] };
+  }
+
+  if (property?.type === 'relationship') {
+    template?.properties
+      ?.filter(
+        prop =>
+          prop._id !== property._id &&
+          prop.content === property.content &&
+          prop.type === property.type
+      )
+      .forEach(prop => {
+        data.properties?.push({ [prop.name]: metadata });
+      });
   }
 
   const entityToSave = entitiesAPI.formatter.update(entity, data);
@@ -133,6 +149,14 @@ const coerceValue = async (
   return undefined;
 };
 
+const getPropertyNameFromExtractPair = (extractorPair: string) => {
+  return extractorPair.substring(extractorPair.indexOf('-') + 1, extractorPair.length);
+};
+
+const getTemplateFromExtractPair = (extractorPair: string) => {
+  return extractorPair.substring(0, extractorPair.indexOf('-'));
+};
+
 export {
   SELECT_TYPES,
   coerceValue,
@@ -141,4 +165,6 @@ export {
   loadValuesAndSuggestions,
   handleEntitySave,
   handleFileSave,
+  getPropertyNameFromExtractPair,
+  getTemplateFromExtractPair,
 };

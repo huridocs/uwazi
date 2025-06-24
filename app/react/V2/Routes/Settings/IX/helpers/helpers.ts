@@ -6,6 +6,10 @@ import { t } from 'app/I18N';
 import { RadioProps } from 'V2/Components/Forms';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { SuggestionValue, TableSuggestion, MultiValueSuggestion } from '../types';
+import {
+  getPropertyNameFromExtractPair,
+  getTemplateFromExtractPair,
+} from '../components/sidepanelFunctions';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
@@ -89,9 +93,11 @@ const getAvailableSources = (
   }
 
   const commonProperty = selectedTemplatesIdsAndProperties[0]
-    ? selectedTemplatesIdsAndProperties[0].split('-', 2)[1]
+    ? getPropertyNameFromExtractPair(selectedTemplatesIdsAndProperties[0])
     : '';
-  const templateIds = selectedTemplatesIdsAndProperties.map(selected => selected.split('-', 2)[0]);
+  const templateIds = selectedTemplatesIdsAndProperties.map(selected =>
+    getTemplateFromExtractPair(selected)
+  );
 
   const templatesIncluded = templates.filter(template =>
     templateIds.includes(template._id.toString())
