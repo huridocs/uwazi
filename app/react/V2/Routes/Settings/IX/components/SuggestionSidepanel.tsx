@@ -38,7 +38,7 @@ interface SuggestionSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion?: TableSuggestion;
-  onEntitySave: (entity: ClientEntitySchema) => any;
+  onEntitySave: () => any;
   property?: ClientPropertySchema;
 }
 
@@ -236,6 +236,8 @@ const SuggestionSidepanel = ({
     setShowSidepanel(false);
   };
 
+  const template = templates.find(tpl => tpl._id.toString() === templateId);
+
   const createOnSubmit =
     (sourceType: 'pdf' | 'entity_property') =>
     async (value: { field: PropertyValueSchema | PropertyValueSchema[] | undefined }) => {
@@ -255,7 +257,13 @@ const SuggestionSidepanel = ({
         entityToSave.__extractedMetadata = { fileID: pdf?._id, selections };
       }
 
-      const savedEntity = await handleEntitySave(entityToSave, property.name, metadata, isDirty);
+      const savedEntity = await handleEntitySave(
+        entityToSave,
+        property,
+        metadata,
+        template,
+        isDirty
+      );
 
       if (savedEntity instanceof FetchResponseError) {
         const details = (savedEntity as FetchResponseError)?.json.prettyMessage;
@@ -264,7 +272,7 @@ const SuggestionSidepanel = ({
       } else if (savedEntity) {
         if (savedEntity) {
           setEntity(savedEntity);
-          onEntitySave(savedEntity);
+          onEntitySave();
         }
 
         setNotifications({ type: 'success', text: 'Saved successfully.' });
@@ -303,10 +311,10 @@ const SuggestionSidepanel = ({
 
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
-        }
-
-        if (coercedValue?.success) {
-          setValue('field', secondsToISODate(coercedValue.value), { shouldDirty: true });
+        } else {
+          const value =
+            property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
+          setValue('field', value, { shouldDirty: true });
           setSelectionError(undefined);
         }
       } else {
@@ -542,7 +550,7 @@ const SuggestionSidepanel = ({
                 <TextProperty
                   propertyName={suggestion.extractorSource.property}
                   entity={entity}
-                  template={templates.find(template => template._id.toString() === templateId)}
+                  template={template}
                   onSelect={selection => {
                     setSelectedText(selection);
                   }}

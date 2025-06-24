@@ -296,7 +296,6 @@ describe('helpers', () => {
 
   describe('getAvailableSources', () => {
     beforeAll(() => {
-      window.__featureFlags__ = { ixExtraSources: true };
       jest.spyOn(translate, 't');
     });
 

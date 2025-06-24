@@ -5,24 +5,24 @@ import { t, Translate } from 'app/I18N';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 
-export const DefaultFilterField = ({ control }: { control: any }) => (
+export const FullWidthField = ({ control }: { control: any }) => (
   <Controller
-    name="defaultfilter"
+    name="fullWidth"
     control={control}
     render={({ field }) => (
       <Checkbox
-        name="defaultfilter"
+        name="fullWidth"
         checked={field.value}
         onChange={e => field.onChange((e.target as HTMLInputElement).checked)}
         label={
           <span className="flex items-center gap-1">
-            <Translate>Default filter</Translate>{' '}
+            <Translate>Full width</Translate>{' '}
             <Tooltip
               // eslint-disable-next-line react/style-prop-object
               style="light"
               content={t(
                 'System',
-                'This property will be the default filter in the library for this template.',
+                'This property will be shown using all the width available.',
                 null,
                 false
               )}

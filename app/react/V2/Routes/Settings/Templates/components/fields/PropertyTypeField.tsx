@@ -15,20 +15,20 @@ export const PropertyTypeField = ({ control, disabled }: PropertyTypeFieldProps)
 
   const propertyTypeOptions = [
     { value: 'text', label: 'Text' },
+    { value: 'markdown', label: 'Rich text' },
     { value: 'numeric', label: 'Numeric' },
     { value: 'date', label: 'Date' },
-    { value: 'daterange', label: 'Date range' },
     { value: 'multidate', label: 'Multiple dates' },
+    { value: 'daterange', label: 'Date range' },
     { value: 'multidaterange', label: 'Multiple date ranges' },
     { value: 'select', label: 'Select' },
     { value: 'multiselect', label: 'Multiple select' },
     { value: 'relationship', label: 'Relationship' },
-    { value: 'markdown', label: 'Rich text' },
+    { value: 'link', label: 'Link' },
     { value: 'image', label: 'Image' },
     { value: 'preview', label: 'Preview' },
     { value: 'media', label: 'Media' },
     { value: 'geolocation', label: 'Geolocation' },
-    { value: 'link', label: 'Link' },
     { value: 'generatedid', label: 'Generated ID' },
   ];
 

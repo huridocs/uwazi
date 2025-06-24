@@ -12,19 +12,16 @@ import type {
   AcceptSuggestionErrorCallback,
 } from '../events';
 import { ixStatus } from '../types';
+import { ixAcceptedSuggestions } from '../components/ixSuggestionsAtom';
 
 type useEventHandlerProps = {
   extractorId: string;
   updateStatus: (status: ixStatus, data?: { processed: number; total: number }) => void;
-  fetchAggregations: () => Promise<void>;
 };
 
-const useEventHandler = ({
-  extractorId,
-  updateStatus,
-  fetchAggregations,
-}: useEventHandlerProps) => {
+const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) => {
   const setNotifications = useSetAtom(notificationAtom);
+  const setAcceptedSuggestionsAtom = useSetAtom(ixAcceptedSuggestions);
   const { revalidate } = useRevalidator();
 
   useEffect(() => {
@@ -37,9 +34,7 @@ const useEventHandler = ({
       if (eventExtractorId === extractorId) {
         updateStatus(modelStatus, data);
         await revalidate();
-        if ((data && data.total === data.processed) || modelStatus === ixStatus.ready) {
-          updateStatus(ixStatus.ready);
-        }
+        setAcceptedSuggestionsAtom(new Set());
       }
     };
 
@@ -53,7 +48,7 @@ const useEventHandler = ({
     };
 
     const handleSuggestionSuccess: AcceptSuggestionSuccessCallback = async () => {
-      await fetchAggregations();
+      await revalidate();
       setNotifications({
         type: 'success',
         text: t('System', 'Suggestions have been updated', null, false),

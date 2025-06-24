@@ -32,7 +32,10 @@ const checkTemplatesEntityCount = async (
   const counts = await Promise.all(
     templateIds.map(async id => {
       const requestParams = new RequestParams({}, headers);
-      const response = await api.get(`documents/count_by_template?templateId=${id}`, requestParams);
+      const response = await api.get(
+        `v2/entities/count_by_template?templateId=${id}`,
+        requestParams
+      );
       return { id, count: response.json };
     })
   );

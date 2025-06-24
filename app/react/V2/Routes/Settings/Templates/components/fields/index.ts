@@ -7,3 +7,4 @@ export { FilterField } from './FilterField';
 export { DefaultFilterField } from './DefaultFilterField';
 export { PrioritySortingField } from './PrioritySortingField';
 export { StyleField } from './StyleField';
+export { FullWidthField } from './FullWidthField';
