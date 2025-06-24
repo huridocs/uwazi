@@ -23,6 +23,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { Translate } from 'app/I18N';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 import { dndSortHandler, getRowIds } from './helpers';
@@ -241,10 +242,10 @@ const Table = <T extends TableRow<T>>({
             {hasGroups && (
               <>
                 <Button disabled={!canCollapse} styling="light" onClick={collapseAll}>
-                  Collapse all
+                  <Translate>Collapse all</Translate>
                 </Button>
                 <Button disabled={!canExpand} styling="light" onClick={expandAll}>
-                  Expand all
+                  <Translate>Expand all</Translate>
                 </Button>
               </>
             )}
