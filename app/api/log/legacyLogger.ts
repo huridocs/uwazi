@@ -22,6 +22,15 @@ const createLegacyLogger = (logger: (message: string) => void) => {
         })
       );
     },
+    info(message: string) {
+      logger(
+        formatter({
+          DATABASE_NAME,
+          message,
+          level: 'info',
+        })
+      );
+    },
   };
 };
 
