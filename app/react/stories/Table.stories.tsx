@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
-import { Button, Table } from 'V2/Components/UI';
+import { Button, Table, TableRef } from 'V2/Components/UI';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {
@@ -101,11 +101,25 @@ const StoryComponent = ({
   const [itemCounter, setItemCounter] = useState(1);
 
   const columns = getColumns(columnType, actionFn);
+  const hasGroups = dataState.some(row => row.subRows);
+  const tableRef = useRef<TableRef>(null);
+  const [canExpand, setCanExpand] = useState(false);
+  const [canCollapse, setCanCollapse] = useState(false);
+
+  useEffect(() => {
+    console.log('tableRef.current?.canCollapse', tableRef.current?.canCollapse);
+    console.log('tableRef.current?.canExpand', tableRef.current?.canExpand);
+    if (tableRef.current) {
+      setCanExpand(tableRef.current.canExpand);
+      setCanCollapse(tableRef.current.canCollapse);
+    }
+  }, [tableRef.current?.canExpand, tableRef.current?.canCollapse]);
 
   return (
     <div className="tw-content">
       <div className="w-full">
         <Table
+          ref={tableRef}
           data={dataState}
           columns={columns}
           defaultSorting={defaultSorting}
@@ -126,6 +140,24 @@ const StoryComponent = ({
           footer={<p className="">My table footer</p>}
         />
         <div className="flex gap-2 mt-4">
+          {hasGroups && (
+            <div className="flex gap-2">
+              <Button
+                styling="outline"
+                disabled={!canCollapse}
+                onClick={() => tableRef.current?.collapseAll()}
+              >
+                Collapse all
+              </Button>
+              <Button
+                styling="outline"
+                disabled={!canExpand}
+                onClick={() => tableRef.current?.expandAll()}
+              >
+                Expand all
+              </Button>
+            </div>
+          )}
           <Button
             styling="outline"
             onClick={() => {

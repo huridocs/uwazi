@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -36,6 +36,14 @@ type TableRow<T> = {
   disableRowDnD?: boolean;
   subRows?: T[];
 };
+
+type TableRef = {
+  collapseAll: () => void;
+  expandAll: () => void;
+  canExpand: boolean;
+  canCollapse: boolean;
+};
+
 type TableProps<T extends TableRow<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];
@@ -56,21 +64,24 @@ type TableProps<T extends TableRow<T>> = {
   groupColumnPosition?: number;
 };
 
-const Table = <T extends TableRow<T>>({
-  columns,
-  data,
-  onChange,
-  dnd,
-  enableSelections,
-  defaultSorting,
-  sortingFn,
-  header,
-  footer,
-  className,
-  noDataMessage = <DefaultNoDataMessage />,
-  groupColumnPosition = 0,
-  initialSelection = [],
-}: TableProps<T>) => {
+const Table = <T extends TableRow<T>>(
+  {
+    columns,
+    data,
+    onChange,
+    dnd,
+    enableSelections,
+    defaultSorting,
+    sortingFn,
+    header,
+    footer,
+    className,
+    noDataMessage = <DefaultNoDataMessage />,
+    groupColumnPosition = 0,
+    initialSelection = [],
+  }: TableProps<T>,
+  ref: React.Ref<TableRef>
+) => {
   const [dataState, setDataState] = useState(data);
   const initialRowSelection = initialSelection.reduce(
     (acc, item) => ({ ...acc, [item.rowId]: true }),
@@ -160,6 +171,48 @@ const Table = <T extends TableRow<T>>({
       sortingFn(sortingState);
     }
   }, [sortingFn, sortingState]);
+
+  const collapseAll = () => {
+    table.getRowModel().rows.forEach(row => {
+      if (row.getCanExpand()) {
+        row.toggleExpanded(false);
+      }
+    });
+  };
+
+  const expandAll = () => {
+    table.getRowModel().rows.forEach(row => {
+      if (Array.isArray(row.original.subRows)) {
+        row.toggleExpanded(true);
+      }
+    });
+  };
+
+  // --- Expansion state values ---
+  const [canExpand, setCanExpand] = useState(false);
+  const [canCollapse, setCanCollapse] = useState(false);
+
+  // Compute expansion state string for effect dependency
+  const expandedState = table
+    .getRowModel()
+    .rows.map(row => row.getIsExpanded())
+    .join(',');
+
+  useEffect(() => {
+    setCanExpand(table.getRowModel().rows.some(row => row.getCanExpand() && !row.getIsExpanded()));
+    setCanCollapse(table.getRowModel().rows.some(row => row.getCanExpand() && row.getIsExpanded()));
+  }, [expandedState]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      collapseAll,
+      expandAll,
+      canExpand,
+      canCollapse,
+    }),
+    [canExpand, canCollapse]
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -254,5 +307,11 @@ const Table = <T extends TableRow<T>>({
     </DndContext>
   );
 };
-export type { TableProps, TableRow };
-export { Table };
+
+// Wrap Table with forwardRef and export
+const ForwardedTable = React.forwardRef(Table) as <T extends TableRow<T>>(
+  props: TableProps<T> & { ref?: React.Ref<TableRef> }
+) => ReturnType<typeof Table>;
+
+export type { TableProps, TableRow, TableRef };
+export { ForwardedTable as Table };
