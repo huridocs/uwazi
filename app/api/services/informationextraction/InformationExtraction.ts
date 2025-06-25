@@ -1,7 +1,6 @@
-// Kevin------------------------------------------------------------------
+/* eslint-disable class-methods-use-this */
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-/* eslint-disable camelcase */
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
@@ -198,8 +197,8 @@ class InformationExtraction {
     );
   }
 
-  requestResults = async (message: InternalIXResultsMessage) => {
-    return retryWithBackoff(async () => {
+  requestResults = async (message: InternalIXResultsMessage) =>
+    retryWithBackoff(async () => {
       try {
         const response = await request.get(message.data_url);
         return JSON.parse(response.json);
@@ -207,15 +206,14 @@ class InformationExtraction {
         throw descriptiveError(error);
       }
     });
-  };
 
   static sendXmlToService = async (
     serviceUrl: string,
     xmlName: string,
     extractorId: ObjectIdSchema,
     type: string
-  ) => {
-    return retryWithBackoff(async () => {
+  ) =>
+    retryWithBackoff(async () => {
       try {
         const fileContent = await storage.fileContents(xmlName, 'segmentation');
         const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
@@ -225,8 +223,8 @@ class InformationExtraction {
         throw descriptiveError(error);
       }
     });
-  };
 
+  // eslint-disable-next-line max-params
   extendMaterialsWithLabeledData = (
     propertyLabeledData: ExtractedMetadataSchema | undefined,
     propertyValue: FileWithAggregation['propertyValue'],
@@ -524,6 +522,8 @@ class InformationExtraction {
     if (extractor?.source.property) {
       return this.saveSuggestionsForTextSource(extractor, rawSuggestions, message);
     }
+
+    return Promise.resolve();
   };
 
   saveSuggestionProcessForTextSource = async (entity: EntitySchema, extractor: IXExtractorType) => {
@@ -739,13 +739,8 @@ class InformationExtraction {
         }
 
         if (!currentModel.findingSuggestions) {
-          return emitToTenant(
-            message.tenant,
-            'ix_model_status',
-            _message.params!.id,
-            'ready',
-            'Canceled'
-          );
+          emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
+          return;
         }
       } catch (error) {
         await this.handleFailedStatus(message, currentModel);
