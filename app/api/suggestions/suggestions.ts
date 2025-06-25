@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
@@ -27,6 +26,7 @@ import {
   propertyTypeIsWithoutExtractedMetadata,
 } from 'api/services/informationextraction/getFiles';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
+import { IXExtractorType } from 'shared/types/extractorType';
 import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
@@ -87,7 +87,7 @@ const updateExtractedMetadata = async (
 };
 
 const buildListQuery = (
-  extractorId: ObjectId,
+  extractor: EnforcedWithId<IXExtractorType>,
   customFilter: SuggestionCustomFilter | undefined,
   setLanguages: LanguagesListSchema | undefined,
   options: { page?: IXSuggestionsQuery['page']; sort?: IXSuggestionsQuery['sort'] }
@@ -96,11 +96,14 @@ const buildListQuery = (
   const limit = options.page?.size || DEFAULT_LIMIT;
   const { sort } = options;
 
+  const isFromPdf = !!extractor.source?.pdf;
   const sortOrder = sort?.order === 'desc' ? -1 : 1;
-  const sorting = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
 
   const pipeline = [
-    ...getMatchStage(extractorId, customFilter),
+    ...getMatchStage(extractor._id, customFilter),
+    ...(!sort?.property ? [{ $sort: { date: 1, state: -1 } }] : []),
+    { $skip: offset },
+    { $limit: limit },
     ...getEntityStage(setLanguages!),
     ...getCurrentValueStage(),
     {
@@ -108,11 +111,8 @@ const buildListQuery = (
         entityTitle: '$entity.title',
       },
     },
-    { $sort: sorting },
-    { $skip: offset },
-    { $limit: limit },
-    ...getFileStage(),
-    ...getLabeledValueStage(),
+    ...(isFromPdf ? [...getFileStage(), ...getLabeledValueStage()] : []),
+    ...(sort?.property ? [{ $sort: { [sort.property]: sortOrder } }] : []),
     {
       $project: {
         entityId: '$entity._id',
@@ -135,6 +135,7 @@ const buildListQuery = (
       },
     },
   ];
+
   return pipeline;
 };
 
@@ -144,10 +145,12 @@ const readFilter = (filter: IXSuggestionsFilter) => {
   return { customFilter, extractorId };
 };
 
-const postProcessSuggestions = async (_suggestions: any, extractorId: ObjectId) => {
+const postProcessSuggestions = async (
+  _suggestions: any,
+  extractor: EnforcedWithId<IXExtractorType>
+) => {
   let suggestions = _suggestions;
   if (suggestions.length > 0) {
-    const extractor = await Extractors.getById(extractorId);
     const propertyName = extractor?.property;
     const property = await templates.getPropertyByName(propertyName!);
     const propertyType = property.type;
@@ -192,17 +195,25 @@ const Suggestions = {
       sort?: IXSuggestionsQuery['sort'];
     }
   ) => {
-    const { languages: setLanguages } = await settings.get();
     const { customFilter, extractorId } = readFilter(filter);
+    const [{ languages: setLanguages }, extractor] = await Promise.all([
+      settings.get(),
+      Extractors.getById(extractorId),
+    ]);
+
+    if (!extractor) {
+      throw new Error(`Extractor not found id: ${extractorId}`);
+    }
 
     const count = await IXSuggestionsModel.db
       .aggregate(getMatchStage(extractorId, customFilter, true))
       .then(result => (result?.length ? result[0].count : 0));
 
     let suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(extractorId, customFilter, setLanguages, options)
+      buildListQuery(extractor, customFilter, setLanguages, options)
     );
-    suggestions = await postProcessSuggestions(suggestions, extractorId);
+
+    suggestions = await postProcessSuggestions(suggestions, extractor);
 
     return {
       suggestions,
