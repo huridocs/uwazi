@@ -19,6 +19,8 @@ mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.withSuggestion': 
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.hasContext': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.obsolete': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.error': 1 });
+mongoSchema.index({ date: 1, state: -1 });
+mongoSchema.index({ extractorId: 1 });
 
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 

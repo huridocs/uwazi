@@ -204,10 +204,8 @@ const Suggestions = {
     if (!extractor) {
       throw new Error(`Extractor not found id: ${extractorId}`);
     }
-
-    const count = await IXSuggestionsModel.db
-      .aggregate(getMatchStage(extractorId, customFilter, true))
-      .then(result => (result?.length ? result[0].count : 0));
+    const [matchQuery] = getMatchStage(extractorId, customFilter, false);
+    const count = await IXSuggestionsModel.db.countDocuments(matchQuery.$match!);
 
     let suggestions = await IXSuggestionsModel.db.aggregate(
       buildListQuery(extractor, customFilter, setLanguages, options)
