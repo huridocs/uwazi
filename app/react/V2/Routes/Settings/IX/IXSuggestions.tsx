@@ -20,6 +20,7 @@ import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema } from 'app/istore';
+import { FunnelIcon } from '@heroicons/react/24/solid';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -222,14 +223,20 @@ const IXSuggestions = () => {
               );
             }}
             header={
-              <SuggestionsTitle
-                property={extractor.property}
-                templates={filteredTemplates()}
-                onFiltersButtonClicked={() => {
-                  setSidepanel('filters');
-                }}
-                activeFilters={activeFilters}
-              />
+              <SuggestionsTitle property={extractor.property} templates={filteredTemplates()} />
+            }
+            actions={
+              <Button size="small" styling="light" onClick={() => setSidepanel('filters')}>
+                <FunnelIcon
+                  className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
+                />
+                <Translate>Stats & Filters</Translate>
+                {activeFilters > 0 && (
+                  <span className="px-3 py-[2px] ml-2 text-xs text-white rounded-md bg-primary-900">
+                    {activeFilters}
+                  </span>
+                )}
+              </Button>
             }
             footer={
               <div className="flex justify-between h-6">

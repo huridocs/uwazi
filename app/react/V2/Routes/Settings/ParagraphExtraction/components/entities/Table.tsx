@@ -27,12 +27,8 @@ const EntitiesTable = ({
     columns={columns}
     enableSelections
     initialSelection={initialSelection}
-    header={
-      <TableTitle
-        items={sourceTemplate ? [sourceTemplate] : []}
-        Buttons={<FilterSidepanelButton />}
-      />
-    }
+    header={<TableTitle items={sourceTemplate ? [sourceTemplate] : []} />}
+    actions={<FilterSidepanelButton />}
     onChange={({ selectedRows }) => {
       onSelectionChange(pxEntitiesData.filter(ex => ex.rowId in selectedRows));
     }}

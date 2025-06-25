@@ -102,6 +102,53 @@ const StoryComponent = ({
 
   const columns = getColumns(columnType, actionFn);
 
+  const actions = (
+    <div className="flex gap-2">
+      <Button
+        styling="outline"
+        onClick={() => {
+          setDataState([
+            ...currentDataState.current,
+            {
+              rowId: `new-${itemCounter}`,
+              title: `New item ${itemCounter}`,
+              description: `Description for ${itemCounter}`,
+              created: Date.now(),
+            },
+          ]);
+          setItemCounter(itemCounter + 1);
+        }}
+      >
+        Add new item
+      </Button>
+      <Button
+        styling="outline"
+        onClick={() => {
+          setDataState(currentDataState.current.slice(0, dataState.length - 1));
+        }}
+      >
+        Remove last item
+      </Button>
+      <Button
+        styling="outline"
+        onClick={() => {
+          setDataState(tableData);
+        }}
+      >
+        Reset data
+      </Button>
+      <Button
+        styling="solid"
+        onClick={() => {
+          setDataState(currentDataState.current);
+          setSelected(currentSelections.current);
+        }}
+      >
+        Save changes
+      </Button>
+    </div>
+  );
+
   return (
     <div className="tw-content">
       <div className="w-full">
@@ -123,52 +170,9 @@ const StoryComponent = ({
               <p>{sorting.length ? `Sorted by ${sorting[0].id}` : 'No sorting'}</p>
             </div>
           }
+          actions={actions}
           footer={<p className="">My table footer</p>}
         />
-        <div className="flex gap-2 mt-4">
-          <Button
-            styling="outline"
-            onClick={() => {
-              setDataState([
-                ...currentDataState.current,
-                {
-                  rowId: `new-${itemCounter}`,
-                  title: `New item ${itemCounter}`,
-                  description: `Description for ${itemCounter}`,
-                  created: Date.now(),
-                },
-              ]);
-              setItemCounter(itemCounter + 1);
-            }}
-          >
-            Add new item
-          </Button>
-          <Button
-            styling="outline"
-            onClick={() => {
-              setDataState(currentDataState.current.slice(0, dataState.length - 1));
-            }}
-          >
-            Remove last item
-          </Button>
-          <Button
-            styling="outline"
-            onClick={() => {
-              setDataState(tableData);
-            }}
-          >
-            Reset data
-          </Button>
-          <Button
-            styling="solid"
-            onClick={() => {
-              setDataState(currentDataState.current);
-              setSelected(currentSelections.current);
-            }}
-          >
-            Save changes
-          </Button>
-        </div>
       </div>
       <hr className="my-4" />
       <div data-testid="sorted-items">

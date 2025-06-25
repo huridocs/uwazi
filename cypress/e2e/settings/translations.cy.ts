@@ -53,14 +53,14 @@ describe('Translations', () => {
 
     it('should have breadcrumb navigation', () => {
       cy.contains('li a > .translation', 'Translations').click();
-      cy.contains('caption', 'System translations');
+      cy.contains('System translations');
     });
 
     const checkEditResults = () => {
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.contains('.bg-gray-100', 'ES');
-      cy.contains('caption', 'Fecha');
-      cy.contains('caption', 'Informe de admisibilidad');
+      cy.contains('Fecha');
+      cy.contains('Informe de admisibilidad');
       cy.get('table').eq(0).scrollIntoView();
       cy.get('table').eq(0).toMatchImageSnapshot();
     };
@@ -69,7 +69,7 @@ describe('Translations', () => {
       cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.get('input[type=text]').should('be.visible');
-      cy.contains('caption', 'Fecha');
+      cy.contains('Fecha');
       cy.intercept('POST', '/api/translations').as('saveTranslations');
       cy.clearAndType('input[name="formValues.0.values.0.value"]', 'Date', { delay: 0 });
       cy.clearAndType('input[name="formValues.2.values.0.value"]', 'تاريخ', { delay: 0 });
@@ -88,10 +88,10 @@ describe('Translations', () => {
 
     it('Should filter translations that have no untranslated terms', () => {
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
-      cy.contains('caption', 'Fecha');
+      cy.contains('Fecha');
       cy.get('input[type=text]').eq(0).should('have.value', 'Date');
       cy.contains('label', 'Untranslated Terms').click();
-      cy.contains('caption', 'Informe de admisibilidad');
+      cy.contains('Informe de admisibilidad');
       cy.get('input[type=text]').eq(0).should('have.value', 'Informe de admisibilidad');
     });
 

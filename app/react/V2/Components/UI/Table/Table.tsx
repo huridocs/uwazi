@@ -22,6 +22,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { Translate } from 'app/I18N';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 import { dndSortHandler, getRowIds } from './helpers';
@@ -29,6 +30,7 @@ import { SortingChevrons } from './SortingChevrons';
 import { GroupCell, GroupHeader } from './GroupComponents';
 import { NoDataRow } from './NoDataRow';
 import { DefaultNoDataMessage } from './DefaultNoDataMessage';
+import { Button } from '../Button';
 
 type TableRow<T> = {
   rowId: string;
@@ -36,6 +38,7 @@ type TableRow<T> = {
   disableRowDnD?: boolean;
   subRows?: T[];
 };
+
 type TableProps<T extends TableRow<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];
@@ -50,6 +53,7 @@ type TableProps<T extends TableRow<T>> = {
   defaultSorting?: SortingState;
   sortingFn?: (sorting: SortingState) => void;
   header?: React.ReactNode;
+  actions?: React.ReactNode;
   footer?: React.ReactNode;
   noDataMessage?: string | React.ReactNode;
   className?: string;
@@ -65,6 +69,7 @@ const Table = <T extends TableRow<T>>({
   defaultSorting,
   sortingFn,
   header,
+  actions,
   footer,
   className,
   noDataMessage = <DefaultNoDataMessage />,
@@ -78,6 +83,7 @@ const Table = <T extends TableRow<T>>({
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
   const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
+
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const { memoizedColumns, groupColumnIndex } = useMemo<{
     memoizedColumns: ColumnDef<T, any>[];
@@ -161,6 +167,20 @@ const Table = <T extends TableRow<T>>({
     }
   }, [sortingFn, sortingState]);
 
+  const collapseAll = () => {
+    table.getRowModel().rows.forEach(row => {
+      row.toggleExpanded(false);
+    });
+  };
+
+  const expandAll = () => {
+    table.getRowModel().rows.forEach(row => {
+      if (Array.isArray(row.original.subRows)) {
+        row.toggleExpanded(true);
+      }
+    });
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const overRow = dataState.find(row => row.rowId === over?.id);
@@ -194,6 +214,12 @@ const Table = <T extends TableRow<T>>({
     useSensor(KeyboardSensor, {})
   );
 
+  const hasGroups = dataState.some(row => row.subRows);
+  const canExpand = table
+    .getRowModel()
+    .rows.some(row => row.getCanExpand() && !row.getIsExpanded());
+  const canCollapse = table.getRowModel().rows.some(row => row.getIsExpanded());
+
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -202,8 +228,23 @@ const Table = <T extends TableRow<T>>({
       sensors={sensors}
     >
       <div className="w-full overflow-auto rounded-md shadow">
+        <div data-testid="table-header" className="flex justify-between items-center p-4 gap-4">
+          {header && <div className="flex-grow">{header}</div>}
+          <div className="flex gap-2">
+            {hasGroups && (
+              <>
+                <Button disabled={!canCollapse} styling="light" onClick={collapseAll}>
+                  <Translate>Collapse all</Translate>
+                </Button>
+                <Button disabled={!canExpand} styling="light" onClick={expandAll}>
+                  <Translate>Expand all</Translate>
+                </Button>
+              </>
+            )}
+            {actions}
+          </div>
+        </div>
         <table className={`w-full ${className || ''}`}>
-          {header && <caption className="p-4">{header}</caption>}
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
@@ -254,5 +295,6 @@ const Table = <T extends TableRow<T>>({
     </DndContext>
   );
 };
+
 export type { TableProps, TableRow };
 export { Table };

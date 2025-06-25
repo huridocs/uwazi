@@ -85,21 +85,21 @@ const ThesaurusForm = ({
   return (
     <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
       <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
-        <div className="p-4">
-          <InputField
-            clearFieldAction={() => {}}
-            id="thesauri-name"
-            placeholder="Thesauri name"
-            className="mb-2"
-            hasErrors={!!errors.name}
-            {...register('name', { required: true })}
-          />
-        </div>
         <Table
           data={thesaurusValues}
           columns={columnsThesaurus({ edit }, thesaurus)}
           dnd={{ enable: true, disableEditingGroups: true }}
           enableSelections
+          header={
+            <InputField
+              clearFieldAction={() => {}}
+              id="thesauri-name"
+              placeholder="Thesauri name"
+              hasErrors={!!errors.name}
+              className="flex-grow"
+              {...register('name', { required: true })}
+            />
+          }
           onChange={({ selectedRows, rows }) => {
             setSelectedThesaurusValue(() => {
               const selection: ThesaurusRow[] = [];

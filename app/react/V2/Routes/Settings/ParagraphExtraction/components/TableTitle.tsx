@@ -5,10 +5,8 @@ import { DisplayPill } from './DisplayPills';
 
 const TableTitle = ({
   items = [],
-  Buttons,
 }: {
   items: { _id?: string; name: string; color?: string }[];
-  Buttons?: React.ReactNode;
 }) => (
   <div className="flex items-center justify-between gap-2">
     <div className="flex items-center gap-2">
@@ -25,7 +23,6 @@ const TableTitle = ({
         </DisplayPill>
       ))}
     </div>
-    <div>{Buttons}</div>
   </div>
 );
 

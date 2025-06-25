@@ -21,6 +21,7 @@ describe('Groups', () => {
   });
 
   it('accesibility check', () => {
+    cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Groups'));
     cy.checkA11y();
     cy.getByTestId('settings-content').toMatchImageSnapshot();
     cy.contains('button', 'Add group').click();
