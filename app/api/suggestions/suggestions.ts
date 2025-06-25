@@ -304,13 +304,15 @@ const Suggestions = {
     );
   },
 
-  markSuggestionsAsTrainingSamples: async (entities: string[], extractorId: string) => {
-    const [model] = await ixmodels.get({ extractorId: ObjectId.createFromHexString(extractorId) });
+  markSuggestionsAsTrainingSamples: async (entities: string[], extractorIdString: string) => {
+    const extractorId = ObjectId.createFromHexString(extractorIdString);
+    const [model] = await ixmodels.get({ extractorId });
+
     const chunks = ArrayUtils.splitInChunks(entities, 1000);
     await chunks.reduce(async (promise, chunk) => {
       await promise;
       await IXSuggestionsModel.updateMany(
-        { entityId: { $in: chunk }, extractorId: ObjectId.createFromHexString(extractorId) },
+        { entityId: { $in: chunk }, extractorId },
         { $set: { trainSampleTimestamp: model.creationDate } }
       );
     }, Promise.resolve());
