@@ -145,12 +145,11 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   }, [reset, isOpen]);
 
   useEffect(() => {
-    const isTitle = propertyToEdit?.isCommonProperty && propertyToEdit?.name === 'title';
-    if (!filter && !isTitle) {
+    if (!filter && !isCommonProperty) {
       setValue('defaultfilter', false);
       setValue('prioritySorting', false);
     }
-  }, [filter, setValue, propertyToEdit]);
+  }, [filter, setValue, isCommonProperty]);
 
   // eslint-disable-next-line max-statements
   const validateMatchingProperties = () => {
