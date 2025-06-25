@@ -51,7 +51,14 @@ export const getMatchStage = (
     ...countExpression,
   ];
 
-  return matchStage;
+  return matchStage as [
+    {
+      $match: FilterQuery<IXSuggestionType>;
+    },
+    {
+      $count: string;
+    },
+  ];
 };
 
 export const getEntityStage = (languages: LanguagesListSchema) => {
