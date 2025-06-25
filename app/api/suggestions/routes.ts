@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-import { Application, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -7,7 +6,6 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import {
@@ -20,21 +18,15 @@ import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
 
-async function processIXFunction(
-  callback: (extractorId: ObjectIdSchema) => Promise<{ message: string; status: string }>,
-  req: Request,
-  res: Response
-) {
+const requireIX = (_req: Request, res: Response, next: NextFunction) => {
   if (!IX) {
     res.status(500).json({
       error: 'Information Extraction service is not available',
     });
     return;
   }
-
-  const status = await callback(ObjectId.createFromHexString(req.body.extractorId));
-  res.json(status);
-}
+  next();
+};
 
 function extractorIdRequestValidation(root = 'body') {
   return validateAndCoerceRequest({
@@ -52,7 +44,6 @@ function extractorIdRequestValidation(root = 'body') {
   });
 }
 
-// eslint-disable-next-line max-statements
 export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/',
@@ -135,8 +126,10 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
+    requireIX,
     async (req, res, _next) => {
-      await processIXFunction(IX.stopModel, req, res);
+      const status = await IX.stopModel(ObjectId.createFromHexString(req.body.extractorId));
+      res.json(status);
     }
   );
 
@@ -145,15 +138,9 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
+    requireIX,
     async (req, res, _next) => {
-      if (!IX) {
-        return res.status(500).json({
-          error: 'Information Extraction service is not available',
-        });
-      }
-
       const output = await IX.trainModel(ObjectId.createFromHexString(req.body.extractorId));
-
       res.status(202).json(output);
     }
   );
@@ -163,8 +150,10 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
+    requireIX,
     async (req, res, _next) => {
-      await processIXFunction(IX.status, req, res);
+      const status = await IX.status(ObjectId.createFromHexString(req.body.extractorId));
+      res.json(status);
     }
   );
 
