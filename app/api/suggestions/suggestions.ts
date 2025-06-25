@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
@@ -27,6 +28,8 @@ import {
 } from 'api/services/informationextraction/getFiles';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import ixmodels from 'api/services/informationextraction/ixmodels';
 import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
@@ -299,6 +302,18 @@ const Suggestions = {
       },
       { $set: { 'state.error': true, 'state.match': null } }
     );
+  },
+
+  markSuggestionsAsTrainingSamples: async (entities: string[], extractorId: string) => {
+    const [model] = await ixmodels.get({ extractorId: ObjectId.createFromHexString(extractorId) });
+    const chunks = ArrayUtils.splitInChunks(entities, 1000);
+    await chunks.reduce(async (promise, chunk) => {
+      await promise;
+      await IXSuggestionsModel.updateMany(
+        { entityId: { $in: chunk }, extractorId: ObjectId.createFromHexString(extractorId) },
+        { $set: { trainSampleTimestamp: model.creationDate } }
+      );
+    }, Promise.resolve());
   },
 
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),

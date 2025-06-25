@@ -1574,6 +1574,47 @@ describe('suggestions', () => {
     });
   });
 
+  describe('markSuggestionsAsTrainingSamples()', () => {
+    const newCreationDate = 13071977;
+
+    beforeEach(async () => {
+      const trainingFixtures = {
+        ...fixtures,
+        ixmodels: [
+          fixtures.ixmodels[0],
+          {
+            ...fixtures.ixmodels[1],
+            creationDate: newCreationDate,
+          },
+          ...fixtures.ixmodels.slice(2),
+        ],
+      };
+      await testingEnvironment.setUp(trainingFixtures);
+    });
+
+    it('should mark the suggestions as training samples', async () => {
+      const entities = ['shared1', 'shared3', 'shared4', 'shared5', 'shared6'];
+      await Suggestions.markSuggestionsAsTrainingSamples(
+        entities,
+        factory.id('title_extractor').toString()
+      );
+      const trainingSamples = await db.mongodb
+        ?.collection('ixsuggestions')
+        .find({ trainSampleTimestamp: newCreationDate })
+        .toArray();
+
+      expect(trainingSamples?.length).toBe(6);
+      expect(trainingSamples?.map(s => s.entityId)).toEqual([
+        'shared1',
+        'shared1',
+        'shared3',
+        'shared4',
+        'shared5',
+        'shared6',
+      ]);
+    });
+  });
+
   describe('markSuggestionsWithoutSegmentation()', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures);
