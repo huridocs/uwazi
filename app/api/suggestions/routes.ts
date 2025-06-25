@@ -1,4 +1,4 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -17,16 +17,6 @@ import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
-
-const requireIX = (_req: Request, res: Response, next: NextFunction) => {
-  if (!IX) {
-    res.status(500).json({
-      error: 'Information Extraction service is not available',
-    });
-    return;
-  }
-  next();
-};
 
 function extractorIdRequestValidation(root = 'body') {
   return validateAndCoerceRequest({
@@ -126,7 +116,6 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
-    requireIX,
     async (req, res, _next) => {
       const status = await IX.stopModel(ObjectId.createFromHexString(req.body.extractorId));
       res.json(status);
@@ -138,7 +127,6 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
-    requireIX,
     async (req, res, _next) => {
       const output = await IX.trainModel(ObjectId.createFromHexString(req.body.extractorId));
       res.status(202).json(output);
@@ -150,7 +138,6 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
-    requireIX,
     async (req, res, _next) => {
       const status = await IX.status(ObjectId.createFromHexString(req.body.extractorId));
       res.json(status);
