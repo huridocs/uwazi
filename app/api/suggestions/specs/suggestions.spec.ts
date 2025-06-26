@@ -1623,23 +1623,22 @@ describe('suggestions', () => {
     });
 
     it('should mark the suggestions as training samples', async () => {
-      const entities = ['shared1', 'shared3', 'shared4', 'shared5', 'shared6'];
+      const entities = ['shared1', 'shared3', 'shared4', 'shared6'];
       await Suggestions.markSuggestionsAsTrainingSamples(
         entities,
         factory.id('title_extractor').toString()
       );
       const trainingSamples = await db.mongodb
         ?.collection('ixsuggestions')
-        .find({ trainSampleTimestamp: newCreationDate })
+        .find({ trainingSample: true })
         .toArray();
 
-      expect(trainingSamples?.length).toBe(6);
+      expect(trainingSamples?.length).toBe(5);
       expect(trainingSamples?.map(s => s.entityId)).toEqual([
         'shared1',
         'shared1',
         'shared3',
         'shared4',
-        'shared5',
         'shared6',
       ]);
     });

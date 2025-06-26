@@ -29,7 +29,6 @@ import {
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import ixmodels from 'api/services/informationextraction/ixmodels';
 import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
@@ -306,14 +305,14 @@ const Suggestions = {
 
   markSuggestionsAsTrainingSamples: async (entities: string[], extractorIdString: string) => {
     const extractorId = ObjectId.createFromHexString(extractorIdString);
-    const [model] = await ixmodels.get({ extractorId });
+    await IXSuggestionsModel.updateMany({ extractorId }, { $set: { trainingSample: false } });
 
     const chunks = ArrayUtils.splitInChunks(entities, 1000);
     await chunks.reduce(async (promise, chunk) => {
       await promise;
       await IXSuggestionsModel.updateMany(
         { entityId: { $in: chunk }, extractorId },
-        { $set: { trainSampleTimestamp: model.creationDate } }
+        { $set: { trainingSample: true } }
       );
     }, Promise.resolve());
   },

@@ -131,7 +131,7 @@ export const IXSuggestionSchema = {
     date: { type: 'number' },
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
-    trainSampleTimestamp: { type: 'number' },
+    trainingSample: { type: 'boolean' },
   },
   required: [
     'propertyName',

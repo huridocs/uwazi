@@ -78,7 +78,7 @@ export interface IXSuggestionType {
     height: number;
     page?: string;
   }[];
-  trainSampleTimestamp?: number;
+  trainingSample?: boolean;
 }
 
 export interface IXSuggestionStateType {

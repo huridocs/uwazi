@@ -9,6 +9,7 @@ import moment from 'moment';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { getEntitiesForTraining } from './getFiles';
 import { PropertySourceMaterials } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
@@ -52,6 +53,7 @@ class TrainModelForText implements UseCase<Input, Output> {
         throw new NoEntitiesForTraining();
       }
 
+      const processedEntityIds: string[] = [];
       const targetProperty = await IXServices.getTargetProperty({ extractor });
 
       await ArrayUtils.sequentialFor(entities, async entity => {
@@ -103,7 +105,13 @@ class TrainModelForText implements UseCase<Input, Output> {
         }
 
         await request.post(urljoin(this.props.serviceUrl, 'labeled_data'), data);
+        processedEntityIds.push(entity.sharedId!);
       });
+
+      await Suggestions.markSuggestionsAsTrainingSamples(
+        processedEntityIds,
+        extractor._id.toString()
+      );
 
       await this.props.iXTaskService.createModelTask({
         extractor,
