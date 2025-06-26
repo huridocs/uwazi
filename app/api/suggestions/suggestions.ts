@@ -98,12 +98,10 @@ const buildListQuery = (
 
   const isFromPdf = !!extractor.source?.pdf;
   const sortOrder = sort?.order === 'desc' ? -1 : 1;
+  const $sort = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
 
   const pipeline = [
     ...getMatchStage(extractor._id, customFilter),
-    ...(!sort?.property ? [{ $sort: { date: 1, state: -1 } }] : []),
-    { $skip: offset },
-    { $limit: limit },
     ...getEntityStage(setLanguages!),
     ...getCurrentValueStage(),
     {
@@ -111,8 +109,10 @@ const buildListQuery = (
         entityTitle: '$entity.title',
       },
     },
+    { $sort },
+    { $skip: offset },
+    { $limit: limit },
     ...(isFromPdf ? [...getFileStage(), ...getLabeledValueStage()] : []),
-    ...(sort?.property ? [{ $sort: { [sort.property]: sortOrder } }] : []),
     {
       $project: {
         entityId: '$entity._id',
