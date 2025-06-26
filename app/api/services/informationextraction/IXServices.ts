@@ -6,6 +6,7 @@ import { ModelStatus } from 'shared/types/IXModelSchema';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from './ixmodels';
 
 type GetTargetPropertyInput = {
@@ -27,6 +28,11 @@ type ExtractLabeledValueFromEntityInput = {
   targetProperty: PropertySchema;
 };
 
+type SaveModelProcessOptions = {
+  findingSuggestions?: boolean;
+  computeTotalSuggestions?: boolean;
+};
+
 export class IXServices {
   static async getTargetProperty({ extractor }: GetTargetPropertyInput) {
     const template = await templatesModel.getById(extractor.templates[0]);
@@ -41,17 +47,24 @@ export class IXServices {
   static async saveModelProcess(
     extractorId: ObjectIdSchema,
     status: ModelStatus = ModelStatus.processing,
-    findingSuggestions = true
+    { findingSuggestions = true, computeTotalSuggestions = false }: SaveModelProcessOptions = {}
   ) {
     const [currentModel] = await ixmodels.get({ extractorId });
 
-    await ixmodels.save({
+    const newModel = {
       ...currentModel,
       status,
       creationDate: new Date().getTime(),
       extractorId,
       findingSuggestions,
-    });
+    };
+
+    if (computeTotalSuggestions) {
+      const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
+      newModel.totalSuggestionsToFind = totalSuggestions;
+    }
+
+    await ixmodels.save(newModel);
   }
 
   static extractCurrentValue({ entity, targetProperty }: ExtractCurrentValueInput) {

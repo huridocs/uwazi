@@ -9,4 +9,6 @@ export interface IXModelType {
   creationDate: number;
   status?: 'processing' | 'failed' | 'ready';
   findingSuggestions?: boolean;
+  testRun?: boolean;
+  totalSuggestionsToFind?: number;
 }

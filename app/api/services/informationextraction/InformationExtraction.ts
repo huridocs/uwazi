@@ -55,6 +55,7 @@ import {
 } from './suggestionFormatting';
 import { ExtractionKey } from './ExtractionKey';
 import { IXTrainModelJob } from './TrainModelJob';
+import { IXServices } from './IXServices';
 
 const defaultTrainingLanguage = 'en';
 
@@ -166,7 +167,9 @@ class InformationExtraction {
   ) {
     const errorMessage = message.error_message || 'Task failed';
 
-    await this.saveModelProcess(message.params!.id, ModelStatus.failed, false);
+    await IXServices.saveModelProcess(message.params!.id, ModelStatus.failed, {
+      findingSuggestions: false,
+    });
 
     if (currentModel?.findingSuggestions) {
       await IXSuggestionsModel.updateMany(
@@ -643,15 +646,39 @@ class InformationExtraction {
     return { status: 'processing_model', message: 'Training model' };
   };
 
+  // TEST!!!
   testModel = async (extractorId: ObjectIdSchema) => {
     const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId);
+    await ixmodels.startTraining(extractorId, true);
 
     const dispatcher = await DefaultDispatcher(tenant.name);
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
 
     return { status: 'processing_model', message: 'Training model' };
+  };
+
+  getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
+    const processedSuggestions = await IXSuggestionsModel.count({
+      extractorId,
+      date: { $gt: model.creationDate },
+    });
+    return {
+      total: model.totalSuggestionsToFind,
+      processed: processedSuggestions,
+    };
+  };
+
+  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
+    const suggestionsStatus = await this.getSuggestionsStatus(message.params!.id, currentModel);
+    emitToTenant(
+      message.tenant,
+      'ix_model_status',
+      message.params!.id.toString(),
+      'processing_suggestions',
+      '',
+      suggestionsStatus
+    );
   };
 
   status = async (extractorId: ObjectIdSchema) => {
@@ -674,10 +701,7 @@ class InformationExtraction {
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
-      const suggestionStatus = await this.getSuggestionsStatus(
-        extractorId,
-        currentModel.creationDate
-      );
+      const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
         return { status: 'ready', message: 'Ready' };
@@ -707,36 +731,28 @@ class InformationExtraction {
     return { status: 'error', message: 'No model found' };
   };
 
-  saveModelProcess = async (
-    extractorId: ObjectIdSchema,
-    status: ModelStatus = ModelStatus.processing,
-    findingSuggestions = true
-  ) => {
-    const [currentModel] = await ixmodels.get({ extractorId });
-
-    await ixmodels.save({
-      ...currentModel,
-      status,
-      creationDate: new Date().getTime(),
-      extractorId,
-      findingSuggestions,
-    });
-  };
-
   processResults = async (_message: IXResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       const message: InternalIXResultsMessage = {
         ..._message,
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
+
       const [currentModel] = await IXModelsModel.get({
         extractorId: message.params!.id,
       });
 
       try {
         if (message.task === 'create_model' && message.success) {
-          await this.saveModelProcess(message.params!.id, ModelStatus.ready);
-          await this.updateSuggestionStatus(message, currentModel);
+          await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
+            computeTotalSuggestions: true,
+          });
+
+          const [updatedModel] = await IXModelsModel.get({
+            extractorId: message.params!.id,
+          });
+
+          await this.updateSuggestionStatus(message, updatedModel);
         }
 
         if (!message.success) {
@@ -759,33 +775,6 @@ class InformationExtraction {
 
       await this.getSuggestions(message.params!.id);
     }, _message.tenant);
-  };
-
-  getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
-    const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
-    const processedSuggestions = await IXSuggestionsModel.count({
-      extractorId,
-      date: { $gt: modelCreationDate },
-    });
-    return {
-      total: totalSuggestions,
-      processed: processedSuggestions,
-    };
-  };
-
-  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
-    const suggestionsStatus = await this.getSuggestionsStatus(
-      message.params!.id,
-      currentModel.creationDate
-    );
-    emitToTenant(
-      message.tenant,
-      'ix_model_status',
-      message.params!.id.toString(),
-      'processing_suggestions',
-      '',
-      suggestionsStatus
-    );
   };
 }
 

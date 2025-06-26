@@ -20,7 +20,7 @@ export default {
     }
     return saved;
   },
-  startTraining: async (extractorId: ObjectIdSchema) => {
+  startTraining: async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
     const [current] = await model.get({ extractorId });
 
     await model.save({
@@ -28,6 +28,7 @@ export default {
       extractorId,
       findingSuggestions: true,
       status: ModelStatus.processing,
+      testRun,
     });
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
