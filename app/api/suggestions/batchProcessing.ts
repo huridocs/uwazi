@@ -1,4 +1,4 @@
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, ObjectIdSchema } from 'shared/types/commonTypes';
 import entitiesModel from 'api/entities/entitiesModel';
 import { EntitySchema } from 'shared/types/entityType';
 
@@ -78,5 +78,21 @@ const fetchEntitiesDataForBatch = async (
   >[];
 };
 
+const getDefaultEntity = async (sharedId: string, defaultLanguage: LanguageISO6391) => {
+  const [defaultEntity] = await entitiesModel.db
+    .find({ sharedId, language: defaultLanguage })
+    .select(['sharedId', 'title', 'language', 'metadata']);
+
+  if (!defaultEntity) {
+    throw new Error(
+      `Default Entity not found: {sharedId: ${sharedId}, language: ${defaultLanguage}}`
+    );
+  }
+
+  return defaultEntity as Required<
+    Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title'>
+  >;
+};
+
 export type { BatchRange };
-export { calculateBatches, fetchEntitiesDataForBatch };
+export { calculateBatches, fetchEntitiesDataForBatch, getDefaultEntity };
