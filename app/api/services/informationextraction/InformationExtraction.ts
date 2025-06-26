@@ -643,6 +643,17 @@ class InformationExtraction {
     return { status: 'processing_model', message: 'Training model' };
   };
 
+  testModel = async (extractorId: ObjectIdSchema) => {
+    const tenant = tenants.current();
+    await ixmodels.startTraining(extractorId);
+
+    const dispatcher = await DefaultDispatcher(tenant.name);
+
+    await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
+
+    return { status: 'processing_model', message: 'Training model' };
+  };
+
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });
 

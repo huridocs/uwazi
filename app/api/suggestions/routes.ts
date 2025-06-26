@@ -134,6 +134,18 @@ export const suggestionsRoutes = (app: Application) => {
   );
 
   app.post(
+    '/api/suggestions/test_model',
+    serviceMiddleware,
+    needsAuthorization(['admin', 'editor']),
+    extractorIdRequestValidation('body'),
+    async (req, res, _next) => {
+      const output = await IX.testModel(ObjectId.createFromHexString(req.body.extractorId));
+
+      res.status(202).json(output);
+    }
+  );
+
+  app.post(
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
