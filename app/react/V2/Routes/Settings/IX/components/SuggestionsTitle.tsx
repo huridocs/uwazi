@@ -1,7 +1,6 @@
 import React from 'react';
-import { FunnelIcon } from '@heroicons/react/24/solid';
 import { Translate, t } from 'app/I18N';
-import { Pill, Button } from 'V2/Components/UI';
+import { Pill } from 'V2/Components/UI';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import {
   DatePropertyIcon,
@@ -15,13 +14,9 @@ import {
 const SuggestionsTitle = ({
   property,
   templates,
-  onFiltersButtonClicked,
-  activeFilters,
 }: {
   property: string;
   templates: ClientTemplateSchema[];
-  onFiltersButtonClicked: () => void;
-  activeFilters: number;
 }) => {
   const allProperties = [
     ...(templates[0].commonProperties || []),
@@ -71,20 +66,6 @@ const SuggestionsTitle = ({
             {templateToDisplay.name}
           </Pill>
         ))}
-      </div>
-
-      <div className="flex-none">
-        <Button size="small" styling="light" onClick={onFiltersButtonClicked}>
-          <FunnelIcon
-            className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
-          />
-          <Translate>Stats & Filters</Translate>
-          {activeFilters > 0 && (
-            <span className="px-3 py-[2px] ml-2 text-xs text-white rounded-md bg-primary-900">
-              {activeFilters}
-            </span>
-          )}
-        </Button>
       </div>
     </div>
   );

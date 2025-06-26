@@ -83,7 +83,7 @@ function thesauriCellRenderer(
 function entitiesCellRenderer(content: string | undefined, templates: ClientTemplateSchema[]) {
   return (cell: CellContext<MatchingPropRow, string | undefined>) => {
     const value = cell.getValue();
-    const matches = value === (content || '');
+    const matches = value === content || (!content && !value);
     const foundTemplate = templates.find(tmpl => tmpl._id === value);
     const displayValue = foundTemplate ? (
       <Translate context={foundTemplate._id} truncate={30}>
@@ -112,7 +112,7 @@ function relationTypeCellRenderer(
 function inheritTypeCellRenderer(inheritType: string | undefined) {
   return (cell: CellContext<MatchingPropRow, { type: string } | undefined>) => {
     const value = cell.getValue()?.type as keyof typeof translationsKeys;
-    const matches = value === (inheritType || '') || (!inheritType && !value);
+    const matches = value === inheritType || (!inheritType && !value);
     return (
       <span className={`flex items-center gap-2 ${matches ? '' : 'text-red-600'}`}>
         {propertyIconsSmall[value]}

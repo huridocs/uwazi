@@ -204,27 +204,17 @@ describe('search filters path', () => {
       await expect(page).toClick('a', { text: 'Templates' });
       await expect(page).toClick('a', { text: 'Informe de admisibilidad' });
 
-      await expect(page).toClick(
-        '.metadataTemplate-list > li:nth-child(3) > div:nth-child(1) > div:nth-child(2) > button',
-        { text: 'Edit' }
-      );
-      await expect(page).toClick('.inline-group > div:nth-child(1) > label:nth-child(1) > span', {
-        text: 'Use as filter',
-      });
-      await expect(page).toClick('.inline-group > div:nth-child(2) > label:nth-child(1) > span', {
-        text: 'Default filter',
-      });
+      await expect(page).toClick('button', { text: 'Fecha' });
+      await expect(page).toClick('label', { text: 'Use as filter' });
+      await expect(page).toClick('label', { text: 'Default filter' });
+      await expect(page).toClick('aside button', { text: 'Save' });
 
-      await expect(page).toClick(
-        '.metadataTemplate-list > li:nth-child(4) > div:nth-child(1) > div:nth-child(2) > button',
-        { text: 'Edit' }
-      );
-      await expect(page).toClick('.inline-group > div:nth-child(2) > label:nth-child(1) > span', {
-        text: 'Default filter',
-      });
+      await expect(page).toClick('button', { text: 'País' });
+      await expect(page).toClick('label', { text: 'Default filter' });
+      await expect(page).toClick('aside button', { text: 'Save' });
 
-      await expect(page).toClick('.btn-success', { text: 'Save' });
-      await expect(page).toClick('.alert.alert-success');
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('button', { text: 'Dismiss' });
     });
 
     it('should check that the filter show on the library', async () => {

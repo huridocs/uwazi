@@ -51,21 +51,15 @@ const ParagraphsTable = ({
     <Table
       data={pxParagraphData}
       columns={tableBuilder({ onViewAction: viewParagraph })}
-      header={
-        <TableTitle
-          items={[template, ...languages]}
-          Buttons={
-            <div className="flex gap-3">
-              <Button
-                onClick={() => openPDFSidepanel(true)}
-                styling="light"
-                className="flex items-center gap-2 leading-4 text-gray-800"
-              >
-                <Translate>Open PDF</Translate>
-              </Button>
-            </div>
-          }
-        />
+      header={<TableTitle items={[template, ...languages]} />}
+      actions={
+        <Button
+          onClick={() => openPDFSidepanel(true)}
+          styling="light"
+          className="flex items-center gap-2 leading-4 text-gray-800"
+        >
+          <Translate>Open PDF</Translate>
+        </Button>
       }
       footer={<PXTableFooter total={totalRows} currentDataLength={pxParagraphData.length} />}
       groupColumnPosition={3}

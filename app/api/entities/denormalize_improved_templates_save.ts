@@ -1,19 +1,14 @@
 /* eslint-disable max-lines */
-import { WithId } from 'api/odm';
-import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
 import { search } from 'api/search';
 import templates from 'api/templates';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
+import {
+  LanguageISO6391,
+  MetadataObjectSchema,
+  MetadataSchema,
+  PropertySchema,
+} from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import translate, { getContext } from 'shared/translate';
-import {
-  MetadataSchema,
-  MetadataObjectSchema,
-  PropertySchema,
-  LanguageISO6391,
-} from 'shared/types/commonTypes';
 import { isString } from 'util';
 
 import model from './entitiesModel';
@@ -174,134 +169,6 @@ const reindexUpdates = async (
   }
 };
 
-const denormalizeRelated = async (
-  newEntity: WithId<EntitySchema>,
-  template: WithId<TemplateSchema>,
-  existingEntity: EntitySchema = {}
-) => {
-  if (!newEntity.title || !newEntity.language || !newEntity.sharedId) {
-    throw new Error('denormalization requires an entity with title, sharedId and language');
-  }
-
-  const entityDiff = diffEntities(newEntity, existingEntity);
-  const templatePropertiesThatChanged = getPropertiesThatChanged(entityDiff, template);
-  if (templatePropertiesThatChanged.length === 0) {
-    return false;
-  }
-
-  const updates = await denormalizationUpdates(
-    template._id.toString(),
-    templatePropertiesThatChanged
-  );
-
-  await Promise.all(
-    updates.map(async update => {
-      const inheritProperty = (template.properties || []).find(
-        p => update.inheritProperty === p._id?.toString()
-      );
-
-      return model.updateMany(
-        {
-          [update.filterPath]: newEntity.sharedId,
-          language: newEntity.language,
-          ...(update.template ? { template: update.template } : {}),
-        },
-        {
-          $set: {
-            [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
-            [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
-            ...(inheritProperty
-              ? {
-                  [`${update.valuePath}.$[valueIndex].inheritedValue`]:
-                    newEntity.metadata?.[inheritProperty.name],
-                }
-              : {}),
-          },
-        },
-        { arrayFilters: [{ 'valueIndex.value': newEntity.sharedId }] }
-      );
-    })
-  );
-
-  return reindexUpdates(newEntity.sharedId, newEntity.language, updates);
-};
-
-const denormalizeThesauriLabelInMetadata = async (
-  valueId: string,
-  newLabel: string,
-  thesaurusId: string,
-  language: string,
-  parent: { id: string; label: string }
-) => {
-  const updates = await denormalizationUpdates(thesaurusId.toString(), ['label']);
-
-  await updates.reduce(async (previous, entry) => {
-    await previous;
-    await model.updateMany(
-      {
-        [entry.filterPath]: valueId,
-        language,
-        ...(entry.template ? { template: entry.template } : {}),
-      },
-      {
-        $set: {
-          [`${entry.valuePath}.$[valueIndex].label`]: newLabel,
-          ...(parent
-            ? {
-                [`${entry.valuePath}.$[valueIndex].parent.label`]: parent.label,
-              }
-            : {}),
-        },
-      },
-      { arrayFilters: [{ 'valueIndex.value': valueId }] }
-    );
-  }, Promise.resolve());
-
-  await reindexUpdates(valueId, language, updates);
-};
-
-const denormalizeSelectProperty = async (
-  property: PropertySchema,
-  values: MetadataObjectSchema[],
-  thesauriByKey?: Record<string, ThesaurusSchema>,
-  translation?: unknown
-) => {
-  const thesaurus = thesauriByKey
-    ? thesauriByKey[property.content!]
-    : await dictionariesModel.getById(property.content);
-  if (!thesaurus) {
-    return undefined;
-  }
-
-  const context = getContext(translation, property.content);
-
-  const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
-  thesaurus.values?.forEach(dv => {
-    if (dv.values) {
-      dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
-    } else {
-      flattenValues.push(dv);
-    }
-  });
-
-  return values.map(value => {
-    const denormalizedValue = { ...value };
-    const thesaurusValue = flattenValues.find(v => v.id === denormalizedValue.value);
-
-    if (thesaurusValue && thesaurusValue.label) {
-      denormalizedValue.label = translate(context, thesaurusValue.label, thesaurusValue.label);
-    }
-
-    if (thesaurusValue && thesaurusValue.parent && thesaurusValue.parent.id) {
-      denormalizedValue.parent = {
-        value: thesaurusValue.parent.id,
-        label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
-      };
-    }
-    return denormalizedValue;
-  });
-};
-
 const denormalizeInheritedProperty = (
   property: PropertySchema,
   value: MetadataObjectSchema,
@@ -378,12 +245,8 @@ const denormalizeProperty = async (
   values: MetadataObjectSchema[] | undefined,
   language: string,
   {
-    thesauriByKey,
-    translation,
     allTemplates,
   }: {
-    thesauriByKey?: Record<string, ThesaurusSchema>;
-    translation: unknown;
     allTemplates: TemplateSchema[];
   }
 ) => {
@@ -393,10 +256,6 @@ const denormalizeProperty = async (
     return values;
   }
 
-  if (property.content && ['select', 'multiselect'].includes(property.type)) {
-    return denormalizeSelectProperty(property, values!, thesauriByKey, translation);
-  }
-
   if (property.type === 'relationship') {
     return denormalizeRelationshipProperty(property, values!, language, allTemplates);
   }
@@ -404,14 +263,12 @@ const denormalizeProperty = async (
   return values;
 };
 
-async function denormalizeMetadata(
+async function denormalizeMetadatatImproved(
   metadata: MetadataSchema,
   language: LanguageISO6391,
   template: TemplateSchema,
   preloadedData: {
     allTemplates?: TemplateSchema[];
-    translation?: IndexedTranslations;
-    thesauriByKey?: Record<string, ThesaurusSchema>;
   } = {}
 ) {
   if (!metadata || !template) {
@@ -419,8 +276,6 @@ async function denormalizeMetadata(
   }
 
   const allTemplates = preloadedData.allTemplates || (await templates.get());
-  const translation =
-    preloadedData.translation || (await translationsModel.get({ locale: language }))[0];
 
   const denormalizedProperties: {
     propertyName: string;
@@ -432,7 +287,7 @@ async function denormalizeMetadata(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
-        { thesauriByKey: preloadedData.thesauriByKey, translation, allTemplates }
+        { allTemplates }
       ),
     }))
   );
@@ -445,4 +300,4 @@ async function denormalizeMetadata(
   return denormalizedMetadata;
 }
 
-export { denormalizeMetadata, denormalizeRelated, denormalizeThesauriLabelInMetadata };
+export { denormalizeMetadatatImproved };

@@ -4,13 +4,11 @@ import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { t } from 'app/I18N';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import { QuickLabelPanel } from 'app/Library/components/QuickLabelPanel';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
 import ImportPanel from 'app/Uploads/components/ImportPanel';
-import { QuickLabelHeader } from './components/QuickLabelHeader';
 import { LibraryFooter } from './components/LibraryFooter';
 
 class LibraryLayoutBase extends Component {
@@ -34,14 +32,12 @@ class LibraryLayoutBase extends Component {
           <title>{t('System', 'Library', null, false)}</title>
           {noindex && <meta name="robots" content="noindex" />}
         </Helmet>
-        {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass} onScroll={scrollCallback}>
           <main className={`${className}`}>{children}</main>
           <LibraryFooter storeKey="library" scrollCount={scrollCount} />
           <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
           {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
-          {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
           <FeatureToggleSemanticSearch>
             <SemanticSearchPanel storeKey="library" />
           </FeatureToggleSemanticSearch>
@@ -74,7 +70,7 @@ LibraryLayoutBase.propTypes = {
 export { LibraryLayoutBase };
 
 export default connect((state, { noindex }) => {
-  const filters = state.library.search.filters;
+  const { filters } = state.library.search;
   const _noindex = (filters && Object.keys(filters).length > 0) || noindex;
   return {
     quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),

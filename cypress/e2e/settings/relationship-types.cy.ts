@@ -64,10 +64,15 @@ describe('Relationship Types configuration', () => {
 
   it('test cant delete when in use', () => {
     cy.contains('span', 'Templates').click();
+    cy.contains('[data-testid="settings-content-header"]', 'Templates');
     cy.contains('Edit').click();
-    cy.get('aside .list-group-item:nth-of-type(4) button').click();
-    cy.get('.metadataTemplate li:nth-of-type(3) .property-edit').click();
-    cy.get('select').eq(0).select('Son');
+    cy.contains('[data-testid="settings-content-header"]', 'Document');
+    cy.contains('button', 'Add property').click();
+
+    cy.get('select[id="property-type"]').select('Relationship');
+    cy.get('select[name="relationType"]').select(1);
+
+    cy.contains('aside button', 'Add property').click();
 
     cy.contains('Save').click();
     cy.wait('@fetchtemplates');

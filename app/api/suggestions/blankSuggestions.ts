@@ -14,7 +14,12 @@ import { FileType } from 'shared/types/fileType';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { IXServices } from 'api/services/informationextraction/IXServices';
 import { ExtractorNotFound, Extractors } from 'api/services/informationextraction/ixextractors';
-import { BatchRange, calculateBatches, fetchEntitiesDataForBatch } from './batchProcessing';
+import {
+  BatchRange,
+  calculateBatches,
+  fetchEntitiesDataForBatch,
+  getDefaultEntity,
+} from './batchProcessing';
 import { CreateBlankStateSuggestionsJob } from './jobs/CreateBlankStateSuggestionsJob';
 import { Suggestions } from './suggestions';
 
@@ -78,51 +83,55 @@ async function createBlankStateSuggestionsBatch(
       '_id entity language extractedMetadata'
     );
 
-    const batchSuggestions = fetchedFiles
-      .filter(file => file.entity)
-      .map(file => {
-        const blank = {
-          language:
-            LanguageUtils.fromISO639_3(file.language as string, false)?.ISO639_1 || defaultLanguage,
-          fileId: file._id,
-          entityId: file.entity!,
-          entityTemplate: templateId,
-          extractorId: ObjectId.createFromHexString(extractorId),
-          propertyName: extractorProperty,
-          status: 'ready' as 'ready',
-          error: '',
-          segment: '',
-          suggestedValue: isMultiValued ? [] : '',
-          date: new Date().getTime(),
-        };
+    const batchSuggestions = await Promise.all(
+      fetchedFiles
+        .filter(file => file.entity)
+        .map(async file => {
+          const blank = {
+            language:
+              LanguageUtils.fromISO639_3(file.language as string, false)?.ISO639_1 ||
+              defaultLanguage,
+            fileId: file._id,
+            entityId: file.entity!,
+            entityTemplate: templateId,
+            extractorId: ObjectId.createFromHexString(extractorId),
+            propertyName: extractorProperty,
+            status: 'ready' as 'ready',
+            error: '',
+            segment: '',
+            suggestedValue: isMultiValued ? [] : '',
+            date: new Date().getTime(),
+          };
 
-        const entity = batchData.find(
-          e => e.language === blank.language && e.sharedId === file.entity
-        );
-        const defaultEntity = batchData.find(
-          e => e.sharedId === file.entity && e.language === defaultLanguage
-        )!;
+          let entity = batchData.find(
+            e => e.language === blank.language && e.sharedId === file.entity
+          );
 
-        const state = getSuggestionState(
-          {
-            date: blank.date,
-            error: blank.error,
-            status: blank.status,
-            segment: blank.segment,
-            suggestedValue: blank.suggestedValue,
-            currentValue: IXServices.extractCurrentValue({
-              entity: entity || defaultEntity,
-              targetProperty,
-            }),
-            labeledValue: IXServices.extractLabeledValueFromFile({ file, targetProperty }),
-            modelCreationDate: undefined as any,
-            state: undefined as any,
-          },
-          targetProperty.type
-        );
+          if (!entity) {
+            entity = await getDefaultEntity(blank.entityId, defaultLanguage);
+          }
 
-        return { ...blank, state };
-      });
+          const state = getSuggestionState(
+            {
+              date: blank.date,
+              error: blank.error,
+              status: blank.status,
+              segment: blank.segment,
+              suggestedValue: blank.suggestedValue,
+              currentValue: IXServices.extractCurrentValue({
+                entity,
+                targetProperty,
+              }),
+              labeledValue: IXServices.extractLabeledValueFromFile({ file, targetProperty }),
+              modelCreationDate: undefined as any,
+              state: undefined as any,
+            },
+            targetProperty.type
+          );
+
+          return { ...blank, state };
+        })
+    );
 
     return Suggestions.createMultiple(batchSuggestions);
   }
@@ -212,6 +221,8 @@ const createBlankSuggestionsForPartialExtractor = async (
     await promise;
 
     const batches = await calculateBatches(template);
+
+    console.log('batches', batches);
     const isMultiValued = propertyTypeIsMultiValued(sampleProperty.type);
     await batches.reduce(async (prev, batch) => {
       await prev;

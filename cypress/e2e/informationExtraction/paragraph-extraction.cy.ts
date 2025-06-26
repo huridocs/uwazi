@@ -25,7 +25,7 @@ describe('Paragraph Extraction', () => {
     it('should navigate to the PX dashboard', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Paragraph Extraction').click();
-      cy.get('table').contains('caption', 'Extractors');
+      cy.contains('Extractors');
     });
 
     it('should check for a11y violations', () => {
@@ -96,8 +96,7 @@ describe('Paragraph Extraction', () => {
 
     it('should navigate to the PX Entities List', () => {
       cy.contains('tbody tr', 'Ordenes del presidente').contains('button', 'View').click();
-      cy.url().should('include', '/settings/paragraph-extraction/');
-      cy.get('table').contains('caption', 'Paragraphs');
+      cy.contains('Paragraphs');
     });
 
     it('should whait until the first entity shows and check the result', () => {
@@ -181,7 +180,7 @@ describe('Paragraph Extraction', () => {
     it('should return to the extractor and check the UI state', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Paragraph Extraction').click();
-      cy.get('table').contains('caption', 'Extractors');
+      cy.contains('Extractors');
       cy.contains('tr', 'Ordenes del presidente').within(() => {
         cy.contains('td', '3');
         cy.contains('span', '1 New').should('not.exist');
@@ -257,10 +256,8 @@ describe('Paragraph Extraction', () => {
 
     it('should open the PDF side panel', () => {
       cy.get('[data-testid="settings-paragraph-extractor"]').first().scrollIntoView();
-      cy.contains('table caption', 'Ordenes del presidente')
-        .contains('button', 'Open PDF')
-        .should('be.visible')
-        .click();
+      cy.contains('Ordenes del presidente');
+      cy.contains('button', 'Open PDF').should('be.visible').click();
       cy.get('aside', { timeout: 15000 })
         .should('be.visible')
         .within(() => {

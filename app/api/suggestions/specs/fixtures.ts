@@ -55,6 +55,7 @@ const fixtures: DBFixture = {
   ixextractors: [
     factory.ixExtractor('age_extractor', 'age', ['personTemplate', 'heroTemplate', 'template1']),
     factory.ixExtractor('title_extractor', 'title', ['heroTemplate']),
+    factory.ixExtractor('non_existing_extractor', 'title', ['heroTemplate']),
     factory.ixExtractor('super_powers_extractor', 'super_powers', ['personTemplate', 'template1']),
     factory.ixExtractor('enemy_extractor', 'enemy', ['personTemplate', 'heroTemplate']),
     factory.ixExtractor('first_encountered_extractor', 'first_encountered', ['heroTemplate']),

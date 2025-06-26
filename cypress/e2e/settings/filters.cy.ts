@@ -20,7 +20,7 @@ describe('Filters', () => {
   it('should navigate to the settings screen', () => {
     cy.contains('a', 'Settings').click();
     cy.contains('a', 'Filters').click();
-    cy.contains('caption', 'Filters').click();
+    cy.contains('Filters').click();
   });
 
   it('should create 2 filters', () => {
@@ -189,7 +189,7 @@ describe('Filters', () => {
     it('should delete single filters', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Filter').click();
-      cy.contains('caption', 'Filters').click();
+      cy.contains('Filters').click();
       cy.contains('tr', 'Mecanismo').contains('Select').click();
       cy.contains('button', 'Delete').click();
       cy.contains('button', 'Save').click();

@@ -1,4 +1,5 @@
 import entities from 'api/entities/entities.js';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -8,21 +9,18 @@ import templates from '../templates';
 
 const f = getFixturesFactory();
 
-async function setUpFixtures(fixtures: DBFixture) {
-  await testingEnvironment.setUp(fixtures, 'templates_denorm_flow');
-  try {
-    await Promise.all(
-      (fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+const getEntitiesByTemplate = async (
+  templateId: string,
+  source: 'mongo' | 'elastic' = 'mongo'
+): Promise<EntitySchema[]> => {
+  if (source === 'mongo') {
+    const allEntities = await testingEnvironment.db.getAllFrom('entities');
+    return (
+      allEntities?.filter(entity => entity.template?.toString() === f.idString(templateId)) || []
     );
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    throw e;
   }
-}
-
-const getEntitiesByTemplate = async (templateId: string): Promise<EntitySchema[]> => {
-  const allEntities = await testingEnvironment.db.getAllFrom('entities');
+  await elasticTesting.refresh();
+  const allEntities = await elasticTesting.getIndexedEntities();
   return (
     allEntities?.filter(entity => entity.template?.toString() === f.idString(templateId)) || []
   );
@@ -45,6 +43,21 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
   ({ featureFlag }) => {
     let fixtures: DBFixture;
 
+    async function setUpFixtures(_fixtures: DBFixture) {
+      await testingEnvironment.setUp(_fixtures, 'templates_denorm_flow');
+      try {
+        await Promise.all(
+          (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+        );
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+        throw e;
+      }
+      testingTenants.changeCurrentTenant({
+        featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
+      });
+    }
     beforeAll(async () => {
       fixtures = {
         settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
@@ -70,9 +83,6 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
         ],
       };
       await setUpFixtures(fixtures);
-      testingTenants.changeCurrentTenant({
-        featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
-      });
     });
 
     describe('when changing a relationship property "inherit"', () => {
@@ -112,6 +122,11 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           { sharedId: 'entityB1', metadata: { rel_prop: [] } },
           { sharedId: 'entityB2', metadata: { rel_prop: [] } },
         ]);
+
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
+          { sharedId: 'entityB1', metadata: { rel_prop: [] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
+        ]);
       });
 
       it('should create metadata values if connections with the new relationType exist', async () => {
@@ -130,6 +145,11 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
         await templates.save(template, 'en');
 
         expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
+        ]);
+
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
           { sharedId: 'entityB2', metadata: { rel_prop: [] } },
         ]);
@@ -171,6 +191,11 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
           { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
         ]);
+
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+        ]);
       });
     });
     describe('when "content" (target template) is empty (any template)', () => {
@@ -203,6 +228,15 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
         );
 
         expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+
+          {
+            sharedId: 'entityB2',
+            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1' }] },
+          },
+        ]);
+
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
 
           {

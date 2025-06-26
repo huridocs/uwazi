@@ -31,6 +31,7 @@ import {
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import { MetadataUtils } from './MetadataUtils';
+import { denormalizeMetadatatImproved } from './denormalize_improved_templates_save';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -45,18 +46,12 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-async function updateEntityPerf(entity, _template, unrestricted = false) {
+async function updateEntityPerf(entity, _template, preloadedData = { allTemplates: [] }) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
 
   const template = _template || { properties: [] };
 
-  const toSyncProperties = template.properties
-    .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
-    .map(p => p.name);
-  const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
-  const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
   // entity = await ATSolveVersionConflict(currentDoc, entity);
-  const thesauriByKey = await templates.getRelatedThesauri(template);
 
   const result = await Promise.all(
     docLanguages.map(async d => {
@@ -66,17 +61,17 @@ async function updateEntityPerf(entity, _template, unrestricted = false) {
         delete toSave.permissions;
 
         if (entity.metadata) {
-          toSave.metadata = await denormalizeMetadata(entity.metadata, d.language, template, {
-            thesauriByKey,
-          });
+          toSave.metadata = await denormalizeMetadatatImproved(
+            entity.metadata,
+            d.language,
+            template,
+            {
+              allTemplates: preloadedData.allTemplates,
+            }
+          );
         }
 
-        const fullEntity = { ...currentDoc, ...toSave };
-
-        if (template._id) {
-          await denormalizeRelated(fullEntity, template, currentDoc);
-        }
-        const saveResult = await saveFunc(toSave, undefined);
+        const saveResult = await model.saveUnrestricted(toSave, undefined);
 
         return saveResult;
       }
@@ -86,26 +81,19 @@ async function updateEntityPerf(entity, _template, unrestricted = false) {
       if (entity.metadata) {
         toSave.metadata = { ...entity.metadata, ...toSave.metadata };
 
-        toSyncProperties
-          .filter(p => entity.metadata[p])
-          .forEach(p => {
-            toSave.metadata[p] = entity.metadata[p];
-          });
-
-        toSave.metadata = await denormalizeMetadata(toSave.metadata, toSave.language, template, {
-          thesauriByKey,
-        });
+        toSave.metadata = await denormalizeMetadatatImproved(
+          toSave.metadata,
+          toSave.language,
+          template,
+          {
+            allTemplates: preloadedData.allTemplates,
+          }
+        );
       }
 
-      if (template._id) {
-        await denormalizeRelated(toSave, template, d);
-      }
-
-      return saveFunc(toSave, undefined);
+      return model.saveUnrestricted(toSave, undefined);
     })
   );
-
-  await denormalizeAfterEntityUpdate(entity);
 
   const afterEntities = await model.get({ sharedId: entity.sharedId });
   await applicationEventsBus.emit(

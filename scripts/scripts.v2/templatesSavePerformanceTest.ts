@@ -10,7 +10,6 @@ import testingDB, { DBFixture } from '../../app/api/utils/testing_db';
 import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import { FileType } from 'shared/types/fileType';
 import { Tenant } from 'api/tenants/tenantContext';
-import entities from 'api/entities';
 
 // const testing_db_name = 'templates_save_perf';
 const tenant: Tenant = {
@@ -160,7 +159,7 @@ const fullText = {
   1: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse non ultricies neque. Aliquam erat volutpat. Etiam mi dolor, porttitor quis arcu id, porttitor posuere eros. Aliquam ultrices diam orci, auctor elementum neque suscipit eu. Praesent scelerisque felis eu convallis commodo. Praesent suscipit est tortor. Aenean in ipsum a lectus euismod vulputate at a lectus. Ut et mattis tellus, non luctus mauris. Proin a mollis sapien. In ultricies, nunc venenatis placerat blandit, libero dui consequat dolor, et aliquet sem augue quis lectus. Praesent mollis facilisis nunc, vitae interdum turpis blandit eget. Quisque ut lacus interdum, porttitor sapien vitae, euismod eros. Nulla facilisi. Sed eget neque mi.',
 };
 
-const generateConnectedEntities = async number => {
+const generateConnectedEntities = async (number: number) => {
   const _entities: EntitySchema[][] = [];
   const files: FileType[] = [];
   const connections: any[] = [];
@@ -185,25 +184,25 @@ const generateConnectedEntities = async number => {
       f.file(`entity2.file${i}`, { entity: `template2.entity${i}`, type: 'document', fullText })
     );
 
-    // connections.push({
-    //   _id: testingDB.id(),
-    //   entity: `template1.entity${i}`,
-    //   template: f.idString('rel1'),
-    //   hub: hub,
-    // });
-    // connections.push({
-    //   _id: testingDB.id(),
-    //   entity: `template2.entity${i}`,
-    //   template: f.idString('rel1'),
-    //   hub: hub,
-    // });
+    connections.push({
+      _id: testingDB.id(),
+      entity: `template1.entity${i}`,
+      template: f.idString('rel1'),
+      hub: hub,
+    });
+    connections.push({
+      _id: testingDB.id(),
+      entity: `template2.entity${i}`,
+      template: f.idString('rel1'),
+      hub: hub,
+    });
 
-    // connections.push({
-    //   _id: testingDB.id(),
-    //   entity: `template2.entity${i}`,
-    //   template: f.idString('rel2'),
-    //   hub: hub1,
-    // });
+    connections.push({
+      _id: testingDB.id(),
+      entity: `template2.entity${i}`,
+      template: f.idString('rel2'),
+      hub: hub1,
+    });
 
     for (let j = 0; j < 10; j += 1) {
       _entities.push(
@@ -220,15 +219,27 @@ const generateConnectedEntities = async number => {
         })
       );
 
-      // connections.push({
-      //   _id: testingDB.id(),
-      //   entity: `template3.entity${i}_${j}`,
-      //   hub: hub1,
-      //   template: f.idString('rel2'),
-      // });
+      connections.push({
+        _id: testingDB.id(),
+        entity: `template3.entity${i}_${j}`,
+        hub: hub1,
+        template: f.idString('rel2'),
+      });
     }
   }
-  return { connections, entities: _entities.flat(), files };
+
+  const translations = [];
+  for (let t = 0; t < 1000; t += 1) {
+    translations.push({
+      _id: f.id(`translations${t}`),
+      language: 'en' as const,
+      key: `translations${t}.key`,
+      value: `translations${t}.value`,
+      context: { type: 'Uwazi UI' as const, label: 'Performance testing', id: 'Testing' },
+    });
+  }
+
+  return { connections, entities: _entities.flat(), files, translations };
 };
 
 const f = getFixturesFactory();
@@ -239,21 +250,43 @@ async function runTest(numberOfEntities: number) {
   );
 
   const template1 = f.template('template1', [f.property('text_property')]);
-  const template2 = f.template('template2', [f.relationshipProp('rel1', 'template1')]);
+  const template2 = f.template('template2', [
+    f.relationshipProp('rel1', 'template1'),
+    f.property('thesauri1', 'select', { content: f.idString('thesauri1') }),
+    f.property('thesauri2', 'select', { content: f.idString('thesauri2') }),
+  ]);
   const template3 = f.template('template3', [
     f.relationshipProp('rel2', 'template2', { relationType: f.idString('rel2') }),
   ]);
 
   const setFixtures = async () => {
-    const generatedFixtures = await generateConnectedEntities(numberOfEntities);
+    const fixtures = await generateConnectedEntities(numberOfEntities);
 
     await fixturer.clearAllAndLoad(DB.mongodb_Db(tenant.dbName), {
       templates: [template1, template2, template3],
       relationtypes: [f.relationType('rel1'), f.relationType('rel2')],
-      entities: generatedFixtures.entities,
-      connections: generatedFixtures.connections,
-      files: generatedFixtures.files,
+      entities: fixtures.entities,
+      connections: fixtures.connections,
+      files: fixtures.files,
+      translationsV2: fixtures.translations,
       migrations: [{ delta: 172 }],
+      dictionaries: [
+        f.thesauri('thesauri1', ['thesauri1', 'thesauri2', 'thesauri3', 'thesauri4', 'thesauri5']),
+        f.thesauri('thesauri2', [
+          'thesauri2.1',
+          'thesauri2.2',
+          'thesauri2.3',
+          'thesauri2.4',
+          'thesauri2.5',
+        ]),
+        f.thesauri('thesauri3', [
+          'thesauri3.1',
+          'thesauri3.2',
+          'thesauri3.3',
+          'thesauri3.4',
+          'thesauri3.5',
+        ]),
+      ],
       settings: [
         {
           languages: [
@@ -264,45 +297,43 @@ async function runTest(numberOfEntities: number) {
         },
       ],
     });
-
-    await Promise.all(
-      (generatedFixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-    );
   };
 
-  await setFixtures();
+  // await setFixtures();
 
-  // await compareRuns(
-  //   async () => {
-  //     await templates.save(
-  //       {
-  //         ...template2,
-  //         properties: [
-  //           {
-  //             ...template2.properties[0],
-  //             inherit: { property: f.idString('text_property') },
-  //           },
-  //         ],
-  //       },
-  //       'en'
-  //     );
-  //   },
-  //   async () => {
-  //     await templates.save(
-  //       {
-  //         ...template2,
-  //         properties: [
-  //           {
-  //             ...template2.properties[0],
-  //             inherit: { property: f.idString('text_property') },
-  //           },
-  //         ],
-  //       },
-  //       'en'
-  //     );
-  //   },
-  //   setFixtures
-  // );
+  await compareRuns(
+    async () => {
+      await templates.save(
+        {
+          ...template2,
+          properties: [
+            ...template2.properties.filter(p => p.name !== 'rel1'),
+            {
+              ...template2.properties[0],
+              inherit: { property: f.idString('text_property') },
+            },
+          ],
+        },
+        'en'
+      );
+    },
+    async () => {
+      await templates.save(
+        {
+          ...template2,
+          properties: [
+            ...template2.properties.filter(p => p.name !== 'rel1'),
+            {
+              ...template2.properties[0],
+              inherit: { property: f.idString('text_property') },
+            },
+          ],
+        },
+        'en'
+      );
+    },
+    setFixtures
+  );
 }
 async function run() {
   await DB.connect(config.DBHOST, config.DBAUTH);
@@ -315,7 +346,8 @@ async function run() {
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
       await runTest(10);
-      // await runTest(300);
+      await runTest(300);
+      await runTest(600);
     }, tenant.name);
 
     console.log('Tests completed successfully.');

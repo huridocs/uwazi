@@ -1,12 +1,11 @@
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { DB } from 'api/odm';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import entities from './entities';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 
 interface Relation {
   hub: { toString(): string };
@@ -22,9 +21,11 @@ const updateMetdataFromTemplateSave = async (
   templateEntities: EntitySchema[],
   language: string,
   template: TemplateSchema,
-  reindex = true
+  reindex = true,
+  preloadedData: {
+    allTemplates?: TemplateSchema[];
+  } = {}
 ) => {
-  const entitiesToReindex: string[] = [];
   const entityIds = templateEntities.map(e => e.sharedId).filter((id): id is string => !!id);
 
   // Batch fetch all relationships at once
@@ -50,12 +51,10 @@ const updateMetdataFromTemplateSave = async (
     return acc;
   }, {});
 
-  // Process all entities
-  const processEntity = (entity: EntitySchema): EntitySchema | null => {
-    if (!entity?.template || !entity.sharedId) {
-      return null;
-    }
+  const entitiesToReindex: string[] = [];
 
+  // Process all entities
+  const processEntity = (entity: EntitySchema): EntitySchema => {
     const metadata = entity.metadata ? { ...entity.metadata } : {};
 
     // Find all hubs that contain this entity
@@ -69,7 +68,6 @@ const updateMetdataFromTemplateSave = async (
     relationshipProperties.forEach(property => {
       const relationshipsGoingToThisProperty = relationsForEntity.filter(
         (r: any) =>
-          r.entity !== entity.sharedId && // exclude self-reference
           r.template &&
           r.template.toString() === property.relationType?.toString() &&
           (!property.content || r.entityData.template.toString() === property.content)
@@ -82,18 +80,16 @@ const updateMetdataFromTemplateSave = async (
       }));
     });
 
+    entitiesToReindex.push(entity.sharedId);
     const updatedEntity = { ...entity, metadata };
-    entitiesToReindex.push(updatedEntity.sharedId);
     return entities.sanitize(updatedEntity, template);
   };
 
   // Batch update entities
-  const entitiesToUpdate = templateEntities
-    .map(processEntity)
-    .filter((e): e is EntitySchema => !!e);
+  const entitiesToUpdate = templateEntities.map(processEntity);
 
   await Promise.all(
-    entitiesToUpdate.map(async entity => entities.updateEntityPerf(entity, template, true))
+    entitiesToUpdate.map(async entity => entities.updateEntityPerf(entity, template, preloadedData))
   );
 
   if (reindex && entitiesToReindex.length) {
@@ -105,7 +101,10 @@ export const bulkDenormalizeEntitiesFromTemplateSave = async (
   template: TemplateSchema,
   language: string,
   limit = 200,
-  reindex = true
+  reindex = true,
+  preloadedData: {
+    allTemplates?: TemplateSchema[];
+  } = {}
 ) => {
   const query = { template: template._id, language };
   const process = async (offset: number, totalRows: number) => {
@@ -135,7 +134,8 @@ export const bulkDenormalizeEntitiesFromTemplateSave = async (
         await resultSet.nextBatch(limit),
         language,
         template,
-        reindex
+        reindex,
+        preloadedData
       );
     }
   }
