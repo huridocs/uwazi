@@ -222,7 +222,6 @@ const createBlankSuggestionsForPartialExtractor = async (
 
     const batches = await calculateBatches(template);
 
-    console.log('batches', batches);
     const isMultiValued = propertyTypeIsMultiValued(sampleProperty.type);
     await batches.reduce(async (prev, batch) => {
       await prev;
