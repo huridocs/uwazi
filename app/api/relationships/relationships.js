@@ -18,6 +18,7 @@ import {
   processRelationshipCollection,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,
+  withConnectedData,
 } from './relationshipsHelpers';
 import { validateConnectionSchema } from './validateConnectionSchema';
 import { relationshipsSearch } from './relationshipsSearch';
@@ -69,7 +70,7 @@ export default {
       );
     } else {
       ownRelations = await model.get({
-        entity,
+        ...(Array.isArray(entity) ? { entity: { $in: entity } } : { entity }),
         ...(file
           ? {
               $or: [
@@ -82,6 +83,28 @@ export default {
     }
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
+  },
+
+  async getByDocuments_improved(sharedIds, language) {
+    const _relationships = await this.getDocumentHubs(sharedIds);
+    if (!_relationships.length) {
+      return [];
+    }
+
+    const _connectedDocuments = await entities.getUnrestricted(
+      {
+        sharedId: { $in: _relationships.map(r => r.entity) },
+        language,
+      },
+      ['template', 'title']
+    );
+
+    const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
+      res[doc.sharedId] = doc;
+      return res;
+    }, {});
+
+    return withConnectedData(_relationships, connectedDocuments);
   },
 
   getByDocument(

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { WithId } from 'api/odm';
-import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
+import translationsModel from 'api/i18n/translations';
 import { search } from 'api/search';
 import templates from 'api/templates';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
@@ -263,8 +263,8 @@ const denormalizeThesauriLabelInMetadata = async (
 const denormalizeSelectProperty = async (
   property: PropertySchema,
   values: MetadataObjectSchema[],
-  thesauriByKey?: Record<string, ThesaurusSchema>,
-  translation?: unknown
+  thesauriByKey: Record<string, ThesaurusSchema>,
+  translation: unknown
 ) => {
   const thesaurus = thesauriByKey
     ? thesauriByKey[property.content!]
@@ -382,7 +382,7 @@ const denormalizeProperty = async (
     translation,
     allTemplates,
   }: {
-    thesauriByKey?: Record<string, ThesaurusSchema>;
+    thesauriByKey: Record<string, ThesaurusSchema>;
     translation: unknown;
     allTemplates: TemplateSchema[];
   }
@@ -407,20 +407,20 @@ const denormalizeProperty = async (
 async function denormalizeMetadata(
   metadata: MetadataSchema,
   language: LanguageISO6391,
-  template: TemplateSchema,
-  preloadedData: {
-    allTemplates?: TemplateSchema[];
-    translation?: IndexedTranslations;
-    thesauriByKey?: Record<string, ThesaurusSchema>;
-  } = {}
+  templateId: string,
+  thesauriByKey: Record<string, ThesaurusSchema>
 ) {
-  if (!metadata || !template) {
+  if (!metadata) {
     return metadata;
   }
 
-  const allTemplates = preloadedData.allTemplates || (await templates.get());
-  const translation =
-    preloadedData.translation || (await translationsModel.get({ locale: language }))[0];
+  const translation = (await translationsModel.get({ locale: language }))[0];
+  const allTemplates = await templates.get();
+
+  const template = allTemplates.find(t => t._id.toString() === templateId);
+  if (!template) {
+    return metadata;
+  }
 
   const denormalizedProperties: {
     propertyName: string;
@@ -432,7 +432,7 @@ async function denormalizeMetadata(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
-        { thesauriByKey: preloadedData.thesauriByKey, translation, allTemplates }
+        { thesauriByKey, translation, allTemplates }
       ),
     }))
   );
