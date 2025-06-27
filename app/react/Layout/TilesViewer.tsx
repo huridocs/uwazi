@@ -13,17 +13,22 @@ class TilesViewerComponent extends React.Component<TilesViewerProps> {
   render() {
     return (
       <RowList zoomLevel={this.props.rowListZoomLevel}>
-        {this.props.documents.get('rows').map(doc => (
-          <Doc
-            doc={doc}
-            storeKey={this.props.storeKey}
-            key={doc?.get('_id')}
-            onClick={this.props.clickOnDocument}
-            onSnippetClick={this.props.onSnippetClick}
-            deleteConnection={this.props.deleteConnection}
-            searchParams={this.props.search}
-          />
-        ))}
+        {this.props.documents.get('rows').map(doc => {
+          const docId = doc?.get('_id');
+          const key =
+            typeof docId === 'string' ? docId : docId?.toString() || `doc-${Math.random()}`;
+          return (
+            <Doc
+              doc={doc}
+              storeKey={this.props.storeKey}
+              key={key}
+              onClick={this.props.clickOnDocument}
+              onSnippetClick={this.props.onSnippetClick}
+              deleteConnection={this.props.deleteConnection}
+              searchParams={this.props.search}
+            />
+          );
+        })}
       </RowList>
     );
   }
