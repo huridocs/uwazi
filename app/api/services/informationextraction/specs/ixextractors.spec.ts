@@ -229,6 +229,13 @@ describe('ixextractors', () => {
 
   describe('create()', () => {
     it('should create a new ixextractor', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        files: [
+          ...fixtures.files!,
+          fixtureFactory.fileDeprecated('F10', 'shared2', 'document', 'documentI.pdf', 'por'),
+        ],
+      });
       await Extractors.create({
         name: 'age_test',
         property: 'age',
