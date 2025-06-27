@@ -7,7 +7,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import ixmodels, { TEST_RUN_SUGGESTIONS_BATCH_SIZE } from './ixmodels';
+import ixmodels, { TEST_RUN_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -63,7 +63,7 @@ export class IXServices {
       const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
       const totalSuggestions = model.testRun
         ? Math.min(
-            model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_BATCH_SIZE,
+            model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
             allPossibleSuggestions
           )
         : allPossibleSuggestions;

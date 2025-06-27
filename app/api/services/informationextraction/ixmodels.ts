@@ -5,7 +5,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel as model } from './IXModelsModel';
 import { IXExtractorModel } from './IXExtractorModel';
 
-const TEST_RUN_SUGGESTIONS_BATCH_SIZE = 1000;
+const TEST_RUN_SUGGESTIONS_SIZE = 1000;
 
 type StartTrainingOptions = {
   testRun?: boolean;
@@ -38,7 +38,7 @@ export default {
       findingSuggestions: true,
       status: ModelStatus.processing,
       testRun,
-      testRunSuggestionsToFind: TEST_RUN_SUGGESTIONS_BATCH_SIZE,
+      testRunSuggestionsToFind: TEST_RUN_SUGGESTIONS_SIZE,
     });
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
@@ -70,4 +70,4 @@ export default {
   },
 };
 
-export { TEST_RUN_SUGGESTIONS_BATCH_SIZE };
+export { TEST_RUN_SUGGESTIONS_SIZE };
