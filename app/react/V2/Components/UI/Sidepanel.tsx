@@ -70,43 +70,41 @@ const Sidepanel = ({
 
   if (withOverlay) {
     return (
-      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
-        <Transition.Child
-          className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
-          enterFrom="opacity-0"
-          enterTo="opacity-50"
-          leaveTo="opacity-0"
-          onClick={closeSidepanelFunction}
-        />
-        <Transition.Child
-          as="aside"
-          className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
-          enterFrom={transition}
-          enterTo="translate-x-0"
-          leaveTo={transition}
-        >
-          <div className={contentClasses}>
-            {sidepanelHeader(closeSidepanelFunction, title)}
-            {children}
-          </div>
-        </Transition.Child>
+      <Transition show={isOpen}>
+        <div className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
+          <div
+            className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
+            onClick={closeSidepanelFunction}
+          />
+          <aside
+            className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
+            style={{
+              transform: isOpen ? 'translateX(0)' : transition,
+            }}
+          >
+            <div className={contentClasses}>
+              {sidepanelHeader(closeSidepanelFunction, title)}
+              {children}
+            </div>
+          </aside>
+        </div>
       </Transition>
     );
   }
 
   return (
-    <Transition
-      show={isOpen}
-      as="aside"
-      className={`fixed top-0 right-0 z-10 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
-      enterFrom={transition}
-      enterTo="translate-x-0"
-      leaveTo={transition}
-    >
-      <div className={contentClasses}>
-        {sidepanelHeader(closeSidepanelFunction, title)}
-        {children}
-      </div>
+    <Transition show={isOpen}>
+      <aside
+        className={`fixed top-0 right-0 z-10 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
+        style={{
+          transform: isOpen ? 'translateX(0)' : transition,
+        }}
+      >
+        <div className={contentClasses}>
+          {sidepanelHeader(closeSidepanelFunction, title)}
+          {children}
+        </div>
+      </aside>
     </Transition>
   );
 };

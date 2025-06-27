@@ -41,6 +41,10 @@ const MultiSelect = ({
     strategy: 'absolute',
   });
 
+  const setPopperElementRef = React.useCallback((node: HTMLDivElement | null) => {
+    setPopperElement(node);
+  }, []);
+
   const [currentValue, setCurrentValue] = useState<string[]>(value);
 
   const optionIsSelected = (option: Option) => currentValue.includes(option.value);
@@ -88,7 +92,7 @@ const MultiSelect = ({
             <PlusCircleIcon className="w-6 text-lg" />
           </Popover.Button>
           <Popover.Panel
-            ref={setPopperElement}
+            ref={setPopperElementRef}
             style={styles.popper}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...attributes.popper}

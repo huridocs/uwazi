@@ -70,6 +70,10 @@ const ColorPicker = ({
     ],
   });
 
+  const setPopperElementRef = React.useCallback((node: HTMLDivElement | null) => {
+    setPopperElement(node);
+  }, []);
+
   return (
     <div className={`${className}`}>
       <Popover className="relative">
@@ -86,7 +90,7 @@ const ColorPicker = ({
               />
             </Popover.Button>
             <Popover.Panel
-              ref={setPopperElement}
+              ref={setPopperElementRef}
               style={styles.popper}
               {...attributes.popper}
               className="flex flex-col gap-2 p-2 bg-white rounded-xl shadow-lg w-56 z-20 border border-gray-100"
