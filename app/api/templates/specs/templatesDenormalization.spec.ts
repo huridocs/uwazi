@@ -95,7 +95,7 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
 
         await templates.save(template, 'en');
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+        const expected = [
           {
             sharedId: 'entityB1',
             metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 1' }] }] },
@@ -104,7 +104,10 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
             sharedId: 'entityB2',
             metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 2' }] }] },
           },
-        ]);
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
       });
     });
 
@@ -118,15 +121,13 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
 
         await templates.save(template, 'en');
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+        const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [] } },
           { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-        ]);
+        ];
 
-        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
-          { sharedId: 'entityB1', metadata: { rel_prop: [] } },
-          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-        ]);
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
       });
 
       it('should create metadata values if connections with the new relationType exist', async () => {
@@ -144,15 +145,13 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
 
         await templates.save(template, 'en');
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+        const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
           { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-        ]);
+        ];
 
-        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
-          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
-          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-        ]);
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
       });
     });
 
@@ -187,15 +186,13 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           'en'
         );
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+        const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
           { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-        ]);
+        ];
 
-        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
-          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-          { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-        ]);
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
       });
     });
     describe('when "content" (target template) is empty (any template)', () => {
@@ -227,23 +224,17 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           'en'
         );
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+        const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
 
           {
             sharedId: 'entityB2',
             metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1' }] },
           },
-        ]);
+        ];
 
-        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject([
-          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-
-          {
-            sharedId: 'entityB2',
-            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1' }] },
-          },
-        ]);
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
       });
     });
 
@@ -268,7 +259,7 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           'en'
         );
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+        const expected = [
           {
             sharedId: 'entityB1',
             metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityB1' }] },
@@ -279,7 +270,10 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
               rel_prop: [{ label: 'entityC1' }, { label: 'entityB2' }, { label: 'entityA1' }],
             },
           },
-        ]);
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
       });
     });
 
@@ -321,7 +315,7 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           'en'
         );
 
-        expect(await getEntitiesByTemplate('templateD')).toMatchObject([
+        const expected = [
           {
             sharedId: 'entityD1',
             metadata: {
@@ -336,7 +330,9 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
               rel_prop2: [{ label: 'entityA2', inheritedValue: [{ value: 'text value A 2' }] }],
             },
           },
-        ]);
+        ];
+        expect(await getEntitiesByTemplate('templateD')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateD', 'elastic')).toMatchObject(expected);
       });
     });
   }
