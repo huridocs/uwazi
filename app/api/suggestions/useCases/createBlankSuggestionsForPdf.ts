@@ -1,17 +1,16 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { LanguageUtils } from 'shared/language';
 import { files } from 'api/files';
-import { getSuggestionState } from 'shared/getIXSuggestionState';
-import { IXServices } from 'api/services/informationextraction/IXServices';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from '../suggestions';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
+import { SuggestionFactory } from '../suggestionFactory';
 
 type Input = CreateBlankSuggestionsInput;
 
 export class CreateBlankSuggestionsForPdf implements UseCase<Input, void> {
   // eslint-disable-next-line class-methods-use-this
-  async execute({ entities, extractor, templateId, isMultiValued, targetProperty }: Input) {
+  async execute({ entities, extractor, targetProperty }: Input) {
     const filesForSuggestions = await files.get(
       {
         entity: { $in: entities.map(entity => entity.sharedId) },
@@ -33,41 +32,14 @@ export class CreateBlankSuggestionsForPdf implements UseCase<Input, void> {
         return;
       }
 
-      const _suggestion = {
-        extractorId: extractor._id,
-        entityId: entity.sharedId!,
-        fileId: file._id,
-        entityTemplate: templateId,
-
-        propertyName: extractor.property,
-        language: entity.language!,
-        suggestedValue: isMultiValued ? [] : '',
-        status: 'ready' as any,
-        error: '',
-        segment: '',
-        date: new Date().getTime(),
-      };
-
-      suggestions.push({
-        ..._suggestion,
-        state: getSuggestionState(
-          {
-            date: _suggestion.date,
-            error: _suggestion.error,
-            status: _suggestion.status,
-            segment: _suggestion.segment,
-            suggestedValue: _suggestion.suggestedValue,
-            currentValue: IXServices.extractCurrentValue({
-              entity,
-              targetProperty,
-            }),
-            labeledValue: IXServices.extractLabeledValueFromFile({ file, targetProperty }),
-            modelCreationDate: undefined as any,
-            state: undefined as any,
-          },
-          targetProperty.type
-        ),
-      });
+      suggestions.push(
+        SuggestionFactory.createForPdf({
+          file,
+          entity,
+          extractor,
+          targetProperty,
+        })
+      );
     });
 
     await Suggestions.createMultiple(suggestions);
