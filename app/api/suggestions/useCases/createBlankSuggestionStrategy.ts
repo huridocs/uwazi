@@ -1,8 +1,8 @@
 import { IXExtractorType } from 'shared/types/extractorType';
-import { CreateBlankSuggestionsForPdf } from './createBlankSuggestionsForPdf';
-import { CreateBlankSuggestionsForProperty } from './createBlankSuggestionsForProperty';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { CreateBlankSuggestionsForPdf } from './createBlankSuggestionsForPdf';
+import { CreateBlankSuggestionsForProperty } from './createBlankSuggestionsForProperty';
 
 export type CreateBlankSuggestionsInput = {
   templateId: string;

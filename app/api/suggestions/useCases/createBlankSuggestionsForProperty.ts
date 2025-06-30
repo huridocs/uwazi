@@ -7,6 +7,7 @@ import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
 type Input = CreateBlankSuggestionsInput;
 
 export class CreateBlankSuggestionsForProperty implements UseCase<Input, void> {
+  // eslint-disable-next-line class-methods-use-this
   async execute({ extractor, templateId, entities, isMultiValued, targetProperty }: Input) {
     const suggestions = entities.map(entity => {
       const blank = {

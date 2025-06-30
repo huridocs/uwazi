@@ -49,12 +49,7 @@ async function createBlankStateSuggestionsBatch(
   batch: BatchRange,
   templateId: string,
   extractorId: string,
-  extractorProperty: string,
-  isMultiValued: boolean,
-  extractorSource: {
-    pdf?: boolean;
-    property?: string;
-  }
+  isMultiValued: boolean
 ) {
   const [entities, extractor] = await Promise.all([
     fetchEntitiesDataForBatch(templateId, batch.fromId, batch.toId),

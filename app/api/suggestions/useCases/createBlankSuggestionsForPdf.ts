@@ -3,13 +3,14 @@ import { LanguageUtils } from 'shared/language';
 import { files } from 'api/files';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { IXServices } from 'api/services/informationextraction/IXServices';
-import { Suggestions } from '../suggestions';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { Suggestions } from '../suggestions';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
 
 type Input = CreateBlankSuggestionsInput;
 
 export class CreateBlankSuggestionsForPdf implements UseCase<Input, void> {
+  // eslint-disable-next-line class-methods-use-this
   async execute({ entities, extractor, templateId, isMultiValued, targetProperty }: Input) {
     const filesForSuggestions = await files.get(
       {
