@@ -69,12 +69,12 @@ const fetchEntitiesDataForBatch = async (
 
   const entities = await entitiesModel.db
     .find(query)
-    .select(['sharedId', 'title', 'language', 'metadata'])
+    .select(['sharedId', 'title', 'language', 'metadata', 'template'])
     .sort({ _id: 1 })
     .lean();
 
   return entities as Required<
-    Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title'>
+    Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title' | 'template'>
   >[];
 };
 

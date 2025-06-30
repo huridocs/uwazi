@@ -9,7 +9,9 @@ export type CreateBlankSuggestionsInput = {
   isMultiValued: boolean;
   extractor: IXExtractorType;
   targetProperty: PropertySchema;
-  entities: Required<Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title'>>[];
+  entities: Required<
+    Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title' | 'template'>
+  >[];
 };
 
 export class CreateBlankSuggestionStrategy {
