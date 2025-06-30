@@ -684,9 +684,9 @@ class InformationExtraction {
     });
   };
 
-  trainModel = async (extractorId: ObjectIdSchema) => {
+  trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
     const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId, { testRun: false });
+    await ixmodels.startTraining(extractorId, { testRun });
 
     const dispatcher = await DefaultDispatcher(tenant.name);
 
@@ -695,17 +695,7 @@ class InformationExtraction {
     return { status: 'processing_model', message: 'Training model' };
   };
 
-  // TEST!!!
-  testModel = async (extractorId: ObjectIdSchema) => {
-    const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId, { testRun: true });
-
-    const dispatcher = await DefaultDispatcher(tenant.name);
-
-    await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
-
-    return { status: 'processing_model', message: 'Training model' };
-  };
+  testModel = async (extractorId: ObjectIdSchema) => this.trainModel(extractorId, true);
 
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });
