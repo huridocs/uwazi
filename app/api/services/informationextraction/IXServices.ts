@@ -7,6 +7,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { IXModelType } from 'shared/types/IXModelType';
 import ixmodels, { TEST_RUN_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {
@@ -44,6 +45,27 @@ export class IXServices {
     return property!;
   }
 
+  static async computeTotalSuggestionsToFind(
+    extractorId: ObjectIdSchema,
+    model: EnforcedWithId<IXModelType>
+  ) {
+    const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
+    let totalSuggestions = allPossibleSuggestions;
+
+    if (model.testRun) {
+      const usedForTraining = await IXSuggestionsModel.count({
+        extractorId,
+        trainingSample: { $eq: true },
+      });
+      totalSuggestions = Math.min(
+        model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
+        allPossibleSuggestions - usedForTraining
+      );
+    }
+
+    return totalSuggestions;
+  }
+
   static async saveModelProcess(
     extractorId: ObjectIdSchema,
     status: ModelStatus = ModelStatus.processing,
@@ -60,13 +82,7 @@ export class IXServices {
     };
 
     if (computeTotalSuggestions) {
-      const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
-      const totalSuggestions = model.testRun
-        ? Math.min(
-            model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
-            allPossibleSuggestions
-          )
-        : allPossibleSuggestions;
+      const totalSuggestions = await this.computeTotalSuggestionsToFind(extractorId, model);
       newModel.totalSuggestionsToFind = totalSuggestions;
     }
 
