@@ -13,7 +13,8 @@ export class CreateBlankSuggestionsForPdf implements UseCase<Input, void> {
   async execute({ entities, extractor, targetProperty }: Input) {
     const filesForSuggestions = await files.get(
       {
-        entity: { $in: entities.map(entity => entity.sharedId) },
+        entity: { $in: entities.map(e => e.sharedId) },
+        language: { $in: entities.map(e => LanguageUtils.fromISO639_1(e.language)?.ISO639_3) },
         type: 'document',
       },
       { _id: 1, entity: 1, language: 1, extractedMetadata: 1 }
