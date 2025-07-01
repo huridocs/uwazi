@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import _ from 'lodash';
 
 import { Suggestions } from 'api/suggestions/suggestions';
