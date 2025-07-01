@@ -996,6 +996,12 @@ describe('InformationExtraction', () => {
             { extractorId: factory.id('sourceTextExtractor1') },
             { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
           );
+        await testingDB.mongodb
+          ?.collection('ixmodels')
+          .updateOne(
+            { extractorId: factory.id('prop1extractor') },
+            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
+          );
 
         await testingDB.mongodb?.collection('ixsuggestions').updateMany(
           {
@@ -1006,7 +1012,7 @@ describe('InformationExtraction', () => {
         );
       });
 
-      it('should stop the model when the subset of suggestions are done, excluding the ones that are training samples', async () => {
+      it('should only process a subset of suggestions, excluding the ones that are training samples', async () => {
         await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
         await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
         const [model] = await IXModelsModel.get({
@@ -1028,6 +1034,15 @@ describe('InformationExtraction', () => {
           'ready',
           'Test completed'
         );
+      });
+
+      it('should work with PDF based extractors', async () => {
+        await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+        const suggestions = await IXSuggestionsModel.get({
+          extractorId: factory.id('prop1extractor'),
+          status: 'processing',
+        });
+        expect(suggestions.length).toBe(1);
       });
     });
   });
