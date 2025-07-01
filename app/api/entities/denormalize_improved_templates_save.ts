@@ -1,6 +1,4 @@
 /* eslint-disable max-lines */
-import { search } from 'api/search';
-import templates from 'api/templates';
 import {
   LanguageISO6391,
   MetadataObjectSchema,
@@ -9,165 +7,6 @@ import {
 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
-import { isString } from 'util';
-
-import model from './entitiesModel';
-
-interface DenormalizationUpdate {
-  propertyName: string;
-  filterPath: string;
-  valuePath: string;
-  template?: string;
-  inheritProperty?: string;
-}
-
-interface PropWithTemplate extends PropertySchema {
-  template?: string;
-}
-
-const metadataChanged = (
-  newMetadata: MetadataObjectSchema[] = [],
-  oldMetadata: MetadataObjectSchema[] = []
-) =>
-  newMetadata.every(
-    (elem, index) => JSON.stringify(elem.value) !== JSON.stringify(oldMetadata[index]?.value)
-  ) || newMetadata.length !== oldMetadata.length;
-
-const diffEntities = (newEntity: EntitySchema, oldEntity: EntitySchema) =>
-  Object.keys(newEntity.metadata || {}).reduce<EntitySchema>(
-    (theDiff, key) => {
-      if (metadataChanged(newEntity?.metadata?.[key], oldEntity?.metadata?.[key])) {
-        // eslint-disable-next-line no-param-reassign
-        theDiff.metadata = theDiff.metadata || {};
-        // eslint-disable-next-line no-param-reassign
-        theDiff.metadata[key] = newEntity.metadata?.[key];
-      }
-      return theDiff;
-    },
-    {
-      ...(newEntity.title !== oldEntity.title ? { title: oldEntity.title } : {}),
-      ...(newEntity.icon?._id !== oldEntity.icon?._id ? { icon: oldEntity.icon } : {}),
-    }
-  );
-
-function getPropertiesThatChanged(entityDiff: EntitySchema, template: TemplateSchema) {
-  const diffPropNames = Object.keys(entityDiff.metadata || {});
-  const metadataPropsThatChanged = (template.properties || [])
-    .filter(p => diffPropNames.includes(p.name))
-    .map(p => p._id?.toString())
-    .filter(isString);
-
-  if (entityDiff.title) {
-    metadataPropsThatChanged.push('label');
-  }
-  if (entityDiff.icon) {
-    metadataPropsThatChanged.push('icon');
-  }
-  return metadataPropsThatChanged;
-}
-
-const uniqueByNameAndInheritProperty = (updates: DenormalizationUpdate[]) =>
-  Object.values(
-    updates.reduce<{
-      [key: string]: DenormalizationUpdate;
-    }>((memo, update) => ({ ...memo, [update.propertyName + update.inheritProperty]: update }), {})
-  );
-
-const oneJumpRelatedProps = async (contentId: string) => {
-  const anyEntityOrDocument = '';
-  const contentIds = [contentId, anyEntityOrDocument];
-  return (await templates.get({ 'properties.content': { $in: contentIds } })).reduce<
-    PropWithTemplate[]
-  >(
-    (props, template) =>
-      props.concat(
-        (template.properties || [])
-          .filter(<
-            (property: PropWithTemplate) => property is PropWithTemplate & { content: string }
-          >(property => property.hasOwnProperty('content')))
-          .filter(p => contentIds.includes(p.content.toString()))
-          .map(p => ({
-            ...p,
-            template: template._id.toString(),
-          }))
-      ),
-    []
-  );
-};
-
-const oneJumpUpdates = async (
-  contentId: string,
-  metadataPropsThatChanged: string[],
-  titleOrIconChanged: boolean
-) => {
-  let updates = (await oneJumpRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
-    propertyName: p.name,
-    inheritProperty: p.inherit?.property,
-    ...(p.inherit?.property ? { template: p.template } : {}),
-    filterPath: `metadata.${p.name}.value`,
-    valuePath: `metadata.${p.name}`,
-  }));
-
-  if (metadataPropsThatChanged?.length && !titleOrIconChanged) {
-    updates = updates.filter(u => metadataPropsThatChanged.includes(u.inheritProperty || ''));
-  }
-  return updates;
-};
-
-const twoJumpsRelatedProps = async (contentId: string) => {
-  const properties: PropertySchema[] = (await templates.get({ 'properties.content': contentId }))
-    .reduce<PropertySchema[]>((m, t) => m.concat(t.properties || []), [])
-    .filter(p => contentId === p.content?.toString());
-
-  const contentIds = properties
-    .map<string | undefined>(p => p._id?.toString())
-    .filter<string>(<(v: string | undefined) => v is string>(v => !!v));
-
-  return (await templates.get({ 'properties.inherit.property': { $in: contentIds } })).reduce<
-    PropWithTemplate[]
-  >(
-    (props, template) =>
-      props.concat(
-        (template.properties || []).filter(p => contentIds.includes(p.inherit?.property || ''))
-      ),
-    []
-  );
-};
-
-const twoJumpUpdates = async (contentId: string) =>
-  (await twoJumpsRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
-    propertyName: p.name,
-    inheritProperty: p.inherit?.property,
-    filterPath: `metadata.${p.name}.inheritedValue.value`,
-    valuePath: `metadata.${p.name}.$[].inheritedValue`,
-  }));
-
-async function denormalizationUpdates(contentId: string, templatePropertiesThatChanged: string[]) {
-  const titleOrIconChanged =
-    templatePropertiesThatChanged.includes('label') ||
-    templatePropertiesThatChanged.includes('icon');
-
-  const metadataPropsThatChanged = templatePropertiesThatChanged.filter(
-    v => !['icon', 'label'].includes(v)
-  );
-
-  return uniqueByNameAndInheritProperty([
-    ...(await oneJumpUpdates(contentId, metadataPropsThatChanged, titleOrIconChanged)),
-    ...(titleOrIconChanged ? await twoJumpUpdates(contentId) : []),
-  ]);
-}
-
-const reindexUpdates = async (
-  value: string,
-  language: string,
-  updates: DenormalizationUpdate[]
-) => {
-  if (updates.length) {
-    await search.indexEntities({
-      $and: [{ language }, { $or: updates.map(update => ({ [update.filterPath]: value })) }],
-    });
-  }
-};
 
 const denormalizeInheritedProperty = (
   property: PropertySchema,
@@ -194,22 +33,13 @@ const denormalizeRelationshipProperty = async (
   property: PropertySchema,
   values: MetadataObjectSchema[],
   language: string,
-  allTemplates: TemplateSchema[]
+  allTemplates: TemplateSchema[],
+  relatedEntities: { [k: string]: EntitySchema } = {}
 ) => {
-  const partners = await model.getUnrestricted({
-    sharedId: { $in: values.map(value => value.value as string) },
-    language,
-  });
-
-  const partnersBySharedId: Record<string, EntitySchema> = {};
-  partners.forEach(partner => {
-    partnersBySharedId[partner.sharedId!] = partner;
-  });
-
   return values.map(value => {
     let denormalizedValue = { ...value };
 
-    const partner = partnersBySharedId[denormalizedValue.value as string];
+    const partner = relatedEntities[(denormalizedValue.value as string) + language];
 
     if (partner && partner.title) {
       denormalizedValue.label = partner.title;
@@ -246,8 +76,10 @@ const denormalizeProperty = async (
   language: string,
   {
     allTemplates,
+    relatedEntities,
   }: {
     allTemplates: TemplateSchema[];
+    relatedEntities: { [k: string]: EntitySchema };
   }
 ) => {
   validateValuesAreDenormalizable(values);
@@ -257,25 +89,30 @@ const denormalizeProperty = async (
   }
 
   if (property.type === 'relationship') {
-    return denormalizeRelationshipProperty(property, values!, language, allTemplates);
+    return denormalizeRelationshipProperty(
+      property,
+      values!,
+      language,
+      allTemplates,
+      relatedEntities
+    );
   }
 
   return values;
 };
 
 async function denormalizeMetadatatImproved(
-  metadata: MetadataSchema,
+  metadata: MetadataSchema | undefined,
   language: LanguageISO6391,
   template: TemplateSchema,
   preloadedData: {
-    allTemplates?: TemplateSchema[];
-  } = {}
+    allTemplates: TemplateSchema[];
+    relatedEntities: { [k: string]: EntitySchema };
+  }
 ) {
   if (!metadata || !template) {
     return metadata;
   }
-
-  const allTemplates = preloadedData.allTemplates || (await templates.get());
 
   const denormalizedProperties: {
     propertyName: string;
@@ -287,7 +124,7 @@ async function denormalizeMetadatatImproved(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
-        { allTemplates }
+        preloadedData
       ),
     }))
   );

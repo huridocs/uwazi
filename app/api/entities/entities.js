@@ -31,7 +31,6 @@ import {
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import { MetadataUtils } from './MetadataUtils';
-import { denormalizeMetadatatImproved } from './denormalize_improved_templates_save';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -45,67 +44,6 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.geolocation,
   propertyTypes.numeric,
 ];
-
-async function updateEntityPerf(entity, _template, preloadedData = { allTemplates: [] }) {
-  const docLanguages = await this.getAllLanguages(entity.sharedId);
-
-  const template = _template || { properties: [] };
-
-  // entity = await ATSolveVersionConflict(currentDoc, entity);
-
-  const result = await Promise.all(
-    docLanguages.map(async d => {
-      if (d._id.toString() === entity._id.toString()) {
-        const toSave = { ...entity };
-        delete toSave.published;
-        delete toSave.permissions;
-
-        if (entity.metadata) {
-          toSave.metadata = await denormalizeMetadatatImproved(
-            entity.metadata,
-            d.language,
-            template,
-            {
-              allTemplates: preloadedData.allTemplates,
-            }
-          );
-        }
-
-        const saveResult = await model.saveUnrestricted(toSave, undefined);
-
-        return saveResult;
-      }
-
-      const toSave = { ...d };
-
-      if (entity.metadata) {
-        toSave.metadata = { ...entity.metadata, ...toSave.metadata };
-
-        toSave.metadata = await denormalizeMetadatatImproved(
-          toSave.metadata,
-          toSave.language,
-          template,
-          {
-            allTemplates: preloadedData.allTemplates,
-          }
-        );
-      }
-
-      return model.saveUnrestricted(toSave, undefined);
-    })
-  );
-
-  const afterEntities = await model.get({ sharedId: entity.sharedId });
-  await applicationEventsBus.emit(
-    new EntityUpdatedEvent({
-      before: docLanguages,
-      after: afterEntities,
-      targetLanguageKey: entity.language,
-    })
-  );
-
-  return result;
-}
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
@@ -437,7 +375,6 @@ export default {
   denormalizeMetadata,
   sanitize,
   updateEntity,
-  updateEntityPerf,
   createEntity,
   getEntityTemplate,
   async save(_doc, { user, language }, options = {}) {

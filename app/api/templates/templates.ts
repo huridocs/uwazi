@@ -270,9 +270,17 @@ export default {
         (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
         newRelationshipProps.length
       ) {
-        await bulkDenormalizeEntitiesFromTemplateSave(savedTemplate, language, 50, reindex, {
-          allTemplates: await this.get(),
-        });
+        await bulkDenormalizeEntitiesFromTemplateSave(
+          savedTemplate,
+          language,
+          // @ts-ignore
+          relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
+          {
+            allTemplates: await this.get(),
+          },
+          50,
+          reindex
+        );
       }
     }
 

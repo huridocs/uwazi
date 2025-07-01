@@ -11,18 +11,27 @@ const f = getFixturesFactory();
 
 const getEntitiesByTemplate = async (
   templateId: string,
-  source: 'mongo' | 'elastic' = 'mongo'
+  source: 'mongo' | 'elastic' = 'mongo',
+  language: string = 'en'
 ): Promise<EntitySchema[]> => {
   if (source === 'mongo') {
     const allEntities = await testingEnvironment.db.getAllFrom('entities');
-    return (
-      allEntities?.filter(entity => entity.template?.toString() === f.idString(templateId)) || []
-    );
+    const filtered =
+      allEntities?.filter(
+        entity =>
+          entity.template?.toString() === f.idString(templateId) && entity.language === language
+      ) || [];
+    return filtered.sort((a, b) => (a.sharedId || '').localeCompare(b.sharedId || ''));
   }
   await elasticTesting.refresh();
   const allEntities = await elasticTesting.getIndexedEntities();
   return (
-    allEntities?.filter(entity => entity.template?.toString() === f.idString(templateId)) || []
+    allEntities
+      ?.filter(
+        entity =>
+          entity.template?.toString() === f.idString(templateId) && entity.language === language
+      )
+      .sort((a, b) => (a.sharedId || '').localeCompare(b.sharedId || '')) || []
   );
 };
 
@@ -60,7 +69,14 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
     }
     beforeAll(async () => {
       fixtures = {
-        settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+        settings: [
+          {
+            languages: [
+              { key: 'en', label: 'English', default: true },
+              { key: 'es', label: 'Español' },
+            ],
+          },
+        ],
         relationtypes: [f.relationType('rel1'), f.relationType('rel2')],
         templates: [
           f.template('templateA', [f.property('text_property')]),
@@ -68,18 +84,58 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           f.template('templateC', [f.property('text_property_2')]),
         ],
         entities: [
-          f.entity('entityA1', 'templateA', {
-            text_property: [f.metadataValue('text value A 1')],
-          }),
-          f.entity('entityA2', 'templateA', {
-            text_property: [f.metadataValue('text value A 2')],
-          }),
-          f.entity('entityB1', 'templateB', {
-            rel_prop: [f.metadataValue('entityA1', '')],
-          }),
-          f.entity('entityB2', 'templateB', {
-            rel_prop: [f.metadataValue('entityA2', '')],
-          }),
+          f.entity(
+            'entityA1',
+            'templateA',
+            { text_property: [f.metadataValue('text value A 1')] },
+            { title: 'entityA1 english', language: 'en' }
+          ),
+          f.entity(
+            'entityA1',
+            'templateA',
+            { text_property: [f.metadataValue('valor texto A 1')] },
+            { title: 'entityA1 spanish', language: 'es' }
+          ),
+          f.entity(
+            'entityA2',
+            'templateA',
+            { text_property: [f.metadataValue('text value A 2')] },
+            { title: 'entityA2 english', language: 'en' }
+          ),
+          f.entity(
+            'entityA2',
+            'templateA',
+            { text_property: [f.metadataValue('valor texto A 2')] },
+            { title: 'entityA2 spanish', language: 'es' }
+          ),
+
+          f.entity(
+            'entityB1',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA1', '')] },
+            { title: 'entityB1 english', language: 'en' }
+          ),
+
+          f.entity(
+            'entityB1',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA1', '')] },
+            { title: 'entityB1 spanish', language: 'es' }
+          ),
+
+          f.entity(
+            'entityB2',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA2', '')] },
+            { title: 'entityB2 english', language: 'en' }
+          ),
+
+          f.entity(
+            'entityB2',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA2', '')] },
+            { title: 'entityB2 spanish', language: 'es' }
+          ),
         ],
       };
       await setUpFixtures(fixtures);
@@ -95,7 +151,7 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
 
         await templates.save(template, 'en');
 
-        const expected = [
+        const expectedEn = [
           {
             sharedId: 'entityB1',
             metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 1' }] }] },
@@ -106,8 +162,22 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           },
         ];
 
-        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
-        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expectedEn);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expectedEn);
+
+        const expectedEs = [
+          {
+            sharedId: 'entityB1',
+            metadata: { rel_prop: [{ inheritedValue: [{ value: 'valor texto A 1' }] }] },
+          },
+          {
+            sharedId: 'entityB2',
+            metadata: { rel_prop: [{ inheritedValue: [{ value: 'valor texto A 2' }] }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB', 'mongo', 'es')).toMatchObject(expectedEs);
+        expect(await getEntitiesByTemplate('templateB', 'elastic', 'es')).toMatchObject(expectedEs);
       });
     });
 
@@ -229,7 +299,7 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
 
           {
             sharedId: 'entityB2',
-            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1' }] },
+            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1 english' }] },
           },
         ];
 
@@ -262,12 +332,16 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
         const expected = [
           {
             sharedId: 'entityB1',
-            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityB1' }] },
+            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityB1 english' }] },
           },
           {
             sharedId: 'entityB2',
             metadata: {
-              rel_prop: [{ label: 'entityC1' }, { label: 'entityB2' }, { label: 'entityA1' }],
+              rel_prop: [
+                { label: 'entityC1' },
+                { label: 'entityB2 english' },
+                { label: 'entityA1 english' },
+              ],
             },
           },
         ];
@@ -319,20 +393,86 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
           {
             sharedId: 'entityD1',
             metadata: {
-              rel_prop: [{ label: 'entityA1' }],
-              rel_prop2: [{ label: 'entityA1', inheritedValue: [{ value: 'text value A 1' }] }],
+              rel_prop: [{ label: 'entityA1 english' }],
+              rel_prop2: [
+                { label: 'entityA1 english', inheritedValue: [{ value: 'text value A 1' }] },
+              ],
             },
           },
           {
             sharedId: 'entityD2',
             metadata: {
-              rel_prop: [{ label: 'entityA2' }],
-              rel_prop2: [{ label: 'entityA2', inheritedValue: [{ value: 'text value A 2' }] }],
+              rel_prop: [{ label: 'entityA2 english' }],
+              rel_prop2: [
+                { label: 'entityA2 english', inheritedValue: [{ value: 'text value A 2' }] },
+              ],
             },
           },
         ];
         expect(await getEntitiesByTemplate('templateD')).toMatchObject(expected);
         expect(await getEntitiesByTemplate('templateD', 'elastic')).toMatchObject(expected);
+      });
+    });
+
+    describe('when creating a new relationship property which have existing connections', () => {
+      it('should create the metadata values on the entities and denormalize with the proper languages', async () => {
+        const hub1 = f.id('hub1');
+        const hub2 = f.id('hub2');
+
+        await setUpFixtures({
+          ...fixtures,
+          templates: [...fixtures.templates, f.template('templateD', [])],
+          entities: [
+            ...(fixtures.entities || []),
+            f.entity('entityD1', 'templateD', {}, { title: 'entityD1 english', language: 'en' }),
+            f.entity('entityD1', 'templateD', {}, { title: 'entityD1 spanish', language: 'es' }),
+
+            f.entity('entityD2', 'templateD', {}, { title: 'entityD2 english', language: 'en' }),
+            f.entity('entityD2', 'templateD', {}, { title: 'entityD2 spanish', language: 'es' }),
+          ],
+          connections: [
+            { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub1 },
+            { _id: testingDB.id(), entity: 'entityD1', hub: hub1 },
+
+            { _id: testingDB.id(), entity: 'entityA2', template: f.idString('rel'), hub: hub2 },
+            { _id: testingDB.id(), entity: 'entityD2', hub: hub2 },
+          ],
+        });
+
+        await templates.save(
+          f.template('templateD', [
+            f.relationshipProp('new_rel_prop', 'templateA', { relationType: f.idString('rel') }),
+          ]),
+          'en'
+        );
+
+        const expectedEn = [
+          {
+            sharedId: 'entityD1',
+            metadata: { new_rel_prop: [{ label: 'entityA1 english' }] },
+          },
+          {
+            sharedId: 'entityD2',
+            metadata: { new_rel_prop: [{ label: 'entityA2 english' }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateD', 'mongo', 'en')).toMatchObject(expectedEn);
+        expect(await getEntitiesByTemplate('templateD', 'elastic', 'en')).toMatchObject(expectedEn);
+
+        const expectedEs = [
+          {
+            sharedId: 'entityD1',
+            metadata: { new_rel_prop: [{ label: 'entityA1 spanish' }] },
+          },
+          {
+            sharedId: 'entityD2',
+            metadata: { new_rel_prop: [{ label: 'entityA2 spanish' }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateD', 'mongo', 'es')).toMatchObject(expectedEs);
+        expect(await getEntitiesByTemplate('templateD', 'elastic', 'es')).toMatchObject(expectedEs);
       });
     });
   }

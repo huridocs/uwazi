@@ -1,20 +1,23 @@
 /* eslint-disable max-lines */
 import { config } from 'api/config';
+import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
 import { DB, models } from 'api/odm';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
+import { Tenant } from 'api/tenants/tenantContext';
 import { Db } from 'mongodb';
+import { FileType } from 'shared/types/fileType';
 import templates from '../../app/api/templates';
 import { getFixturesFactory } from '../../app/api/utils/fixturesFactory';
 import testingDB, { DBFixture } from '../../app/api/utils/testing_db';
-import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import { FileType } from 'shared/types/fileType';
-import { Tenant } from 'api/tenants/tenantContext';
+import { elasticTesting } from 'api/utils/elastic_testing';
 
 // const testing_db_name = 'templates_save_perf';
+// @ts-ignore
 const tenant: Tenant = {
   name: 'default',
-  dbName: 'uwazi_development',
+  dbName: 'templates_save_perf',
+  indexName: 'templates_save_perf',
 };
 
 const formatMemory = function (bytes: number) {
@@ -81,12 +84,6 @@ const compareRuns = async (
   patchedCallback: () => Promise<void>,
   beforeEachCallback: () => Promise<void> = async () => {}
 ): Promise<void> => {
-  // //warmup
-  // await beforeEachCallback();
-  // await forceGC();
-  // await callback();
-  // //warmup
-
   // Normal run
   await beforeEachCallback();
   const normal = await getMeasurements(callback);
@@ -174,6 +171,9 @@ const generateConnectedEntities = async (number: number) => {
     _entities.push(
       f.entityInMultipleLanguages(['en', 'es', 'pt'], `template2.entity${i}`, 'template2', {
         rel1: [f.metadataValue(`template1.entity${i}`)],
+        text_1: [f.metadataValue(`template1.text_1${i}`)],
+        text_2: [f.metadataValue(`template1.text_2${i}`)],
+        text_3: [f.metadataValue(`template1.text_3${i}`)],
       })
     );
 
@@ -254,6 +254,9 @@ async function runTest(numberOfEntities: number) {
     f.relationshipProp('rel1', 'template1'),
     f.property('thesauri1', 'select', { content: f.idString('thesauri1') }),
     f.property('thesauri2', 'select', { content: f.idString('thesauri2') }),
+    f.property('text_1'),
+    f.property('text_2'),
+    f.property('text_3'),
   ]);
   const template3 = f.template('template3', [
     f.relationshipProp('rel2', 'template2', { relationType: f.idString('rel2') }),
@@ -297,6 +300,7 @@ async function runTest(numberOfEntities: number) {
         },
       ],
     });
+    await elasticTesting.resetIndex();
   };
 
   // await setFixtures();

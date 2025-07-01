@@ -13,7 +13,6 @@ import { otherLanguageSchema } from 'shared/language/availableLanguages';
 import { getTenantESMapping } from 'api/tenants/tenantESMapping';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import { elastic } from './elastic';
-import { inspect } from 'util';
 
 class IndexError extends Error {}
 
@@ -97,6 +96,7 @@ const bulkIndex = async (docs, _action = 'index') => {
   });
 
   const results = await elastic.bulk({ body });
+
   if (results.body.items) {
     handleErrors(results.body.items.filter(f => f.index.error));
   }
