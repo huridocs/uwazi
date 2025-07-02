@@ -19,7 +19,7 @@ import { registerJobs } from './queueRegistry';
 import { initSentry } from './initSentry';
 
 type Props = {
-  isRunningOnExclusiveProcess?: boolean;
+  standAloneProcess?: boolean;
 };
 
 const replaceTenantWithJobNamespace =
@@ -69,9 +69,9 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
 };
 
 export function setupQueueWorker(props?: Props) {
-  const isRunningOnExclusiveProcess = props?.isRunningOnExclusiveProcess ?? false;
+  const standAloneProcess = props?.standAloneProcess ?? false;
 
-  if (isRunningOnExclusiveProcess) {
+  if (standAloneProcess) {
     initSentry();
   }
 
@@ -91,7 +91,7 @@ export function setupQueueWorker(props?: Props) {
       registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
-      if (isRunningOnExclusiveProcess) {
+      if (standAloneProcess) {
         registerEventListeners(applicationEventsBus);
         logger.info('Registered event listeners');
       }

@@ -1,3 +1,3 @@
 import { setupQueueWorker } from './setupQueueWorker';
 
-setupQueueWorker({ isRunningOnExclusiveProcess: true });
+setupQueueWorker({ standAloneProcess: true });

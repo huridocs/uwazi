@@ -136,7 +136,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
       }
     });
     // eslint-disable-next-line global-require
-    setupQueueWorker();
+    setupQueueWorker({ standAloneProcess: false });
   }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
