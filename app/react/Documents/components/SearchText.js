@@ -58,12 +58,6 @@ class SearchText extends Component {
     query.searchTerm = value.searchTerm;
 
     this.props.navigate(path + toUrlParams(query));
-
-    return this.props.searchSnippets(
-      value.searchTerm,
-      this.props.doc.get('sharedId'),
-      this.props.storeKey
-    );
   }
 
   render() {
@@ -83,7 +77,6 @@ class SearchText extends Component {
             <div className="search-box">
               <div className="input-group">
                 <Field model=".searchTerm">
-                  <Icon icon="search" />
                   <input
                     type="text"
                     placeholder={t('System', 'Search related entities or documents', null, false)}
@@ -91,7 +84,10 @@ class SearchText extends Component {
                     autoComplete="off"
                     aria-label={t('System', 'Search text description', null, false)}
                   />
-                  <Icon icon="times" onClick={this.resetSearch} />
+                  <Icon
+                    icon="search"
+                    onClick={() => this.formDispatch(formActions.submit('searchText'))}
+                  />
                 </Field>
               </div>
               <ModalTips
