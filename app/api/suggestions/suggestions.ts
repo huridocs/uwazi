@@ -216,6 +216,7 @@ const Suggestions = {
     return {
       suggestions,
       totalPages: Math.ceil(count / (options.page?.size || DEFAULT_LIMIT)),
+      total: count,
     };
   },
 

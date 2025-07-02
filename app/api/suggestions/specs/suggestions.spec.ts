@@ -491,6 +491,14 @@ describe('suggestions', () => {
       expect(totalPages).toBe(1);
     });
 
+    it('should return total count', async () => {
+      const { total } = await Suggestions.get(
+        { extractorId: factory.id('title_extractor').toString() },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(total).toBe(6);
+    });
+
     it('should be able to filter', async () => {
       const { suggestions } = await Suggestions.get(
         {

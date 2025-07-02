@@ -56,6 +56,7 @@ const IXSuggestions = () => {
     aggregation,
     currentStatus,
     totalPages,
+    total,
     activeFilters,
   } = useLoaderData() as IXSuggestionsLoaderResponse;
   const prevSuggestions = useRef(suggestions);
@@ -243,7 +244,7 @@ const IXSuggestions = () => {
                 <PaginationState
                   page={Number(searchParams.get('page') || 1)}
                   size={SUGGESTIONS_PER_PAGE}
-                  total={aggregation.total || totalPages * SUGGESTIONS_PER_PAGE}
+                  total={total}
                   currentLength={currentSuggestions.length}
                 />
                 <div>
@@ -354,6 +355,7 @@ const IXSuggestionsLoader =
     const suggestionsList: {
       suggestions: EntitySuggestion[];
       totalPages: number;
+      total: number;
     } = await suggestionsAPI.get(
       {
         filter,
@@ -387,6 +389,7 @@ const IXSuggestionsLoader =
       aggregation,
       currentStatus: currentStatus.status,
       activeFilters,
+      total: suggestionsList.total,
     };
   };
 

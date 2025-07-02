@@ -51,6 +51,7 @@ type IXSuggestionsLoaderResponse = {
   currentStatus: ixStatus;
   totalPages: number;
   activeFilters: number;
+  total: number;
 };
 
 export enum ixStatus {
