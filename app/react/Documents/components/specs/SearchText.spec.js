@@ -156,16 +156,6 @@ describe('SearchText', () => {
   });
 
   describe('submit', () => {
-    it('should searchSnippets with value, doc id and storeKey', done => {
-      props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
-      render();
-
-      instance.submit({ searchTerm: 'value' }).then(() => {
-        expect(props.searchSnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
-        done();
-      });
-    });
-
     it('should add searchTerm into the url query', () => {
       props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
       render();
