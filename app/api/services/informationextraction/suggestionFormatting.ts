@@ -153,10 +153,15 @@ const FORMATTERS: Record<
       throw new Error('Date suggestion is not valid.');
     }
 
-    const suggestedValue = date.dateToSeconds(
+    let suggestedValue = date.dateToSeconds(
       rawSuggestion.text.trim(),
       currentSuggestion?.language || entity.language
     );
+
+    if (!Number(suggestedValue)) {
+      suggestedValue = '' as any;
+    }
+
     const suggestion: Partial<IXSuggestionType> = {
       ...simpleSuggestion(suggestedValue, rawSuggestion),
       suggestedText: rawSuggestion.text,
@@ -261,7 +266,10 @@ class SuggestionTextSourceFormatter {
   }
 
   private static date({ text, segment_text }: RawSuggestion, language: LanguageISO6391) {
-    const suggestedValue = date.dateToSeconds(text, language);
+    let suggestedValue = date.dateToSeconds(text, language);
+    if (!Number(suggestedValue)) {
+      suggestedValue = '' as any;
+    }
 
     return {
       suggestedValue,
