@@ -22,6 +22,7 @@ import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
+import { TemplateValidationService } from './validation/TemplateValidationService';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
@@ -172,6 +173,8 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
   return thesauriByKey;
 };
 
+const validationService = new TemplateValidationService();
+
 export default {
   async save(template: TemplateSchema, language: string, reindex = true) {
     template.properties = template.properties || [];
@@ -179,6 +182,7 @@ export default {
     template.properties = await denormalizeInheritedProperties(template);
 
     await validateTemplate(template);
+
     const mappedTemplate = await v2.processNewRelationshipProperties(template);
 
     await this.swapNamesValidation(mappedTemplate);
@@ -383,16 +387,23 @@ export default {
       )
     );
   },
+  async validateTemplateDelete(templateToDelete: TemplateSchema, _id: string) {
+    const countByTemplate = await this.countByTemplate(_id);
+    await validationService.validateTemplateDelete(templateToDelete, countByTemplate);
+  },
 
   async delete(template: Partial<TemplateSchema>) {
-    const count = await this.countByTemplate(ensure(template._id));
-    if (count > 0) {
-      return Promise.reject({ key: 'documents_using_template', value: count });
+    const _id = ensure<string>(template._id);
+    const [templateToDelete] = await this.get({ _id });
+
+    if (!templateToDelete) {
+      return Promise.resolve();
     }
+
+    await this.validateTemplateDelete(templateToDelete, _id);
 
     await v2.processNewRelationshipPropertiesOnDelete(template._id);
 
-    const _id = ensure<string>(template._id);
     await translations.deleteContext(_id);
     await this.removePropsWithNonexistentId(_id);
     await model.delete(_id);
