@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import _ from 'lodash';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -543,6 +544,99 @@ describe('ixextractors', () => {
         expect(suggestions).toMatchObject(expectedSuggestions);
       }
     );
+
+    it('should create Blank Suggestions for Extractor of PDF', async () => {
+      const template = fixtureFactory.template('extractor_source_pdf_target_text_template', [
+        fixtureFactory.property('target_text', 'text'),
+      ]);
+
+      const entityA = fixtureFactory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entityA',
+        template.name
+      );
+
+      const entityB = fixtureFactory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entityB',
+        template.name
+      );
+
+      const entityC = fixtureFactory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entityC',
+        template.name
+      );
+
+      const entityD = fixtureFactory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entityD',
+        template.name
+      );
+
+      const entityE = fixtureFactory.entityInMultipleLanguages(
+        ['en', 'es'],
+        'entityE',
+        template.name
+      );
+
+      const file1A = fixtureFactory.document('file1_A', { entity: 'entityA', language: 'en' });
+      const file2A = fixtureFactory.document('file2_A', { entity: 'entityA', language: 'es' });
+      const file3A = fixtureFactory.document('file3_A', { entity: 'entityA', language: 'pt' });
+
+      const file1B = fixtureFactory.document('file1_B', { entity: 'entityB', language: 'en' });
+      const file2B = fixtureFactory.document('file2_B', { entity: 'entityB', language: 'es' });
+
+      const file1D = fixtureFactory.document('file3_D', { entity: 'entityD', language: 'pt' });
+
+      const file1E = fixtureFactory.document('file3_E', { entity: 'entityE', language: 'en' });
+
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        templates: [template],
+        files: [file1A, file2A, file3A, file1B, file2B, file1D, file1E],
+        entities: [...entityA, ...entityB, ...entityC, ...entityD, ...entityE],
+      });
+
+      const extractor = await Extractors.create({
+        name: 'extractor_source_pdf_target_text',
+        property: 'target_text',
+        source: { pdf: true },
+        templates: [fixtureFactory.id('extractor_source_pdf_target_text_template').toString()],
+      });
+
+      const suggestions = await Suggestions.getByExtractor(extractor._id);
+      const sorted = _.orderBy(suggestions, ['entityId', 'language']);
+
+      expect(suggestions.length).toBe(5);
+      expect(sorted).toMatchObject([
+        {
+          fileId: file1A._id,
+          language: 'en',
+          entityId: 'entityA',
+        },
+        {
+          fileId: file2A._id,
+          language: 'es',
+          entityId: 'entityA',
+        },
+        {
+          fileId: file1B._id,
+          language: 'en',
+          entityId: 'entityB',
+        },
+        {
+          fileId: file2B._id,
+          language: 'es',
+          entityId: 'entityB',
+        },
+        {
+          fileId: file1E._id,
+          language: 'en',
+          entityId: 'entityE',
+        },
+      ]);
+    });
 
     it('should throw if the property does not exist', async () => {
       await expect(async () =>

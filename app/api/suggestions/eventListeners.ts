@@ -1,13 +1,8 @@
-import _ from 'lodash';
-
-import entities from 'api/entities';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { files } from 'api/files';
-import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';
 import templates from 'api/templates';
@@ -23,8 +18,13 @@ import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { Suggestions } from './suggestions';
 import { getBlankSuggestionForPdf, getBlankSuggestionForProperty } from './blankSuggestions';
+import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
+import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();
@@ -175,42 +175,18 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     }
   });
 
-  eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
-    if (!(await featureIsEnabled())) return;
-
-    if (newFile.entity && newFile.type === 'document') {
-      const entityTemplateId = (
-        await entities.get({ sharedId: newFile.entity }, 'template')
-      )[0].template.toString();
-
-      const extractors = await Extractors.get({
-        templates: { $in: [entityTemplateId] },
-        'source.pdf': { $exists: true, $eq: true },
-      });
-
-      if (extractors.length) {
-        const defaultLanguage = await settings.getDefaultLanguage();
-        await createDefaultSuggestionsForFiles(
-          [newFile],
-          entityTemplateId,
-          extractors,
-          defaultLanguage.key
-        );
-      }
-    }
-  });
-
   eventsBus.on(EntityDeletedEvent, async ({ entity }) => {
     if (!(await featureIsEnabled())) return;
     await Suggestions.deleteByEntityId(entity[0].sharedId!);
   });
 
-  eventsBus.on(FileUpdatedEvent, async ({ before, after }) => {
-    if (!(await featureIsEnabled())) return;
-    if (!_.isEqual(before.extractedMetadata, after.extractedMetadata)) {
-      await Suggestions.updateStates({ fileId: after._id });
-    }
-  });
+  new AfterFileUpdatedListener(eventsBus, () => ({
+    eventBus: eventsBus,
+    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
+    createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
+    updateSuggestionsState: Suggestions.updateStates,
+    logger: DefaultLogger(),
+  })).start();
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {
     if (!(await featureIsEnabled())) return;
