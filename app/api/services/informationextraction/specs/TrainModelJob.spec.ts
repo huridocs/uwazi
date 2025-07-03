@@ -4,7 +4,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { IXTrainModelJob } from '../TrainModelJob';
 import { TrainModelForPDF } from '../TrainModelForPDF';
 import { NoEntitiesForTraining, TrainModelForText } from '../TrainModelForText';
-import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
 import { ExtractorNotFound, Extractors } from '../ixextractors';
 
 type Props = {

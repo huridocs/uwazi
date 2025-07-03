@@ -10,7 +10,7 @@ import { emitToTenant } from 'api/socketio/setupSockets';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { getEntitiesForTraining } from './getFiles';
+import { getEntitiesForTraining } from './ixMaterials';
 import { PropertySourceMaterials } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
 import { IXServices } from './IXServices';

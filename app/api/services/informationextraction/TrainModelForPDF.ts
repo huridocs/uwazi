@@ -15,7 +15,7 @@ import {
   getFilesForTraining,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
-} from './getFiles';
+} from './ixMaterials';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import {
   CommonMaterialsData,

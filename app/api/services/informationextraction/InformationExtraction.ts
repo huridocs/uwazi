@@ -33,7 +33,7 @@ import {
   propertyTypeIsWithoutExtractedMetadata,
   getPropertyType,
   getEntitiesForSuggestions,
-} from 'api/services/informationextraction/getFiles';
+} from 'api/services/informationextraction/ixMaterials';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { LanguageUtils } from 'shared/language';

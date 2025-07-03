@@ -1,4 +1,4 @@
-import { propertyTypeIsMultiValued } from 'api/services/informationextraction/getFiles';
+import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import { IXServices } from 'api/services/informationextraction/IXServices';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { LanguageUtils } from 'shared/language';
