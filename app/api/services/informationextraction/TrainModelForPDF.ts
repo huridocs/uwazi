@@ -9,12 +9,13 @@ import { LanguageUtils } from 'shared/language';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { Suggestions } from 'api/suggestions/suggestions';
 import {
   FileWithAggregation,
   getFilesForTraining,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
-} from './getFiles';
+} from './ixMaterials';
 import { IXWebSocketEvents } from './WebSocketEvents';
 import {
   CommonMaterialsData,
@@ -52,6 +53,9 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       if (!files.length) {
         throw new NoFilesForTraining();
       }
+
+      const processedEntityIds: string[] = [];
+
       await ArrayUtils.parallelFor(files, async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
@@ -76,7 +80,14 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
           propertyValue,
           propertyType,
         });
+
+        processedEntityIds.push(file.entity);
       });
+
+      await Suggestions.markSuggestionsAsTrainingSamples(
+        processedEntityIds,
+        extractor._id.toString()
+      );
 
       await this.props.iXTaskService.createModelTask({
         extractor,

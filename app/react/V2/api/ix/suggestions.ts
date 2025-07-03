@@ -61,4 +61,14 @@ const cancel = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   return response;
 };
 
-export { get, accept, aggregation, findSuggestions, status, cancel };
+const testRun = async (extractorId: string, headers?: IncomingHttpHeaders): Promise<number> => {
+  try {
+    const params = new RequestParams({ extractorId }, headers);
+    const { status: response } = await api.post('suggestions/test_model', params);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { get, accept, aggregation, findSuggestions, status, cancel, testRun };

@@ -32,6 +32,8 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
     status = jest.fn().mockResolvedValue({ status: 'ready' });
 
     trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
+
+    testModel = jest.fn().mockResolvedValue({ status: 'processing' });
   },
 }));
 
@@ -345,6 +347,17 @@ describe('suggestions routes', () => {
     it('should return the status of the IX process', async () => {
       const response = await request(app)
         .post('/api/suggestions/train')
+        .send({ extractorId: factory.id('super_powers_extractor').toString() })
+        .expect(202);
+
+      expect(response.body).toMatchObject({ status: 'processing' });
+    });
+  });
+
+  describe('POST /api/suggestions/test_model', () => {
+    it('should return the status of the IX process', async () => {
+      const response = await request(app)
+        .post('/api/suggestions/test_model')
         .send({ extractorId: factory.id('super_powers_extractor').toString() })
         .expect(202);
 

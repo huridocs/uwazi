@@ -6,7 +6,9 @@ import { ModelStatus } from 'shared/types/IXModelSchema';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
-import ixmodels from './ixmodels';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { IXModelType } from 'shared/types/IXModelType';
+import ixmodels, { TEST_RUN_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -27,6 +29,11 @@ type ExtractLabeledValueFromEntityInput = {
   targetProperty: PropertySchema;
 };
 
+type SaveModelProcessOptions = {
+  findingSuggestions?: boolean;
+  computeTotalSuggestions?: boolean;
+};
+
 export class IXServices {
   static async getTargetProperty({ extractor }: GetTargetPropertyInput) {
     const template = await templatesModel.getById(extractor.templates[0]);
@@ -38,20 +45,48 @@ export class IXServices {
     return property!;
   }
 
+  static async computeTotalSuggestionsToFind(
+    extractorId: ObjectIdSchema,
+    model: EnforcedWithId<IXModelType>
+  ) {
+    const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
+    let totalSuggestions = allPossibleSuggestions;
+
+    if (model.testRun) {
+      const usedForTraining = await IXSuggestionsModel.count({
+        extractorId,
+        trainingSample: { $eq: true },
+      });
+      totalSuggestions = Math.min(
+        model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
+        allPossibleSuggestions - usedForTraining
+      );
+    }
+
+    return totalSuggestions;
+  }
+
   static async saveModelProcess(
     extractorId: ObjectIdSchema,
     status: ModelStatus = ModelStatus.processing,
-    findingSuggestions = true
+    { findingSuggestions = true, computeTotalSuggestions = false }: SaveModelProcessOptions = {}
   ) {
-    const [currentModel] = await ixmodels.get({ extractorId });
+    const [model] = await ixmodels.get({ extractorId });
 
-    await ixmodels.save({
-      ...currentModel,
+    const newModel = {
+      ...model,
       status,
       creationDate: new Date().getTime(),
       extractorId,
       findingSuggestions,
-    });
+    };
+
+    if (computeTotalSuggestions) {
+      const totalSuggestions = await this.computeTotalSuggestionsToFind(extractorId, model);
+      newModel.totalSuggestionsToFind = totalSuggestions;
+    }
+
+    await ixmodels.save(newModel);
   }
 
   static extractCurrentValue({ entity, targetProperty }: ExtractCurrentValueInput) {
