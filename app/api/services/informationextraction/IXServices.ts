@@ -20,7 +20,7 @@ type ExtractCurrentValueInput = {
 };
 
 type ExtractLabelTextForPDFInput = {
-  file: EnforcedWithId<FileType>;
+  file: FileType;
   targetProperty: PropertySchema;
 };
 

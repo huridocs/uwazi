@@ -73,4 +73,14 @@ export class MongoSettingsDataSource
 
     return {};
   }
+
+  async get(): Promise<SettingsType> {
+    const settings = await this.readSettings();
+
+    if (!settings) {
+      throw new Error('Settings not found');
+    }
+
+    return settings;
+  }
 }
