@@ -12,6 +12,7 @@ import * as setupSockets from 'api/socketio/setupSockets';
 import { sortByStrings } from 'shared/data_utils/objectSorting';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 
+import testingDB from 'api/utils/testing_db';
 import { factory, fixtures } from './fixtures';
 import {
   CommonSuggestion,
@@ -25,7 +26,8 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
-import { NoLabeledEntities, NoSegmentedFiles } from '../getFiles';
+import { NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
+import { TEST_RUN_SUGGESTIONS_SIZE } from '../ixmodels';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -659,6 +661,35 @@ describe('InformationExtraction', () => {
     });
   });
 
+  describe('testModel', () => {
+    it('should send xmls (as in trainModel)', async () => {
+      await informationExtraction.testModel(factory.id('prop1extractor'));
+
+      const xmlA = await readDocument('A');
+
+      const xmlC = await readDocument('C');
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
+        id: factory.id('prop1extractor').toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
+      expect(IXExternalService.filesNames.sort()).toEqual(
+        ['documentA.xml', 'documentC.xml'].sort()
+      );
+    });
+
+    it('should mark the model as testRun', async () => {
+      await informationExtraction.testModel(factory.id('prop1extractor'));
+
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+      expect(model.testRun).toBe(true);
+      expect(model.testRunSuggestionsToFind).toBe(TEST_RUN_SUGGESTIONS_SIZE);
+    });
+  });
+
   describe('when model is trained', () => {
     it('should call getSuggestions', async () => {
       const getSuggestionsSpy = jest
@@ -955,6 +986,64 @@ describe('InformationExtraction', () => {
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
       const [model] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
       expect(model.findingSuggestions).toBe(false);
+    });
+
+    describe('testRun', () => {
+      beforeEach(async () => {
+        await testingDB.mongodb
+          ?.collection('ixmodels')
+          .updateOne(
+            { extractorId: factory.id('sourceTextExtractor1') },
+            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
+          );
+        await testingDB.mongodb
+          ?.collection('ixmodels')
+          .updateOne(
+            { extractorId: factory.id('prop1extractor') },
+            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
+          );
+
+        await testingDB.mongodb?.collection('ixsuggestions').updateMany(
+          {
+            extractorId: factory.id('sourceTextExtractor1'),
+            entityId: 'A1',
+          },
+          { $set: { trainingSample: true } }
+        );
+      });
+
+      it('should only process a subset of suggestions, excluding the ones that are training samples', async () => {
+        await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+        await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+        const [model] = await IXModelsModel.get({
+          extractorId: factory.id('sourceTextExtractor1'),
+        });
+        expect(model.findingSuggestions).toBe(false);
+
+        const suggestionsInProcessing = await IXSuggestionsModel.get({
+          extractorId: factory.id('sourceTextExtractor1'),
+          status: 'processing',
+        });
+        expect(suggestionsInProcessing.length).toBe(1);
+        expect(suggestionsInProcessing[0].entityId).toBe('entity_without_label_data');
+        expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+          1,
+          'tenant1',
+          'ix_model_status',
+          factory.id('sourceTextExtractor1'),
+          'ready',
+          'Test completed'
+        );
+      });
+
+      it('should work with PDF based extractors', async () => {
+        await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+        const suggestions = await IXSuggestionsModel.get({
+          extractorId: factory.id('prop1extractor'),
+          status: 'processing',
+        });
+        expect(suggestions.length).toBe(1);
+      });
     });
   });
 

@@ -132,6 +132,13 @@ const IXSuggestions = () => {
     } catch (error) {}
   };
 
+  const testRun = async () => {
+    try {
+      setStatus({ status: ixStatus.sending_labeled_data });
+      await suggestionsAPI.testRun(extractor._id!);
+    } catch (error) {}
+  };
+
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
     const type = selectedSuggestion.extractorSource.pdf ? 'pdf' : 'property';
@@ -305,6 +312,11 @@ const IXSuggestions = () => {
                   <Translate>Cancel</Translate>
                 )}
               </Button>
+              {status.status === ixStatus.ready && (
+                <Button size="small" type="button" styling="light" onClick={testRun}>
+                  <Translate>Test run</Translate>
+                </Button>
+              )}
               {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>

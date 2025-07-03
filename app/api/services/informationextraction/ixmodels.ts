@@ -5,6 +5,12 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel as model } from './IXModelsModel';
 import { IXExtractorModel } from './IXExtractorModel';
 
+const TEST_RUN_SUGGESTIONS_SIZE = 1000;
+
+type StartTrainingOptions = {
+  testRun?: boolean;
+};
+
 export default {
   get: model.get.bind(model),
   delete: model.delete.bind(model),
@@ -20,7 +26,10 @@ export default {
     }
     return saved;
   },
-  startTraining: async (extractorId: ObjectIdSchema) => {
+  startTraining: async (
+    extractorId: ObjectIdSchema,
+    { testRun = false }: StartTrainingOptions = {}
+  ) => {
     const [current] = await model.get({ extractorId });
 
     await model.save({
@@ -28,6 +37,8 @@ export default {
       extractorId,
       findingSuggestions: true,
       status: ModelStatus.processing,
+      testRun,
+      testRunSuggestionsToFind: TEST_RUN_SUGGESTIONS_SIZE,
     });
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
@@ -58,3 +69,5 @@ export default {
     });
   },
 };
+
+export { TEST_RUN_SUGGESTIONS_SIZE };

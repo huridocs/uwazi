@@ -231,17 +231,21 @@ describe('Information Extraction', () => {
     });
 
     it('should sort by the document column', () => {
-      cy.get('tbody tr').eq(5).should('be.visible');
+      cy.get('tbody tr').eq(4).should('be.visible');
       cy.contains('th', 'Name').click();
-      cy.contains('Uwazi Heroes Investigation', { timeout: 100 });
+      cy.contains('Lorem Ipsum (en)', { timeout: 100 });
       cy.get('tbody').within(() => {
-        cy.get('tr').eq(5).contains('Uwazi Heroes Investigation');
         cy.get('tr')
           .eq(0)
           .contains(
-            'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+            'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)'
           );
+        cy.get('tr').eq(4).contains('The Spectacular Spider-Man (en)');
       });
+    });
+
+    it('should not display documents for languages that are not installed', () => {
+      cy.contains('Uwazi Heroes Investigation').should('not.exist');
     });
 
     it('should display suggestions and be accessible', () => {

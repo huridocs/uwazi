@@ -40,7 +40,16 @@ describe('PDF display', () => {
       });
       saveEntity();
       waitForLegacyNotifications();
+    });
+
+    it('should select the english as the file language', () => {
+      cy.get('#tabpanel-metadata').within(() => {
+        cy.contains('button', 'Edit').click();
+        cy.get('select#language').select('English (English)');
+        cy.contains('button', 'Save').click();
+      });
       cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
+      waitForLegacyNotifications();
     });
   });
 
@@ -182,7 +191,7 @@ describe('PDF display', () => {
         cy.contains('a', 'Metadata Extraction').click();
         cy.contains('td', 'Extractor 1');
         cy.contains('button', 'Review').click();
-        cy.contains('td', 'Entity with pdf (es)');
+        cy.contains('td', 'Entity with pdf (en)');
       });
 
       it('should check that the pdf renders and scrolls to the selection', () => {

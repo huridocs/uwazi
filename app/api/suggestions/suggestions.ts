@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
@@ -24,9 +25,10 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
-} from 'api/services/informationextraction/getFiles';
+} from 'api/services/informationextraction/ixMaterials';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
@@ -301,6 +303,20 @@ const Suggestions = {
     );
   },
 
+  markSuggestionsAsTrainingSamples: async (entities: string[], extractorIdString: string) => {
+    const extractorId = ObjectId.createFromHexString(extractorIdString);
+    await IXSuggestionsModel.updateMany({ extractorId }, { $set: { trainingSample: false } });
+
+    const chunks = ArrayUtils.splitInChunks(entities, 1000);
+    await chunks.reduce(async (promise, chunk) => {
+      await promise;
+      await IXSuggestionsModel.updateMany(
+        { entityId: { $in: chunk }, extractorId },
+        { $set: { trainingSample: true } }
+      );
+    }, Promise.resolve());
+  },
+
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
   saveMultiple: async (_suggestions: IXSuggestionType[]) => {
@@ -311,6 +327,7 @@ const Suggestions = {
   createMultiple: async (_suggestions: IXSuggestionType[]) =>
     IXSuggestionsModel.db.createMany(_suggestions),
 
+  // eslint-disable-next-line max-statements
   accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
     const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));
     const suggestions = await IXSuggestionsModel.get({ _id: { $in: acceptedIds } });
