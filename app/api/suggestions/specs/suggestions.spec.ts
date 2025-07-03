@@ -46,7 +46,7 @@ const stateUpdateCases: {
     state: {
       withValue: true,
       withSuggestion: false,
-      labeled: false,
+      labeled: true,
       match: false,
       obsolete: false,
       processing: false,
@@ -180,7 +180,7 @@ const stateUpdateCases: {
   },
   {
     state: {
-      labeled: false,
+      labeled: true,
       withValue: true,
       withSuggestion: true,
       match: true,
@@ -196,7 +196,7 @@ const stateUpdateCases: {
   },
   {
     state: {
-      labeled: false,
+      labeled: true,
       withValue: true,
       withSuggestion: true,
       match: true,
@@ -214,7 +214,7 @@ const stateUpdateCases: {
   },
   {
     state: {
-      labeled: false,
+      labeled: true,
       withValue: true,
       withSuggestion: true,
       match: false,

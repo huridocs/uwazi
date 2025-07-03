@@ -5,7 +5,6 @@ import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,
   propertyIsRelationship,
-  propertyIsSelect,
   propertyIsSelectOrMultiSelect,
 } from './propertyTypes';
 
@@ -67,17 +66,10 @@ class IXSuggestionState implements IXSuggestionStateType {
     this.setError(values);
   }
 
-  setLabeled(
-    { labeledValue, currentValue }: SuggestionValues,
-    propertyType: PropertySchema['type']
-  ) {
-    if (
-      labeledValue ||
-      (propertyIsSelect(propertyType) && currentValue) ||
-      (propertyIsMultiValued(propertyType) &&
-        Array.isArray(currentValue) &&
-        currentValue.length > 0)
-    ) {
+  setLabeled({ currentValue }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (propertyIsMultiValued(propertyType) && Array.isArray(currentValue)) {
+      this.labeled = currentValue?.length > 0;
+    } else if (currentValue) {
       this.labeled = true;
     }
   }
