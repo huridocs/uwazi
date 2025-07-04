@@ -12,7 +12,7 @@ import { IXModelsModel } from '../IXModelsModel';
 import { ExtractionKey } from '../ExtractionKey';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { NoEntitiesForTraining } from '../TrainModelForText';
-import { getEntitiesForTraining } from '../getFiles';
+import { getEntitiesForTraining } from '../ixMaterials';
 
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/services/tasksmanager/TaskManager.ts');

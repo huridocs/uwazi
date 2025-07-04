@@ -1150,6 +1150,7 @@ const fixtures: DBFixture = {
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 5,
     },
     {
       extractorId: factory.id('prop3extractor'),

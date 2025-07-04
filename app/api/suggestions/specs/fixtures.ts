@@ -329,6 +329,7 @@ const fixtures: DBFixture = {
       page: 2,
       status: 'ready',
       error: '',
+      trainingSample: true,
     },
     {
       entityId: 'shared5',

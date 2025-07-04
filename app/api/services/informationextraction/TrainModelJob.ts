@@ -5,7 +5,7 @@ import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
 import { ExtractorNotFound, Extractors } from './ixextractors';
 import { TrainModelForPDF } from './TrainModelForPDF';
 import { NoEntitiesForTraining, TrainModelForText } from './TrainModelForText';
-import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './getFiles';
+import { NoFilesForTraining, NoLabeledEntities, NoSegmentedFiles } from './ixMaterials';
 
 type CustomParams = {
   extractorId: string;

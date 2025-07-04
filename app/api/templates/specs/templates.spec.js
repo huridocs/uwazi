@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import { ObjectId } from 'mongodb';
 import documents from 'api/documents/documents.js';
 import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
 import entities from 'api/entities/entities.js';
@@ -434,6 +435,10 @@ describe('templates', () => {
   });
 
   describe('delete', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures, elasticIndex);
+    });
+
     it('should delete properties of other templates using this template as select/relationship', async () => {
       await templates.delete({ _id: templateToBeDeleted });
 
@@ -526,6 +531,29 @@ describe('templates', () => {
         expect(error.message).toBeUndefined();
         expect(error.key).toEqual('documents_using_template');
         expect(error.value).toEqual(1);
+      }
+    });
+
+    it('should handle a non existing template', async () => {
+      try {
+        await templates.delete({ _id: new ObjectId().toString() });
+      } catch (error) {
+        throw new Error(
+          'should not delete the template and throw an error because it is the default template'
+        );
+      }
+    });
+
+    it('should throw an error when the template is the default template', async () => {
+      try {
+        await templates.delete({ _id: templateToBeEditedId });
+        throw new Error(
+          'should not delete the template and throw an error because it is the default template'
+        );
+      } catch (error) {
+        expect(error.message).toEqual(
+          'Validation error\n{"path":"_id","message":"default_template_cannot_be_deleted"}'
+        );
       }
     });
   });
