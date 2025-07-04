@@ -28,11 +28,12 @@ import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
 import {
+  BATCH_SIZE as SUGGESTIONS_BATCH_SIZE,
   FileWithAggregation,
-  getFilesForSuggestions,
-  propertyTypeIsWithoutExtractedMetadata,
-  getPropertyType,
   getEntitiesForSuggestions,
+  getFilesForSuggestions,
+  getPropertyType,
+  propertyTypeIsWithoutExtractedMetadata,
 } from 'api/services/informationextraction/ixMaterials';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -634,10 +635,8 @@ class InformationExtraction {
     if (extractor.source.pdf) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
       const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
-      const files = await getFilesForSuggestions(
-        extractorId,
-        model.testRun ? remaining : undefined
-      );
+      const batchSize = model.testRun ? Math.min(remaining, SUGGESTIONS_BATCH_SIZE) : undefined;
+      const files = await getFilesForSuggestions(extractorId, batchSize);
 
       if (files.length === 0) {
         await this.stopModel(extractorId);
@@ -651,10 +650,8 @@ class InformationExtraction {
     if (extractor.source.property) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
       const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
-      const entitiesForSuggestions = await getEntitiesForSuggestions(
-        extractorId,
-        model.testRun ? remaining : undefined
-      );
+      const batchSize = model.testRun ? Math.min(remaining, SUGGESTIONS_BATCH_SIZE) : undefined;
+      const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
       if (entitiesForSuggestions.length === 0) {
         await this.stopModel(extractorId);
