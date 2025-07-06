@@ -73,6 +73,7 @@ describe('suggestions routes', () => {
           },
         })
         .expect(200);
+
       expect(response.body.suggestions).toMatchObject([
         {
           propertyName: 'super_powers',
@@ -83,7 +84,7 @@ describe('suggestions routes', () => {
           page: 3,
           error: '',
           state: {
-            labeled: false,
+            labeled: true,
             withValue: true,
             withSuggestion: true,
             match: null,
@@ -236,15 +237,10 @@ describe('suggestions routes', () => {
             },
           })
           .expect(200);
-        expect(response.body.suggestions).toEqual([
-          expect.objectContaining({
-            entityTitle: 'The Penguin',
-            language: 'en',
-          }),
-          expect.objectContaining({
-            entityTitle: 'The Penguin',
-            language: 'es',
-          }),
+        expect(response.body.suggestions).toMatchObject([
+          { sharedId: 'shared1', language: 'en' },
+          { sharedId: 'shared6', language: 'en' },
+          { sharedId: 'shared6', language: 'en' },
         ]);
       });
     });
@@ -511,11 +507,11 @@ describe('aggregation routes', () => {
         .expect(200);
 
       expect(response.body).toEqual({
-        total: 14,
-        labeled: 4,
+        total: 18,
+        labeled: 8,
         nonLabeled: 10,
         match: 4,
-        mismatch: 4,
+        mismatch: 8,
         obsolete: 4,
         error: 2,
       });

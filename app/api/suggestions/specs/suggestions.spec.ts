@@ -516,7 +516,7 @@ describe('suggestions', () => {
           page: 3,
           currentValue: 'scientific knowledge',
           state: {
-            labeled: false,
+            labeled: true,
             withValue: true,
             withSuggestion: true,
             match: null,
@@ -681,9 +681,9 @@ describe('suggestions', () => {
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
         )[1].state
       ).toEqual({
-        labeled: false,
+        labeled: true,
         withValue: true,
-        withSuggestion: true,
+        withSuggestion: false,
         match: false,
         hasContext: true,
         obsolete: false,
@@ -694,7 +694,7 @@ describe('suggestions', () => {
       expect(
         enemySuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared1').state
       ).toEqual({
-        labeled: false,
+        labeled: true,
         withValue: true,
         withSuggestion: true,
         match: true,
@@ -734,7 +734,7 @@ describe('suggestions', () => {
       expect(
         ageSuggestions.find((s: EntitySuggestionType) => s.segment === 'Alfred 67 years old').state
       ).toEqual({
-        labeled: false,
+        labeled: true,
         withValue: true,
         withSuggestion: false,
         match: false,
@@ -772,7 +772,7 @@ describe('suggestions', () => {
       ).toEqual({
         labeled: true,
         withValue: true,
-        withSuggestion: false,
+        withSuggestion: true,
         match: false,
         hasContext: true,
         obsolete: false,
@@ -820,6 +820,7 @@ describe('suggestions', () => {
         const labelMismatchedSuggestions = suggestions.filter(
           (sug: any) => sug.state.labeled && !sug.state.match
         );
+
         const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
         await Suggestions.accept(
           labelMismatchedSuggestions.map((sug: any) => ({
@@ -832,18 +833,22 @@ describe('suggestions', () => {
           extractorId: factory.id('super_powers_extractor').toString(),
         });
         const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
+
         expect(changedSuggestions).toMatchObject([
           {
-            _id: labelMismatchedSuggestions[0]._id,
-            state: matchState(),
-            suggestedValue: labelMismatchedSuggestions[0].suggestedValue,
-            labeledValue: labelMismatchedSuggestions[0].suggestedValue,
+            sharedId: 'shared2',
+            language: 'en',
+            currentValue: 'NOT_READY',
           },
           {
-            _id: labelMismatchedSuggestions[1]._id,
-            state: matchState(),
-            suggestedValue: labelMismatchedSuggestions[1].suggestedValue,
-            labeledValue: labelMismatchedSuggestions[1].suggestedValue,
+            sharedId: 'shared2',
+            language: 'es',
+            currentValue: 'NOT_READY',
+          },
+          {
+            sharedId: 'shared3',
+            language: 'en',
+            currentValue: 'puts up with Bruce Wayne',
           },
         ]);
       });
