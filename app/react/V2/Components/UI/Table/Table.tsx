@@ -77,9 +77,9 @@ const Table = <T extends TableRow<T>>({
   initialSelection = [],
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
-  const initialRowSelection = initialSelection.reduce(
-    (acc, item) => ({ ...acc, [item.rowId]: true }),
-    {}
+  const initialRowSelection = useMemo(
+    () => initialSelection.reduce((acc, item) => ({ ...acc, [item.rowId]: true }), {}),
+    [initialSelection]
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
   const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);

@@ -25,8 +25,8 @@ import { UwaziFilterQuery } from 'api/odm';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Extractors } from './ixextractors';
 
-const BATCH_SIZE = 50;
-const SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE = 1000;
+const BATCH_SIZE_FOR_PDF = 50;
+const BATCH_SIZE_FOR_PROPERTY = 1000;
 const MAX_TRAINING_FILES_NUMBER = 2000;
 const MAX_TRAINING_ENTITIES_NUMBER = 15000;
 
@@ -231,7 +231,7 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
   }
 
   const suggestions = await IXSuggestionsModel.get(query, '', {
-    limit: limit || SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE,
+    limit: limit || BATCH_SIZE_FOR_PROPERTY,
   });
 
   if (!extractor.property || !extractor) {
@@ -334,7 +334,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
   }
 
   const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-    limit: limit || BATCH_SIZE,
+    limit: limit || BATCH_SIZE_FOR_PDF,
   });
 
   const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
@@ -357,6 +357,8 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
 }
 
 export {
+  BATCH_SIZE_FOR_PDF,
+  BATCH_SIZE_FOR_PROPERTY,
   getFilesForTraining,
   getEntitiesForTraining,
   getFilesForSuggestions,
