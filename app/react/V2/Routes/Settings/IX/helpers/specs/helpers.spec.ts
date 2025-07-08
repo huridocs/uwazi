@@ -5,8 +5,9 @@
 import * as translate from 'app/I18N/translateFunction';
 import { formatOptions } from '../../components/ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
-import { getAvailableSources } from '../helpers';
+import { getAvailableSources, generateChildrenRows } from '../helpers';
 import { extractors, templates, templatesWithCommonProperties } from './fixtures';
+import { MultiValueSuggestion } from '../../types';
 
 describe('helpers', () => {
   describe('formatOptions', () => {
@@ -368,6 +369,121 @@ describe('helpers', () => {
         { label: 'Opinión', value: 'opini_n', defaultChecked: false },
         { label: 'Descripción', value: 'descripcion', defaultChecked: true },
       ]);
+    });
+  });
+
+  describe('generateChildrenRows', () => {
+    it('should generate child rows for multiselect with segment', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: [
+          { id: 'value1', label: 'Value 1', segment: 'context for value1' },
+          { id: 'value2', label: 'Value 2', segment: 'context for value2' },
+        ],
+        currentValue: ['value1', 'value3'],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+      
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: { id: 'value1', label: 'Value 1', segment: 'context for value1' },
+        currentValue: 'value1',
+        rowId: 'suggestion1-value1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: { id: 'value2', label: 'Value 2', segment: 'context for value2' },
+        currentValue: '',
+        rowId: 'suggestion1-value2',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'value3',
+        rowId: 'suggestion1-value3',
+        isChild: true,
+      });
+    });
+
+    it('should generate child rows for multiselect without segment', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: ['value1', 'value2'],
+        currentValue: ['value1', 'value3'],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+      
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'value1',
+        currentValue: 'value1',
+        rowId: 'suggestion1-value1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: 'value2',
+        currentValue: '',
+        rowId: 'suggestion1-value2',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'value3',
+        rowId: 'suggestion1-value3',
+        isChild: true,
+      });
     });
   });
 });

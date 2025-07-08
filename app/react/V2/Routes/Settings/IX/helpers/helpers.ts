@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { uniqBy } from 'lodash';
+import { get, uniqBy } from 'lodash';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { t } from 'app/I18N';
@@ -26,7 +26,10 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
 
   const { subRows, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
-    const valuePresent = currentValues.find(v => v === suggestedValue);
+    const suggestedValueId = get(suggestedValue, 'id') || suggestedValue;
+    const valuePresent = currentValues.find(v => {
+      return v === suggestedValue || v === get(suggestedValue, 'id');
+    });
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);
     }
@@ -39,7 +42,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       disableRowSelection: true,
       isChild: true,
       entityTitle: '',
-      rowId: `${suggestion.rowId}-${suggestedValue}`,
+      rowId: `${suggestion.rowId}-${suggestedValueId}`,
     });
   });
 
