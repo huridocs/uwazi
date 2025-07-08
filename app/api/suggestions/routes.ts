@@ -15,6 +15,7 @@ import {
 } from 'shared/types/suggestionType';
 import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
+import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 
 const IX = new InformationExtraction();
 
@@ -72,11 +73,20 @@ export const suggestionsRoutes = (app: Application) => {
       },
       res: Response
     ) => {
-      const suggestionsList = await Suggestions.get(req.query.filter, {
-        page: req.query.page,
-        sort: req.query.sort,
+      const query = new GetSuggestionsForTableQuery();
+
+      console.time('query');
+      const result = await query.execute({
+        extractorId: new ObjectId(req.query.filter.extractorId),
+        filter: req.query.filter.customFilter,
+        options: {
+          page: req.query.page,
+          sort: req.query.sort,
+        },
       });
-      res.json(suggestionsList);
+      console.timeEnd('query');
+
+      res.json(result);
     }
   );
 
