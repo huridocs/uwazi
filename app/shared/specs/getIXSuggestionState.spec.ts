@@ -256,5 +256,152 @@ describe('getIXSuggestionState', () => {
         error: false,
       });
     });
+
+    it('should mark match when suggestedValue contains objects with matching IDs for multiselect', () => {
+      const values = <SuggestionValues>{
+        currentValue: ['value1', 'value2'],
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: [
+          { id: 'value1', label: 'Label 1' },
+          { id: 'value2', label: 'Label 2' },
+        ],
+        modelCreationDate: 1,
+      };
+
+      const state = getSuggestionState(values, 'multiselect');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark no match when suggestedValue contains objects with non-matching IDs for multiselect', () => {
+      const values = <SuggestionValues>{
+        currentValue: ['value1', 'value3'],
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: [
+          { id: 'value1', label: 'Label 1' },
+          { id: 'value2', label: 'Label 2' },
+        ],
+        modelCreationDate: 1,
+      };
+
+      const state = getSuggestionState(values, 'multiselect');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with matching ID for select', () => {
+      const values = <SuggestionValues>{
+        currentValue: 'value1',
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: [{ id: 'value1', label: 'Label 1' }],
+        modelCreationDate: 1,
+      };
+
+      const state = getSuggestionState(values, 'select');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark no match when suggestedValue contains objects with non-matching ID for select', () => {
+      const values = <SuggestionValues>{
+        currentValue: 'value2',
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: [{ id: 'value1', label: 'Label 1' }],
+        modelCreationDate: 1,
+      };
+
+      const state = getSuggestionState(values, 'select');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with segment_text and matching ID for select', () => {
+      const values = <SuggestionValues>{
+        currentValue: 'value1',
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: [{ id: 'value1', label: 'Label 1', segment: 'context for value1' }],
+        modelCreationDate: 1,
+      };
+
+      const state = getSuggestionState(values, 'select');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with segment_text and matching IDs for multiselect', () => {
+      const values = <SuggestionValues>{
+        currentValue: ['value1', 'value2'],
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: [
+          { id: 'value1', label: 'Label 1', segment: 'context for value1' },
+          { id: 'value2', label: 'Label 2', segment: 'context for value2' },
+        ],
+        modelCreationDate: 1,
+      };
+
+      const state = getSuggestionState(values, 'multiselect');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
   });
 });

@@ -62,7 +62,7 @@ export interface IXSuggestionType {
   entityTemplate: string;
   fileId?: ObjectIdSchema;
   propertyName: string;
-  suggestedValue: PropertyValueSchema | PropertyValueSchema[];
+  suggestedValue: PropertyValueSchema | PropertyValueSchema[] | SuggestionOptionValue[];
   suggestedText?: string;
   segment?: string;
   language: string;
@@ -143,7 +143,14 @@ export interface ValuesSelectionSuggestion {
   values: {
     id: string;
     label: string;
+    segment_text?: string;
   }[];
   segment_text: string;
   [k: string]: unknown | undefined;
+}
+
+export interface SuggestionOptionValue {
+  id: string;
+  label?: string;
+  segment?: string;
 }
