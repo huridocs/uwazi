@@ -165,7 +165,13 @@ export const EntitySuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'EntitySuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema, suggestionOptionValueSchema },
+  definitions: {
+    objectIdSchema,
+    propertyTypes,
+    propertyValueSchema,
+    IXSuggestionStateSchema,
+    suggestionOptionValueSchema,
+  },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },

@@ -29,9 +29,7 @@ interface SuggestionValues {
 }
 const sameValueSet = (first: string[], second: string[]) => setsEqual(first || [], second || []);
 
-const normalizeToIds = (
-  value: CurrentValue | CurrentValue[] | SuggestedValue
-): string[] => {
+const normalizeToIds = (value: CurrentValue | CurrentValue[] | SuggestedValue): string[] => {
   const toId = (v: any): string | null => {
     if (v == null) return null;
     if (typeof v === 'object' && typeof v.id === 'string') return v.id;
@@ -53,10 +51,7 @@ const EQUALITIES: Record<string, (first: any, second: any) => boolean> = {
 const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) => {
   const equalityFn = EQUALITIES[type];
   if (equalityFn) {
-    return equalityFn(
-      normalizeToIds(first),
-      normalizeToIds(second)
-    );
+    return equalityFn(normalizeToIds(first), normalizeToIds(second));
   }
 
   return normalizeToIds(first)[0] === normalizeToIds(second)[0];

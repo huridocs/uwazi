@@ -31,7 +31,10 @@ const statusColor = (suggestion: TableSuggestion): Color => {
     return 'red';
   }
 
-  if (suggestion.currentValue === suggestion.suggestedValue || suggestion.currentValue === get(suggestion.suggestedValue, 'id')) {
+  if (
+    suggestion.currentValue === suggestion.suggestedValue ||
+    suggestion.currentValue === get(suggestion.suggestedValue, 'id')
+  ) {
     return 'green';
   }
 
@@ -43,7 +46,7 @@ const statusColor = (suggestion: TableSuggestion): Color => {
       (value: SuggestionValue) =>
         suggestion.suggestedValue &&
         (suggestion.suggestedValue as SuggestionValue[]).some(
-          (suggested: SuggestionValue) => (suggested === value || value === get(suggested, 'id'))
+          (suggested: SuggestionValue) => suggested === value || value === get(suggested, 'id')
         )
     )
   ) {
@@ -91,7 +94,10 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
   const suggestions = suggestion.subRows;
   const ammountOfSuggestions = suggestions?.length || 0;
   const amountOfValues = suggestions?.filter(s => s.currentValue).length || 0;
-  const amountOfMatches = suggestions?.filter(s => s.currentValue === s.suggestedValue || s.currentValue === get(s.suggestedValue, 'id')).length || 0;
+  const amountOfMatches =
+    suggestions?.filter(
+      s => s.currentValue === s.suggestedValue || s.currentValue === get(s.suggestedValue, 'id')
+    ).length || 0;
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
   return (

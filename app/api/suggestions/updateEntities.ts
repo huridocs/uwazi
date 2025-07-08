@@ -42,13 +42,21 @@ const fetchEntityInfo = async (
   acceptedSuggestions: AcceptedSuggestion[],
   suggestions: IXSuggestionType[]
 ): Promise<{ entityInfo: EntityInfo }> => {
-  const suggestionSharedIds = suggestions.map(s => {
-    const suggestedValue = s.suggestedValue;
-    if (Array.isArray(suggestedValue) && suggestedValue.length > 0 && typeof suggestedValue[0] === 'object' && suggestedValue[0] && 'id' in suggestedValue[0]) {
-      return suggestedValue.map(item => (item as any).id);
-    }
-    return suggestedValue;
-  }).flat();
+  const suggestionSharedIds = suggestions
+    .map(s => {
+      const suggestedValue = s.suggestedValue;
+      if (
+        Array.isArray(suggestedValue) &&
+        suggestedValue.length > 0 &&
+        typeof suggestedValue[0] === 'object' &&
+        suggestedValue[0] &&
+        'id' in suggestedValue[0]
+      ) {
+        return suggestedValue.map(item => (item as any).id);
+      }
+      return suggestedValue;
+    })
+    .flat();
   const addedSharedIds = acceptedSuggestions.map(s => s.addedValues || []).flat();
   const expectedSharedIds = Array.from(new Set(suggestionSharedIds.concat(addedSharedIds)));
   const entitiesInDb = (await entities.get({ sharedId: { $in: expectedSharedIds } }, [
@@ -108,9 +116,15 @@ const getRawValue = (
   const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
   if (!suggestion) return undefined;
   const suggestedValue = suggestion.suggestedValue;
-  if (Array.isArray(suggestedValue) && suggestedValue.length > 0 && typeof suggestedValue[0] === 'object' && suggestedValue[0] && 'id' in suggestedValue[0]) {
+  if (
+    Array.isArray(suggestedValue) &&
+    suggestedValue.length > 0 &&
+    typeof suggestedValue[0] === 'object' &&
+    suggestedValue[0] &&
+    'id' in suggestedValue[0]
+  ) {
     return suggestedValue.map(item => (item as any).id);
-  }  
+  }
   return suggestedValue;
 };
 

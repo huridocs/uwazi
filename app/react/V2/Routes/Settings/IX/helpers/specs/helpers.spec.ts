@@ -408,7 +408,7 @@ describe('helpers', () => {
       const result = generateChildrenRows(suggestion);
 
       expect(result.subRows).toHaveLength(3);
-      
+
       expect(result.subRows![0]).toMatchObject({
         suggestedValue: { id: 'value1', label: 'Value 1', segment: 'context for value1' },
         currentValue: 'value1',
@@ -463,7 +463,7 @@ describe('helpers', () => {
       const result = generateChildrenRows(suggestion);
 
       expect(result.subRows).toHaveLength(3);
-      
+
       expect(result.subRows![0]).toMatchObject({
         suggestedValue: 'value1',
         currentValue: 'value1',

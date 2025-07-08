@@ -78,7 +78,8 @@ const SuggestedValue = ({
       return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
     }
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      const suggestedValueId = get(suggestion.suggestedValue, 'id') || suggestion.suggestedValue as string;
+      const suggestedValueId =
+        get(suggestion.suggestedValue, 'id') || (suggestion.suggestedValue as string);
       const label = getLabelFromThesaurus(suggestedValueId, thesaurus);
       return <Translate context={content}>{label}</Translate>;
     }
