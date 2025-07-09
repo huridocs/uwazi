@@ -89,14 +89,16 @@ export class GetSuggestionsForTableQuery {
 
     if (isFromPdf) {
       this.applyFilesLookupStage();
-
       this.applyDocumentsProjectStage(extractor);
     }
 
     if (!isFromPdf) {
       this.applyPropertiesProjectStage(extractor);
     }
-    let suggestions = await entitiesModel.db.aggregate(this.pipelineBuilder.build());
+
+    const pipeline = this.pipelineBuilder.build();
+
+    let suggestions = await entitiesModel.db.aggregate(pipeline);
 
     suggestions = suggestions.map(s => {
       const propertyValue = s.currentValue?.[0]?.value ?? '';
@@ -146,7 +148,6 @@ export class GetSuggestionsForTableQuery {
     this.pipelineBuilder.add({
       $match: {
         template: { $in: extractor.templates },
-        [`metadata.${extractor.property}`]: { $exists: true },
       },
     });
   }
