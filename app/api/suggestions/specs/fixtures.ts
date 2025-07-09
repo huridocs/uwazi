@@ -302,6 +302,7 @@ const fixtures: DBFixture = {
       page: 3,
       status: 'failed',
       error: 'This has an error',
+      fileId: factory.id('shared4_file_1'),
     },
     {
       entityId: 'shared3',
@@ -617,7 +618,6 @@ const fixtures: DBFixture = {
       template: personTemplateId,
     },
     {
-      _id: testingDB.id(),
       sharedId: 'shared4',
       title: 'Joker',
       language: 'en',
@@ -848,6 +848,14 @@ const fixtures: DBFixture = {
       'documentWithSelects3.pdf',
       'eng',
       'documentWithSelects3.pdf'
+    ),
+    factory.fileDeprecated(
+      'shared4_file_1',
+      'shared4',
+      'document',
+      'shared4_file_1.pdf',
+      'eng',
+      'shared4_file_1.pdf'
     ),
   ],
   dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],

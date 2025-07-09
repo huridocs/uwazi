@@ -108,6 +108,10 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
     return this.create(data);
   }
 
+  async update(data: Partial<DataType<T>>) {
+    await this.db.updateOne({ _id: data._id }, { $set: data as UwaziUpdateQuery<DataType<T>> });
+  }
+
   async create(data: Partial<DataType<T>>) {
     const saved = await this.db.create([data]);
     await this.logHelper.upsertLogOne(saved[0]);

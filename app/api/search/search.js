@@ -23,6 +23,7 @@ import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { inspect } from 'util';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -872,6 +873,7 @@ const search = {
   },
 
   async bulkIndex(docs, action = 'index') {
+    inspect(new Error('who calls ?'));
     return bulkIndex(docs, action);
   },
 
