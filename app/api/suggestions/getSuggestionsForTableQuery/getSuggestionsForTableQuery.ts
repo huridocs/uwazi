@@ -5,22 +5,17 @@ import { IXExtractorType } from 'shared/types/extractorType';
 import entitiesModel from 'api/entities/entitiesModel';
 import templates from 'api/templates';
 import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';
-import { getLabeledValueStage, getMatchStage, translateCustomFilter } from '../pipelineStages';
+import { getMatchStage, translateCustomFilter } from '../pipelineStages';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { PipelineBuilder } from '../queryBuilder';
 import { Pagination } from '../pagination';
 import { Sorter } from './sorter';
 
-type Options = {
-  sort: IXSuggestionsQuery['sort'];
-  page: IXSuggestionsQuery['page'];
-};
-
-type Input = {
-  extractorId: ObjectId;
+type InputDto = {
+  extractorId: string;
   filter?: SuggestionCustomFilter;
-  paginationDto?: { number: number; size: number };
-  options?: Options;
+  sort?: IXSuggestionsQuery['sort'];
+  pagination?: IXSuggestionsQuery['page'];
 };
 
 export class GetSuggestionsForTableQuery {
@@ -31,29 +26,29 @@ export class GetSuggestionsForTableQuery {
   }
 
   // eslint-disable-next-line max-statements
-  async execute({ extractorId, filter, options, paginationDto }: Input) {
+  async execute(input: InputDto) {
+    const extractorId = new ObjectId(input.extractorId);
     const extractor = await Extractors.getById(extractorId);
     if (!extractor) {
       throw new Error(`Extractor not found id: ${extractorId}`);
     }
-    // console.log('extractor', extractor);
     const targetProperty = await templates.getPropertyByName(extractor.property);
 
     const pagination = new Pagination({
-      pageSize: paginationDto?.size,
-      currentPage: paginationDto?.number,
+      pageSize: input?.pagination?.size,
+      currentPage: input?.pagination?.number,
     });
 
     const sorter = new Sorter({
-      field: options?.sort?.property && this.toMongoField(options.sort.property, extractor),
-      order: options?.sort?.order,
+      field: input?.sort?.property && this.toMongoField(input.sort.property, extractor),
+      order: input?.sort?.order,
     });
 
-    const [matchQuery] = getMatchStage(new ObjectId(extractorId), filter, false);
+    const [matchQuery] = getMatchStage(new ObjectId(extractorId), input.filter, false);
     const total = await IXSuggestionsModel.db.countDocuments(matchQuery.$match!);
 
     const isFromPdf = !!extractor.source?.pdf;
-    const orFilters = filter && translateCustomFilter(filter);
+    const orFilters = input.filter && translateCustomFilter(input.filter);
     const shouldPrePaginate = !orFilters?.length && !isFromPdf;
 
     this.applyEntityMatchStage(extractor);
@@ -101,7 +96,6 @@ export class GetSuggestionsForTableQuery {
     if (!isFromPdf) {
       this.applyPropertiesProjectStage(extractor);
     }
-    // console.log(JSON.stringify(this.pipelineBuilder.build()));
     let suggestions = await entitiesModel.db.aggregate(this.pipelineBuilder.build());
 
     suggestions = suggestions.map(s => {
@@ -110,10 +104,19 @@ export class GetSuggestionsForTableQuery {
       const isArray =
         propertyIsMultiselect(targetProperty.type) || propertyIsRelationship(targetProperty.type);
 
-      return {
+      const _s = {
         ...s,
         currentValue: isArray ? [propertyValue] : propertyValue,
       };
+
+      if (s.extractedMetadata) {
+        const labeledValue =
+          s.extractedMetadata.find((e: any) => e.name === extractor.property)?.selection.text || '';
+
+        _s.labeledValue = labeledValue;
+      }
+
+      return _s;
     });
 
     return {
@@ -211,8 +214,6 @@ export class GetSuggestionsForTableQuery {
     this.pipelineBuilder.add({
       $unwind: '$file',
     });
-
-    this.pipelineBuilder.add(getLabeledValueStage()[0]);
   }
 
   private applyDocumentsProjectStage(extractor: IXExtractorType) {
@@ -238,7 +239,6 @@ export class GetSuggestionsForTableQuery {
         page: '$file.page',
         extractedMetadata: '$file.extractedMetadata',
         selectionRectangle: '$file.selectionRectangle',
-        labeledValue: 1,
       },
     });
   }
