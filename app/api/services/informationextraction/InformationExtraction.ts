@@ -1,7 +1,6 @@
-// Kevin------------------------------------------------------------------
+/* eslint-disable class-methods-use-this */
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-/* eslint-disable camelcase */
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
@@ -29,12 +28,14 @@ import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
 import {
+  BATCH_SIZE_FOR_PDF,
+  BATCH_SIZE_FOR_PROPERTY,
   FileWithAggregation,
-  getFilesForSuggestions,
-  propertyTypeIsWithoutExtractedMetadata,
-  getPropertyType,
   getEntitiesForSuggestions,
-} from 'api/services/informationextraction/getFiles';
+  getFilesForSuggestions,
+  getPropertyType,
+  propertyTypeIsWithoutExtractedMetadata,
+} from 'api/services/informationextraction/ixMaterials';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { LanguageUtils } from 'shared/language';
@@ -56,6 +57,7 @@ import {
 } from './suggestionFormatting';
 import { ExtractionKey } from './ExtractionKey';
 import { IXTrainModelJob } from './TrainModelJob';
+import { IXServices } from './IXServices';
 
 const defaultTrainingLanguage = 'en';
 
@@ -167,7 +169,9 @@ class InformationExtraction {
   ) {
     const errorMessage = message.error_message || 'Task failed';
 
-    await this.saveModelProcess(message.params!.id, ModelStatus.failed, false);
+    await IXServices.saveModelProcess(message.params!.id, ModelStatus.failed, {
+      findingSuggestions: false,
+    });
 
     if (currentModel?.findingSuggestions) {
       await IXSuggestionsModel.updateMany(
@@ -198,8 +202,8 @@ class InformationExtraction {
     );
   }
 
-  requestResults = async (message: InternalIXResultsMessage) => {
-    return retryWithBackoff(async () => {
+  requestResults = async (message: InternalIXResultsMessage) =>
+    retryWithBackoff(async () => {
       try {
         const response = await request.get(message.data_url);
         return JSON.parse(response.json);
@@ -207,15 +211,14 @@ class InformationExtraction {
         throw descriptiveError(error);
       }
     });
-  };
 
   static sendXmlToService = async (
     serviceUrl: string,
     xmlName: string,
     extractorId: ObjectIdSchema,
     type: string
-  ) => {
-    return retryWithBackoff(async () => {
+  ) =>
+    retryWithBackoff(async () => {
       try {
         const fileContent = await storage.fileContents(xmlName, 'segmentation');
         const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
@@ -225,8 +228,8 @@ class InformationExtraction {
         throw descriptiveError(error);
       }
     });
-  };
 
+  // eslint-disable-next-line max-params
   extendMaterialsWithLabeledData = (
     propertyLabeledData: ExtractedMetadataSchema | undefined,
     propertyValue: FileWithAggregation['propertyValue'],
@@ -263,6 +266,62 @@ class InformationExtraction {
     }
 
     return data;
+  };
+
+  sendMaterials = async (
+    files: FileWithAggregation[],
+    extractor: IXExtractorType,
+    serviceUrl: string,
+    type = 'labeled_data'
+  ) => {
+    await Promise.all(
+      files.map(async file => {
+        const xmlName = file.segmentation.xmlname!;
+        const xmlExists = await storage.fileExists(xmlName, 'segmentation');
+
+        const propertyLabeledData = file.extractedMetadata?.find(
+          labeledData => labeledData.name === extractor.property
+        );
+        const { propertyValue, propertyType } = file;
+
+        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
+          ? !propertyValue
+          : type === 'labeled_data' && !propertyLabeledData;
+
+        if (!xmlExists || missingData) return;
+
+        await InformationExtraction.sendXmlToService(serviceUrl, xmlName, extractor._id, type);
+
+        let data: MaterialsData = {
+          xml_file_name: xmlName,
+          id: extractor._id.toString(),
+          tenant: tenants.current().name,
+          xml_segments_boxes: file.segmentation.segmentation?.paragraphs,
+          page_width: file.segmentation.segmentation?.page_width,
+          page_height: file.segmentation.segmentation?.page_height,
+        };
+
+        if (type === 'labeled_data' && !missingData) {
+          data = this.extendMaterialsWithLabeledData(
+            propertyLabeledData,
+            propertyValue,
+            propertyType,
+            file,
+            data
+          );
+        }
+
+        await request.post(urljoin(serviceUrl, type), data);
+        if (type === 'prediction_data') {
+          await this.saveSuggestionProcess(file, extractor);
+        }
+      })
+    );
+  };
+
+  sendMaterialsForPDF = async (files: FileWithAggregation[], extractor: IXExtractorType) => {
+    const serviceUrl = await this.serviceUrl();
+    await this.sendMaterials(files, extractor, serviceUrl, 'prediction_data');
   };
 
   async sendMaterialsForProperty(
@@ -336,57 +395,6 @@ class InformationExtraction {
       }
     });
   }
-
-  sendMaterials = async (
-    files: FileWithAggregation[],
-    extractor: IXExtractorType,
-    serviceUrl: string,
-    type = 'labeled_data'
-  ) => {
-    await Promise.all(
-      files.map(async file => {
-        const xmlName = file.segmentation.xmlname!;
-        const xmlExists = await storage.fileExists(xmlName, 'segmentation');
-
-        const propertyLabeledData = file.extractedMetadata?.find(
-          labeledData => labeledData.name === extractor.property
-        );
-        const { propertyValue, propertyType } = file;
-
-        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
-          ? !propertyValue
-          : type === 'labeled_data' && !propertyLabeledData;
-
-        if (!xmlExists || missingData) return;
-
-        await InformationExtraction.sendXmlToService(serviceUrl, xmlName, extractor._id, type);
-
-        let data: MaterialsData = {
-          xml_file_name: xmlName,
-          id: extractor._id.toString(),
-          tenant: tenants.current().name,
-          xml_segments_boxes: file.segmentation.segmentation?.paragraphs,
-          page_width: file.segmentation.segmentation?.page_width,
-          page_height: file.segmentation.segmentation?.page_height,
-        };
-
-        if (type === 'labeled_data' && !missingData) {
-          data = this.extendMaterialsWithLabeledData(
-            propertyLabeledData,
-            propertyValue,
-            propertyType,
-            file,
-            data
-          );
-        }
-
-        await request.post(urljoin(serviceUrl, type), data);
-        if (type === 'prediction_data') {
-          await this.saveSuggestionProcess(file, extractor);
-        }
-      })
-    );
-  };
 
   _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggregation) => {
     let [entity] = await entities.getUnrestricted({
@@ -524,6 +532,8 @@ class InformationExtraction {
     if (extractor?.source.property) {
       return this.saveSuggestionsForTextSource(extractor, rawSuggestions, message);
     }
+
+    return Promise.resolve();
   };
 
   saveSuggestionProcessForTextSource = async (entity: EntitySchema, extractor: IXExtractorType) => {
@@ -578,13 +588,56 @@ class InformationExtraction {
     return serviceUrl;
   };
 
+  getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
+    const processedSuggestions = await IXSuggestionsModel.count({
+      extractorId,
+      date: { $gt: model.creationDate },
+    });
+    return {
+      total: model.totalSuggestionsToFind,
+      processed: processedSuggestions,
+    };
+  };
+
+  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
+    const suggestionsStatus = await this.getSuggestionsStatus(message.params!.id, currentModel);
+    emitToTenant(
+      message.tenant,
+      'ix_model_status',
+      message.params!.id.toString(),
+      'processing_suggestions',
+      '',
+      suggestionsStatus
+    );
+  };
+
   getSuggestions = async (extractorId: ObjectIdSchema) => {
     const [extractor] = await Extractors.get({ _id: extractorId });
     if (!extractor) {
       return;
     }
+
+    const [model] = await IXModelsModel.get({ extractorId });
+    if (model.testRun) {
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+      if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
+        await this.stopModel(extractorId);
+        emitToTenant(
+          tenants.current().name,
+          'ix_model_status',
+          extractorId,
+          'ready',
+          'Test completed'
+        );
+        return;
+      }
+    }
+
     if (extractor.source.pdf) {
-      const files = await getFilesForSuggestions(extractorId);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+      const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
+      const batchSize = model.testRun ? Math.min(remaining, BATCH_SIZE_FOR_PDF) : undefined;
+      const files = await getFilesForSuggestions(extractorId, batchSize);
 
       if (files.length === 0) {
         await this.stopModel(extractorId);
@@ -592,13 +645,16 @@ class InformationExtraction {
         return;
       }
 
-      await this.materialsForSuggestions(files, extractor);
+      await this.sendMaterialsForPDF(files, extractor);
     }
 
     if (extractor.source.property) {
-      const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId);
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+      const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
+      const batchSize = model.testRun ? Math.min(remaining, BATCH_SIZE_FOR_PROPERTY) : undefined;
+      const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
-      if (!entitiesForSuggestions.length) {
+      if (entitiesForSuggestions.length === 0) {
         await this.stopModel(extractorId);
         emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
         return;
@@ -626,15 +682,9 @@ class InformationExtraction {
     });
   };
 
-  materialsForSuggestions = async (files: FileWithAggregation[], extractor: IXExtractorType) => {
-    const serviceUrl = await this.serviceUrl();
-
-    await this.sendMaterials(files, extractor, serviceUrl, 'prediction_data');
-  };
-
-  trainModel = async (extractorId: ObjectIdSchema) => {
+  trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
     const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId);
+    await ixmodels.startTraining(extractorId, { testRun });
 
     const dispatcher = await DefaultDispatcher(tenant.name);
 
@@ -642,6 +692,8 @@ class InformationExtraction {
 
     return { status: 'processing_model', message: 'Training model' };
   };
+
+  testModel = async (extractorId: ObjectIdSchema) => this.trainModel(extractorId, true);
 
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });
@@ -663,10 +715,7 @@ class InformationExtraction {
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
-      const suggestionStatus = await this.getSuggestionsStatus(
-        extractorId,
-        currentModel.creationDate
-      );
+      const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
         return { status: 'ready', message: 'Ready' };
@@ -696,36 +745,28 @@ class InformationExtraction {
     return { status: 'error', message: 'No model found' };
   };
 
-  saveModelProcess = async (
-    extractorId: ObjectIdSchema,
-    status: ModelStatus = ModelStatus.processing,
-    findingSuggestions = true
-  ) => {
-    const [currentModel] = await ixmodels.get({ extractorId });
-
-    await ixmodels.save({
-      ...currentModel,
-      status,
-      creationDate: new Date().getTime(),
-      extractorId,
-      findingSuggestions,
-    });
-  };
-
   processResults = async (_message: IXResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       const message: InternalIXResultsMessage = {
         ..._message,
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
+
       const [currentModel] = await IXModelsModel.get({
         extractorId: message.params!.id,
       });
 
       try {
         if (message.task === 'create_model' && message.success) {
-          await this.saveModelProcess(message.params!.id, ModelStatus.ready);
-          await this.updateSuggestionStatus(message, currentModel);
+          await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
+            computeTotalSuggestions: true,
+          });
+
+          const [updatedModel] = await IXModelsModel.get({
+            extractorId: message.params!.id,
+          });
+
+          await this.updateSuggestionStatus(message, updatedModel);
         }
 
         if (!message.success) {
@@ -739,13 +780,8 @@ class InformationExtraction {
         }
 
         if (!currentModel.findingSuggestions) {
-          return emitToTenant(
-            message.tenant,
-            'ix_model_status',
-            _message.params!.id,
-            'ready',
-            'Canceled'
-          );
+          emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
+          return;
         }
       } catch (error) {
         await this.handleFailedStatus(message, currentModel);
@@ -753,33 +789,6 @@ class InformationExtraction {
 
       await this.getSuggestions(message.params!.id);
     }, _message.tenant);
-  };
-
-  getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
-    const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
-    const processedSuggestions = await IXSuggestionsModel.count({
-      extractorId,
-      date: { $gt: modelCreationDate },
-    });
-    return {
-      total: totalSuggestions,
-      processed: processedSuggestions,
-    };
-  };
-
-  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
-    const suggestionsStatus = await this.getSuggestionsStatus(
-      message.params!.id,
-      currentModel.creationDate
-    );
-    emitToTenant(
-      message.tenant,
-      'ix_model_status',
-      message.params!.id.toString(),
-      'processing_suggestions',
-      '',
-      suggestionsStatus
-    );
   };
 }
 

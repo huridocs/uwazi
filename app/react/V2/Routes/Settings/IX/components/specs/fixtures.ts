@@ -71,6 +71,7 @@ const loaderData: IXSuggestionsLoaderResponse = {
   currentStatus: ixStatus.ready,
   totalPages: 1,
   activeFilters: 0,
+  total: 10,
 };
 
 export { loaderData, suggestion1, textProperty, numericProperty, dateProperty };

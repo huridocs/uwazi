@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
 import { socket } from 'app/socket';

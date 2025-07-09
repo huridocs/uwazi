@@ -25,8 +25,8 @@ import { UwaziFilterQuery } from 'api/odm';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Extractors } from './ixextractors';
 
-const BATCH_SIZE = 50;
-const SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE = 1000;
+const BATCH_SIZE_FOR_PDF = 50;
+const BATCH_SIZE_FOR_PROPERTY = 1000;
 const MAX_TRAINING_FILES_NUMBER = 2000;
 const MAX_TRAINING_ENTITIES_NUMBER = 15000;
 
@@ -216,19 +216,23 @@ async function getEntitiesForTraining(
   return entities;
 }
 
-async function getEntitiesForSuggestions(extractorId: ObjectIdSchema) {
+async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const [currentModel] = await ixmodels.get({ extractorId });
   const [extractor] = await Extractors.get({ _id: extractorId });
 
-  const suggestions = await IXSuggestionsModel.get(
-    {
-      extractorId,
-      date: { $lt: currentModel.creationDate },
-      'state.error': { $ne: true },
-    },
-    '',
-    { limit: SOURCE_TEXT_SUGGESTIONS_BATCH_SIZE }
-  );
+  const query: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: currentModel.creationDate },
+    'state.error': { $ne: true },
+  };
+
+  if (currentModel.testRun) {
+    query.trainingSample = { $ne: true };
+  }
+
+  const suggestions = await IXSuggestionsModel.get(query, '', {
+    limit: limit || BATCH_SIZE_FOR_PROPERTY,
+  });
 
   if (!extractor.property || !extractor) {
     return [];
@@ -316,18 +320,22 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
-async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
+async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const [currentModel] = await ixmodels.get({ extractorId });
 
-  const suggestions = await IXSuggestionsModel.get(
-    {
-      extractorId,
-      date: { $lt: currentModel.creationDate },
-      'state.error': { $ne: true },
-    },
-    'fileId',
-    { limit: BATCH_SIZE }
-  );
+  const query: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: currentModel.creationDate },
+    'state.error': { $ne: true },
+  };
+
+  if (currentModel.testRun) {
+    query.trainingSample = { $ne: true };
+  }
+
+  const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
+    limit: limit || BATCH_SIZE_FOR_PDF,
+  });
 
   const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
 
@@ -349,6 +357,8 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
 }
 
 export {
+  BATCH_SIZE_FOR_PDF,
+  BATCH_SIZE_FOR_PROPERTY,
   getFilesForTraining,
   getEntitiesForTraining,
   getFilesForSuggestions,

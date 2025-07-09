@@ -34,6 +34,7 @@ import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
 import { initSentry } from './initSentry';
+import { setupQueueWorker } from './setupQueueWorker';
 
 mongoose.Promise = Promise;
 
@@ -135,7 +136,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
       }
     });
     // eslint-disable-next-line global-require
-    require('./queueWorker');
+    setupQueueWorker({ standAloneProcess: false });
   }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];

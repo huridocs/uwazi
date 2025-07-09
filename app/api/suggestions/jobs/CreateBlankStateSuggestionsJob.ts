@@ -28,17 +28,9 @@ class CreateBlankStateSuggestionsJob implements Dispatchable {
     params: SpecificJobParams,
     jobInfo: JobInfo
   ): Promise<void> {
-    const { batch, templateId, extractorId, extractorProperty, isMultiValued, extractorSource } =
-      params;
+    const { batch, templateId, extractorId, isMultiValued } = params;
     await tenants.run(async () => {
-      await createBlankStateSuggestionsBatch(
-        batch,
-        templateId,
-        extractorId,
-        extractorProperty,
-        isMultiValued,
-        extractorSource
-      );
+      await createBlankStateSuggestionsBatch(batch, templateId, extractorId, isMultiValued);
     }, jobInfo.namespace);
   }
 }

@@ -491,6 +491,14 @@ describe('suggestions', () => {
       expect(totalPages).toBe(1);
     });
 
+    it('should return total count', async () => {
+      const { total } = await Suggestions.get(
+        { extractorId: factory.id('title_extractor').toString() },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(total).toBe(6);
+    });
+
     it('should be able to filter', async () => {
       const { suggestions } = await Suggestions.get(
         {
@@ -1601,6 +1609,46 @@ describe('suggestions', () => {
       expect(segmented?.every(s => s.state?.error)).toBe(false);
       expect(notSegmented?.length).toBe(1);
       expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
+    });
+  });
+
+  describe('markSuggestionsAsTrainingSamples()', () => {
+    const newCreationDate = 13071977;
+
+    beforeEach(async () => {
+      const trainingFixtures = {
+        ...fixtures,
+        ixmodels: [
+          fixtures.ixmodels[0],
+          {
+            ...fixtures.ixmodels[1],
+            creationDate: newCreationDate,
+          },
+          ...fixtures.ixmodels.slice(2),
+        ],
+      };
+      await testingEnvironment.setUp(trainingFixtures);
+    });
+
+    it('should mark the suggestions as training samples', async () => {
+      const entities = ['shared1', 'shared3', 'shared4', 'shared6'];
+      await Suggestions.markSuggestionsAsTrainingSamples(
+        entities,
+        factory.id('title_extractor').toString()
+      );
+      const trainingSamples = await db.mongodb
+        ?.collection('ixsuggestions')
+        .find({ trainingSample: true })
+        .toArray();
+
+      expect(trainingSamples?.length).toBe(5);
+      expect(trainingSamples?.map(s => s.entityId)).toEqual([
+        'shared1',
+        'shared1',
+        'shared3',
+        'shared4',
+        'shared6',
+      ]);
     });
   });
 
