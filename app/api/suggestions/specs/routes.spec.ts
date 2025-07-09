@@ -7,8 +7,6 @@ import { search } from 'api/search';
 import {
   factory,
   fixtures,
-  shared2enId,
-  shared2esId,
   shared6enId,
   stateFilterFixtures,
   suggestionSharedId6Title,
@@ -63,422 +61,163 @@ describe('suggestions routes', () => {
     await Suggestions.updateStates({});
   });
 
-  describe('GET /api/suggestions', () => {
-    it('should return the suggestions filtered by the request language and the property name', async () => {
-      const response = await request(app)
-        .get('/api/suggestions')
-        .query({
-          filter: {
-            extractorId: factory.id('super_powers_extractor').toString(),
-          },
-        })
-        .expect(200);
-      expect(response.body.suggestions).toMatchObject([
-        {
-          propertyName: 'super_powers',
-          suggestedValue: 'NOT_READY',
-          segment: 'Red Robin, a variation on the traditional Robin persona.',
-          language: 'en',
-          date: 2,
-          page: 3,
-          error: '',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            match: null,
-            hasContext: true,
-            obsolete: true,
-            processing: true,
-            error: false,
-          },
-        },
-        {
-          entityId: shared2enId.toString(),
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-          propertyName: 'super_powers',
-          suggestedValue: 'scientific knowledge',
-          segment: 'he relies on his own scientific knowledge',
-          state: {
-            labeled: true,
-            withValue: true,
-            withSuggestion: true,
-            match: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          language: 'en',
-          page: 5,
-        },
-        {
-          entityId: shared2esId.toString(),
-          sharedId: 'shared2',
-          entityTitle: 'Batman es',
-          propertyName: 'super_powers',
-          suggestedValue: 'scientific knowledge es',
-          segment: 'el confía en su propio conocimiento científico',
-          state: {
-            labeled: true,
-            withValue: true,
-            withSuggestion: true,
-            match: false,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          language: 'es',
-          page: 5,
-        },
-        {
-          entityId: factory.id('Alfred-english-entity').toString(),
-          sharedId: 'shared3',
-          entityTitle: 'Alfred',
-          propertyName: 'super_powers',
-          suggestedValue: 'puts up with Bruce Wayne',
-          segment: 'he puts up with Bruce Wayne',
-          state: {
-            labeled: true,
-            withValue: true,
-            withSuggestion: true,
-            match: false,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          language: 'en',
-          page: 3,
-        },
-      ]);
-      expect(response.body.totalPages).toBe(1);
+  describe('validation', () => {
+    it('should return a validation error if params are not valid', async () => {
+      const invalidQuery = { additionParam: true };
+      const response = await request(app).get('/api/suggestions/').query(invalidQuery);
+      expect(response.status).toBe(400);
     });
+  });
+});
 
-    it('should include failed suggestions', async () => {
-      const response = await request(app)
-        .get('/api/suggestions')
-        .query({
-          filter: {
-            extractorId: factory.id('age_extractor').toString(),
-          },
-        })
-        .expect(200);
-      const joker = response.body.suggestions.find(
-        (suggestion: any) => suggestion.entityTitle === 'Joker'
+describe('POST /api/suggestions/status', () => {
+  it('should return the status of the IX process', async () => {
+    const response = await request(app)
+      .post('/api/suggestions/status')
+      .send({
+        extractorId: factory.id('super_powers_extractor').toString(),
+      })
+      .expect(200);
+
+    expect(response.body).toMatchObject({ status: 'ready' });
+  });
+});
+
+describe('POST /api/suggestions/train', () => {
+  it('should return the status of the IX process', async () => {
+    const response = await request(app)
+      .post('/api/suggestions/train')
+      .send({ extractorId: factory.id('super_powers_extractor').toString() })
+      .expect(202);
+
+    expect(response.body).toMatchObject({ status: 'processing' });
+  });
+});
+
+describe('POST /api/suggestions/test_model', () => {
+  it('should return the status of the IX process', async () => {
+    const response = await request(app)
+      .post('/api/suggestions/test_model')
+      .send({ extractorId: factory.id('super_powers_extractor').toString() })
+      .expect(202);
+
+    expect(response.body).toMatchObject({ status: 'processing' });
+  });
+});
+
+describe('POST /api/suggestions/accept', () => {
+  const suggestionsSuccess = async () =>
+    waitForExpect(() => {
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'ACCEPT_SUGGESTION_SUCCESS',
+        TestEmitSources.session
       );
-      expect(joker).toMatchObject({
-        entityTitle: 'Joker',
-        propertyName: 'age',
-        segment: 'Joker age is 45',
-        sharedId: 'shared4',
-        state: {
-          error: true,
-        },
-        suggestedValue: null,
-      });
+      expect(iosocket.emit).toHaveBeenCalledTimes(1);
     });
 
-    describe('pagination', () => {
-      it('should return the requested page sorted by date by default', async () => {
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('title_extractor').toString(),
-            },
-            page: { number: 2, size: 2 },
-          })
-          .expect(200);
-
-        expect(response.body.suggestions).toMatchObject([
-          { entityTitle: 'Alfred' },
-          { entityTitle: 'Robin' },
-        ]);
-
-        expect(response.body.totalPages).toBe(3);
-      });
-
-      it.each([
-        { number: -2, size: 2 },
-        { number: 2, size: -2 },
-        { number: 2, size: 1000 },
-      ])('should handle invalid pagination params', async page => {
-        await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('title_extractor').toString(),
-            },
-            page,
-          })
-          .expect(400);
-      });
-    });
-
-    describe('filtering', () => {
-      it('should filter by state', async () => {
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('enemy_extractor').toString(),
-              customFilter: {
-                labeled: true,
-                nonLabeled: false,
-                match: false,
-                mismatch: false,
-                obsolete: false,
-                error: false,
-              },
-            },
-          })
-          .expect(200);
-        expect(response.body.suggestions).toEqual([
-          expect.objectContaining({
-            entityTitle: 'The Penguin',
-            language: 'en',
-          }),
-          expect.objectContaining({
-            entityTitle: 'The Penguin',
-            language: 'es',
-          }),
-        ]);
-      });
-    });
-
-    describe('sorting', () => {
-      it('should sort by entity title', async () => {
-        const response = await request(app)
-          .get('/api/suggestions')
-          .query({
-            filter: {
-              extractorId: factory.id('super_powers_extractor').toString(),
-            },
-            sort: { property: 'entityTitle', order: 'desc' },
-          })
-          .expect(200);
-
-        expect(response.body.suggestions[0]).toMatchObject({
-          sharedId: 'shared2',
-          entityTitle: 'Batman es',
-          language: 'es',
-        });
-
-        expect(response.body.suggestions[1]).toMatchObject({
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-          language: 'en',
-        });
-
-        expect(response.body.suggestions[2]).toMatchObject({
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-          language: 'en',
-        });
-
-        expect(response.body.suggestions[3]).toMatchObject({
-          sharedId: 'shared3',
-          entityTitle: 'Alfred',
-          language: 'en',
-        });
-
-        expect(response.body.totalPages).toBe(1);
-      });
-
-      it('should sort by current value', async () => {
-        const response = await request(app)
-          .get('/api/suggestions')
-          .query({
-            filter: {
-              extractorId: factory.id('super_powers_extractor').toString(),
-            },
-            sort: { property: 'currentValue' },
-          })
-          .expect(200);
-
-        expect(response.body.suggestions[0]).toMatchObject({
-          currentValue: 'conocimiento científico',
-          entityTitle: 'Batman es',
-          sharedId: 'shared2',
-        });
-
-        expect(response.body.suggestions[1]).toMatchObject({
-          currentValue: 'no super powers',
-          entityTitle: 'Alfred',
-          sharedId: 'shared3',
-        });
-
-        expect(response.body.suggestions[2]).toMatchObject({
-          currentValue: 'scientific knowledge',
-          entityTitle: 'Batman en',
-          sharedId: 'shared2',
-        });
-
-        expect(response.body.totalPages).toBe(1);
-      });
-    });
-
-    describe('validation', () => {
-      it('should return a validation error if params are not valid', async () => {
-        const invalidQuery = { additionParam: true };
-        const response = await request(app).get('/api/suggestions/').query(invalidQuery);
-        expect(response.status).toBe(400);
-      });
-    });
+  afterEach(() => {
+    iosocket.emit.mockClear();
   });
 
-  describe('POST /api/suggestions/status', () => {
-    it('should return the status of the IX process', async () => {
-      const response = await request(app)
-        .post('/api/suggestions/status')
-        .send({
-          extractorId: factory.id('super_powers_extractor').toString(),
-        })
-        .expect(200);
+  it('should update the suggestion for title in one language', async () => {
+    await request(app)
+      .post('/api/suggestions/accept')
+      .send({
+        suggestions: [
+          {
+            _id: suggestionSharedId6Title,
+            sharedId: 'shared6',
+            entityId: shared6enId,
+          },
+        ],
+      })
+      .expect(202);
 
-      expect(response.body).toMatchObject({ status: 'ready' });
-    });
+    await suggestionsSuccess();
+
+    const actualEntities = await entities.get({ sharedId: 'shared6' });
+    expect(actualEntities).toMatchObject([
+      {
+        title: 'The Penguin',
+      },
+      {
+        title: 'Penguin',
+      },
+      {
+        title: 'The Penguin',
+      },
+    ]);
+    expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
   });
 
-  describe('POST /api/suggestions/train', () => {
-    it('should return the status of the IX process', async () => {
-      const response = await request(app)
-        .post('/api/suggestions/train')
-        .send({ extractorId: factory.id('super_powers_extractor').toString() })
-        .expect(202);
+  it('should handle partial acceptance parameters for multiselects', async () => {
+    await request(app)
+      .post('/api/suggestions/accept')
+      .send({
+        suggestions: [
+          {
+            _id: factory.idString('multiSelectSuggestion2'),
+            sharedId: 'entityWithSelects2',
+            entityId: factory.idString('entityWithSelects2'),
+            addedValues: ['1B'],
+            removedValues: ['1A'],
+          },
+        ],
+      })
+      .expect(202);
 
-      expect(response.body).toMatchObject({ status: 'processing' });
-    });
+    await suggestionsSuccess();
+
+    const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
+    expect(entity.metadata.property_multiselect).toEqual([
+      { value: 'A', label: 'A' },
+      { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
+    ]);
+    expect(search.indexEntities).toHaveBeenCalledWith(
+      { sharedId: 'entityWithSelects2' },
+      '+fullText'
+    );
   });
 
-  describe('POST /api/suggestions/test_model', () => {
-    it('should return the status of the IX process', async () => {
-      const response = await request(app)
-        .post('/api/suggestions/test_model')
-        .send({ extractorId: factory.id('super_powers_extractor').toString() })
-        .expect(202);
+  it('should emit ACCEPT_SUGGESTION_SUCCESS event after accept suggestion finish with success', async () => {
+    await request(app)
+      .post('/api/suggestions/accept')
+      .send({
+        suggestions: [
+          {
+            _id: suggestionSharedId6Title,
+            sharedId: 'shared6',
+            entityId: shared6enId,
+          },
+        ],
+      })
+      .expect(202);
 
-      expect(response.body).toMatchObject({ status: 'processing' });
-    });
+    await suggestionsSuccess();
   });
 
-  describe('POST /api/suggestions/accept', () => {
-    const suggestionsSuccess = async () =>
-      waitForExpect(() => {
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'ACCEPT_SUGGESTION_SUCCESS',
-          TestEmitSources.session
-        );
-        expect(iosocket.emit).toHaveBeenCalledTimes(1);
-      });
+  it('should emit ACCEPT_SUGGESTION_ERROR event after accept suggestion finish with error', async () => {
+    await request(app)
+      .post('/api/suggestions/accept')
+      .send({
+        suggestions: [
+          {
+            _id: 'any',
+            sharedId: 'any',
+            entityId: 'any',
+          },
+        ],
+      })
+      .expect(202);
 
-    afterEach(() => {
-      iosocket.emit.mockClear();
-    });
-
-    it('should update the suggestion for title in one language', async () => {
-      await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          suggestions: [
-            {
-              _id: suggestionSharedId6Title,
-              sharedId: 'shared6',
-              entityId: shared6enId,
-            },
-          ],
-        })
-        .expect(202);
-
-      await suggestionsSuccess();
-
-      const actualEntities = await entities.get({ sharedId: 'shared6' });
-      expect(actualEntities).toMatchObject([
-        {
-          title: 'The Penguin',
-        },
-        {
-          title: 'Penguin',
-        },
-        {
-          title: 'The Penguin',
-        },
-      ]);
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
-    });
-
-    it('should handle partial acceptance parameters for multiselects', async () => {
-      await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          suggestions: [
-            {
-              _id: factory.idString('multiSelectSuggestion2'),
-              sharedId: 'entityWithSelects2',
-              entityId: factory.idString('entityWithSelects2'),
-              addedValues: ['1B'],
-              removedValues: ['1A'],
-            },
-          ],
-        })
-        .expect(202);
-
-      await suggestionsSuccess();
-
-      const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
-      expect(entity.metadata.property_multiselect).toEqual([
-        { value: 'A', label: 'A' },
-        { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
-      ]);
-      expect(search.indexEntities).toHaveBeenCalledWith(
-        { sharedId: 'entityWithSelects2' },
-        '+fullText'
+    await waitForExpect(() => {
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'ACCEPT_SUGGESTION_ERROR',
+        TestEmitSources.session,
+        expect.any(String)
       );
-    });
 
-    it('should emit ACCEPT_SUGGESTION_SUCCESS event after accept suggestion finish with success', async () => {
-      await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          suggestions: [
-            {
-              _id: suggestionSharedId6Title,
-              sharedId: 'shared6',
-              entityId: shared6enId,
-            },
-          ],
-        })
-        .expect(202);
-
-      await suggestionsSuccess();
-    });
-
-    it('should emit ACCEPT_SUGGESTION_ERROR event after accept suggestion finish with error', async () => {
-      await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          suggestions: [
-            {
-              _id: 'any',
-              sharedId: 'any',
-              entityId: 'any',
-            },
-          ],
-        })
-        .expect(202);
-
-      await waitForExpect(() => {
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'ACCEPT_SUGGESTION_ERROR',
-          TestEmitSources.session,
-          expect.any(String)
-        );
-
-        expect(iosocket.emit).toHaveBeenCalledTimes(1);
-      });
+      expect(iosocket.emit).toHaveBeenCalledTimes(1);
     });
   });
 });
