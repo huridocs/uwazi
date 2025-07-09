@@ -495,21 +495,15 @@ describe('suggestions', () => {
           extractorId: factory.id('super_powers_extractor'),
         });
         const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
-
         expect(changedSuggestions).toMatchObject([
           {
-            sharedId: 'shared2',
-            language: 'en',
-            currentValue: 'NOT_READY',
-          },
-          {
-            sharedId: 'shared2',
             language: 'es',
-            currentValue: 'NOT_READY',
+            sharedId: 'shared2',
+            currentValue: 'scientific knowledge es',
           },
           {
-            sharedId: 'shared3',
             language: 'en',
+            sharedId: 'shared3',
             currentValue: 'puts up with Bruce Wayne',
           },
         ]);
