@@ -14,6 +14,9 @@ export class PipelineBuilder {
   }
 
   build() {
-    return [...this.pipeline];
+    const pipeline = [...this.pipeline];
+    this.pipeline = [];
+
+    return pipeline;
   }
 }
