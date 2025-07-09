@@ -215,8 +215,8 @@ export default {
   },
 
   async _update(template: TemplateSchema, language: string, _reindex = true) {
-    const reindex = _reindex && !template.synced;
     const templateStructureChanges = await checkIfReindex(template);
+    const reindex = _reindex && templateStructureChanges && !template.synced;
     const currentTemplate = ensure<WithId<TemplateSchema>>(
       await this.getById(ensure(template._id))
     );
@@ -229,7 +229,7 @@ export default {
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     }
 
-    const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = await model.save(template, undefined);
     if (templateStructureChanges) {
       await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
@@ -263,8 +263,6 @@ export default {
         );
       }
 
-      await reindexEntitiesByTemplate(template, { reindex, generatedIdAdded });
-
       const relationshipPropsWithChangedRelData =
         currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
       const newRelationshipProps = currentTemplateV2
@@ -285,6 +283,10 @@ export default {
           50,
           reindex
         );
+      }
+
+      if (reindex) {
+        await search.indexEntities({ template: template._id });
       }
     }
 

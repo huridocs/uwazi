@@ -80,7 +80,10 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
         relationtypes: [f.relationType('rel1'), f.relationType('rel2')],
         templates: [
           f.template('templateA', [f.property('text_property')]),
-          f.template('templateB', [f.relationshipProp('rel_prop', 'templateA')]),
+          f.template('templateB', [
+            f.relationshipProp('rel_prop', 'templateA'),
+            f.property('text_property_b'),
+          ]),
           f.template('templateC', [f.property('text_property_2')]),
         ],
         entities: [
@@ -139,6 +142,27 @@ describe.each([{ featureFlag: false }, { featureFlag: true }])(
         ],
       };
       await setUpFixtures(fixtures);
+    });
+
+    describe('when changing a property name and template contains relationship properties', () => {
+      it('should change the name on all entities and reindex', async () => {
+        const propertyWithNameChanged = f.property('text_property_b', 'text', {
+          label: 'name_changed',
+        });
+        const template = f.template('templateB', [
+          f.relationshipProp('rel_prop', 'templateA'),
+          propertyWithNameChanged,
+        ]);
+        await templates.save(template, 'en');
+
+        const expectedEn = [
+          { sharedId: 'entityB1', metadata: { name_changed: [] } },
+          { sharedId: 'entityB2', metadata: { name_changed: [] } },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expectedEn);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expectedEn);
+      });
     });
 
     describe('when changing a relationship property "inherit"', () => {

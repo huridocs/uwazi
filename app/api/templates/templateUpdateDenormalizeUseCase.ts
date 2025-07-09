@@ -223,7 +223,7 @@ const updateMetdataFromTemplateSave = async (
   //   { ordered: false }
   // );
 
-  await search.indexEntities({ sharedId: { $in: entitiesToUpdate.map(e => e.sharedId) } });
+  // await search.indexEntities({ sharedId: { $in: entitiesToUpdate.map(e => e.sharedId) } });
 };
 
 export const denormalizeTemplateEntities = async (
