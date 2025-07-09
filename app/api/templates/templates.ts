@@ -50,19 +50,6 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const reindexEntitiesByTemplate = async (
-  template: TemplateSchema,
-  options: { reindex: boolean; generatedIdAdded: boolean }
-) => {
-  const templateHasRelationShipProperty = template.properties?.find(
-    p => p.type === propertyTypes.relationship
-  );
-  if (options.reindex && (options.generatedIdAdded || !templateHasRelationShipProperty)) {
-    return search.indexEntities({ template: template._id });
-  }
-  return Promise.resolve();
-};
-
 const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
   translations.addContext(
     template._id.toString(),
