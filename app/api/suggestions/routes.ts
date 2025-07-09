@@ -75,16 +75,12 @@ export const suggestionsRoutes = (app: Application) => {
     ) => {
       const query = new GetSuggestionsForTableQuery();
 
-      console.time('query');
       const result = await query.execute({
-        extractorId: new ObjectId(req.query.filter.extractorId),
+        extractorId: req.query.filter.extractorId.toString(),
         filter: req.query.filter.customFilter,
-        options: {
-          page: req.query.page,
-          sort: req.query.sort,
-        },
+        sort: req.query.sort,
+        pagination: req.query.page,
       });
-      console.timeEnd('query');
 
       res.json(result);
     }
