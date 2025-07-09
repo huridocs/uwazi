@@ -96,6 +96,7 @@ const bulkIndex = async (docs, _action = 'index') => {
   });
 
   const results = await elastic.bulk({ body });
+
   if (results.body.items) {
     handleErrors(results.body.items.filter(f => f.index.error));
   }

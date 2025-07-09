@@ -1,4 +1,5 @@
 import entities from 'api/entities/entities.js';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -8,23 +9,29 @@ import templates from '../templates';
 
 const f = getFixturesFactory();
 
-async function setUpFixtures(fixtures: DBFixture) {
-  await testingEnvironment.setUp(fixtures, 'templates_denorm_flow');
-  try {
-    await Promise.all(
-      (fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-    );
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    throw e;
+const getEntitiesByTemplate = async (
+  templateId: string,
+  source: 'mongo' | 'elastic' = 'mongo',
+  language: string = 'en'
+): Promise<EntitySchema[]> => {
+  if (source === 'mongo') {
+    const allEntities = await testingEnvironment.db.getAllFrom('entities');
+    const filtered =
+      allEntities?.filter(
+        entity =>
+          entity.template?.toString() === f.idString(templateId) && entity.language === language
+      ) || [];
+    return filtered.sort((a, b) => (a.sharedId || '').localeCompare(b.sharedId || ''));
   }
-}
-
-const getEntitiesByTemplate = async (templateId: string): Promise<EntitySchema[]> => {
-  const allEntities = await testingEnvironment.db.getAllFrom('entities');
+  await elasticTesting.refresh();
+  const allEntities = await elasticTesting.getIndexedEntities();
   return (
-    allEntities?.filter(entity => entity.template?.toString() === f.idString(templateId)) || []
+    allEntities
+      ?.filter(
+        entity =>
+          entity.template?.toString() === f.idString(templateId) && entity.language === language
+      )
+      .sort((a, b) => (a.sharedId || '').localeCompare(b.sharedId || '')) || []
   );
 };
 
@@ -40,316 +47,433 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each([
-  { featureFlag: false },
-  //  { featureFlag: true }
-])('templates denormalization scenarios (feature flag -> $featureFlag)', ({ featureFlag }) => {
-  let fixtures: DBFixture;
+describe.each([{ featureFlag: false }, { featureFlag: true }])(
+  'templates denormalization scenarios (feature flag -> $featureFlag)',
+  ({ featureFlag }) => {
+    let fixtures: DBFixture;
 
-  beforeAll(async () => {
-    fixtures = {
-      settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
-      relationtypes: [f.relationType('rel1'), f.relationType('rel2')],
-      templates: [
-        f.template('templateA', [f.property('text_property')]),
-        f.template('templateB', [f.relationshipProp('rel_prop', 'templateA')]),
-        f.template('templateC', [f.property('text_property_2')]),
-      ],
-      entities: [
-        f.entity('entityA1', 'templateA', {
-          text_property: [f.metadataValue('text value A 1')],
-        }),
-        f.entity('entityA2', 'templateA', {
-          text_property: [f.metadataValue('text value A 2')],
-        }),
-        f.entity('entityB1', 'templateB', {
-          rel_prop: [f.metadataValue('entityA1', '')],
-        }),
-        f.entity('entityB2', 'templateB', {
-          rel_prop: [f.metadataValue('entityA2', '')],
-        }),
-      ],
-    };
-    await setUpFixtures(fixtures);
-    testingTenants.changeCurrentTenant({
-      featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
-    });
-  });
-
-  describe('when changing a relationship property "inherit"', () => {
-    it('should correctly inherit and denormalize properties from related templates', async () => {
-      const template = f.template('templateB', [
-        f.relationshipProp('rel_prop', 'templateA', {
-          inherit: { property: f.idString('text_property'), type: 'text' },
-        }),
-      ]);
-
-      await templates.save(template, 'en');
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        {
-          sharedId: 'entityB1',
-          metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 1' }] }] },
-        },
-        {
-          sharedId: 'entityB2',
-          metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 2' }] }] },
-        },
-      ]);
-    });
-  });
-
-  describe('when changing a relationship property "relationType"', () => {
-    it('should delete values belonging to the previous relationType', async () => {
-      const template = f.template('templateB', [
-        f.relationshipProp('rel_prop', 'templateA', {
-          relationType: f.idString('rel2'),
-        }),
-      ]);
-
-      await templates.save(template, 'en');
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        { sharedId: 'entityB1', metadata: { rel_prop: [] } },
-        { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-      ]);
-    });
-
-    it('should create metadata values if connections with the new relationType exist', async () => {
-      await setUpFixtures({
-        ...fixtures,
-        entities: [...(fixtures.entities || []), f.entity('entityA3', 'templateA', {})],
-        connections: [...createConnection('entityB1', 'entityA3', 'rel2', 'hub1')],
+    async function setUpFixtures(_fixtures: DBFixture) {
+      await testingEnvironment.setUp(_fixtures, 'templates_denorm_flow');
+      try {
+        await Promise.all(
+          (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+        );
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+        throw e;
+      }
+      testingTenants.changeCurrentTenant({
+        featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
       });
-
-      const template = f.template('templateB', [
-        f.relationshipProp('rel_prop', 'templateA', {
-          relationType: f.idString('rel2'),
-        }),
-      ]);
-
-      await templates.save(template, 'en');
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
-        { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-      ]);
-    });
-  });
-
-  describe('when changing a relationship property "content" (target template)', () => {
-    it('should delete values belonging to the previous content', async () => {
-      const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateC')]);
-
-      await templates.save(template, 'en');
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        { sharedId: 'entityB1', metadata: { rel_prop: [] } },
-        { sharedId: 'entityB2', metadata: { rel_prop: [] } },
-      ]);
-    });
-
-    it('should create metadata values if connections to entities with the new content (target template) exist', async () => {
-      await setUpFixtures({
-        ...fixtures,
-        entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
-        connections: [
-          ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
-          ...createConnection('entityC1', 'entityB2', 'rel', 'hub1'),
-        ],
-      });
-
-      await templates.save(
-        f.template('templateB', [
-          f.relationshipProp('rel_prop', 'templateC', {
-            relationType: f.idString('rel'),
-          }),
-        ]),
-        'en'
-      );
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-        { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-      ]);
-    });
-  });
-  describe('when "content" (target template) is empty (any template)', () => {
-    it('should create metadata values if connections to entities to any template exists', async () => {
-      const hub1 = f.id('hub1');
-      const hub2 = f.id('hub2');
-      const hub3 = f.id('hub3');
-      await setUpFixtures({
-        ...fixtures,
-        entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
-        connections: [
-          { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub1 },
-          { _id: testingDB.id(), entity: 'entityB1', hub: hub1 },
-
-          { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub2 },
-          { _id: testingDB.id(), entity: 'entityB2', hub: hub2 },
-
-          { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub3 },
-          { _id: testingDB.id(), entity: 'entityB2', hub: hub3 },
-        ],
-      });
-
-      await templates.save(
-        f.template('templateB', [
-          f.relationshipProp('rel_prop', undefined, {
-            relationType: f.idString('rel'),
-          }),
-        ]),
-        'en'
-      );
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-
-        {
-          sharedId: 'entityB2',
-          metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1' }] },
-        },
-      ]);
-    });
-  });
-
-  describe('when "content" (target template) is empty (any template) AND ALL CONNECTIONS HAVE RelationType (even the parent)', () => {
-    it('should the values created include itself ????? (this is the current behaviour)', async () => {
-      await setUpFixtures({
-        ...fixtures,
-        entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
-        connections: [
-          ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
-          ...createConnection('entityC1', 'entityB2', 'rel', 'hub2'),
-          ...createConnection('entityA1', 'entityB2', 'rel', 'hub3'),
-        ],
-      });
-
-      await templates.save(
-        f.template('templateB', [
-          f.relationshipProp('rel_prop', undefined, {
-            relationType: f.idString('rel'),
-          }),
-        ]),
-        'en'
-      );
-
-      expect(await getEntitiesByTemplate('templateB')).toMatchObject([
-        {
-          sharedId: 'entityB1',
-          metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityB1' }] },
-        },
-        {
-          sharedId: 'entityB2',
-          metadata: {
-            rel_prop: [{ label: 'entityC1' }, { label: 'entityB2' }, { label: 'entityA1' }],
+    }
+    beforeAll(async () => {
+      fixtures = {
+        settings: [
+          {
+            languages: [
+              { key: 'en', label: 'English', default: true },
+              { key: 'es', label: 'Español' },
+            ],
           },
-        },
-      ]);
-    });
-  });
-
-  describe('when 2 relationships point to the same template/rel combination but different inherit props', () => {
-    it('should properly dernomalize both props', async () => {
-      await setUpFixtures({
-        ...fixtures,
+        ],
+        relationtypes: [f.relationType('rel1'), f.relationType('rel2')],
         templates: [
-          ...fixtures.templates,
+          f.template('templateA', [f.property('text_property')]),
+          f.template('templateB', [f.relationshipProp('rel_prop', 'templateA')]),
+          f.template('templateC', [f.property('text_property_2')]),
+        ],
+        entities: [
+          f.entity(
+            'entityA1',
+            'templateA',
+            { text_property: [f.metadataValue('text value A 1')] },
+            { title: 'entityA1 english', language: 'en' }
+          ),
+          f.entity(
+            'entityA1',
+            'templateA',
+            { text_property: [f.metadataValue('valor texto A 1')] },
+            { title: 'entityA1 spanish', language: 'es' }
+          ),
+          f.entity(
+            'entityA2',
+            'templateA',
+            { text_property: [f.metadataValue('text value A 2')] },
+            { title: 'entityA2 english', language: 'en' }
+          ),
+          f.entity(
+            'entityA2',
+            'templateA',
+            { text_property: [f.metadataValue('valor texto A 2')] },
+            { title: 'entityA2 spanish', language: 'es' }
+          ),
+
+          f.entity(
+            'entityB1',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA1', '')] },
+            { title: 'entityB1 english', language: 'en' }
+          ),
+
+          f.entity(
+            'entityB1',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA1', '')] },
+            { title: 'entityB1 spanish', language: 'es' }
+          ),
+
+          f.entity(
+            'entityB2',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA2', '')] },
+            { title: 'entityB2 english', language: 'en' }
+          ),
+
+          f.entity(
+            'entityB2',
+            'templateB',
+            { rel_prop: [f.metadataValue('entityA2', '')] },
+            { title: 'entityB2 spanish', language: 'es' }
+          ),
+        ],
+      };
+      await setUpFixtures(fixtures);
+    });
+
+    describe('when changing a relationship property "inherit"', () => {
+      it('should correctly inherit and denormalize properties from related templates', async () => {
+        const template = f.template('templateB', [
+          f.relationshipProp('rel_prop', 'templateA', {
+            inherit: { property: f.idString('text_property'), type: 'text' },
+          }),
+        ]);
+
+        await templates.save(template, 'en');
+
+        const expectedEn = [
+          {
+            sharedId: 'entityB1',
+            metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 1' }] }] },
+          },
+          {
+            sharedId: 'entityB2',
+            metadata: { rel_prop: [{ inheritedValue: [{ value: 'text value A 2' }] }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expectedEn);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expectedEn);
+
+        const expectedEs = [
+          {
+            sharedId: 'entityB1',
+            metadata: { rel_prop: [{ inheritedValue: [{ value: 'valor texto A 1' }] }] },
+          },
+          {
+            sharedId: 'entityB2',
+            metadata: { rel_prop: [{ inheritedValue: [{ value: 'valor texto A 2' }] }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB', 'mongo', 'es')).toMatchObject(expectedEs);
+        expect(await getEntitiesByTemplate('templateB', 'elastic', 'es')).toMatchObject(expectedEs);
+      });
+    });
+
+    describe('when changing a relationship property "relationType"', () => {
+      it('should delete values belonging to the previous relationType', async () => {
+        const template = f.template('templateB', [
+          f.relationshipProp('rel_prop', 'templateA', {
+            relationType: f.idString('rel2'),
+          }),
+        ]);
+
+        await templates.save(template, 'en');
+
+        const expected = [
+          { sharedId: 'entityB1', metadata: { rel_prop: [] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
+      });
+
+      it('should create metadata values if connections with the new relationType exist', async () => {
+        await setUpFixtures({
+          ...fixtures,
+          entities: [...(fixtures.entities || []), f.entity('entityA3', 'templateA', {})],
+          connections: [...createConnection('entityB1', 'entityA3', 'rel2', 'hub1')],
+        });
+
+        const template = f.template('templateB', [
+          f.relationshipProp('rel_prop', 'templateA', {
+            relationType: f.idString('rel2'),
+          }),
+        ]);
+
+        await templates.save(template, 'en');
+
+        const expected = [
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
+      });
+    });
+
+    describe('when changing a relationship property "content" (target template)', () => {
+      it('should delete values belonging to the previous content', async () => {
+        const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateC')]);
+
+        await templates.save(template, 'en');
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject([
+          { sharedId: 'entityB1', metadata: { rel_prop: [] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [] } },
+        ]);
+      });
+
+      it('should create metadata values if connections to entities with the new content (target template) exist', async () => {
+        await setUpFixtures({
+          ...fixtures,
+          entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+          connections: [
+            ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
+            ...createConnection('entityC1', 'entityB2', 'rel', 'hub1'),
+          ],
+        });
+
+        await templates.save(
+          f.template('templateB', [
+            f.relationshipProp('rel_prop', 'templateC', {
+              relationType: f.idString('rel'),
+            }),
+          ]),
+          'en'
+        );
+
+        const expected = [
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
+      });
+    });
+    describe('when "content" (target template) is empty (any template)', () => {
+      it('should create metadata values if connections to entities to any template exists', async () => {
+        const hub1 = f.id('hub1');
+        const hub2 = f.id('hub2');
+        const hub3 = f.id('hub3');
+        await setUpFixtures({
+          ...fixtures,
+          entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+          connections: [
+            { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub1 },
+            { _id: testingDB.id(), entity: 'entityB1', hub: hub1 },
+
+            { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub2 },
+            { _id: testingDB.id(), entity: 'entityB2', hub: hub2 },
+
+            { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub3 },
+            { _id: testingDB.id(), entity: 'entityB2', hub: hub3 },
+          ],
+        });
+
+        await templates.save(
+          f.template('templateB', [
+            f.relationshipProp('rel_prop', undefined, {
+              relationType: f.idString('rel'),
+            }),
+          ]),
+          'en'
+        );
+
+        const expected = [
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+
+          {
+            sharedId: 'entityB2',
+            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1 english' }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
+      });
+    });
+
+    describe('when "content" (target template) is empty (any template) AND ALL CONNECTIONS HAVE RelationType (even the parent)', () => {
+      it('should the values created include itself ????? (this is the current behaviour)', async () => {
+        await setUpFixtures({
+          ...fixtures,
+          entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+          connections: [
+            ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
+            ...createConnection('entityC1', 'entityB2', 'rel', 'hub2'),
+            ...createConnection('entityA1', 'entityB2', 'rel', 'hub3'),
+          ],
+        });
+
+        await templates.save(
+          f.template('templateB', [
+            f.relationshipProp('rel_prop', undefined, {
+              relationType: f.idString('rel'),
+            }),
+          ]),
+          'en'
+        );
+
+        const expected = [
+          {
+            sharedId: 'entityB1',
+            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityB1 english' }] },
+          },
+          {
+            sharedId: 'entityB2',
+            metadata: {
+              rel_prop: [
+                { label: 'entityC1' },
+                { label: 'entityB2 english' },
+                { label: 'entityA1 english' },
+              ],
+            },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateB', 'elastic')).toMatchObject(expected);
+      });
+    });
+
+    describe('when 2 relationships point to the same template/rel combination but different inherit props', () => {
+      it('should properly dernomalize both props', async () => {
+        await setUpFixtures({
+          ...fixtures,
+          templates: [
+            ...fixtures.templates,
+            f.template('templateD', [
+              f.relationshipProp('rel_prop', 'templateA'),
+              f.relationshipProp('rel_prop2', 'templateA'),
+            ]),
+          ],
+          entities: [
+            ...(fixtures.entities || []),
+            f.entity('entityD1', 'templateD', {
+              rel_prop: [f.metadataValue('entityA1', '')],
+              rel_prop2: [f.metadataValue('entityA1', '')],
+            }),
+            f.entity('entityD2', 'templateD', {
+              rel_prop: [f.metadataValue('entityA2', '')],
+              rel_prop2: [f.metadataValue('entityA2', '')],
+            }),
+          ],
+          connections: [
+            ...createConnection('entityD1', 'entityA1', 'rel', 'hub1'),
+            ...createConnection('entityD2', 'entityA2', 'rel', 'hub1'),
+          ],
+        });
+
+        await templates.save(
           f.template('templateD', [
             f.relationshipProp('rel_prop', 'templateA'),
-            f.relationshipProp('rel_prop2', 'templateA'),
+            f.relationshipProp('rel_prop2', 'templateA', {
+              inherit: { property: f.idString('text_property'), type: 'text' },
+            }),
           ]),
-        ],
-        entities: [
-          ...(fixtures.entities || []),
-          f.entity('entityD1', 'templateD', {
-            rel_prop: [f.metadataValue('entityA1', '')],
-            rel_prop2: [f.metadataValue('entityA1', '')],
-          }),
-          f.entity('entityD2', 'templateD', {
-            rel_prop: [f.metadataValue('entityA2', '')],
-            rel_prop2: [f.metadataValue('entityA2', '')],
-          }),
-        ],
-        connections: [
-          ...createConnection('entityD1', 'entityA1', 'rel', 'hub1'),
-          ...createConnection('entityD2', 'entityA2', 'rel', 'hub1'),
-        ],
+          'en'
+        );
+
+        const expected = [
+          {
+            sharedId: 'entityD1',
+            metadata: {
+              rel_prop: [{ label: 'entityA1 english' }],
+              rel_prop2: [
+                { label: 'entityA1 english', inheritedValue: [{ value: 'text value A 1' }] },
+              ],
+            },
+          },
+          {
+            sharedId: 'entityD2',
+            metadata: {
+              rel_prop: [{ label: 'entityA2 english' }],
+              rel_prop2: [
+                { label: 'entityA2 english', inheritedValue: [{ value: 'text value A 2' }] },
+              ],
+            },
+          },
+        ];
+        expect(await getEntitiesByTemplate('templateD')).toMatchObject(expected);
+        expect(await getEntitiesByTemplate('templateD', 'elastic')).toMatchObject(expected);
       });
-
-      await templates.save(
-        f.template('templateD', [
-          f.relationshipProp('rel_prop', 'templateA'),
-          f.relationshipProp('rel_prop2', 'templateA', {
-            inherit: { property: f.idString('text_property'), type: 'text' },
-          }),
-        ]),
-        'en'
-      );
-
-      expect(await getEntitiesByTemplate('templateD')).toMatchObject([
-        {
-          sharedId: 'entityD1',
-          metadata: {
-            rel_prop: [{ label: 'entityA1' }],
-            rel_prop2: [{ label: 'entityA1', inheritedValue: [{ value: 'text value A 1' }] }],
-          },
-        },
-        {
-          sharedId: 'entityD2',
-          metadata: {
-            rel_prop: [{ label: 'entityA2' }],
-            rel_prop2: [{ label: 'entityA2', inheritedValue: [{ value: 'text value A 2' }] }],
-          },
-        },
-      ]);
     });
-  });
 
-  describe('when creating a new relationship property', () => {
-    it('should create metadata values if connections to entities exists', async () => {
-      await setUpFixtures({
-        ...fixtures,
-        templates: [...fixtures.templates, f.template('templateD')],
-        entities: [
-          ...(fixtures.entities || []),
-          f.entity('entityD1', 'templateD', {}),
-          f.entity('entityD2', 'templateD', {}),
-        ],
-        connections: [
-          ...createConnection('entityD1', 'entityA1', 'rel', 'hub1'),
-          ...createConnection('entityD2', 'entityA2', 'rel', 'hub2'),
-        ],
+    describe('when creating a new relationship property which have existing connections', () => {
+      it('should create the metadata values on the entities and denormalize with the proper languages', async () => {
+        const hub1 = f.id('hub1');
+        const hub2 = f.id('hub2');
+
+        await setUpFixtures({
+          ...fixtures,
+          templates: [...fixtures.templates, f.template('templateD', [])],
+          entities: [
+            ...(fixtures.entities || []),
+            f.entity('entityD1', 'templateD', {}, { title: 'entityD1 english', language: 'en' }),
+            f.entity('entityD1', 'templateD', {}, { title: 'entityD1 spanish', language: 'es' }),
+
+            f.entity('entityD2', 'templateD', {}, { title: 'entityD2 english', language: 'en' }),
+            f.entity('entityD2', 'templateD', {}, { title: 'entityD2 spanish', language: 'es' }),
+          ],
+          connections: [
+            { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub1 },
+            { _id: testingDB.id(), entity: 'entityD1', hub: hub1 },
+
+            { _id: testingDB.id(), entity: 'entityA2', template: f.idString('rel'), hub: hub2 },
+            { _id: testingDB.id(), entity: 'entityD2', hub: hub2 },
+          ],
+        });
+
+        await templates.save(
+          f.template('templateD', [
+            f.relationshipProp('new_rel_prop', 'templateA', { relationType: f.idString('rel') }),
+          ]),
+          'en'
+        );
+
+        const expectedEn = [
+          {
+            sharedId: 'entityD1',
+            metadata: { new_rel_prop: [{ label: 'entityA1 english' }] },
+          },
+          {
+            sharedId: 'entityD2',
+            metadata: { new_rel_prop: [{ label: 'entityA2 english' }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateD', 'mongo', 'en')).toMatchObject(expectedEn);
+        expect(await getEntitiesByTemplate('templateD', 'elastic', 'en')).toMatchObject(expectedEn);
+
+        const expectedEs = [
+          {
+            sharedId: 'entityD1',
+            metadata: { new_rel_prop: [{ label: 'entityA1 spanish' }] },
+          },
+          {
+            sharedId: 'entityD2',
+            metadata: { new_rel_prop: [{ label: 'entityA2 spanish' }] },
+          },
+        ];
+
+        expect(await getEntitiesByTemplate('templateD', 'mongo', 'es')).toMatchObject(expectedEs);
+        expect(await getEntitiesByTemplate('templateD', 'elastic', 'es')).toMatchObject(expectedEs);
       });
-
-      await templates.save(
-        f.template('templateD', [
-          f.relationshipProp('new_rel_prop', 'templateA', { relationType: f.idString('rel') }),
-          f.relationshipProp('new_rel_prop2', 'templateA', {
-            relationType: f.idString('rel'),
-            inherit: { property: f.idString('text_property'), type: 'text' },
-          }),
-        ]),
-        'en'
-      );
-
-      expect(await getEntitiesByTemplate('templateD')).toMatchObject([
-        {
-          sharedId: 'entityD1',
-          metadata: {
-            new_rel_prop: [{ label: 'entityA1' }],
-            new_rel_prop2: [{ label: 'entityA1', inheritedValue: [{ value: 'text value A 1' }] }],
-          },
-        },
-        {
-          sharedId: 'entityD2',
-          metadata: {
-            new_rel_prop: [{ label: 'entityA2' }],
-            new_rel_prop2: [{ label: 'entityA2', inheritedValue: [{ value: 'text value A 2' }] }],
-          },
-        },
-      ]);
     });
-  });
-});
+  }
+);
