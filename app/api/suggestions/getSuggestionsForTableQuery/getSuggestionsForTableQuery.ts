@@ -102,8 +102,8 @@ export class GetSuggestionsForTableQuery {
 
     suggestions = suggestions.map(s => {
       const isMultiValue = propertyTypeIsMultiValued(targetProperty.type);
-      const suggestedValue = s.suggestedValue ?? (isMultiValue ? [] : '');
-      const currentValue = isMultiValue ? (s?.currentValue ?? []) : (s?.currentValue?.[0] ?? '');
+      const suggestedValue = s.suggestedValue || (isMultiValue ? [] : '');
+      const currentValue = isMultiValue ? s?.currentValue || [] : s?.currentValue?.[0] || '';
 
       const _s = {
         ...s,

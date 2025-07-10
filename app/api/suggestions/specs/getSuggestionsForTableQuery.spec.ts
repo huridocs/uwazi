@@ -714,7 +714,7 @@ describe('getSuggestionsForTableQuery', () => {
     ]);
   });
 
-  describe('given labeledValue is null', () => {
+  describe('given suggestedValue is null', () => {
     it('when target property is single value should fallback to empty string', async () => {
       const { sut } = createSut();
 

@@ -260,7 +260,7 @@ class SuggestionTextSourceFormatter {
 
   private static numeric({ text, segment_text }: RawSuggestion) {
     return {
-      suggestedValue: Number(text),
+      suggestedValue: Number(text) || '',
       segment: segment_text,
     };
   }
