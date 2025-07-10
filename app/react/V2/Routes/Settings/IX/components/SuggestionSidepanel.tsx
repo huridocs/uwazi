@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
@@ -47,6 +48,38 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
+const MultiselectItemLabel = ({
+  currentValues,
+  suggestions,
+  value,
+  property,
+}: {
+  currentValues: string[];
+  suggestions: string[];
+  value;
+  property: ClientPropertySchema;
+}) => {
+  const matchingStyles = 'bg-success-50 text-success-800';
+  const nonMatchingStyles = 'bg-orange-50 text-orange-800';
+
+  const isSelected = currentValues.includes(value.id);
+  const isSuggested = suggestions.includes(value.id);
+  let styles = '';
+
+  if (isSelected && isSuggested) {
+    styles = matchingStyles;
+  }
+
+  if (!isSelected && isSuggested) {
+    styles = nonMatchingStyles;
+  }
+  return (
+    <Translate className={styles} context={property?.content}>
+      {value.label}
+    </Translate>
+  );
+};
+
 const SuggestionSidepanel = ({
   showSidepanel,
   setShowSidepanel,
@@ -69,7 +102,6 @@ const SuggestionSidepanel = ({
   const [selectAndSearch, setSelectAndSearch] = useState(false);
   const [selectAndSearchValue, setSelectAndSearchValue] = useState<string | undefined>();
   const [options, setOptions] = useState<MultiselectListOption[]>([]);
-  const [currentValueOptions, setCurrentValueOptions] = useState<MultiselectListOption[]>([]);
   const pdfScalingValue = useAtomValue(pdfScaleAtom);
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
 
@@ -97,55 +129,41 @@ const SuggestionSidepanel = ({
   const watchField = watch('field');
 
   useEffect(() => {
-    if (
-      property?.type !== 'select' &&
-      property?.type !== 'multiselect' &&
-      property?.type !== 'relationship'
-    ) {
-      return;
-    }
+    if (property?.type === 'select' || property?.type === 'multiselect') {
+      const currentValues = (getValues('field') as string[]) || [];
+      const suggestions = (suggestion?.suggestedValue as string[]) || [];
 
-    const currentValues = (getValues('field') as string[]) || [];
-    const suggestions = (suggestion?.suggestedValue as string[]) || [];
-
-    const renderLabel = (value: any) => {
-      const matchingStyles = 'bg-success-50 text-success-800';
-      const nonMatchingStyles = 'bg-orange-50 text-orange-800';
-
-      const isSelected = currentValues.includes(value.id);
-      const isSuggested = suggestions.includes(value.id);
-      let styles = '';
-
-      if (isSelected && isSuggested) {
-        styles = matchingStyles;
-      }
-
-      if (!isSelected && isSuggested) {
-        styles = nonMatchingStyles;
-      }
-      return (
-        <Translate className={styles} context={property?.content}>
-          {value.label}
-        </Translate>
-      );
-    };
-
-    const _options: MultiselectListOption[] = [];
-    thesaurus?.values.forEach((value: any) => {
-      _options.push({
-        label: renderLabel(value),
-        searchLabel: value.label.toLowerCase(),
-        value: value.id,
-        suggested: (suggestion?.suggestedValue as string[])?.includes(value.id),
-        items: value.values?.map((subValue: any) => ({
-          label: renderLabel(subValue),
-          searchLabel: subValue.label.toLowerCase(),
-          value: subValue.id,
-          suggested: (suggestion?.suggestedValue as string[])?.includes(subValue.id),
-        })),
+      const _options: MultiselectListOption[] = [];
+      thesaurus?.values.forEach((value: any) => {
+        _options.push({
+          label: (
+            <MultiselectItemLabel
+              currentValues={currentValues}
+              suggestions={suggestions}
+              value={value}
+              property={property}
+            />
+          ),
+          searchLabel: value.label.toLowerCase(),
+          value: value.id,
+          suggested: (suggestion?.suggestedValue as string[])?.includes(value.id),
+          items: value.values?.map((subValue: any) => ({
+            label: (
+              <MultiselectItemLabel
+                currentValues={currentValues}
+                suggestions={suggestions}
+                value={subValue}
+                property={property}
+              />
+            ),
+            searchLabel: subValue.label.toLowerCase(),
+            value: subValue.id,
+            suggested: (suggestion?.suggestedValue as string[])?.includes(subValue.id),
+          })),
+        });
       });
-    });
-    setOptions(_options);
+      setOptions(_options);
+    }
   }, [getValues, property, suggestion, thesaurus, watchField]);
 
   useEffect(() => {
@@ -153,26 +171,6 @@ const SuggestionSidepanel = ({
       const _thesaurus = thesauris.find(thes => thes._id === property.content);
       setThesaurus(_thesaurus);
     }
-
-    if (!property?.content && property) {
-      const limit = preloadOptionsLimit();
-      const thesaurusOfTypeTemplate = thesauris.filter(thes => thes.type === 'template');
-      const limitPerThesaurus = limit / thesaurusOfTypeTemplate.length;
-
-      const combinedTheasaurus = thesaurusOfTypeTemplate.reduce(
-        (acc: ClientThesaurusValue[], thes) => {
-          const values = thes.values.slice(0, limitPerThesaurus);
-          return acc.concat(values);
-        },
-        []
-      );
-      const _thesaurus = { values: combinedTheasaurus };
-      setThesaurus(_thesaurus);
-    }
-
-    return () => {
-      setThesaurus(undefined);
-    };
   }, [property, thesauris]);
 
   useEffect(() => {
@@ -185,26 +183,6 @@ const SuggestionSidepanel = ({
         .catch(e => {
           throw e;
         });
-
-      if (property?.type === 'relationship') {
-        loadValuesAndSuggestions(
-          suggestion.currentValue as string[],
-          suggestion.suggestedValue as string[],
-          suggestion.language
-        )
-          .then(entities => {
-            const preloadedOptions = entities.map(_entity => ({
-              label: _entity.title as string,
-              value: _entity.sharedId as string,
-              searchLabel: _entity.title as string,
-            }));
-
-            setCurrentValueOptions(preloadedOptions);
-          })
-          .catch(e => {
-            throw e;
-          });
-      }
     }
   }, [property, suggestion]);
 
@@ -221,6 +199,28 @@ const SuggestionSidepanel = ({
     }
   }, [pdf, setValue, showSidepanel, suggestion]);
 
+  useEffect(() => {
+    if (property?.type === 'relationship' && suggestion) {
+      loadValuesAndSuggestions(
+        suggestion.currentValue as string[],
+        suggestion.suggestedValue as string[],
+        suggestion.language
+      )
+        .then(entities => {
+          const preloadedOptions = entities.map(_entity => ({
+            label: _entity.title as string,
+            value: _entity.sharedId as string,
+            searchLabel: _entity.title as string,
+          }));
+
+          setOptions(preloadedOptions);
+        })
+        .catch(e => {
+          throw e;
+        });
+    }
+  }, [property, suggestion]);
+
   const handleClose = () => {
     setSelectedText(undefined);
     setSelectionError(undefined);
@@ -229,7 +229,6 @@ const SuggestionSidepanel = ({
     setValue('field', undefined, { shouldDirty: false });
     setPdf(undefined);
     setEntity(undefined);
-    setCurrentValueOptions([]);
     setSelectAndSearchValue('');
     setSelectAndSearch(false);
     reset();
@@ -382,14 +381,14 @@ const SuggestionSidepanel = ({
 
   const initialOptions = useMemo(
     () =>
-      [...options, ...currentValueOptions].reduce((acc, option) => {
+      options.reduce((acc, option) => {
         if (!acc.find(_option => _option.value === option.value)) {
           acc.push(option);
         }
 
         return acc;
       }, [] as MultiselectListOption[]),
-    [currentValueOptions, options]
+    [options]
   );
 
   const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
