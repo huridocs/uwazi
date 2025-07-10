@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import { IXExtractorType } from 'shared/types/extractorType';
 import entitiesModel from 'api/entities/entitiesModel';
 import templates from 'api/templates';
-import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';
+import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import { getMatchStage, translateCustomFilter } from '../pipelineStages';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { PipelineBuilder } from '../queryBuilder';
@@ -101,14 +101,14 @@ export class GetSuggestionsForTableQuery {
     let suggestions = await entitiesModel.db.aggregate(pipeline);
 
     suggestions = suggestions.map(s => {
-      const propertyValue = s.currentValue?.[0]?.value ?? '';
-
-      const isArray =
-        propertyIsMultiselect(targetProperty.type) || propertyIsRelationship(targetProperty.type);
+      const isMultiValue = propertyTypeIsMultiValued(targetProperty.type);
+      const suggestedValue = s.suggestedValue ?? (isMultiValue ? [] : '');
+      const currentValue = isMultiValue ? (s?.currentValue ?? []) : (s?.currentValue?.[0] ?? '');
 
       const _s = {
         ...s,
-        currentValue: isArray ? [propertyValue] : propertyValue,
+        currentValue,
+        suggestedValue,
       };
 
       if (s.extractedMetadata) {
@@ -225,7 +225,8 @@ export class GetSuggestionsForTableQuery {
         entityTemplateId: '$template',
         sharedId: 1,
         language: 1,
-        currentValue: extractor.property === 'title' ? '$title' : `$metadata.${extractor.property}`,
+        currentValue:
+          extractor.property === 'title' ? '$title' : `$metadata.${extractor.property}.value`,
 
         _id: '$suggestion._id',
         propertyName: '$suggestion.propertyName',
@@ -252,7 +253,8 @@ export class GetSuggestionsForTableQuery {
         entityTemplateId: '$template',
         sharedId: 1,
         language: 1,
-        currentValue: extractor.property === 'title' ? '$title' : `$metadata.${extractor.property}`,
+        currentValue:
+          extractor.property === 'title' ? '$title' : `$metadata.${extractor.property}.value`,
 
         _id: '$suggestion._id',
         propertyName: '$suggestion.propertyName',

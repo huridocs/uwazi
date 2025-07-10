@@ -24,6 +24,10 @@ const fixtures: DBFixture = {
       factory.property('target_text', 'text'),
     ]),
 
+    factory.template('extractor_source_pdf_target_multiselect_template', [
+      factory.property('target_multiselect', 'multiselect'),
+    ]),
+
     factory.template('extractor_source_text_target_text_template', [
       factory.property('target_text', 'text'),
       factory.property('source_text', 'text'),
@@ -32,6 +36,10 @@ const fixtures: DBFixture = {
   ixextractors: [
     factory.ixExtractor('extractor_source_pdf_target_text', 'target_text', [
       'extractor_source_pdf_target_text_template',
+    ]),
+
+    factory.ixExtractor('extractor_source_pdf_target_multiselect', 'target_multiselect', [
+      'extractor_source_pdf_target_multiselect_template',
     ]),
 
     factory.ixExtractor(
@@ -48,6 +56,24 @@ const fixtures: DBFixture = {
       'extractor_source_pdf_target_text_template',
       {
         target_text: [{ value: 'labeled_match_context_value' }],
+      }
+    ),
+
+    ...factory.entityInMultipleLanguages(
+      ['es', 'en'],
+      'extractor_source_pdf_target_text_entity_2',
+      'extractor_source_pdf_target_text_template',
+      {
+        target_text: [],
+      }
+    ),
+
+    ...factory.entityInMultipleLanguages(
+      ['es', 'en'],
+      'extractor_source_pdf_target_multiselect_entity_1',
+      'extractor_source_pdf_target_multiselect_template',
+      {
+        target_multiselect: [],
       }
     ),
 
@@ -135,6 +161,50 @@ const fixtures: DBFixture = {
         hasContext: true,
         withValue: true,
         withSuggestion: true,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
+    }),
+
+    factory.ixSuggestion({
+      entityId: 'extractor_source_pdf_target_text_entity_2',
+      suggestedValue: null,
+      entityTemplate: 'extractor_source_pdf_target_text_template',
+      propertyName: 'target_text',
+      extractorId: factory.id('extractor_source_pdf_target_text'),
+      language: 'en',
+      segment: '',
+      status: 'ready',
+      fileId: factory.id('extractor_source_pdf_target_text_entity_2_pdf_1'),
+      state: {
+        match: false,
+        labeled: false,
+        hasContext: false,
+        withValue: false,
+        withSuggestion: false,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
+    }),
+
+    factory.ixSuggestion({
+      entityId: 'extractor_source_pdf_target_multiselect_entity_1',
+      suggestedValue: null,
+      entityTemplate: 'extractor_source_pdf_target_multiselect_template',
+      propertyName: 'target_multiselect',
+      extractorId: factory.id('extractor_source_pdf_target_multiselect'),
+      language: 'en',
+      segment: '',
+      status: 'ready',
+      fileId: factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_1'),
+      state: {
+        match: false,
+        labeled: false,
+        hasContext: false,
+        withValue: false,
+        withSuggestion: false,
         error: false,
         obsolete: false,
         processing: false,
@@ -372,6 +442,18 @@ const fixtures: DBFixture = {
       language: 'es',
       entity: 'extractor_source_pdf_target_text_entity_1',
       extractedMetadata: [{ name: 'target_text', selection: { text: 'labeled_value' } }],
+    }),
+
+    factory.document('extractor_source_pdf_target_text_entity_2_pdf_1', {
+      language: 'en',
+      entity: 'extractor_source_pdf_target_text_entity_2',
+      extractedMetadata: [],
+    }),
+
+    factory.document('extractor_source_pdf_target_multiselect_entity_1_pdf_1', {
+      language: 'en',
+      entity: 'extractor_source_pdf_target_multiselect_entity_1',
+      extractedMetadata: [],
     }),
   ],
 };
@@ -630,5 +712,39 @@ describe('getSuggestionsForTableQuery', () => {
         language: 'es',
       },
     ]);
+  });
+
+  describe('given labeledValue is null', () => {
+    it('when target property is single value should fallback to empty string', async () => {
+      const { sut } = createSut();
+
+      const { suggestions } = await sut.execute({
+        extractorId: factory.id('extractor_source_pdf_target_text').toString(),
+      });
+
+      expect(
+        suggestions.find(
+          s =>
+            s.fileId.toString() ===
+            factory.id('extractor_source_pdf_target_text_entity_2_pdf_1').toString()
+        )
+      ).toMatchObject({ suggestedValue: '' });
+    });
+
+    it('when target property is multi value should fallback to empty array', async () => {
+      const { sut } = createSut();
+
+      const { suggestions } = await sut.execute({
+        extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
+      });
+
+      expect(
+        suggestions.find(
+          s =>
+            s.fileId.toString() ===
+            factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_1').toString()
+        )
+      ).toMatchObject({ suggestedValue: [] });
+    });
   });
 });
