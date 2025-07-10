@@ -6,7 +6,6 @@ import entities, { model } from 'api/entities';
 import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
 import { denormalizeMetadatatImproved } from 'api/entities/denormalize_improved_templates_save';
 import relationships from 'api/relationships/relationships';
-import { search } from 'api/search';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -223,7 +222,7 @@ const updateMetdataFromTemplateSave = async (
   //   { ordered: false }
   // );
 
-  await search.indexEntities({ sharedId: { $in: entitiesToUpdate.map(e => e.sharedId) } });
+  // await search.indexEntities({ sharedId: { $in: entitiesToUpdate.map(e => e.sharedId) } });
 };
 
 export const denormalizeTemplateEntities = async (
