@@ -114,11 +114,7 @@ const EditThesaurus = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-thesauri"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-thesauri">
       <SettingsContent className="flex flex-col h-full">
         <SettingsContent.Header
           path={new Map([['Thesauri', '/settings/thesauri']])}

@@ -151,11 +151,7 @@ const Collection = () => {
   ];
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-collection"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-collection">
       <SettingsContent>
         <SettingsContent.Header title="Collection" />
         <SettingsContent.Body>

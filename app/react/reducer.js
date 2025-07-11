@@ -6,7 +6,6 @@ import createReducer from 'app/BasicReducer';
 import page from 'app/Pages/reducers/reducer';
 import notifications from 'app/Notifications/reducers/notificationsReducer';
 
-import thesauri from 'app/Thesauri/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
@@ -41,7 +40,7 @@ export default combineReducers({
   inlineEditForm: formReducer('inlineEditModel', {}),
   inlineEditModel: modelReducer('inlineEditModel', {}),
   page,
-  thesauri,
+  settings,
   entityView,
   thesauris: createReducer('thesauris', []),
   entityThesauris: createReducer('entityThesauris', {}),
@@ -64,7 +63,6 @@ export default combineReducers({
   attachments,
   modals,
   user,
-  settings,
   metadata,
   exportSearchResults,
   userGroups: createReducer('userGroups', []),

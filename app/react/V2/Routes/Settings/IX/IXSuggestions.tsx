@@ -237,11 +237,7 @@ const IXSuggestions = () => {
   });
 
   return (
-    <div
-      className="tw-content"
-      data-testid="settings-ix"
-      style={{ width: '100%', overflowY: 'auto' }}
-    >
+    <div className="h-full w-full overflow-y-auto" data-testid="settings-ix">
       <SettingsContent>
         <SettingsContent.Header
           path={new Map([['Metadata extraction', '/settings/metadata_extraction']])}

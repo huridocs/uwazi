@@ -3,7 +3,7 @@ import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'V2/Components/UI';
 import { StarIcon } from '@heroicons/react/20/solid';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N';
 import { Tooltip } from 'flowbite-react';
 import { TemplateRow } from '../types';
 

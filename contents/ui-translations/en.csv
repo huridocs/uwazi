@@ -48,7 +48,6 @@ Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,Add template
 Add thesaurus,Add thesaurus
-Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
 Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
 Add to all languages,Add to all languages
@@ -129,7 +128,6 @@ You will need to update them manually. After selecting this option, you will not
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
-Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
 Clear All,Clear All
@@ -175,7 +173,6 @@ Copy Highlighted,Copy Highlighted
 Copy link,Copy link
 Copy properties to this entity from,Copy properties to this entity from
 Copy to clipboard,Copy to clipboard
-Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
 Could not reach server. Please try again later.,Could not reach server. Please try again later.
@@ -346,7 +343,6 @@ Find,Find
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions
 Fine tune,Fine tune
-Firefox extension store link,Firefox extension store link
 Fit,Fit
 Flag,Flag
 for,for
@@ -400,9 +396,8 @@ Inherit property,Inherit property
 Inherit type,Inherit type
 Input,Input
 Install,Install
-Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
-INSTALL the browser extension,INSTALL the browser extension
+Install the browser extension.,Install the browser extension.
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -517,6 +512,7 @@ New page,New page
 New password,New password
 New relationship type,New relationship type
 New relationships group,New relationships group
+New Relationships Migration,New Relationships Migration
 New user,New user
 Next,Next
 No,No
@@ -994,7 +990,6 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,You can create metadata templates in
-"You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

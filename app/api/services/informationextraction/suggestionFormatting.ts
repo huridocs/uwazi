@@ -139,7 +139,7 @@ const FORMATTERS: Record<
       throw new Error('Numeric suggestion is not valid.');
     }
 
-    const suggestedValue = parseFloat(rawSuggestion.text.trim()) || null;
+    const suggestedValue = parseFloat(rawSuggestion.text.trim()) || '';
     const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
 
     return suggestion;
@@ -260,7 +260,7 @@ class SuggestionTextSourceFormatter {
 
   private static numeric({ text, segment_text }: RawSuggestion) {
     return {
-      suggestedValue: Number(text),
+      suggestedValue: Number(text) || '',
       segment: segment_text,
     };
   }
