@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import _ from 'lodash';
-
+import { ObjectId } from 'mongodb';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
@@ -36,7 +36,6 @@ describe('thesauri', () => {
       const elasticIndex = 'thesauri.spec.elastic.index';
       await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
       const thesaurus = await thesauri.get(null, 'es');
-
       expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
       expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
 
@@ -70,6 +69,23 @@ describe('thesauri', () => {
         expect(response[0].values[0].label).toBe('value 1');
         expect(response[0].values[1].label).toBe('Parent');
         expect(response[0].values[1].values[0].label).toBe('value 2');
+      });
+    });
+  });
+
+  describe('getAll()', () => {
+    it('should return all thesauri', async () => {
+      const { rows } = await thesauri.getAll();
+
+      expect(rows[0]).toMatchObject({ _id: expect.any(ObjectId), name: 'dictionary' });
+
+      expect(rows[1]).toMatchObject({
+        _id: expect.any(ObjectId),
+        name: 'dictionary 2',
+        values: [
+          { id: '1', label: 'value 1' },
+          { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 2' }] },
+        ],
       });
     });
   });
