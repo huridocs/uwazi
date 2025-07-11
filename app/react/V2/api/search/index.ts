@@ -17,8 +17,15 @@ interface LookupResponse {
 }
 
 const lookup = async (
-  entityTitle: string,
-  template?: string,
+  {
+    entityTitle,
+    template,
+    limit = 10,
+  }: {
+    entityTitle: string;
+    template?: string;
+    limit?: number;
+  },
   headers?: IncomingHttpHeaders
 ): Promise<LookupResponse> => {
   try {
@@ -28,6 +35,7 @@ const lookup = async (
         searchString: entityTitle,
         ...(template && { template }),
       },
+      page: { limit },
     };
 
     const requestParams = new RequestParams(qs.stringify(search), headers);
