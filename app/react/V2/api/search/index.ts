@@ -6,7 +6,7 @@ import { SearchQuery } from 'shared/types/SearchQueryType';
 import { EntitySchema } from 'shared/types/entityType';
 
 interface LookupResponse {
-  data: (Pick<EntitySchema, 'title' | 'sharedId' | 'template'> & { _id: string })[];
+  data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];
   links?: {
     self: string;
     first?: string | null;
@@ -39,6 +39,7 @@ const lookup = async (
     };
 
     const requestParams = new RequestParams(qs.stringify(search), headers);
+
     if (headers && headers['Content-Language']) {
       api.locale(headers['Content-Language']);
     }
