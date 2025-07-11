@@ -1,38 +1,170 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ImportProgress rendering states should render a state for end 1`] = `
-<div
-  className="alert alert-info"
->
-  <Connect(Icon)
-    icon="check"
-    size="2x"
-  />
+<Fragment>
   <div
-    className="force-ltr"
+    className="alert alert-info"
   >
-    <Translate
-      translationKey="Import completed"
+    <Connect(Icon)
+      icon="check"
+      size="2x"
+    />
+    <div
+      className="force-ltr"
     >
-      Import completed. Number of entities created:
-    </Translate>
-     
-    5
-    <br />
-    <Translate>
-      Indexing entities may take a few minutes
-    </Translate>
-  </div>
-  <Connect(Icon)
-    icon="times"
-    onClick={[Function]}
-    style={
-      Object {
-        "cursor": "pointer",
+      <Translate
+        translationKey="Import completed"
+      >
+        Import completed. Number of entities created:
+      </Translate>
+       
+      5
+      <br />
+      <Translate>
+        Indexing entities may take a few minutes
+      </Translate>
+    </div>
+    <Connect(Icon)
+      icon="times"
+      onClick={[Function]}
+      style={
+        Object {
+          "cursor": "pointer",
+        }
       }
-    }
-  />
-</div>
+    />
+  </div>
+</Fragment>
+`;
+
+exports[`ImportProgress rendering states should render a state for end with row exceptions 1`] = `
+<Fragment>
+  <div
+    className="alert alert-info"
+  >
+    <Connect(Icon)
+      icon="check"
+      size="2x"
+    />
+    <div
+      className="force-ltr"
+    >
+      <Translate
+        translationKey="Import completed"
+      >
+        Import completed. Number of entities created:
+      </Translate>
+       
+      5
+      <br />
+      <Translate>
+        Indexing entities may take a few minutes
+      </Translate>
+    </div>
+    <Connect(Icon)
+      icon="times"
+      onClick={[Function]}
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
+    />
+  </div>
+  <div>
+    <div
+      className="alert alert-warning"
+    >
+      <Connect(Icon)
+        icon="exclamation-triangle"
+        size="2x"
+      />
+      <Translate>
+        The import process threw some warnings:
+      </Translate>
+    </div>
+    <div
+      className="alert"
+    >
+      <div
+        key="Sanitized entries skipped in import"
+      >
+        <Translate>
+          Sanitized entries skipped in import
+          :
+        </Translate>
+        <div
+          className="item-info"
+          key="Sanitized entries skipped in import-0-0"
+        >
+          <strong>
+            <Translate>
+              Row
+            </Translate>
+          </strong>
+          : 
+          1
+           -
+           
+          <strong>
+            <Translate>
+              Property
+            </Translate>
+          </strong>
+          : 
+          select_with_spaces
+           -
+           
+          <strong>
+            <Translate>
+              Value
+            </Translate>
+          </strong>
+          : 
+           Item2 
+        </div>
+      </div>
+      <div
+        key="Another warning type"
+      >
+        <Translate>
+          Another warning type
+          :
+        </Translate>
+        <div
+          className="item-info"
+          key="Another warning type-1-0"
+        >
+          <strong>
+            <Translate>
+              Row
+            </Translate>
+          </strong>
+          : 
+          2
+           -
+           
+          <strong>
+            <Translate>
+              Property
+            </Translate>
+          </strong>
+          : 
+          another_property
+           -
+           
+          <strong>
+            <Translate>
+              Value
+            </Translate>
+          </strong>
+          : 
+          invalid_value
+        </div>
+      </div>
+    </div>
+  </div>
+</Fragment>
 `;
 
 exports[`ImportProgress rendering states should render a state for errors 1`] = `
