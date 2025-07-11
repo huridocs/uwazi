@@ -139,7 +139,7 @@ const FORMATTERS: Record<
       throw new Error('Numeric suggestion is not valid.');
     }
 
-    const suggestedValue = parseFloat(rawSuggestion.text.trim()) || null;
+    const suggestedValue = parseFloat(rawSuggestion.text.trim()) || '';
     const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
 
     return suggestion;
@@ -153,10 +153,15 @@ const FORMATTERS: Record<
       throw new Error('Date suggestion is not valid.');
     }
 
-    const suggestedValue = date.dateToSeconds(
+    let suggestedValue = date.dateToSeconds(
       rawSuggestion.text.trim(),
       currentSuggestion?.language || entity.language
     );
+
+    if (!Number(suggestedValue)) {
+      suggestedValue = '' as any;
+    }
+
     const suggestion: Partial<IXSuggestionType> = {
       ...simpleSuggestion(suggestedValue, rawSuggestion),
       suggestedText: rawSuggestion.text,
@@ -255,13 +260,16 @@ class SuggestionTextSourceFormatter {
 
   private static numeric({ text, segment_text }: RawSuggestion) {
     return {
-      suggestedValue: Number(text),
+      suggestedValue: Number(text) || '',
       segment: segment_text,
     };
   }
 
   private static date({ text, segment_text }: RawSuggestion, language: LanguageISO6391) {
-    const suggestedValue = date.dateToSeconds(text, language);
+    let suggestedValue = date.dateToSeconds(text, language);
+    if (!Number(suggestedValue)) {
+      suggestedValue = '' as any;
+    }
 
     return {
       suggestedValue,

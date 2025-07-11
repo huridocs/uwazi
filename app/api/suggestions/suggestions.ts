@@ -1,50 +1,28 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
 import { EnforcedWithId } from 'api/odm';
-import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import templates from 'api/templates';
 import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
-import {
-  ExtractedMetadataSchema,
-  LanguagesListSchema,
-  ObjectIdSchema,
-  PropertySchema,
-} from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
-import {
-  IXSuggestionAggregation,
-  IXSuggestionsFilter,
-  IXSuggestionsQuery,
-  IXSuggestionType,
-  SuggestionCustomFilter,
-} from 'shared/types/suggestionType';
+import { IXSuggestionAggregation, IXSuggestionType } from 'shared/types/suggestionType';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
 } from 'api/services/informationextraction/ixMaterials';
-import { Extractors } from 'api/services/informationextraction/ixextractors';
-import { IXExtractorType } from 'shared/types/extractorType';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { registerEventListeners } from './eventListeners';
-import {
-  getCurrentValueStage,
-  getEntityStage,
-  getFileStage,
-  getLabeledValueStage,
-  getMatchStage,
-} from './pipelineStages';
-import { postProcessCurrentValues, updateStates } from './updateState';
+import { updateStates } from './updateState';
 import {
   AcceptedSuggestion,
   SuggestionAcceptanceError,
   updateEntitiesWithSuggestion,
 } from './updateEntities';
-
-const DEFAULT_LIMIT = 30;
 
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],
@@ -88,79 +66,6 @@ const updateExtractedMetadata = async (
   });
 };
 
-const buildListQuery = (
-  extractor: EnforcedWithId<IXExtractorType>,
-  customFilter: SuggestionCustomFilter | undefined,
-  setLanguages: LanguagesListSchema | undefined,
-  options: { page?: IXSuggestionsQuery['page']; sort?: IXSuggestionsQuery['sort'] }
-) => {
-  const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
-  const limit = options.page?.size || DEFAULT_LIMIT;
-  const { sort } = options;
-
-  const isFromPdf = !!extractor.source?.pdf;
-  const sortOrder = sort?.order === 'desc' ? -1 : 1;
-  const $sort = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
-
-  const pipeline = [
-    ...getMatchStage(extractor._id, customFilter),
-    ...getEntityStage(setLanguages!),
-    ...getCurrentValueStage(),
-    {
-      $addFields: {
-        entityTitle: '$entity.title',
-      },
-    },
-    { $sort },
-    { $skip: offset },
-    { $limit: limit },
-    ...(isFromPdf ? [...getFileStage(), ...getLabeledValueStage()] : []),
-    {
-      $project: {
-        entityId: '$entity._id',
-        entityTemplateId: '$entity.template',
-        sharedId: '$entity.sharedId',
-        entityTitle: 1,
-        fileId: 1,
-        language: 1,
-        propertyName: 1,
-        extractorId: 1,
-        suggestedValue: 1,
-        segment: 1,
-        currentValue: 1,
-        state: 1,
-        page: 1,
-        date: 1,
-        error: 1,
-        labeledValue: 1,
-        selectionRectangles: 1,
-      },
-    },
-  ];
-
-  return pipeline;
-};
-
-const readFilter = (filter: IXSuggestionsFilter) => {
-  const { customFilter, extractorId: _extractorId } = filter;
-  const extractorId = new ObjectId(_extractorId);
-  return { customFilter, extractorId };
-};
-
-const postProcessSuggestions = async (
-  _suggestions: any,
-  extractor: EnforcedWithId<IXExtractorType>
-) => {
-  let suggestions = _suggestions;
-  if (suggestions.length > 0) {
-    const propertyName = extractor?.property;
-    const property = await templates.getPropertyByName(propertyName!);
-    const propertyType = property.type;
-    suggestions = postProcessCurrentValues(suggestions, propertyType);
-  }
-  return suggestions;
-};
-
 const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
 
 const needsAllLanguages = (propertyType: PropertySchema['type']) =>
@@ -189,38 +94,6 @@ const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
   getByExtractor: async (extractorId: ObjectIdSchema) => IXSuggestionsModel.get({ extractorId }),
-
-  get: async (
-    filter: IXSuggestionsFilter,
-    options: {
-      page?: IXSuggestionsQuery['page'];
-      sort?: IXSuggestionsQuery['sort'];
-    }
-  ) => {
-    const { customFilter, extractorId } = readFilter(filter);
-    const [{ languages: setLanguages }, extractor] = await Promise.all([
-      settings.get(),
-      Extractors.getById(extractorId),
-    ]);
-
-    if (!extractor) {
-      throw new Error(`Extractor not found id: ${extractorId}`);
-    }
-    const [matchQuery] = getMatchStage(extractorId, customFilter, false);
-    const count = await IXSuggestionsModel.db.countDocuments(matchQuery.$match!);
-
-    let suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(extractor, customFilter, setLanguages, options)
-    );
-
-    suggestions = await postProcessSuggestions(suggestions, extractor);
-
-    return {
-      suggestions,
-      totalPages: Math.ceil(count / (options.page?.size || DEFAULT_LIMIT)),
-      total: count,
-    };
-  },
 
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
     const extractorId = new ObjectId(_extractorId);

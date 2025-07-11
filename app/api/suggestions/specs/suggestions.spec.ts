@@ -12,20 +12,27 @@ import {
 import { Suggestions } from '../suggestions';
 import {
   factory,
-  file2Id,
-  file3Id,
   fixtures,
   personTemplateId,
   relationshipAcceptanceFixtureBase,
   selectAcceptanceFixtureBase,
   shared2AgeSuggestionId,
-  shared2enId,
-  shared2esId,
   suggestionId,
 } from './fixtures';
+import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 
-const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
-  Suggestions.get(filter, { page: { size, number: 1 } });
+const getSuggestions = async (filter: IXSuggestionsFilter, size = 50) => {
+  const query = new GetSuggestionsForTableQuery();
+  const result = query.execute({
+    extractorId: filter.extractorId.toString(),
+    filter: filter.customFilter,
+    pagination: {
+      size,
+      number: 1,
+    },
+  });
+  return result;
+};
 
 const findOneSuggestion = async (query: any): Promise<IXSuggestionType> =>
   db.mongodb
@@ -46,7 +53,7 @@ const stateUpdateCases: {
     state: {
       withValue: true,
       withSuggestion: false,
-      labeled: false,
+      labeled: true,
       match: false,
       obsolete: false,
       processing: false,
@@ -180,7 +187,7 @@ const stateUpdateCases: {
   },
   {
     state: {
-      labeled: false,
+      labeled: true,
       withValue: true,
       withSuggestion: true,
       match: true,
@@ -196,7 +203,7 @@ const stateUpdateCases: {
   },
   {
     state: {
-      labeled: false,
+      labeled: true,
       withValue: true,
       withSuggestion: true,
       match: true,
@@ -214,7 +221,7 @@ const stateUpdateCases: {
   },
   {
     state: {
-      labeled: false,
+      labeled: true,
       withValue: true,
       withSuggestion: true,
       match: false,
@@ -380,12 +387,12 @@ const prepareAndAcceptSuggestion = async (
   };
   await Suggestions.save(suggestion);
 
-  const savedSuggestion = (await Suggestions.get({ extractorId: factory.id(extractorName) }, {}))
+  const savedSuggestion = (await getSuggestions({ extractorId: factory.id(extractorName) }))
     .suggestions[0];
   const { _id, sharedId, entityId } = savedSuggestion;
 
   await Suggestions.accept([{ _id, sharedId, entityId, ...acceptanceParameters }]);
-  const acceptedSuggestion = (await Suggestions.get({ extractorId: factory.id(extractorName) }, {}))
+  const acceptedSuggestion = (await getSuggestions({ extractorId: factory.id(extractorName) }))
     .suggestions[0];
   const entities = await db.mongodb?.collection('entities').find({ sharedId }).toArray();
   const metadataValues = entities?.map(entity => entity.metadata[propertyName]);
@@ -461,359 +468,6 @@ describe('suggestions', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('get()', () => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures);
-      await Suggestions.updateStates({});
-    });
-
-    it('should not fail on 0 suggestions', async () => {
-      const { suggestions } = await Suggestions.get(
-        { extractorId: factory.id('non_existing_extractor').toString() },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(suggestions.length).toBe(0);
-    });
-
-    it('should return all title suggestions', async () => {
-      const { suggestions } = await Suggestions.get(
-        { extractorId: factory.id('title_extractor').toString() },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(suggestions.length).toBe(6);
-    });
-
-    it('should return total page count', async () => {
-      const { totalPages } = await Suggestions.get(
-        { extractorId: factory.id('title_extractor').toString() },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(totalPages).toBe(1);
-    });
-
-    it('should return total count', async () => {
-      const { total } = await Suggestions.get(
-        { extractorId: factory.id('title_extractor').toString() },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(total).toBe(6);
-    });
-
-    it('should be able to filter', async () => {
-      const { suggestions } = await Suggestions.get(
-        {
-          extractorId: factory.id('super_powers_extractor').toString(),
-        },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(suggestions.length).toBe(4);
-    });
-
-    it('should return suggestion and extra entity information', async () => {
-      const { suggestions } = await Suggestions.get(
-        { extractorId: factory.id('super_powers_extractor').toString() },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(suggestions).toMatchObject([
-        {
-          propertyName: 'super_powers',
-          suggestedValue: 'NOT_READY',
-          segment: 'Red Robin, a variation on the traditional Robin persona.',
-          language: 'en',
-          date: 2,
-          page: 3,
-          currentValue: 'scientific knowledge',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            match: null,
-            hasContext: true,
-            obsolete: true,
-            processing: true,
-            error: false,
-          },
-          entityId: shared2enId,
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-        },
-        {
-          fileId: file2Id,
-          propertyName: 'super_powers',
-          extractorId: factory.id('super_powers_extractor'),
-          suggestedValue: 'scientific knowledge',
-          segment: 'he relies on his own scientific knowledge',
-          language: 'en',
-          date: 4,
-          page: 5,
-          currentValue: 'scientific knowledge',
-          labeledValue: 'scientific knowledge',
-          state: {
-            labeled: true,
-            withValue: true,
-            withSuggestion: true,
-            match: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          entityId: shared2enId,
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-        },
-        {
-          fileId: file3Id,
-          propertyName: 'super_powers',
-          extractorId: factory.id('super_powers_extractor'),
-          suggestedValue: 'scientific knowledge es',
-          segment: 'el confía en su propio conocimiento científico',
-          language: 'es',
-          date: 4,
-          page: 5,
-          currentValue: 'conocimiento científico',
-          labeledValue: 'conocimiento científico',
-          state: {
-            labeled: true,
-            withValue: true,
-            withSuggestion: true,
-            match: false,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          entityId: shared2esId,
-          sharedId: 'shared2',
-          entityTitle: 'Batman es',
-        },
-        {
-          fileId: factory.id('F7'),
-          propertyName: 'super_powers',
-          extractorId: factory.id('super_powers_extractor'),
-          segment: 'he puts up with Bruce Wayne',
-          currentValue: 'no super powers',
-          date: 4000,
-          page: 3,
-          entityId: factory.id('Alfred-english-entity'),
-          entityTemplateId: personTemplateId,
-          entityTitle: 'Alfred',
-          error: '',
-          labeledValue: 'no super powers',
-          language: 'en',
-          sharedId: 'shared3',
-          state: {
-            error: false,
-            hasContext: true,
-            labeled: true,
-            match: false,
-            obsolete: false,
-            processing: false,
-            withSuggestion: true,
-            withValue: true,
-          },
-          suggestedValue: 'puts up with Bruce Wayne',
-        },
-      ]);
-    });
-
-    it('should return suggestion and extra entity information (multiselects)', async () => {
-      const { suggestions } = await Suggestions.get(
-        { extractorId: factory.id('multiselect_extractor').toString() },
-        { page: { size: 50, number: 1 } }
-      );
-      expect(suggestions).toMatchObject([
-        {
-          fileId: factory.id('fileForentityWithSelects'),
-          sharedId: 'entityWithSelects',
-          propertyName: 'property_multiselect',
-          extractorId: factory.id('multiselect_extractor'),
-          suggestedValue: ['A', '1A'],
-          language: 'en',
-          date: 5,
-          currentValue: ['A', '1A'],
-          entityTitle: 'entityWithSelects',
-        },
-        {
-          fileId: factory.id('fileForentityWithSelects2'),
-          sharedId: 'entityWithSelects2',
-          propertyName: 'property_multiselect',
-          extractorId: factory.id('multiselect_extractor'),
-          suggestedValue: ['A', '1B'],
-          language: 'en',
-          date: 5,
-          currentValue: ['A', '1A'],
-          entityTitle: 'entityWithSelects2',
-        },
-        {
-          fileId: factory.id('fileForentityWithSelects3'),
-          sharedId: 'entityWithSelects3',
-          propertyName: 'property_multiselect',
-          extractorId: factory.id('multiselect_extractor'),
-          suggestedValue: ['A', '1A'],
-          language: 'en',
-          date: 5,
-          currentValue: [],
-          entityTitle: 'entityWithSelects3',
-        },
-      ]);
-    });
-
-    it('should return match status', async () => {
-      const { suggestions: superPowersSuggestions } = await getSuggestions({
-        extractorId: factory.id('super_powers_extractor').toString(),
-      });
-
-      expect(
-        superPowersSuggestions.find(
-          (s: EntitySuggestionType) => s.segment === 'he relies on his own scientific knowledge'
-        ).state
-      ).toEqual({
-        labeled: true,
-        withValue: true,
-        withSuggestion: true,
-        match: true,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-
-      const { suggestions: enemySuggestions } = await getSuggestions(
-        { extractorId: factory.id('enemy_extractor').toString() },
-        6
-      );
-
-      expect(
-        enemySuggestions.filter(
-          (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
-        )[1].state
-      ).toEqual({
-        labeled: false,
-        withValue: true,
-        withSuggestion: true,
-        match: false,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-
-      expect(
-        enemySuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared1').state
-      ).toEqual({
-        labeled: false,
-        withValue: true,
-        withSuggestion: true,
-        match: true,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-
-      expect(
-        enemySuggestions.find(
-          (s: EntitySuggestionType) => s.sharedId === 'shared8' && s.language === 'en'
-        ).state
-      ).toEqual({
-        labeled: false,
-        withValue: false,
-        withSuggestion: false,
-        match: false,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-
-      const { suggestions: ageSuggestions } = await getSuggestions(
-        {
-          extractorId: factory.id('age_extractor').toString(),
-        },
-        10
-      );
-
-      expect(ageSuggestions.length).toBe(6);
-      expect(
-        ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared5').state.obsolete
-      ).toEqual(true);
-
-      expect(
-        ageSuggestions.find((s: EntitySuggestionType) => s.segment === 'Alfred 67 years old').state
-      ).toEqual({
-        labeled: false,
-        withValue: true,
-        withSuggestion: false,
-        match: false,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-    });
-
-    it('should return mismatch status', async () => {
-      const { suggestions: superPowersSuggestions } = await getSuggestions({
-        extractorId: factory.id('super_powers_extractor').toString(),
-      });
-      expect(
-        superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'es').state
-      ).toEqual({
-        labeled: true,
-        withValue: true,
-        withSuggestion: true,
-        match: false,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-
-      const { suggestions: enemySuggestions } = await getSuggestions({
-        extractorId: factory.id('enemy_extractor').toString(),
-      });
-      expect(
-        enemySuggestions.find(
-          (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
-        ).state
-      ).toEqual({
-        labeled: true,
-        withValue: true,
-        withSuggestion: false,
-        match: false,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-
-      expect(
-        enemySuggestions.find(
-          (s: EntitySuggestionType) => s.sharedId === 'shared9' && s.language === 'en'
-        ).state
-      ).toEqual({
-        labeled: false,
-        withValue: false,
-        withSuggestion: true,
-        match: false,
-        hasContext: true,
-        obsolete: false,
-        processing: false,
-        error: false,
-      });
-    });
-
-    it('should return error status', async () => {
-      const { suggestions } = await getSuggestions({
-        extractorId: factory.id('age_extractor').toString(),
-      });
-      expect(
-        suggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared4').state.error
-      ).toBe(true);
-    });
-  });
-
   describe('accept()', () => {
     describe('general', () => {
       beforeAll(async () => {
@@ -823,11 +477,12 @@ describe('suggestions', () => {
 
       it('should accept suggestions', async () => {
         const { suggestions } = await getSuggestions({
-          extractorId: factory.id('super_powers_extractor').toString(),
+          extractorId: factory.id('super_powers_extractor'),
         });
         const labelMismatchedSuggestions = suggestions.filter(
           (sug: any) => sug.state.labeled && !sug.state.match
         );
+
         const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
         await Suggestions.accept(
           labelMismatchedSuggestions.map((sug: any) => ({
@@ -837,21 +492,19 @@ describe('suggestions', () => {
           }))
         );
         const { suggestions: newSuggestions } = await getSuggestions({
-          extractorId: factory.id('super_powers_extractor').toString(),
+          extractorId: factory.id('super_powers_extractor'),
         });
         const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
         expect(changedSuggestions).toMatchObject([
           {
-            _id: labelMismatchedSuggestions[0]._id,
-            state: matchState(),
-            suggestedValue: labelMismatchedSuggestions[0].suggestedValue,
-            labeledValue: labelMismatchedSuggestions[0].suggestedValue,
+            language: 'es',
+            sharedId: 'shared2',
+            currentValue: 'scientific knowledge es',
           },
           {
-            _id: labelMismatchedSuggestions[1]._id,
-            state: matchState(),
-            suggestedValue: labelMismatchedSuggestions[1].suggestedValue,
-            labeledValue: labelMismatchedSuggestions[1].suggestedValue,
+            language: 'en',
+            sharedId: 'shared3',
+            currentValue: 'puts up with Bruce Wayne',
           },
         ]);
       });
@@ -867,12 +520,12 @@ describe('suggestions', () => {
         await expect(
           Suggestions.accept([
             {
-              _id: ageSuggestion._id,
+              _id: ageSuggestion._id!,
               sharedId: ageSuggestion.sharedId,
               entityId: ageSuggestion.entityId,
             },
             {
-              _id: superPowersSuggestion._id,
+              _id: superPowersSuggestion._id!,
               sharedId: superPowersSuggestion.sharedId,
               entityId: superPowersSuggestion.entityId,
             },
@@ -882,17 +535,19 @@ describe('suggestions', () => {
 
       it('should not accept a suggestion with an error', async () => {
         const { suggestions } = await getSuggestions({
-          extractorId: factory.id('age_extractor').toString(),
+          extractorId: factory.id('age_extractor'),
         });
+
         const errorSuggestion = suggestions.find(
           (s: EntitySuggestionType) => s.sharedId === 'shared4'
         );
+
         try {
           await Suggestions.accept([
             {
-              _id: errorSuggestion._id,
-              sharedId: errorSuggestion.sharedId,
-              entityId: errorSuggestion.entityId,
+              _id: errorSuggestion!._id!,
+              sharedId: errorSuggestion!.sharedId,
+              entityId: errorSuggestion!.entityId,
             },
           ]);
         } catch (e: any) {
@@ -916,12 +571,12 @@ describe('suggestions', () => {
         );
         await Suggestions.accept([
           {
-            _id: suggestionsToAccept[0]._id,
+            _id: suggestionsToAccept[0]._id!,
             sharedId: suggestionsToAccept[0].sharedId,
             entityId: suggestionsToAccept[0].entityId,
           },
           {
-            _id: suggestionsToAccept[1]._id,
+            _id: suggestionsToAccept[1]._id!,
             sharedId: suggestionsToAccept[1].sharedId,
             entityId: suggestionsToAccept[1].entityId,
           },

@@ -268,7 +268,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: expectedStates.onlyLabeled,
+            state: { ...expectedStates.onlyLabeled, labeled: false },
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
@@ -280,7 +280,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: expectedStates.onlyLabeled,
+            state: { ...expectedStates.onlyLabeled, labeled: false },
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],
@@ -304,7 +304,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: expectedStates.onlyValue,
+            state: { ...expectedStates.onlyValue, labeled: true },
             entityTemplate: fixtureFactory.id('animalTemplate').toString(),
           },
           {
@@ -316,7 +316,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: expectedStates.onlyValue,
+            state: { ...expectedStates.onlyValue, labeled: true },
             entityTemplate: fixtureFactory.id('animalTemplate').toString(),
           },
           {
@@ -328,7 +328,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: expectedStates.onlyValue,
+            state: { ...expectedStates.onlyValue, labeled: true },
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
@@ -340,7 +340,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: expectedStates.onlyValue,
+            state: { ...expectedStates.onlyValue, labeled: true },
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],

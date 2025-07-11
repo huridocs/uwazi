@@ -302,6 +302,7 @@ const fixtures: DBFixture = {
       page: 3,
       status: 'failed',
       error: 'This has an error',
+      fileId: factory.id('shared4_file_1'),
     },
     {
       entityId: 'shared3',
@@ -617,7 +618,6 @@ const fixtures: DBFixture = {
       template: personTemplateId,
     },
     {
-      _id: testingDB.id(),
       sharedId: 'shared4',
       title: 'Joker',
       language: 'en',
@@ -849,6 +849,14 @@ const fixtures: DBFixture = {
       'eng',
       'documentWithSelects3.pdf'
     ),
+    factory.fileDeprecated(
+      'shared4_file_1',
+      'shared4',
+      'document',
+      'shared4_file_1.pdf',
+      'eng',
+      'shared4_file_1.pdf'
+    ),
   ],
   dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],
   templates: [
@@ -968,20 +976,26 @@ const stateFilterFixtures: DBFixture = {
     ...factory.entityInMultipleLanguages(['es', 'en'], 'labeled-mismatch', 'template1', {
       testprop: [{ value: 'test-labeled-mismatch' }],
     }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'labeled-no-context', 'template1', {
+      testprop: [{ value: 'labeled-no-context' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'labeled-no_context-match', 'template1', {
+      testprop: [{ value: 'labeled-no_context-match' }],
+    }),
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-no-suggestion', 'template1', {
-      testprop: [{ value: 'test-unlabeled-no-suggestion' }],
+      testprop: [],
     }),
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-no-context', 'template1', {
-      testprop: [{ value: 'test-unlabeled-no-context' }],
+      testprop: [],
     }),
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-obsolete', 'template1', {
-      testprop: [{ value: 'test-unlabeled-obsolete' }],
+      testprop: [],
     }),
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-processing', 'template1', {
-      testprop: [{ value: 'test-unlabeled-processing' }],
+      testprop: [],
     }),
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-error', 'template1', {
-      testprop: [{ value: 'test-unlabeled-error' }],
+      testprop: [],
     }),
   ],
   files: [
@@ -1117,6 +1131,26 @@ const stateFilterFixtures: DBFixture = {
       'es',
       undefined
     ),
+    factory.document('labeled-no-context-file-en', {
+      entity: 'labeled-no-context',
+      filename: 'unlcen.pdf',
+      language: 'en',
+    }),
+    factory.document('labeled-no-context-file-es', {
+      entity: 'labeled-no-context',
+      filename: 'unlcen.pdf',
+      language: 'es',
+    }),
+    factory.document('labeled-no_context-match-file-en', {
+      entity: 'labeled-no_context-match',
+      filename: 'unlcen.pdf',
+      language: 'en',
+    }),
+    factory.document('labeled-no_context-match-file-es', {
+      entity: 'labeled-no_context-match',
+      filename: 'unlcen.pdf',
+      language: 'es',
+    }),
   ],
   ixmodels: [factory.ixModel('test_model', 'test_extractor', 1000)],
   ixextractors: [
@@ -1349,6 +1383,70 @@ const stateFilterFixtures: DBFixture = {
         obsolete: true,
         labeled: true,
         error: true,
+      },
+    }),
+
+    factory.ixSuggestion({
+      fileId: factory.id('labeled-no-context-file-en'),
+      extractorId: factory.id('test_extractor'),
+      entityId: 'labeled-no-context',
+      entityTemplate: 'template1',
+      language: 'en',
+
+      propertyName: 'testprop',
+      suggestedValue: 'test-unlabeled-no-context',
+      segment: '',
+      status: 'ready',
+      error: '',
+    }),
+
+    factory.ixSuggestion({
+      fileId: factory.id('labeled-no-context-file-es'),
+      extractorId: factory.id('test_extractor'),
+      entityId: 'labeled-no-context',
+      entityTemplate: 'template1',
+      language: 'es',
+
+      propertyName: 'testprop',
+      suggestedValue: 'test-unlabeled-no-context',
+      segment: '',
+      status: 'ready',
+      error: '',
+    }),
+
+    factory.ixSuggestion({
+      fileId: factory.id('labeled-no_context-match-file-en'),
+      extractorId: factory.id('test_extractor'),
+      entityId: 'labeled-no_context-match',
+      entityTemplate: 'template1',
+      language: 'en',
+
+      propertyName: 'testprop',
+      suggestedValue: 'labeled-no_context-match',
+      segment: '',
+      status: 'ready',
+      error: '',
+      state: {
+        match: true,
+        hasContext: false,
+      },
+    }),
+
+    factory.ixSuggestion({
+      fileId: factory.id('labeled-no_context-match-file-es'),
+      extractorId: factory.id('test_extractor'),
+      entityId: 'labeled-no_context-match',
+      entityTemplate: 'template1',
+      language: 'es',
+
+      propertyName: 'testprop',
+      suggestedValue: 'labeled-no_context-match',
+      segment: '',
+      status: 'ready',
+      error: '',
+      state: {
+        match: true,
+        hasContext: false,
       },
     }),
   ],

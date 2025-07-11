@@ -1206,7 +1206,7 @@ describe('InformationExtraction', () => {
           status: 'ready',
           suggestedValue: 'text_in_eng_language',
           state: {
-            labeled: false,
+            labeled: true,
             withValue: true,
             withSuggestion: true,
             match: false,

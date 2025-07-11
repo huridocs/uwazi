@@ -148,14 +148,14 @@ function removeSingleHubs(relationshipArray) {
   return relationshipArray.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
 }
 
-function withConnectedData(relationshipArray, connectedDocuments) {
-  return relationshipArray
-    .map(relationship => ({
-      template: null,
-      entityData: connectedDocuments[relationship.entity],
-      ...relationship,
-    }))
-    .filter(relationship => Boolean(relationship.entityData));
+export function withConnectedData(relationshipArray, connectedDocuments) {
+  return relationshipArray.reduce((acc, relationship) => {
+    const entityData = connectedDocuments[relationship.entity];
+    if (entityData) {
+      acc.push({ template: null, entityData, ...relationship });
+    }
+    return acc;
+  }, []);
 }
 
 function removeUnpublished(relationshipArray) {
