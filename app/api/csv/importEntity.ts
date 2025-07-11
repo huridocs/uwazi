@@ -30,18 +30,40 @@ const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
 const toMetadata = async (
   template: TemplateSchema,
   toImportEntity: RawEntity,
-  dateFormat: string
-): Promise<MetadataSchema> =>
-  (template.properties || [])
+  dateFormat: string,
+  feedbackCallback?: (warning: { property: string; value: string; reason: string }) => void
+): Promise<MetadataSchema> => {
+  const metadata: MetadataSchema = {};
+
+  const propertyPromises = (template.properties || [])
     .filter(prop => hasValidValue(prop, toImportEntity))
-    .reduce<Promise<MetadataSchema>>(
-      async (meta, prop) =>
-        ({
-          ...(await meta),
-          [ensure<string>(prop.name)]: await parse(toImportEntity, prop, dateFormat),
-        }) as MetadataSchema,
-      Promise.resolve({})
-    );
+    .map(async prop => {
+      const propName = ensure<string>(prop.name);
+      const originalValue = toImportEntity.propertiesFromColumns[propName];
+
+      const parsed = (await parse(toImportEntity, prop, dateFormat)) as MetadataObjectSchema[];
+
+      if (
+        parsed === null ||
+        parsed === undefined ||
+        (Array.isArray(parsed) && parsed.length === 0)
+      ) {
+        if (feedbackCallback) {
+          feedbackCallback({
+            property: propName,
+            value: originalValue,
+            reason: 'Sanitized entries skipped in import',
+          });
+        }
+      } else {
+        metadata[propName] = parsed || [];
+      }
+    });
+
+  await Promise.all(propertyPromises);
+
+  return metadata;
+};
 
 const currentEntityIdentifiers = async (sharedId: string | undefined, language: string) =>
   sharedId ? entities.get({ sharedId, language }, '_id sharedId').then(([e]) => e) : {};
@@ -60,12 +82,18 @@ const titleByTemplate = (template: TemplateSchema, entity: RawEntity) => {
 const entityObject = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
-  { language, dateFormat = 'YYYY/MM/DD' }: Options
+  {
+    language,
+    dateFormat = 'YYYY/MM/DD',
+    feedbackCallback,
+  }: Options & {
+    feedbackCallback?: (warning: { property: string; value: string; reason: string }) => void;
+  }
 ) => ({
   language,
   title: titleByTemplate(template, toImportEntity),
   template: template._id,
-  metadata: await toMetadata(template, toImportEntity, dateFormat),
+  metadata: await toMetadata(template, toImportEntity, dateFormat, feedbackCallback),
   ...(await currentEntityIdentifiers(toImportEntity.propertiesFromColumns.id, language)),
 });
 
@@ -79,7 +107,14 @@ const importEntity = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
   importFile: ImportFile,
-  { user = {}, language, dateFormat }: Options
+  {
+    user = {},
+    language,
+    dateFormat,
+    feedbackCallback,
+  }: Options & {
+    feedbackCallback?: (warning: { property: string; value: string; reason: string }) => void;
+  }
 ) => {
   const { propertiesFromColumns } = toImportEntity;
   const { attachments } = propertiesFromColumns;
@@ -94,7 +129,11 @@ const importEntity = async (
 
   delete propertiesFromColumns.attachments;
 
-  const eo = await entityObject(toImportEntity, template, { language, dateFormat });
+  const eo = await entityObject(toImportEntity, template, {
+    language,
+    dateFormat,
+    feedbackCallback,
+  });
 
   if (parsedAttachments?.length) {
     Object.entries(eo.metadata as [string, any[]]).forEach(([key, metadata]) => {

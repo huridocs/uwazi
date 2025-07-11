@@ -52,7 +52,9 @@ const multiselect = async (
 
   const values = info.map(i => generateMetadataValue(currentThesaurus, i));
 
-  return values;
+  return values.filter(
+    v => v !== null && v.value !== undefined && v.value !== null
+  ) as MetadataObjectSchema[];
 };
 
 export default multiselect;

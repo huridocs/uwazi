@@ -167,10 +167,12 @@ describe('csvLoader', () => {
         geolocation_geolocation: [{ value: { label: '', lat: 1, lon: 1 } }],
         language: [{ value: 'English' }],
         multi_select_label: [{ label: 'multivalue1', value: expect.any(String) }],
+        multiselect_with_spaces: [],
         not_configured_on_csv: [],
         not_defined_type: [{ value: 'notType1' }],
         numeric_label: [{ value: 1977 }],
         select_label: [{ label: 'thesauri1', value: expect.any(String) }],
+        select_with_spaces: [],
         text_label: [{ value: 'text value 1' }],
         header_with_dots: [{ value: 'header with dots value 1' }],
       });
@@ -205,6 +207,28 @@ describe('csvLoader', () => {
       it('should import properties that contains parentheses in the name', () => {
         const additionalTags = imported.map(i => i.metadata['additional_tag(s)'][0].value);
         expect(additionalTags).toEqual(['tag1', 'tag2', 'tag3']);
+      });
+
+      it('should ignore select values with group labels ending in spaces', () => {
+        const selectWithSpacesValues = imported.map(i => i.metadata.select_with_spaces);
+        // Row 1: "Group ::Item1" should be empty (group ends with space)
+        // Row 2: "Another Group::Item3 " should be empty (item ends with space)
+        // Row 3: "Normal Group::Normal Item" should work
+        expect(selectWithSpacesValues[0]).toEqual([]);
+        expect(selectWithSpacesValues[1]).toEqual([]);
+        expect(selectWithSpacesValues[2]).toHaveLength(1);
+        expect(selectWithSpacesValues[2][0]).toHaveProperty('label', 'Normal Item');
+      });
+
+      it('should ignore multiselect values with group or item labels ending in spaces', () => {
+        const multiselectWithSpacesValues = imported.map(i => i.metadata.multiselect_with_spaces);
+        // Row 1: "Group ::Item1|Another Group ::Item3 " should be empty (both have spaces)
+        // Row 2: "Group :: Item2 " should be empty (both have spaces)
+        // Row 3: "Normal Group::Normal Item" should work
+        expect(multiselectWithSpacesValues[0]).toEqual([]);
+        expect(multiselectWithSpacesValues[1]).toEqual([]);
+        expect(multiselectWithSpacesValues[2]).toHaveLength(1);
+        expect(multiselectWithSpacesValues[2][0]).toHaveProperty('label', 'Normal Item');
       });
 
       describe('when parser not defined', () => {
@@ -458,6 +482,36 @@ describe('csvLoader', () => {
 
       expect(spanishEntity.metadata.date_field).toEqual([{ value: expectedDate }]);
       expect(englishEntity.metadata.date_field).toEqual([{ value: expectedDate }]);
+    });
+  });
+
+  describe('sanitization warnings', () => {
+    beforeEach(async () => {
+      jest.restoreAllMocks();
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('should emit sanitizationWarning event when properties are ignored due to sanitization', async () => {
+      const csv = `title, select_with_spaces
+                   title1, " Item2 "
+                   title2, "Normal Item"`;
+
+      const readStreamMock = mockCsvFileReadStream(csv);
+      const testingLoader = new CSVLoader();
+      jest.spyOn(testingLoader, 'emit');
+      await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
+      expect(testingLoader.emit).toHaveBeenCalledWith('rowExceptions', {
+        'Sanitized entries skipped in import': [
+          {
+            index: 0,
+            property: 'select_with_spaces',
+            reason: '',
+            value: ' Item2 ',
+          },
+        ],
+      });
+
+      readStreamMock.mockRestore();
     });
   });
 });

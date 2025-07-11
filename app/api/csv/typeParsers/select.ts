@@ -55,6 +55,14 @@ const determineParentChildRelationship = (label: string): LabelInfo | null => {
     split,
     normalizedSplit
   );
+
+  const parentEndsWithSpace = parent && parent.trim() !== parent;
+  const childEndsWithSpace = child && child.trim() !== child;
+
+  if (parentEndsWithSpace || childEndsWithSpace) {
+    return null;
+  }
+
   return {
     label: parent,
     normalizedLabel: normalizedParent,
@@ -62,7 +70,10 @@ const determineParentChildRelationship = (label: string): LabelInfo | null => {
   };
 };
 
-const generateMetadataValue = (currentThesaurus: ThesaurusSchema, labelInfo: LabelInfo) => {
+const generateMetadataValue = (
+  currentThesaurus: ThesaurusSchema,
+  labelInfo: LabelInfo
+): MetadataObjectSchema | null => {
   const parent = currentThesaurus.values?.find(
     v => normalizeThesaurusLabel(v.label) === labelInfo.normalizedLabel
   );
@@ -70,6 +81,11 @@ const generateMetadataValue = (currentThesaurus: ThesaurusSchema, labelInfo: Lab
     const child = parent?.values?.find(
       v => normalizeThesaurusLabel(v.label) === labelInfo.child?.normalizedLabel
     );
+
+    if (child && child.label.trim() !== child.label) {
+      return null;
+    }
+
     return {
       value: ensure<string>(child?.id),
       label: ensure<string>(child?.label),
@@ -79,6 +95,11 @@ const generateMetadataValue = (currentThesaurus: ThesaurusSchema, labelInfo: Lab
       },
     };
   }
+
+  if (parent && parent.label.trim() !== parent.label) {
+    return null;
+  }
+
   return {
     value: ensure<string>(parent?.id),
     label: ensure<string>(parent?.label),
@@ -93,7 +114,10 @@ const select = async (
   const propValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
   const labelInfo = determineParentChildRelationship(propValue);
 
-  return labelInfo ? [generateMetadataValue(currentThesauri, labelInfo)] : null;
+  if (!labelInfo) return null;
+  const value = generateMetadataValue(currentThesauri, labelInfo);
+  if (!value || value.value === undefined || value.value === null) return null;
+  return [value];
 };
 
 export default select;
