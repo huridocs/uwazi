@@ -200,26 +200,46 @@ const SuggestionSidepanel = ({
   }, [pdf, setValue, showSidepanel, suggestion]);
 
   useEffect(() => {
-    if (property?.type === 'relationship' && suggestion) {
-      loadValuesAndSuggestions(
-        suggestion.currentValue as string[],
-        suggestion.suggestedValue as string[],
-        suggestion.language
-      )
-        .then(entities => {
-          const preloadedOptions = entities.map(_entity => ({
-            label: _entity.title as string,
-            value: _entity.sharedId as string,
-            searchLabel: _entity.title as string,
-          }));
+    if (showSidepanel && property?.type === 'relationship') {
+      const relationshipOptions: MultiselectListOption[] = [];
 
-          setOptions(preloadedOptions);
+      if (suggestion) {
+        loadValuesAndSuggestions(
+          suggestion.currentValue as string[],
+          suggestion.suggestedValue as string[],
+          suggestion.language
+        )
+          .then(entities => {
+            relationshipOptions.push(
+              ...entities.map(_entity => ({
+                label: _entity.title as string,
+                value: _entity.sharedId as string,
+                searchLabel: _entity.title as string,
+              }))
+            );
+          })
+          .catch(e => {
+            throw e;
+          });
+      }
+
+      lookup('', property?.content ? [property.content] : undefined)
+        .then(response => {
+          relationshipOptions.push(
+            ...response.options.map(_option => ({
+              label: _option.label,
+              value: _option.value,
+              searchLabel: _option.label,
+            }))
+          );
         })
         .catch(e => {
           throw e;
         });
+
+      setOptions(relationshipOptions);
     }
-  }, [property, suggestion]);
+  }, [property, showSidepanel, suggestion]);
 
   const handleClose = () => {
     setSelectedText(undefined);
