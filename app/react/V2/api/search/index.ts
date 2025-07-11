@@ -32,7 +32,7 @@ const lookup = async (
     const search: SearchQuery = {
       fields: ['title', 'sharedId', 'template'],
       filter: {
-        searchString: `title:${entityTitle}~2`,
+        ...(entityTitle && { searchString: `title:${entityTitle}~2` }),
         ...(template && { template }),
       },
       page: { limit },
