@@ -203,6 +203,20 @@ describe('upload routes', () => {
       expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START', TestEmitSources.session);
       expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', TestEmitSources.session, 1);
       expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', TestEmitSources.session, 2);
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'IMPORT_CSV_ROW_EXCEPTIONS',
+        TestEmitSources.session,
+        {
+          'Sanitized entries skipped in import': [
+            {
+              index: 0,
+              property: 'select_with_spaces',
+              reason: '',
+              value: ' Item2 ',
+            },
+          ],
+        }
+      );
 
       const imported = await entities.get({ template: importTemplate });
       expect(imported).toEqual([
