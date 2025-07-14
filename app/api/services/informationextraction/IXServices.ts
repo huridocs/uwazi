@@ -98,7 +98,7 @@ export class IXServices {
 
     const values = entity.metadata?.[targetProperty.name]?.map(i => String(i.value));
     if (!values) {
-      return null;
+      return isMultiValued ? [] : '';
     }
 
     return isMultiValued ? values : values[0];
