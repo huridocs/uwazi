@@ -2,12 +2,7 @@ import api from 'app/utils/api';
 
 export default {
   get(requestParams) {
-    const url = 'thesauris';
-    return api.get(url, requestParams).then(response => response.json.rows);
-  },
-
-  getThesauri(requestParams) {
-    const url = 'dictionaries';
+    const url = 'thesauri';
     return api.get(url, requestParams).then(response => response.json.rows);
   },
 

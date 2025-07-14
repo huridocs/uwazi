@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { t, Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
-import thesauriAPI from 'V2/api/thesauri';
+import { save as saveThesauri } from 'V2/api/thesauri';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -29,7 +29,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
       name: name.trim(),
       values: [],
     };
-    const savedThesaurus = await thesauriAPI.save(newThesaurus);
+    const savedThesaurus = await saveThesauri(newThesaurus);
     setThesauri([...thesauri, savedThesaurus]);
     setNotifications({
       type: 'success',
