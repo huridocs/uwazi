@@ -85,7 +85,7 @@ const PageEditor = () => {
 
   const handleRevalidate = async (response: Page) => {
     if (!page.sharedId) {
-      await navigate(`/${response.language}/settings/pages/page/${response.sharedId}`, {
+      await navigate(`/${response.language}/settings/pages/edit/${response.sharedId}`, {
         replace: true,
       });
     } else {

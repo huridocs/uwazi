@@ -21,18 +21,18 @@ describe('Settings mobile menu', { viewportWidth: 384, viewportHeight: 768 }, ()
     cy.location().should(location => {
       expect(location.pathname).to.contain('settings');
     });
-    cy.get('.tw-content').should('not.exist');
+    cy.get('[data-testid="settings-content"]').should('not.exist');
   });
 
   it('should enter the account settings', () => {
     cy.intercept('api/user').as('getUser');
     cy.contains('a', 'Account').click();
     cy.wait('@getUser');
-    cy.get('.tw-content').should('be.visible');
+    cy.get('[data-testid="settings-content"]').should('exist');
   });
 
   it('should go back to the menu', () => {
     cy.contains('a', 'Navigate back').click();
-    cy.get('.tw-content').should('not.exist');
+    cy.get('[data-testid="settings-content"]').should('not.exist');
   });
 });

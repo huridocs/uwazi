@@ -48,7 +48,6 @@ Add relationship,Añadir relación
 Add relationship type,Añadir tipo de relación
 Add template,Añadir plantilla
 Add thesaurus,Añadir tesauro
-Add thesaurus modal description,"Después de la creación, puedes ir a Configuración → Tesauri para añadir elementos"
 Add thesaurus value,Añadir valor del tesauro
 Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
@@ -125,7 +124,6 @@ Character support description,"Esta opción mejora la compatibilidad con idiomas
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
 Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
-Chrome extension store link,Enlace de la tienda de extensiones de Chrome
 Clear,Limpiar
 Clear all,Clear all
 Clear All,Clear All
@@ -171,7 +169,6 @@ Copy Highlighted,Copiar lo resaltado
 Copy link,Copiar enlace
 Copy properties to this entity from,Copiar las propiedades a esta entidad desde
 Copy to clipboard,Copy to clipboard
-Copy token,Copiar token
 Could not be processed,El proceso no ha sido posible
 Could not detect the area for the selected text,"No se pudo detectar el área para el texto seleccionado, por favor intenta seleccionar nuevamente."
 Could not reach server. Please try again later.,No se puede conectar con el servidor. Por favor intenta después.
@@ -342,7 +339,6 @@ Find,Encontrar
 Find suggestions,Encontrar sugerencias
 Finding suggestions,Encontrando sugerencias
 Fine tune,Afinar búsqueda
-Firefox extension store link,Enlace de la tienda de extensiones de Firefox
 Fit,Encajar
 Flag,Bandera
 for,for
@@ -396,9 +392,8 @@ Inherit property,Heredar propiedad
 Inherit type,Inherit type
 Input,Input
 Install,Instalar
-Install browser extension (dynamic link),Instalar extensión de navegador (enlace dinámico)
 Install Language(s),Instalar Idioma(s)
-INSTALL the browser extension,INSTALAR la extensión de navegador
+Install the browser extension.,Install the browser extension.
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -513,6 +508,7 @@ New page,Nueva página
 New password,Nueva contraseña
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
+New Relationships Migration,New Relationships Migration
 New user,New user
 Next,Próximo
 No,No
@@ -989,7 +985,6 @@ You can add one or many items in this form.,You can add one or many items in thi
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
-"You have not connected an Uwazi instance, yet","No has conectado una instancia Uwazi, todavía"
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

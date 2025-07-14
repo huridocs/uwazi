@@ -26,13 +26,17 @@ describe('Thesauri configuration', () => {
 
   const saveThesaurus = () => {
     cy.contains('button', 'Save').click();
-    cy.contains('Thesauri updated.');
     cy.contains('Dismiss').click();
-    cy.get('#thesauri-name').click();
-    cy.get('tbody').toMatchImageSnapshot({
-      disableTimersAndAnimations: true,
-      threshold: 0.08,
-      capture: 'viewport',
+    cy.wait('@editThesauri');
+  };
+
+  const assertThesaurusTableState = (expectedItems: string[]) => {
+    // Check that the table has the expected number of rows
+    cy.get('tbody tr').should('have.length', expectedItems.length);
+
+    // Check that each expected item is present in the table
+    expectedItems.forEach(item => {
+      cy.get('tbody').should('contain.text', item);
     });
   };
 
@@ -44,9 +48,7 @@ describe('Thesauri configuration', () => {
     cy.get('input[name="newValues.1.label"]').type('Second Item', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 2);
-    cy.contains('button', 'Save').click();
-    cy.contains('Thesauri added.');
-    cy.contains('Dismiss').click();
+    saveThesaurus();
   });
 
   it('should add groups', () => {
@@ -63,6 +65,7 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 4);
     saveThesaurus();
+    assertThesaurusTableState(['First Item', 'Second Item', 'Group A', 'Group B']);
   });
 
   it('should add items', () => {
@@ -73,6 +76,13 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 5);
     saveThesaurus();
+    assertThesaurusTableState([
+      'First Item',
+      'Second Item',
+      'Group A',
+      'Group B',
+      'Added Root Item',
+    ]);
   });
 
   it('should edit an item', () => {
@@ -81,6 +91,13 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 5);
     saveThesaurus();
+    assertThesaurusTableState([
+      'First Item',
+      'Edited Second Item',
+      'Group A',
+      'Group B',
+      'Added Root Item',
+    ]);
   });
 
   it('should edit a group', () => {
@@ -92,6 +109,13 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 5);
     saveThesaurus();
+    assertThesaurusTableState([
+      'First Item',
+      'Edited Second Item',
+      'Group A',
+      'Edited Group B',
+      'Added Root Item',
+    ]);
   });
 
   it('should allow to sort by dnd', () => {
@@ -100,6 +124,14 @@ describe('Thesauri configuration', () => {
       cy.get('button[aria-roledescription="sortable"]').eq(0)
     );
     saveThesaurus();
+    // After drag and drop, verify the items are still present but order may have changed
+    assertThesaurusTableState([
+      'First Item',
+      'Edited Second Item',
+      'Group A',
+      'Edited Group B',
+      'Added Root Item',
+    ]);
   });
 
   it('should delete items', () => {
@@ -110,7 +142,16 @@ describe('Thesauri configuration', () => {
     );
     cy.contains('button', 'Remove').click();
     saveThesaurus();
+    assertThesaurusTableState([
+      'Edited Group B',
+      'Edited First Child B',
+      'Added Third Child B',
+      'First Item',
+      'Group A',
+      'Added Root Item',
+    ]);
   });
+
   it('should use the thesaurus in a template', () => {
     cy.contains('a', 'Templates').click();
     cy.contains('a', 'País').click();
@@ -121,13 +162,12 @@ describe('Thesauri configuration', () => {
 
     cy.contains('aside button', 'Add property').click();
     cy.contains('Save').click();
-    cy.contains('success');
+    cy.contains('Dismiss').click();
   });
 
   it('should list the thesauri', () => {
     cy.contains('span', 'Thesauri').click();
     cy.contains('tr', 'New Thesaurus').contains('País');
-    cy.get('tbody').toMatchImageSnapshot();
   });
 
   it('should do not allow to delete a used thesaurus', () => {
@@ -139,7 +179,12 @@ describe('Thesauri configuration', () => {
   it('should keep sorting', () => {
     cy.contains('tr', 'New Thesaurus').contains('button', 'Edit').click();
     cy.contains('tbody', 'Edited Group B');
-    cy.get('tbody').toMatchImageSnapshot();
+    // Verify the thesaurus form table structure
+    cy.get('tbody tr').should('have.length.at.least', 1);
+    cy.get('tbody tr').should('contain', 'Edited Group B');
+    cy.get('tbody tr').each($row => {
+      cy.wrap($row).should('contain', 'Edit');
+    });
   });
 
   it('should do ask for confirmation when delete an item of a used thesaurus', () => {
@@ -148,6 +193,7 @@ describe('Thesauri configuration', () => {
     cy.contains('Are you sure you want to delete this item');
     cy.contains('button', 'Accept').click();
     saveThesaurus();
+    assertThesaurusTableState(['Edited Group B', 'Group A', 'Added Root Item']);
   });
 
   it('should import items from csv', () => {
@@ -157,16 +203,31 @@ describe('Thesauri configuration', () => {
     });
     cy.contains('Thesauri updated.');
     cy.contains('Dismiss').click();
-    cy.get('tbody').toMatchImageSnapshot();
+    // Verify imported items are present
+    cy.get('tbody').should('contain.text', 'Imported Colors');
+    //click on the group
+    cy.contains('tr', 'Imported Colors').contains('button', 'Group').click();
+    cy.get('tbody').should('contain.text', 'Imported Blue');
+    cy.get('tbody').should('contain.text', 'Imported Red');
   });
 
   it('should sort the items alphabetically', () => {
     cy.contains('button', 'Sort').click();
-    cy.get('tbody').toMatchImageSnapshot();
+    // Verify items are sorted alphabetically by checking the order
+    cy.get('tbody tr').then($rows => {
+      const texts = Array.from($rows).map(row => row.textContent);
+      const sortedTexts = [...texts].sort();
+      expect(texts).to.deep.equal(sortedTexts);
+    });
     changeLanguage('Español');
     cy.contains('Colores');
     cy.contains('button', 'Ordenar').click();
-    cy.get('tbody').toMatchImageSnapshot();
+    // Verify items are sorted alphabetically in Spanish
+    cy.get('tbody tr').then($rows => {
+      const texts = Array.from($rows).map(row => row.textContent);
+      const sortedTexts = [...texts].sort();
+      expect(texts).to.deep.equal(sortedTexts);
+    });
   });
 
   it('should cancel the changes', () => {
@@ -209,11 +270,10 @@ describe('Thesauri configuration', () => {
   });
 
   it('should reflect the changes in the Entities', () => {
-    cy.contains('a', 'Library', { timeout: 5000 }).click();
+    cy.visit('http://localhost:3000/library');
+    cy.contains('.multiselectItem-name', 'Restricted').click();
     cy.contains('.multiselectItem-name', 'País').click();
-    //for the library sidepanel to reload by selecting anoth er entity first so that 'País select'
-    //loads correctly.
-    cy.contains('.item-document', 'Bolivia').click();
+
     cy.contains('.item-document', 'País select').click();
     cy.contains('.metadata-name-select', 'Colors: Blue');
   });

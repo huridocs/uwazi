@@ -28,11 +28,7 @@ const ParagraphExtractorDashboard = () => {
   );
 
   return (
-    <div
-      className="tw-content"
-      data-testid="settings-paragraph-extractor"
-      style={{ width: '100%', overflowY: 'auto' }}
-    >
+    <div className="h-full w-full overflow-y-auto" data-testid="settings-paragraph-extractor">
       <SettingsContent>
         <SettingsContent.Header title="Paragraph extraction" />
         <SettingsContent.Body>

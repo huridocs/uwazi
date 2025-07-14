@@ -115,7 +115,7 @@ const RelationshipTypes = () => {
   };
 
   return (
-    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+    <div className="w-full h-full overflow-y-auto">
       <SettingsContent>
         <SettingsContent.Header title="Relationship types" />
         <SettingsContent.Body>

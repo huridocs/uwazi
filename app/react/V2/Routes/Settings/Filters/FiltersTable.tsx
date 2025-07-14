@@ -134,7 +134,7 @@ const FiltersTable = () => {
   };
 
   return (
-    <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
+    <div className="h-full w-full overflow-y-auto">
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
         <SettingsContent.Body>

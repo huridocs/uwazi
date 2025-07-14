@@ -126,11 +126,7 @@ const IXDashboard = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      data-testid="settings-ix"
-      style={{ width: '100%', overflowY: 'auto' }}
-    >
+    <div className="h-full w-full overflow-y-auto" data-testid="settings-ix">
       <SettingsContent>
         <SettingsContent.Header title="Metadata extraction" />
 

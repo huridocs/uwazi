@@ -67,11 +67,7 @@ const TranslationsList = () => {
   ];
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-translations"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-translations">
       <SettingsContent>
         <SettingsContent.Header title="Translations" />
         <SettingsContent.Body>

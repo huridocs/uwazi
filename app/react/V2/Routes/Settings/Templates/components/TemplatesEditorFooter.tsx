@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLinkV2 as I18NLink } from 'app/I18N';
 import { Button } from 'V2/Components/UI';
 
 interface TemplatesEditorFooterProps {
