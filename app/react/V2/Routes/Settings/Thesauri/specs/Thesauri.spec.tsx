@@ -36,7 +36,7 @@ jest.mock('app/V2/api/thesauri', () => ({
   __esModule: true,
   default: {
     ...jest.requireActual('app/V2/api/thesauri').default,
-    getThesauri: (params: { _id: string }, headers?: IncomingHttpHeaders) =>
+    get: (params: { _id: string }, headers?: IncomingHttpHeaders) =>
       mockUseLoaderData(params, headers),
     delete: (params: { _id: string }) => mockDeleteThesauri(params),
     save: (params: { _id: string }) => mockSaveThesauri(params),

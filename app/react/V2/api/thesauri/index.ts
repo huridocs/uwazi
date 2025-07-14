@@ -4,20 +4,20 @@ import { IncomingHttpHeaders } from 'http';
 import { httpRequest } from 'shared/superagent';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-const getById = async (params: { _id?: string }, headers?: IncomingHttpHeaders) => {
-  const url = 'thesauri/getById'; //WIP
+const get = async (params: { _id?: string }, headers?: IncomingHttpHeaders) => {
+  const url = 'thesauri';
   const requestParams = new RequestParams(params, headers);
   return api.get(url, requestParams).then((response: any) => response.json.rows);
 };
 
 const save = async (thesaurus: ThesaurusSchema) => {
   const requestParams = new RequestParams(thesaurus);
-  return api.post('thesauri', requestParams).then((response: any) => response.json);
+  return api.post('thesauris', requestParams).then((response: any) => response.json);
 };
 
-const remove = async (params: { _id: string }) => {
+const deleteThesauri = async (params: { _id: string }) => {
   const requestParams = new RequestParams(params);
-  return api.delete('thesauri', requestParams).then((response: any) => response.json);
+  return api.delete('thesauris', requestParams).then((response: any) => response.json);
 };
 
 const importThesaurus = async (thesaurus: ThesaurusSchema, file: File) => {
@@ -31,4 +31,4 @@ const importThesaurus = async (thesaurus: ThesaurusSchema, file: File) => {
   return httpRequest('thesauris', fields, headers, file);
 };
 
-export { getById, save, remove, importThesaurus };
+export { get, save, deleteThesauri, importThesaurus };

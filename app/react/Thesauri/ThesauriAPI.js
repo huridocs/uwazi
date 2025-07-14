@@ -2,11 +2,6 @@ import api from 'app/utils/api';
 
 export default {
   get(requestParams) {
-    const url = 'thesauri/getById'; //WIP
-    return api.get(url, requestParams).then(response => response.json.rows);
-  },
-
-  getThesauri(requestParams) {
     const url = 'thesauri';
     return api.get(url, requestParams).then(response => response.json.rows);
   },
@@ -24,10 +19,10 @@ export default {
   },
 
   save(requestParams) {
-    return api.post('thesauri', requestParams).then(response => response.json);
+    return api.post('thesauris', requestParams).then(response => response.json);
   },
 
   delete(requestParams) {
-    return api.delete('thesauri', requestParams).then(response => response.json);
+    return api.delete('thesauris', requestParams).then(response => response.json);
   },
 };
