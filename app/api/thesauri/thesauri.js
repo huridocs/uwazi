@@ -273,8 +273,8 @@ const thesauri = {
     return dictionaries;
   },
 
-  async getAll() {
-    const dictionaries = await model.db.find();
+  async find(input) {
+    const dictionaries = await model.db.find(input);
 
     return {
       rows: dictionaries,
