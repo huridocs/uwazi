@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { FullEntity } from 'api/templates/templateUpdateDenormalizeUseCase';
 import {
   LanguageISO6391,
   MetadataObjectSchema,
@@ -29,7 +30,7 @@ const denormalizeInheritedProperty = (
   };
 };
 
-const denormalizeRelationshipProperty = async (
+const denormalizeRelationshipProperty = (
   property: PropertySchema,
   values: MetadataObjectSchema[],
   language: string,
@@ -70,7 +71,7 @@ const validateValuesAreDenormalizable = (values: MetadataObjectSchema[] | undefi
   }
 };
 
-const denormalizeProperty = async (
+const denormalizeProperty = (
   property: PropertySchema | undefined,
   values: MetadataObjectSchema[] | undefined,
   language: string,
@@ -101,40 +102,33 @@ const denormalizeProperty = async (
   return values;
 };
 
-async function denormalizeMetadatatImproved(
-  metadata: MetadataSchema | undefined,
-  language: LanguageISO6391,
+function denormalizeMetadatatImproved(
+  entity: FullEntity,
   template: TemplateSchema,
   preloadedData: {
     allTemplates: TemplateSchema[];
     relatedEntities: { [k: string]: EntitySchema };
   }
 ) {
-  if (!metadata || !template) {
-    return metadata;
-  }
-
-  const denormalizedProperties: {
-    propertyName: string;
-    denormalizedValue: MetadataObjectSchema[] | undefined;
-  }[] = await Promise.all(
-    Object.keys(metadata).map(async propertyName => ({
-      propertyName,
-      denormalizedValue: await denormalizeProperty(
-        template.properties?.find(p => p.name === propertyName),
-        metadata[propertyName],
-        language,
-        preloadedData
-      ),
-    }))
+  const result = Object.keys(entity.translations).reduce<FullEntity>(
+    (denormalizedEntity: FullEntity, entityLanguage: string) => {
+      Object.keys(entity.translations[entityLanguage].metadata).forEach((propertyName: string) => {
+        denormalizedEntity.translations[entityLanguage].metadata[propertyName] =
+          denormalizeProperty(
+            template.properties?.find(p => p.name === propertyName),
+            entity.translations[entityLanguage].metadata[propertyName],
+            entityLanguage,
+            preloadedData
+          );
+      });
+      return denormalizedEntity;
+    },
+    {
+      sharedId: entity.sharedId,
+      translations: entity.translations,
+    }
   );
-
-  const denormalizedMetadata: Record<string, MetadataObjectSchema[] | undefined> = {};
-  denormalizedProperties.forEach(({ propertyName, denormalizedValue }) => {
-    denormalizedMetadata[propertyName] = denormalizedValue;
-  });
-
-  return denormalizedMetadata;
+  return result;
 }
 
 export { denormalizeMetadatatImproved };
