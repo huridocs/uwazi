@@ -2,8 +2,7 @@ import api from 'app/utils/api';
 
 export default {
   get(requestParams) {
-    const url = 'thesauri';
-    return api.get(url, requestParams).then(response => response.json.rows);
+    return api.get('thesauri', requestParams).then(response => response.json.rows);
   },
 
   getModelStatus(requestParams) {

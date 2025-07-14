@@ -4,20 +4,29 @@ import { IncomingHttpHeaders } from 'http';
 import { httpRequest } from 'shared/superagent';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-const get = async (params: { _id?: string }, headers?: IncomingHttpHeaders) => {
-  const url = 'thesauri';
+const get = async (
+  params: { _id?: string },
+  headers?: IncomingHttpHeaders
+): Promise<(ThesaurusSchema & { _id: string })[]> => {
   const requestParams = new RequestParams(params, headers);
-  return api.get(url, requestParams).then((response: any) => response.json.rows);
+  const response = (await api.get('thesauri', requestParams)) as {
+    json: { rows: (ThesaurusSchema & { _id: string })[] };
+  };
+  return response.json.rows;
 };
 
-const save = async (thesaurus: ThesaurusSchema) => {
+const save = async (thesaurus: ThesaurusSchema): Promise<ThesaurusSchema & { _id: string }> => {
   const requestParams = new RequestParams(thesaurus);
-  return api.post('thesauris', requestParams).then((response: any) => response.json);
+  const response = (await api.post('thesauris', requestParams)) as {
+    json: ThesaurusSchema & { _id: string };
+  };
+  return response.json;
 };
 
-const deleteThesauri = async (params: { _id: string }) => {
+const deleteThesauri = async (params: { _id: string }): Promise<{ ok: boolean }> => {
   const requestParams = new RequestParams(params);
-  return api.delete('thesauris', requestParams).then((response: any) => response.json);
+  const response = (await api.delete('thesauris', requestParams)) as { json: { ok: boolean } };
+  return response.json;
 };
 
 const importThesaurus = async (thesaurus: ThesaurusSchema, file: File) => {
