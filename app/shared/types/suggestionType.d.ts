@@ -79,6 +79,8 @@ export interface IXSuggestionType {
     page?: string;
   }[];
   trainingSample?: boolean;
+  entityTitle?: string;
+  currentValue?: PropertyValueSchema | PropertyValueSchema[];
 }
 
 export interface IXSuggestionStateType {

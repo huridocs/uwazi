@@ -132,6 +132,16 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
     trainingSample: { type: 'boolean' },
+    entityTitle: { type: 'string' },
+    currentValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
   },
   required: [
     'propertyName',
