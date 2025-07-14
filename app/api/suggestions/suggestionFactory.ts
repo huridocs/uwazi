@@ -16,6 +16,12 @@ type CreateForPdfInput = {
   targetProperty: PropertySchema;
 };
 
+type CreateForPropertyInput = {
+  entity: EntitySchema;
+  extractor: IXExtractorType;
+  targetProperty: PropertySchema;
+};
+
 export class SuggestionFactory {
   static createForPdf({
     extractor,
@@ -54,7 +60,6 @@ export class SuggestionFactory {
           entity,
           targetProperty,
         }),
-        labeledValue: IXServices.extractLabeledValueFromFile({ file, targetProperty }),
         modelCreationDate: undefined as any,
         state: undefined as any,
       },
@@ -65,5 +70,47 @@ export class SuggestionFactory {
       ..._suggestion,
       state,
     };
+  }
+
+  static createForProperty({
+    entity,
+    extractor,
+    targetProperty,
+  }: CreateForPropertyInput): IXSuggestionType {
+    const suggestion: IXSuggestionType = {
+      extractorId: extractor._id,
+      entityId: entity.sharedId!,
+      entityTemplate: entity.template!.toString(),
+
+      language: entity.language!,
+      propertyName: extractor.property,
+      entityTitle: entity.title,
+      currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
+      suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
+      date: Date.now(),
+      status: 'ready',
+
+      error: '',
+      segment: '',
+      trainingSample: false,
+      suggestedText: '',
+    };
+
+    const state = getSuggestionState(
+      {
+        currentValue: suggestion.currentValue!,
+        date: suggestion.date!,
+        error: suggestion.error!,
+        segment: suggestion.segment!,
+        status: suggestion.status!,
+        suggestedValue: suggestion.suggestedValue!,
+
+        state: undefined as any,
+        modelCreationDate: undefined as any,
+      },
+      targetProperty.type
+    );
+
+    return { ...suggestion, state };
   }
 }
