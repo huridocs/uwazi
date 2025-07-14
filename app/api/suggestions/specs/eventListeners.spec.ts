@@ -124,6 +124,12 @@ const fixtures: DBFixture = {
       ['extractor_source_text_target_text_template'],
       { property: 'source_text' }
     ),
+    fixturesFactory.ixExtractor(
+      'extractor_source_text_target_text_2',
+      'target_text',
+      ['extractor_source_text_target_text_template'],
+      { property: 'source_text' }
+    ),
     fixturesFactory.ixExtractor('extractor_source_pdf_target_text', 'target_text', [
       'extractor_source_text_target_text_template',
     ]),
@@ -618,12 +624,22 @@ describe('On EntityCreatedEvent', () => {
         targetLanguageKey: 'en',
         entities: [
           {
+            title: 'any_title',
             sharedId: 'any_shared_id_1',
             template: fixturesFactory.id('extractor_source_text_target_text_template'),
+            metadata: {
+              target_text: [{ value: 'target_text_value' }],
+            },
+            language: 'en',
           },
           {
+            title: 'any_title',
             sharedId: 'any_shared_id_1',
             template: fixturesFactory.id('extractor_source_text_target_text_template'),
+            metadata: {
+              target_text: [{ value: 'target_text_value' }],
+            },
+            language: 'pt',
           },
         ],
       })
@@ -641,6 +657,20 @@ describe('On EntityCreatedEvent', () => {
         segment: '',
         suggestedValue: '',
         date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
       },
       {
         language: 'pt',
@@ -653,10 +683,96 @@ describe('On EntityCreatedEvent', () => {
         segment: '',
         suggestedValue: '',
         date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
+      },
+
+      {
+        language: 'en',
+        entityId: 'any_shared_id_1',
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
+        extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
+        propertyName: 'target_text',
+        status: 'ready',
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
+      },
+      {
+        language: 'pt',
+        entityId: 'any_shared_id_1',
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
+        extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
+        propertyName: 'target_text',
+        status: 'ready',
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
       },
     ]);
 
     saveSpy.mockRestore();
+  });
+
+  it('should not create Suggestions if there are no Extractors', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+    await applicationEventsBus.emit(
+      new EntityCreatedEvent({
+        targetLanguageKey: 'en',
+        entities: [
+          {
+            template: fixturesFactory.id('template_without_extractors'),
+          },
+          {
+            template: fixturesFactory.id('template_without_extractors'),
+          },
+        ],
+      })
+    );
+
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 });
 
