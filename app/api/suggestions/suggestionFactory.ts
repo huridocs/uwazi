@@ -34,7 +34,7 @@ export class SuggestionFactory {
       throw new LanguageNotSupportedError(file.language!);
     }
 
-    const _suggestion = {
+    const suggestion = {
       extractorId: extractor._id,
       entityId: entity.sharedId!,
       fileId: file._id,
@@ -47,27 +47,27 @@ export class SuggestionFactory {
       status: 'ready' as any,
       error: '',
       segment: '',
+      currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
+      entityTitle: entity.title,
     };
 
     const state = getSuggestionState(
       {
-        date: _suggestion.date,
-        error: _suggestion.error,
-        status: _suggestion.status,
-        segment: _suggestion.segment,
-        suggestedValue: _suggestion.suggestedValue,
-        currentValue: IXServices.extractCurrentValue({
-          entity,
-          targetProperty,
-        }),
-        modelCreationDate: undefined as any,
+        currentValue: suggestion.currentValue!,
+        date: suggestion.date!,
+        error: suggestion.error!,
+        segment: suggestion.segment!,
+        status: suggestion.status!,
+        suggestedValue: suggestion.suggestedValue!,
+
         state: undefined as any,
+        modelCreationDate: undefined as any,
       },
       targetProperty.type
     );
 
     return {
-      ..._suggestion,
+      ...suggestion,
       state,
     };
   }
