@@ -14,7 +14,7 @@ import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { useAtomValue, useSetAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -102,6 +102,7 @@ const SuggestionSidepanel = ({
   const [selectAndSearch, setSelectAndSearch] = useState(false);
   const [selectAndSearchValue, setSelectAndSearchValue] = useState<string | undefined>();
   const [options, setOptions] = useState<MultiselectListOption[]>([]);
+  const intitialOptionsRef = useRef<MultiselectListOption[]>([]);
   const pdfScalingValue = useAtomValue(pdfScaleAtom);
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
 
@@ -243,6 +244,7 @@ const SuggestionSidepanel = ({
           );
 
           setOptions(intialOptions);
+          intitialOptionsRef.current = intialOptions;
         })
         .catch(() => {});
     }
@@ -408,7 +410,7 @@ const SuggestionSidepanel = ({
 
   const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
     if (!searchTerm) {
-      return options;
+      return intitialOptionsRef.current;
     }
 
     const response = await lookup({
@@ -419,7 +421,7 @@ const SuggestionSidepanel = ({
     const currentValues = (getValues('field') as string[]) || [];
     const suggestions = (suggestion?.suggestedValue as string[]) || [];
 
-    const newItems = response.data.map(option => ({
+    return response.data.map(option => ({
       label: (
         <MultiselectItemLabel
           currentValues={currentValues}
@@ -433,8 +435,6 @@ const SuggestionSidepanel = ({
       searchLabel: option.title,
       suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId),
     }));
-
-    return newItems;
   };
 
   const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => (
