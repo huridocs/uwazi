@@ -1,11 +1,6 @@
 /* eslint-disable max-lines */
 import { FullEntity } from 'api/templates/templateUpdateDenormalizeUseCase';
-import {
-  LanguageISO6391,
-  MetadataObjectSchema,
-  MetadataSchema,
-  PropertySchema,
-} from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 
@@ -112,15 +107,23 @@ function denormalizeMetadatatImproved(
 ) {
   const result = Object.keys(entity.translations).reduce<FullEntity>(
     (denormalizedEntity: FullEntity, entityLanguage: string) => {
-      Object.keys(entity.translations[entityLanguage].metadata).forEach((propertyName: string) => {
-        denormalizedEntity.translations[entityLanguage].metadata[propertyName] =
-          denormalizeProperty(
-            template.properties?.find(p => p.name === propertyName),
-            entity.translations[entityLanguage].metadata[propertyName],
-            entityLanguage,
-            preloadedData
-          );
-      });
+      Object.keys(entity.translations[entityLanguage].metadata || {}).forEach(
+        (propertyName: string) => {
+          if (
+            denormalizedEntity.translations[entityLanguage].metadata &&
+            entity.translations[entityLanguage].metadata
+          ) {
+            // eslint-disable-next-line no-param-reassign
+            denormalizedEntity.translations[entityLanguage].metadata[propertyName] =
+              denormalizeProperty(
+                template.properties?.find(p => p.name === propertyName),
+                entity.translations[entityLanguage].metadata[propertyName],
+                entityLanguage,
+                preloadedData
+              );
+          }
+        }
+      );
       return denormalizedEntity;
     },
     {
