@@ -12,14 +12,12 @@ import { lookup } from 'V2/api/search';
 import { notificationAtom, pdfScaleAtom, thesauriAtom } from 'V2/atoms';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Translate } from 'app/I18N';
-import { ClientThesaurusValue } from 'app/apiResponseTypes';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { useAtomValue, useSetAtom } from 'jotai';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { preloadOptionsLimit } from 'shared/config';
 import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import { Highlights, TableSuggestion } from '../types';
@@ -28,8 +26,8 @@ import {
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
-  loadValuesAndSuggestions,
   SELECT_TYPES,
+  loadValuesAndSuggestions,
 } from './sidepanelFunctions';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
@@ -52,18 +50,20 @@ const MultiselectItemLabel = ({
   currentValues,
   suggestions,
   value,
+  label,
   property,
 }: {
   currentValues: string[];
   suggestions: string[];
-  value;
+  value: string;
+  label: string;
   property: ClientPropertySchema;
 }) => {
   const matchingStyles = 'bg-success-50 text-success-800';
   const nonMatchingStyles = 'bg-orange-50 text-orange-800';
 
-  const isSelected = currentValues.includes(value.id);
-  const isSuggested = suggestions.includes(value.id);
+  const isSelected = currentValues.includes(value);
+  const isSuggested = suggestions.includes(value);
   let styles = '';
 
   if (isSelected && isSuggested) {
@@ -75,7 +75,7 @@ const MultiselectItemLabel = ({
   }
   return (
     <Translate className={styles} context={property?.content}>
-      {value.label}
+      {label}
     </Translate>
   );
 };
@@ -140,7 +140,8 @@ const SuggestionSidepanel = ({
             <MultiselectItemLabel
               currentValues={currentValues}
               suggestions={suggestions}
-              value={value}
+              value={value.id}
+              label={value.label}
               property={property}
             />
           ),
@@ -152,7 +153,8 @@ const SuggestionSidepanel = ({
               <MultiselectItemLabel
                 currentValues={currentValues}
                 suggestions={suggestions}
-                value={subValue}
+                value={subValue.id}
+                label={subValue.label}
                 property={property}
               />
             ),
@@ -187,8 +189,7 @@ const SuggestionSidepanel = ({
   }, [property, suggestion]);
 
   useEffect(() => {
-    if (pdf?.extractedMetadata && suggestion && showSidepanel) {
-      setSelectedText(undefined);
+    if (showSidepanel && pdf?.extractedMetadata && suggestion) {
       setHighlights(
         selectionHandlers.getHighlightsFromFile(
           pdf.extractedMetadata,
@@ -201,45 +202,51 @@ const SuggestionSidepanel = ({
 
   useEffect(() => {
     if (showSidepanel && property?.type === 'relationship') {
-      const relationshipOptions: MultiselectListOption[] = [];
+      const currentValues = (getValues('field') as string[]) || [];
+      const suggestions = (suggestion?.suggestedValue as string[]) || [];
 
-      if (suggestion) {
-        loadValuesAndSuggestions(
-          suggestion.currentValue as string[],
-          suggestion.suggestedValue as string[],
-          suggestion.language
-        )
-          .then(entities => {
-            relationshipOptions.push(
-              ...entities.map(_entity => ({
-                label: _entity.title as string,
-                value: _entity.sharedId as string,
-                searchLabel: _entity.title as string,
-              }))
-            );
-          })
-          .catch(e => {
-            throw e;
-          });
-      }
+      Promise.all([
+        lookup({ entityTitle: '', template: property?.content }),
+        ...(suggestion
+          ? [
+              loadValuesAndSuggestions(
+                suggestion.currentValue as string[],
+                suggestion.suggestedValue as string[],
+                suggestion.language
+              ),
+            ]
+          : []),
+      ])
+        .then(([emptySearchResult, suggestedEntities]) => {
+          const intialOptions = [...emptySearchResult.data, ...suggestedEntities].reduce(
+            (acc, option) => {
+              if (!acc.find(_option => _option.value === option.sharedId)) {
+                acc.push({
+                  label: (
+                    <MultiselectItemLabel
+                      currentValues={currentValues}
+                      suggestions={suggestions}
+                      value={option.sharedId!}
+                      label={option.title!}
+                      property={property}
+                    />
+                  ),
+                  value: option.sharedId!,
+                  searchLabel: option.title!,
+                  suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId!),
+                });
+              }
 
-      lookup('', property?.content ? [property.content] : undefined)
-        .then(response => {
-          relationshipOptions.push(
-            ...response.options.map(_option => ({
-              label: _option.label,
-              value: _option.value,
-              searchLabel: _option.label,
-            }))
+              return acc;
+            },
+            [] as MultiselectListOption[]
           );
-        })
-        .catch(e => {
-          throw e;
-        });
 
-      setOptions(relationshipOptions);
+          setOptions(intialOptions);
+        })
+        .catch(() => {});
     }
-  }, [property, showSidepanel, suggestion]);
+  }, [getValues, property, showSidepanel, suggestion]);
 
   const handleClose = () => {
     setSelectedText(undefined);
@@ -399,32 +406,32 @@ const SuggestionSidepanel = ({
     );
   };
 
-  const initialOptions = useMemo(
-    () =>
-      options.reduce((acc, option) => {
-        if (!acc.find(_option => _option.value === option.value)) {
-          acc.push(option);
-        }
-
-        return acc;
-      }, [] as MultiselectListOption[]),
-    [options]
-  );
-
   const _lookup = async (searchTerm: string): Promise<MultiselectListOption[]> => {
     if (!searchTerm) {
-      return initialOptions;
+      return options;
     }
 
-    const response = await lookup(
-      searchTerm || '',
-      property?.content ? [property.content] : undefined
-    );
+    const response = await lookup({
+      entityTitle: searchTerm || '',
+      template: property?.content,
+    });
 
-    const newItems = response.options.map((option: any) => ({
-      label: option.label,
-      value: option.value,
-      searchLabel: option.label,
+    const currentValues = (getValues('field') as string[]) || [];
+    const suggestions = (suggestion?.suggestedValue as string[]) || [];
+
+    const newItems = response.data.map(option => ({
+      label: (
+        <MultiselectItemLabel
+          currentValues={currentValues}
+          suggestions={suggestions}
+          value={option.sharedId}
+          label={option.title}
+          property={property!}
+        />
+      ),
+      value: option.sharedId,
+      searchLabel: option.title,
+      suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId),
     }));
 
     return newItems;
@@ -440,7 +447,7 @@ const SuggestionSidepanel = ({
           <MultiselectList
             onChange={onChange}
             selectedValues={value as string[]}
-            items={initialOptions}
+            items={options}
             checkboxes
             singleSelect={type === 'select'}
             search={selectAndSearchValue}
