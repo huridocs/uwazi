@@ -47,7 +47,7 @@ import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
-import { Extractors } from './ixextractors';
+import { Extractors, ModelNotReadyError } from './ixextractors';
 import {
   CommonSuggestion,
   RawSuggestion,
@@ -432,7 +432,7 @@ class InformationExtraction {
   async saveSuggestionsForTextSource(
     extractor: EnforcedWithId<IXExtractorType>,
     rawSuggestions: RawSuggestion[],
-    message: InternalIXResultsMessage
+    model: IXModelType
   ) {
     const targetTemplate = await templatesModel.getById(extractor.templates[0]);
     const properties = [
@@ -462,7 +462,7 @@ class InformationExtraction {
         targetProperty,
         rawSuggestion,
         currentSuggestion,
-        message
+        model
       );
 
       return Suggestions.save(suggestion);
@@ -472,7 +472,7 @@ class InformationExtraction {
   async saveSuggestionsForPdfSource(
     extractor: EnforcedWithId<IXExtractorType>,
     rawSuggestions: RawSuggestion[],
-    message: InternalIXResultsMessage
+    model: IXModelType
   ) {
     const templates = await templatesModel.get();
 
@@ -511,7 +511,7 @@ class InformationExtraction {
           rawSuggestion,
           currentSuggestion,
           entity,
-          message
+          model
         );
 
         return Suggestions.save(suggestion);
@@ -520,17 +520,17 @@ class InformationExtraction {
   }
 
   saveSuggestionsManager = async (message: InternalIXResultsMessage) => {
-    const [extractor, rawSuggestions] = await Promise.all([
-      Extractors.getById({ _id: message.params?.id }),
-      this.requestResults(message),
-    ]);
-
-    if (extractor?.source.pdf) {
-      return this.saveSuggestionsForPdfSource(extractor, rawSuggestions, message);
+    const [extractor] = await Extractors.get({ _id: message.params!.id });
+    if (!extractor) {
+      return Promise.resolve();
     }
-
-    if (extractor?.source.property) {
-      return this.saveSuggestionsForTextSource(extractor, rawSuggestions, message);
+    const [model] = await ixmodels.get({ extractorId: extractor._id });
+    const rawSuggestions = await this.requestResults(message);
+    if (extractor.source.pdf) {
+      return this.saveSuggestionsForPdfSource(extractor, rawSuggestions, model);
+    }
+    if (extractor.source.property) {
+      return this.saveSuggestionsForTextSource(extractor, rawSuggestions, model);
     }
 
     return Promise.resolve();
@@ -680,6 +680,31 @@ class InformationExtraction {
         },
       },
     });
+  };
+
+  startFindSuggestions = async (extractorId: ObjectIdSchema, sharedIds: string[]) => {
+    const [model] = await ixmodels.get({ extractorId });
+
+    if (!model || model.status !== ModelStatus.ready) {
+      throw new ModelNotReadyError(extractorId.toString());
+    }
+
+    if (model.findSuggestionsRunTimestamp) {
+      throw new Error('A find suggestions process is already running for this extractor.');
+    }
+
+    await ixmodels.save({
+      ...model,
+      findSuggestionsRunTimestamp: Date.now(),
+      findSuggestionsSharedIds: sharedIds,
+      findingSuggestions: true,
+    });
+
+    await this.getSuggestions(extractorId);
+
+    const [updatedModel] = await ixmodels.get({ extractorId });
+
+    return this.getSuggestionsStatus(extractorId, updatedModel!);
   };
 
   trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {

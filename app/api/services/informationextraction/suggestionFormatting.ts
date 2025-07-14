@@ -17,7 +17,7 @@ import {
   ValuesSelectionSuggestionSchema,
 } from 'shared/types/suggestionSchema';
 import { syncWrapValidator } from 'shared/tsUtils';
-import { InternalIXResultsMessage } from './InformationExtraction';
+import { IXModelType } from 'shared/types/IXModelType';
 import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';
 
 type RawSuggestion = {
@@ -228,14 +228,6 @@ const formatRawSuggestion = (
   return formatter(rawSuggestion, currentSuggestion, entity);
 };
 
-const readMessageSuccess = (message: InternalIXResultsMessage) =>
-  message.success
-    ? {}
-    : {
-        status: 'failed' as 'failed',
-        error: message.error_message ? message.error_message : 'Unknown error',
-      };
-
 class SuggestionTextSourceFormatter {
   private static title({ text, segment_text }: RawSuggestion) {
     return {
@@ -349,36 +341,40 @@ const formatSuggestionPdfSource = (
   rawSuggestion: RawSuggestion,
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema,
-  message: InternalIXResultsMessage
+  model: IXModelType
+  // eslint-disable-next-line max-params
 ) => {
-  const suggestion: IXSuggestionType = {
+  const suggestion = formatRawSuggestion(rawSuggestion, property, currentSuggestion, entity);
+  return {
     ...currentSuggestion,
+    ...suggestion,
     status: 'ready' as 'ready',
     error: '',
-    ...formatRawSuggestion(rawSuggestion, property, currentSuggestion, entity),
-    ...readMessageSuccess(message),
     date: new Date().getTime(),
+    ...(model.findSuggestionsRunTimestamp
+      ? { findSuggestionsRunTimestamp: model.findSuggestionsRunTimestamp }
+      : {}),
   };
-
-  return suggestion;
 };
 
 const formatSuggestionTextSource = (
   targetProperty: PropertySchema,
   rawSuggestion: RawSuggestion,
   currentSuggestion: IXSuggestionType,
-  message: InternalIXResultsMessage
+  model: IXModelType
 ): IXSuggestionType => ({
   ...currentSuggestion,
-  status: 'ready' as 'ready',
-  error: '',
   ...SuggestionTextSourceFormatter.format(
     targetProperty,
     rawSuggestion,
-    currentSuggestion.language! as LanguageISO6391
+    currentSuggestion.language as LanguageISO6391
   ),
-  ...readMessageSuccess(message),
+  status: 'ready',
+  error: '',
   date: new Date().getTime(),
+  ...(model.findSuggestionsRunTimestamp
+    ? { findSuggestionsRunTimestamp: model.findSuggestionsRunTimestamp }
+    : {}),
 });
 
 const formatSuggestionFacade = {

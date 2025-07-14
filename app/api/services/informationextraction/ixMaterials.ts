@@ -220,36 +220,70 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
   const [currentModel] = await ixmodels.get({ extractorId });
   const [extractor] = await Extractors.get({ _id: extractorId });
 
-  const query: UwaziFilterQuery<any> = {
-    extractorId,
-    date: { $lt: currentModel.creationDate },
-    'state.error': { $ne: true },
-  };
-
-  if (currentModel.testRun) {
-    query.trainingSample = { $ne: true };
-  }
-
-  const suggestions = await IXSuggestionsModel.get(query, '', {
-    limit: limit || BATCH_SIZE_FOR_PROPERTY,
-  });
-
-  if (!extractor.property || !extractor) {
+  if (!extractor.property) {
     return [];
   }
 
-  const propertyType = await getPropertyType(extractor.templates, extractor.property);
+  let entityQuery: UwaziFilterQuery<any> = {};
 
-  if (!propertyType) {
-    return [];
-  }
+  if (currentModel.findSuggestionsRunTimestamp) {
+    if (
+      !currentModel.findSuggestionsSharedIds ||
+      currentModel.findSuggestionsSharedIds.length === 0
+    ) {
+      await ixmodels.save({
+        ...currentModel,
+        findSuggestionsRunTimestamp: undefined,
+        findSuggestionsSharedIds: undefined,
+      });
+      return [];
+    }
 
-  const entities = await entitiesModel.getUnrestricted(
-    {
+    const BATCH_SIZE = limit || BATCH_SIZE_FOR_PROPERTY;
+    const sharedIdsToProcess = currentModel.findSuggestionsSharedIds.slice(0, BATCH_SIZE);
+
+    await ixmodels.save({
+      ...currentModel,
+      findSuggestionsSharedIds: currentModel.findSuggestionsSharedIds.slice(BATCH_SIZE),
+    });
+
+    entityQuery = { sharedId: { $in: sharedIdsToProcess } };
+  } else {
+    const suggestionsQuery: UwaziFilterQuery<any> = {
+      extractorId,
+      date: { $lt: currentModel.creationDate },
+      'state.error': { $ne: true },
+    };
+
+    if (currentModel.testRun) {
+      suggestionsQuery.trainingSample = { $ne: true };
+    }
+
+    const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', {
+      limit: limit || BATCH_SIZE_FOR_PROPERTY,
+    });
+
+    if (!suggestions.length) {
+      return [];
+    }
+
+    entityQuery = {
       sharedId: { $in: suggestions.map(s => s.entityId) },
       language: { $in: suggestions.map(s => s.language) },
-    },
-    `sharedId metadata.${extractor.property} metadata.${extractor.source.property} language`
+    };
+  }
+
+  const projection = new Set([
+    'sharedId',
+    'title',
+    `metadata.${extractor.property}`,
+    'language',
+    `metadata.${extractor.source.property}`,
+  ]);
+
+  const entities = await entitiesModel.getUnrestricted(
+    entityQuery,
+    Array.from(projection).join(' ')
   );
 
   return entities;
@@ -322,38 +356,79 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const [currentModel] = await ixmodels.get({ extractorId });
+  const [extractor] = await Extractors.get({ _id: extractorId });
 
-  const query: UwaziFilterQuery<any> = {
-    extractorId,
-    date: { $lt: currentModel.creationDate },
-    'state.error': { $ne: true },
-  };
-
-  if (currentModel.testRun) {
-    query.trainingSample = { $ne: true };
+  if (!extractor) {
+    return [];
   }
 
-  const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-    limit: limit || BATCH_SIZE_FOR_PDF,
-  });
+  let filesQuery: UwaziFilterQuery<FileType> = {};
+  const batchLimit = limit || BATCH_SIZE_FOR_PDF;
 
-  const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
+  if (currentModel.findSuggestionsRunTimestamp) {
+    if (
+      !currentModel.findSuggestionsSharedIds ||
+      currentModel.findSuggestionsSharedIds.length === 0
+    ) {
+      await ixmodels.save({
+        ...currentModel,
+        findSuggestionsRunTimestamp: undefined,
+        findSuggestionsSharedIds: undefined,
+      });
+      return [];
+    }
 
-  const files = (await filesModel.get(
-    {
-      $and: [
-        {
-          type: 'document',
-          filename: { $exists: true },
-          language: { $exists: true },
-        },
-        { _id: { $in: fileIds } },
-      ],
-    },
-    'extractedMetadata entity language filename'
-  )) as (FileType & FileEnforcedNotUndefined)[];
+    const sharedIdsToProcess = currentModel.findSuggestionsSharedIds.slice(0, batchLimit);
 
-  return getFilesWithAggregations(files);
+    await ixmodels.save({
+      ...currentModel,
+      findSuggestionsSharedIds: currentModel.findSuggestionsSharedIds.slice(batchLimit),
+    });
+
+    filesQuery = {
+      entity: { $in: sharedIdsToProcess },
+      type: 'document',
+      filename: { $exists: true },
+      language: { $exists: true },
+    };
+  } else {
+    const suggestionsQuery: UwaziFilterQuery<any> = {
+      extractorId,
+      date: { $lt: currentModel.creationDate },
+      'state.error': { $ne: true },
+    };
+
+    if (currentModel.testRun) {
+      suggestionsQuery.trainingSample = { $ne: true };
+    }
+
+    const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', {
+      limit: batchLimit,
+    });
+
+    if (!suggestions.length) {
+      return [];
+    }
+
+    filesQuery = {
+      _id: { $in: suggestions.map(s => s.fileId) },
+      type: 'document',
+      filename: { $exists: true },
+      language: { $exists: true },
+    };
+  }
+
+  const filesToProcess = await filesModel.get(
+    filesQuery,
+    'extractedMetadata entity language filename',
+    { limit: batchLimit }
+  );
+
+  const filesWithAggregation = await getFilesWithAggregations(
+    filesToProcess as (FileType & FileEnforcedNotUndefined)[]
+  );
+
+  return filesWithAggregation;
 }
 
 export {

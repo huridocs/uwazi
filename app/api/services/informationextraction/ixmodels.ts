@@ -65,6 +65,8 @@ export default {
     await model.save({
       ...current,
       findingSuggestions: false,
+      findSuggestionsRunTimestamp: undefined,
+      findSuggestionsSharedIds: undefined,
       status: ModelStatus.ready,
     });
   },
