@@ -17,14 +17,14 @@ import { EnforcedWithId } from 'api/odm';
 import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { Suggestions } from './suggestions';
-import { getBlankSuggestionForPdf, getBlankSuggestionForProperty } from './blankSuggestions';
+import { getBlankSuggestionForPdf } from './blankSuggestions';
 import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
 import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument';
+import { SuggestionFactory } from './suggestionFactory';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();
@@ -138,41 +138,31 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     await handleTemplateChange(originalDoc, modifiedDoc, extractors);
   });
 
-  eventsBus.on(EntityCreatedEvent, async payload => {
+  eventsBus.on(EntityCreatedEvent, async ({ entities }) => {
     if (!(await featureIsEnabled())) return;
-    const [entity] = payload.entities;
 
     const extractors = await Extractors.get({
-      templates: { $in: [entity.template] },
+      templates: { $in: [entities[0].template] },
       'source.property': { $exists: true },
     });
 
-    if (extractors.length) {
-      const { languages } = await settings.get();
+    if (!extractors.length) return;
 
-      const suggestionsToSave: IXSuggestionType[] = [];
+    const targetProperty = await templates.getPropertyByName(extractors[0].property);
 
-      await ArrayUtils.parallelFor(extractors, async e => {
-        const sampleProperty = await templates.getPropertyByName(e.property);
+    const suggestionsToSave: IXSuggestionType[] = [];
 
-        languages!.forEach(l =>
-          suggestionsToSave.push(
-            getBlankSuggestionForProperty({
-              entityId: entity.sharedId!,
-              extractorId: e._id,
-              propertyName: e.property,
-              template: entity.template!,
-              propertyType: sampleProperty.type,
-              language: l.key,
-            })
-          )
-        );
-      });
+    extractors.forEach(extractor =>
+      entities.forEach(entity =>
+        suggestionsToSave.push(
+          SuggestionFactory.createForProperty({ entity, extractor, targetProperty })
+        )
+      )
+    );
 
-      if (suggestionsToSave.length) {
-        await Suggestions.saveMultiple(suggestionsToSave);
-      }
-    }
+    if (!suggestionsToSave.length) return;
+
+    await Suggestions.saveMultiple(suggestionsToSave);
   });
 
   eventsBus.on(EntityDeletedEvent, async ({ entity }) => {
