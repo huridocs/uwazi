@@ -1,6 +1,6 @@
 import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { IXSuggestionStateType } from './types/suggestionType';
+import { IXSuggestionStateType, IXSuggestionType } from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,
@@ -13,12 +13,9 @@ const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
 
 type CurrentValue = string | number | null;
 
-type SuggestedValue = string[] | string | null;
-
 interface SuggestionValues {
-  currentValue: CurrentValue | CurrentValue[];
-  labeledValue: string | null;
-  suggestedValue: SuggestedValue;
+  currentValue: IXSuggestionType['currentValue'];
+  suggestedValue: IXSuggestionType['currentValue'];
   modelCreationDate: number;
   error: string;
   date: number;
