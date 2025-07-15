@@ -113,6 +113,7 @@ describe('thesauri', () => {
     it('should delete a thesauri', async () => {
       const response = await thesauri.delete(dictionaryId);
       expect(response.ok).toBe(true);
+      expect(response._id).toBe(dictionaryId);
 
       const dictionaries = await thesauri.get({ _id: dictionaryId });
       expect(dictionaries.length).toBe(0);

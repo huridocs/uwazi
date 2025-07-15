@@ -287,7 +287,7 @@ const thesauri = {
         return translations.deleteContext(id);
       })
       .then(() => model.delete(id))
-      .then(() => ({ ok: true }));
+      .then(() => ({ ok: true, _id: id }));
   },
 
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
