@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+import { ClientThesaurus } from 'app/apiResponseTypes';
 import { ClientTemplateSchema, ClientTranslationSchema } from 'app/istore';
 
 const currentTranslations: ClientTranslationSchema[] = [
@@ -213,6 +215,57 @@ const templates: ClientTemplateSchema[] = [
   },
 ];
 
+const thesauri: ClientThesaurus[] = [
+  {
+    _id: 'thesaurus1',
+    name: 'Categories',
+    values: [
+      {
+        id: 'cat1',
+        label: 'Category 1',
+        values: [
+          {
+            id: 'subcat1',
+            label: 'Subcategory 1.1',
+          },
+          {
+            id: 'subcat2',
+            label: 'Subcategory 1.2',
+          },
+        ],
+      },
+      {
+        id: 'cat2',
+        label: 'Category 2',
+        values: [
+          {
+            id: 'subcat3',
+            label: 'Subcategory 2.1',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    _id: 'thesaurus2',
+    name: 'Priorities',
+    values: [
+      {
+        id: 'high',
+        label: 'High',
+      },
+      {
+        id: 'medium',
+        label: 'Medium',
+      },
+      {
+        id: 'low',
+        label: 'Low',
+      },
+    ],
+  },
+];
+
 export {
   updatedTranslation,
   currentTranslations,
@@ -220,4 +273,5 @@ export {
   translationKeysChangeResult,
   translationKeysChangeArguments,
   templates,
+  thesauri,
 };

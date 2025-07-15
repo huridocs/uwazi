@@ -3,7 +3,7 @@
  */
 /* eslint-disable max-statements */
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
-import { atomStore, templatesAtom, translationsAtom } from 'V2/atoms';
+import { atomStore, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { socket } from '../../socket';
 import '../sockets';
 import { store } from '../../store';
@@ -14,6 +14,7 @@ import {
   translationKeysChangeArguments,
   translationKeysChangeResult,
   templates,
+  thesauri,
 } from './fixtures/fixtures';
 
 describe('sockets', () => {
@@ -120,20 +121,47 @@ describe('sockets', () => {
   });
 
   describe('Thesauri', () => {
-    it('should emit a thesauriChange event', () => {
-      socket._callbacks.$thesauriChange[0]({ _id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'thesauris/UPDATE',
-        value: { _id: '123' },
-      });
+    beforeEach(() => {
+      atomStore.set(
+        thesauriAtom,
+        thesauri.map(t => ({ ...t }))
+      );
+      spyOn(atomStore, 'set');
     });
 
+    it('should emit a thesauriChange event and update the store', () => {
+      const updatedThesaurus = {
+        ...thesauri[0],
+        name: 'Updated categories',
+        values: [
+          ...thesauri[0].values,
+
+          {
+            id: 'cat3',
+            label: 'Category 3',
+            values: 'cat3',
+          },
+        ],
+      };
+
+      socket._callbacks.$thesauriChange[0](updatedThesaurus);
+
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([updatedThesaurus, thesauri[1]])
+      );
+      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), expect.toBeArrayOfSize(2));
+    });
+
+    it('should emit a thesauriChange event and add the thesaurus to the store', () => {});
+
     it('should emit a thesauriDelete event', () => {
-      socket._callbacks.$thesauriDelete[0]({ id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'thesauris/REMOVE',
-        value: { _id: '123' },
-      });
+      socket._callbacks.$thesauriDelete[0]({ id: 'thesaurus2' });
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([thesauri[1]])
+      );
+      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), expect.toBeArrayOfSize(1));
     });
   });
 
