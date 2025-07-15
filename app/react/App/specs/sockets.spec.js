@@ -3,7 +3,7 @@
  */
 /* eslint-disable max-statements */
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
-import { atomStore, translationsAtom } from 'V2/atoms';
+import { atomStore, templatesAtom, translationsAtom } from 'V2/atoms';
 import { socket } from '../../socket';
 import '../sockets';
 import { store } from '../../store';
@@ -13,6 +13,7 @@ import {
   updatedTranslation,
   translationKeysChangeArguments,
   translationKeysChangeResult,
+  templates,
 } from './fixtures/fixtures';
 
 describe('sockets', () => {
@@ -61,27 +62,64 @@ describe('sockets', () => {
     });
   });
 
-  describe('templateChange', () => {
-    it('should emit a templateChange event', () => {
-      socket._callbacks.$templateChange[0]({ _id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'templates/UPDATE',
-        value: { _id: '123' },
-      });
+  describe('templates', () => {
+    beforeEach(() => {
+      atomStore.set(
+        templatesAtom,
+        templates.map(t => ({ ...t }))
+      );
+      spyOn(atomStore, 'set');
+    });
+
+    it('should emit a templateChange event and update the store', () => {
+      socket._callbacks.$templateChange[0]({ ...templates[1], name: 'Template 2 updated' });
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([
+          templates[0],
+          { ...templates[1], name: 'Template 2 updated' },
+          templates[2],
+        ])
+      );
+    });
+
+    it('should emit a templateChange event and add the template to the store', () => {
+      const newTemplate = {
+        _id: '4',
+        name: 'Template 4',
+        commonProperties: [
+          {
+            _id: '41',
+            label: 'Title',
+            name: 'title',
+            type: 'text',
+            isCommonProperty: true,
+          },
+        ],
+        properties: [],
+      };
+
+      socket._callbacks.$templateChange[0](newTemplate);
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([...templates, newTemplate])
+      );
+    });
+
+    it('should emit a templateDelete event and remove that template from the store', () => {
+      socket._callbacks.$templateDelete[0]({ _id: '1' });
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([templates[1], templates[2]])
+      );
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.not.arrayContaining([templates[0]])
+      );
     });
   });
 
-  describe('templateDelete', () => {
-    it('should emit a templateDelete event', () => {
-      socket._callbacks.$templateDelete[0]({ id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'templates/REMOVE',
-        value: { _id: '123' },
-      });
-    });
-  });
-
-  describe('thesauriChange', () => {
+  describe('Thesauri', () => {
     it('should emit a thesauriChange event', () => {
       socket._callbacks.$thesauriChange[0]({ _id: '123' });
       expect(store.dispatch).toHaveBeenCalledWith({
@@ -89,23 +127,11 @@ describe('sockets', () => {
         value: { _id: '123' },
       });
     });
-  });
 
-  describe('thesauriDelete', () => {
     it('should emit a thesauriDelete event', () => {
       socket._callbacks.$thesauriDelete[0]({ id: '123' });
       expect(store.dispatch).toHaveBeenCalledWith({
         type: 'thesauris/REMOVE',
-        value: { _id: '123' },
-      });
-    });
-  });
-
-  describe('templateChange', () => {
-    it('should emit a templateChange event', () => {
-      socket._callbacks.$templateChange[0]({ _id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'templates/UPDATE',
         value: { _id: '123' },
       });
     });

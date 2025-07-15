@@ -63,10 +63,10 @@ socket.on('updateSettings', settings => {
 });
 
 socket.on('thesauriChange', thesauri => {
-  store.dispatch(actions.update('thesauris', thesauri));
+  console.log('thesauriChange!', thesauri);
 });
 socket.on('thesauriDelete', thesauri => {
-  store.dispatch(actions.remove('thesauris', { _id: thesauri.id }));
+  console.log('thesauriDelete', thesauri);
 });
 
 socket.on('translationsChange', languageTranslations => {

@@ -1,4 +1,4 @@
-import { ClientTranslationSchema } from 'app/istore';
+import { ClientTemplateSchema, ClientTranslationSchema } from 'app/istore';
 
 const currentTranslations: ClientTranslationSchema[] = [
   {
@@ -146,10 +146,78 @@ const translationKeysChangeResult = [
   },
 ];
 
+const templates: ClientTemplateSchema[] = [
+  {
+    _id: '1',
+    name: 'Template 1',
+    commonProperties: [
+      {
+        _id: '11',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+    ],
+    properties: [
+      {
+        _id: '12',
+        label: 'Description',
+        name: 'description',
+        type: 'markdown',
+      },
+    ],
+  },
+  {
+    _id: '2',
+    name: 'Template 2',
+    commonProperties: [
+      {
+        _id: '21',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+    ],
+    properties: [
+      {
+        _id: '22',
+        label: 'Summary',
+        name: 'summary',
+        type: 'text',
+      },
+    ],
+  },
+  {
+    _id: '3',
+    name: 'Template 3',
+    commonProperties: [
+      {
+        _id: '31',
+        label: 'Title',
+        name: 'title',
+        type: 'text',
+        isCommonProperty: true,
+      },
+    ],
+    properties: [
+      {
+        _id: '32',
+        label: 'Priority',
+        name: 'priority',
+        type: 'select',
+        content: 'thesaurus2',
+      },
+    ],
+  },
+];
+
 export {
   updatedTranslation,
   currentTranslations,
   newLanguage,
   translationKeysChangeResult,
   translationKeysChangeArguments,
+  templates,
 };
