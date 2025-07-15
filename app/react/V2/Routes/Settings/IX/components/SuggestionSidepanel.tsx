@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
@@ -29,6 +28,7 @@ import {
   SELECT_TYPES,
   loadValuesAndSuggestions,
 } from './sidepanelFunctions';
+import { MultiselectItemLabel } from './MultiselectItemLabel';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
@@ -45,40 +45,6 @@ enum HighlightColors {
   CURRENT = '#B1F7A3',
   NEW = '#F27DA5',
 }
-
-const MultiselectItemLabel = ({
-  currentValues,
-  suggestions,
-  value,
-  label,
-  property,
-}: {
-  currentValues: string[];
-  suggestions: string[];
-  value: string;
-  label: string;
-  property: ClientPropertySchema;
-}) => {
-  const matchingStyles = 'bg-success-50 text-success-800';
-  const nonMatchingStyles = 'bg-orange-50 text-orange-800';
-
-  const isSelected = currentValues.includes(value);
-  const isSuggested = suggestions.includes(value);
-  let styles = '';
-
-  if (isSelected && isSuggested) {
-    styles = matchingStyles;
-  }
-
-  if (!isSelected && isSuggested) {
-    styles = nonMatchingStyles;
-  }
-  return (
-    <Translate className={styles} context={property?.content}>
-      {label}
-    </Translate>
-  );
-};
 
 const SuggestionSidepanel = ({
   showSidepanel,
@@ -139,9 +105,8 @@ const SuggestionSidepanel = ({
         _options.push({
           label: (
             <MultiselectItemLabel
-              currentValues={currentValues}
-              suggestions={suggestions}
-              value={value.id}
+              isSelected={currentValues.includes(value)}
+              isSuggested={suggestions.includes(value)}
               label={value.label}
               property={property}
             />
@@ -152,9 +117,8 @@ const SuggestionSidepanel = ({
           items: value.values?.map((subValue: any) => ({
             label: (
               <MultiselectItemLabel
-                currentValues={currentValues}
-                suggestions={suggestions}
-                value={subValue.id}
+                isSelected={currentValues.includes(value)}
+                isSuggested={suggestions.includes(value)}
                 label={subValue.label}
                 property={property}
               />
@@ -225,9 +189,8 @@ const SuggestionSidepanel = ({
                 acc.push({
                   label: (
                     <MultiselectItemLabel
-                      currentValues={currentValues}
-                      suggestions={suggestions}
-                      value={option.sharedId!}
+                      isSelected={currentValues.includes(option.sharedId!)}
+                      isSuggested={suggestions.includes(option.sharedId!)}
                       label={option.title!}
                       property={property}
                     />
@@ -424,9 +387,8 @@ const SuggestionSidepanel = ({
     return response.rows.map(option => ({
       label: (
         <MultiselectItemLabel
-          currentValues={currentValues}
-          suggestions={suggestions}
-          value={option.sharedId}
+          isSelected={currentValues.includes(option.sharedId)}
+          isSuggested={suggestions.includes(option.sharedId)}
           label={option.title}
           property={property!}
         />
