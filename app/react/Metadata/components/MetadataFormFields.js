@@ -173,28 +173,7 @@ class MetadataFormFields extends Component {
           </>
         );
       case 'relationship':
-        if (property.content) {
-          const source = thesauris.find(
-            opt => opt.get('_id').toString() === property.content.toString()
-          );
-
-          totalPossibleOptions = source.get('optionsCount');
-          thesauri = translateOptions(source);
-        }
-
-        if (!property.content) {
-          thesauri = Array.prototype
-            .concat(
-              ...thesauris
-                .filter(filterThesauri => filterThesauri.get('type') === 'template')
-                .map(source => {
-                  totalPossibleOptions += source.get('optionsCount');
-                  return translateOptions(source);
-                })
-            )
-            .slice(0, preloadOptionsLimit());
-        }
-
+        thesauri = [];
         if (entityThesauris.get(property.name)) {
           entityThesauris
             .get(property.name)

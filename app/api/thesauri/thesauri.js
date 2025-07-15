@@ -12,9 +12,9 @@ import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
 import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
 import { search } from 'api/search';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
-import { objectIndex } from 'shared/data_utils/objectIndex';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);
