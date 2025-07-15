@@ -101,6 +101,7 @@ function getFixturesFactory() {
       _id: idMapper(name),
       name,
       properties,
+      processing: false,
       commonProperties: commonProperties(`commonProperties${name}`, idMapper),
     }),
 

@@ -5,12 +5,15 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import entities, { model } from 'api/entities';
 import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
 import { denormalizeMetadatatImproved } from 'api/entities/denormalize_improved_templates_save';
+import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { applicationEventsBus } from 'api/eventsbus';
 import relationships from 'api/relationships/relationships';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { cloneDeep } from 'lodash';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 
-type FullEntity = {
+export type FullEntity = {
   sharedId: string;
   translations: {
     [language: string]: EntitySchema;
@@ -20,24 +23,28 @@ type FullEntity = {
 class MongoFullEntitiesDataSource extends MongoDataSource<EntityDBO> {
   protected collectionName = 'entities';
 
-  async bulkUpdate(entitiesToSave: EntitySchema[], propertyNamesThatChanged: string[] = []) {
+  async bulkUpdate(entitiesToSave: FullEntity[], propertyNamesThatChanged: string[] = []) {
     await this.getCollection().bulkWrite(
       // @ts-ignore
-      entitiesToSave.map(e => {
-        const $set = propertyNamesThatChanged.reduce<{ [k: string]: any }>((memo, name) => {
-          if (e?.metadata?.[name]) {
-            // eslint-disable-next-line no-param-reassign
-            memo[`metadata.${name}`] = e.metadata[name];
-          }
-          return memo;
-        }, {});
-        return {
-          updateOne: {
-            filter: { _id: e._id },
-            update: { $set },
-          },
-        };
-      }),
+      entitiesToSave
+        .map(fullEntity => {
+          return Object.values(fullEntity.translations).map(e => {
+            const $set = propertyNamesThatChanged.reduce<{ [k: string]: any }>((memo, name) => {
+              if (e?.metadata?.[name]) {
+                // eslint-disable-next-line no-param-reassign
+                memo[`metadata.${name}`] = e.metadata[name];
+              }
+              return memo;
+            }, {});
+            return {
+              updateOne: {
+                filter: { _id: e._id },
+                update: { $set },
+              },
+            };
+          });
+        })
+        .flat(),
       { ordered: false }
     );
   }
@@ -126,29 +133,6 @@ async function getRelatedEntities(
   return relatedEntitiesBySharedId;
 }
 
-async function denormalizeRelationshipProperties(
-  fullEntity: FullEntity,
-  template: TemplateSchema,
-  preloadedData: {
-    allTemplates: TemplateSchema[];
-    relatedEntities: { [k: string]: EntitySchema };
-  }
-) {
-  return Promise.all(
-    Object.keys(fullEntity.translations).map(async entityLanguage => {
-      // eslint-disable-next-line no-param-reassign
-      fullEntity.translations[entityLanguage].metadata = await denormalizeMetadatatImproved(
-        fullEntity.translations[entityLanguage].metadata,
-        // @ts-ignore
-        entityLanguage,
-        template,
-        preloadedData
-      );
-      return fullEntity.translations[entityLanguage];
-    })
-  );
-}
-
 const sanitizeFullEntity = (entity: FullEntity, template: TemplateSchema) => {
   Object.values(entity.translations).forEach(e => {
     entities.sanitize(e, template);
@@ -169,7 +153,12 @@ const updateMetdataFromTemplateSave = async (
 
   const entitiesToUpdate = _templateEntities.map(e =>
     sanitizeFullEntity(
-      createMetadataBasedOnRelationships(e, allRelations, relationsByHub, relPropertiesThatChanged),
+      createMetadataBasedOnRelationships(
+        cloneDeep(e),
+        allRelations,
+        relationsByHub,
+        relPropertiesThatChanged
+      ),
       template
     )
   );
@@ -179,50 +168,34 @@ const updateMetdataFromTemplateSave = async (
     relPropertiesThatChanged
   );
 
-  const denormalizedEntities = await Promise.all(
-    entitiesToUpdate.map(async entity => {
-      const result = await denormalizeRelationshipProperties(entity, template, {
-        ...preloadedData,
-        relatedEntities: relatedEntitiesBySharedId,
-      });
-      return result;
+  const denormalizedEntities = entitiesToUpdate.map(entity =>
+    denormalizeMetadatatImproved(entity, template, {
+      ...preloadedData,
+      relatedEntities: relatedEntitiesBySharedId,
     })
   );
 
-  // const afterEntities = await model.get({ sharedId: entity.sharedId });
-  // await applicationEventsBus.emit(
-  //   new EntityUpdatedEvent({
-  //     before: docLanguages,
-  //     after: afterEntities,
-  //     targetLanguageKey: entity.language,
-  //   })
-  // );
-  //
-  // return result;
+  await _templateEntities.reduce(async (previousPromise, entity, i) => {
+    await previousPromise;
 
-  // console.log(relPropertiesThatChanged.map(r => r.name));
+    const beforeTranslations = Object.values(entity.translations);
+    const afterTranslations = Object.values(entitiesToUpdate[i].translations);
+
+    return applicationEventsBus.emit(
+      new EntityUpdatedEvent({
+        before: beforeTranslations,
+        after: afterTranslations,
+        targetLanguageKey: language,
+      })
+    );
+  }, Promise.resolve());
 
   const db = new MongoFullEntitiesDataSource(getConnection(), DefaultTransactionManager());
 
   await db.bulkUpdate(
-    denormalizedEntities.flat(),
+    denormalizedEntities,
     relPropertiesThatChanged.map(r => r.name)
   );
-
-  // await model.db.bulkWrite(
-  //   denormalizedEntities.flat().map(e => ({
-  //     updateOne: {
-  //       filter: { _id: e._id },
-  //       update: relPropertiesThatChanged.reduce((memo, prop) => {
-  //         memo['metadata.' + prop.name] = e.metadata[prop.name];
-  //         return memo;
-  //       }, {}),
-  //     },
-  //   })),
-  //   { ordered: false }
-  // );
-
-  // await search.indexEntities({ sharedId: { $in: entitiesToUpdate.map(e => e.sharedId) } });
 };
 
 export const denormalizeTemplateEntities = async (

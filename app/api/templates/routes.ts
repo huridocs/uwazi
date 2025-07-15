@@ -29,7 +29,9 @@ export default (app: Application) => {
       const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
-        templates.save(template, req.language, !fullReindex)
+        templates.save(template, req.language, !fullReindex, () => {
+          req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
+        })
       );
 
       req.sockets.emitToCurrentTenant('templateChange', response);
