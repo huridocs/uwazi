@@ -150,18 +150,33 @@ describe('sockets', () => {
         expect.any(Object),
         expect.arrayContaining([updatedThesaurus, thesauri[1]])
       );
-      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), expect.toBeArrayOfSize(2));
     });
 
-    it('should emit a thesauriChange event and add the thesaurus to the store', () => {});
+    it('should emit a thesauriChange event and add the thesaurus to the store', () => {
+      const newThesaurus = {
+        _id: 'new',
+        name: 'New!',
+        values: [],
+      };
 
-    it('should emit a thesauriDelete event', () => {
-      socket._callbacks.$thesauriDelete[0]({ id: 'thesaurus2' });
+      socket._callbacks.$thesauriChange[0](newThesaurus);
+
       expect(atomStore.set).toHaveBeenCalledWith(
         expect.any(Object),
-        expect.arrayContaining([thesauri[1]])
+        expect.arrayContaining([...thesauri, newThesaurus])
       );
-      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), expect.toBeArrayOfSize(1));
+    });
+
+    it('should emit a thesauriDelete event and remove the thesaurus from the store', () => {
+      socket._callbacks.$thesauriDelete[0]({ _id: 'thesaurus2' });
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.arrayContaining([thesauri[0]])
+      );
+      expect(atomStore.set).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.not.arrayContaining([thesauri[1]])
+      );
     });
   });
 
