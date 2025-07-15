@@ -183,7 +183,7 @@ const SuggestionSidepanel = ({
           : []),
       ])
         .then(([emptySearchResult, suggestedEntities]) => {
-          const intialOptions = [...emptySearchResult.rows, ...suggestedEntities].reduce(
+          const intialOptions = [...suggestedEntities, ...emptySearchResult.rows].reduce(
             (acc, option) => {
               if (!acc.find(_option => _option.value === option.sharedId)) {
                 acc.push({
