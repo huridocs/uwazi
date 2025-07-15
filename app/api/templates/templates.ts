@@ -1,5 +1,6 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
 import entitiesModel from 'api/entities/entitiesModel';
@@ -11,6 +12,7 @@ import { search } from 'api/search';
 import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
+import { tenants } from 'api/tenants';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -22,7 +24,6 @@ import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
-import { TemplateValidationService } from './validation/TemplateValidationService';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
@@ -34,6 +35,7 @@ import {
   updateExtractedMetadataProperties,
 } from './utils';
 import * as v2 from './v2_support';
+import { TemplateValidationService } from './validation/TemplateValidationService';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -163,7 +165,12 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
 const validationService = new TemplateValidationService();
 
 export default {
-  async save(template: TemplateSchema, language: string, reindex = true) {
+  async save(
+    template: TemplateSchema,
+    language: string,
+    reindex = true,
+    onTemplateProcessed: () => void = () => {}
+  ) {
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
     template.properties = await denormalizeInheritedProperties(template);
@@ -179,7 +186,7 @@ export default {
     }
 
     return mappedTemplate._id
-      ? this._update(mappedTemplate, language, reindex)
+      ? this._update(mappedTemplate, language, reindex, onTemplateProcessed)
       : _save(mappedTemplate);
   },
 
@@ -201,12 +208,91 @@ export default {
     });
   },
 
-  async _update(template: TemplateSchema, language: string, _reindex = true) {
+  async postProcessTemplateUpdate(
+    currentTemplate: WithId<TemplateSchema>,
+    template: TemplateSchema,
+    language: string,
+    reindex: boolean
+  ) {
+    await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, template);
+
+    const newTemplate = TemplateInputMappers.toApp(template);
+    const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
+
+    const actions = {
+      $rename: Object.fromEntries(
+        currentTemplateV2
+          .selectPropertiesWhereNameHasChanged(newTemplate)
+          .map(({ oldProperty, newProperty }) => [
+            `metadata.${oldProperty.name}`,
+            `metadata.${newProperty.name}`,
+          ])
+      ),
+      $unset: Object.fromEntries(
+        currentTemplateV2
+          .selectDeletedProperties(newTemplate)
+          .map(property => [`metadata.${property.name}`, ''])
+      ),
+    };
+
+    if (Object.keys(actions.$rename).length || Object.keys(actions.$unset).length) {
+      await entitiesModel.updateMany(
+        { template: template._id },
+        {
+          ...(Object.keys(actions.$unset).length ? { $unset: actions.$unset } : {}),
+          ...(Object.keys(actions.$rename).length ? { $rename: actions.$rename } : {}),
+        }
+      );
+    }
+
+    const relationshipPropsWithChangedRelData =
+      currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
+    const newRelationshipProps = currentTemplateV2
+      .selectNewProperties(newTemplate)
+      .filter(p => p.type === 'relationship');
+    if (
+      (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
+      newRelationshipProps.length
+    ) {
+      await bulkDenormalizeEntitiesFromTemplateSave(
+        template,
+        language,
+        // @ts-ignore
+        relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
+        {
+          allTemplates: await this.get(),
+        },
+        50,
+        reindex
+      );
+    }
+
+    if (reindex) {
+      await search.indexEntities({ template: template._id });
+    }
+  },
+
+  async _update(
+    template: TemplateSchema,
+    language: string,
+    _reindex = true,
+    onTemplateProcessed: () => void = () => {}
+  ) {
     const templateStructureChanges = await checkIfReindex(template);
     const reindex = _reindex && templateStructureChanges && !template.synced;
     const currentTemplate = ensure<WithId<TemplateSchema>>(
       await this.getById(ensure(template._id))
     );
+
+    if (
+      templateStructureChanges &&
+      tenants.current().featureFlags?.templatesDenormalizationPerfImprovements &&
+      currentTemplate.processing
+    ) {
+      throw new ValidationError([
+        { path: 'processing', message: 'template is being processed you can not update it yet' },
+      ]);
+    }
 
     if (templateStructureChanges || currentTemplate.name !== template.name) {
       await updateTranslation(currentTemplate, template);
@@ -217,64 +303,37 @@ export default {
     }
 
     await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    if (
+      templateStructureChanges &&
+      tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
+    ) {
+      // eslint-disable-next-line no-param-reassign
+      template.processing = true;
+    } else {
+      // eslint-disable-next-line no-param-reassign
+      template.processing = undefined;
+      await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
+    }
     const savedTemplate = await model.save(template, undefined);
-    if (templateStructureChanges) {
-      await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
 
-      const newTemplate = TemplateInputMappers.toApp(template);
-      const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
-
-      const actions = {
-        $rename: Object.fromEntries(
-          currentTemplateV2
-            .selectPropertiesWhereNameHasChanged(newTemplate)
-            .map(({ oldProperty, newProperty }) => [
-              `metadata.${oldProperty.name}`,
-              `metadata.${newProperty.name}`,
-            ])
-        ),
-        $unset: Object.fromEntries(
-          currentTemplateV2
-            .selectDeletedProperties(newTemplate)
-            .map(property => [`metadata.${property.name}`, ''])
-        ),
-      };
-
-      if (Object.keys(actions.$rename).length || Object.keys(actions.$unset).length) {
-        await entitiesModel.updateMany(
-          { template: template._id },
-          {
-            ...(Object.keys(actions.$unset).length ? { $unset: actions.$unset } : {}),
-            ...(Object.keys(actions.$rename).length ? { $rename: actions.$rename } : {}),
-          }
-        );
-      }
-
-      const relationshipPropsWithChangedRelData =
-        currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
-      const newRelationshipProps = currentTemplateV2
-        .selectNewProperties(newTemplate)
-        .filter(p => p.type === 'relationship');
-      if (
-        (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
-        newRelationshipProps.length
-      ) {
-        await bulkDenormalizeEntitiesFromTemplateSave(
-          savedTemplate,
-          language,
-          // @ts-ignore
-          relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
-          {
-            allTemplates: await this.get(),
-          },
-          50,
-          reindex
-        );
-      }
-
-      if (reindex) {
-        await search.indexEntities({ template: template._id });
-      }
+    if (
+      templateStructureChanges &&
+      !tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
+    ) {
+      await this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex);
+    }
+    if (
+      templateStructureChanges &&
+      tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
+    ) {
+      this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
+        .then(async () => model.save({ _id: template._id, processing: false }))
+        .then(() => {
+          onTemplateProcessed();
+        })
+        .catch(e => {
+          throw e;
+        });
     }
 
     await applicationEventsBus.emit(
