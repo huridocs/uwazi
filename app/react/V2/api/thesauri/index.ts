@@ -9,7 +9,7 @@ const get = async (
   headers?: IncomingHttpHeaders
 ): Promise<(ThesaurusSchema & { _id: string })[]> => {
   const requestParams = new RequestParams(params, headers);
-  const response = (await api.get('thesauri', requestParams)) as {
+  const response = (await api.get('dictionaries', requestParams)) as {
     json: { rows: (ThesaurusSchema & { _id: string })[] };
   };
   return response.json.rows;
