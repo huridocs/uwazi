@@ -50,7 +50,10 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-async function updateTemplate(template: TemplateSchema) {
+async function updateTemplate(template: TemplateSchema, featureFlag: boolean) {
+  if (!featureFlag) {
+    return templates.save(template, 'en');
+  }
   await new Promise<void>(resolve => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     templates.save(template, 'en', true, resolve).catch(e => {
@@ -59,7 +62,7 @@ async function updateTemplate(template: TemplateSchema) {
   });
 }
 
-async function setUpFixtures(_fixtures: DBFixture) {
+async function setUpFixtures(_fixtures: DBFixture, featureFlag: boolean) {
   await testingEnvironment.setUp(_fixtures, 'templates_denorm_flow');
   try {
     await Promise.all(
@@ -70,6 +73,10 @@ async function setUpFixtures(_fixtures: DBFixture) {
     console.error(e);
     throw e;
   }
+
+  testingTenants.changeCurrentTenant({
+    featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
+  });
 }
 
 describe('templates save', () => {
@@ -152,10 +159,7 @@ describe('templates save', () => {
     { featureFlag: true },
   ])('templates denormalization scenarios (feature flag -> $featureFlag)', ({ featureFlag }) => {
     beforeAll(async () => {
-      await setUpFixtures(fixtures);
-      testingTenants.changeCurrentTenant({
-        featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
-      });
+      await setUpFixtures(fixtures, featureFlag);
     });
 
     describe('when changing a property name and template contains relationship properties', () => {
@@ -168,7 +172,7 @@ describe('templates save', () => {
           propertyWithNameChanged,
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expectedEn = [
           { sharedId: 'entityB1', metadata: { name_changed: [] } },
@@ -188,7 +192,7 @@ describe('templates save', () => {
           }),
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expectedEn = [
           {
@@ -228,7 +232,7 @@ describe('templates save', () => {
           }),
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [] } },
@@ -240,11 +244,14 @@ describe('templates save', () => {
       });
 
       it('should create metadata values if connections with the new relationType exist', async () => {
-        await setUpFixtures({
-          ...fixtures,
-          entities: [...(fixtures.entities || []), f.entity('entityA3', 'templateA', {})],
-          connections: [...createConnection('entityB1', 'entityA3', 'rel2', 'hub1')],
-        });
+        await setUpFixtures(
+          {
+            ...fixtures,
+            entities: [...(fixtures.entities || []), f.entity('entityA3', 'templateA', {})],
+            connections: [...createConnection('entityB1', 'entityA3', 'rel2', 'hub1')],
+          },
+          featureFlag
+        );
 
         const template = f.template('templateB', [
           f.relationshipProp('rel_prop', 'templateA', {
@@ -252,7 +259,7 @@ describe('templates save', () => {
           }),
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
@@ -268,7 +275,7 @@ describe('templates save', () => {
       it('should delete values belonging to the previous content', async () => {
         const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateC')]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         expect(await getEntitiesByTemplate('templateB')).toMatchObject([
           { sharedId: 'entityB1', metadata: { rel_prop: [] } },
@@ -277,21 +284,25 @@ describe('templates save', () => {
       });
 
       it('should create metadata values if connections to entities with the new content (target template) exist', async () => {
-        await setUpFixtures({
-          ...fixtures,
-          entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
-          connections: [
-            ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
-            ...createConnection('entityC1', 'entityB2', 'rel', 'hub1'),
-          ],
-        });
+        await setUpFixtures(
+          {
+            ...fixtures,
+            entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+            connections: [
+              ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
+              ...createConnection('entityC1', 'entityB2', 'rel', 'hub1'),
+            ],
+          },
+          featureFlag
+        );
 
         await updateTemplate(
           f.template('templateB', [
             f.relationshipProp('rel_prop', 'templateC', {
               relationType: f.idString('rel'),
             }),
-          ])
+          ]),
+          featureFlag
         );
 
         const expected = [
@@ -308,27 +319,31 @@ describe('templates save', () => {
         const hub1 = f.id('hub1');
         const hub2 = f.id('hub2');
         const hub3 = f.id('hub3');
-        await setUpFixtures({
-          ...fixtures,
-          entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
-          connections: [
-            { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub1 },
-            { _id: testingDB.id(), entity: 'entityB1', hub: hub1 },
+        await setUpFixtures(
+          {
+            ...fixtures,
+            entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+            connections: [
+              { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub1 },
+              { _id: testingDB.id(), entity: 'entityB1', hub: hub1 },
 
-            { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub2 },
-            { _id: testingDB.id(), entity: 'entityB2', hub: hub2 },
+              { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub2 },
+              { _id: testingDB.id(), entity: 'entityB2', hub: hub2 },
 
-            { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub3 },
-            { _id: testingDB.id(), entity: 'entityB2', hub: hub3 },
-          ],
-        });
+              { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub3 },
+              { _id: testingDB.id(), entity: 'entityB2', hub: hub3 },
+            ],
+          },
+          featureFlag
+        );
 
         await updateTemplate(
           f.template('templateB', [
             f.relationshipProp('rel_prop', undefined, {
               relationType: f.idString('rel'),
             }),
-          ])
+          ]),
+          featureFlag
         );
 
         const expected = [
@@ -347,22 +362,26 @@ describe('templates save', () => {
 
     describe('when "content" (target template) is empty (any template) AND ALL CONNECTIONS HAVE RelationType (even the parent)', () => {
       it('should the values created include itself ????? (this is the current behaviour)', async () => {
-        await setUpFixtures({
-          ...fixtures,
-          entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
-          connections: [
-            ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
-            ...createConnection('entityC1', 'entityB2', 'rel', 'hub2'),
-            ...createConnection('entityA1', 'entityB2', 'rel', 'hub3'),
-          ],
-        });
+        await setUpFixtures(
+          {
+            ...fixtures,
+            entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+            connections: [
+              ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
+              ...createConnection('entityC1', 'entityB2', 'rel', 'hub2'),
+              ...createConnection('entityA1', 'entityB2', 'rel', 'hub3'),
+            ],
+          },
+          featureFlag
+        );
 
         await updateTemplate(
           f.template('templateB', [
             f.relationshipProp('rel_prop', undefined, {
               relationType: f.idString('rel'),
             }),
-          ])
+          ]),
+          featureFlag
         );
 
         const expected = [
@@ -389,31 +408,34 @@ describe('templates save', () => {
 
     describe('when 2 relationships point to the same template/rel combination but different inherit props', () => {
       it('should properly dernomalize both props', async () => {
-        await setUpFixtures({
-          ...fixtures,
-          templates: [
-            ...fixtures.templates,
-            f.template('templateD', [
-              f.relationshipProp('rel_prop', 'templateA'),
-              f.relationshipProp('rel_prop2', 'templateA'),
-            ]),
-          ],
-          entities: [
-            ...(fixtures.entities || []),
-            f.entity('entityD1', 'templateD', {
-              rel_prop: [f.metadataValue('entityA1', '')],
-              rel_prop2: [f.metadataValue('entityA1', '')],
-            }),
-            f.entity('entityD2', 'templateD', {
-              rel_prop: [f.metadataValue('entityA2', '')],
-              rel_prop2: [f.metadataValue('entityA2', '')],
-            }),
-          ],
-          connections: [
-            ...createConnection('entityD1', 'entityA1', 'rel', 'hub1'),
-            ...createConnection('entityD2', 'entityA2', 'rel', 'hub1'),
-          ],
-        });
+        await setUpFixtures(
+          {
+            ...fixtures,
+            templates: [
+              ...fixtures.templates,
+              f.template('templateD', [
+                f.relationshipProp('rel_prop', 'templateA'),
+                f.relationshipProp('rel_prop2', 'templateA'),
+              ]),
+            ],
+            entities: [
+              ...(fixtures.entities || []),
+              f.entity('entityD1', 'templateD', {
+                rel_prop: [f.metadataValue('entityA1', '')],
+                rel_prop2: [f.metadataValue('entityA1', '')],
+              }),
+              f.entity('entityD2', 'templateD', {
+                rel_prop: [f.metadataValue('entityA2', '')],
+                rel_prop2: [f.metadataValue('entityA2', '')],
+              }),
+            ],
+            connections: [
+              ...createConnection('entityD1', 'entityA1', 'rel', 'hub1'),
+              ...createConnection('entityD2', 'entityA2', 'rel', 'hub1'),
+            ],
+          },
+          featureFlag
+        );
 
         await updateTemplate(
           f.template('templateD', [
@@ -421,7 +443,8 @@ describe('templates save', () => {
             f.relationshipProp('rel_prop2', 'templateA', {
               inherit: { property: f.idString('text_property'), type: 'text' },
             }),
-          ])
+          ]),
+          featureFlag
         );
 
         const expected = [
@@ -454,30 +477,34 @@ describe('templates save', () => {
         const hub1 = f.id('hub1');
         const hub2 = f.id('hub2');
 
-        await setUpFixtures({
-          ...fixtures,
-          templates: [...fixtures.templates, f.template('templateD', [])],
-          entities: [
-            ...(fixtures.entities || []),
-            f.entity('entityD1', 'templateD', {}, { title: 'entityD1 english', language: 'en' }),
-            f.entity('entityD1', 'templateD', {}, { title: 'entityD1 spanish', language: 'es' }),
+        await setUpFixtures(
+          {
+            ...fixtures,
+            templates: [...fixtures.templates, f.template('templateD', [])],
+            entities: [
+              ...(fixtures.entities || []),
+              f.entity('entityD1', 'templateD', {}, { title: 'entityD1 english', language: 'en' }),
+              f.entity('entityD1', 'templateD', {}, { title: 'entityD1 spanish', language: 'es' }),
 
-            f.entity('entityD2', 'templateD', {}, { title: 'entityD2 english', language: 'en' }),
-            f.entity('entityD2', 'templateD', {}, { title: 'entityD2 spanish', language: 'es' }),
-          ],
-          connections: [
-            { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub1 },
-            { _id: testingDB.id(), entity: 'entityD1', hub: hub1 },
+              f.entity('entityD2', 'templateD', {}, { title: 'entityD2 english', language: 'en' }),
+              f.entity('entityD2', 'templateD', {}, { title: 'entityD2 spanish', language: 'es' }),
+            ],
+            connections: [
+              { _id: testingDB.id(), entity: 'entityA1', template: f.idString('rel'), hub: hub1 },
+              { _id: testingDB.id(), entity: 'entityD1', hub: hub1 },
 
-            { _id: testingDB.id(), entity: 'entityA2', template: f.idString('rel'), hub: hub2 },
-            { _id: testingDB.id(), entity: 'entityD2', hub: hub2 },
-          ],
-        });
+              { _id: testingDB.id(), entity: 'entityA2', template: f.idString('rel'), hub: hub2 },
+              { _id: testingDB.id(), entity: 'entityD2', hub: hub2 },
+            ],
+          },
+          featureFlag
+        );
 
         await updateTemplate(
           f.template('templateD', [
             f.relationshipProp('new_rel_prop', 'templateA', { relationType: f.idString('rel') }),
-          ])
+          ]),
+          featureFlag
         );
 
         const expectedEn = [
@@ -522,7 +549,7 @@ describe('templates save', () => {
         applicationEventsBus.on(EntityUpdatedEvent, async triggeredEventData => {
           eventData.push(triggeredEventData);
         });
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const sortedEvents = eventData.sort((a, b) =>
           (a.before[0]?.sharedId || '').localeCompare(b.before[0]?.sharedId || '')
@@ -586,10 +613,7 @@ describe('templates save', () => {
 
   describe('when feature flag is true', () => {
     it('should not allow updating a template that is currently being processed', async () => {
-      await setUpFixtures(fixtures);
-      testingTenants.changeCurrentTenant({
-        featureFlags: { templatesDenormalizationPerfImprovements: true },
-      });
+      await setUpFixtures(fixtures, true);
 
       const propertyWithNameChanged = f.property('text_property_b', 'text', {
         label: 'name_changed',
@@ -604,10 +628,7 @@ describe('templates save', () => {
     });
 
     it('should again allow updating a template when the processing has finished', async () => {
-      await setUpFixtures(fixtures);
-      testingTenants.changeCurrentTenant({
-        featureFlags: { templatesDenormalizationPerfImprovements: true },
-      });
+      await setUpFixtures(fixtures, true);
 
       const propertyWithNameChanged = f.property('text_property_b', 'text', {
         label: 'name_changed',
@@ -627,30 +648,29 @@ describe('templates save', () => {
         templates.save(template, 'en', true, resolve);
       });
 
-      await expect(updateTemplate(modifiedTemplate)).resolves.not.toThrow();
+      await expect(updateTemplate(modifiedTemplate, true)).resolves.not.toThrow();
     });
   });
 
   describe('when feature flag is false', () => {
     it('should be able to save even if the template is processing (and should remove the flag also)', async () => {
-      await setUpFixtures({
-        ...fixtures,
-        templates: [
-          f.template('templateA', [f.property('text_property')]),
-          {
-            ...f.template('templateB', [
-              f.relationshipProp('rel_prop', 'templateA'),
-              f.property('text_property_b'),
-            ]),
-            processing: true,
-          },
-          f.template('templateC', [f.property('text_property_2')]),
-        ],
-      });
-
-      testingTenants.changeCurrentTenant({
-        featureFlags: { templatesDenormalizationPerfImprovements: false },
-      });
+      await setUpFixtures(
+        {
+          ...fixtures,
+          templates: [
+            f.template('templateA', [f.property('text_property')]),
+            {
+              ...f.template('templateB', [
+                f.relationshipProp('rel_prop', 'templateA'),
+                f.property('text_property_b'),
+              ]),
+              processing: true,
+            },
+            f.template('templateC', [f.property('text_property_2')]),
+          ],
+        },
+        false
+      );
 
       const template = f.template('templateB');
       template.processing = true;

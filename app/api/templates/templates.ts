@@ -1,5 +1,6 @@
 import { ClientSession, ObjectId } from 'mongodb';
 
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
 import entitiesModel from 'api/entities/entitiesModel';
@@ -11,6 +12,7 @@ import { search } from 'api/search';
 import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
+import { tenants } from 'api/tenants';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -22,7 +24,6 @@ import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
-import { TemplateValidationService } from './validation/TemplateValidationService';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
@@ -34,7 +35,7 @@ import {
   updateExtractedMetadataProperties,
 } from './utils';
 import * as v2 from './v2_support';
-import { tenants } from 'api/tenants';
+import { TemplateValidationService } from './validation/TemplateValidationService';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -288,7 +289,9 @@ export default {
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements &&
       currentTemplate.processing
     ) {
-      throw new Error('template is being processed you can not update it yet');
+      throw new ValidationError([
+        { path: 'processing', message: 'template is being processed you can not update it yet' },
+      ]);
     }
 
     if (templateStructureChanges || currentTemplate.name !== template.name) {
@@ -304,10 +307,12 @@ export default {
       templateStructureChanges &&
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
+      // eslint-disable-next-line no-param-reassign
       template.processing = true;
     } else {
+      // eslint-disable-next-line no-param-reassign
       template.processing = undefined;
-      model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
+      await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
     }
     const savedTemplate = await model.save(template, undefined);
 
@@ -316,7 +321,6 @@ export default {
       !tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
       await this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex);
-      onTemplateProcessed();
     }
     if (
       templateStructureChanges &&

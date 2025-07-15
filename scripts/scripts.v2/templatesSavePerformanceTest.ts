@@ -307,23 +307,19 @@ async function runTest(numberOfEntities: number) {
 
   await compareRuns(
     async () => {
-      await new Promise<void>(resolve => {
-        templates.save(
-          {
-            ...template2,
-            properties: [
-              ...template2.properties.filter(p => p.name !== 'rel1'),
-              {
-                ...template2.properties[0],
-                inherit: { property: f.idString('text_property') },
-              },
-            ],
-          },
-          'en',
-          true,
-          resolve
-        );
-      });
+      await templates.save(
+        {
+          ...template2,
+          properties: [
+            ...template2.properties.filter(p => p.name !== 'rel1'),
+            {
+              ...template2.properties[0],
+              inherit: { property: f.idString('text_property') },
+            },
+          ],
+        },
+        'en'
+      );
     },
     async () => {
       await new Promise<void>(resolve => {
