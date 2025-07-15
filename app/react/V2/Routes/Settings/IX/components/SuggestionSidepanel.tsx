@@ -219,7 +219,7 @@ const SuggestionSidepanel = ({
           : []),
       ])
         .then(([emptySearchResult, suggestedEntities]) => {
-          const intialOptions = [...emptySearchResult.data, ...suggestedEntities].reduce(
+          const intialOptions = [...emptySearchResult.rows, ...suggestedEntities].reduce(
             (acc, option) => {
               if (!acc.find(_option => _option.value === option.sharedId)) {
                 acc.push({
@@ -421,7 +421,7 @@ const SuggestionSidepanel = ({
     const currentValues = (getValues('field') as string[]) || [];
     const suggestions = (suggestion?.suggestedValue as string[]) || [];
 
-    return response.data.map(option => ({
+    return response.rows.map(option => ({
       label: (
         <MultiselectItemLabel
           currentValues={currentValues}

@@ -5,7 +5,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 import { EntitySchema } from 'shared/types/entityType';
 
-interface LookupResponse {
+type SearchResponse = {
   data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];
   links?: {
     self: string;
@@ -14,7 +14,12 @@ interface LookupResponse {
     next?: string | null;
     prev?: string | null;
   };
-}
+};
+
+type Response = {
+  rows: SearchResponse['data'];
+  count: number;
+};
 
 const lookup = async (
   {
@@ -27,7 +32,7 @@ const lookup = async (
     limit?: number;
   },
   headers?: IncomingHttpHeaders
-): Promise<LookupResponse> => {
+): Promise<Response> => {
   try {
     const search: SearchQuery = {
       fields: ['title', 'sharedId', 'template'],
@@ -44,8 +49,8 @@ const lookup = async (
       api.locale(headers['Content-Language']);
     }
 
-    const response: { json: LookupResponse } = await api.get('v2/search', requestParams);
-    return response.json;
+    const response: { json: SearchResponse } = await api.get('v2/search', requestParams);
+    return { rows: response.json.data, count: response.json.data.length };
   } catch (e) {
     return e;
   }
