@@ -2,7 +2,7 @@ import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
-import { atomStore, translationsAtom } from 'V2/atoms';
+import { atomStore, templatesAtom, translationsAtom } from 'V2/atoms';
 import { store } from '../store';
 import { socket, reconnectSocket } from '../socket';
 
@@ -41,11 +41,21 @@ socket.on('forceReconnect', () => {
 });
 
 socket.on('templateChange', template => {
-  store.dispatch(actions.update('templates', template));
+  const currentTemplates = atomStore.get(templatesAtom);
+  const index = currentTemplates.findIndex(current => current._id === template._id);
+  atomStore.set(
+    templatesAtom,
+    index === -1
+      ? [...currentTemplates, template]
+      : [...currentTemplates.slice(0, index), template, ...currentTemplates.slice(index + 1)]
+  );
 });
 
 socket.on('templateDelete', template => {
-  store.dispatch(actions.remove('templates', { _id: template.id }));
+  const updatedTemplates = atomStore
+    .get(templatesAtom)
+    .filter(currentTemplate => currentTemplate._id !== template._id);
+  atomStore.set(templatesAtom, updatedTemplates);
 });
 
 socket.on('updateSettings', settings => {
