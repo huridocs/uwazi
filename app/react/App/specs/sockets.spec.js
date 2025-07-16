@@ -125,9 +125,12 @@ describe('sockets', () => {
         thesauri.map(t => ({ ...t }))
       );
       spyOn(atomStore, 'set');
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
     });
 
-    it('should emit a thesauriChange event and update the store', () => {
+    it('should emit a thesauriChange event and update the stores', () => {
       const updatedThesaurus = {
         ...thesauri[0],
         name: 'Updated categories',
@@ -144,6 +147,10 @@ describe('sockets', () => {
 
       socket._callbacks.$thesauriChange[0](updatedThesaurus);
 
+      expect(store.dispatch).toHaveBeenCalledWith({
+        type: 'thesauris/UPDATE',
+        value: updatedThesaurus,
+      });
       expect(atomStore.set).toHaveBeenCalledWith(
         thesauriAtom,
         expect.arrayContaining([updatedThesaurus, thesauri[1]])

@@ -71,6 +71,7 @@ socket.on('thesauriChange', thesaurus => {
       ? [...currentThesauri, thesaurus]
       : [...currentThesauri.slice(0, index), thesaurus, ...currentThesauri.slice(index + 1)]
   );
+  store?.dispatch(actions.update('thesauris', thesaurus));
 });
 
 socket.on('thesauriDelete', payload => {
