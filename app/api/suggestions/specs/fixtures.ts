@@ -879,6 +879,7 @@ const fixtures: DBFixture = {
           name: 'super_powers',
         },
       ],
+      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
     },
     {
       _id: heroTemplateId,
@@ -903,6 +904,7 @@ const fixtures: DBFixture = {
     },
     {
       _id: factory.id('template1'),
+      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
       properties: [
         {
           label: 'Super powers',
