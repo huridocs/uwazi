@@ -275,11 +275,7 @@ const EditTranslations = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-translations-edit"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-translations-edit">
       <SettingsContent>
         <SettingsContent.Header
           path={new Map([['Translations', '/settings/translations']])}

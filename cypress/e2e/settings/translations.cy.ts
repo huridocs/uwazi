@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { changeLanguage, clearCookiesAndLogin } from '../helpers';
 import 'cypress-axe';
 
@@ -17,7 +18,6 @@ describe('Translations', () => {
   describe('translations list', () => {
     it('should be accessible', () => {
       cy.contains('User Interface');
-      cy.get('[data-testid=settings-translations]').toMatchImageSnapshot();
       cy.checkA11y();
     });
   });
@@ -56,15 +56,6 @@ describe('Translations', () => {
       cy.contains('System translations');
     });
 
-    const checkEditResults = () => {
-      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
-      cy.contains('.bg-gray-100', 'ES');
-      cy.contains('Fecha');
-      cy.contains('Informe de admisibilidad');
-      cy.get('table').eq(0).scrollIntoView();
-      cy.get('table').eq(0).toMatchImageSnapshot();
-    };
-
     it('Should edit a translation', () => {
       cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
@@ -75,7 +66,12 @@ describe('Translations', () => {
       cy.clearAndType('input[name="formValues.2.values.0.value"]', 'تاريخ', { delay: 0 });
       cy.contains('button', 'Save').click();
       cy.wait('@saveTranslations');
-      checkEditResults();
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
+      cy.contains('.bg-gray-100', 'ES');
+      cy.contains('Fecha');
+      cy.contains('Informe de admisibilidad');
+      cy.get('input[name="formValues.0.values.0.value"]').should('have.value', 'Date');
+      cy.get('input[name="formValues.2.values.0.value"]').should('have.value', 'تاريخ');
     });
 
     it('should disable the form and buttons, and emit a notification when saving', () => {

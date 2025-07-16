@@ -297,6 +297,7 @@ export const templateSchema = {
     default: { type: 'boolean', default: false },
     entityViewPage: { type: 'string', default: '' },
     synced: { type: 'boolean' },
+    processing: { type: 'boolean' },
     commonProperties: {
       type: 'array',
       requireTitleProperty: true,

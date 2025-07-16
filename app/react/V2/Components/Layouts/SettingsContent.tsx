@@ -13,7 +13,7 @@ interface SettingsContentFooterProps extends SettingsContentProps {
 }
 
 interface SettingsHeaderProps extends PropsWithChildren {
-  title?: string;
+  title?: string | React.ReactNode;
   contextId?: string;
   className?: string;
   path?: Map<string, string>;
@@ -27,6 +27,24 @@ const SettingsContent = ({ children, className }: SettingsContentProps) => (
     {children}
   </div>
 );
+
+const SettingsHeaderTitle = ({
+  title,
+  contextId,
+}: {
+  title: string | React.ReactNode;
+  contextId?: string;
+}) => {
+  if (typeof title === 'string') {
+    return (
+      <Translate context={contextId || 'System'} className="max-w-xs truncate">
+        {title}
+      </Translate>
+    );
+  }
+
+  return title;
+};
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
   <div className={`${className || ''} flex pt-5 pb-4 px-4 `} data-testid="settings-content-header">
@@ -46,9 +64,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
       ))}
       {title !== undefined && (
         <Breadcrumb.Item>
-          <Translate context={contextId || 'System'} className="max-w-xs truncate">
-            {title}
-          </Translate>
+          <SettingsHeaderTitle title={title} contextId={contextId} />
         </Breadcrumb.Item>
       )}
     </Breadcrumb>

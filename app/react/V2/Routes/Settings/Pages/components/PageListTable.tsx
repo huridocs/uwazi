@@ -1,10 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Link } from 'react-router';
 import { kebabCase } from 'lodash';
 import { CellContext } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
 import { TablePage } from '../PagesList';
 
 const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
@@ -20,16 +19,16 @@ const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
 
   return (
     <div className="flex justify-end gap-2">
-      <Link to={`/${pageUrl}`} target="_blank" aria-disabled={isEntityView}>
+      <I18NLink to={`/${pageUrl}`} target="_blank" aria-disabled={isEntityView}>
         <Button styling="light" disabled={isEntityView}>
           <Translate>View</Translate>
         </Button>
-      </Link>
-      <Link to={`/settings/pages/page/${cell.getValue()}`}>
+      </I18NLink>
+      <I18NLink to={`/settings/pages/edit/${cell.getValue()}`}>
         <Button styling="light">
           <Translate>Edit</Translate>
         </Button>
-      </Link>
+      </I18NLink>
     </div>
   );
 };

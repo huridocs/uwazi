@@ -10,6 +10,7 @@ export interface TemplateSchema {
   default?: boolean;
   entityViewPage?: string;
   synced?: boolean;
+  processing?: boolean;
   /**
    * @minItems 1
    */

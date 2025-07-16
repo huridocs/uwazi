@@ -1,10 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
+import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -86,11 +86,7 @@ const PagesList = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-pages"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-pages">
       <SettingsContent>
         <SettingsContent.Header title="Pages" />
         <SettingsContent.Body>
@@ -127,11 +123,11 @@ const PagesList = () => {
           {selectedPages.length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Link to="/settings/pages/page">
+                <I18NLink to="/settings/pages/new">
                   <Button styling="solid" color="primary" type="button">
                     <Translate>Add page</Translate>
                   </Button>
-                </Link>
+                </I18NLink>
               </div>
             </div>
           )}
