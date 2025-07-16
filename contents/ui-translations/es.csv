@@ -818,8 +818,10 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Plantilla
 Template conflict,Conflicto de plantilla
+Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Nombre de plantilla
 Template name already exists,Template name already exists
+Template processing completed.,Template processing completed.
 Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
 Template(s),Template(s)
