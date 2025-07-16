@@ -190,47 +190,70 @@ describe('sockets', () => {
     });
   });
 
-  describe('translationsChange', () => {
-    beforeEach(() => {
-      atomStore.set(
-        translationsAtom,
-        currentTranslations.map(t => ({ ...t }))
-      );
-      spyOn(atomStore, 'set');
+  describe('Translations', () => {
+    describe('translationsChange', () => {
+      beforeEach(() => {
+        atomStore.set(
+          translationsAtom,
+          currentTranslations.map(t => ({ ...t }))
+        );
+        spyOn(atomStore, 'set');
+      });
+
+      it('should emit a translationsChange event', () => {
+        socket._callbacks.$translationsChange[0](updatedTranslation);
+        expect(atomStore.set).toHaveBeenCalledWith(
+          translationsAtom,
+          expect.arrayContaining([updatedTranslation, currentTranslations[1]])
+        );
+      });
+
+      it('should add a new language to the translations', () => {
+        socket._callbacks.$translationsChange[0](newLanguage);
+        expect(atomStore.set).toHaveBeenCalledWith(
+          translationsAtom,
+          expect.arrayContaining([...currentTranslations, newLanguage])
+        );
+      });
     });
 
-    it('should emit a translationsChange event', () => {
-      socket._callbacks.$translationsChange[0](updatedTranslation);
-      expect(atomStore.set).toHaveBeenCalledWith(
-        translationsAtom,
-        expect.arrayContaining([updatedTranslation, currentTranslations[1]])
-      );
+    describe('translationKeysChange', () => {
+      const initialTranslations = [...currentTranslations.map(t => ({ ...t })), newLanguage];
+
+      beforeEach(() => {
+        atomStore.set(translationsAtom, initialTranslations);
+        spyOn(atomStore, 'set');
+      });
+
+      it('should emit a translationKeysChange event', () => {
+        socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
+        expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, translationKeysChangeResult);
+      });
     });
 
-    it('should add a new language to the translations', () => {
-      socket._callbacks.$translationsChange[0](newLanguage);
-      expect(atomStore.set).toHaveBeenCalledWith(
-        translationsAtom,
-        expect.arrayContaining([...currentTranslations, newLanguage])
-      );
-    });
-  });
+    describe('translationsDelete', () => {
+      beforeEach(() => {
+        atomStore.set(
+          translationsAtom,
+          currentTranslations.map(t => ({ ...t }))
+        );
+        spyOn(atomStore, 'set');
+      });
 
-  describe('translationKeysChange', () => {
-    const initialTranslations = [...currentTranslations.map(t => ({ ...t })), newLanguage];
-
-    beforeEach(() => {
-      atomStore.set(translationsAtom, initialTranslations);
-      spyOn(atomStore, 'set');
-    });
-
-    it('should emit a translationKeysChange event', () => {
-      socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
-      expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, translationKeysChangeResult);
+      it('should emit a translationsDelete event when a language is removed and update the store', () => {
+        socket._callbacks.$translationsDelete[0]('es');
+        expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, [currentTranslations[0]]);
+      });
     });
   });
 
   describe('Languages', () => {
+    beforeEach(() => {
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
+    });
+
     describe('language install', () => {
       it('should dispatch a notification on translationsInstallDone', () => {
         socket._callbacks.$translationsInstallDone[0]();
@@ -258,11 +281,6 @@ describe('sockets', () => {
     });
 
     describe('language delete', () => {
-      it('should emit a translationsDelete event and update the store', () => {
-        socket._callbacks.$translationsDelete[0]('es');
-        expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, [currentTranslations[0]]);
-      });
-
       it('should dispatch a on translationsDeleteDone', () => {
         socket._callbacks.$translationsDeleteDone[0]();
         expect(store.dispatch.calls.allArgs()[1][0]).toEqual({

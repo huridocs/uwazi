@@ -105,7 +105,6 @@ socket.on('translationKeysChange', translationsEntries => {
 });
 
 socket.on('translationsInstallDone', () => {
-  console.log('translationsInstallDone');
   store.dispatch(
     notificationActions.notify(
       t('System', 'Languages installed successfully', null, false),
