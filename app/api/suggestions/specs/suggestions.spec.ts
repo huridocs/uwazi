@@ -9,6 +9,7 @@ import {
   IXSuggestionType,
   IXSuggestionsFilter,
 } from 'shared/types/suggestionType';
+import { applicationEventsBus } from 'api/eventsbus';
 import { Suggestions } from '../suggestions';
 import {
   factory,
@@ -20,6 +21,9 @@ import {
   suggestionId,
 } from './fixtures';
 import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
+
+const _getSuggestions = async (query: any) =>
+  testingEnvironment.db.getCollection('ixsuggestions')?.find(query).toArray() || [];
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 50) => {
   const query = new GetSuggestionsForTableQuery();
@@ -464,6 +468,10 @@ const prepareAndAcceptRelationshipSuggestion = async (
   );
 
 describe('suggestions', () => {
+  beforeAll(() => {
+    Suggestions.registerEventListeners(applicationEventsBus);
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
@@ -491,19 +499,24 @@ describe('suggestions', () => {
             entityId: sug.entityId,
           }))
         );
-        const { suggestions: newSuggestions } = await getSuggestions({
+
+        const acceptedSuggestions = await _getSuggestions({
           extractorId: factory.id('super_powers_extractor'),
         });
-        const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
+
+        const changedSuggestions = acceptedSuggestions.filter((sug: any) =>
+          ids.has(sug._id.toString())
+        );
+
         expect(changedSuggestions).toMatchObject([
           {
             language: 'es',
-            sharedId: 'shared2',
+            entityId: 'shared2',
             currentValue: 'scientific knowledge es',
           },
           {
             language: 'en',
-            sharedId: 'shared3',
+            entityId: 'shared3',
             currentValue: 'puts up with Bruce Wayne',
           },
         ]);
@@ -594,7 +607,27 @@ describe('suggestions', () => {
           .find({ sharedId: 'shared2' })
           .toArray();
         const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
+
         expect(ages2).toEqual([20, 20, 20]);
+
+        const acceptedSuggestions = await _getSuggestions({
+          extractorId: factory.id('age_extractor'),
+          entityId: { $in: ['shared1', 'shared2'] },
+        });
+
+        expect(acceptedSuggestions).toMatchObject([
+          {
+            entityId: 'shared1',
+            language: 'en',
+            currentValue: 17,
+          },
+
+          {
+            entityId: 'shared2',
+            language: 'en',
+            currentValue: 20,
+          },
+        ]);
       });
     });
 
@@ -613,6 +646,7 @@ describe('suggestions', () => {
       it('should update entities of all languages, with the properly translated labels', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
           await prepareAndAcceptSelectSuggestion('A', 'en', 'property_select', 'select_extractor');
+
         expect(acceptedSuggestion.state).toEqual(matchState());
         expect(metadataValues).toEqual([
           [{ value: 'A', label: 'A' }],
