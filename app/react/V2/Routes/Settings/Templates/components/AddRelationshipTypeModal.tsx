@@ -3,7 +3,7 @@ import { t, Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import * as relationshipTypesAPI from 'V2/api/relationshiptypes';
-import { useSetAtom, useAtomValue } from 'jotai';
+import { useSetAtom, useAtom } from 'jotai';
 import { notificationAtom, relationshipTypesAtom } from 'V2/atoms';
 
 interface AddRelationshipTypeModalProps {
@@ -14,8 +14,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
-  const setRelationshipTypes = useSetAtom(relationshipTypesAtom);
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const [relationshipTypes, setRelationshipTypes] = useAtom(relationshipTypesAtom);
   const [nameError, setNameError] = useState(false);
 
   const handleClose = () => {
