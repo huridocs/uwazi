@@ -75,7 +75,7 @@ describe('sockets', () => {
     it('should emit a templateChange event and update the store', () => {
       socket._callbacks.$templateChange[0]({ ...templates[1], name: 'Template 2 updated' });
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        templatesAtom,
         expect.arrayContaining([
           templates[0],
           { ...templates[1], name: 'Template 2 updated' },
@@ -102,7 +102,7 @@ describe('sockets', () => {
 
       socket._callbacks.$templateChange[0](newTemplate);
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        templatesAtom,
         expect.arrayContaining([...templates, newTemplate])
       );
     });
@@ -110,11 +110,11 @@ describe('sockets', () => {
     it('should emit a templateDelete event and remove that template from the store', () => {
       socket._callbacks.$templateDelete[0]({ _id: '1' });
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        templatesAtom,
         expect.arrayContaining([templates[1], templates[2]])
       );
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        templatesAtom,
         expect.not.arrayContaining([templates[0]])
       );
     });
@@ -147,7 +147,7 @@ describe('sockets', () => {
       socket._callbacks.$thesauriChange[0](updatedThesaurus);
 
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        thesauriAtom,
         expect.arrayContaining([updatedThesaurus, thesauri[1]])
       );
     });
@@ -162,7 +162,7 @@ describe('sockets', () => {
       socket._callbacks.$thesauriChange[0](newThesaurus);
 
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        thesauriAtom,
         expect.arrayContaining([...thesauri, newThesaurus])
       );
     });
@@ -170,11 +170,11 @@ describe('sockets', () => {
     it('should emit a thesauriDelete event and remove the thesaurus from the store', () => {
       socket._callbacks.$thesauriDelete[0]({ _id: 'thesaurus2' });
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        thesauriAtom,
         expect.arrayContaining([thesauri[0]])
       );
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        thesauriAtom,
         expect.not.arrayContaining([thesauri[1]])
       );
     });
@@ -202,7 +202,7 @@ describe('sockets', () => {
     it('should emit a translationsChange event', () => {
       socket._callbacks.$translationsChange[0](updatedTranslation);
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        translationsAtom,
         expect.arrayContaining([updatedTranslation, currentTranslations[1]])
       );
     });
@@ -210,7 +210,7 @@ describe('sockets', () => {
     it('should add a new language to the translations', () => {
       socket._callbacks.$translationsChange[0](newLanguage);
       expect(atomStore.set).toHaveBeenCalledWith(
-        expect.any(Object),
+        translationsAtom,
         expect.arrayContaining([...currentTranslations, newLanguage])
       );
     });
@@ -226,7 +226,7 @@ describe('sockets', () => {
 
     it('should emit a translationKeysChange event', () => {
       socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
-      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), translationKeysChangeResult);
+      expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, translationKeysChangeResult);
     });
   });
 
@@ -269,7 +269,7 @@ describe('sockets', () => {
 
     it('should emit a translationsDelete event', () => {
       socket._callbacks.$translationsDelete[0]('es');
-      expect(atomStore.set).toHaveBeenCalledWith(expect.any(Object), [currentTranslations[0]]);
+      expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, [currentTranslations[0]]);
     });
   });
 

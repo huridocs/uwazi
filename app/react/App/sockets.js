@@ -66,7 +66,7 @@ socket.on('thesauriChange', thesaurus => {
   const currentThesauri = atomStore.get(thesauriAtom);
   const index = currentThesauri.findIndex(current => current._id === thesaurus._id);
   atomStore.set(
-    templatesAtom,
+    thesauriAtom,
     index === -1
       ? [...currentThesauri, thesaurus]
       : [...currentThesauri.slice(0, index), thesaurus, ...currentThesauri.slice(index + 1)]
