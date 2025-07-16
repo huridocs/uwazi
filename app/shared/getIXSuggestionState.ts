@@ -16,12 +16,11 @@ type CurrentValue = string | number | null;
 interface SuggestionValues {
   currentValue: IXSuggestionType['currentValue'];
   suggestedValue: IXSuggestionType['currentValue'];
-  modelCreationDate: number;
   error: string;
   date: number;
   segment: string | null;
-  state: string | null;
   status: string | null;
+  obsolete: boolean;
 }
 
 const sameValueSet = (first: string[], second: string[]) => setsEqual(first || [], second || []);
@@ -114,8 +113,8 @@ class IXSuggestionState implements IXSuggestionStateType {
     }
   }
 
-  setObsolete({ modelCreationDate, date }: SuggestionValues) {
-    if (date < modelCreationDate) {
+  setObsolete({ obsolete }: SuggestionValues) {
+    if (obsolete) {
       this.obsolete = true;
       this.match = undefined;
     }
