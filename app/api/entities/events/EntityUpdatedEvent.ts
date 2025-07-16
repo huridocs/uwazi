@@ -10,3 +10,5 @@ interface EntityUpdatedData {
 class EntityUpdatedEvent extends AbstractEvent<EntityUpdatedData> {}
 
 export { EntityUpdatedEvent };
+
+export type { EntityUpdatedData };

@@ -322,19 +322,23 @@ async function runTest(numberOfEntities: number) {
       );
     },
     async () => {
-      await templates.save(
-        {
-          ...template2,
-          properties: [
-            ...template2.properties.filter(p => p.name !== 'rel1'),
-            {
-              ...template2.properties[0],
-              inherit: { property: f.idString('text_property') },
-            },
-          ],
-        },
-        'en'
-      );
+      await new Promise<void>(resolve => {
+        templates.save(
+          {
+            ...template2,
+            properties: [
+              ...template2.properties.filter(p => p.name !== 'rel1'),
+              {
+                ...template2.properties[0],
+                inherit: { property: f.idString('text_property') },
+              },
+            ],
+          },
+          'en',
+          true,
+          resolve
+        );
+      });
     },
     setFixtures
   );
@@ -352,6 +356,7 @@ async function run() {
       await runTest(10);
       await runTest(300);
       await runTest(600);
+      await runTest(2000);
     }, tenant.name);
 
     console.log('Tests completed successfully.');

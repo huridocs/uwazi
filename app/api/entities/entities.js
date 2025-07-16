@@ -157,7 +157,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
       targetLanguageKey: entity.language,
     })
   );
-
   return result;
 }
 
