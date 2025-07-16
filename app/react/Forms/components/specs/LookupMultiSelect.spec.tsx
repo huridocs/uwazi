@@ -1,5 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { sleep } from 'shared/tsUtils';
 import {
   LookupMultiSelect,
   LookupMultiSelectProps,
@@ -8,7 +9,6 @@ import {
 } from '../LookupMultiSelect';
 
 import { MultiSelect, MultiSelectProps } from '../MultiSelect';
-import { sleep } from 'shared/tsUtils';
 
 describe('LookupMultiSelect', () => {
   let component: ShallowWrapper<LookupMultiSelectProps, LookupMultiSelectState, LookupMultiSelect>;
@@ -34,14 +34,16 @@ describe('LookupMultiSelect', () => {
     };
   });
 
-  const render = () => {
-    const lookup = async () => ({
-      options: [
-        { label: 'new', value: 'new', results: 1 },
-        { label: 'new 2', value: 'new 2', results: 2 },
-      ],
-      count: 2,
-    });
+  const render = (lookupOverride?: any) => {
+    const lookup =
+      lookupOverride ||
+      (async () => ({
+        options: [
+          { label: 'new', value: 'new', results: 1 },
+          { label: 'new 2', value: 'new 2', results: 2 },
+        ],
+        count: 2,
+      }));
 
     component = shallow(<LookupMultiSelect {...props} lookup={lookup} />);
   };
@@ -61,18 +63,6 @@ describe('LookupMultiSelect', () => {
           { label: 'new 2', value: 'new 2', results: 2 },
         ])
       );
-    });
-
-    it('should set lookupOptions to empty when searchTerm is empty', async () => {
-      render();
-
-      component.setState({ lookupOptions: [{ label: 'new', value: 'new', results: 1 }] });
-      await getProps().onFilter('');
-      await sleep(debounceTime + 1);
-
-      component.update();
-
-      expect(getProps().options).toEqual(props.options);
     });
   });
 
@@ -99,6 +89,46 @@ describe('LookupMultiSelect', () => {
       component.setProps({ totalPossibleOptions: 42 });
 
       expect(component.state().totalPossibleOptions).toBe(42);
+    });
+  });
+
+  describe('lifecycle on mount and lookup prop change', () => {
+    it('should call onFilter (lookup) on mount', async () => {
+      const lookupSpy = jasmine.createSpy('lookup').and.returnValue(
+        Promise.resolve({
+          options: [{ label: 'mount', value: 'mount', results: 1 }],
+          count: 1,
+        })
+      );
+      render(lookupSpy);
+      // Wait for debounce and async
+      await sleep(debounceTime + 1);
+      component.update();
+      expect(lookupSpy).toHaveBeenCalledWith('');
+    });
+
+    it('should call onFilter (lookup) when lookup prop changes', async () => {
+      const firstLookup = jasmine.createSpy('lookup1').and.returnValue(
+        Promise.resolve({
+          options: [{ label: 'first', value: 'first', results: 1 }],
+          count: 1,
+        })
+      );
+      render(firstLookup);
+      await sleep(debounceTime + 1);
+      component.update();
+      expect(firstLookup).toHaveBeenCalledWith('');
+
+      const secondLookup = jasmine.createSpy('lookup2').and.returnValue(
+        Promise.resolve({
+          options: [{ label: 'second', value: 'second', results: 1 }],
+          count: 1,
+        })
+      );
+      component.setProps({ lookup: secondLookup });
+      await sleep(debounceTime + 1);
+      component.update();
+      expect(secondLookup).toHaveBeenCalledWith('');
     });
   });
 });
