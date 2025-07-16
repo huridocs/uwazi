@@ -13,6 +13,14 @@ import { sortByStrings } from 'shared/data_utils/objectSorting';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 
 import testingDB from 'api/utils/testing_db';
+import entities from 'api/entities';
+import { EnforcedWithId } from 'api/odm';
+import settings from 'api/settings';
+import { Suggestions } from 'api/suggestions/suggestions';
+import { LanguageUtils } from 'shared/language';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { FileType } from 'shared/types/fileType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { factory, fixtures } from './fixtures';
 import {
   CommonSuggestion,
@@ -26,7 +34,7 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
-import { NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
+import { FileWithAggregation, NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
 import { TEST_RUN_SUGGESTIONS_SIZE } from '../ixmodels';
 
 let informationExtractionForJob: InformationExtraction;
@@ -64,6 +72,44 @@ jest.mock('api/queue.v2/configuration/factories', () => ({
     });
   },
 }));
+
+const _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggregation) => {
+  let [entity] = await entities.getUnrestricted({
+    sharedId: file.entity,
+    language: LanguageUtils.fromISO639_3(file.language!)?.ISO639_1,
+  });
+
+  if (!entity) {
+    const defaultLanguage = await settings.getDefaultLanguage();
+    [entity] = await entities.getUnrestricted({
+      sharedId: file.entity,
+      language: defaultLanguage?.key,
+    });
+  }
+  return entity;
+};
+
+const _saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXExtractorType) => {
+  const entity = await _getEntityFromFile(file);
+  const [existingSuggestions] = await IXSuggestionsModel.get({
+    entityId: entity.sharedId,
+    extractorId: extractor._id,
+    fileId: file._id,
+  });
+
+  const suggestion: IXSuggestionType = {
+    ...existingSuggestions,
+    entityId: entity.sharedId!,
+    fileId: file._id,
+    language: LanguageUtils.fromISO639_3(file.language)?.ISO639_1 || 'other',
+    extractorId: extractor._id,
+    propertyName: extractor.property,
+    status: 'processing',
+    date: new Date().getTime(),
+  };
+
+  return Suggestions.save(suggestion);
+};
 
 const readDocument = async (letter: string, xmlName?: string) => {
   const _xmlName = xmlName ?? `document${letter}.xml`;
@@ -151,7 +197,7 @@ describe('InformationExtraction', () => {
   ) => {
     const extractorId = factory.id(extractorName);
     const [extractor] = await Extractors.get({ _id: extractorId });
-    await informationExtraction.saveSuggestionProcess(
+    await _saveSuggestionProcess(
       {
         _id: factory.id(id),
         entity,
