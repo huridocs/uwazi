@@ -1,5 +1,4 @@
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { files } from 'api/files';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
@@ -25,6 +24,8 @@ import { getBlankSuggestionForPdf } from './blankSuggestions';
 import { AfterFileUpdatedListener } from './listeners/afterFileCreatedListener';
 import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSuggestionsFromDocument';
 import { SuggestionFactory } from './suggestionFactory';
+import { AfterEntityUpdatedListener } from './listeners/afterEntityUpdatedListener';
+import { UpdateSuggestionsAfterEntityUpdate } from './useCases/updateSuggestionsAfterEntityUpdate';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();
@@ -125,18 +126,12 @@ const handleTemplateChange = async (
 };
 
 const registerEventListeners = (eventsBus: EventsBus) => {
-  eventsBus.on(EntityUpdatedEvent, async ({ before, after, targetLanguageKey }) => {
-    if (!(await featureIsEnabled())) return;
-
-    const originalDoc = before.find(doc => doc.language === targetLanguageKey)!;
-    const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
-
-    const extractors = await Extractors.get();
-    if (await extractedMetadataChanged(originalDoc, modifiedDoc, extractors)) {
-      await Suggestions.updateStates({ entityId: originalDoc.sharedId });
-    }
-    await handleTemplateChange(originalDoc, modifiedDoc, extractors);
-  });
+  new AfterEntityUpdatedListener(eventsBus, () => ({
+    eventBus: eventsBus,
+    settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
+    logger: DefaultLogger(),
+    updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
+  })).start();
 
   eventsBus.on(EntityCreatedEvent, async ({ entities }) => {
     if (!(await featureIsEnabled())) return;
@@ -174,7 +169,6 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     eventBus: eventsBus,
     settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
-    updateSuggestionsState: Suggestions.updateStates,
     logger: DefaultLogger(),
   })).start();
 

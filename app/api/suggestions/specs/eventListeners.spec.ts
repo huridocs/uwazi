@@ -210,19 +210,6 @@ afterAll(async () => {
 
 describe(`On ${EntityUpdatedEvent.name}`, () => {
   let updateSpy: jest.SpyInstance;
-  const extractedBefore = {
-    _id: db.id(),
-    sharedId: 'sid',
-    title: 'title',
-    template: fixturesFactory.id(extractedTemplateName),
-    metadata: {
-      not_extracted_property_1: [{ value: 'text' }],
-      not_extracted_property_2: [{ value: 0 }],
-      extracted_property_1: [{ value: 'text' }],
-      extracted_property_2: [{ value: 0 }],
-    },
-    language: 'en',
-  };
 
   beforeAll(async () => {
     updateSpy = jest.spyOn(Suggestions, 'updateStates');
@@ -234,101 +221,6 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 
   afterAll(() => {
     updateSpy.mockRestore();
-  });
-
-  it('should not act if the feature is not configured', async () => {
-    await disableFeatures();
-
-    await applicationEventsBus.emit(
-      new EntityUpdatedEvent({
-        before: [extractedBefore],
-        after: [
-          {
-            ...extractedBefore.metadata,
-            extracted_property_1: [{ value: 'new text' }],
-          },
-        ],
-        targetLanguageKey: 'en',
-      })
-    );
-
-    expect(updateSpy).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    {
-      before: {
-        _id: db.id(),
-        sharedId: 'sid',
-        title: 'title',
-        template: fixturesFactory.id(notExtractedTemplateName),
-        metadata: { some_property: [{ value: 'text' }] },
-        language: 'en',
-      },
-      afterMetadata: { some_property: [{ value: 'other_text' }] },
-      called: false,
-      message: 'should not update suggestions, if template is not set up',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: extractedBefore.metadata,
-      called: false,
-      message: 'should not update suggestions, if no metadata changed',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: {
-        ...extractedBefore.metadata,
-        not_extracted_property_1: [{ value: 'new text' }],
-        not_extracted_property_2: [{ value: 1 }],
-      },
-      called: false,
-      message: 'should not update suggestions, if no relevant metadata changed',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: {
-        ...extractedBefore.metadata,
-        extracted_property_1: [{ value: 'new text' }],
-      },
-      called: true,
-      message: 'should update suggestions, if only relevant metadata changed',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: {
-        not_extracted_property_1: [{ value: 'new text' }],
-        not_extracted_property_2: [{ value: 1 }],
-        extracted_property_1: [{ value: 'new text' }],
-        extracted_property_2: [{ value: 1 }],
-      },
-      called: true,
-      message: 'should update suggestions, if relevant metadata is also changed',
-    },
-  ])('$message', async ({ before, afterMetadata, called }) => {
-    const after = {
-      ...before,
-      metadata: afterMetadata,
-    };
-    await applicationEventsBus.emit(
-      new EntityUpdatedEvent({ before: [before], after: [after], targetLanguageKey: 'en' })
-    );
-    if (called) {
-      expect(updateSpy).toHaveBeenCalled();
-    } else {
-      expect(updateSpy).not.toHaveBeenCalled();
-    }
-  });
-
-  it('should update suggestions, if title is configured and changed', async () => {
-    const after = {
-      ...extractedBefore,
-      title: 'new title',
-    };
-    await applicationEventsBus.emit(
-      new EntityUpdatedEvent({ before: [extractedBefore], after: [after], targetLanguageKey: 'en' })
-    );
-    expect(updateSpy).toHaveBeenCalled();
   });
 
   it.each([
