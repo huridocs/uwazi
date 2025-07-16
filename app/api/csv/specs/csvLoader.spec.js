@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import path from 'path';
-
+import moment from 'moment';
 import { CSVLoader } from 'api/csv';
 import { simpleTemplateId, templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import entities from 'api/entities';
@@ -10,11 +10,10 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import moment from 'moment';
+import thesauri from 'api/thesauri';
 import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
-import thesauri from 'api/thesauri';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
@@ -197,11 +196,10 @@ describe('csvLoader', () => {
         text_label: [{ value: 'text value 1' }],
         header_with_dots: [{ value: 'header with dots value 1' }],
       });
-      // Check new thesaurus values for the new row
       const newEntity = imported[3];
       expect(newEntity.metadata['select_label'][0].label).toBe('new_select_value');
       expect(newEntity.metadata['multi_select_label']).toBeDefined();
-      // Fetch thesauri after import and check new values
+
       const selectThesaurus = await thesauri.getById(fixtures.dictionaries.find(d => d.name === 'thesauri1')._id);
       const selectLabels = selectThesaurus.values.map(v => v.label.trim());
       expect(selectLabels).toContain('new_select_value');
@@ -269,7 +267,7 @@ describe('csvLoader', () => {
         expect(multiselectWithSpacesValues[1][0]).toHaveProperty('label', ' Item2 ');
         expect(multiselectWithSpacesValues[2]).toHaveLength(1);
         expect(multiselectWithSpacesValues[2][0]).toHaveProperty('label', 'Normal Item');
-        // Row 4: "New Group :: New Item | Another Group :: new_multi2" - now properly splits into 2 values
+
         expect(multiselectWithSpacesValues[3]).toHaveLength(2);
         expect(multiselectWithSpacesValues[3][0]).toHaveProperty('label', 'New Item');
         expect(multiselectWithSpacesValues[3][1]).toHaveProperty('label', 'new_multi2');
@@ -602,7 +600,30 @@ describe('csvLoader', () => {
     it('should emit warnings for values not found or invalid format', async () => {
       expect(typeof loader.errors()).toBe('object');
     });
+
+    it('should sanitize nested thesaurus values', async () => {
+      // Test that nested values with spaces are properly sanitized
+      const selectWithSpaces = imported[0].metadata['select_with_spaces'];
+      expect(selectWithSpaces[0].label).toBe('Item1');
+      expect(selectWithSpaces[0].parent.label).toBe('Group ');
+
+      const multiselectWithSpaces = imported[0].metadata['multiselect_with_spaces'];
+      expect(multiselectWithSpaces[0].label).toBe('Item1');
+      expect(multiselectWithSpaces[0].parent.label).toBe('Group ');
+      expect(multiselectWithSpaces[1].label).toBe('Item3 ');
+      expect(multiselectWithSpaces[1].parent.label).toBe('Another Group');
+
+      // Test that new nested values are properly sanitized
+      const newEntity = imported[3];
+      const newSelectWithSpaces = newEntity.metadata['select_with_spaces'];
+      expect(newSelectWithSpaces[0].label).toBe('New Item');
+      expect(newSelectWithSpaces[0].parent.label).toBe('New Group');
+
+      const newMultiselectWithSpaces = newEntity.metadata['multiselect_with_spaces'];
+      expect(newMultiselectWithSpaces[0].label).toBe('New Item');
+      expect(newMultiselectWithSpaces[0].parent.label).toBe('New Group');
+      expect(newMultiselectWithSpaces[1].label).toBe('new_multi2');
+      expect(newMultiselectWithSpaces[1].parent.label).toBe('Another Group');
+    });
   });
 });
-
-
