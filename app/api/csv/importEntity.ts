@@ -17,10 +17,16 @@ import { generateID } from 'shared/IDGenerator';
 import typeParsers from './typeParsers';
 import { csvConstants } from './csvDefinitions';
 
-const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) =>
-  typeParsers[prop.type]
-    ? typeParsers[prop.type](toImportEntity, prop, dateFormat)
-    : typeParsers.text(toImportEntity, prop);
+const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) => {
+  const parser = typeParsers[prop.type] || typeParsers.text;
+  const result = await parser(toImportEntity, prop, dateFormat);
+
+  if (Array.isArray(result)) {
+    return { data: result, warnings: [] };
+  }
+
+  return result;
+};
 
 const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
   prop.name
@@ -41,14 +47,20 @@ const toMetadata = async (
       const propName = ensure<string>(prop.name);
       const originalValue = toImportEntity.propertiesFromColumns[propName];
 
-      const parsed = (await parse(toImportEntity, prop, dateFormat)) as MetadataObjectSchema[];
+      const parsed = await parse(toImportEntity, prop, dateFormat);
 
-      if (
-        parsed === null ||
-        parsed === undefined ||
-        (Array.isArray(parsed) && parsed.length === 0)
-      ) {
-        if (feedbackCallback) {
+      if (parsed && typeof parsed === 'object' && 'data' in parsed) {
+        const { data, warnings } = parsed;
+
+        warnings.forEach(warning => {
+          if (feedbackCallback) {
+            feedbackCallback(warning);
+          }
+        });
+
+        if (data && data.length > 0) {
+          metadata[propName] = data;
+        } else if (feedbackCallback) {
           feedbackCallback({
             property: propName,
             value: originalValue,
@@ -56,7 +68,28 @@ const toMetadata = async (
           });
         }
       } else {
-        metadata[propName] = parsed || [];
+        if (parsed === null || parsed === undefined) {
+          if (feedbackCallback) {
+            feedbackCallback({
+              property: propName,
+              value: originalValue,
+              reason: 'Sanitized entries skipped in import',
+            });
+          }
+        } else {
+          const data = parsed as MetadataObjectSchema[];
+          if (Array.isArray(data) && data.length === 0) {
+            if (feedbackCallback) {
+              feedbackCallback({
+                property: propName,
+                value: originalValue,
+                reason: 'Sanitized entries skipped in import',
+              });
+            }
+          } else {
+            metadata[propName] = data || [];
+          }
+        }
       }
     });
 

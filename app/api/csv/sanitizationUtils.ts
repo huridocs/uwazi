@@ -11,32 +11,16 @@ export interface SanitizationResult {
   warnings: SanitizationWarning[];
 }
 
-/**
- * Basic text sanitization that can be used across the codebase.
- * This consolidates the text sanitization logic that was duplicated in:
- * - app/api/entities/routes.js (coerceValues function)
- * - app/api/csv/importThesauri.ts (parseValue function)
- * - Our new CSV import sanitization
- */
 export const sanitizeText = (value: string): string => {
   if (!value) return '';
-  
+
   return value
-    .replace(/(\n|\r)/g, ' ')  // Replace newlines with spaces
-    .replace(/\s+/g, ' ')      // Normalize multiple spaces to single space
-    .trim();                   // Trim leading/trailing whitespace
+    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
+    .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+    .trim(); // Trim leading/trailing whitespace
 };
 
-/**
- * Sanitizes a string value according to Priority 1 CSV sanitization rules:
- * 1. Text trimming (remove leading/trailing whitespace)
- * 2. Empty string normalization (convert various empty representations to empty string)
- * 3. Space normalization (convert multiple spaces to single space)
- */
-export const sanitizeStringValue = (
-  value: string,
-  propertyName: string
-): SanitizationResult => {
+export const sanitizeStringValue = (value: string, propertyName: string): SanitizationResult => {
   const warnings: SanitizationWarning[] = [];
   let sanitizedValue = value;
 
@@ -45,7 +29,7 @@ export const sanitizeStringValue = (
 
   // Apply basic text sanitization first
   const basicSanitized = sanitizeText(value);
-  
+
   // Check if basic sanitization made changes
   if (basicSanitized !== value) {
     // Determine which specific sanitizations were applied
@@ -57,7 +41,7 @@ export const sanitizeStringValue = (
         reason: 'Leading/trailing whitespace removed',
       });
     }
-    
+
     const spaceNormalized = value.replace(/\s+/g, ' ');
     if (spaceNormalized !== value) {
       warnings.push({
@@ -66,12 +50,22 @@ export const sanitizeStringValue = (
         reason: 'Multiple spaces normalized to single space',
       });
     }
-    
+
     sanitizedValue = basicSanitized;
   }
 
   // 2. Empty string normalization
-  const emptyPatterns = ['null', 'NULL', 'Null', 'undefined', 'UNDEFINED', 'Undefined', 'N/A', 'n/a', 'N/a'];
+  const emptyPatterns = [
+    'null',
+    'NULL',
+    'Null',
+    'undefined',
+    'UNDEFINED',
+    'Undefined',
+    'N/A',
+    'n/a',
+    'N/a',
+  ];
   if (emptyPatterns.includes(sanitizedValue)) {
     warnings.push({
       property: propertyName,
@@ -114,14 +108,7 @@ export const sanitizeMetadataValue = (
   const stringValue = String(value);
 
   // Apply string sanitization for text-based types
-  const textBasedTypes = [
-    'text',
-    'preview',
-    'image',
-    'media',
-    'nested',
-    'link',
-  ];
+  const textBasedTypes = ['text', 'preview', 'image', 'media', 'nested', 'link'];
 
   if (textBasedTypes.includes(propertyType)) {
     return sanitizeStringValue(stringValue, propertyName);
@@ -148,11 +135,7 @@ export const sanitizeMetadataArray = (
 
   for (const metadata of metadataArray) {
     if (metadata.value !== undefined && metadata.value !== null) {
-      const sanitizationResult = sanitizeMetadataValue(
-        metadata.value,
-        propertyName,
-        propertyType
-      );
+      const sanitizationResult = sanitizeMetadataValue(metadata.value, propertyName, propertyType);
 
       warnings.push(...sanitizationResult.warnings);
 
@@ -167,4 +150,4 @@ export const sanitizeMetadataArray = (
   }
 
   return { sanitizedArray, warnings };
-}; 
+};

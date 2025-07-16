@@ -282,19 +282,29 @@ const handleRow = (
   const safeNamedRow = toSafeName(row, newNameGeneration);
 
   headersWithoutLanguage.forEach(header => {
-    let labelInfo = determineParentChildRelationship(safeNamedRow[header]);
+    const property = template.properties?.find(p => p.name === header);
+    const isMultiselect = property?.type === 'multiselect';
 
-    if (!labelInfo && safeNamedRow[header]) {
-      const sanitizedValue = sanitizeStringValue(safeNamedRow[header], header).value;
-      labelInfo = determineParentChildRelationship(sanitizedValue);
-    }
+    if (isMultiselect) {
+      const result = splitMultiselectLabels(safeNamedRow[header]);
+      result.labelInfos.forEach(labelInfo => {
+        tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
+      });
+    } else {
+      let labelInfo = determineParentChildRelationship(safeNamedRow[header]);
 
-    if (!labelInfo && safeNamedRow[header]) {
-      labelInfo = parseParentChildWithSpaces(safeNamedRow[header]);
-    }
+      if (!labelInfo && safeNamedRow[header]) {
+        const sanitizedValue = sanitizeStringValue(safeNamedRow[header], header).value;
+        labelInfo = determineParentChildRelationship(sanitizedValue);
+      }
 
-    if (labelInfo) {
-      tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
+      if (!labelInfo && safeNamedRow[header]) {
+        labelInfo = parseParentChildWithSpaces(safeNamedRow[header]);
+      }
+
+      if (labelInfo) {
+        tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
+      }
     }
   });
 

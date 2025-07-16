@@ -6,6 +6,7 @@ import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 import { csvConstants } from '../csvDefinitions';
 import { TypeParserError } from './errors';
+import { sanitizeStringValue } from '../sanitizationUtils';
 
 type LabelInfoBase = {
   label: string;
@@ -14,6 +15,11 @@ type LabelInfoBase = {
 
 type LabelInfo = LabelInfoBase & {
   child: LabelInfoBase | null;
+};
+
+type ParserResult = {
+  data: MetadataObjectSchema[];
+  warnings: Array<{ property: string; value: string; reason: string }>;
 };
 
 const splitLabel = (
@@ -27,7 +33,7 @@ const splitLabel = (
   const split = label.split(csvConstants.dictionaryParentChildSeparator);
   const normalizedSplit = normalizedLabel.split(csvConstants.dictionaryParentChildSeparator);
   if (split.length > 2) {
-    throw new TypeParserError(`Label "${label}" has too many parent-child separators.`);
+    return null;
   }
   return { split, normalizedSplit };
 };
@@ -77,47 +83,122 @@ const generateMetadataValue = (
   const parent = currentThesaurus.values?.find(
     v => normalizeThesaurusLabel(v.label) === labelInfo.normalizedLabel
   );
+  
+  if (!parent || !parent.id) {
+    return null;
+  }
+  
   if (labelInfo.child) {
     const child = parent?.values?.find(
       v => normalizeThesaurusLabel(v.label) === labelInfo.child?.normalizedLabel
     );
 
-    if (child && child.label.trim() !== child.label) {
+    if (!child || !child.id) {
       return null;
     }
 
     return {
-      value: ensure<string>(child?.id),
-      label: ensure<string>(child?.label),
+      value: child.id,
+      label: child.label,
       parent: {
-        value: ensure<string>(parent?.id),
-        label: ensure<string>(parent?.label),
+        value: parent.id,
+        label: parent.label,
       },
     };
   }
 
-  if (parent && parent.label.trim() !== parent.label) {
+  return {
+    value: parent.id,
+    label: parent.label,
+  };
+};
+
+const parseParentChildWithSpaces = (value: string): LabelInfo | null => {
+  if (!value) return null;
+
+  const separator = '::';
+  const parts = value.split(separator);
+
+  if (parts.length > 2) {
+    return null;
+  }
+
+  if (parts.length === 1) {
+    const trimmedLabel = parts[0].trim();
+    const normalizedLabel = normalizeThesaurusLabel(trimmedLabel);
+    if (!normalizedLabel) return null;
+
+    return {
+      label: trimmedLabel,
+      normalizedLabel,
+      child: null,
+    };
+  }
+
+  const parentLabel = parts[0].trim();
+  const childLabel = parts[1].trim();
+
+  const normalizedParentLabel = normalizeThesaurusLabel(parentLabel);
+  const normalizedChildLabel = normalizeThesaurusLabel(childLabel);
+
+  if (!normalizedParentLabel || !normalizedChildLabel) {
     return null;
   }
 
   return {
-    value: ensure<string>(parent?.id),
-    label: ensure<string>(parent?.label),
+    label: parentLabel,
+    normalizedLabel: normalizedParentLabel,
+    child: {
+      label: childLabel,
+      normalizedLabel: normalizedChildLabel,
+    },
   };
 };
 
 const select = async (
   entityToImport: RawEntity,
   property: PropertySchema
-): Promise<MetadataObjectSchema[] | null> => {
+): Promise<ParserResult> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
   const propValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
-  const labelInfo = determineParentChildRelationship(propValue);
+  const warnings: Array<{ property: string; value: string; reason: string }> = [];
 
-  if (!labelInfo) return null;
+  if (!propValue) {
+    return { data: [], warnings: [] };
+  }
+
+  let labelInfo = determineParentChildRelationship(propValue);
+
+  if (!labelInfo && propValue) {
+    const sanitizedValue = sanitizeStringValue(propValue, property.name).value;
+    labelInfo = determineParentChildRelationship(sanitizedValue);
+  }
+
+  if (!labelInfo && propValue) {
+    labelInfo = parseParentChildWithSpaces(propValue);
+  }
+
+  if (!labelInfo) {
+    warnings.push({
+      property: property.name,
+      value: propValue,
+      reason: 'Invalid thesaurus value format',
+    });
+    return { data: [], warnings };
+  }
+
   const value = generateMetadataValue(currentThesauri, labelInfo);
-  if (!value || value.value === undefined || value.value === null) return null;
-  return [value];
+  
+  if (!value || value.value === undefined || value.value === null) {
+    warnings.push({
+      property: property.name,
+      value: propValue,
+      reason: 'Thesaurus value not found',
+    });
+    return { data: [], warnings };
+  }
+
+  return { data: [value], warnings };
 };
 
 export default select;
