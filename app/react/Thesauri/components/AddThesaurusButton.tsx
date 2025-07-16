@@ -8,6 +8,16 @@ import { IStore } from 'app/istore';
 import { Icon } from 'UI';
 import { saveThesaurus } from '../actions/thesauriActions';
 
+// Simple sanitization function for thesaurus names
+const sanitizeThesaurusName = (name: string): string => {
+  if (!name) return '';
+
+  return name
+    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
+    .replace(/\s+/g, ' ')     // Normalize multiple spaces to single space
+    .trim();                  // Trim leading/trailing whitespace
+};
+
 const mapStateToProps = (state: IStore) => ({
   thesauri: state.thesauris,
 });
@@ -37,7 +47,7 @@ const AddThesaurusButton = ({ thesaurusSave, thesauri }: mappedProps) => {
 
   const onSave: SubmitHandler<{ thesaurus: string }> = data => {
     const thesaurus = {
-      name: data.thesaurus,
+      name: sanitizeThesaurusName(data.thesaurus),
       values: [],
     };
     thesaurusSave(thesaurus);

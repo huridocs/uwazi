@@ -8,7 +8,7 @@ import { InputField } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusRow } from './TableComponents';
-import { emptyThesaurus } from '../helpers';
+import { emptyThesaurus, sanitizeThesaurusLabel } from '../helpers';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
@@ -62,12 +62,20 @@ const ThesauriGroupFormSidepanel = ({
   }, [watch, append]);
 
   const curateBeforeSubmit = (tValue: ThesaurusRow) => {
+    // Sanitize group name and item labels before submitting
+    const sanitizedGroupLabel = sanitizeThesaurusLabel(tValue.label);
+
     const filteredValues = (tValue.subRows || [])
       .filter(fValue => !isEmpty(fValue.label))
-      .map(item => ({ ...item, groupId: tValue.rowId }));
+      .map(item => ({
+        ...item,
+        groupId: tValue.rowId,
+        label: sanitizeThesaurusLabel(item.label),
+      }));
 
     submit({
       ...tValue,
+      label: sanitizedGroupLabel,
       subRows: filteredValues,
     });
     closePanel();

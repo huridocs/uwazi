@@ -3,6 +3,16 @@ import { Translate } from 'app/I18N';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
 
+// Simple sanitization function for thesaurus values
+const sanitizeThesaurusValue = (value: string): string => {
+  if (!value) return '';
+
+  return value
+    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
+    .replace(/\s+/g, ' ')     // Normalize multiple spaces to single space
+    .trim();                  // Trim leading/trailing whitespace
+};
+
 interface AddThesauriValueModalProps {
   isOpen: boolean;
   values: Array<any>;
@@ -39,7 +49,12 @@ const AddThesauriValueModal = ({
   } = useForm<FormInputs>({ defaultValues: { group: 'root' } });
 
   const onSubmitted = (submittedValues: any) => {
-    onAccept(submittedValues);
+    // Sanitize the value before accepting
+    const sanitizedValues = {
+      ...submittedValues,
+      value: sanitizeThesaurusValue(submittedValues.value),
+    };
+    onAccept(sanitizedValues);
   };
 
   const renderGroupSelect = (selectValues: { value: string; label: string }[]) => (

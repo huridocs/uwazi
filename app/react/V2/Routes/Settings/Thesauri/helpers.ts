@@ -191,6 +191,19 @@ const compareThesaurus = (
   return changedName || changedValues;
 };
 
+/**
+ * Sanitizes a thesaurus value label by trimming whitespace and normalizing spaces.
+ * This is used in the UI to prevent new values with trailing spaces while respecting existing values.
+ */
+const sanitizeThesaurusLabel = (label: string): string => {
+  if (!label) return '';
+  
+  return label
+    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
+    .replace(/\s+/g, ' ')     // Normalize multiple spaces to single space
+    .trim();                  // Trim leading/trailing whitespace
+};
+
 export {
   sanitizeThesaurusValues,
   sanitizeThesauri,
@@ -204,6 +217,7 @@ export {
   addItemSubmit,
   addGroupSubmit,
   compareThesaurus,
+  sanitizeThesaurusLabel,
 };
 
 export type { ConfirmationCallback };
