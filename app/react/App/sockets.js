@@ -2,7 +2,7 @@ import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
-import { atomStore, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
+import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { store } from '../store';
 import { socket, reconnectSocket } from '../socket';
 
@@ -59,7 +59,7 @@ socket.on('templateDelete', payload => {
 });
 
 socket.on('updateSettings', settings => {
-  store.dispatch(actions.set('settings/collection', settings));
+  atomStore.set(settingsAtom, settings);
 });
 
 socket.on('thesauriChange', thesaurus => {
@@ -105,6 +105,7 @@ socket.on('translationKeysChange', translationsEntries => {
 });
 
 socket.on('translationsInstallDone', () => {
+  console.log('translationsInstallDone');
   store.dispatch(
     notificationActions.notify(
       t('System', 'Languages installed successfully', null, false),

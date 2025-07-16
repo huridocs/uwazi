@@ -3,7 +3,7 @@
  */
 /* eslint-disable max-statements */
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
-import { atomStore, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
+import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { socket } from '../../socket';
 import '../sockets';
 import { store } from '../../store';
@@ -18,13 +18,13 @@ import {
 } from './fixtures/fixtures';
 
 describe('sockets', () => {
-  beforeEach(() => {
-    spyOn(store, 'dispatch').and.callFake(argument =>
-      typeof argument === 'function' ? argument(store.dispatch) : argument
-    );
-  });
+  describe('connection events', () => {
+    beforeEach(() => {
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
+    });
 
-  describe('disconnect', () => {
     it('should emit a disconnect event', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
@@ -34,9 +34,7 @@ describe('sockets', () => {
       );
       jasmine.clock().uninstall();
     });
-  });
 
-  describe('reconnect', () => {
     it('should emit a connect event', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
@@ -63,7 +61,7 @@ describe('sockets', () => {
     });
   });
 
-  describe('templates', () => {
+  describe('Templates', () => {
     beforeEach(() => {
       atomStore.set(
         templatesAtom,
@@ -180,13 +178,15 @@ describe('sockets', () => {
     });
   });
 
-  describe('updateSettings', () => {
-    it('should emit a updateSettings event', () => {
-      socket._callbacks.$updateSettings[0]({ id: '123' });
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'settings/collection/SET',
-        value: { id: '123' },
-      });
+  describe('Collection settings', () => {
+    beforeEach(() => {
+      atomStore.set(settingsAtom, { key: 'value' });
+      spyOn(atomStore, 'set');
+    });
+
+    it('should emit a updateSettings event and update the store', () => {
+      socket._callbacks.$updateSettings[0]({ payload: 'new settings' });
+      expect(atomStore.set).toHaveBeenCalledWith(settingsAtom, { payload: 'new settings' });
     });
   });
 
@@ -230,78 +230,72 @@ describe('sockets', () => {
     });
   });
 
-  describe('translationsInstallDone', () => {
-    it('should dispatch a notification', () => {
-      socket._callbacks.$translationsInstallDone[0]();
-      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
-        type: 'NOTIFY',
-        notification: {
-          id: expect.any(String),
-          message: 'Languages installed successfully',
-          type: 'success',
-        },
+  describe('Languages', () => {
+    describe('language install', () => {
+      it('should dispatch a notification on translationsInstallDone', () => {
+        socket._callbacks.$translationsInstallDone[0]();
+        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+          type: 'NOTIFY',
+          notification: {
+            id: expect.any(String),
+            message: 'Languages installed successfully',
+            type: 'success',
+          },
+        });
+      });
+
+      it('should dispatch a notification on translationsInstallError', () => {
+        socket._callbacks.$translationsInstallError[0]('error message');
+        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+          type: 'NOTIFY',
+          notification: {
+            id: expect.any(String),
+            message: 'An error has occured while installing languages:\nerror message',
+            type: 'danger',
+          },
+        });
       });
     });
-  });
 
-  describe('translationsInstallError', () => {
-    it('should dispatch a notification', () => {
-      socket._callbacks.$translationsInstallError[0]('error message');
-      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
-        type: 'NOTIFY',
-        notification: {
-          id: expect.any(String),
-          message: 'An error has occured while installing languages:\nerror message',
-          type: 'danger',
-        },
+    describe('language delete', () => {
+      it('should emit a translationsDelete event and update the store', () => {
+        socket._callbacks.$translationsDelete[0]('es');
+        expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, [currentTranslations[0]]);
       });
-    });
-  });
 
-  describe('translationsDelete', () => {
-    beforeEach(() => {
-      atomStore.set(
-        translationsAtom,
-        currentTranslations.map(t => ({ ...t }))
-      );
-      spyOn(atomStore, 'set');
-    });
-
-    it('should emit a translationsDelete event', () => {
-      socket._callbacks.$translationsDelete[0]('es');
-      expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, [currentTranslations[0]]);
-    });
-  });
-
-  describe('translationsDeleteError', () => {
-    it('should dispatch a notification', () => {
-      socket._callbacks.$translationsDeleteError[0]('error message');
-      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
-        type: 'NOTIFY',
-        notification: {
-          id: expect.any(String),
-          message: 'An error has occured while deleting a language:\nerror message',
-          type: 'danger',
-        },
+      it('should dispatch a on translationsDeleteDone', () => {
+        socket._callbacks.$translationsDeleteDone[0]();
+        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+          type: 'NOTIFY',
+          notification: {
+            id: expect.any(String),
+            message: 'Language uninstalled successfully',
+            type: 'success',
+          },
+        });
       });
-    });
-  });
 
-  describe('translationsDeleteDone', () => {
-    it('should dispatch a notification', () => {
-      socket._callbacks.$translationsDeleteDone[0]();
-      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
-        type: 'NOTIFY',
-        notification: {
-          id: expect.any(String),
-          message: 'Language uninstalled successfully',
-          type: 'success',
-        },
+      it('should dispatch a notification on error', () => {
+        socket._callbacks.$translationsDeleteError[0]('error message');
+        expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+          type: 'NOTIFY',
+          notification: {
+            id: expect.any(String),
+            message: 'An error has occured while deleting a language:\nerror message',
+            type: 'danger',
+          },
+        });
       });
     });
   });
 
   describe('documentProcessed', () => {
+    beforeEach(() => {
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
+    });
+
     it('should dispatch the documentProcessed action', () => {
       jest.spyOn(uploadActions, 'documentProcessed').mockImplementationOnce(() => {});
       socket._callbacks.$documentProcessed[0]('entitySharedId');
