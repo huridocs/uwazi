@@ -106,8 +106,8 @@ export class IXServices {
       return entity.title!;
     }
 
-    const values = entity.metadata?.[targetProperty.name]?.map(i => String(i.value));
-    if (!values) {
+    const values = entity.metadata?.[targetProperty.name]?.map(i => i.value);
+    if (!values?.length) {
       return isMultiValued ? [] : '';
     }
 
