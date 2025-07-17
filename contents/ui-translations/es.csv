@@ -698,6 +698,7 @@ Review,Revisar
 Reviewed,Revisados
 Role,Rol
 Route,Ruta
+Row,Row
 Sample,Ejemplo
 Satellite,Satélite
 Save,Guardar
@@ -832,6 +833,7 @@ Test run,Test run
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
+The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."
