@@ -17,9 +17,10 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect';
-import { LabelInfoBase, determineParentChildRelationship } from './typeParsers/select';
+import { determineParentChildRelationship } from './typeParsers/select';
 import { headerWithLanguage } from './csvDefinitions';
 import { sanitizeStringValue } from './sanitizationUtils';
+import { LabelInfoBase } from './typeParsers/shared';
 
 class ArrangeThesauriError extends Error {
   row: CSVRow;

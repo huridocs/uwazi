@@ -67,8 +67,17 @@ const toMetadata = async (
             reason: 'Sanitized entries skipped in import',
           });
         }
+      } else if (parsed === null || parsed === undefined) {
+        if (feedbackCallback) {
+          feedbackCallback({
+            property: propName,
+            value: originalValue,
+            reason: 'Sanitized entries skipped in import',
+          });
+        }
       } else {
-        if (parsed === null || parsed === undefined) {
+        const data = parsed as MetadataObjectSchema[];
+        if (Array.isArray(data) && data.length === 0) {
           if (feedbackCallback) {
             feedbackCallback({
               property: propName,
@@ -77,18 +86,7 @@ const toMetadata = async (
             });
           }
         } else {
-          const data = parsed as MetadataObjectSchema[];
-          if (Array.isArray(data) && data.length === 0) {
-            if (feedbackCallback) {
-              feedbackCallback({
-                property: propName,
-                value: originalValue,
-                reason: 'Sanitized entries skipped in import',
-              });
-            }
-          } else {
-            metadata[propName] = data || [];
-          }
+          metadata[propName] = data || [];
         }
       }
     });

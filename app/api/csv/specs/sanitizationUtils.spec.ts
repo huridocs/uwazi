@@ -1,9 +1,4 @@
-import {
-  sanitizeText,
-  sanitizeStringValue,
-  sanitizeMetadataValue,
-  SanitizationWarning,
-} from '../sanitizationUtils';
+import { sanitizeText, sanitizeStringValue, sanitizeMetadataValue } from '../sanitizationUtils';
 
 describe('sanitizationUtils', () => {
   describe('sanitizeText', () => {
@@ -74,7 +69,7 @@ describe('sanitizationUtils', () => {
         'n/a',
         'N/a',
       ];
-      for (const pattern of patterns) {
+      patterns.forEach(pattern => {
         const result = sanitizeStringValue(pattern, 'test');
         expect(result.value).toBe('');
         expect(result.warnings).toEqual([
@@ -84,7 +79,7 @@ describe('sanitizationUtils', () => {
             reason: 'Empty value pattern normalized to empty string',
           },
         ]);
-      }
+      });
     });
 
     it('should apply all sanitizations in order', () => {
@@ -111,16 +106,16 @@ describe('sanitizationUtils', () => {
   });
 
   describe('sanitizeMetadataValue', () => {
-    it('should handle null and undefined values', () => {
+    it('should handle null and undefined values', async () => {
       const nullResult = sanitizeMetadataValue(null, 'test', 'text');
       expect(nullResult.value).toBe('');
-      expect(nullResult.warnings[0].reason).toMatch(
+      await expect(nullResult.warnings[0].reason).toMatch(
         /Null\/undefined value converted to empty string/
       );
 
       const undefinedResult = sanitizeMetadataValue(undefined, 'test', 'text');
       expect(undefinedResult.value).toBe('');
-      expect(undefinedResult.warnings[0].reason).toMatch(
+      await expect(undefinedResult.warnings[0].reason).toMatch(
         /Null\/undefined value converted to empty string/
       );
     });

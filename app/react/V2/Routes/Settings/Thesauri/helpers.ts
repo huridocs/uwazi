@@ -192,8 +192,6 @@ const compareThesaurus = (
   return changedName || changedValues;
 };
 
-
-
 export {
   sanitizeThesaurusValues,
   sanitizeThesauri,

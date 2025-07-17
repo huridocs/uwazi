@@ -2,30 +2,21 @@ import _ from 'lodash';
 
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
-import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
-import { sanitizeStringValue } from '../sanitizationUtils';
 
 import {
   LabelInfo,
-  determineParentChildRelationship,
   generateMetadataValue,
-  parseParentChildWithSpaces,
   splitMultiselectLabels,
   normalizeMultiselectLabels,
 } from './shared';
-import { csvConstants } from '../csvDefinitions';
 
 type ParserResult = {
   data: MetadataObjectSchema[];
   warnings: Array<{ property: string; value: string; reason: string }>;
 };
-
-function labelNotNull(label: string | null): label is string {
-  return label !== null;
-}
 
 const multiselect = async (
   entityToImport: RawEntity,
@@ -57,9 +48,7 @@ const multiselect = async (
     v => v !== null && v.value !== undefined && v.value !== null
   ) as MetadataObjectSchema[];
 
-  const invalidValues = values.filter(
-    v => v === null || v.value === undefined || v.value === null
-  );
+  const invalidValues = values.filter(v => v === null || v.value === undefined || v.value === null);
 
   if (invalidValues.length > 0) {
     warnings.push({

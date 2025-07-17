@@ -30,9 +30,7 @@ describe('csvLoader typeParsers', () => {
       const rawEntity = rawEntityWithProps({ numeric_prop: 'Not a number' });
 
       const result = await typeParsers.numeric(rawEntity, templateProp);
-      expect(result.data).toEqual([
-        { value: 'Not a number' },
-      ]);
+      expect(result.data).toEqual([{ value: 'Not a number' }]);
     });
   });
 

@@ -63,7 +63,7 @@ const parseValue = (value: string) => {
     }
   }
 
-  const sanitizedResult = nested 
+  const sanitizedResult = nested
     ? sanitizeStringValue(processedValue.join(''), 'thesaurus_import')
     : sanitizeStringValue(value, 'thesaurus_import');
 

@@ -134,7 +134,7 @@ describe('csvLoader thesauri', () => {
       const updated = await loader.loadThesauri('mockedFileFromString', thesauri1Id, {
         language: 'en',
       });
-      
+
       // Should sanitize spaces and normalize empty patterns
       expect(updated!.values!.map(v => v.label)).toEqual([
         'value1',

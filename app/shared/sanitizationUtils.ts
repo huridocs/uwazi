@@ -22,13 +22,13 @@ export const sanitizeThesaurusLabel = (label: string): string => {
 
   return label
     .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
-    .replace(/\s+/g, ' ')     // Normalize multiple spaces to single space
-    .trim();                  // Trim leading/trailing whitespace
+    .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+    .trim(); // Trim leading/trailing whitespace
 };
 
 /**
  * Sanitizes a thesaurus name by applying the same sanitization as labels.
- * 
+ *
  * @param name - The thesaurus name to sanitize
  * @returns The sanitized name
  */
@@ -39,7 +39,7 @@ export const sanitizeThesaurusName = (name: string): string => {
 /**
  * Sanitizes a text value with detailed warnings about what was changed.
  * This is used for CSV import and other scenarios where detailed feedback is needed.
- * 
+ *
  * @param value - The value to sanitize
  * @param propertyName - The name of the property being sanitized (for warnings)
  * @returns Object containing sanitized value and warnings
@@ -102,4 +102,4 @@ export const sanitizeStringValue = (value: string, propertyName: string): Saniti
  * Legacy alias for backward compatibility.
  * @deprecated Use sanitizeThesaurusLabel instead
  */
-export const sanitizeText = sanitizeThesaurusLabel; 
+export const sanitizeText = sanitizeThesaurusLabel;

@@ -127,7 +127,7 @@ describe('csvLoader', () => {
   });
 
   describe('load', () => {
-    let imported;
+    let loadedEntities;
     const events = [];
 
     beforeAll(async () => {
@@ -142,16 +142,16 @@ describe('csvLoader', () => {
         throw loader.errors()[Object.keys(loader.errors())[0]];
       }
 
-      imported = await entities.get({ language: 'en' });
+      loadedEntities = await entities.get({ language: 'en' });
     });
 
     it('should load title', () => {
-      const textValues = imported.map(i => i.title);
+      const textValues = loadedEntities.map(i => i.title);
       expect(textValues).toEqual(['title1', 'title2', 'title3', 'title4']);
     });
 
     it('should generate an id when the template has a property with generatedid type', () => {
-      expect(imported[0].metadata).toEqual(
+      expect(loadedEntities[0].metadata).toEqual(
         expect.objectContaining({
           auto_id: [{ value: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/) }],
         })
@@ -163,7 +163,7 @@ describe('csvLoader', () => {
     });
 
     it('should only import valid metadata', async () => {
-      expect(imported[0].metadata).toEqual({
+      expect(loadedEntities[0].metadata).toEqual({
         'additional_tag(s)': [{ value: 'tag1' }],
         auto_id: [{ value: expect.any(String) }],
         date_label: [{ value: 1641168000 }],
@@ -196,52 +196,61 @@ describe('csvLoader', () => {
         text_label: [{ value: 'text value 1' }],
         header_with_dots: [{ value: 'header with dots value 1' }],
       });
-      const newEntity = imported[3];
-      expect(newEntity.metadata['select_label'][0].label).toBe('new_select_value');
-      expect(newEntity.metadata['multi_select_label']).toBeDefined();
+      const newEntity = loadedEntities[3];
+      expect(newEntity.metadata.select_label[0].label).toBe('new_select_value');
+      expect(newEntity.metadata.multi_select_label).toBeDefined();
 
-      const selectThesaurus = await thesauri.getById(fixtures.dictionaries.find(d => d.name === 'thesauri1')._id);
+      const selectThesaurus = await thesauri.getById(
+        fixtures.dictionaries.find(d => d.name === 'thesauri1')._id
+      );
       const selectLabels = selectThesaurus.values.map(v => v.label.trim());
       expect(selectLabels).toContain('new_select_value');
-      const multiselectThesaurus = await thesauri.getById(fixtures.dictionaries.find(d => d.name === 'multi_select_thesaurus')._id);
+      const multiselectThesaurus = await thesauri.getById(
+        fixtures.dictionaries.find(d => d.name === 'multi_select_thesaurus')._id
+      );
       const multiLabels = multiselectThesaurus.values.map(v => v.label.trim());
       expect(multiLabels).toContain('new_multi1');
       expect(multiLabels).toContain('new_multi2');
     });
 
     it('should ignore properties not configured in the template', () => {
-      const textValues = imported.map(i => i.metadata.non_configured).filter(i => i);
+      const textValues = loadedEntities.map(i => i.metadata.non_configured).filter(i => i);
 
       expect(textValues.length).toEqual(0);
     });
 
     it('should import properties named "Language" properly', () => {
-      const textValues = imported.map(i => i.metadata.language[0].value);
+      const textValues = loadedEntities.map(i => i.metadata.language[0].value);
       expect(textValues).toEqual(['English', 'Spanish', 'AnyStringIsGood', 'French']);
     });
 
     describe('metadata parsing', () => {
       it('should parse metadata properties by type using typeParsers', () => {
-        const textValues = imported.map(i => i.metadata.text_label[0].value);
-        expect(textValues).toEqual(['text value 1', 'text value 2', 'text value 3', 'text value 4']);
+        const textValues = loadedEntities.map(i => i.metadata.text_label[0].value);
+        expect(textValues).toEqual([
+          'text value 1',
+          'text value 2',
+          'text value 3',
+          'text value 4',
+        ]);
 
-        const numericValues = imported.map(i => i.metadata.numeric_label[0].value);
+        const numericValues = loadedEntities.map(i => i.metadata.numeric_label[0].value);
         expect(numericValues).toEqual([1977, 2019, 2020, 2021]);
 
-        const thesauriValues = imported.map(i => i.metadata.select_label[0].label);
+        const thesauriValues = loadedEntities.map(i => i.metadata.select_label[0].label);
         expect(thesauriValues).toEqual(['thesauri1', 'thesauri2', 'thesauri2', 'new_select_value']);
 
-        const dateValues = imported.map(i => i.metadata.date_label[0].value);
+        const dateValues = loadedEntities.map(i => i.metadata.date_label[0].value);
         expect(dateValues).toEqual([1641168000, 1646092800, 1640995200, 1672617600]);
       });
 
       it('should import properties that contains parentheses in the name', () => {
-        const additionalTags = imported.map(i => i.metadata['additional_tag(s)'][0].value);
+        const additionalTags = loadedEntities.map(i => i.metadata['additional_tag(s)'][0].value);
         expect(additionalTags).toEqual(['tag1', 'tag2', 'tag3', 'tag4']);
       });
 
       it('should accept select values with spaces by trimming them', () => {
-        const selectWithSpacesValues = imported.map(i => i.metadata.select_with_spaces);
+        const selectWithSpacesValues = loadedEntities.map(i => i.metadata.select_with_spaces);
         // Row 1: " Group ::Item1" should work (leading space trimmed, matches "Group " and "Item1")
         // Row 2: "Another Group::Item3 " should work (matches "Another Group" and "Item3 " with trailing space)
         // Row 3: "Normal Group::Normal Item" should work
@@ -256,10 +265,13 @@ describe('csvLoader', () => {
       });
 
       it('should accept multiselect values with spaces by trimming them', () => {
-        const multiselectWithSpacesValues = imported.map(i => i.metadata.multiselect_with_spaces);
-        // Row 1: " Group ::Item1|Another Group ::Item3 " should work (leading space trimmed, matches "Group " and "Item1", "Another Group" and "Item3 ")
-        // Row 2: " Group :: Item2 " should work (leading space trimmed, matches "Group " and " Item2 ")
-        // Row 3: "Normal Group::Normal Item" should work
+        const multiselectWithSpacesValues = loadedEntities.map(
+          i => i.metadata.multiselect_with_spaces
+        );
+        // Row 1: " Group ::Item1other Group ::Item3 " should work
+        // (leading space trimmed, matches Group " andItem1, Another Group" andItem3 )
+        // Row 2:  Group :: Item2 " should work (leading space trimmed, matches "Group and Item2 )
+        // Row 3 Normal Group::Normal Item" should work
         expect(multiselectWithSpacesValues[0]).toHaveLength(2);
         expect(multiselectWithSpacesValues[0][0]).toHaveProperty('label', 'Item1');
         expect(multiselectWithSpacesValues[0][1]).toHaveProperty('label', 'Item3 ');
@@ -275,7 +287,7 @@ describe('csvLoader', () => {
 
       describe('when parser not defined', () => {
         it('should use default parser', () => {
-          const noTypeValues = imported.map(i => i.metadata.not_defined_type[0].value);
+          const noTypeValues = loadedEntities.map(i => i.metadata.not_defined_type[0].value);
           expect(noTypeValues).toEqual(['notType1', 'notType2', 'notType3', 'notType4']);
         });
       });
@@ -536,18 +548,18 @@ describe('csvLoader', () => {
     it('should accept child values with spaces by trimming them', async () => {
       const csv = `title, select_with_spaces
                    title1, " Item2 "
-                   title2, "Normal Item"`;
+                   title2,Normal Item"`;
 
       const readStreamMock = mockCsvFileReadStream(csv);
       const testingLoader = new CSVLoader();
       await testingLoader.load('mockedFileFromString', template1Id, { language: 'en' });
 
       // Verify that the entities were imported successfully
-      const imported = await entities.get({ language: 'en' });
-      expect(imported).toHaveLength(2);
+      const sanitizedEntities = await entities.get({ language: 'en' });
+      expect(sanitizedEntities).toHaveLength(2);
 
       // Check that " Item2 " was accepted (trimmed to match " Item2 " in thesaurus)
-      const selectWithSpacesValues = imported.map(i => i.metadata.select_with_spaces);
+      const selectWithSpacesValues = sanitizedEntities.map(i => i.metadata.select_with_spaces);
       expect(selectWithSpacesValues[0]).toHaveLength(1);
       expect(selectWithSpacesValues[0][0]).toHaveProperty('label', 'Item2');
 
@@ -557,42 +569,42 @@ describe('csvLoader', () => {
 
   describe('thesauri integration', () => {
     it('should sanitize new thesauri values (trims, lowercases, etc.)', async () => {
-      const selectWithSpaces = imported[0].metadata['select_with_spaces'];
+      const selectWithSpaces = imported[0].metadata.select_with_spaces;
       expect(selectWithSpaces[0].label).toBe('Item1');
       expect(selectWithSpaces[0].parent.label).toBe('Group ');
     });
 
     it('should preserve existing unsanitized values', async () => {
-      const selectWithSpaces = imported[1].metadata['select_with_spaces'];
+      const selectWithSpaces = imported[1].metadata.select_with_spaces;
       expect(selectWithSpaces[0].label).toBe('Item3 ');
       expect(selectWithSpaces[0].parent.label).toBe('Another Group');
     });
 
     it('should handle nested parent-child sanitization', async () => {
-      const selectWithSpaces = imported[2].metadata['select_with_spaces'];
+      const selectWithSpaces = imported[2].metadata.select_with_spaces;
       expect(selectWithSpaces[0].label).toBe('Normal Item');
       expect(selectWithSpaces[0].parent.label).toBe('Normal Group');
     });
 
     it('should handle case-insensitive matching for existing values', async () => {
-      const selectLabel = imported[0].metadata['select_label'];
+      const selectLabel = imported[0].metadata.select_label;
       expect(selectLabel[0].label.toLowerCase()).toBe('thesauri1');
     });
 
     it('should sanitize multiselect values with spaces', async () => {
-      const multiselectWithSpaces = imported[0].metadata['multiselect_with_spaces'];
+      const multiselectWithSpaces = imported[0].metadata.multiselect_with_spaces;
       expect(multiselectWithSpaces[0].label).toBe('Item1');
       expect(multiselectWithSpaces[0].parent.label).toBe('Group ');
     });
 
     it('should preserve existing unsanitized multiselect values', async () => {
-      const multiselectWithSpaces = imported[1].metadata['multiselect_with_spaces'];
+      const multiselectWithSpaces = imported[1].metadata.multiselect_with_spaces;
       expect(multiselectWithSpaces[0].label).toBe(' Item2 ');
       expect(multiselectWithSpaces[0].parent.label).toBe('Group ');
     });
 
     it('should handle mixed sanitized and unsanitized values in the same CSV', async () => {
-      const multiselectWithSpaces = imported[2].metadata['multiselect_with_spaces'];
+      const multiselectWithSpaces = imported[2].metadata.multiselect_with_spaces;
       expect(multiselectWithSpaces[0].label).toBe('Normal Item');
       expect(multiselectWithSpaces[0].parent.label).toBe('Normal Group');
     });
@@ -603,11 +615,11 @@ describe('csvLoader', () => {
 
     it('should sanitize nested thesaurus values', async () => {
       // Test that nested values with spaces are properly sanitized
-      const selectWithSpaces = imported[0].metadata['select_with_spaces'];
+      const selectWithSpaces = imported[0].metadata.select_with_spaces;
       expect(selectWithSpaces[0].label).toBe('Item1');
       expect(selectWithSpaces[0].parent.label).toBe('Group ');
 
-      const multiselectWithSpaces = imported[0].metadata['multiselect_with_spaces'];
+      const multiselectWithSpaces = imported[0].metadata.multiselect_with_spaces;
       expect(multiselectWithSpaces[0].label).toBe('Item1');
       expect(multiselectWithSpaces[0].parent.label).toBe('Group ');
       expect(multiselectWithSpaces[1].label).toBe('Item3 ');
@@ -615,11 +627,11 @@ describe('csvLoader', () => {
 
       // Test that new nested values are properly sanitized
       const newEntity = imported[3];
-      const newSelectWithSpaces = newEntity.metadata['select_with_spaces'];
+      const newSelectWithSpaces = newEntity.metadata.select_with_spaces;
       expect(newSelectWithSpaces[0].label).toBe('New Item');
       expect(newSelectWithSpaces[0].parent.label).toBe('New Group');
 
-      const newMultiselectWithSpaces = newEntity.metadata['multiselect_with_spaces'];
+      const newMultiselectWithSpaces = newEntity.metadata.multiselect_with_spaces;
       expect(newMultiselectWithSpaces[0].label).toBe('New Item');
       expect(newMultiselectWithSpaces[0].parent.label).toBe('New Group');
       expect(newMultiselectWithSpaces[1].label).toBe('new_multi2');

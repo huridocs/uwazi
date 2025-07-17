@@ -3,8 +3,6 @@ import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
-import { csvConstants } from '../csvDefinitions';
-import { TypeParserError } from './errors';
 import { sanitizeStringValue } from '../sanitizationUtils';
 import {
   LabelInfo,
@@ -51,7 +49,7 @@ const select = async (
   }
 
   const value = generateMetadataValue(currentThesauri, labelInfo);
-  
+
   if (!value || value.value === undefined || value.value === null) {
     warnings.push({
       property: property.name,

@@ -90,7 +90,11 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
             <Button styling="outline" onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button color="success" onClick={handleSave} disabled={isSaving || !sanitizeThesaurusName(name)}>
+            <Button
+              color="success"
+              onClick={handleSave}
+              disabled={isSaving || !sanitizeThesaurusName(name)}
+            >
               <Translate>Save</Translate>
             </Button>
           </div>

@@ -119,7 +119,7 @@ export const sanitizeMetadataArray = (
   const warnings: SanitizationWarning[] = [];
   const sanitizedArray: MetadataObjectSchema[] = [];
 
-  for (const metadata of metadataArray) {
+  metadataArray.forEach(metadata => {
     if (metadata.value !== undefined && metadata.value !== null) {
       const sanitizationResult = sanitizeMetadataValue(metadata.value, propertyName, propertyType);
 
@@ -133,7 +133,7 @@ export const sanitizeMetadataArray = (
         });
       }
     }
-  }
+  });
 
   return { sanitizedArray, warnings };
 };

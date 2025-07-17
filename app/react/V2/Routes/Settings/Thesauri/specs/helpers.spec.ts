@@ -31,4 +31,4 @@ describe('thesaurus helpers', () => {
       expect(sanitizeThesaurusLabel('Hello World')).toBe('Hello World');
     });
   });
-}); 
+});

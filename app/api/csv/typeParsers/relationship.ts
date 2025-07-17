@@ -12,17 +12,24 @@ export interface ParserResult {
   warnings: SanitizationWarning[];
 }
 
-const relationship = async (entityToImport: RawEntity, property: PropertySchema): Promise<ParserResult> => {
+const relationship = async (
+  entityToImport: RawEntity,
+  property: PropertySchema
+): Promise<ParserResult> => {
   const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
-  const sanitizationResult = sanitizeMetadataValue(rawValue, ensure<string>(property.name), property.type);
-  
+  const sanitizationResult = sanitizeMetadataValue(
+    rawValue,
+    ensure<string>(property.name),
+    property.type
+  );
+
   if (sanitizationResult.value === '') {
     return {
       data: [],
       warnings: sanitizationResult.warnings,
     };
   }
-  
+
   const values = sanitizationResult.value
     .split(csvConstants.multiValueSeparator)
     .filter(emptyString)
@@ -58,7 +65,9 @@ const relationship = async (entityToImport: RawEntity, property: PropertySchema)
   return {
     data: toRelateEntities
       .map(e => ({ value: e.sharedId, label: e.title }))
-      .filter((mo, index, mos) => mos.findIndex(e => e.value === mo.value) === index) as MetadataObjectSchema[],
+      .filter(
+        (mo, index, mos) => mos.findIndex(e => e.value === mo.value) === index
+      ) as MetadataObjectSchema[],
     warnings: sanitizationResult.warnings,
   };
 };

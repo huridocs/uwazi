@@ -4,7 +4,11 @@ import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { sanitizeMetadataValue, SanitizationWarning, sanitizeStringValue } from '../sanitizationUtils';
+import {
+  sanitizeMetadataValue,
+  SanitizationWarning,
+  sanitizeStringValue,
+} from '../sanitizationUtils';
 import { csvConstants } from '../csvDefinitions';
 
 export interface ParserResult {
@@ -34,7 +38,10 @@ export const extractAndSanitizeValue = (
   return { rawValue, sanitizationResult };
 };
 
-export const handleEmptyValue = (sanitizationResult: { value: string; warnings: SanitizationWarning[] }): ParserResult => {
+export const handleEmptyValue = (sanitizationResult: {
+  value: string;
+  warnings: SanitizationWarning[];
+}): ParserResult => {
   return {
     data: [],
     warnings: sanitizationResult.warnings,
@@ -68,7 +75,12 @@ export const splitLabel = (
 export const pickParentChild = (
   split: string[],
   normalizedSplit: string[]
-): { parent: string; child: string | null; normalizedParent: string; normalizedChild: string | null } => {
+): {
+  parent: string;
+  child: string | null;
+  normalizedParent: string;
+  normalizedChild: string | null;
+} => {
   const [parent, child] = split.length === 2 ? split : [split[0], null];
   const [normalizedParent, normalizedChild] =
     normalizedSplit.length === 2 ? normalizedSplit : [normalizedSplit[0], null];
@@ -198,7 +210,10 @@ export const parseMultiValue = (values: string) =>
  * Creates a standardized parser function for simple text-based types.
  * This eliminates the repetitive pattern found in multiple parsers.
  */
-export const createStandardParser = (): (entityToImport: RawEntity, property: PropertySchema) => Promise<ParserResult> => {
+export const createStandardParser = (): ((
+  entityToImport: RawEntity,
+  property: PropertySchema
+) => Promise<ParserResult>) => {
   return async (entityToImport: RawEntity, property: PropertySchema): Promise<ParserResult> => {
     const { sanitizationResult } = extractAndSanitizeValue(entityToImport, property);
 
@@ -206,10 +221,7 @@ export const createStandardParser = (): (entityToImport: RawEntity, property: Pr
       return handleEmptyValue(sanitizationResult);
     }
 
-    return createSuccessResult(
-      [{ value: sanitizationResult.value }],
-      sanitizationResult.warnings
-    );
+    return createSuccessResult([{ value: sanitizationResult.value }], sanitizationResult.warnings);
   };
 };
 
@@ -292,4 +304,4 @@ export function normalizeMultiselectLabels(labelArray: string[]): string[] {
   }
   const normalizedLabels = labelArray.map(l => l && l.trim()).filter(labelNotNull);
   return Array.from(new Set(normalizedLabels));
-} 
+}

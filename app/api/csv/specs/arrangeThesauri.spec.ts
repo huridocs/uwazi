@@ -615,8 +615,8 @@ describe('arrangeThesauri', () => {
 
       expect(result).toHaveProperty('select_property');
       expect(result).toHaveProperty('multi_select_property');
-      expect(result['select_property']).toBe(selectThesaurusId);
-      expect(result['multi_select_property']).toBe(multiselectThesaurusId);
+      expect(result.select_property).toBe(selectThesaurusId);
+      expect(result.multi_select_property).toBe(multiselectThesaurusId);
     });
   });
 });
