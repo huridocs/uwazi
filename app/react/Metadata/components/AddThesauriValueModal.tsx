@@ -2,16 +2,7 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
-
-// Simple sanitization function for thesaurus values
-const sanitizeThesaurusValue = (value: string): string => {
-  if (!value) return '';
-
-  return value
-    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
-    .replace(/\s+/g, ' ')     // Normalize multiple spaces to single space
-    .trim();                  // Trim leading/trailing whitespace
-};
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 
 interface AddThesauriValueModalProps {
   isOpen: boolean;
@@ -52,7 +43,7 @@ const AddThesauriValueModal = ({
     // Sanitize the value before accepting
     const sanitizedValues = {
       ...submittedValues,
-      value: sanitizeThesaurusValue(submittedValues.value),
+      value: sanitizeThesaurusLabel(submittedValues.value),
     };
     onAccept(sanitizedValues);
   };

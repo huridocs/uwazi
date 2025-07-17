@@ -11,28 +11,18 @@ export interface SanitizationResult {
   warnings: SanitizationWarning[];
 }
 
-export const sanitizeText = (value: string): string => {
-  if (!value) return '';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 
-  return value
-    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
-    .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
-    .trim(); // Trim leading/trailing whitespace
-};
+export const sanitizeText = sanitizeThesaurusLabel;
 
 export const sanitizeStringValue = (value: string, propertyName: string): SanitizationResult => {
   const warnings: SanitizationWarning[] = [];
   let sanitizedValue = value;
 
-  // Store original value for comparison
   const originalValue = value;
-
-  // Apply basic text sanitization first
   const basicSanitized = sanitizeText(value);
 
-  // Check if basic sanitization made changes
   if (basicSanitized !== value) {
-    // Determine which specific sanitizations were applied
     const trimmed = value.trim();
     if (trimmed !== value) {
       warnings.push({
@@ -54,7 +44,6 @@ export const sanitizeStringValue = (value: string, propertyName: string): Saniti
     sanitizedValue = basicSanitized;
   }
 
-  // 2. Empty string normalization
   const emptyPatterns = [
     'null',
     'NULL',
@@ -104,17 +93,14 @@ export const sanitizeMetadataValue = (
     };
   }
 
-  // Convert to string for sanitization
   const stringValue = String(value);
 
-  // Apply string sanitization for text-based types
   const textBasedTypes = ['text', 'preview', 'image', 'media', 'nested', 'link'];
 
   if (textBasedTypes.includes(propertyType)) {
     return sanitizeStringValue(stringValue, propertyName);
   }
 
-  // For non-text types, just return the original value without warnings
   return {
     value: stringValue,
     warnings: [],

@@ -6,16 +6,7 @@ import thesauriAPI from 'V2/api/thesauri';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-
-// Simple sanitization function for thesaurus names
-const sanitizeThesaurusName = (name: string): string => {
-  if (!name) return '';
-
-  return name
-    .replace(/(\n|\r)/g, ' ') // Replace newlines with spaces
-    .replace(/\s+/g, ' ')     // Normalize multiple spaces to single space
-    .trim();                  // Trim leading/trailing whitespace
-};
+import { sanitizeThesaurusName } from 'shared/sanitizationUtils';
 
 interface AddThesaurusModalProps {
   onClose: () => void;
