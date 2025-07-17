@@ -71,7 +71,6 @@ const TemplatesEditor = () => {
   const [commonProperties, setCommonProperties] = useState<PropertyRow[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const setNotifications = useSetAtom(notificationAtom);
-  const setTemplates = useSetAtom(templatesAtom);
   const templates = useAtomValue(templatesAtom);
   const [nameError, setNameError] = useState(false);
   const [colorError, setColorError] = useState(false);
@@ -178,11 +177,6 @@ const TemplatesEditor = () => {
     const savedTemplate = await templatesAPI.save(templateToSave);
     await revalidator.revalidate();
 
-    // Update templates atom
-    const updatedTemplates = template._id
-      ? templates.map(t => (t._id === template._id ? savedTemplate : t))
-      : [...templates, savedTemplate];
-    setTemplates(updatedTemplates);
     if (savedTemplate.processing) {
       setNotifications({
         type: 'warning',
@@ -194,7 +188,8 @@ const TemplatesEditor = () => {
         text: <Translate>Template saved successfully.</Translate>,
       });
     }
-    await navigate(`/settings/templates/edit/${savedTemplate._id}`);
+
+    await navigate(`/settings/templates/edit/${savedTemplate._id}`, { replace: true });
   };
 
   const handlePropertySave = (propertyConfig: PropertySchema) => {
