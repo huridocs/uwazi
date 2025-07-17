@@ -38,6 +38,11 @@ const fixtures: DBFixture = {
       'templateToSegmentA',
       'templateToSegmentB',
     ]),
+
+    factory.ixExtractor('extractor_source_pdf_target_text', 'target_text', [
+      'extractor_source_pdf_target_text_template',
+    ]),
+
     factory.ixExtractor('sourceTextExtractor1', 'property1', ['templateToSegmentA'], {
       property: 'text',
     }),
@@ -316,6 +321,21 @@ const fixtures: DBFixture = {
       },
       { language: 'es' }
     ),
+    factory.entity(
+      'extractor_source_pdf_target_text_entity_1',
+      'extractor_source_pdf_target_text_template',
+      {
+        target_text: [{ value: 'any_target_text_value_en' }],
+      }
+    ),
+
+    factory.entity(
+      'extractor_source_pdf_target_text_entity_2',
+      'extractor_source_pdf_target_text_template',
+      {
+        target_text: [{ value: 'any_target_text_value_en' }],
+      }
+    ),
   ],
   files: [
     factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -361,7 +381,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameE, 'spa'),
+    factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameE, 'eng'),
     factory.fileDeprecated('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
     factory.fileDeprecated('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
     factory.fileDeprecated('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
@@ -413,6 +433,27 @@ const fixtures: DBFixture = {
           },
         },
       ],
+    }),
+
+    factory.document('extractor_source_pdf_target_text_entity_1_f1_en', {
+      language: 'en',
+      filename: 'extractor_source_pdf_target_text_entity_1_f1_en',
+      entity: 'extractor_source_pdf_target_text_entity_1',
+      extractedMetadata: [
+        {
+          name: 'target_text',
+          selection: {
+            text: 'any_target_text_value_en',
+            selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+          },
+        },
+      ],
+    }),
+
+    factory.document('extractor_source_pdf_target_text_entity_2_f1_en', {
+      language: 'en',
+      filename: 'extractor_source_pdf_target_text_entity_2_f1_en',
+      entity: 'extractor_source_pdf_target_text_entity_2',
     }),
   ],
   segmentations: [
@@ -684,6 +725,46 @@ const fixtures: DBFixture = {
         ],
       },
     },
+    {
+      filename: 'extractor_source_pdf_target_text_entity_1_f1_en',
+      xmlname: 'extractor_source_pdf_target_text_entity_1_f1_en.xml',
+      fileID: factory.id('extractor_source_pdf_target_text_entity_1_f1_en'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P3',
+          },
+        ],
+      },
+    },
+    {
+      filename: 'extractor_source_pdf_target_text_entity_2_f1_en',
+      xmlname: 'extractor_source_pdf_target_text_entity_2_f1_en.xml',
+      fileID: factory.id('extractor_source_pdf_target_text_entity_2_f1_en'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P3',
+          },
+        ],
+      },
+    },
   ],
   ixsuggestions: [
     {
@@ -698,6 +779,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: 1088985600,
+      entityTitle: 'A1',
     },
     {
       fileId: factory.id('F3'),
@@ -712,6 +795,22 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
     },
+
+    {
+      fileId: factory.id('F3'),
+      entityId: 'A3',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
+      language: 'en',
+      propertyName: 'property2',
+      extractorId: factory.id('prop2extractor'),
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+      currentValue: 2,
+      entityTitle: 'A3',
+    },
+
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
@@ -833,6 +932,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: ['A'],
+      entityTitle: 'A17',
     },
     {
       _id: factory.id('SUG18'),
@@ -846,6 +947,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: ['B', 'C'],
+      entityTitle: 'A18',
     },
     {
       _id: factory.id('SUG19'),
@@ -859,6 +962,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: [],
+      entityTitle: 'A18',
     },
     {
       _id: factory.id('SUG17B'),
@@ -872,6 +977,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: 'A',
+      entityTitle: 'A17',
     },
     {
       _id: factory.id('SUG18B'),
@@ -885,6 +992,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: 'B',
+      entityTitle: 'A18',
     },
     {
       _id: factory.id('SUG19B'),
@@ -898,6 +1007,8 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: '',
+      entityTitle: 'A19',
     },
     {
       _id: factory.id('SUG21'),
@@ -911,6 +1022,7 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: ['P1sharedId'],
     },
     {
       _id: factory.id('SUG22'),
@@ -924,6 +1036,7 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: ['P1sharedId', 'P3sharedId'],
     },
     {
       _id: factory.id('SUG23'),
@@ -937,6 +1050,7 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: [],
     },
     {
       extractorId: factory.id('sourceTextExtractor1'),
@@ -948,6 +1062,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'A1',
+      currentValue: 'labeled text',
     },
     {
       extractorId: factory.id('sourceTextExtractor1'),
@@ -959,6 +1075,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'A1',
+      currentValue: 1088985600,
     },
     {
       extractorId: factory.id('sourceTextExtractor1'),
@@ -981,6 +1099,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'extractor_target_title_source_text_entity',
+      currentValue: 'extractor_target_title_source_text_entity',
     },
     {
       extractorId: factory.id('extractor_target_numeric_source_text'),
@@ -992,6 +1112,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'extractor_target_numeric_source_text_entity',
+      currentValue: 123,
     },
     {
       extractorId: factory.id('extractor_target_date_source_text'),
@@ -1003,6 +1125,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'A1',
+      currentValue: 1088985600,
     },
     {
       extractorId: factory.id('extractor_target_multiselect_source_text'),
@@ -1014,6 +1138,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'A17',
+      currentValue: ['A'],
     },
     {
       extractorId: factory.id('extractor_target_relationship_source_text'),
@@ -1025,6 +1151,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'A21',
+      currentValue: ['P1sharedId'],
     },
     {
       extractorId: factory.id('extractor_target_select_source_text'),
@@ -1080,6 +1208,8 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'extractor_target_rich_text_source_text_entity_1',
+      currentValue: 'any_target_rich_text_1_en',
     },
     {
       extractorId: factory.id('extractor_target_rich_text_source_text'),
@@ -1091,6 +1221,32 @@ const fixtures: DBFixture = {
       segment: '',
       status: 'ready',
       date: 100,
+      entityTitle: 'extractor_target_rich_text_source_text_entity_1',
+      currentValue: 'any_target_rich_text_1_es',
+    },
+    {
+      extractorId: factory.id('extractor_source_pdf_target_text'),
+      entityId: 'extractor_source_pdf_target_text_entity_1',
+      entityTemplate: factory.idString('extractor_source_pdf_target_text_template'),
+      language: 'en',
+      propertyName: 'target_text',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+      fileId: factory.id('extractor_source_pdf_target_text_entity_1_f1_en'),
+    },
+    {
+      extractorId: factory.id('extractor_source_pdf_target_text'),
+      entityId: 'extractor_source_pdf_target_text_entity_2',
+      entityTemplate: factory.idString('extractor_source_pdf_target_text_template'),
+      language: 'en',
+      propertyName: 'target_text',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+      fileId: factory.id('extractor_source_pdf_target_text_entity_2_f1_en'),
     },
   ],
   ixmodels: [
@@ -1306,6 +1462,9 @@ const fixtures: DBFixture = {
     ]),
     factory.template('extractor_target_rich_text_source_pdf_template', [
       factory.property('target_rich_text', 'markdown'),
+    ]),
+    factory.template('extractor_source_pdf_target_text_template', [
+      factory.property('target_text', 'text'),
     ]),
   ],
   dictionaries: [factory.nestedThesauri('thesauri1', ['A', 'B', 'C', { 1: ['1A', '1B'] }])],

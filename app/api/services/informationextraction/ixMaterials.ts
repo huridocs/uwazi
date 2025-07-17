@@ -139,36 +139,24 @@ async function getPropertyType(templates: ObjectIdSchema[], property: string) {
   return type;
 }
 
-async function anyFilesSegmented(
-  property: string,
-  propertyType: string,
-  entitiesFromTrainingTemplatesIds: string[]
-) {
-  const needsExtractedMetadata = !propertyTypeIsWithoutExtractedMetadata(propertyType);
+async function anyFilesSegmented(entitiesFromTrainingTemplatesIds: string[]) {
   const segmentedFilesCount = await filesModel.count({
     type: 'document',
     filename: { $exists: true },
     language: { $exists: true },
     _id: { $in: await getSegmentedFilesIds() },
     entity: { $in: entitiesFromTrainingTemplatesIds },
-    ...(needsExtractedMetadata ? { 'extractedMetadata.name': property } : {}),
   });
   return !!segmentedFilesCount;
 }
 
-async function fileQuery(
-  property: string,
-  propertyType: string,
-  entitiesFromTrainingTemplatesIds: string[]
-) {
-  const needsExtractedMetadata = !propertyTypeIsWithoutExtractedMetadata(propertyType);
+async function fileQuery(entitiesFromTrainingTemplatesIds: string[]) {
   const query = {
     type: 'document',
     filename: { $exists: true },
     language: { $exists: true },
     _id: { $in: await getSegmentedFilesIds() },
     entity: { $in: entitiesFromTrainingTemplatesIds },
-    ...(needsExtractedMetadata ? { 'extractedMetadata.name': property } : {}),
   };
   return query;
 }
@@ -270,12 +258,12 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     throw new NoLabeledEntities();
   }
 
-  if (!(await anyFilesSegmented(property, propertyType, entitiesFromTrainingTemplatesIds))) {
+  if (!(await anyFilesSegmented(entitiesFromTrainingTemplatesIds))) {
     throw new NoSegmentedFiles();
   }
 
   const files = (await filesModel.get(
-    await fileQuery(property, propertyType, entitiesFromTrainingTemplatesIds),
+    await fileQuery(entitiesFromTrainingTemplatesIds),
     'extractedMetadata entity language filename',
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];

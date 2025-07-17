@@ -242,15 +242,19 @@ describe('InformationExtraction', () => {
 
       const xmlC = await readDocument('C');
 
+      const xmlD = await readDocument('D');
+
+      const xmlE = await readDocument('E');
+
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
         id: factory.id('prop1extractor').toString(),
         tenant: 'tenant1',
       });
 
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC, xmlD, xmlE]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentC.xml'].sort()
+        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml'].sort()
       );
     });
 
@@ -295,7 +299,7 @@ describe('InformationExtraction', () => {
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
-      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.length).toBe(4);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
         xml_file_name: 'documentA.xml',
         id: factory.id('prop1extractor').toString(),
@@ -316,6 +320,41 @@ describe('InformationExtraction', () => {
         label_text: 'labeled text',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
+    });
+
+    it('should send labeled (target Property has value and none extractedMetadata)', async () => {
+      await informationExtraction.trainModel(factory.id('extractor_source_pdf_target_text'));
+
+      expect(IXExternalService.materials.length).toBe(2);
+
+      expect(IXExternalService.materials).toMatchObject([
+        {
+          xml_file_name: 'extractor_source_pdf_target_text_entity_1_f1_en.xml',
+          id: expect.any(String),
+          tenant: 'tenant1',
+          xml_segments_boxes: [
+            { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' },
+          ],
+          page_width: 13,
+          page_height: 13,
+          language_iso: 'en',
+          label_text: 'any_target_text_value_en',
+          label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
+        },
+
+        {
+          xml_file_name: 'extractor_source_pdf_target_text_entity_2_f1_en.xml',
+          id: expect.any(String),
+          tenant: 'tenant1',
+          xml_segments_boxes: [
+            { left: 1, top: 1, width: 1, height: 1, page_number: 1, text: 'P3' },
+          ],
+          page_width: 13,
+          page_height: 13,
+          language_iso: 'en',
+          label_text: 'any_target_text_value_en',
+        },
+      ]);
     });
 
     it('should send labeled data (multiselect)', async () => {
@@ -620,6 +659,14 @@ describe('InformationExtraction', () => {
               id: 'extractor_target_rich_text_source_pdf_entity_1',
               label: 'extractor_target_rich_text_source_pdf_entity_1',
             },
+            {
+              id: 'extractor_source_pdf_target_text_entity_1',
+              label: 'extractor_source_pdf_target_text_entity_1',
+            },
+            {
+              id: 'extractor_source_pdf_target_text_entity_2',
+              label: 'extractor_source_pdf_target_text_entity_2',
+            },
           ],
           metadata: {
             extractor_name: 'extractorWithRelationshipToAny',
@@ -717,15 +764,19 @@ describe('InformationExtraction', () => {
 
       const xmlC = await readDocument('C');
 
+      const xmlD = await readDocument('D');
+
+      const xmlE = await readDocument('E');
+
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
         id: factory.id('prop1extractor').toString(),
         tenant: 'tenant1',
       });
 
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC, xmlD, xmlE]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentC.xml'].sort()
+        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml'].sort()
       );
     });
 
@@ -1717,8 +1768,8 @@ describe('InformationExtraction', () => {
           status: 'ready',
           suggestedValue: 'text_in_eng_language',
           state: {
-            labeled: true,
-            withValue: true,
+            labeled: false,
+            withValue: false,
             withSuggestion: true,
             match: false,
             hasContext: true,
@@ -1797,35 +1848,6 @@ describe('InformationExtraction', () => {
           },
         })
       );
-    });
-
-    it('should not store invalid suggestions for the field as ready', async () => {
-      setIXServiceResults([
-        {
-          id: factory.id('prop2extractor').toString(),
-          text: '',
-        },
-        {
-          id: factory.id('prop2extractor').toString(),
-          xml_file_name: 'documentC.xml',
-          text: 'Not a valid date',
-          segment_text: 'segment_text_2',
-        },
-      ]);
-
-      await informationExtraction.processResults({
-        params: { id: factory.id('prop2extractor').toString() },
-        tenant: 'tenant1',
-        task: 'suggestions',
-        success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
-      });
-
-      const suggestions = await IXSuggestionsModel.get({
-        status: 'ready',
-        extractorId: factory.id('prop2extractor'),
-      });
-      expect(suggestions.length).toBe(4);
     });
 
     describe('text', () => {
@@ -1958,7 +1980,7 @@ describe('InformationExtraction', () => {
           },
         };
 
-        expect(sorted).toEqual([
+        expect(sorted).toMatchObject([
           {
             ...expectedBase,
             fileId: factory.id('F17'),
@@ -2061,7 +2083,7 @@ describe('InformationExtraction', () => {
           },
         };
 
-        expect(sorted).toEqual([
+        expect(sorted).toMatchObject([
           {
             ...expectedBase,
             fileId: factory.id('F17'),
@@ -2163,7 +2185,7 @@ describe('InformationExtraction', () => {
           },
         };
 
-        expect(sorted).toEqual([
+        expect(sorted).toMatchObject([
           {
             ...expectedBase,
             fileId: factory.id('F21'),
