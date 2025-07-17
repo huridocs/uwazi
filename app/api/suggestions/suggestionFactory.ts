@@ -147,6 +147,7 @@ export class SuggestionFactory {
     const _suggestion: IXSuggestionType = {
       ...suggestion,
       status: 'processing',
+      date: Date.now(),
     };
 
     _suggestion.state = SuggestionFactory.updateSuggestionState(_suggestion, targetProperty);
