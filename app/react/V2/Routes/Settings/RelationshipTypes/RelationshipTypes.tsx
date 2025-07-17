@@ -62,6 +62,10 @@ const RelationshipTypes = () => {
     );
   }, [relationshipTypes, templates]);
 
+  useEffect(() => {
+    setRelationshipTypes(relationshipTypes);
+  }, [relationshipTypes, setRelationshipTypes]);
+
   const edit = (row: Row<Relationships>) => {
     setFormValues(row.original);
     setIsSidepanelOpen(true);
@@ -76,13 +80,11 @@ const RelationshipTypes = () => {
     const { rowId, ...data } = submitedData;
     try {
       await relationshipTypesAPI.save(data);
-      const updatedRelationships = await relationshipTypesAPI.get();
       setNotifications({
         type: 'success',
         text: <Translate>Updated</Translate>,
       });
       setIsSidepanelOpen(false);
-      setRelationshipTypes(updatedRelationships);
     } catch (error) {
       setNotifications({
         type: 'error',
@@ -111,7 +113,6 @@ const RelationshipTypes = () => {
       setShowConfirmationModal(false);
     }
     await revalidator.revalidate();
-    setRelationshipTypes(relationshipTypes);
   };
 
   return (

@@ -22,7 +22,7 @@ const save = async (relationshipType: ClientRelationshipType): Promise<Relations
   return api.post('relationtypes', requestParams).then((response: any) => response.json);
 };
 
-const deleteRelationtypes = async (ids: string[]) => {
+const deleteRelationtypes = async (ids: string[]): Promise<boolean[]> => {
   const allDeleted = ids.map(async id => {
     const requestParams = new RequestParams({ _id: id });
     return api.delete('relationtypes', requestParams).then((response: any) => response.json);

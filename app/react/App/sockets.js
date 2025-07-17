@@ -2,7 +2,7 @@ import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
-import { atomStore, translationsAtom } from 'V2/atoms';
+import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { store } from '../store';
 import { socket, reconnectSocket } from '../socket';
 
@@ -41,22 +41,44 @@ socket.on('forceReconnect', () => {
 });
 
 socket.on('templateChange', template => {
-  store.dispatch(actions.update('templates', template));
+  const currentTemplates = atomStore.get(templatesAtom);
+  const index = currentTemplates.findIndex(current => current._id === template._id);
+  atomStore.set(
+    templatesAtom,
+    index === -1
+      ? [...currentTemplates, template]
+      : [...currentTemplates.slice(0, index), template, ...currentTemplates.slice(index + 1)]
+  );
 });
 
-socket.on('templateDelete', template => {
-  store.dispatch(actions.remove('templates', { _id: template.id }));
+socket.on('templateDelete', payload => {
+  const updatedTemplates = atomStore
+    .get(templatesAtom)
+    .filter(currentTemplate => currentTemplate._id !== payload._id);
+  atomStore.set(templatesAtom, updatedTemplates);
 });
 
 socket.on('updateSettings', settings => {
-  store.dispatch(actions.set('settings/collection', settings));
+  atomStore.set(settingsAtom, settings);
 });
 
-socket.on('thesauriChange', thesauri => {
-  store.dispatch(actions.update('thesauris', thesauri));
+socket.on('thesauriChange', thesaurus => {
+  const currentThesauri = atomStore.get(thesauriAtom);
+  const index = currentThesauri.findIndex(current => current._id === thesaurus._id);
+  atomStore.set(
+    thesauriAtom,
+    index === -1
+      ? [...currentThesauri, thesaurus]
+      : [...currentThesauri.slice(0, index), thesaurus, ...currentThesauri.slice(index + 1)]
+  );
+  store?.dispatch(actions.update('thesauris', thesaurus));
 });
-socket.on('thesauriDelete', thesauri => {
-  store.dispatch(actions.remove('thesauris', { _id: thesauri.id }));
+
+socket.on('thesauriDelete', payload => {
+  const updatedThesauri = atomStore
+    .get(thesauriAtom)
+    .filter(currentThesauri => currentThesauri._id !== payload._id);
+  atomStore.set(thesauriAtom, updatedThesauri);
 });
 
 socket.on('translationsChange', languageTranslations => {

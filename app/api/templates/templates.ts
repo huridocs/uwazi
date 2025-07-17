@@ -309,7 +309,8 @@ export default {
     ) {
       // eslint-disable-next-line no-param-reassign
       template.processing = true;
-    } else {
+    }
+    if (!tenants.current().featureFlags?.templatesDenormalizationPerfImprovements) {
       // eslint-disable-next-line no-param-reassign
       template.processing = undefined;
       await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
