@@ -82,420 +82,418 @@ const sanitizedThesaurusValues: {}[] = [
   },
 ];
 
-describe('thesaurus helpers', () => {
-  describe('sanitizeThesaurusLabel', () => {
-    it('should handle null and undefined values', () => {
-      expect(sanitizeThesaurusLabel(null as any)).toBe('');
-      expect(sanitizeThesaurusLabel(undefined as any)).toBe('');
-      expect(sanitizeThesaurusLabel('')).toBe('');
-    });
+describe('sanitizeThesaurusValues', () => {
+  it('should remove table properties', () => {
+    const result = sanitizeThesaurusValues(thesaurusValues as ThesaurusRow[]);
+    expect(result).toEqual(sanitizedThesaurusValues);
+  });
+});
 
-    it('should replace newlines with spaces', () => {
-      expect(sanitizeThesaurusLabel('hello\nworld')).toBe('hello world');
-      expect(sanitizeThesaurusLabel('hello\r\nworld')).toBe('hello world');
-    });
+describe('addSelection', () => {
+  it('should push the item into selection if rowId is selected', () => {
+    const selectedRows = { item2: true };
+    const selection: ThesaurusRow[] = [];
+    addSelection(selectedRows, selection)(thesaurusValues[1]);
+    expect(selection).toHaveLength(1);
+    expect(selection[0]).toEqual(thesaurusValues[1]);
+  });
 
-    it('should normalize multiple spaces to single space', () => {
-      expect(sanitizeThesaurusLabel('hello    world')).toBe('hello world');
-      expect(sanitizeThesaurusLabel('hello   world   test')).toBe('hello world test');
-    });
+  it('should not push the item into selection if rowId is not selected ', () => {
+    const selectedRows = { item1: false };
+    const selection: ThesaurusRow[] = [];
+    addSelection(selectedRows, selection)(thesaurusValues[1]);
+    expect(selection).toHaveLength(0);
+  });
+});
 
-    it('should trim leading and trailing whitespace', () => {
-      expect(sanitizeThesaurusLabel('  hello world  ')).toBe('hello world');
-    });
+describe('sanitizeThesauri', () => {
+  it('should remove empty labels', () => {
+    const thesaurus = {
+      _id: 'thesaurus1',
+      name: 'Thesaurus1',
+      values: [
+        { rowId: 'newId', label: '' },
+        {
+          rowId: 'value1',
+          label: 'Value1',
+          values: [
+            {
+              id: 'value 1-1',
+              _id: 'value 1-1',
+              label: 'Value 1-1',
+            },
+            {
+              id: 'other',
+              label: '',
+            },
+          ],
+        },
+      ],
+    };
+    const sanitizedThesaurus = {
+      _id: 'thesaurus1',
+      name: 'Thesaurus1',
+      values: [
+        {
+          rowId: 'value1',
+          label: 'Value1',
+          values: [
+            {
+              _id: 'value 1-1',
+              id: 'value 1-1',
+              label: 'Value 1-1',
+            },
+          ],
+        },
+      ],
+    };
+    const result = sanitizeThesauri(thesaurus);
+    expect(result).toEqual(sanitizedThesaurus);
+  });
+});
 
-    it('should apply all sanitizations together', () => {
-      expect(sanitizeThesaurusLabel('  hello\n   world  ')).toBe('hello world');
-    });
-
-    it('should preserve existing values without spaces', () => {
-      expect(sanitizeThesaurusLabel('hello world')).toBe('hello world');
-      expect(sanitizeThesaurusLabel('Hello World')).toBe('Hello World');
+describe('thesaurusAsRow', () => {
+  it('should append a rowId with id for existent items and a new id for the new ones', () => {
+    const thesaurus = {
+      _id: 'old_Id',
+      id: 'oldId',
+      label: 'label1',
+      values: [
+        {
+          id: 'item1-1',
+          label: 'Item1-1',
+        },
+        {
+          label: 'new1-2',
+        },
+      ],
+    };
+    const result = thesaurusAsRow(thesaurus);
+    expect(result).toEqual({
+      _id: 'old_Id',
+      id: 'oldId',
+      rowId: 'oldId',
+      label: 'label1',
+      subRows: [
+        {
+          id: 'item1-1',
+          label: 'Item1-1',
+          rowId: 'item1-1',
+          groupId: 'oldId',
+        },
+        {
+          rowId: expect.any(String),
+          label: 'new1-2',
+          groupId: 'oldId',
+        },
+      ],
     });
   });
 
-  describe('sanitizeThesaurusValues', () => {
-    it('should remove table properties', () => {
-      const result = sanitizeThesaurusValues(thesaurusValues as ThesaurusRow[]);
-      expect(result).toEqual(sanitizedThesaurusValues);
+  it('should accept an empty thesaurus', () => {
+    const thesaurus = {
+      label: 'label1',
+    };
+    const result = thesaurusAsRow(thesaurus);
+    expect(result).toEqual({
+      rowId: expect.any(String),
+      label: 'label1',
     });
   });
+});
 
-  describe('addSelection', () => {
-    it('should push the item into selection if rowId is selected', () => {
-      const selectedRows = { item2: true };
-      const selection: ThesaurusRow[] = [];
-      addSelection(selectedRows, selection)(thesaurusValues[1]);
-      expect(selection).toHaveLength(1);
-      expect(selection[0]).toEqual(thesaurusValues[1]);
-    });
+describe('removeItem', () => {
+  let prev: ThesaurusRow[];
 
-    it('should not push the item into selection if rowId is not selected ', () => {
-      const selectedRows = { item1: false };
-      const selection: ThesaurusRow[] = [];
-      addSelection(selectedRows, selection)(thesaurusValues[1]);
-      expect(selection).toHaveLength(0);
-    });
-  });
-
-  describe('sanitizeThesauri', () => {
-    it('should remove empty labels', () => {
-      const thesaurus = {
-        _id: 'thesaurus1',
-        name: 'Thesaurus1',
-        values: [
-          { rowId: 'newId', label: '' },
-          {
-            rowId: 'value1',
-            label: 'Value1',
-            values: [
-              {
-                id: 'value 1-1',
-                _id: 'value 1-1',
-                label: 'Value 1-1',
-              },
-              {
-                id: 'other',
-                label: '',
-              },
-            ],
-          },
-        ],
-      };
-      const sanitizedThesaurus = {
-        _id: 'thesaurus1',
-        name: 'Thesaurus1',
-        values: [
-          {
-            rowId: 'value1',
-            label: 'Value1',
-            values: [
-              {
-                _id: 'value 1-1',
-                id: 'value 1-1',
-                label: 'Value 1-1',
-              },
-            ],
-          },
-        ],
-      };
-      const result = sanitizeThesauri(thesaurus);
-      expect(result).toEqual(sanitizedThesaurus);
-    });
-  });
-
-  describe('thesaurusAsRow', () => {
-    it('should append a rowId with id for existent items and a new id for the new ones', () => {
-      const thesaurus = {
-        _id: 'old_Id',
-        id: 'oldId',
-        label: 'label1',
-        values: [
-          {
-            id: 'item1-1',
-            label: 'Item1-1',
-          },
-          {
-            label: 'new1-2',
-          },
-        ],
-      };
-      const result = thesaurusAsRow(thesaurus);
-      expect(result).toEqual({
-        _id: 'old_Id',
-        id: 'oldId',
-        rowId: 'oldId',
-        label: 'label1',
+  beforeEach(() => {
+    prev = [
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
         subRows: [
-          {
-            id: 'item1-1',
-            label: 'Item1-1',
-            rowId: 'item1-1',
-            groupId: 'oldId',
-          },
-          {
-            rowId: expect.any(String),
-            label: 'new1-2',
-            groupId: 'oldId',
-          },
+          { rowId: 'prevChild1', label: 'Prev Child 1' },
+          { rowId: 'prevChild2', label: 'Prev Child 2' },
         ],
-      });
-    });
-
-    it('should accept an empty thesaurus', () => {
-      const thesaurus = {
-        label: 'label1',
-      };
-      const result = thesaurusAsRow(thesaurus);
-      expect(result).toEqual({
-        rowId: expect.any(String),
-        label: 'label1',
-      });
-    });
+      },
+      { rowId: 'prevItem2', label: 'Prev Item 2' },
+      { rowId: 'prevItem3', label: 'Prev Item 3' },
+    ];
   });
 
-  describe('removeItem', () => {
-    let prev: ThesaurusRow[];
-
-    beforeEach(() => {
-      prev = [
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [
-            { rowId: 'prevChild1', label: 'Prev Child 1' },
-            { rowId: 'prevChild2', label: 'Prev Child 2' },
-          ],
-        },
-        { rowId: 'prevItem2', label: 'Prev Item 2' },
-        { rowId: 'prevItem3', label: 'Prev Item 3' },
-      ];
-    });
-
-    it('should delete a root item', () => {
-      const prevCopy = prev;
-      removeItem(prevCopy, { rowId: 'prevItem2', label: 'Prev Item 2' });
-      expect(prevCopy).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [
-            { rowId: 'prevChild1', label: 'Prev Child 1' },
-            { rowId: 'prevChild2', label: 'Prev Child 2' },
-          ],
-        },
-        { rowId: 'prevItem3', label: 'Prev Item 3' },
-      ]);
-    });
-
-    it('should delete a child item', () => {
-      const prevCopy = prev;
-      removeItem(prevCopy, { rowId: 'prevChild1', label: 'Prev Child 1' });
-      expect(prevCopy).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [{ rowId: 'prevChild2', label: 'Prev Child 2' }],
-        },
-        { rowId: 'prevItem2', label: 'Prev Item 2' },
-        { rowId: 'prevItem3', label: 'Prev Item 3' },
-      ]);
-    });
-
-    it('should delete a group if all the items are deleted', () => {
-      const prevCopy = prev;
-      removeItem(prevCopy, { rowId: 'prevChild1', label: 'Prev Child 1' });
-      removeItem(prevCopy, { rowId: 'prevChild2', label: 'Prev Child 2' });
-      expect(prevCopy).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        { rowId: 'prevItem2', label: 'Prev Item 2' },
-        { rowId: 'prevItem3', label: 'Prev Item 3' },
-      ]);
-    });
+  it('should delete a root item', () => {
+    const prevCopy = prev;
+    removeItem(prevCopy, { rowId: 'prevItem2', label: 'Prev Item 2' });
+    expect(prevCopy).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [
+          { rowId: 'prevChild1', label: 'Prev Child 1' },
+          { rowId: 'prevChild2', label: 'Prev Child 2' },
+        ],
+      },
+      { rowId: 'prevItem3', label: 'Prev Item 3' },
+    ]);
   });
 
-  describe('sortValues', () => {
-    it('should sort alphabetically the thesaurus values', () => {
-      const setThesaurusValues = jest.fn();
-      const valuesToSort = [
-        { rowId: 't1', label: 'Last item' },
-        {
-          rowId: 't2',
-          label: 'Group',
-          subRows: [
-            { rowId: 'c1', label: 'Last Child' },
-            { rowId: 'c2', label: 'First Child' },
-          ],
-        },
-        { rowId: 't3', label: 'First item' },
-      ];
-      sortValues(valuesToSort, setThesaurusValues)();
-      expect(setThesaurusValues).toHaveBeenCalledWith([
-        { rowId: 't3', label: 'First item' },
-        {
-          rowId: 't2',
-          label: 'Group',
-          subRows: [
-            { rowId: 'c2', label: 'First Child' },
-            { rowId: 'c1', label: 'Last Child' },
-          ],
-        },
-        { rowId: 't1', label: 'Last item' },
-      ]);
-    });
+  it('should delete a child item', () => {
+    const prevCopy = prev;
+    removeItem(prevCopy, { rowId: 'prevChild1', label: 'Prev Child 1' });
+    expect(prevCopy).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [{ rowId: 'prevChild2', label: 'Prev Child 2' }],
+      },
+      { rowId: 'prevItem2', label: 'Prev Item 2' },
+      { rowId: 'prevItem3', label: 'Prev Item 3' },
+    ]);
   });
 
-  describe('addItemSubmit', () => {
-    let prev: ThesaurusRow[];
+  it('should delete a group if all the items are deleted', () => {
+    const prevCopy = prev;
+    removeItem(prevCopy, { rowId: 'prevChild1', label: 'Prev Child 1' });
+    removeItem(prevCopy, { rowId: 'prevChild2', label: 'Prev Child 2' });
+    expect(prevCopy).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      { rowId: 'prevItem2', label: 'Prev Item 2' },
+      { rowId: 'prevItem3', label: 'Prev Item 3' },
+    ]);
+  });
+});
 
-    beforeEach(() => {
-      prev = [
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
-        },
-      ];
-    });
+describe('sortValues', () => {
+  it('should sort alphabetically the thesaurus values', () => {
+    const setThesaurusValues = jest.fn();
+    const valuesToSort = [
+      { rowId: 't1', label: 'Last item' },
+      {
+        rowId: 't2',
+        label: 'Group',
+        subRows: [
+          { rowId: 'c1', label: 'Last Child' },
+          { rowId: 'c2', label: 'First Child' },
+        ],
+      },
+      { rowId: 't3', label: 'First item' },
+    ];
+    sortValues(valuesToSort, setThesaurusValues)();
+    expect(setThesaurusValues).toHaveBeenCalledWith([
+      { rowId: 't3', label: 'First item' },
+      {
+        rowId: 't2',
+        label: 'Group',
+        subRows: [
+          { rowId: 'c2', label: 'First Child' },
+          { rowId: 'c1', label: 'Last Child' },
+        ],
+      },
+      { rowId: 't1', label: 'Last item' },
+    ]);
+  });
+});
 
-    let result: ThesaurusRow[];
+describe('addItemSubmit', () => {
+  let prev: ThesaurusRow[];
 
-    it('should add new root items', () => {
-      const items = [
-        { rowId: 'newItem2', label: 'New Item2' },
-        { rowId: 'newItem3', label: 'New Item3' },
-      ];
-      const setThesaurusValues = jest.fn().mockImplementation(fn => {
-        result = fn(prev);
-      });
-      addItemSubmit(prev, setThesaurusValues)(items);
-      expect(result).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
-        },
-        { rowId: 'newItem2', label: 'New Item2' },
-        { rowId: 'newItem3', label: 'New Item3' },
-      ]);
-    });
-    it('should edit a root item', () => {
-      const items = [{ rowId: 'prevItem1', label: 'Changed Item 1' }];
-      const setThesaurusValues = jest.fn();
-      addItemSubmit(prev, setThesaurusValues)(items);
-      expect(setThesaurusValues).toHaveBeenCalledWith([
-        { rowId: 'prevItem1', label: 'Changed Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
-        },
-      ]);
-    });
-    it('should add items into a group', () => {
-      const items = [{ rowId: 'newItem2', label: 'New Item2', groupId: 'prevGroup1' }];
-      const setThesaurusValues = jest.fn().mockImplementation(fn => {
-        result = fn(prev);
-      });
-      addItemSubmit(prev, setThesaurusValues)(items);
-      expect(result).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [
-            { rowId: 'prevChild1', label: 'Prev Child 1' },
-            { rowId: 'newItem2', label: 'New Item2' },
-          ],
-        },
-      ]);
-    });
+  beforeEach(() => {
+    prev = [
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
+      },
+    ];
   });
 
-  describe('addGroupSubmit', () => {
-    let prev: ThesaurusRow[];
+  let result: ThesaurusRow[];
 
-    beforeEach(() => {
-      prev = [
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
-        },
-      ];
-    });
-    let result: ThesaurusRow[];
+  it('should add new root items', () => {
+    const items = [
+      { rowId: 'newItem2', label: 'New Item2' },
+      { rowId: 'newItem3', label: 'New Item3' },
+    ];
     const setThesaurusValues = jest.fn().mockImplementation(fn => {
       result = fn(prev);
     });
+    addItemSubmit(prev, setThesaurusValues)(items);
+    expect(result).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
+      },
+      { rowId: 'newItem2', label: 'New Item2' },
+      { rowId: 'newItem3', label: 'New Item3' },
+    ]);
+  });
+  it('should edit a root item', () => {
+    const items = [{ rowId: 'prevItem1', label: 'Changed Item 1' }];
+    const setThesaurusValues = jest.fn();
+    addItemSubmit(prev, setThesaurusValues)(items);
+    expect(setThesaurusValues).toHaveBeenCalledWith([
+      { rowId: 'prevItem1', label: 'Changed Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
+      },
+    ]);
+  });
+  it('should add items into a group', () => {
+    const items = [{ rowId: 'newItem2', label: 'New Item2', groupId: 'prevGroup1' }];
+    const setThesaurusValues = jest.fn().mockImplementation(fn => {
+      result = fn(prev);
+    });
+    addItemSubmit(prev, setThesaurusValues)(items);
+    expect(result).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [
+          { rowId: 'prevChild1', label: 'Prev Child 1' },
+          { rowId: 'newItem2', label: 'New Item2' },
+        ],
+      },
+    ]);
+  });
+});
 
-    it('should add a new group', () => {
-      const group = {
+describe('addGroupSubmit', () => {
+  let prev: ThesaurusRow[];
+
+  beforeEach(() => {
+    prev = [
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
+      },
+    ];
+  });
+  let result: ThesaurusRow[];
+  const setThesaurusValues = jest.fn().mockImplementation(fn => {
+    result = fn(prev);
+  });
+
+  it('should add a new group', () => {
+    const group = {
+      rowId: 'newGroup2',
+      label: 'New Group2',
+      subRows: [{ rowId: 'newChild2', label: 'New Child 2', groupId: 'newGroup2' }],
+    };
+    addGroupSubmit(prev, setThesaurusValues)(group);
+    expect(result).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
+        rowId: 'prevGroup1',
+        label: 'Prev Group1',
+        subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
+      },
+      {
         rowId: 'newGroup2',
         label: 'New Group2',
-        subRows: [{ rowId: 'newChild2', label: 'New Child 2', groupId: 'newGroup2' }],
-      };
-      addGroupSubmit(prev, setThesaurusValues)(group);
-      expect(result).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Prev Group1',
-          subRows: [{ rowId: 'prevChild1', label: 'Prev Child 1' }],
-        },
-        {
-          rowId: 'newGroup2',
-          label: 'New Group2',
-          subRows: [{ rowId: 'newChild2', label: 'New Child 2' }],
-        },
-      ]);
-    });
-    it('should add items to an existent group', () => {
-      const group = {
+        subRows: [{ rowId: 'newChild2', label: 'New Child 2' }],
+      },
+    ]);
+  });
+  it('should add items to an existent group', () => {
+    const group = {
+      rowId: 'prevGroup1',
+      label: 'Updated Group1',
+      subRows: [
+        { rowId: 'prevChild1', label: 'Prev Child 1', groupId: 'prevGroup1' },
+        { rowId: 'newChild1', label: 'New Child 1', groupId: 'prevGroup1' },
+      ],
+    };
+    addGroupSubmit(prev, setThesaurusValues)(group);
+    expect(result).toEqual([
+      { rowId: 'prevItem1', label: 'Prev Item 1' },
+      {
         rowId: 'prevGroup1',
         label: 'Updated Group1',
         subRows: [
-          { rowId: 'prevChild1', label: 'Prev Child 1', groupId: 'prevGroup1' },
-          { rowId: 'newChild1', label: 'New Child 1', groupId: 'prevGroup1' },
+          { rowId: 'prevChild1', label: 'Prev Child 1' },
+          { rowId: 'newChild1', label: 'New Child 1' },
         ],
-      };
-      addGroupSubmit(prev, setThesaurusValues)(group);
-      expect(result).toEqual([
-        { rowId: 'prevItem1', label: 'Prev Item 1' },
-        {
-          rowId: 'prevGroup1',
-          label: 'Updated Group1',
-          subRows: [
-            { rowId: 'prevChild1', label: 'Prev Child 1' },
-            { rowId: 'newChild1', label: 'New Child 1' },
-          ],
-        },
-      ]);
-    });
+      },
+    ]);
   });
+});
 
-  describe('compareThesaurus', () => {
-    const originalThesaurus = {
+describe('compareThesaurus', () => {
+  const originalThesaurus = {
+    _id: 't1',
+    name: 'Original Name',
+    values: [{ id: 'v1', label: 'Value 1' }],
+  };
+  it('should return true if the values are the same', () => {
+    const result = compareThesaurus(originalThesaurus, { ...originalThesaurus });
+    expect(result).toEqual(false);
+  });
+  it('should return false if the name has changed', () => {
+    const newThesaurus = {
       _id: 't1',
-      name: 'Original Name',
+      name: 'New Name',
       values: [{ id: 'v1', label: 'Value 1' }],
     };
-    it('should return true if the values are the same', () => {
-      const result = compareThesaurus(originalThesaurus, { ...originalThesaurus });
-      expect(result).toEqual(false);
-    });
-    it('should return false if the name has changed', () => {
-      const newThesaurus = {
-        _id: 't1',
-        name: 'New Name',
-        values: [{ id: 'v1', label: 'Value 1' }],
-      };
-      const result = compareThesaurus(originalThesaurus, newThesaurus);
-      expect(result).toEqual(true);
-    });
-    it('should return false if a value has changed', () => {
-      const newThesaurus = {
-        _id: 't1',
-        name: 'Original Name',
-        values: [{ id: 'v1', label: 'New Value 1' }],
-      };
-      const result = compareThesaurus(originalThesaurus, newThesaurus);
-      expect(result).toEqual(true);
-    });
-    it('should return false if there is a new value', () => {
-      const newThesaurus = {
-        _id: 't1',
-        name: 'Original Name',
-        values: [{ id: 'v1', label: 'Value 1' }, { label: 'Value 2' }],
-      };
-      const result = compareThesaurus(originalThesaurus, newThesaurus);
-      expect(result).toEqual(true);
-    });
+    const result = compareThesaurus(originalThesaurus, newThesaurus);
+    expect(result).toEqual(true);
+  });
+  it('should return false if a value has changed', () => {
+    const newThesaurus = {
+      _id: 't1',
+      name: 'Original Name',
+      values: [{ id: 'v1', label: 'New Value 1' }],
+    };
+    const result = compareThesaurus(originalThesaurus, newThesaurus);
+    expect(result).toEqual(true);
+  });
+  it('should return false if there is a new value', () => {
+    const newThesaurus = {
+      _id: 't1',
+      name: 'Original Name',
+      values: [{ id: 'v1', label: 'Value 1' }, { label: 'Value 2' }],
+    };
+    const result = compareThesaurus(originalThesaurus, newThesaurus);
+    expect(result).toEqual(true);
+  });
+});
+
+describe('sanitizeThesaurusLabel', () => {
+  it('should handle null and undefined values', () => {
+    expect(sanitizeThesaurusLabel(null as any)).toBe('');
+    expect(sanitizeThesaurusLabel(undefined as any)).toBe('');
+    expect(sanitizeThesaurusLabel('')).toBe('');
+  });
+
+  it('should replace newlines with spaces', () => {
+    expect(sanitizeThesaurusLabel('hello\nworld')).toBe('hello world');
+    expect(sanitizeThesaurusLabel('hello\r\nworld')).toBe('hello world');
+  });
+
+  it('should normalize multiple spaces to single space', () => {
+    expect(sanitizeThesaurusLabel('hello    world')).toBe('hello world');
+    expect(sanitizeThesaurusLabel('hello   world   test')).toBe('hello world test');
+  });
+
+  it('should trim leading and trailing whitespace', () => {
+    expect(sanitizeThesaurusLabel('  hello world  ')).toBe('hello world');
+  });
+
+  it('should apply all sanitizations together', () => {
+    expect(sanitizeThesaurusLabel('  hello\n   world  ')).toBe('hello world');
+  });
+
+  it('should preserve existing values without spaces', () => {
+    expect(sanitizeThesaurusLabel('hello world')).toBe('hello world');
+    expect(sanitizeThesaurusLabel('Hello World')).toBe('Hello World');
   });
 });
