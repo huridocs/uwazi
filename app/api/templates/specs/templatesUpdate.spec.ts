@@ -613,17 +613,33 @@ describe('templates save', () => {
 
   describe('when feature flag is true', () => {
     it('should not allow updating a template that is currently being processed', async () => {
-      await setUpFixtures(fixtures, true);
+      await setUpFixtures(
+        {
+          ...fixtures,
+          templates: [
+            f.template('templateA', [f.property('text_property')]),
+            {
+              ...f.template('templateB', [
+                f.relationshipProp('rel_prop', 'templateA'),
+                f.property('text_property_b'),
+              ]),
+              processing: true,
+            },
+            f.template('templateC', [f.property('text_property_2')]),
+          ],
+        },
+        true
+      );
 
       const propertyWithNameChanged = f.property('text_property_b', 'text', {
         label: 'name_changed',
       });
+
       const template = f.template('templateB', [
         f.relationshipProp('rel_prop', 'templateA'),
         propertyWithNameChanged,
       ]);
 
-      await templates.save(template, 'en');
       await expect(async () => templates.save(template, 'en')).rejects.toBeInstanceOf(Error);
     });
 

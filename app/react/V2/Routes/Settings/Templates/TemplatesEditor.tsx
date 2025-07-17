@@ -20,6 +20,9 @@ import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from 'V2/atoms';
 import uniqueID from 'shared/uniqueID';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Tooltip } from 'flowbite-react';
+import { socket } from 'app/socket';
 import {
   cleanProperty,
   emptyTemplate,
@@ -82,6 +85,21 @@ const TemplatesEditor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const ENTITY_COUNT_THRESHOLD = 3000;
 
+  const handleTemplateProcessed = async () => {
+    await revalidator.revalidate();
+    setNotifications({
+      type: 'success',
+      text: <Translate>Template processing completed.</Translate>,
+    });
+  };
+
+  useEffect(() => {
+    socket.on('templateProcessed', handleTemplateProcessed);
+    return () => {
+      socket.off('templateProcessed', handleTemplateProcessed);
+    };
+  });
+
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
   }, [loadedTemplate.properties]);
@@ -92,6 +110,12 @@ const TemplatesEditor = () => {
 
   useEffect(() => {
     setTemplate(loadedTemplate);
+    if (loadedTemplate.processing) {
+      setNotifications({
+        type: 'warning',
+        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
+      });
+    }
   }, [loadedTemplate]);
 
   const getCurrentStatus = useCallback((): ClientTemplateSchema => {
@@ -159,11 +183,17 @@ const TemplatesEditor = () => {
       ? templates.map(t => (t._id === template._id ? savedTemplate : t))
       : [...templates, savedTemplate];
     setTemplates(updatedTemplates);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Template saved successfully.</Translate>,
-    });
-
+    if (savedTemplate.processing) {
+      setNotifications({
+        type: 'warning',
+        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
+      });
+    } else {
+      setNotifications({
+        type: 'success',
+        text: <Translate>Template saved successfully.</Translate>,
+      });
+    }
     await navigate(`/settings/templates/edit/${savedTemplate._id}`);
   };
 
@@ -227,11 +257,27 @@ const TemplatesEditor = () => {
     setShowConfigPropertyPanel(true);
   };
 
+  const headerTitle = template.processing ? (
+    <Tooltip
+      content={<Translate>Template is being processed. Please wait for it to finish.</Translate>}
+      placement="right"
+      // eslint-disable-next-line react/style-prop-object
+      style="light"
+    >
+      <div className="flex items-center gap-2">
+        {template.name}
+        <ExclamationTriangleIcon className="w-5 h-5 text-warning-500" />
+      </div>
+    </Tooltip>
+  ) : (
+    template.name
+  );
+
   return (
     <div className="w-full h-full overflow-y-auto">
       <SettingsContent>
         <SettingsContent.Header
-          title={template.name}
+          title={headerTitle}
           path={new Map([['Templates', '/settings/templates']])}
         />
         <SettingsContent.Body>

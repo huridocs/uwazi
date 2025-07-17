@@ -820,8 +820,10 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,ပုံစံပြား
 Template conflict,Template conflict
+Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Template name
 Template name already exists,Template name already exists
+Template processing completed.,Template processing completed.
 Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
