@@ -329,6 +329,12 @@ describe('sockets', () => {
   });
 
   describe('IMPORT_CSV_ROW_EXCEPTIONS', () => {
+    beforeEach(() => {
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
+    });
+
     it('should dispatch importRowExceptions action', () => {
       const exceptions = {
         'Sanitized entries skipped in import': [
