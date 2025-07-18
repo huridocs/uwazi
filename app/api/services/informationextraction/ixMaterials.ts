@@ -97,8 +97,8 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
   const segmentationForFiles = (await SegmentationModel.get(
     { filename: { $in: filesNames } },
-    'filename segmentation xmlname'
-  )) as (SegmentationType & { filename: string })[];
+    'filename segmentation xmlname status'
+  )) as (SegmentationType & { filename: string; status: string })[];
 
   const segmentationDictionary = Object.assign(
     {},

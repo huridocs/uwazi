@@ -71,7 +71,7 @@ class PDFSegmentation {
 
   storeProcess = async (fileID: ObjectIdSchema, filename: string, processing = true) => {
     const [existingSegmentation] = await SegmentationModel.get({ fileID });
-    
+
     if (existingSegmentation) {
       if (
         existingSegmentation.status === 'failed' &&
@@ -95,9 +95,9 @@ class PDFSegmentation {
   };
 
   getFilesToSegment = async (): Promise<{ filename: string; _id: ObjectIdSchema }[]> => {
-    const segmentations = (await SegmentationModel.get(
-      { fileID: { $exists: true } }
-    )) as (SegmentationType & { fileID: string })[];
+    const segmentations = (await SegmentationModel.get({
+      fileID: { $exists: true },
+    })) as (SegmentationType & { fileID: string })[];
 
     const successfullySegmentedFiles = segmentations
       .filter(segmentation => segmentation.status === 'ready')
@@ -108,11 +108,13 @@ class PDFSegmentation {
       .map(segmentation => segmentation.fileID);
 
     const retryableFailedSegmentations = segmentations.filter(
-      segmentation => 
-        segmentation.status === 'failed' && 
+      segmentation =>
+        segmentation.status === 'failed' &&
         (segmentation.retryCount || 0) < PDFSegmentation.MAX_RETRY_COUNT
     );
-    const retryableFailedSegmentedFiles = retryableFailedSegmentations.map(segmentation => segmentation.fileID);
+    const retryableFailedSegmentedFiles = retryableFailedSegmentations.map(
+      segmentation => segmentation.fileID
+    );
 
     const files = (await filesModel.get(
       {
@@ -125,19 +127,19 @@ class PDFSegmentation {
       { limit: this.batchSize }
     )) as (FileType & { filename: string; _id: ObjectIdSchema })[];
 
-
     const allFilesToProcess = [
       ...files.map(file => ({ _id: file._id, filename: file.filename })),
       ...retryableFailedSegmentations
-        .filter(segmentation => 
-          segmentation.fileID && 
-          segmentation.filename && 
-          !processingFiles.includes(segmentation.fileID)
+        .filter(
+          segmentation =>
+            segmentation.fileID &&
+            segmentation.filename &&
+            !processingFiles.includes(segmentation.fileID)
         )
-        .map(segmentation => ({ 
-          _id: segmentation.fileID!, 
-          filename: segmentation.filename! 
-        }))
+        .map(segmentation => ({
+          _id: segmentation.fileID!,
+          filename: segmentation.filename!,
+        })),
     ];
 
     if (retryableFailedSegmentedFiles.length > 0) {
@@ -169,7 +171,7 @@ class PDFSegmentation {
             }
 
             const filesToSegment = await this.getFilesToSegment();
-            
+
             for (let i = 0; i < filesToSegment.length; i += 1) {
               // eslint-disable-next-line no-await-in-loop
               await this.segmentOnePdf(filesToSegment[i], segmentationServiceConfig.url, tenant);

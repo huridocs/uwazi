@@ -274,8 +274,19 @@ class InformationExtraction {
     serviceUrl: string,
     type = 'labeled_data'
   ) => {
+    const filesWithReadySegmentations = files.filter(file => {
+      if (!file.segmentation || !file.segmentation.status) {
+        return false;
+      }
+      return file.segmentation.status === 'ready';
+    });
+
+    if (filesWithReadySegmentations.length === 0) {
+      throw new Error('No files with segmentations to be used for training');
+    }
+
     await Promise.all(
-      files.map(async file => {
+      filesWithReadySegmentations.map(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -645,7 +656,22 @@ class InformationExtraction {
         return;
       }
 
-      await this.sendMaterialsForPDF(files, extractor);
+      try {
+        await this.sendMaterialsForPDF(files, extractor);
+      } catch (error) {
+        if (error.message === 'No files with segmentations to be used for training') {
+          await this.stopModel(extractorId);
+          emitToTenant(
+            tenants.current().name,
+            'ix_model_status',
+            extractorId,
+            'ready',
+            'No files with segmentations to be used for training'
+          );
+          return;
+        }
+        throw error;
+      }
     }
 
     if (extractor.source.property) {

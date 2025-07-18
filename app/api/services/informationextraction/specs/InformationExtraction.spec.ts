@@ -28,6 +28,7 @@ import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
 import { TEST_RUN_SUGGESTIONS_SIZE } from '../ixmodels';
+import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -938,6 +939,232 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.files.length).toBe(1);
 
       expect(IXExternalService.materials.length).toBe(1);
+    });
+
+    it('should filter out files with failed segmentations to prevent zero-length batches', async () => {
+      // Segmentation with failed status for documentA
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        status: 'failed',
+        retryCount: 1,
+      });
+
+      // Segmentation with ready status for documentC
+      await SegmentationModel.save({
+        fileID: factory.id('F3'),
+        filename: 'documentC.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'something',
+            },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'documentC.xml',
+      });
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      expect(IXExternalService.filesNames.sort()).toEqual(['documentC.xml'].sort());
+      expect(IXExternalService.files.length).toBe(1);
+      expect(IXExternalService.materials.length).toBe(1);
+
+      expect(IXExternalService.filesNames).not.toContain('documentA.xml');
+    });
+
+    it('should filter out files with processing segmentations to prevent zero-length batches', async () => {
+      // Segmentation with processing status for documentA
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        status: 'processing',
+      });
+
+      // Segmentation with ready status for documentC
+      await SegmentationModel.save({
+        fileID: factory.id('F3'),
+        filename: 'documentC.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'something',
+            },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'documentC.xml',
+      });
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      expect(IXExternalService.filesNames.sort()).toEqual(['documentC.xml'].sort());
+      expect(IXExternalService.files.length).toBe(1);
+      expect(IXExternalService.materials.length).toBe(1);
+
+      expect(IXExternalService.filesNames).not.toContain('documentA.xml');
+    });
+
+    it('should filter out files with missing segmentation status', async () => {
+      // Segmentation without status for documentA
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        // No status field
+      });
+
+      // Segmentation with ready status for documentC
+      await SegmentationModel.save({
+        fileID: factory.id('F3'),
+        filename: 'documentC.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'something',
+            },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'documentC.xml',
+      });
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      expect(IXExternalService.filesNames.sort()).toEqual(['documentC.xml'].sort());
+      expect(IXExternalService.files.length).toBe(1);
+      expect(IXExternalService.materials.length).toBe(1);
+
+      expect(IXExternalService.filesNames).not.toContain('documentA.xml');
+    });
+
+    it('should handle error when no files have ready segmentations', async () => {
+      // Segmentations with failed status
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        status: 'failed',
+        retryCount: 1,
+      });
+
+      await SegmentationModel.save({
+        fileID: factory.id('F3'),
+        filename: 'documentC.pdf',
+        status: 'processing',
+      });
+
+      // The function should handle the error gracefully and stop the model
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      // Verify that the model was stopped
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
+      expect(model.findingSuggestions).toBe(false);
+
+      // Verify that the appropriate status was emitted
+      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        factory.id('prop1extractor'),
+        'ready',
+        'No files with segmentations to be used for training'
+      );
+    });
+
+    it('should handle mixed segmentation statuses correctly', async () => {
+      // Segmentations with different statuses
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'documentA content',
+            },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'documentA.xml',
+      });
+
+      await SegmentationModel.save({
+        fileID: factory.id('F3'),
+        filename: 'documentC.pdf',
+        status: 'failed',
+        retryCount: 1,
+      });
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      // Should only process the ready segmentation
+      expect(IXExternalService.filesNames).toEqual(['documentA.xml']);
+      expect(IXExternalService.files.length).toBe(1);
+      expect(IXExternalService.materials.length).toBe(1);
+
+      expect(IXExternalService.filesNames).not.toContain('documentC.xml');
+    });
+
+    it('should create suggestions for all files regardless of segmentation status', async () => {
+      // Segmentations with different statuses
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'content' },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'documentA.xml',
+      });
+
+      await SegmentationModel.save({
+        fileID: factory.id('F3'),
+        filename: 'documentC.pdf',
+        status: 'failed',
+        retryCount: 1,
+      });
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      // Should create suggestions for both files regardless of segmentation status
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId: factory.id('prop1extractor'),
+      });
+      expect(suggestions.length).toBe(2);
+
+      // But only send the ready one for processing
+      expect(IXExternalService.filesNames).toEqual(['documentA.xml']);
+      expect(IXExternalService.files.length).toBe(1);
     });
 
     it('should create the task for the suggestions', async () => {
