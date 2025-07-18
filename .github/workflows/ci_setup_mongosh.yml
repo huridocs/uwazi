@@ -1,0 +1,41 @@
+name: Setup MongoDB Tools
+
+on:
+  workflow_call:
+
+jobs:
+  setup_mongosh:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Cache MongoDB repository
+        uses: actions/cache@v4
+        with:
+          path: /etc/apt/sources.list.d/mongodb-org-6.0.list
+          key: ${{ runner.os }}-mongodb-repo-6.0
+
+      - name: Cache MongoDB packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives/mongodb*
+          key: ${{ runner.os }}-mongodb-packages-6.0
+
+      - name: Install mongosh
+        run: |
+          # Only add repo if not already present
+          if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y wget gnupg
+            wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          fi
+
+          # Install only if not already installed
+          if ! command -v mongosh &> /dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+          fi
+
+      - name: Verify mongosh installation
+        run: |
+          mongosh --version
+          mongorestore --version

@@ -44,15 +44,34 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: 🍃 Install mongosh
+      - name: Restore MongoDB repository cache
+        uses: actions/cache@v4
+        with:
+          path: /etc/apt/sources.list.d/mongodb-org-6.0.list
+          key: ${{ runner.os }}-mongodb-repo-6.0
+
+      - name: Restore MongoDB packages cache
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives/mongodb*
+          key: ${{ runner.os }}-mongodb-packages-6.0
+
+      - name: Install mongosh if not cached
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-          sudo apt-get update
-          sudo apt-get install -y mongodb-mongosh
-          sudo apt-get install -y mongodb-org-tools
+          # Only add repo if not already present
+          if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y wget gnupg
+            wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          fi
+
+          # Install only if not already installed
+          if ! command -v mongosh &> /dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+          fi
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
@@ -72,7 +91,7 @@ jobs:
         run: yarn install
       - name: Get Cypress version
         id: cypress-version
-        run: echo "version=$(yarn list cypress --depth=0 --json | jq -r '.data.trees[0].children.cypress.version')" >> $GITHUB_OUTPUT
+        run: echo "version=$(yarn info cypress version)" >> $GITHUB_OUTPUT
       - name: Cache Cypress
         id: cache-cypress
         uses: actions/cache@v4
@@ -105,8 +124,8 @@ jobs:
         if: matrix.needs_setup
         run: |
           python3 -m venv .venv
-          make install_venv -C dummy_extractor_services
-          make start -C dummy_extractor_services > logs.log &
+          make install_venv
+          make start > logs.log &
           sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
         working-directory: dummy_extractor_services
       - name: Log dummy services on failure
