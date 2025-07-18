@@ -1,4 +1,4 @@
-name: Build production artifact
+name: build-production
 
 permissions:
   contents: read

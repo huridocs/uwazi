@@ -2,7 +2,7 @@ name: check translations
 
 on:
   workflow_run:
-    workflows: ['Build production artifact']
+    workflows: [build-production']
     types:
       - completed
 
