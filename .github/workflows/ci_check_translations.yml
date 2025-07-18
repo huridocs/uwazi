@@ -3,10 +3,6 @@ name: Check Translations
 on:
   workflow_call:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   check_translations:
     runs-on: ubuntu-24.04

@@ -3,10 +3,6 @@ name: E2E Cypress Base
 on:
   workflow_call:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   e2e-cypress:
     runs-on: ubuntu-24.04
@@ -43,15 +39,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Cache node modules and Cypress
+      - name: Cache node modules
         uses: actions/cache@v4
         with:
-          path: |
-            ./node_modules
-            ~/.cache/Cypress
+          path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      - name: Get Cypress version
+        id: cypress-version
+        run: echo "version=$(yarn list cypress --depth=0 --json | jq -r '.data.trees[0].children.cypress.version')" >> $GITHUB_OUTPUT
+      - name: Cache Cypress
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - name: Download production build artifact
