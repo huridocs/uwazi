@@ -39,9 +39,6 @@ jobs:
             sudo chown $USER:$USER ~/.local/bin/mongosh
           fi
 
-      - name: Set PATH for mongosh
-        run: echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-
       - name: Verify mongosh installation
         run: |
           mongosh --version
