@@ -17,32 +17,37 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: Restore MongoDB repository cache
+      - name: Cache MongoDB tools
+        id: cache-mongodb
         uses: actions/cache@v4
         with:
-          path: /etc/apt/sources.list.d/mongodb-org-6.0.list
-          key: ${{ runner.os }}-mongodb-repo-6.0
+          path: ~/.local/bin
+          key: ${{ runner.os }}-mongodb-tools-6.0
 
-      - name: Restore MongoDB packages cache
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives/mongodb*
-          key: ${{ runner.os }}-mongodb-packages-6.0
-
-      - name: Install mongosh if not cached
+      - name: Install MongoDB tools if not cached
         run: |
-          # Only add repo if not already present
-          if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
-            sudo apt-get update -qq
-            sudo apt-get install -y wget gnupg
-            wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-          fi
+          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
+            echo "MongoDB tools found in cache"
+            export PATH="$HOME/.local/bin:$PATH"
+          else
+            echo "Installing MongoDB tools..."
+            # Add MongoDB repo if not already present
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+              sudo apt-get update -qq
+              sudo apt-get install -y wget gnupg
+              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            fi
 
-          # Install only if not already installed
-          if ! command -v mongosh &> /dev/null; then
+            # Install MongoDB tools
             sudo apt-get update -qq
             sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+            
+            # Copy to cache location for next run
+            mkdir -p ~/.local/bin
+            sudo cp /usr/bin/mongosh ~/.local/bin/
+            sudo cp /usr/bin/mongorestore ~/.local/bin/
+            sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
           fi
 
       - name: Start MongoDB

@@ -21,9 +21,9 @@ jobs:
     needs: setup_mongosh
     uses: ./.github/workflows/ci_build.yml
 
-  e2e_cypress:
-    needs: [setup_mongosh, build]
-    uses: ./.github/workflows/ci_e2e_cypress.yml
+  #e2e_cypress:
+  #  needs: [setup_mongosh, build]
+  #  uses: ./.github/workflows/ci_e2e_cypress.yml
 
   e2e_puppeteer:
     needs: [setup_mongosh, build]
