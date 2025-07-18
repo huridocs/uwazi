@@ -699,6 +699,7 @@ Review,Review
 Reviewed,تمت مراجعته
 Role,دور
 Route,مسار
+Row,Row
 Sample,عينة
 Satellite,Satellite
 Save,احفظ
@@ -834,6 +835,7 @@ Test run,Test run
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,نتج عن عملية الاستيراد الخطأ التالي:
+The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."

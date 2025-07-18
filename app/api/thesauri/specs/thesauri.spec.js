@@ -801,6 +801,21 @@ describe('thesauri', () => {
       },
     ]);
 
+    it('should sanitize new value labels when appending', () => {
+      const baseSimple = { values: [{ label: 'existing' }] };
+      const addition = [
+        { label: '  new   value  ' },
+        { label: 'existing' }, // should not duplicate
+        { label: '  another\nvalue  ' },
+      ];
+      const result = thesauri.appendValues(baseSimple, addition);
+      expect(result.values).toEqual([
+        { label: 'existing' },
+        { label: 'new value' },
+        { label: 'another value' },
+      ]);
+    });
+
     it.each([
       {
         case: 'add root value',

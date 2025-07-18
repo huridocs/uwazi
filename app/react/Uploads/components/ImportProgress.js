@@ -14,26 +14,61 @@ export class ImportProgress extends Component {
   render() {
     const {
       close,
-      importState: { importStart, importProgress, importError, importEnd },
+      importState: { importStart, importProgress, importError, importEnd, importRowExceptions },
     } = this.props;
     if (!importStart && !importProgress) {
       return false;
     }
     if (importEnd) {
       return (
-        <div className="alert alert-info">
-          <Icon icon="check" size="2x" />
-          <div className="force-ltr">
-            <Translate translationKey="Import completed">
-              Import completed. Number of entities created:
-            </Translate>
-            &nbsp;
-            {importProgress}
-            <br />
-            <Translate>Indexing entities may take a few minutes</Translate>
-          </div>
-          <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close} />
-        </div>
+        <>
+          {importProgress && (
+            <div className="alert alert-info">
+              <Icon icon="check" size="2x" />
+              <div className="force-ltr">
+                <Translate translationKey="Import completed">
+                  Import completed. Number of entities created:
+                </Translate>
+                &nbsp;
+                {importProgress}
+                <br />
+                <Translate>Indexing entities may take a few minutes</Translate>
+              </div>
+              <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close} />
+            </div>
+          )}
+          {importRowExceptions?.size > 0 && (
+            <div>
+              <div className="alert alert-warning">
+                <Icon icon="exclamation-triangle" size="2x" />
+                <Translate>The import process threw some warnings:</Translate>
+              </div>
+              <div className="alert">
+                {importRowExceptions.entrySeq().map(([key, warnings]) => (
+                  <div key={key}>
+                    <Translate>{key}:</Translate>
+                    {warnings.map((w, i) => (
+                      <div className="item-info" key={`${key}-${w.get('index')}-${i}`}>
+                        <strong>
+                          <Translate>Row</Translate>
+                        </strong>
+                        : {w.get('index') + 1} -{' '}
+                        <strong>
+                          <Translate>Property</Translate>
+                        </strong>
+                        : {w.get('property')} -{' '}
+                        <strong>
+                          <Translate>Value</Translate>
+                        </strong>
+                        : {w.get('value')}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       );
     }
 
@@ -72,6 +107,7 @@ ImportProgress.propTypes = {
     importEnd: PropTypes.bool.isRequired,
     importProgress: PropTypes.number.isRequired,
     importError: PropTypes.instanceOf(Immutable.Map).isRequired,
+    importRowExceptions: PropTypes.instanceOf(Immutable.Map),
   }).isRequired,
   close: PropTypes.func.isRequired,
 };

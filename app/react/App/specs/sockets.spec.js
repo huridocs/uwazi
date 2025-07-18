@@ -327,4 +327,38 @@ describe('sockets', () => {
       expect(uploadActions.documentProcessed).toHaveBeenCalledWith('entitySharedId', 'library');
     });
   });
+
+  describe('IMPORT_CSV_ROW_EXCEPTIONS', () => {
+    beforeEach(() => {
+      spyOn(store, 'dispatch').and.callFake(argument =>
+        typeof argument === 'function' ? argument(store.dispatch) : argument
+      );
+    });
+
+    it('should dispatch importRowExceptions action', () => {
+      const exceptions = {
+        'Sanitized entries skipped in import': [
+          {
+            index: 0,
+            property: 'select_with_spaces',
+            reason: '',
+            value: ' Item2 ',
+          },
+        ],
+        'Another warning type': [
+          {
+            index: 1,
+            property: 'another_property',
+            reason: 'Invalid format',
+            value: 'invalid_value',
+          },
+        ],
+      };
+      socket._callbacks.$IMPORT_CSV_ROW_EXCEPTIONS[0](exceptions);
+      expect(store.dispatch).toHaveBeenCalledWith({
+        type: 'importRowExceptions/SET',
+        value: exceptions,
+      });
+    });
+  });
 });

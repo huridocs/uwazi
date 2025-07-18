@@ -340,6 +340,10 @@ export default (app: Application) => {
         req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
       });
 
+      loader.on('rowExceptions', exceptions => {
+        req.emitToSessionSocket('IMPORT_CSV_ROW_EXCEPTIONS', exceptions);
+      });
+
       loader.on('loadError', error => {
         req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
       });

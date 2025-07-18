@@ -11,6 +11,7 @@ const multiSelectThesaurusId = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 const templateWithGeneratedTitle = db.id();
+const thesaurusWithSpacesId = db.id();
 
 const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 
@@ -29,6 +30,41 @@ const commonTranslationsV2 = (language: LanguageISO6391): TranslationDBO[] => [
     id: thesauri1Id.toString(),
     type: 'Thesaurus',
     label: 'thesauri1',
+  }),
+  createTranslationDBO('Group ', 'Group ', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
+  }),
+  createTranslationDBO('Item1', 'Item1', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
+  }),
+  createTranslationDBO(' Item2 ', ' Item2 ', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
+  }),
+  createTranslationDBO('Another Group', 'Another Group', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
+  }),
+  createTranslationDBO('Item3 ', 'Item3 ', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
+  }),
+  createTranslationDBO('Normal Group', 'Normal Group', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
+  }),
+  createTranslationDBO('Normal Item', 'Normal Item', language, {
+    id: thesaurusWithSpacesId.toString(),
+    type: 'Thesaurus',
+    label: 'thesaurus_with_spaces',
   }),
   createTranslationDBO('original 3', 'original 3', language, {
     id: 'System',
@@ -139,6 +175,18 @@ export default {
           label: 'Language',
           name: templateUtils.safeName('Language'),
         },
+        {
+          type: propertyTypes.select,
+          label: 'Select with spaces',
+          name: templateUtils.safeName('select_with_spaces'),
+          content: thesaurusWithSpacesId.toString(),
+        },
+        {
+          type: propertyTypes.multiselect,
+          label: 'Multiselect with spaces',
+          name: templateUtils.safeName('multiselect_with_spaces'),
+          content: thesaurusWithSpacesId.toString(),
+        },
       ],
     },
     {
@@ -176,6 +224,46 @@ export default {
         },
       ],
     },
+    {
+      _id: thesaurusWithSpacesId,
+      name: 'thesaurus_with_spaces',
+      values: [
+        {
+          label: 'Group ',
+          id: db.id().toString(),
+          values: [
+            {
+              label: 'Item1',
+              id: db.id().toString(),
+            },
+            {
+              label: ' Item2 ',
+              id: db.id().toString(),
+            },
+          ],
+        },
+        {
+          label: 'Another Group',
+          id: db.id().toString(),
+          values: [
+            {
+              label: 'Item3 ',
+              id: db.id().toString(),
+            },
+          ],
+        },
+        {
+          label: 'Normal Group',
+          id: db.id().toString(),
+          values: [
+            {
+              label: 'Normal Item',
+              id: db.id().toString(),
+            },
+          ],
+        },
+      ],
+    },
   ],
 
   settings: [
@@ -199,4 +287,4 @@ export default {
   ],
 };
 
-export { template1Id, templateWithGeneratedTitle, thesauri1Id, simpleTemplateId };
+export { template1Id, simpleTemplateId, templateWithGeneratedTitle, thesaurusWithSpacesId };

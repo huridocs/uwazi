@@ -6,6 +6,7 @@ import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Readable } from 'stream';
 import { CSVRow } from './csv';
+import { sanitizeStringValue } from './sanitizationUtils';
 
 type ParsedValue = { nested: boolean; value: string };
 type ParsedRow = Record<string, ParsedValue>;
@@ -14,14 +15,18 @@ const buildThesauriValues = (rows: ParsedRow[], languageLabel: string) => {
   const result: ThesaurusValueSchema[] = [];
   rows.forEach(row => {
     const { value: valueForLanguage, nested } = row[languageLabel];
+    if (!valueForLanguage || valueForLanguage === '') return;
     const newThesauriValue = { label: valueForLanguage };
 
     if (!nested) {
       result.push(newThesauriValue);
     } else {
       const lastValue = result[result.length - 1];
+      if (!lastValue) return;
       lastValue.values = lastValue.values ?? [];
-      lastValue.values.push(newThesauriValue);
+      if (valueForLanguage && valueForLanguage !== '') {
+        lastValue.values.push(newThesauriValue);
+      }
     }
   });
   return result;
@@ -36,7 +41,9 @@ const buildTranslation = (
     Object.keys(languagesToTranslate).map(lang => [
       lang,
       Object.fromEntries(
-        rows.map(row => [row[languageLabel].value, row[languagesToTranslate[lang]].value])
+        rows
+          .filter(row => row[languageLabel].value !== '')
+          .map(row => [row[languageLabel].value, row[languagesToTranslate[lang]].value])
       ),
     ])
   );
@@ -56,9 +63,13 @@ const parseValue = (value: string) => {
     }
   }
 
+  const sanitizedResult = nested
+    ? sanitizeStringValue(processedValue.join(''), 'thesaurus_import')
+    : sanitizeStringValue(value, 'thesaurus_import');
+
   return {
     nested,
-    value: nested ? processedValue.join('').trim() : value.trim(),
+    value: sanitizedResult.value,
   };
 };
 

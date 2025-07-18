@@ -165,5 +165,8 @@ socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', tr
 socket.on('IMPORT_CSV_PROGRESS', progress =>
   store.dispatch(actions.set('importProgress', progress))
 );
+socket.on('IMPORT_CSV_ROW_EXCEPTIONS', exceptions =>
+  store.dispatch(actions.set('importRowExceptions', exceptions))
+);
 socket.on('IMPORT_CSV_ERROR', error => store.dispatch(actions.set('importError', error)));
 socket.on('IMPORT_CSV_END', () => store.dispatch(actions.set('importEnd', true)));

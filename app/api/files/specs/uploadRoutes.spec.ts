@@ -211,6 +211,47 @@ describe('upload routes', () => {
       ]);
     });
 
+    it('should emit IMPORT_CSV_ROW_EXCEPTIONS when there are import warnings', async () => {
+      const csvWithWarnings = `title,select_with_spaces,text_label
+imported entity one, " Item2 ", "text with   multiple   spaces"
+imported entity two, "Normal Item", "normal text"
+imported entity three, "  Only spaces"
+imported entity four, "Invalid::Thesaurus::Value, ext with\nnewlines"`;
+
+      const tempCsvPath = `${__dirname}/uploads/temp_import_with_warnings.csv`;
+      await fs.writeFile(tempCsvPath, csvWithWarnings);
+
+      try {
+        await socketEmit('IMPORT_CSV_END', async () =>
+          request(app)
+            .post('/api/import')
+            .field('template', importTemplate.toString())
+            .attach('file', tempCsvPath)
+        );
+
+        expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START', TestEmitSources.session);
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'IMPORT_CSV_ROW_EXCEPTIONS',
+          TestEmitSources.session,
+          expect.objectContaining({
+            'Sanitized entries skipped in import': expect.arrayContaining([
+              expect.objectContaining({
+                index: expect.any(Number),
+                property: expect.any(String),
+                reason: expect.any(String),
+                value: expect.any(String),
+              }),
+            ]),
+          })
+        );
+
+        const imported = await entities.get({ template: importTemplate });
+        expect(imported.length).toBeGreaterThan(0);
+      } finally {
+        await fs.unlink(tempCsvPath).catch(() => {});
+      }
+    });
+
     describe('on error', () => {
       it('should emit the error', async () => {
         await socketEmit('IMPORT_CSV_ERROR', async () =>
