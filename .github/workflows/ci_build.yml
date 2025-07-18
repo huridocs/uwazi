@@ -1,5 +1,8 @@
 name: Build production artifact
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
   push:
