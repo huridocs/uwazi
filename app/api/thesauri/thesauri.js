@@ -14,6 +14,7 @@ import translations from 'api/i18n/translations';
 import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
 import { search } from 'api/search';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
 
@@ -160,9 +161,10 @@ function calcNewLabels(originals, news) {
   const normalizedSet = new Set(normalizedOriginals);
   const actualNewLabels = [];
   news.forEach(({ label }) => {
-    const normalized = normalizeThesaurusLabel(label);
+    const sanitizedLabel = sanitizeThesaurusLabel(label);
+    const normalized = normalizeThesaurusLabel(sanitizedLabel);
     if (!normalizedSet.has(normalized)) {
-      actualNewLabels.push(label);
+      actualNewLabels.push(sanitizedLabel);
       normalizedSet.add(normalized);
     }
   });

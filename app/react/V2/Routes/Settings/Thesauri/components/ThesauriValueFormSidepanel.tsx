@@ -8,6 +8,7 @@ import { InputField, Select } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusRow } from './TableComponents';
+import { sanitizeThesaurusLabel } from '../helpers';
 
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
@@ -52,7 +53,15 @@ const ThesauriValueFormSidepanel = ({
   }, [editMode, watch, append, value]);
 
   const submitHandler = (data: { newValues: ThesaurusRow[] }) => {
-    submit(data.newValues.filter(thesaurus => thesaurus.label !== ''));
+    // Sanitize new values before submitting
+    const sanitizedValues = data.newValues
+      .filter(thesaurus => thesaurus.label !== '')
+      .map(thesaurus => ({
+        ...thesaurus,
+        label: sanitizeThesaurusLabel(thesaurus.label),
+      }));
+
+    submit(sanitizedValues);
     closePanel();
   };
 

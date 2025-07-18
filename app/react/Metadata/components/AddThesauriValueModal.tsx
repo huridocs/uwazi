@@ -2,6 +2,7 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 
 interface AddThesauriValueModalProps {
   isOpen: boolean;
@@ -39,7 +40,12 @@ const AddThesauriValueModal = ({
   } = useForm<FormInputs>({ defaultValues: { group: 'root' } });
 
   const onSubmitted = (submittedValues: any) => {
-    onAccept(submittedValues);
+    // Sanitize the value before accepting
+    const sanitizedValues = {
+      ...submittedValues,
+      value: sanitizeThesaurusLabel(submittedValues.value),
+    };
+    onAccept(sanitizedValues);
   };
 
   const renderGroupSelect = (selectValues: { value: string; label: string }[]) => (

@@ -1,5 +1,6 @@
-Title , header.with.dots, text label  , numeric label, non configured, select_label, not defined type, geolocation_geolocation,auto id, additional tag(s), Multi Select Label, Date label, Language
+Title , header.with.dots, text label  , numeric label, non configured, select_label, not defined type, geolocation_geolocation,auto id, additional tag(s), Multi Select Label, Date label, Language, Select with spaces, Multiselect with spaces
 
-title1, header with dots value 1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,tag1, multivalue1,03/01/2022,English
-title2, header with dots value 2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,tag2, multivalue2,01/03/2022,Spanish
-title3, header with dots value 3, text value 3, 2020, ______________, thesauri2   , notType3                 , 0|0,,tag3, multivalue1|multivalue3,01/01/2022,AnyStringIsGood
+title1, header with dots value 1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,tag1, multivalue1,03/01/2022,English, Group ::Item1, Group ::Item1|Another Group ::Item3 
+title2, header with dots value 2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,tag2, multivalue2,01/03/2022,Spanish, Another Group::Item3 , Group :: Item2 
+title3, header with dots value 3, text value 3, 2020, ______________, thesauri2   , notType3                 , 0|0,,tag3, multivalue1|multivalue3,01/01/2022,AnyStringIsGood, Normal Group::Normal Item, Normal Group::Normal Item
+ title4 , header with dots value 4, text   value   4 , 2021, ______________, new_select_value, notType4 , 2|2,,tag4 , new_multi1|new_multi2,02/01/2023,French, New Group :: New Item, New Group :: New Item | Another Group :: new_multi2 

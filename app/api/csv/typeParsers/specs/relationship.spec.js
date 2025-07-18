@@ -89,18 +89,27 @@ describe('relationship', () => {
     expect(entitiesRelated[1].title).toBe('value3');
     expect(entitiesRelated[2].title).toBe('value2');
 
-    expect(value1).toEqual([
-      { value: entitiesRelated[0].sharedId, label: 'value1' },
-      { value: entitiesRelated[1].sharedId, label: 'value3' },
-    ]);
-    expect(value2).toEqual([
-      { value: entitiesRelated[0].sharedId, label: 'value1' },
-      { value: entitiesRelated[2].sharedId, label: 'value2' },
-    ]);
-    expect(value3).toEqual([
-      { value: entitiesRelated[0].sharedId, label: 'value1' },
-      { value: entitiesRelated[2].sharedId, label: 'value2' },
-    ]);
+    expect(value1).toEqual({
+      data: [
+        { value: entitiesRelated[0].sharedId, label: 'value1' },
+        { value: entitiesRelated[1].sharedId, label: 'value3' },
+      ],
+      warnings: [],
+    });
+    expect(value2).toEqual({
+      data: [
+        { value: entitiesRelated[0].sharedId, label: 'value1' },
+        { value: entitiesRelated[2].sharedId, label: 'value2' },
+      ],
+      warnings: [],
+    });
+    expect(value3).toEqual({
+      data: [
+        { value: entitiesRelated[0].sharedId, label: 'value1' },
+        { value: entitiesRelated[2].sharedId, label: 'value2' },
+      ],
+      warnings: [],
+    });
   });
 
   it('should not create blank values, duplicate values, or values without templates', async () => {

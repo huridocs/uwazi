@@ -2,12 +2,35 @@ import entities from 'api/entities';
 import { unique, emptyString } from 'api/utils/filters';
 import { RawEntity } from 'api/csv/entityRow';
 import { ensure } from 'shared/tsUtils';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { csvConstants } from '../csvDefinitions';
+import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils';
 
-const relationship = async (entityToImport: RawEntity, property: PropertySchema) => {
-  const values = entityToImport.propertiesFromColumns[ensure<string>(property.name)]
+export interface ParserResult {
+  data: MetadataObjectSchema[];
+  warnings: SanitizationWarning[];
+}
+
+const relationship = async (
+  entityToImport: RawEntity,
+  property: PropertySchema
+): Promise<ParserResult> => {
+  const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+  const sanitizationResult = sanitizeMetadataValue(
+    rawValue,
+    ensure<string>(property.name),
+    property.type
+  );
+
+  if (sanitizationResult.value === '') {
+    return {
+      data: [],
+      warnings: sanitizationResult.warnings,
+    };
+  }
+
+  const values = sanitizationResult.value
     .split(csvConstants.multiValueSeparator)
     .filter(emptyString)
     .filter(unique);
@@ -39,9 +62,14 @@ const relationship = async (entityToImport: RawEntity, property: PropertySchema)
   }
 
   const toRelateEntities: EntityWithFilesSchema[] = await entities.get(query);
-  return toRelateEntities
-    .map(e => ({ value: e.sharedId, label: e.title }))
-    .filter((mo, index, mos) => mos.findIndex(e => e.value === mo.value) === index);
+  return {
+    data: toRelateEntities
+      .map(e => ({ value: e.sharedId, label: e.title }))
+      .filter(
+        (mo, index, mos) => mos.findIndex(e => e.value === mo.value) === index
+      ) as MetadataObjectSchema[],
+    warnings: sanitizationResult.warnings,
+  };
 };
 
 export default relationship;

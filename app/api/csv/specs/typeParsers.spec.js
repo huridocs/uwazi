@@ -11,7 +11,8 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'text_prop' };
       const rawEntity = rawEntityWithProps({ text_prop: 'text' });
 
-      expect(await typeParsers.text(rawEntity, templateProp)).toEqual([{ value: 'text' }]);
+      const result = await typeParsers.text(rawEntity, templateProp);
+      expect(result.data).toEqual([{ value: 'text' }]);
     });
   });
 
@@ -20,16 +21,16 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'numeric_prop' };
       const rawEntity = rawEntityWithProps({ numeric_prop: '2019' });
 
-      expect(await typeParsers.numeric(rawEntity, templateProp)).toEqual([{ value: 2019 }]);
+      const result = await typeParsers.numeric(rawEntity, templateProp);
+      expect(result.data).toEqual([{ value: 2019 }]);
     });
 
     it('should return original value if value is NaN (will be catched by the entitiy validator)', async () => {
       const templateProp = { name: 'numeric_prop' };
       const rawEntity = rawEntityWithProps({ numeric_prop: 'Not a number' });
 
-      expect(await typeParsers.numeric(rawEntity, templateProp)).toEqual([
-        { value: 'Not a number' },
-      ]);
+      const result = await typeParsers.numeric(rawEntity, templateProp);
+      expect(result.data).toEqual([{ value: 'Not a number' }]);
     });
   });
 
@@ -38,7 +39,8 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'link_prop' };
       const rawEntity = rawEntityWithProps({ link_prop: 'http://www.url.com' });
 
-      expect(await typeParsers.link(rawEntity, templateProp)).toEqual([
+      const result = await typeParsers.link(rawEntity, templateProp);
+      expect(result.data).toEqual([
         {
           value: {
             label: 'http://www.url.com',
@@ -59,7 +61,8 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'link_prop' };
       const rawEntity = rawEntityWithProps({ link_prop: 'label|http://www.url.com' });
 
-      expect(await typeParsers.link(rawEntity, templateProp)).toEqual([
+      const result = await typeParsers.link(rawEntity, templateProp);
+      expect(result.data).toEqual([
         {
           value: {
             label: 'label',
@@ -108,13 +111,13 @@ describe('csvLoader typeParsers', () => {
       async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
-        const expected = await typeParsers.date(
+        const result = await typeParsers.date(
           rawEntityWithProps({ date_prop: dateProp }),
           templateProp,
           dateFormat
         );
 
-        expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual(expectedDate);
+        expect(moment.utc(result.data[0].value, 'X').format('DD-MM-YYYY')).toEqual(expectedDate);
       }
     );
   });
@@ -136,13 +139,13 @@ describe('csvLoader typeParsers', () => {
       async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
-        const expected = await typeParsers.multidate(
+        const result = await typeParsers.multidate(
           rawEntityWithProps({ date_prop: dateProp }),
           templateProp,
           dateFormat
         );
 
-        expect(expected.map(date => moment.utc(date.value, 'X').format('DD-MM-YYYY'))).toEqual(
+        expect(result.data.map(date => moment.utc(date.value, 'X').format('DD-MM-YYYY'))).toEqual(
           expectedDate
         );
       }
@@ -164,15 +167,17 @@ describe('csvLoader typeParsers', () => {
       async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
-        const [
-          {
-            value: { from, to },
-          },
-        ] = await typeParsers.daterange(
+        const result = await typeParsers.daterange(
           rawEntityWithProps({ date_prop: dateProp }),
           templateProp,
           dateFormat
         );
+
+        const [
+          {
+            value: { from, to },
+          },
+        ] = result.data;
 
         expect({
           from: from && moment.utc(from, 'X').format('DD-MM-YYYY'),
@@ -260,14 +265,14 @@ describe('csvLoader typeParsers', () => {
       async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
-        const expected = await typeParsers.multidaterange(
+        const result = await typeParsers.multidaterange(
           rawEntityWithProps({ date_prop: dateProp }),
           templateProp,
           dateFormat
         );
 
         expect(
-          expected.map(range => ({
+          result.data.map(range => ({
             from: range.value.from && moment.utc(range.value.from, 'X').format('DD-MM-YYYY'),
             to: range.value.to && moment.utc(range.value.to, 'X').format('DD-MM-YYYY'),
           }))

@@ -8,4 +8,5 @@ export default combineReducers({
   importStart: createReducer('importStart', false),
   importEnd: createReducer('importEnd', false),
   importError: createReducer('importError', {}),
+  importRowExceptions: createReducer('importRowExceptions', {}),
 });

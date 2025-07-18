@@ -6,12 +6,17 @@ describe('generatedid parser', () => {
 
   it('should return the value if the property has one', async () => {
     const rawEntity = { propertiesFromColumns: { id: 'XYZ123' }, language: 'en' };
-    expect(await typeParsers.generatedid(rawEntity, templateProp)).toEqual([{ value: 'XYZ123' }]);
+    expect(await typeParsers.generatedid(rawEntity, templateProp)).toEqual({
+      data: [{ value: 'XYZ123' }],
+      warnings: [],
+    });
   });
 
   it('should return a generated id if the property is empty', async () => {
     const rawEntity = { propertiesFromColumns: { id: '' }, language: 'en' };
-    const [propertyValue] = await typeParsers.generatedid(rawEntity, templateProp);
+    const {
+      data: [propertyValue],
+    } = await typeParsers.generatedid(rawEntity, templateProp);
     expect(propertyValue.value).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
   });
 });
