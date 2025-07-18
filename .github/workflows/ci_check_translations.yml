@@ -4,7 +4,11 @@ on:
   workflow_call:
 
 jobs:
+  setup_mongosh:
+    uses: ./.github/workflows/ci_setup_mongosh.yml
+
   check_translations:
+    needs: setup_mongosh
     runs-on: ubuntu-24.04
     services:
       elasticsearch:
@@ -13,9 +17,6 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: Setup MongoDB tools
-        uses: ./.github/workflows/ci_setup_mongosh.yml
-
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:

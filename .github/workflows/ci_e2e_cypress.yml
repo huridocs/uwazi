@@ -4,7 +4,11 @@ on:
   workflow_call:
 
 jobs:
+  setup_mongosh:
+    uses: ./.github/workflows/ci_setup_mongosh.yml
+
   e2e-cypress:
+    needs: setup_mongosh
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -50,8 +54,6 @@ jobs:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
 
-      - name: Setup MongoDB tools
-        uses: ./.github/workflows/ci_setup_mongosh.yml
       - uses: actions/checkout@v4
       - name: Setup Nodejs
         uses: actions/setup-node@v4
