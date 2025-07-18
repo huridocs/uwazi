@@ -48,8 +48,7 @@ const getBlankSuggestionForPdf = ({
 async function createBlankStateSuggestionsBatch(
   batch: BatchRange,
   templateId: string,
-  extractorId: string,
-  isMultiValued: boolean
+  extractorId: string
 ) {
   const [entities, extractor] = await Promise.all([
     fetchEntitiesDataForBatch(templateId, batch.fromId, batch.toId),
@@ -66,8 +65,6 @@ async function createBlankStateSuggestionsBatch(
 
   await useCase.execute({
     entities,
-    templateId,
-    isMultiValued,
     extractor,
     targetProperty,
   });

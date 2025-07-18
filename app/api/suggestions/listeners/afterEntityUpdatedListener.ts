@@ -3,12 +3,15 @@ import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { isEqual } from 'lodash';
+import { ObjectId } from 'mongodb';
 import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
+import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged';
 
 type Dependencies = {
   settingsDS: SettingsDataSource;
   logger: Logger;
   updateSuggestionsAfterEntityUpdate: UpdateSuggestionsAfterEntityUpdate;
+  processSuggestionsAfterTemplateChanged: ProcessSuggestionsAfterTemplateChanged;
 };
 
 export class AfterEntityUpdatedListener {
@@ -41,6 +44,12 @@ export class AfterEntityUpdatedListener {
       }
 
       await this.deps.updateSuggestionsAfterEntityUpdate.execute({ entities: after });
+    } else {
+      await this.deps.processSuggestionsAfterTemplateChanged.execute({
+        entities: after,
+        newTemplateId: after[0]!.template as ObjectId,
+        oldTemplateId: before[0]!.template as ObjectId,
+      });
     }
   }
 }

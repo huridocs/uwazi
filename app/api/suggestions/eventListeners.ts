@@ -26,6 +26,7 @@ import { CreateBlankSuggestionsFromDocument } from './useCases/createBlankSugges
 import { SuggestionFactory } from './suggestionFactory';
 import { AfterEntityUpdatedListener } from './listeners/afterEntityUpdatedListener';
 import { UpdateSuggestionsAfterEntityUpdate } from './useCases/updateSuggestionsAfterEntityUpdate';
+import { ProcessSuggestionsAfterTemplateChanged } from './useCases/processSuggestionsAfterTemplateChanged';
 
 const featureIsEnabled = async () => {
   const configuration = await settings.get();
@@ -131,6 +132,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     settingsDS: DefaultSettingsDataSource(DefaultTransactionManager()),
     logger: DefaultLogger(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(),
+    processSuggestionsAfterTemplateChanged: new ProcessSuggestionsAfterTemplateChanged(),
   })).start();
 
   eventsBus.on(EntityCreatedEvent, async ({ entities }) => {
