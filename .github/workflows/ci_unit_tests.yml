@@ -20,7 +20,7 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
       minio:
-        # fixme: let's not depend on external unofficial image
+        # fixme: let's not depend on external unofficial image. #updated coment: ok!
         image: lazybit/minio
         ports:
           - 9000:9000
