@@ -53,6 +53,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: prod
-          path: ./prod
-          exclude: ./prod/node_modules
+          path: |
+            ./prod/dist
+            ./prod/app
+            ./prod/database
+            ./prod/scripts
+            ./prod/public
+            ./prod/package.json
+            ./prod/server.js
+            ./prod/message.js
+            ./prod/contents
+            ./prod/uploaded_documents
+            ./prod/temporal_files
+            ./prod/custom_uploads
+            ./prod/log
           compression-level: 9
