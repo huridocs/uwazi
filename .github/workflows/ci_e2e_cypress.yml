@@ -81,8 +81,10 @@ jobs:
         with:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
-        env:
-          PATH: ${{ env.PATH }}:$HOME/.local/bin
+
+      - name: Set PATH for mongosh
+        run: echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+
       - uses: actions/checkout@v4
       - name: Setup Nodejs
         uses: actions/setup-node@v4

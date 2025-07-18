@@ -7,33 +7,40 @@ jobs:
   setup_mongosh:
     runs-on: ubuntu-24.04
     steps:
-      - name: Cache MongoDB repository
+      - name: Cache mongosh
+        id: cache-mongosh
         uses: actions/cache@v4
         with:
-          path: /etc/apt/sources.list.d/mongodb-org-6.0.list
-          key: ${{ runner.os }}-mongodb-repo-6.0
+          path: ~/.local/bin/mongosh
+          key: ${{ runner.os }}-mongosh-6.0
 
-      - name: Cache MongoDB packages
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives/mongodb*
-          key: ${{ runner.os }}-mongodb-packages-6.0
-
-      - name: Install mongosh
+      - name: Install mongosh if not cached
         run: |
-          # Only add repo if not already present
-          if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
-            sudo apt-get update -qq
-            sudo apt-get install -y wget gnupg
-            wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-            echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-          fi
+          if [ -f ~/.local/bin/mongosh ]; then
+            echo "mongosh found in cache"
+            export PATH="$HOME/.local/bin:$PATH"
+          else
+            echo "Installing mongosh..."
+            # Add MongoDB repo if not already present
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+              sudo apt-get update -qq
+              sudo apt-get install -y wget gnupg
+              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            fi
 
-          # Install only if not already installed
-          if ! command -v mongosh &> /dev/null; then
+            # Install mongosh
             sudo apt-get update -qq
             sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+            
+            # Copy to cache location for next run
+            mkdir -p ~/.local/bin
+            sudo cp /usr/bin/mongosh ~/.local/bin/
+            sudo chown $USER:$USER ~/.local/bin/mongosh
           fi
+
+      - name: Set PATH for mongosh
+        run: echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
       - name: Verify mongosh installation
         run: |
