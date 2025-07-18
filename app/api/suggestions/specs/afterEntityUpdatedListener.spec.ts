@@ -6,6 +6,7 @@ import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
 import { AfterEntityUpdatedListener } from '../listeners/afterEntityUpdatedListener';
+import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged';
 
 const factory = getFixturesFactory();
 
@@ -20,6 +21,10 @@ const createSut = (props?: Props) => {
     props?.updateSuggestionsAfterEntityUpdate ??
     TestUtils.mockClass<UpdateSuggestionsAfterEntityUpdate>({ execute: jest.fn() });
 
+  const processSuggestionsAfterTemplateChanged =
+    props?.updateSuggestionsAfterEntityUpdate ??
+    TestUtils.mockClass<ProcessSuggestionsAfterTemplateChanged>({ execute: jest.fn() });
+
   const settingsDS =
     props?.settingsDS ??
     TestUtils.mockClass<SettingsDataSource>({
@@ -30,11 +35,13 @@ const createSut = (props?: Props) => {
     eventBus,
     settingsDS,
     updateSuggestionsAfterEntityUpdate,
+    processSuggestionsAfterTemplateChanged,
     logger: createMockLogger(),
   })).start();
 
   return {
     updateSuggestionsAfterEntityUpdate,
+    processSuggestionsAfterTemplateChanged,
     eventBus,
   };
 };
@@ -86,5 +93,25 @@ describe('AfterEntityUpdatedListener', () => {
     );
 
     expect(updateSuggestionsAfterEntityUpdate.execute).not.toHaveBeenCalled();
+  });
+
+  it('should call ProcessSuggestionsAfterTemplateChanged if template changed', async () => {
+    const { processSuggestionsAfterTemplateChanged, eventBus } = createSut();
+
+    const entities = factory.entityInMultipleLanguages(['en', 'es'], 'any_entity', 'template_a');
+    const entitiesChanged = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'any_entity',
+      'template_b',
+      {
+        text: [{ value: 'text' }],
+      }
+    );
+
+    await eventBus.emit(
+      new EntityUpdatedEvent({ before: entities, after: entitiesChanged, targetLanguageKey: 'en' })
+    );
+
+    expect(processSuggestionsAfterTemplateChanged.execute).toHaveBeenCalled();
   });
 });
