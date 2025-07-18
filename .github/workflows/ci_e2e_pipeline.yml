@@ -14,21 +14,17 @@ permissions:
   contents: read
 
 jobs:
-  setup_mongosh:
-    uses: ./.github/workflows/ci_setup_mongosh.yml
-
   build:
-    needs: setup_mongosh
     uses: ./.github/workflows/ci_build.yml
 
   #e2e_cypress:
-  #  needs: [setup_mongosh, build]
+  #  needs: build
   #  uses: ./.github/workflows/ci_e2e_cypress.yml
 
   e2e_puppeteer:
-    needs: [setup_mongosh, build]
+    needs: build
     uses: ./.github/workflows/ci_e2e_puppeteer.yml
 
   check_translations:
-    needs: [setup_mongosh, build]
+    needs: build
     uses: ./.github/workflows/ci_check_translations.yml
