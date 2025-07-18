@@ -11,7 +11,6 @@ import { FormGroup } from 'app/Forms';
 import { t, Translate } from 'app/I18N';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import Tip from 'app/Layout/Tip';
-import { preloadOptionsLimit } from 'shared/config';
 import { generateID } from 'shared/IDGenerator';
 
 import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
@@ -105,7 +104,7 @@ class MetadataFormFields extends Component {
 
   getField(property, _model, thesauris, formModel) {
     let thesauri;
-    let totalPossibleOptions = 0;
+    const totalPossibleOptions = 0;
     const {
       dateFormat,
       version,
@@ -173,28 +172,7 @@ class MetadataFormFields extends Component {
           </>
         );
       case 'relationship':
-        if (property.content) {
-          const source = thesauris.find(
-            opt => opt.get('_id').toString() === property.content.toString()
-          );
-
-          totalPossibleOptions = source.get('optionsCount');
-          thesauri = translateOptions(source);
-        }
-
-        if (!property.content) {
-          thesauri = Array.prototype
-            .concat(
-              ...thesauris
-                .filter(filterThesauri => filterThesauri.get('type') === 'template')
-                .map(source => {
-                  totalPossibleOptions += source.get('optionsCount');
-                  return translateOptions(source);
-                })
-            )
-            .slice(0, preloadOptionsLimit());
-        }
-
+        thesauri = [];
         if (entityThesauris.get(property.name)) {
           entityThesauris
             .get(property.name)
@@ -221,32 +199,7 @@ class MetadataFormFields extends Component {
           return null;
         }
 
-        if (property.targetTemplates.length > 0) {
-          thesauri = Array.prototype
-            .concat(
-              ...thesauris
-                .filter(opt => property.targetTemplates.includes(opt.get('_id').toString()))
-                .map(source => {
-                  totalPossibleOptions += source.get('optionsCount');
-                  return translateOptions(source);
-                })
-            )
-            .slice(0, preloadOptionsLimit());
-        }
-
-        if (property.targetTemplates.length === 0) {
-          thesauri = Array.prototype
-            .concat(
-              ...thesauris
-                .filter(filterThesauri => filterThesauri.get('type') === 'template')
-                .map(source => {
-                  totalPossibleOptions += source.get('optionsCount');
-                  return translateOptions(source);
-                })
-            )
-            .slice(0, preloadOptionsLimit());
-        }
-
+        thesauri = [];
         if (entityThesauris.get(property.name)) {
           entityThesauris
             .get(property.name)
