@@ -76,9 +76,13 @@ jobs:
 
       - name: Install system packages if not cached
         run: |
+          echo "Checking for cached system packages..."
+          ls -la ~/.local/system-packages/ 2>/dev/null || echo "Cache directory doesn't exist"
+
           if [ -f ~/.local/system-packages/pdftoppm ] && [ -f ~/.local/system-packages/pdftotext ]; then
             echo "System packages found in cache"
             export PATH="$HOME/.local/system-packages:$PATH"
+            echo "PATH updated: $PATH"
           else
             echo "Installing system packages..."
             sudo apt-get update -qq
@@ -86,10 +90,14 @@ jobs:
             
             # Copy actual binaries to cache location for next run
             mkdir -p ~/.local/system-packages
+            echo "Copying binaries to cache location..."
             sudo cp /usr/bin/pdftoppm ~/.local/system-packages/
             sudo cp /usr/bin/pdftotext ~/.local/system-packages/
             sudo cp /usr/bin/pdfinfo ~/.local/system-packages/
             sudo chown $USER:$USER ~/.local/system-packages/pdftoppm ~/.local/system-packages/pdftotext ~/.local/system-packages/pdfinfo
+            
+            echo "Verifying copied files:"
+            ls -la ~/.local/system-packages/
           fi
       - name: Download production build artifact
         uses: actions/download-artifact@v4
