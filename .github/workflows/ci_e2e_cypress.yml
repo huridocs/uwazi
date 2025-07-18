@@ -4,11 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  setup_mongosh:
-    uses: ./.github/workflows/ci_setup_mongosh.yml
-
   e2e-cypress:
-    needs: setup_mongosh
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -48,6 +44,38 @@ jobs:
           - 6379:6379
 
     steps:
+      - name: Restore MongoDB tools from cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/bin
+          key: ${{ runner.os }}-mongodb-tools-6.0
+
+      - name: Set PATH for MongoDB tools
+        run: |
+          if [ -f ~/.local/bin/mongosh ]; then
+            echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          else
+            echo "MongoDB tools not found in cache, installing..."
+            # Add MongoDB repo if not already present
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+              sudo apt-get update -qq
+              sudo apt-get install -y wget gnupg
+              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            fi
+
+            # Install MongoDB tools
+            sudo apt-get update -qq
+            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+            
+            # Copy to cache location for next run
+            mkdir -p ~/.local/bin
+            sudo cp /usr/bin/mongosh ~/.local/bin/
+            sudo cp /usr/bin/mongorestore ~/.local/bin/
+            sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
+            echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          fi
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
