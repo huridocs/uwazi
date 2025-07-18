@@ -50,10 +50,14 @@ jobs:
         id: cypress-version
         run: echo "version=$(yarn list cypress --depth=0 --json | jq -r '.data.trees[0].children.cypress.version')" >> $GITHUB_OUTPUT
       - name: Cache Cypress
+        id: cache-cypress
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
+      - name: Install Cypress if not cached
+        run: npx cypress install
+        if: steps.cache-cypress.outputs.cache-hit != 'true'
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - name: Download production build artifact

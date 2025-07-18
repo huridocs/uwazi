@@ -17,21 +17,9 @@ jobs:
   build:
     uses: ./.github/workflows/ci_build.yml
 
-  e2e_cypress_base:
+  e2e_cypress:
     needs: build
-    uses: ./.github/workflows/ci_e2e_cypress_base.yml
-
-  e2e_cypress_IX:
-    needs: build
-    uses: ./.github/workflows/ci_e2e_cypress_IX.yml
-
-  e2e_cypress_pages:
-    needs: build
-    uses: ./.github/workflows/ci_e2e_cypress_pages.yml
-
-  e2e_cypress_settings:
-    needs: build
-    uses: ./.github/workflows/ci_e2e_cypress_settings.yml
+    uses: ./.github/workflows/ci_e2e_cypress.yml
 
   e2e_puppeteer:
     needs: build

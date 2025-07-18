@@ -1,4 +1,4 @@
-name: E2E Cypress Information Extraction
+name: E2E Cypress Tests
 
 on:
   workflow_call:
@@ -6,6 +6,30 @@ on:
 jobs:
   e2e-cypress:
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: base
+            spec: 'cypress/e2e/base/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
+          - name: information-extraction
+            spec: 'cypress/e2e/informationExtraction/*.cy.ts'
+            needs_setup: true
+            needs_ix_config: true
+            needs_external_services: true
+          - name: pages
+            spec: 'cypress/e2e/pages/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
+          - name: settings
+            spec: 'cypress/e2e/settings/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: true
+            needs_external_services: true
     env:
       CYPRESS_RETRIES: 2
     services:
@@ -18,6 +42,7 @@ jobs:
         image: redis:5.0.14
         ports:
           - 6379:6379
+
     steps:
       - name: 🍃 Install mongosh
         run: |
@@ -64,23 +89,35 @@ jobs:
         with:
           name: prod
           path: ./prod
+      # Matrix-specific setup steps
       - name: Set up Python 3.11
+        if: matrix.needs_setup
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
       - name: Clone dummy services
+        if: matrix.needs_setup
         uses: actions/checkout@v4
         with:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
-      - run: python3 -m venv .venv
+      - name: Setup dummy services
+        if: matrix.needs_setup
+        run: |
+          python3 -m venv .venv
+          make install_venv -C dummy_extractor_services
+          make start -C dummy_extractor_services > logs.log &
+          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
         working-directory: dummy_extractor_services
-      - run: make install_venv -C dummy_extractor_services
-      - run: make start -C dummy_extractor_services > logs.log &
-      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
-      - name: Log on failure
-        if: ${{ failure() }}
+      - name: Log dummy services on failure
+        if: matrix.needs_setup && failure()
         run: cat dummy_extractor_services/logs.log
+      - name: Configure IX settings
+        if: matrix.needs_ix_config
+        run: yarn ix-config
+        env:
+          DBHOST: localhost:27017
+          DATABASE_NAME: uwazi_e2e
       - run: yarn blank-state
         id: blank-state-attempt1
         continue-on-error: true
@@ -99,10 +136,6 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
-      - run: yarn ix-config
-        env:
-          DBHOST: localhost:27017
-          DATABASE_NAME: uwazi_e2e
       - name: start Uwazi
         env:
           NOTIFICATION_DELAY: 50
@@ -110,16 +143,16 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-          EXTERNAL_SERVICES: true
-          FEATURE_FLAG_PARAGRAPH_EXTRACTION: true
+          EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
+          FEATURE_FLAG_PARAGRAPH_EXTRACTION: ${{ matrix.needs_external_services }}
         run: .github/scripts/start-uwazi.sh
-      - name: Cypress run
+      - name: Cypress run - ${{ matrix.name }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           component: false
           config-file: cypress.config.ts
-          spec: 'cypress/e2e/informationExtraction/*.cy.ts'
+          spec: ${{ matrix.spec }}
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
@@ -128,12 +161,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-          name: snapshots
+          name: snapshots-${{ matrix.name }}
           path: cypress/e2e/**/__image_snapshots__/
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-          name: video
+          name: video-${{ matrix.name }}
           path: cypress/videos/
       - name: Print server output
         run: cat output.txt
