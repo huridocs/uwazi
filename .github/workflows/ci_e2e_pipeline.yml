@@ -1,4 +1,4 @@
-name: CI E2E Pipeline
+name: E2E Pipeline
 
 on:
   push:
