@@ -41,6 +41,16 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     ) => Promise<void>;
   }
 
+  async componentDidMount() {
+    await this.onFilter('');
+  }
+
+  async componentDidUpdate(prevProps: LookupMultiSelectProps) {
+    if (prevProps.lookup !== this.props.lookup) {
+      await this.onFilter('');
+    }
+  }
+
   onChange(value: string[]) {
     this.props.onChange(value);
     const options = this.combineOptions();
@@ -53,24 +63,18 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   async onFilter(searchTerm: string) {
-    if (searchTerm.length) {
-      const { options, count } = await this.props.lookup(searchTerm);
-
-      const lookupOptions = options.map((o: Option) => ({
-        ...o,
-        [this.props.optionsValue]: o.value,
-        [this.props.optionsLabel]: o.label,
-      }));
-
-      this.setState({ lookupOptions, totalPossibleOptions: count });
+    if (!this.props.lookup) {
+      return;
     }
+    const { options, count } = await this.props.lookup(searchTerm);
 
-    if (!searchTerm.length) {
-      this.setState({
-        lookupOptions: [],
-        totalPossibleOptions: this.props.totalPossibleOptions,
-      });
-    }
+    const lookupOptions = options.map((o: Option) => ({
+      ...o,
+      [this.props.optionsValue]: o.value,
+      [this.props.optionsLabel]: o.label,
+    }));
+
+    this.setState({ lookupOptions, totalPossibleOptions: count });
   }
 
   combineOptions(): Option[] {

@@ -1142,6 +1142,11 @@ describe('search', () => {
       const { options: withLongerSearch } = await search.autocomplete('shed', 'es');
       expect(withLongerSearch.length).toBe(2);
     });
+
+    it('should return all documents when search term is empty', async () => {
+      const { options } = await search.autocomplete('', 'es');
+      expect(options.length).toBe(6);
+    });
   });
 
   describe('customFilters', () => {
