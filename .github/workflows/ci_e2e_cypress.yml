@@ -6,6 +6,7 @@ on:
 jobs:
   e2e-cypress:
     runs-on: ubuntu-24.04
+    name: ${{ matrix.name }}
     strategy:
       fail-fast: false
       matrix:
