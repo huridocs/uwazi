@@ -13,18 +13,20 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: Restore MongoDB tools from cache
+      - name: Cache MongoDB tools
+        id: cache-mongodb
         uses: actions/cache@v4
         with:
           path: ~/.local/bin
           key: ${{ runner.os }}-mongodb-tools-6.0
 
-      - name: Set PATH for MongoDB tools
+      - name: Install MongoDB tools if not cached
         run: |
-          if [ -f ~/.local/bin/mongosh ]; then
-            echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
+            echo "MongoDB tools found in cache"
+            export PATH="$HOME/.local/bin:$PATH"
           else
-            echo "MongoDB tools not found in cache, installing..."
+            echo "Installing MongoDB tools..."
             # Add MongoDB repo if not already present
             if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
               sudo apt-get update -qq
@@ -42,7 +44,6 @@ jobs:
             sudo cp /usr/bin/mongosh ~/.local/bin/
             sudo cp /usr/bin/mongorestore ~/.local/bin/
             sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
-            echo "$HOME/.local/bin:$PATH" >> $GITHUB_ENV
           fi
 
       - name: Start MongoDB
