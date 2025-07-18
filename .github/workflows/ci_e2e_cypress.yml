@@ -105,37 +105,29 @@ jobs:
           key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
       - name: install dependencies
         run: yarn install
-      - name: Cache system packages
-        id: cache-system-packages
+      - name: Cache poppler-utils
+        id: cache-poppler
         uses: actions/cache@v4
         with:
           path: ~/.local/system-packages
-          key: ${{ runner.os }}-system-packages-1.0
+          key: ${{ runner.os }}-poppler-utils-1.0
 
-      - name: Install system packages if not cached
+      - name: Install poppler-utils if not cached
         run: |
-          echo "Checking for cached system packages..."
-          ls -la ~/.local/system-packages/ 2>/dev/null || echo "Cache directory doesn't exist"
-
           if [ -f ~/.local/system-packages/pdftoppm ] && [ -f ~/.local/system-packages/pdftotext ]; then
-            echo "System packages found in cache"
+            echo "poppler-utils found in cache"
             export PATH="$HOME/.local/system-packages:$PATH"
-            echo "PATH updated: $PATH"
           else
-            echo "Installing system packages..."
+            echo "Installing poppler-utils..."
             sudo apt-get update -qq
             sudo apt-get install -y poppler-utils
             
             # Copy actual binaries to cache location for next run
             mkdir -p ~/.local/system-packages
-            echo "Copying binaries to cache location..."
             sudo cp /usr/bin/pdftoppm ~/.local/system-packages/
             sudo cp /usr/bin/pdftotext ~/.local/system-packages/
             sudo cp /usr/bin/pdfinfo ~/.local/system-packages/
             sudo chown $USER:$USER ~/.local/system-packages/pdftoppm ~/.local/system-packages/pdftotext ~/.local/system-packages/pdfinfo
-            
-            echo "Verifying copied files:"
-            ls -la ~/.local/system-packages/
           fi
       - name: Download production build artifact
         uses: actions/download-artifact@v4
