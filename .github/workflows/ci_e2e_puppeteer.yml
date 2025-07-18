@@ -1,18 +1,10 @@
-name: e2e puppeteer
+name: E2E Puppeteer
 
 on:
-  workflow_run:
-    workflows: ['build-production']
-    types:
-      - completed
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
   e2e-puppeteer:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -39,8 +31,7 @@ jobs:
         with:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
-      - name: Checkout reposistory
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:

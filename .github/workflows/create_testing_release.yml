@@ -34,11 +34,9 @@ jobs:
         with:
           path: ./prod
           key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/run.js') }}-${{ hashFiles('**/server.js') }}
-      - name: Download production build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: prod
-          path: ./prod
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
       - uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}

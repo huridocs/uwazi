@@ -1,10 +1,7 @@
-name: check translations
+name: Check Translations
 
 on:
-  workflow_run:
-    workflows: [build-production']
-    types:
-      - completed
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,7 +9,6 @@ concurrency:
 
 jobs:
   check_translations:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     services:
       elasticsearch:

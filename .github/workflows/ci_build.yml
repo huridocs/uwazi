@@ -1,18 +1,7 @@
-name: build-production
-
-permissions:
-  contents: read
+name: Build production artifact
 
 on:
   workflow_call:
-  push:
-    branches: [development]
-  pull_request:
-    branches: [development, staging, production]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:

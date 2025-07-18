@@ -1,18 +1,10 @@
-name: e2e cypress INFORMATION EXTRACTION
+name: E2E Cypress Information Extraction
 
 on:
-  workflow_run:
-    workflows: ['Build production artifact']
-    types:
-      - completed
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
   e2e-cypress:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
@@ -26,7 +18,6 @@ jobs:
         image: redis:5.0.14
         ports:
           - 6379:6379
-
     steps:
       - name: 🍃 Install mongosh
         run: |
@@ -43,6 +34,21 @@ jobs:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
       - uses: actions/checkout@v4
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node modules and Cypress
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./node_modules
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt update
+      - run: sudo apt-get install poppler-utils
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
