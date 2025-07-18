@@ -1,10 +1,10 @@
 name: check translations
 
 on:
-  push:
-    branches:
-      - development
-  pull_request:
+  workflow_run:
+    workflows: ['Build production artifact']
+    types:
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   check_translations:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     services:
       elasticsearch:
@@ -58,10 +59,11 @@ jobs:
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - run: yarn production-build
-        env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      - name: Download production build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: prod
+          path: ./prod
       - run: cd prod; yarn update-translations-db
         env:
           NODE_ENV: production

@@ -1,14 +1,10 @@
 name: e2e cypress PAGES
 
 on:
-  pull_request:
-    branches: [development, staging, production]
+  workflow_run:
+    workflows: ['Build production artifact']
     types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
-      - converted_to_draft
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,7 +12,7 @@ concurrency:
 
 jobs:
   e2e-cypress:
-    if: github.event.pull_request.draft == false
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
@@ -63,22 +59,11 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v4
+      - name: Download production build artifact
+        uses: actions/download-artifact@v4
         with:
+          name: prod
           path: ./prod
-          key: >-
-            ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
-            ${{ hashFiles('app/**/*.*') }}-
-            ${{ hashFiles('database/**/*.*') }}-
-            ${{ hashFiles('**/yarn.lock') }}-
-            ${{ hashFiles('**/webpack.production.config.js') }}-
-            ${{ hashFiles('**/.babelrc') }}-
-            ${{ hashFiles('webpack/**/config.js') }}-
-      - name: build production
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: yarn production-build
       - run: yarn blank-state
         id: blank-state-attempt1
         continue-on-error: true
