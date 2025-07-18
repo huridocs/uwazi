@@ -17,6 +17,15 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Get Cypress version
+        id: cypress-version
+        run: echo "version=$(yarn info cypress version | tr -d '\n')" >> $GITHUB_OUTPUT
+
+      - name: Cache Cypress
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
       - name: install dependencies
         run: yarn install
       - name: build production
