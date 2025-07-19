@@ -214,5 +214,10 @@ jobs:
           name: video-${{ matrix.name }}
           path: cypress/videos/
       - name: Print server output
-        run: cat output.txt
+        run: |
+          echo "📁 Startup logs:"
+          cat .github/logs/start-uwazi-logs.txt || echo "Startup log file not found"
+          echo
+          echo "📁 Health-check logs:"
+          cat .github/logs/health-check-logs.txt || echo "Health-check log file not found"
         if: failure()
