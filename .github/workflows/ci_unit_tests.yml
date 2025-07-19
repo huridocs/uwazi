@@ -201,6 +201,14 @@ jobs:
         run: ./cc-test-reporter sum-coverage **/codeclimate.*.json -p 3 -o codeclimate.total.json
       - name: Debug total coverage file
         run: head -5 codeclimate.total.json
+      - name: Debug file before upload
+        run: |
+          echo "File size:"
+          ls -la codeclimate.total.json
+          echo "First 10 lines:"
+          head -10 codeclimate.total.json
+          echo "Last 10 lines:"
+          tail -10 codeclimate.total.json
       - name: Upload coverage reports
         run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
     env:

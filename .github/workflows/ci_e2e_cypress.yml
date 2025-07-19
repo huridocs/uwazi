@@ -116,7 +116,6 @@ jobs:
         run: |
           if [ -f ~/.local/system-packages/pdftoppm ] && [ -f ~/.local/system-packages/pdftotext ]; then
             echo "poppler-utils found in cache"
-            export PATH="$HOME/.local/system-packages:$PATH"
           else
             echo "Installing poppler-utils..."
             sudo apt-get update -qq
@@ -129,6 +128,8 @@ jobs:
             sudo cp /usr/bin/pdfinfo ~/.local/system-packages/
             sudo chown $USER:$USER ~/.local/system-packages/pdftoppm ~/.local/system-packages/pdftotext ~/.local/system-packages/pdfinfo
           fi
+      - name: Set PATH for poppler-utils
+        run: echo "$HOME/.local/system-packages" >> $GITHUB_PATH
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
