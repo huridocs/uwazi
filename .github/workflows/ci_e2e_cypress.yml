@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/bin
-          key: ${{ runner.os }}-mongodb-tools-6.0
+          key: ${{ runner.os }}-ubuntu-24.04-mongodb-tools-6.0
 
       - name: Install MongoDB tools if not cached
         run: |
@@ -110,7 +110,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/system-packages
-          key: ${{ runner.os }}-poppler-utils-1.0
+          key: ${{ runner.os }}-ubuntu-24.04-poppler-utils
 
       - name: Install poppler-utils if not cached
         run: |
