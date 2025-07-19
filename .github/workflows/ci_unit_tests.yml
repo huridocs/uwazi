@@ -70,22 +70,10 @@ jobs:
 
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - run: ./cc-test-reporter before-build
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --coverage --coverageDirectory  coverage/api --maxWorkers=2 --logHeapUsage
-      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-coverage-report
-          path: tmp/codeclimate.api.json
-          retention-days: 1
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --maxWorkers=2 --logHeapUsage
   app_unit_tests:
     runs-on: ubuntu-24.04
     steps:
@@ -101,20 +89,8 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - run: ./cc-test-reporter before-build
       - name: Run tests
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
-      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: react-coverage-report
-          path: tmp/codeclimate.react.json
-          retention-days: 1
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --maxWorkers=2
   migrations_unit_tests:
     runs-on: ubuntu-24.04
     services:
@@ -170,46 +146,7 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - run: ./cc-test-reporter before-build
       - name: Run migration tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api/migrations --coverage --coverageDirectory  coverage/migrations --maxWorkers=2 --logHeapUsage
-      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.migrations.json coverage/migrations/lcov.info
-      - name: Archive migrations coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: migrations-coverage-report
-          path: tmp/codeclimate.migrations.json
-          retention-days: 1
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
-  codeclimate:
-    runs-on: ubuntu-24.04
-    needs: [api_unit_tests, app_unit_tests, migrations_unit_tests]
-    steps:
-      - name: Download tests results
-        uses: actions/download-artifact@v4.1.7
-        with:
-          pattern: '*-coverage-report'
-      - name: Download codeclimate binay
-        run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - name: Sum coverage reports
-        run: ./cc-test-reporter sum-coverage **/codeclimate.*.json -p 3 -o codeclimate.total.json
-      - name: Debug total coverage file
-        run: head -5 codeclimate.total.json
-      - name: Debug file before upload
-        run: |
-          echo "File size:"
-          ls -la codeclimate.total.json
-          echo "First 10 lines:"
-          head -10 codeclimate.total.json
-          echo "Last 10 lines:"
-          tail -10 codeclimate.total.json
-      - name: Upload coverage reports
-        run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api/migrations --maxWorkers=2 --logHeapUsage
