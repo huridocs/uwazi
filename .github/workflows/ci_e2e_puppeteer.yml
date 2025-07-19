@@ -67,31 +67,8 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - name: Cache poppler-utils
-        id: cache-poppler
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/system-packages
-          key: ${{ runner.os }}-ubuntu-24.04-poppler-utils
-
-      - name: Install poppler-utils if not cached
-        run: |
-          if [ -f ~/.local/system-packages/pdftoppm ] && [ -f ~/.local/system-packages/pdftotext ]; then
-            echo "poppler-utils found in cache"
-          else
-            echo "Installing poppler-utils..."
-            sudo apt-get update -qq
-            sudo apt-get install -y poppler-utils
-            
-            # Copy actual binaries to cache location for next run
-            mkdir -p ~/.local/system-packages
-            sudo cp /usr/bin/pdftoppm ~/.local/system-packages/
-            sudo cp /usr/bin/pdftotext ~/.local/system-packages/
-            sudo cp /usr/bin/pdfinfo ~/.local/system-packages/
-            sudo chown $USER:$USER ~/.local/system-packages/pdftoppm ~/.local/system-packages/pdftotext ~/.local/system-packages/pdfinfo
-          fi
-      - name: Set PATH for poppler-utils
-        run: echo "$HOME/.local/system-packages" >> $GITHUB_PATH
+      - name: Install poppler-utils
+        run: sudo apt-get update -qq && sudo apt-get install -y poppler-utils
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
