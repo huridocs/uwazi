@@ -12,35 +12,50 @@ concurrency:
 
 jobs:
   cypress-run:
+    name: Component testing
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+
       - name: Cache node modules
         uses: actions/cache@v4
         with:
-          path: ./node_modules
+          path: |
+            ./node_modules
+            ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
       - name: Get Cypress version
         id: cypress-version
         run: echo "version=$(yarn info cypress version | tr -d '\n')" >> $GITHUB_OUTPUT
+
       - name: Cache Cypress
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
-      - name: install dependencies
-        run: yarn install
-      - name: generate global css
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: Install Cypress binary
+        run: npx cypress install
+        if: steps.cypress-version.outputs.version != ''
+
+      - name: Generate global CSS
         run: yarn tailwind
+
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
