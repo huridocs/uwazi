@@ -123,7 +123,6 @@ jobs:
         with:
           name: prod
           path: ./prod
-      # Matrix-specific setup steps
       - name: Set up Python 3.11
         if: matrix.needs_setup
         uses: actions/setup-python@v4
