@@ -111,11 +111,11 @@ jobs:
         with:
           path: ~/.local/bin
           key: ${{ runner.os }}-ubuntu-24.04-poppler-utils
-
       - name: Install poppler-utils if not cached
         run: |
-          if command -v pdftotext >/dev/null 2>&1 && command -v pdftoppm >/dev/null 2>&1 && command -v pdfinfo >/dev/null 2>&1; then
-            echo "poppler-utils found in PATH"
+          if [ -f ~/.local/bin/pdftotext ] && [ -f ~/.local/bin/pdftoppm ] && [ -f ~/.local/bin/pdfinfo ]; then
+            echo "poppler-utils found in cache"
+            export PATH="$HOME/.local/bin:$PATH"
           else
             echo "Installing poppler-utils..."
             sudo apt-get update -qq
