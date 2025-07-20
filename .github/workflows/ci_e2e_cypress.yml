@@ -134,9 +134,9 @@ jobs:
 
       - name: Verify poppler-utils installation
         run: |
-          pdftotext --version
-          pdftoppm --version
-          pdfinfo --version
+          pdftotext -v
+          pdftoppm -v
+          pdfinfo -v
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
