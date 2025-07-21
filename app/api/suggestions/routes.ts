@@ -35,6 +35,21 @@ function extractorIdRequestValidation(root = 'body') {
   });
 }
 
+const findSuggestionsRequestValidation = validateAndCoerceRequest({
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['extractorId', 'sharedIds'],
+      properties: {
+        extractorId: { type: 'string' },
+        sharedIds: { type: 'array', items: { type: 'string' } },
+      },
+    },
+  },
+});
+
 export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/',
@@ -147,6 +162,21 @@ export const suggestionsRoutes = (app: Application) => {
     async (req, res, _next) => {
       const output = await IX.testModel(ObjectId.createFromHexString(req.body.extractorId));
 
+      res.status(202).json(output);
+    }
+  );
+
+  app.post(
+    '/api/suggestions/find',
+    serviceMiddleware,
+    needsAuthorization(['admin', 'editor']),
+    findSuggestionsRequestValidation,
+    async (req, res, _next) => {
+      const { extractorId, sharedIds } = req.body;
+      const output = await IX.findSuggestionsForIds(
+        ObjectId.createFromHexString(extractorId),
+        sharedIds
+      );
       res.status(202).json(output);
     }
   );

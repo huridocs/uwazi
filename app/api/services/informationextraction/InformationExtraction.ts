@@ -47,7 +47,7 @@ import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
-import { Extractors } from './ixextractors';
+import { Extractors, ModelNotReadyError } from './ixextractors';
 import {
   CommonSuggestion,
   RawSuggestion,
@@ -680,6 +680,31 @@ class InformationExtraction {
         },
       },
     });
+  };
+
+  findSuggestionsForIds = async (extractorId: ObjectIdSchema, sharedIds: string[]) => {
+    const [model] = await ixmodels.get({ extractorId });
+
+    if (!model || model.status !== ModelStatus.ready) {
+      throw new ModelNotReadyError(extractorId.toString());
+    }
+
+    if (model.findSuggestionsRunTimestamp) {
+      throw new Error('A find suggestions process is already running for this extractor.');
+    }
+
+    await ixmodels.save({
+      ...model,
+      findSuggestionsRunTimestamp: Date.now(),
+      findSuggestionsSharedIds: sharedIds,
+      findingSuggestions: true,
+    });
+
+    await this.getSuggestions(extractorId);
+
+    const [updatedModel] = await ixmodels.get({ extractorId });
+
+    return this.getSuggestionsStatus(extractorId, updatedModel!);
   };
 
   trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
