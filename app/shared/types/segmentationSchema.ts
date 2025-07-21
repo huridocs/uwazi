@@ -42,6 +42,7 @@ export const segmentationSchema = {
     filename: { type: 'string', minLength: 1 },
     xmlname: { type: 'string', minLength: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+    retryCount: { type: 'number' },
     segmentation: {
       type: 'object',
       additionalProperties: false,

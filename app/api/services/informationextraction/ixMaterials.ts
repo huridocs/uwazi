@@ -322,9 +322,11 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
 
 async function getFileIdsWithReadySegmentations(
   extractorId: ObjectIdSchema,
-  targetLimit: number
+  limit: number
 ): Promise<ObjectIdSchema[]> {
   const [currentModel] = await ixmodels.get({ extractorId });
+
+  const targetLimit = limit || BATCH_SIZE_FOR_PDF;
 
   const query: UwaziFilterQuery<any> = {
     extractorId,
