@@ -169,7 +169,7 @@ export default {
     template: TemplateSchema,
     language: string,
     reindex = true,
-    onTemplateProcessed: () => void = () => {}
+    onTemplateProcessed: () => Promise<void> = async () => {}
   ) {
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
@@ -276,7 +276,7 @@ export default {
     template: TemplateSchema,
     language: string,
     _reindex = true,
-    onTemplateProcessed: () => void = () => {}
+    onTemplateProcessed: () => Promise<void> = async () => {}
   ) {
     const templateStructureChanges = await checkIfReindex(template);
     const reindex = _reindex && templateStructureChanges && !template.synced;
@@ -328,10 +328,8 @@ export default {
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
       this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
+        .then(async () => onTemplateProcessed())
         .then(async () => model.save({ _id: template._id, processing: false }))
-        .then(() => {
-          onTemplateProcessed();
-        })
         .catch(e => {
           throw e;
         });
