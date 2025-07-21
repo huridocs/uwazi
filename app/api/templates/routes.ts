@@ -6,6 +6,7 @@ import { search } from 'api/search';
 import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
+import { tenants } from 'api/tenants';
 
 const reindexAllTemplates = async () => {
   const allTemplates = await templates.get();
@@ -29,8 +30,13 @@ export default (app: Application) => {
       const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
-        templates.save(template, req.language, !fullReindex, () => {
-          req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
+        templates.save(template, req.language, !fullReindex, async () => {
+          if (fullReindex) {
+            await reindexAllTemplates();
+            req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
+          } else {
+            req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
+          }
         })
       );
 
@@ -43,7 +49,12 @@ export default (app: Application) => {
 
       if (updatedSettings) req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
 
-      if (fullReindex) await reindexAllTemplates();
+      if (
+        fullReindex &&
+        !tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
+      ) {
+        await reindexAllTemplates();
+      }
 
       res.json(response);
     } catch (error) {
