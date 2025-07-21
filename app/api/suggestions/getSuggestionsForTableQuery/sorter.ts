@@ -34,8 +34,4 @@ export class Sorter {
 
     return { [this.field]: this.orderAsNumber };
   }
-
-  get isSortingOnEntitiesCollection() {
-    return ['title', 'metadata'].includes(this.field.split('.')[0]);
-  }
 }
