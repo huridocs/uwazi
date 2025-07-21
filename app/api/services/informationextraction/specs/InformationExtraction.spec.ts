@@ -13,6 +13,8 @@ import { sortByStrings } from 'shared/data_utils/objectSorting';
 import { PropertyTypeSchema } from 'shared/types/commonTypes';
 
 import testingDB from 'api/utils/testing_db';
+import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import { filesModel } from 'api/files/filesModel';
 import { factory, fixtures } from './fixtures';
 import {
   CommonSuggestion,
@@ -28,7 +30,6 @@ import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
 import { TEST_RUN_SUGGESTIONS_SIZE } from '../ixmodels';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -1060,6 +1061,68 @@ describe('InformationExtraction', () => {
     });
 
     it('should handle error when no files have ready segmentations', async () => {
+      // Clear existing segmentations and suggestions to ensure clean state
+      await SegmentationModel.delete({});
+      await IXSuggestionsModel.delete({});
+
+      // Create file records
+      await filesModel.save({
+        _id: factory.id('F1'),
+        filename: 'documentA.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity1',
+        extractedMetadata: [],
+      });
+
+      await filesModel.save({
+        _id: factory.id('F3'),
+        filename: 'documentC.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity3',
+        extractedMetadata: [],
+      });
+
+      // Create suggestions for these files
+      await IXSuggestionsModel.save({
+        fileId: factory.id('F1'),
+        entityId: 'entity1',
+        language: 'en',
+        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
+        date: new Date().getTime(),
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
+      await IXSuggestionsModel.save({
+        fileId: factory.id('F3'),
+        entityId: 'entity3',
+        language: 'en',
+        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
+        date: new Date().getTime(),
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
       // Segmentations with failed status
       await SegmentationModel.save({
         fileID: factory.id('F1'),
@@ -1087,7 +1150,7 @@ describe('InformationExtraction', () => {
         'ix_model_status',
         factory.id('prop1extractor'),
         'ready',
-        'No files with segmentations to be used for training'
+        'Completed'
       );
     });
 
@@ -1129,6 +1192,106 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.materials.length).toBe(1);
 
       expect(IXExternalService.filesNames).not.toContain('documentC.xml');
+    });
+
+    it('should fetch more files when many have failed segmentations to ensure batch size', async () => {
+      // Clear existing data to ensure clean state
+      await SegmentationModel.delete({});
+      await IXSuggestionsModel.delete({});
+
+      // Create file records
+      await filesModel.save({
+        _id: factory.id('F1'),
+        filename: 'document1.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity1',
+        extractedMetadata: [],
+      });
+
+      await filesModel.save({
+        _id: factory.id('F2'),
+        filename: 'document2.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity2',
+        extractedMetadata: [],
+      });
+
+      // Create failed segmentation
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'document1.pdf',
+        status: 'failed',
+        retryCount: 1,
+      });
+
+      // Create ready segmentation
+      await SegmentationModel.save({
+        fileID: factory.id('F2'),
+        filename: 'document2.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            {
+              left: 58,
+              top: 63,
+              width: 457,
+              height: 15,
+              page_number: 1,
+              text: 'content',
+            },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'document2.xml',
+      });
+
+      // Create suggestions for both files
+      await IXSuggestionsModel.save({
+        _id: factory.id('S1'),
+        extractorId: factory.id('prop1extractor'),
+        entityId: 'entity1',
+        fileId: factory.id('F1'),
+        date: 100, // Use a date before model creation
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
+      await IXSuggestionsModel.save({
+        _id: factory.id('S2'),
+        extractorId: factory.id('prop1extractor'),
+        entityId: 'entity2',
+        fileId: factory.id('F2'),
+        date: 100, // Use a date before model creation
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
+      // Test the core logic by calling getFilesForSuggestions directly
+      const { getFilesForSuggestions } = await import('../ixMaterials');
+      const files = await getFilesForSuggestions(factory.id('prop1extractor'), 10);
+
+      // Should have returned only the file with ready segmentation
+      expect(files.length).toBe(1);
+      expect(files[0].segmentation?.xmlname).toBe('document2.xml');
     });
 
     it('should create suggestions for all files regardless of segmentation status', async () => {

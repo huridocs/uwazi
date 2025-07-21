@@ -320,7 +320,10 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
-async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+async function getFileIdsWithReadySegmentations(
+  extractorId: ObjectIdSchema,
+  targetLimit: number
+): Promise<ObjectIdSchema[]> {
   const [currentModel] = await ixmodels.get({ extractorId });
 
   const query: UwaziFilterQuery<any> = {
@@ -333,11 +336,51 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
     query.trainingSample = { $ne: true };
   }
 
-  const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-    limit: limit || BATCH_SIZE_FOR_PDF,
-  });
+  let allFileIds: ObjectIdSchema[] = [];
+  let skip = 0;
+  const batchSize = 100;
 
-  const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
+  while (allFileIds.length < targetLimit) {
+    // eslint-disable-next-line no-await-in-loop
+    const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
+      limit: batchSize,
+      skip,
+    });
+
+    if (suggestions.length === 0) {
+      break;
+    }
+
+    const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
+
+    const segmentations = await SegmentationModel.get(
+      { fileID: { $in: fileIds } },
+      'fileID status'
+    );
+
+    const readySegmentationFileIds = segmentations
+      .filter(seg => seg.status === 'ready' && seg.fileID)
+      .map(seg => seg.fileID!);
+
+    allFileIds.push(...readySegmentationFileIds);
+    skip += batchSize;
+
+    if (skip > 10000) {
+      break;
+    }
+  }
+
+  return allFileIds.slice(0, targetLimit);
+}
+
+async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+  const targetLimit = limit || BATCH_SIZE_FOR_PDF;
+
+  const allFileIds = await getFileIdsWithReadySegmentations(extractorId, targetLimit);
+
+  if (allFileIds.length === 0) {
+    return [];
+  }
 
   const files = (await filesModel.get(
     {
@@ -347,7 +390,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
           filename: { $exists: true },
           language: { $exists: true },
         },
-        { _id: { $in: fileIds } },
+        { _id: { $in: allFileIds } },
       ],
     },
     'extractedMetadata entity language filename'

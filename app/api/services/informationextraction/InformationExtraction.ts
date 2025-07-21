@@ -274,19 +274,12 @@ class InformationExtraction {
     serviceUrl: string,
     type = 'labeled_data'
   ) => {
-    const filesWithReadySegmentations = files.filter(file => {
-      if (!file.segmentation || !file.segmentation.status) {
-        return false;
-      }
-      return file.segmentation.status === 'ready';
-    });
-
-    if (filesWithReadySegmentations.length === 0) {
+    if (files.length === 0) {
       throw new Error('No files with segmentations to be used for training');
     }
 
     await Promise.all(
-      filesWithReadySegmentations.map(async file => {
+      files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -323,6 +316,7 @@ class InformationExtraction {
         }
 
         await request.post(urljoin(serviceUrl, type), data);
+
         if (type === 'prediction_data') {
           await this.saveSuggestionProcess(file, extractor);
         }
