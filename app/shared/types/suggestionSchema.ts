@@ -109,6 +109,10 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    _entityId: {
+      type: 'object',
+      tsType: 'ObjectId',
+    },
     extractorId: objectIdSchema,
     entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,

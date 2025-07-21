@@ -58,6 +58,7 @@ export interface IXSuggestionAggregation {
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
+  _entityId?: ObjectId;
   extractorId: ObjectIdSchema;
   entityTemplate: string;
   fileId?: ObjectIdSchema;

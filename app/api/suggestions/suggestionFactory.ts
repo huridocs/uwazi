@@ -58,6 +58,7 @@ export class SuggestionFactory {
     const _suggestion: IXSuggestionType = {
       extractorId: extractor._id,
       entityId: entity.sharedId!,
+      _entityId: entity._id,
       fileId: file._id,
       entityTemplate: entity.template!.toString(),
 
@@ -70,6 +71,36 @@ export class SuggestionFactory {
       segment: '',
       currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
       entityTitle: entity.title,
+    };
+
+    _suggestion.state = SuggestionFactory.updateSuggestionState(_suggestion, targetProperty);
+
+    return _suggestion;
+  }
+
+  static createForProperty({
+    entity,
+    extractor,
+    targetProperty,
+  }: CreateForPropertyInput): IXSuggestionType {
+    const _suggestion: IXSuggestionType = {
+      extractorId: extractor._id,
+      entityId: entity.sharedId!,
+      _entityId: entity._id,
+      entityTemplate: entity.template!.toString(),
+
+      language: entity.language!,
+      propertyName: extractor.property,
+      entityTitle: entity.title,
+      currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
+      suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
+      date: Date.now(),
+      status: 'ready',
+
+      error: '',
+      segment: '',
+      trainingSample: false,
+      suggestedText: '',
     };
 
     _suggestion.state = SuggestionFactory.updateSuggestionState(_suggestion, targetProperty);
@@ -96,35 +127,6 @@ export class SuggestionFactory {
     const _suggestion: IXSuggestionType = {
       ...suggestion,
       state: { ...suggestion.state!, obsolete: true },
-    };
-
-    _suggestion.state = SuggestionFactory.updateSuggestionState(_suggestion, targetProperty);
-
-    return _suggestion;
-  }
-
-  static createForProperty({
-    entity,
-    extractor,
-    targetProperty,
-  }: CreateForPropertyInput): IXSuggestionType {
-    const _suggestion: IXSuggestionType = {
-      extractorId: extractor._id,
-      entityId: entity.sharedId!,
-      entityTemplate: entity.template!.toString(),
-
-      language: entity.language!,
-      propertyName: extractor.property,
-      entityTitle: entity.title,
-      currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
-      suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
-      date: Date.now(),
-      status: 'ready',
-
-      error: '',
-      segment: '',
-      trainingSample: false,
-      suggestedText: '',
     };
 
     _suggestion.state = SuggestionFactory.updateSuggestionState(_suggestion, targetProperty);
