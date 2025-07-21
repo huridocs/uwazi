@@ -58,7 +58,7 @@ export class SuggestionFactory {
     const _suggestion: IXSuggestionType = {
       extractorId: extractor._id,
       entityId: entity.sharedId!,
-      _entityId: entity._id,
+      entityLanguageId: entity._id,
       fileId: file._id,
       entityTemplate: entity.template!.toString(),
 
@@ -86,7 +86,7 @@ export class SuggestionFactory {
     const _suggestion: IXSuggestionType = {
       extractorId: extractor._id,
       entityId: entity.sharedId!,
-      _entityId: entity._id,
+      entityLanguageId: entity._id,
       entityTemplate: entity.template!.toString(),
 
       language: entity.language!,
