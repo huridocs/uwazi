@@ -336,7 +336,7 @@ async function runTest(numberOfEntities: number) {
           },
           'en',
           true,
-          resolve
+          async () => resolve()
         );
       });
     },
