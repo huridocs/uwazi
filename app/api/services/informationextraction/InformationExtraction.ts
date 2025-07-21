@@ -611,37 +611,39 @@ class InformationExtraction {
     );
   };
 
-  getSuggestions = async (extractorId: ObjectIdSchema) => {
-    const [extractor] = await Extractors.get({ _id: extractorId });
-    if (!extractor) {
-      return;
-    }
+  determineBatchSize = async (
+    extractorId: ObjectIdSchema,
+    model: IXModelType,
+    source: 'pdf' | 'property'
+  ) => {
+    const MAX_BATCH_SIZE = source === 'pdf' ? BATCH_SIZE_FOR_PDF : BATCH_SIZE_FOR_PROPERTY;
+    const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+    const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
+    const batchSize = model.testRun ? Math.min(remaining, MAX_BATCH_SIZE) : undefined;
+    return batchSize;
+  };
 
-    const [model] = await IXModelsModel.get({ extractorId });
-    if (model.testRun) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
-      if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
-        await this.stopModel(extractorId);
-        emitToTenant(
-          tenants.current().name,
-          'ix_model_status',
-          extractorId,
-          'ready',
-          'Test completed'
-        );
-        return;
-      }
-    }
+  stopModelAndEmitReadyCompleted = async (extractorId: ObjectIdSchema) => {
+    await this.stopModel(extractorId);
+    emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
+  };
 
+  stopModelAndEmitReadyTestCompleted = async (extractorId: ObjectIdSchema) => {
+    await this.stopModel(extractorId);
+    emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Test completed');
+  };
+
+  sendMaterialsAndTaskSuggestions = async (
+    extractor: EnforcedWithId<IXExtractorType>,
+    model: IXModelType
+  ) => {
+    const extractorId = extractor._id;
     if (extractor.source.pdf) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
-      const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
-      const batchSize = model.testRun ? Math.min(remaining, BATCH_SIZE_FOR_PDF) : undefined;
+      const batchSize = await this.determineBatchSize(extractorId, model, 'pdf');
       const files = await getFilesForSuggestions(extractorId, batchSize);
 
       if (files.length === 0) {
-        await this.stopModel(extractorId);
-        emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
+        await this.stopModelAndEmitReadyCompleted(extractorId);
         return;
       }
 
@@ -649,14 +651,11 @@ class InformationExtraction {
     }
 
     if (extractor.source.property) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
-      const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
-      const batchSize = model.testRun ? Math.min(remaining, BATCH_SIZE_FOR_PROPERTY) : undefined;
+      const batchSize = await this.determineBatchSize(extractorId, model, 'property');
       const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
       if (entitiesForSuggestions.length === 0) {
-        await this.stopModel(extractorId);
-        emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
+        await this.stopModelAndEmitReadyCompleted(extractorId);
         return;
       }
 
@@ -680,6 +679,23 @@ class InformationExtraction {
         },
       },
     });
+  };
+
+  getSuggestions = async (extractorId: ObjectIdSchema) => {
+    const [extractor] = await Extractors.get({ _id: extractorId });
+    if (!extractor) {
+      return;
+    }
+
+    const [model] = await IXModelsModel.get({ extractorId });
+    if (model.testRun) {
+      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+      if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
+        await this.stopModelAndEmitReadyTestCompleted(extractorId);
+      }
+    }
+
+    await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
   findSuggestionsForIds = async (extractorId: ObjectIdSchema, sharedIds: string[]) => {
