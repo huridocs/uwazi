@@ -29,8 +29,8 @@ jobs:
           - name: settings
             spec: 'cypress/e2e/settings/*.cy.ts'
             needs_setup: false
-            needs_ix_config: true
-            needs_external_services: true
+            needs_ix_config: false
+            needs_external_services: false
     env:
       CYPRESS_RETRIES: 2
     services:
