@@ -109,7 +109,7 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
-    _entityId: {
+    entityLanguageId: {
       type: 'object',
       tsType: 'ObjectId',
     },
