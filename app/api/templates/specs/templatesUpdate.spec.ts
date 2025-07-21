@@ -56,9 +56,11 @@ async function updateTemplate(template: TemplateSchema, featureFlag: boolean) {
   }
   await new Promise<void>(resolve => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    templates.save(template, 'en', true, resolve).catch(e => {
-      throw e;
-    });
+    templates
+      .save(template, 'en', true, async () => resolve())
+      .catch(e => {
+        throw e;
+      });
   });
 }
 
@@ -661,7 +663,7 @@ describe('templates save', () => {
 
       await new Promise<void>(resolve => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        templates.save(template, 'en', true, resolve);
+        templates.save(template, 'en', true, async () => resolve());
       });
 
       await expect(updateTemplate(modifiedTemplate, true)).resolves.not.toThrow();
