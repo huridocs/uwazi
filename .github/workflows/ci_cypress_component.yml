@@ -44,5 +44,9 @@ jobs:
       - name: generate global css
         run: yarn tailwind
       - name: Cypress run
-        run: yarn cypress run --component --config-file cypress.config.ts
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          component: true
+          config-file: cypress.config.ts
         timeout-minutes: 15
