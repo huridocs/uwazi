@@ -1,21 +1,49 @@
-name: E2E Puppeteer
+name: E2E Cypress Tests
 
 on:
   workflow_call:
 
 jobs:
-  e2e-puppeteer:
+  e2e-cypress:
     runs-on: ubuntu-24.04
+    name: ${{ matrix.name }}
     strategy:
       fail-fast: false
       matrix:
-        suite-dir: ['suite1', 'suite2', 'mobile']
+        include:
+          - name: base
+            spec: 'cypress/e2e/base/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
+          - name: information-extraction
+            spec: 'cypress/e2e/informationExtraction/*.cy.ts'
+            needs_setup: true
+            needs_ix_config: true
+            needs_external_services: true
+          - name: pages
+            spec: 'cypress/e2e/pages/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
+          - name: settings
+            spec: 'cypress/e2e/settings/*.cy.ts'
+            needs_setup: false
+            needs_ix_config: false
+            needs_external_services: false
+    env:
+      CYPRESS_RETRIES: 2
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=30s --health-retries=10
+      redis:
+        image: redis:5.0.14
+        ports:
+          - 6379:6379
+
     steps:
       - name: Cache MongoDB tools
         id: cache-mongodb
@@ -55,6 +83,7 @@ jobs:
         with:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
+
       - uses: actions/checkout@v4
       - name: Setup Nodejs
         uses: actions/setup-node@v4
@@ -65,12 +94,23 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Get Cypress version
+        id: cypress-version
+        run: |
+          echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
+      - name: Cache Cypress if not cached
+        id: cache-cypress
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
       - name: install dependencies
         run: yarn install
       - name: Install poppler-utils
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y poppler-utils
+
       - name: Set PATH for poppler-utils
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
@@ -84,7 +124,46 @@ jobs:
         with:
           name: prod
           path: ./prod
-      - run: yarn e2e-fixtures
+      - name: Set up Python 3.11
+        if: matrix.needs_setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Clone dummy services
+        if: matrix.needs_setup
+        uses: actions/checkout@v4
+        with:
+          repository: huridocs/dummy_extractor_services
+          path: dummy_extractor_services
+      - name: Setup dummy services
+        if: matrix.needs_setup
+        run: |
+          python3 -m venv .venv
+          make install_venv
+          make start > logs.log &
+          sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+        working-directory: dummy_extractor_services
+      - name: Log dummy services on failure
+        if: matrix.needs_setup && failure()
+        run: cat dummy_extractor_services/logs.log
+      - name: Configure IX settings
+        if: matrix.needs_ix_config
+        run: yarn ix-config
+        env:
+          DBHOST: localhost:27017
+          DATABASE_NAME: uwazi_e2e
+      - run: yarn blank-state
+        id: blank-state-attempt1
+        continue-on-error: true
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+      - run: yarn blank-state --force
+        id: blank-state-attempt2
+        if: steps.blank-state-attempt1.outcome == 'failure'
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
@@ -93,17 +172,36 @@ jobs:
           TRANSPILED: true
       - name: start Uwazi
         env:
+          NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
+          EXTERNAL_SERVICES: ${{ matrix.needs_external_services }}
+          FEATURE_FLAG_PARAGRAPH_EXTRACTION: ${{ matrix.needs_external_services }}
         run: .github/scripts/start-uwazi.sh
-      - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
+      - name: Cypress run - ${{ matrix.name }}
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          component: false
+          config-file: cypress.config.ts
+          spec: ${{ matrix.spec }}
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: snapshots-${{ matrix.name }}
+          path: cypress/e2e/**/__image_snapshots__/
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: video-${{ matrix.name }}
+          path: cypress/videos/
       - name: Print server output
         run: |
           echo "📁 Startup logs:"

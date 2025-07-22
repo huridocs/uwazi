@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { clearCookiesAndLogin } from './helpers';
+import { clearCookiesAndLogin } from '../helpers';
 
 const removeEntity = (title: string) => {
   cy.contains('div.rightRelationship', title).scrollIntoView();

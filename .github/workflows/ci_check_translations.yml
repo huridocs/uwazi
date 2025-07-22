@@ -1,14 +1,7 @@
-name: check translations
+name: Check Translations
 
 on:
-  push:
-    branches:
-      - development
-  pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
   check_translations:
@@ -20,15 +13,39 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: 🍃 Install mongosh
+      - name: Cache MongoDB tools
+        id: cache-mongodb
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/bin
+          key: ${{ runner.os }}-mongodb-tools-6.0
+
+      - name: Install MongoDB tools if not cached
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-          sudo apt-get update
-          sudo apt-get install -y mongodb-mongosh
-          sudo apt-get install -y mongodb-org-tools
+          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
+            echo "MongoDB tools found in cache"
+            export PATH="$HOME/.local/bin:$PATH"
+          else
+            echo "Installing MongoDB tools..."
+            # Add MongoDB repo if not already present
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+              sudo apt-get update -qq
+              sudo apt-get install -y wget gnupg
+              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            fi
+
+            # Install MongoDB tools
+            sudo apt-get update -qq
+            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+            
+            # Copy to cache location for next run
+            mkdir -p ~/.local/bin
+            sudo cp /usr/bin/mongosh ~/.local/bin/
+            sudo cp /usr/bin/mongorestore ~/.local/bin/
+            sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
+          fi
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
@@ -58,10 +75,11 @@ jobs:
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - run: yarn production-build
-        env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      - name: Download production build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: prod
+          path: ./prod
       - run: cd prod; yarn update-translations-db
         env:
           NODE_ENV: production
