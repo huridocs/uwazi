@@ -343,6 +343,7 @@ async function getFileIdsWithReadySegmentations(
   const totalBatches = Math.ceil(maxSkip / batchSize);
 
   const allFileIds: ObjectIdSchema[] = [];
+  const suggestionsWithFailedSegmentations: any[] = [];
 
   const batchPromises = Array.from({ length: totalBatches }, (_, i) => i * batchSize).map(
     async skip => {
@@ -368,13 +369,52 @@ async function getFileIdsWithReadySegmentations(
         .filter(seg => seg.status === 'ready' && seg.fileID)
         .map(seg => seg.fileID!);
 
+      // Find suggestions for files with failed segmentations
+      const failedSegmentationFileIds = segmentations
+        .filter(seg => seg.status === 'failed' && seg.fileID)
+        .map(seg => seg.fileID!);
+
+      const suggestionsForFailedFiles = suggestions.filter(s => 
+        s.fileId && failedSegmentationFileIds.includes(s.fileId)
+      );
+
       allFileIds.push(...readySegmentationFileIds);
+      suggestionsWithFailedSegmentations.push(...suggestionsForFailedFiles);
     }
   );
 
   await Promise.all(batchPromises);
 
+  // Mark suggestions for files with failed segmentations
+  if (suggestionsWithFailedSegmentations.length > 0) {
+    await markSuggestionsWithFailedSegmentations(suggestionsWithFailedSegmentations);
+  }
+
   return allFileIds.slice(0, targetLimit);
+}
+
+async function markSuggestionsWithFailedSegmentations(suggestions: any[]) {
+  try {
+    const suggestionIds = suggestions.map(s => s._id).filter(Boolean);
+    
+    if (suggestionIds.length === 0) return;
+
+    // Mark suggestions as having failed segmentations instead of obsolete
+    await IXSuggestionsModel.updateMany(
+      { _id: { $in: suggestionIds } },
+      { 
+        $set: { 
+          'state.segmentationFailed': true,
+          'state.obsolete': false, // Override the obsolete status
+          segmentationFailedDate: new Date()
+        }
+      }
+    );
+
+    console.log(`[IX] Marked ${suggestionIds.length} suggestions as having failed segmentations`);
+  } catch (error) {
+    console.error('[IX] Error marking suggestions with failed segmentations:', error);
+  }
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
@@ -403,6 +443,24 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
   return getFilesWithAggregations(files);
 }
 
+async function getSuggestionsWithFailedSegmentations(extractorId?: ObjectIdSchema) {
+  try {
+    const query: any = { 'state.segmentationFailed': true };
+    if (extractorId) {
+      query.extractorId = extractorId;
+    }
+    
+    const suggestions = await IXSuggestionsModel.get(
+      query,
+      'fileId entityId propertyName state segmentationFailedDate'
+    );
+    return suggestions;
+  } catch (error) {
+    console.error('[IX] Error getting suggestions with failed segmentations:', error);
+    return [];
+  }
+}
+
 export {
   BATCH_SIZE_FOR_PDF,
   BATCH_SIZE_FOR_PROPERTY,
@@ -415,6 +473,7 @@ export {
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsMultiValued,
+  getSuggestionsWithFailedSegmentations,
   NoLabeledEntities,
   NoSegmentedFiles,
   NoFilesForTraining,

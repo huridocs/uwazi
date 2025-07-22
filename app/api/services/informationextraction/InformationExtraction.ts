@@ -315,6 +315,15 @@ class InformationExtraction {
           );
         }
 
+        // DEBUG LOG: print URL, file ID, segmentation status, segment count, and first 2 segments
+        console.log('[IX DEBUG] Sending payload to external service:', {
+          url: urljoin(serviceUrl, type),
+          file_id: file._id,
+          segmentation_status: file.segmentation?.status,
+          segments_count: Array.isArray(data.xml_segments_boxes) ? data.xml_segments_boxes.length : 0,
+          first_segments: Array.isArray(data.xml_segments_boxes) ? data.xml_segments_boxes.slice(0, 2) : [],
+        });
+
         await request.post(urljoin(serviceUrl, type), data);
 
         if (type === 'prediction_data') {
