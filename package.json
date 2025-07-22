@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.222.1",
+  "version": "1.222.2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -85,6 +85,7 @@
     "ws": "8.18.0",
     "body-parser": "^1.20.3",
     "cross-spawn": "^7.0.5",
+    "form-data": "^4.0.4",
     "//underscore & axios": "Are required exclusively for testing purposes.",
     "underscore": "1.13.7",
     "axios": "0.30.0"
