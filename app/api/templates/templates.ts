@@ -259,9 +259,6 @@ export default {
         language,
         // @ts-ignore
         relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
-        {
-          allTemplates: await this.get(),
-        },
         50,
         reindex
       );
@@ -327,12 +324,10 @@ export default {
       templateStructureChanges &&
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
         .then(async () => onTemplateProcessed())
-        .then(async () => model.save({ _id: template._id, processing: false }))
-        .catch(e => {
-          throw e;
-        });
+        .then(async () => model.save({ _id: template._id, processing: false }));
     }
 
     await applicationEventsBus.emit(

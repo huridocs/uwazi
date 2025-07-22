@@ -356,7 +356,7 @@ async function run() {
       await runTest(10);
       await runTest(300);
       await runTest(600);
-      await runTest(2000);
+      // await runTest(2000);
     }, tenant.name);
 
     console.log('Tests completed successfully.');

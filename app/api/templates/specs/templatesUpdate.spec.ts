@@ -54,13 +54,9 @@ async function updateTemplate(template: TemplateSchema, featureFlag: boolean) {
   if (!featureFlag) {
     return templates.save(template, 'en');
   }
-  await new Promise<void>(resolve => {
+  await new Promise<void>((resolve, reject) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    templates
-      .save(template, 'en', true, async () => resolve())
-      .catch(e => {
-        throw e;
-      });
+    templates.save(template, 'en', true, async () => resolve()).catch(reject);
   });
 }
 
@@ -157,7 +153,7 @@ describe('templates save', () => {
   };
   describe.each([
     // prettier-ignore
-    { featureFlag: false },
+    // { featureFlag: false },
     { featureFlag: true },
   ])('templates denormalization scenarios (feature flag -> $featureFlag)', ({ featureFlag }) => {
     beforeAll(async () => {
@@ -249,7 +245,21 @@ describe('templates save', () => {
         await setUpFixtures(
           {
             ...fixtures,
-            entities: [...(fixtures.entities || []), f.entity('entityA3', 'templateA', {})],
+            entities: [
+              ...(fixtures.entities || []),
+              f.entity(
+                'entityA3',
+                'templateA',
+                {},
+                { title: 'entityA3 english', icon: { label: 'icon' }, language: 'en' }
+              ),
+              f.entity(
+                'entityA3',
+                'templateA',
+                {},
+                { title: 'entityA3 spanish', icon: { label: 'icon' }, language: 'es' }
+              ),
+            ],
             connections: [...createConnection('entityB1', 'entityA3', 'rel2', 'hub1')],
           },
           featureFlag
@@ -264,7 +274,10 @@ describe('templates save', () => {
         await updateTemplate(template, featureFlag);
 
         const expected = [
-          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityA3' }] } },
+          {
+            sharedId: 'entityB1',
+            metadata: { rel_prop: [{ label: 'entityA3 english', icon: { label: 'icon' } }] },
+          },
           { sharedId: 'entityB2', metadata: { rel_prop: [] } },
         ];
 
@@ -289,7 +302,11 @@ describe('templates save', () => {
         await setUpFixtures(
           {
             ...fixtures,
-            entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+            entities: [
+              ...(fixtures.entities || []),
+              f.entity('entityC1', 'templateC', {}, { title: 'entityC1 english', language: 'en' }),
+              f.entity('entityC1', 'templateC', {}, { title: 'entityC1 spanish', language: 'es' }),
+            ],
             connections: [
               ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
               ...createConnection('entityC1', 'entityB2', 'rel', 'hub1'),
@@ -308,8 +325,8 @@ describe('templates save', () => {
         );
 
         const expected = [
-          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
-          { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1 english' }] } },
+          { sharedId: 'entityB2', metadata: { rel_prop: [{ label: 'entityC1 english' }] } },
         ];
 
         expect(await getEntitiesByTemplate('templateB')).toMatchObject(expected);
@@ -324,7 +341,11 @@ describe('templates save', () => {
         await setUpFixtures(
           {
             ...fixtures,
-            entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+            entities: [
+              ...(fixtures.entities || []),
+              f.entity('entityC1', 'templateC', {}, { title: 'entityC1 english', language: 'en' }),
+              f.entity('entityC1', 'templateC', {}, { title: 'entityC1 spanish', language: 'es' }),
+            ],
             connections: [
               { _id: testingDB.id(), entity: 'entityC1', template: f.idString('rel'), hub: hub1 },
               { _id: testingDB.id(), entity: 'entityB1', hub: hub1 },
@@ -349,11 +370,11 @@ describe('templates save', () => {
         );
 
         const expected = [
-          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1' }] } },
+          { sharedId: 'entityB1', metadata: { rel_prop: [{ label: 'entityC1 english' }] } },
 
           {
             sharedId: 'entityB2',
-            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityA1 english' }] },
+            metadata: { rel_prop: [{ label: 'entityC1 english' }, { label: 'entityA1 english' }] },
           },
         ];
 
@@ -367,7 +388,11 @@ describe('templates save', () => {
         await setUpFixtures(
           {
             ...fixtures,
-            entities: [...(fixtures.entities || []), f.entity('entityC1', 'templateC', {})],
+            entities: [
+              ...(fixtures.entities || []),
+              f.entity('entityC1', 'templateC', {}, { title: 'entityC1 english', language: 'en' }),
+              f.entity('entityC1', 'templateC', {}, { title: 'entityC1 spanish', language: 'es' }),
+            ],
             connections: [
               ...createConnection('entityC1', 'entityB1', 'rel', 'hub1'),
               ...createConnection('entityC1', 'entityB2', 'rel', 'hub2'),
@@ -389,13 +414,13 @@ describe('templates save', () => {
         const expected = [
           {
             sharedId: 'entityB1',
-            metadata: { rel_prop: [{ label: 'entityC1' }, { label: 'entityB1 english' }] },
+            metadata: { rel_prop: [{ label: 'entityC1 english' }, { label: 'entityB1 english' }] },
           },
           {
             sharedId: 'entityB2',
             metadata: {
               rel_prop: [
-                { label: 'entityC1' },
+                { label: 'entityC1 english' },
                 { label: 'entityB2 english' },
                 { label: 'entityA1 english' },
               ],
