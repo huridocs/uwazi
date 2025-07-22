@@ -5,7 +5,6 @@ import { InputField } from 'V2/Components/Forms';
 import { save as saveThesauri } from 'V2/api/thesauri';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { sanitizeThesaurusName } from 'shared/sanitizationUtils';
 
 interface AddThesaurusModalProps {
@@ -26,7 +25,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
   };
 
   const save = async () => {
-    const newThesaurus: ThesaurusSchema = {
+    const newThesaurus = {
       name: sanitizeThesaurusName(name),
       values: [],
     };
