@@ -374,9 +374,11 @@ async function getFileIdsWithReadySegmentations(
         .filter(seg => seg.status === 'failed' && seg.fileID)
         .map(seg => seg.fileID!);
 
-      const suggestionsForFailedFiles = suggestions.filter(s => 
-        s.fileId && failedSegmentationFileIds.includes(s.fileId)
-      );
+      const suggestionsForFailedFiles = suggestions.filter(s => {
+        if (!s.fileId) return false;
+        const fileIdString = s.fileId.toString();
+        return failedSegmentationFileIds.some(failedId => failedId === fileIdString);
+      });
 
       allFileIds.push(...readySegmentationFileIds);
       suggestionsWithFailedSegmentations.push(...suggestionsForFailedFiles);
@@ -387,34 +389,16 @@ async function getFileIdsWithReadySegmentations(
 
   // Mark suggestions for files with failed segmentations
   if (suggestionsWithFailedSegmentations.length > 0) {
-    await markSuggestionsWithFailedSegmentations(suggestionsWithFailedSegmentations);
+    const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
+      ...suggestion,
+      'state.error': true,
+      'state.obsolete': false,
+      status: 'failed',
+    }));
+    await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
   }
 
   return allFileIds.slice(0, targetLimit);
-}
-
-async function markSuggestionsWithFailedSegmentations(suggestions: any[]) {
-  try {
-    const suggestionIds = suggestions.map(s => s._id).filter(Boolean);
-    
-    if (suggestionIds.length === 0) return;
-
-    // Mark suggestions as having failed segmentations instead of obsolete
-    await IXSuggestionsModel.updateMany(
-      { _id: { $in: suggestionIds } },
-      { 
-        $set: { 
-          'state.segmentationFailed': true,
-          'state.obsolete': false, // Override the obsolete status
-          segmentationFailedDate: new Date()
-        }
-      }
-    );
-
-    console.log(`[IX] Marked ${suggestionIds.length} suggestions as having failed segmentations`);
-  } catch (error) {
-    console.error('[IX] Error marking suggestions with failed segmentations:', error);
-  }
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
@@ -449,7 +433,7 @@ async function getSuggestionsWithFailedSegmentations(extractorId?: ObjectIdSchem
     if (extractorId) {
       query.extractorId = extractorId;
     }
-    
+
     const suggestions = await IXSuggestionsModel.get(
       query,
       'fileId entityId propertyName state segmentationFailedDate'

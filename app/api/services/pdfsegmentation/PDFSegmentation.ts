@@ -97,7 +97,12 @@ class PDFSegmentation {
   getFilesToSegment = async (): Promise<{ filename: string; _id: ObjectIdSchema }[]> => {
     const segmentations = (await SegmentationModel.get({
       fileID: { $exists: true },
-    })) as (SegmentationType & { fileID: string; retryCount?: number; status: string; filename: string })[];
+    })) as (SegmentationType & {
+      fileID: string;
+      retryCount?: number;
+      status: string;
+      filename: string;
+    })[];
 
     const successfullySegmentedFiles = segmentations
       .filter(segmentation => segmentation.status === 'ready')
@@ -108,7 +113,11 @@ class PDFSegmentation {
       .map(segmentation => segmentation.fileID);
 
     const permanentlyFailedSegmentedFiles = segmentations
-      .filter(segmentation => segmentation.status === 'failed' && (segmentation.retryCount || 0) >= PDFSegmentation.MAX_RETRY_COUNT)
+      .filter(
+        segmentation =>
+          segmentation.status === 'failed' &&
+          (segmentation.retryCount || 0) >= PDFSegmentation.MAX_RETRY_COUNT
+      )
       .map(segmentation => segmentation.fileID);
 
     const retryableFailedSegmentations = segmentations.filter(
@@ -125,7 +134,13 @@ class PDFSegmentation {
         type: 'document',
         filename: { $exists: true },
         status: 'ready',
-        _id: { $nin: [...successfullySegmentedFiles, ...processingFiles, ...permanentlyFailedSegmentedFiles] },
+        _id: {
+          $nin: [
+            ...successfullySegmentedFiles,
+            ...processingFiles,
+            ...permanentlyFailedSegmentedFiles,
+          ],
+        },
       },
       'filename',
       { limit: this.batchSize }
