@@ -31,7 +31,10 @@ const deleteThesauri = async (params: { _id: string }): Promise<{ ok: boolean }>
   return response.json;
 };
 
-const importThesaurus = async (thesaurus: ClientThesaurus, file: File) => {
+const importThesaurus = async (
+  thesaurus: Omit<ClientThesaurus, '_id'> & { _id?: string },
+  file: File
+) => {
   const headers = {
     Accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
