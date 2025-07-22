@@ -49,7 +49,7 @@ const ThesauriList = () => {
   const deleteSelectedThesauri = async () => {
     try {
       const requests = selectedThesauri.map(async thesaurus =>
-        ThesauriAPI.deleteThesauri({ _id: thesaurus._id.toString() })
+        ThesauriAPI.deleteThesauri({ _id: thesaurus._id })
       );
       await Promise.all(requests);
       setNotifications({
