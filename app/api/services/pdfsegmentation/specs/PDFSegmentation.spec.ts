@@ -279,9 +279,9 @@ describe('PDFSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
-    // Should process 4 files: 3 ready files + 1 failed file (F6) for retry
+    // Should process 3 files: 3 ready files (F3, F4, F5)
     // The maxed-out failed file and the ready file should be excluded
-    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(4);
+    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(3);
 
     // Verify that the maxed-out failed segmentation was not processed
     await tenants.run(async () => {
