@@ -1,0 +1,64 @@
+name: Build production artifact
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Get Cypress version
+        id: cypress-version
+        run: echo "version=$(yarn info cypress version | tr -d '\n')" >> $GITHUB_OUTPUT
+
+      - name: Cache Cypress
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
+
+      - name: Cache Webpack
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache
+          key: ${{ runner.os }}-webpack-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+
+      - name: install dependencies
+        run: yarn install
+      - name: build production
+        run: yarn production-build
+      - name: Upload production build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod
+          path: |
+            ./prod/dist
+            ./prod/app
+            ./prod/database
+            ./prod/scripts
+            ./prod/public
+            ./prod/package.json
+            ./prod/server.js
+            ./prod/message.js
+            ./prod/contents
+            ./prod/uploaded_documents
+            ./prod/temporal_files
+            ./prod/custom_uploads
+            ./prod/log
+          compression-level: 9

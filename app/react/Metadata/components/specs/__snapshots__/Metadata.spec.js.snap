@@ -577,3 +577,43 @@ exports[`Metadata when passing inheritted relationships should flatten the resul
   </dd>
 </dl>
 `;
+
+exports[`Metadata when passing inheritted relationships should show parent values if present 1`] = `
+<dl
+  className="metadata-type-inherit metadata-name-inherited_select  "
+  key="inherited_select_0"
+>
+  <dt
+    className=""
+  >
+    <Translate
+      context="System"
+    >
+      Inherited select
+    </Translate>
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "inheritedType": "select",
+          "label": "Inherited select",
+          "name": "inherited_select",
+          "type": "inherit",
+          "value": Array [
+            Object {
+              "value": "Group 2: Item A",
+            },
+            Object {
+              "value": "Item 1",
+            },
+          ],
+        }
+      }
+    />
+  </dd>
+</dl>
+`;
