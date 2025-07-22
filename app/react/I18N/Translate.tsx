@@ -2,7 +2,6 @@
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
-import { Tooltip } from 'flowbite-react';
 import { Truncate } from 'V2/Components/UI/Truncate';
 
 const parseMarkdownMarker = (
