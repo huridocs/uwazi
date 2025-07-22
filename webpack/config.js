@@ -30,6 +30,12 @@ module.exports = production => {
     context: rootPath,
     devtool: 'eval-source-map',
     mode: 'development',
+    cache: {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    },
     entry: {
       main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),

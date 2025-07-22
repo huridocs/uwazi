@@ -20,7 +20,7 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
       minio:
-        # fixme: let's not depend on external unofficial image
+        # fixme: let's not depend on external unofficial image. #updated coment: ok!
         image: lazybit/minio
         ports:
           - 9000:9000
@@ -70,22 +70,10 @@ jobs:
 
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - run: ./cc-test-reporter before-build
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2 --logHeapUsage
-      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-coverage-report
-          path: tmp/codeclimate.api.json
-          retention-days: 1
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --maxWorkers=2 --logHeapUsage
   app_unit_tests:
     runs-on: ubuntu-24.04
     steps:
@@ -101,34 +89,64 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - run: ./cc-test-reporter before-build
       - name: Run tests
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
-      - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: react-coverage-report
-          path: tmp/codeclimate.react.json
-          retention-days: 1
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
-  codeclimate:
+        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --maxWorkers=2
+  migrations_unit_tests:
     runs-on: ubuntu-24.04
-    needs: [api_unit_tests, app_unit_tests]
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.7-amd64
+        ports:
+          - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+      minio:
+        image: lazybit/minio
+        ports:
+          - 9000:9000
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+        options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
     steps:
-      - name: Download tests results
-        uses: actions/download-artifact@v4.1.7
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          pattern: '*-coverage-report'
-      - name: Download codeclimate binay
-        run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      - name: Sum coverage reports
-        run: ./cc-test-reporter sum-coverage **/codeclimate.*.json -p 2 -o codeclimate.total.json
-      - name: Upload coverage reports
-        run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+          node-version-file: '.nvmrc'
+      - name: 🍃 Install mongosh
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-mongosh
+          sudo apt-get install -y mongodb-org-tools
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 6.0
+          mongodb-replica-set: uwazi_replica_set
+          mongodb-port: 27017
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt update
+      - run: sudo apt-get install poppler-utils
+      - name: Run migration tests
+        env:
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api/migrations --maxWorkers=2 --logHeapUsage

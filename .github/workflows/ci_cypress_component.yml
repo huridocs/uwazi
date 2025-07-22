@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   cypress-run:
+    name: Component testing
     runs-on: ubuntu-24.04
     env:
       CYPRESS_RETRIES: 2
@@ -24,6 +25,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Get Cypress version
+        id: cypress-version
+        run: |
+          echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
+      - name: Cache Cypress
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
       - name: install dependencies
         run: yarn install
       - name: generate global css
@@ -33,3 +48,5 @@ jobs:
         with:
           browser: chrome
           component: true
+          config-file: cypress.config.ts
+        timeout-minutes: 15
