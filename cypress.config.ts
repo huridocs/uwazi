@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { defineConfig } from 'cypress';
+import webpackConfig from './webpack.config';
 
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
@@ -32,6 +33,7 @@ export default defineConfig({
           }
         }
       });
+
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.name === 'chrome' && browser.isHeadless) {
           launchOptions.args.push('--window-size=1280,768');
@@ -56,6 +58,7 @@ export default defineConfig({
     devServer: {
       framework: 'react',
       bundler: 'webpack',
+      webpackConfig,
     },
     specPattern: 'app/react/**/*.cy.tsx',
   },

@@ -49,4 +49,6 @@ jobs:
           browser: chrome
           component: true
           config-file: cypress.config.ts
+          headed: false
+          env: CYPRESS_launchArgs=--no-sandbox,--disable-gpu
         timeout-minutes: 15
