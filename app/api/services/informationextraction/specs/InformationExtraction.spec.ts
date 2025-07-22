@@ -982,6 +982,61 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.filesNames).not.toContain('documentA.xml');
     });
 
+    it('should mark suggestions as failed when their segmentations fail', async () => {
+      await SegmentationModel.delete({});
+      await IXSuggestionsModel.delete({});
+
+      await filesModel.save({
+        _id: factory.id('F1'),
+        filename: 'documentA.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity1',
+        extractedMetadata: [],
+      });
+
+      await filesModel.save({
+        _id: factory.id('F2'),
+        filename: 'documentB.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity2',
+        extractedMetadata: [],
+      });
+
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'documentA.pdf',
+        status: 'failed',
+        retryCount: 1,
+      });
+
+      await SegmentationModel.save({
+        fileID: factory.id('F2'),
+        filename: 'documentB.pdf',
+        status: 'failed',
+        retryCount: 2,
+      });
+
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      const suggestions = await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') });
+      expect(suggestions.length).toBe(2);
+
+      const failedSuggestions = suggestions.filter(s => s.status === 'failed');
+      expect(failedSuggestions.length).toBe(2);
+
+      failedSuggestions.forEach(suggestion => {
+        expect(suggestion.status).toBe('failed');
+        expect(suggestion.state?.error).toBe(true);
+        expect(suggestion.state?.obsolete).toBe(false);
+      });
+
+      expect(IXExternalService.filesNames).toEqual([]);
+      expect(IXExternalService.files.length).toBe(0);
+      expect(IXExternalService.materials.length).toBe(0);
+    });
+
     it('should filter out files with processing segmentations to prevent zero-length batches', async () => {
       // Segmentation with processing status for documentA
       await SegmentationModel.save({

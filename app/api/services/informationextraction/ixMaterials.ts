@@ -427,24 +427,6 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
   return getFilesWithAggregations(files);
 }
 
-async function getSuggestionsWithFailedSegmentations(extractorId?: ObjectIdSchema) {
-  try {
-    const query: any = { 'state.segmentationFailed': true };
-    if (extractorId) {
-      query.extractorId = extractorId;
-    }
-
-    const suggestions = await IXSuggestionsModel.get(
-      query,
-      'fileId entityId propertyName state segmentationFailedDate'
-    );
-    return suggestions;
-  } catch (error) {
-    console.error('[IX] Error getting suggestions with failed segmentations:', error);
-    return [];
-  }
-}
-
 export {
   BATCH_SIZE_FOR_PDF,
   BATCH_SIZE_FOR_PROPERTY,
@@ -457,7 +439,6 @@ export {
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsMultiValued,
-  getSuggestionsWithFailedSegmentations,
   NoLabeledEntities,
   NoSegmentedFiles,
   NoFilesForTraining,
