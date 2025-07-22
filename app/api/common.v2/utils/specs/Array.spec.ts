@@ -37,7 +37,10 @@ describe('ArrayUtils', () => {
 
       await ArrayUtils.runInBatches({ array: [1, 2, 3, 4], batchSize: 2 }, callback);
 
+      const calledItems = callback.mock.calls.map(([item]) => item);
+
       expect(callback).toHaveBeenCalledTimes(4);
+      expect(calledItems).toEqual([1, 2, 3, 4]);
     });
   });
 });
