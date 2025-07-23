@@ -4,7 +4,7 @@ import {
   clickOnEditEntity,
   saveEntity,
   selectRestrictedEntities,
-} from './helpers';
+} from '../helpers';
 
 describe('text references', () => {
   before(() => {

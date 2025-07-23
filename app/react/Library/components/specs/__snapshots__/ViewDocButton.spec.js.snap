@@ -6,7 +6,7 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
   onClick={[Function]}
   to="/entity/123"
 >
-  <Connect(Icon)
+  <Icon
     icon="angle-right"
   />
    
@@ -22,7 +22,7 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
   onClick={[Function]}
   to="/entity/123?searchTerm=something"
 >
-  <Connect(Icon)
+  <Icon
     icon="angle-right"
   />
    
@@ -38,7 +38,7 @@ exports[`ViewDocButton when targetReference is provided should render view butto
   onClick={[Function]}
   to="/entity/123?ref=ref1"
 >
-  <Connect(Icon)
+  <Icon
     icon="angle-right"
   />
    
@@ -54,7 +54,7 @@ exports[`ViewDocButton when targetReference is provided should render view butto
   onClick={[Function]}
   to="/entity/123?searchTerm=something&ref=ref1"
 >
-  <Connect(Icon)
+  <Icon
     icon="angle-right"
   />
    

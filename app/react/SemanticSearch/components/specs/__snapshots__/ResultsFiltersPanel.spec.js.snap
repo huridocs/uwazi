@@ -106,7 +106,7 @@ exports[`ResultsFiltersPanel render should render search filters and instruction
       <div
         className="alert alert-info alert-vertical"
       >
-        <Connect(Icon)
+        <Icon
           icon="info-circle"
           size="2x"
         />

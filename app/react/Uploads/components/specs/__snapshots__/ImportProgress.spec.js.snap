@@ -5,7 +5,7 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
   <div
     className="alert alert-info"
   >
-    <Connect(Icon)
+    <Icon
       icon="check"
       size="2x"
     />
@@ -24,7 +24,7 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
         Indexing entities may take a few minutes
       </Translate>
     </div>
-    <Connect(Icon)
+    <Icon
       icon="times"
       onClick={[Function]}
       style={
@@ -42,7 +42,7 @@ exports[`ImportProgress rendering states should render a state for end with row 
   <div
     className="alert alert-info"
   >
-    <Connect(Icon)
+    <Icon
       icon="check"
       size="2x"
     />
@@ -61,7 +61,7 @@ exports[`ImportProgress rendering states should render a state for end with row 
         Indexing entities may take a few minutes
       </Translate>
     </div>
-    <Connect(Icon)
+    <Icon
       icon="times"
       onClick={[Function]}
       style={
@@ -75,7 +75,7 @@ exports[`ImportProgress rendering states should render a state for end with row 
     <div
       className="alert alert-warning"
     >
-      <Connect(Icon)
+      <Icon
         icon="exclamation-triangle"
         size="2x"
       />
@@ -172,7 +172,7 @@ exports[`ImportProgress rendering states should render a state for errors 1`] = 
   <div
     className="alert alert-danger"
   >
-    <Connect(Icon)
+    <Icon
       icon="exclamation-triangle"
       size="2x"
     />
@@ -183,7 +183,7 @@ exports[`ImportProgress rendering states should render a state for errors 1`] = 
         The import process threw an error:
       </Translate>
     </div>
-    <Connect(Icon)
+    <Icon
       icon="times"
       onClick={[Function]}
       style={
@@ -205,7 +205,7 @@ exports[`ImportProgress rendering states should render a state for errors 2`] = 
   <div
     className="alert alert-danger"
   >
-    <Connect(Icon)
+    <Icon
       icon="exclamation-triangle"
       size="2x"
     />
@@ -216,7 +216,7 @@ exports[`ImportProgress rendering states should render a state for errors 2`] = 
         The import process threw an error:
       </Translate>
     </div>
-    <Connect(Icon)
+    <Icon
       icon="times"
       onClick={[Function]}
       style={
@@ -245,7 +245,7 @@ exports[`ImportProgress rendering states should render a state for normal progre
 <div
   className="alert alert-info"
 >
-  <Connect(Icon)
+  <Icon
     icon="cog"
     size="2x"
   />

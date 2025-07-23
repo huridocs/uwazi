@@ -36,7 +36,7 @@ exports[`Should match render of wem media form 1`] = `
     className="btn"
     type="submit"
   >
-    <Connect(Icon)
+    <Icon
       icon="link"
     />
       
@@ -101,7 +101,7 @@ exports[`should also display a name field when hasName is true 1`] = `
     className="btn"
     type="submit"
   >
-    <Connect(Icon)
+    <Icon
       icon="link"
     />
       

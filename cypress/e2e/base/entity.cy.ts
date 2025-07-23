@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from './helpers/login';
-import { changeLanguage, clickOnEditEntity, saveEntity } from './helpers';
+import { clearCookiesAndLogin } from '../helpers/login';
+import { changeLanguage, clickOnEditEntity, saveEntity } from '../helpers';
 
 const entityTitle = 'Entity with all props';
 const textWithHtml = `<h1>The title</h1>

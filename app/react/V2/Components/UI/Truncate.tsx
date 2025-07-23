@@ -24,19 +24,19 @@ const truncateText = (
   return [start, end];
 };
 
-const getTextContent = (node: React.ReactNode): string => {
+const getTextContent = (node: React.ReactNode | React.ReactNode[] | string | number): string => {
   if (typeof node === 'string' || typeof node === 'number') {
     return String(node);
   }
 
+  if (Array.isArray(node)) return node.map(child => getTextContent(child)).join('');
+
   if (isValidElement(node)) {
     const { children } = node.props;
-
     if (Array.isArray(children)) {
       const texts = children.map(child => getTextContent(child));
       return texts.join('');
     }
-
     return getTextContent(children);
   }
 
@@ -60,7 +60,6 @@ const Truncate = ({
   const childClassName = getClassName(children);
   const shouldEllipsize = text.length > maxLength;
   const [startText, endText] = truncateText(text, maxLength, ellipsisPosition);
-
   if (!shouldEllipsize) {
     return <>{children}</>;
   }
