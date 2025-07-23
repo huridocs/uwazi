@@ -18,11 +18,12 @@ import { FileType } from 'shared/types/fileType';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
+import { UwaziFilterQuery } from 'api/odm';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure } from 'shared/tsUtils';
 import { LanguageUtils } from 'shared/language';
-import { UwaziFilterQuery } from 'api/odm';
-import { Entity } from 'api/entities.v2/model/Entity';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Extractors } from './ixextractors';
 
 const BATCH_SIZE_FOR_PDF = 50;
@@ -98,7 +99,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
   const segmentationForFiles = (await SegmentationModel.get(
     { filename: { $in: filesNames } },
     'filename segmentation xmlname status'
-  )) as (SegmentationType & { filename: string; status: string })[];
+  )) as (SegmentationType & { filename: string })[];
 
   const segmentationDictionary = Object.assign(
     {},
@@ -339,7 +340,7 @@ async function getFileIdsWithReadySegmentations(
 
   const batchSize = 100;
   const allFileIds: ObjectIdSchema[] = [];
-  const suggestionsWithFailedSegmentations: any[] = [];
+  const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
 
   let skip = 0;
   let hasMore = true;
@@ -389,7 +390,7 @@ async function getFileIdsWithReadySegmentations(
       ...suggestion,
       'state.error': true,
       'state.obsolete': false,
-      status: 'failed',
+      status: 'failed' as IXSuggestionType['status'],
     }));
 
     await IXSuggestionsModel.saveMultiple(modifiedSuggestions);

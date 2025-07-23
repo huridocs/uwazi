@@ -1056,15 +1056,7 @@ describe('InformationExtraction', () => {
         retryCount: 2,
       });
 
-      // Debug: log suggestions before getSuggestions
-      // eslint-disable-next-line no-console
-      //console.log('Before getSuggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
-
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
-
-      // Debug: log suggestions after getSuggestions
-      // eslint-disable-next-line no-console
-      //console.log('After getSuggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
 
       const suggestions = await IXSuggestionsModel.get({
         extractorId: factory.id('prop1extractor'),
@@ -1073,10 +1065,6 @@ describe('InformationExtraction', () => {
 
       const failedSuggestions = suggestions.filter(s => s.status === 'failed');
       expect(failedSuggestions.length).toBe(2);
-
-      // Debug: log all suggestions after assertions
-      // eslint-disable-next-line no-console
-      //console.log('Final suggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
 
       failedSuggestions.forEach(suggestion => {
         expect(suggestion.status).toBe('failed');
@@ -1129,7 +1117,6 @@ describe('InformationExtraction', () => {
     });
 
     it('should filter out files with missing segmentation status', async () => {
-      // Segmentation without status for documentA
       await SegmentationModel.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1168,11 +1155,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should handle error when no files have ready segmentations', async () => {
-      // Clear existing segmentations and suggestions to ensure clean state
       await SegmentationModel.delete({});
       await IXSuggestionsModel.delete({});
 
-      // Create file records
       await filesModel.save({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1191,7 +1176,6 @@ describe('InformationExtraction', () => {
         extractedMetadata: [],
       });
 
-      // Create suggestions for these files
       await IXSuggestionsModel.save({
         fileId: factory.id('F1'),
         entityId: 'entity1',
@@ -1244,14 +1228,11 @@ describe('InformationExtraction', () => {
         status: 'processing',
       });
 
-      // The function should handle the error gracefully and stop the model
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
 
-      // Verify that the model was stopped
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
       expect(model.findingSuggestions).toBe(false);
 
-      // Verify that the appropriate status was emitted
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         'tenant1',
         'ix_model_status',
@@ -1302,11 +1283,9 @@ describe('InformationExtraction', () => {
     });
 
     it('should fetch more files when many have failed segmentations to ensure batch size', async () => {
-      // Clear existing data to ensure clean state
       await SegmentationModel.delete({});
       await IXSuggestionsModel.delete({});
 
-      // Create file records
       await filesModel.save({
         _id: factory.id('F1'),
         filename: 'document1.pdf',
@@ -1325,7 +1304,6 @@ describe('InformationExtraction', () => {
         extractedMetadata: [],
       });
 
-      // Create failed segmentation
       await SegmentationModel.save({
         fileID: factory.id('F1'),
         filename: 'document1.pdf',
@@ -1333,7 +1311,6 @@ describe('InformationExtraction', () => {
         retryCount: 1,
       });
 
-      // Create ready segmentation
       await SegmentationModel.save({
         fileID: factory.id('F2'),
         filename: 'document2.pdf',
@@ -1355,13 +1332,12 @@ describe('InformationExtraction', () => {
         xmlname: 'document2.xml',
       });
 
-      // Create suggestions for both files
       await IXSuggestionsModel.save({
         _id: factory.id('S1'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity1',
         fileId: factory.id('F1'),
-        date: 100, // Use a date before model creation
+        date: 100,
         state: {
           labeled: false,
           withValue: false,
@@ -1379,7 +1355,7 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity2',
         fileId: factory.id('F2'),
-        date: 100, // Use a date before model creation
+        date: 100,
         state: {
           labeled: false,
           withValue: false,
@@ -1392,7 +1368,6 @@ describe('InformationExtraction', () => {
         },
       });
 
-      // Test the core logic by calling getFilesForSuggestions directly
       const { getFilesForSuggestions } = await import('../ixMaterials');
       const files = await getFilesForSuggestions(factory.id('prop1extractor'), 10);
 
@@ -1402,7 +1377,6 @@ describe('InformationExtraction', () => {
     });
 
     it('should create suggestions for all files regardless of segmentation status', async () => {
-      // Segmentations with different statuses
       await SegmentationModel.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
