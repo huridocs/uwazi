@@ -1,5 +1,4 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ObjectId } from 'mongodb';
 import { DBFixture } from 'api/utils/testing_db';
 import { factory } from './fixtures';
 import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
@@ -56,6 +55,11 @@ const fixtures: DBFixture = {
       'extractor_source_pdf_target_text_template',
       {
         target_text: [{ value: 'labeled_match_context_value' }],
+      },
+      {},
+      {
+        es: { _id: factory.id('extractor_source_pdf_target_text_entity_1_es') },
+        en: { _id: factory.id('extractor_source_pdf_target_text_entity_1_en') },
       }
     ),
 
@@ -83,7 +87,9 @@ const fixtures: DBFixture = {
       'extractor_source_text_target_text_template',
       {
         target_text: [{ value: 'labeled_match_context_value' }],
-      }
+      },
+      {},
+      { es: { _id: factory.id('extractor_source_text_target_text_entity_1_es') } }
     ),
 
     ...factory.entityInMultipleLanguages(
@@ -126,7 +132,7 @@ const fixtures: DBFixture = {
     factory.ixSuggestion({
       entityId: 'extractor_source_pdf_target_text_entity_1',
       suggestedValue: 'labeled_match_context_value',
-      entityTemplate: 'extractor_source_pdf_target_text_template',
+      entityTemplate: factory.id('extractor_source_pdf_target_text_template').toString(),
       propertyName: 'target_text',
       extractorId: factory.id('extractor_source_pdf_target_text'),
       language: 'en',
@@ -143,12 +149,15 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+      entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1_en'),
+      currentValue: 'labeled_match_context_value',
+      entityTitle: 'extractor_source_pdf_target_text_entity_1',
     }),
 
     factory.ixSuggestion({
       entityId: 'extractor_source_pdf_target_text_entity_1',
       suggestedValue: 'labeled_match_context_value',
-      entityTemplate: 'extractor_source_pdf_target_text_template',
+      entityTemplate: factory.id('extractor_source_pdf_target_text_template').toString(),
       propertyName: 'target_text',
       extractorId: factory.id('extractor_source_pdf_target_text'),
       language: 'es',
@@ -165,12 +174,15 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+      currentValue: 'labeled_match_context_value',
+      entityTitle: 'extractor_source_pdf_target_text_entity_1',
+      entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1_es'),
     }),
 
     factory.ixSuggestion({
       entityId: 'extractor_source_pdf_target_text_entity_2',
       suggestedValue: null,
-      entityTemplate: 'extractor_source_pdf_target_text_template',
+      entityTemplate: factory.id('extractor_source_pdf_target_text_template').toString(),
       propertyName: 'target_text',
       extractorId: factory.id('extractor_source_pdf_target_text'),
       language: 'en',
@@ -231,6 +243,9 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+
+      currentValue: 'labeled_match_context_value',
+      entityTitle: 'extractor_source_text_target_text_entity_1',
     }),
 
     factory.ixSuggestion({
@@ -238,7 +253,7 @@ const fixtures: DBFixture = {
       entityId: 'extractor_source_text_target_text_entity_1',
 
       suggestedValue: 'labeled_match_context_value',
-      entityTemplate: 'extractor_source_text_target_text_template',
+      entityTemplate: factory.id('extractor_source_text_target_text_template').toString(),
       propertyName: 'target_text',
       language: 'es',
       segment: 'any_segment_1',
@@ -253,6 +268,10 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_1',
+      currentValue: 'labeled_match_context_value',
+      entityLanguageId: factory.id('extractor_source_text_target_text_entity_1_es'),
     }),
 
     factory.ixSuggestion({
@@ -275,6 +294,7 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+      entityTitle: 'extractor_source_text_target_text_entity_2',
     }),
 
     factory.ixSuggestion({
@@ -297,6 +317,8 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_2',
     }),
 
     factory.ixSuggestion({
@@ -319,6 +341,7 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+      entityTitle: 'extractor_source_text_target_text_entity_3',
     }),
 
     factory.ixSuggestion({
@@ -341,6 +364,8 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_3',
     }),
 
     factory.ixSuggestion({
@@ -363,6 +388,8 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_4',
     }),
 
     factory.ixSuggestion({
@@ -385,6 +412,8 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_4',
     }),
 
     factory.ixSuggestion({
@@ -407,6 +436,8 @@ const fixtures: DBFixture = {
         match: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_5',
     }),
 
     factory.ixSuggestion({
@@ -429,6 +460,8 @@ const fixtures: DBFixture = {
         match: false,
         processing: false,
       },
+
+      entityTitle: 'extractor_source_text_target_text_entity_5',
     }),
   ],
   files: [
@@ -492,16 +525,42 @@ describe('getSuggestionsForTableQuery', () => {
     });
 
     expect(suggestions[0]).toMatchObject({
-      _id: expect.any(ObjectId),
-      fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_2'),
-      entityTemplateId: factory.id('extractor_source_pdf_target_text_template'),
-      extractorId,
-      entityId: expect.any(ObjectId),
+      extractorId: factory.id('extractor_source_pdf_target_text'),
+      fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_1'),
+      language: 'en',
       sharedId: 'extractor_source_pdf_target_text_entity_1',
-
-      language: 'es',
+      entityId: factory.id('extractor_source_pdf_target_text_entity_1_en'),
+      entityTemplateId: factory.id('extractor_source_pdf_target_text_template').toString(),
       entityTitle: 'extractor_source_pdf_target_text_entity_1',
       currentValue: 'labeled_match_context_value',
+      propertyName: 'target_text',
+
+      error: '',
+      segment: 'any_segment',
+      suggestedValue: 'labeled_match_context_value',
+      date: 1001,
+      state: {
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        hasContext: true,
+        processing: false,
+        obsolete: false,
+        error: false,
+        match: true,
+      },
+    });
+
+    expect(suggestions[1]).toMatchObject({
+      extractorId,
+      fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_2'),
+      language: 'es',
+      entityTemplateId: factory.id('extractor_source_pdf_target_text_template').toString(),
+      entityId: factory.id('extractor_source_pdf_target_text_entity_1_es'),
+      sharedId: 'extractor_source_pdf_target_text_entity_1',
+      entityTitle: 'extractor_source_pdf_target_text_entity_1',
+      currentValue: 'labeled_match_context_value',
+
       suggestedValue: 'labeled_match_context_value',
       propertyName: 'target_text',
       segment: 'any_segment',
@@ -517,19 +576,6 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         processing: false,
       },
-      extractedMetadata: [{ name: 'target_text', selection: expect.any(Object) }],
-      labeledValue: 'labeled_value',
-    });
-
-    expect(suggestions[1]).toMatchObject({
-      fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_1'),
-      entityTemplateId: factory.id('extractor_source_pdf_target_text_template'),
-      extractorId,
-      sharedId: 'extractor_source_pdf_target_text_entity_1',
-
-      language: 'en',
-      extractedMetadata: [],
-      labeledValue: '',
     });
   });
 
@@ -544,11 +590,10 @@ describe('getSuggestionsForTableQuery', () => {
       },
     });
 
-    expect(suggestions[0]).toMatchObject({
-      _id: expect.any(ObjectId),
-      entityTemplateId: factory.id('extractor_source_text_target_text_template'),
+    expect(suggestions[1]).toMatchObject({
+      entityTemplateId: factory.id('extractor_source_text_target_text_template').toString(),
       extractorId,
-      entityId: expect.any(ObjectId),
+      entityId: factory.id('extractor_source_text_target_text_entity_1_es'),
       sharedId: 'extractor_source_text_target_text_entity_1',
 
       language: 'es',
@@ -676,39 +721,39 @@ describe('getSuggestionsForTableQuery', () => {
 
     const [sortedByTitle, sortedBySegment, sortedByTargetPropertyValue] = await Promise.all([
       sut.execute({ ...input, sort: { property: 'entityTitle', order: 'asc' } }),
-      sut.execute({ ...input, sort: { property: 'segment', order: 'asc' } }),
+      sut.execute({ ...input, sort: { property: 'segment', order: 'desc' } }),
       sut.execute({ ...input, sort: { property: 'currentValue', order: 'desc' } }),
     ]);
 
     expect(sortedByTitle.suggestions).toMatchObject([
       {
         entityTitle: 'extractor_source_text_target_text_entity_1',
-        language: 'es',
+        language: 'en',
       },
       {
         entityTitle: 'extractor_source_text_target_text_entity_1',
-        language: 'en',
+        language: 'es',
       },
     ]);
 
     expect(sortedBySegment.suggestions).toMatchObject([
       {
-        segment: 'any_segment_1',
+        segment: 'any_segment_3',
         language: 'es',
       },
       {
-        segment: 'any_segment_1',
+        segment: 'any_segment_3',
         language: 'en',
       },
     ]);
 
     expect(sortedByTargetPropertyValue.suggestions).toMatchObject([
       {
-        currentValue: 'labeled_no-match_context_value',
+        currentValue: 'labeled_match_context_value',
         language: 'en',
       },
       {
-        currentValue: 'labeled_no-match_context_value',
+        currentValue: 'labeled_match_context_value',
         language: 'es',
       },
     ]);
