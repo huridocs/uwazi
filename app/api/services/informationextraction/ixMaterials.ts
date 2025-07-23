@@ -217,6 +217,20 @@ async function getEntitiesForTraining(
   return entities;
 }
 
+function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWithId<IXModelType>) {
+  const suggestionsQuery: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: model.creationDate },
+    'state.error': { $ne: true },
+  };
+
+  if (model.testRun) {
+    suggestionsQuery.trainingSample = { $ne: true };
+  }
+
+  return suggestionsQuery;
+}
+
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
   if (!model.findSuggestionsSharedIds?.length) {
     await ixmodels.save({
@@ -244,16 +258,7 @@ async function getEntitiesForSuggestionsQuery(
   model: EnforcedWithId<IXModelType>,
   BATCH_SIZE: number
 ) {
-  const suggestionsQuery: UwaziFilterQuery<any> = {
-    extractorId,
-    date: { $lt: model.creationDate },
-    'state.error': { $ne: true },
-  };
-
-  if (model.testRun) {
-    suggestionsQuery.trainingSample = { $ne: true };
-  }
-
+  const suggestionsQuery = conformSuggestionsQuery(extractorId, model);
   const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', { limit: BATCH_SIZE });
 
   if (!suggestions.length) {
@@ -269,7 +274,7 @@ async function getEntitiesForSuggestionsQuery(
 }
 
 async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[currentModel], [extractor]] = await Promise.all([
+  const [[model], [extractor]] = await Promise.all([
     ixmodels.get({ extractorId }),
     Extractors.get({ _id: extractorId }),
   ]);
@@ -285,10 +290,10 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
 
   let entityQuery: UwaziFilterQuery<any> | null = {};
 
-  if (currentModel.findSuggestionsRunTimestamp) {
-    entityQuery = await getEntitiesForIdsQuery(currentModel, BATCH_SIZE);
+  if (model.findSuggestionsRunTimestamp) {
+    entityQuery = await getEntitiesForIdsQuery(model, BATCH_SIZE);
   } else {
-    entityQuery = await getEntitiesForSuggestionsQuery(extractorId, currentModel, BATCH_SIZE);
+    entityQuery = await getEntitiesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
   }
 
   if (!entityQuery) {
@@ -376,40 +381,92 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
-async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [currentModel] = await ixmodels.get({ extractorId });
-
-  const query: UwaziFilterQuery<any> = {
-    extractorId,
-    date: { $lt: currentModel.creationDate },
-    'state.error': { $ne: true },
-  };
-
-  if (currentModel.testRun) {
-    query.trainingSample = { $ne: true };
+async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
+  if (!model.findSuggestionsSharedIds?.length) {
+    await ixmodels.save({
+      ...model,
+      findSuggestionsRunTimestamp: undefined,
+      findSuggestionsSharedIds: undefined,
+    });
+    return null;
   }
 
-  const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-    limit: limit || BATCH_SIZE_FOR_PDF,
+  const sharedIdsToProcess = model.findSuggestionsSharedIds.slice(0, BATCH_SIZE);
+
+  await ixmodels.save({
+    ...model,
+    findSuggestionsSharedIds: model.findSuggestionsSharedIds.slice(BATCH_SIZE),
   });
 
-  const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
+  const filesQuery = {
+    entity: { $in: sharedIdsToProcess },
+    type: 'document',
+    filename: { $exists: true },
+    language: { $exists: true },
+  };
 
-  const files = (await filesModel.get(
-    {
-      $and: [
-        {
-          type: 'document',
-          filename: { $exists: true },
-          language: { $exists: true },
-        },
-        { _id: { $in: fileIds } },
-      ],
-    },
+  return filesQuery;
+}
+
+async function getFilesForSuggestionsQuery(
+  extractorId: ObjectIdSchema,
+  model: EnforcedWithId<IXModelType>,
+  BATCH_SIZE: number
+) {
+  const suggestionsQuery = {
+    ...conformSuggestionsQuery(extractorId, model),
+    fileId: { $exists: true, $ne: null },
+  };
+  const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', { limit: BATCH_SIZE });
+
+  if (!suggestions.length) {
+    return null;
+  }
+
+  const filesQuery = {
+    _id: { $in: suggestions.map(s => s.fileId) },
+    type: 'document',
+    filename: { $exists: true },
+    language: { $exists: true },
+  };
+
+  return filesQuery;
+}
+
+async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+  const [[model], [extractor]] = await Promise.all([
+    ixmodels.get({ extractorId }),
+    Extractors.get({ _id: extractorId }),
+  ]);
+
+  if (!extractor) {
+    return [];
+  }
+
+  const BATCH_SIZE = limit || BATCH_SIZE_FOR_PDF;
+
+  let filesQuery: UwaziFilterQuery<FileType> | null = {};
+
+  if (model.findSuggestionsRunTimestamp) {
+    filesQuery = await getFilesForIdsQuery(model, BATCH_SIZE);
+  } else {
+    filesQuery = await getFilesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
+  }
+
+  if (!filesQuery) {
+    return [];
+  }
+
+  const filesToProcess = await filesModel.get(
+    filesQuery,
     'extractedMetadata entity language filename'
-  )) as (FileType & FileEnforcedNotUndefined)[];
+  );
 
-  return getFilesWithAggregations(files);
+  const filesWithAggregation = await getFilesWithAggregations(
+    filesToProcess as (FileType & FileEnforcedNotUndefined)[]
+  );
+
+  return filesWithAggregation;
 }
 
 export {
