@@ -14,7 +14,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </button>
@@ -23,7 +23,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
     <div
       className="alert alert-info"
     >
-      <Connect(Icon)
+      <Icon
         icon="info-circle"
         size="2x"
       />
@@ -126,7 +126,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
         id="import-csv"
         type="submit"
       >
-        <Connect(Icon)
+        <Icon
           icon="upload"
         />
         <span
@@ -156,7 +156,7 @@ exports[`ImportPanel rendering states when the import starts should render an up
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </button>
@@ -164,7 +164,7 @@ exports[`ImportPanel rendering states when the import starts should render an up
   <div
     className="alert alert-info"
   >
-    <Connect(Icon)
+    <Icon
       icon="info-circle"
       size="2x"
     />
@@ -196,7 +196,7 @@ exports[`ImportPanel rendering states when the upload starts should render an up
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </button>
@@ -204,7 +204,7 @@ exports[`ImportPanel rendering states when the upload starts should render an up
   <div
     className="alert alert-info"
   >
-    <Connect(Icon)
+    <Icon
       icon="info-circle"
       size="2x"
     />

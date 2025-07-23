@@ -5,7 +5,7 @@ exports[`StackTrace expanded should display the full message 1`] = `
   className="stack-trace"
   onClick={[Function]}
 >
-  <Connect(Icon)
+  <Icon
     icon="sort"
   />
    
@@ -34,7 +34,7 @@ exports[`StackTrace should display a shortened message 1`] = `
   className="stack-trace"
   onClick={[Function]}
 >
-  <Connect(Icon)
+  <Icon
     icon="sort"
   />
    

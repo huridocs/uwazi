@@ -11,7 +11,7 @@ exports[`ShowSidepanelMenu should show button if panel is not open 1`] = `
       className="btn btn-primary"
       onClick={[Function]}
     >
-      <Connect(Icon)
+      <Icon
         icon="columns"
       />
     </div>

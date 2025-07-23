@@ -50,7 +50,7 @@ exports[`Doc when target reference is specified should pass the target reference
         className="item-connection"
       >
         <div>
-          <Connect(Icon)
+          <Icon
             icon="exchange-alt"
           />
           <span>
@@ -76,7 +76,7 @@ exports[`Doc when target reference is specified should pass the target reference
               onClick={[Function]}
               type="button"
             >
-              <Connect(Icon)
+              <Icon
                 icon="trash-alt"
               />
             </button>
@@ -87,7 +87,7 @@ exports[`Doc when target reference is specified should pass the target reference
         className="item-connection"
       >
         <div>
-          <Connect(Icon)
+          <Icon
             icon="exchange-alt"
           />
           <span>
@@ -113,7 +113,7 @@ exports[`Doc when target reference is specified should pass the target reference
               onClick={[Function]}
               type="button"
             >
-              <Connect(Icon)
+              <Icon
                 icon="trash-alt"
               />
             </button>
