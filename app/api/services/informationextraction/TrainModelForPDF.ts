@@ -56,7 +56,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
       const processedEntityIds: string[] = [];
 
-      await ArrayUtils.parallelFor(files, async file => {
+      await ArrayUtils.runInBatches({ array: files, batchSize: 1 }, async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 

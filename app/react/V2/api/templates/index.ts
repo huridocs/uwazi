@@ -19,9 +19,9 @@ const setDefault = async (requestParams: RequestParams) => {
   return response;
 };
 
-const remove = async (requestParams: RequestParams) => {
+const remove = async (requestParams: RequestParams): Promise<{ _id: string }> => {
   const response = await api.delete('templates', requestParams);
-  return response;
+  return response.json;
 };
 
 const checkTemplatesEntityCount = async (

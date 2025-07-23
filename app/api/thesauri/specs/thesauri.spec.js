@@ -129,6 +129,7 @@ describe('thesauri', () => {
     it('should delete a thesauri', async () => {
       const response = await thesauri.delete(dictionaryId);
       expect(response.ok).toBe(true);
+      expect(response._id).toBe(dictionaryId);
 
       const dictionaries = await thesauri.get({ _id: dictionaryId });
       expect(dictionaries.length).toBe(0);
@@ -815,6 +816,21 @@ describe('thesauri', () => {
         B: ['B1'],
       },
     ]);
+
+    it('should sanitize new value labels when appending', () => {
+      const baseSimple = { values: [{ label: 'existing' }] };
+      const addition = [
+        { label: '  new   value  ' },
+        { label: 'existing' }, // should not duplicate
+        { label: '  another\nvalue  ' },
+      ];
+      const result = thesauri.appendValues(baseSimple, addition);
+      expect(result.values).toEqual([
+        { label: 'existing' },
+        { label: 'new value' },
+        { label: 'another value' },
+      ]);
+    });
 
     it.each([
       {

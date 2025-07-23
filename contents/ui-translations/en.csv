@@ -702,6 +702,7 @@ Review,Review
 Reviewed,Reviewed
 Role,Role
 Route,Route
+Row,Row
 Sample,Sample
 Satellite,Satellite
 Save,Save
@@ -822,8 +823,10 @@ Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Template
 Template conflict,Template conflict
+Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Template name
 Template name already exists,Template name already exists
+Template processing completed.,Template processing completed.
 Template saved successfully.,Template saved successfully.
 Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
        this process may take several minutes, do you want to continue?"
@@ -835,6 +838,7 @@ Test run,Test run
 Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,The import process threw an error:
+The import process threw some warnings:,The import process threw some warnings:
 "The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
               column for updates on the process."

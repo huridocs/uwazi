@@ -58,11 +58,14 @@ describe('MetadataFormFields with one entity to edit ', () => {
           values: [
             {
               label: 'option1',
-              id: '1',
+              value: '1',
             },
           ],
         },
       ]),
+      entityThesauris: fromJS({
+        field2: [{ value: '1', label: 'option1' }],
+      }),
       dateFormat: '',
       model: 'metadata',
       storeKey: 'library',
@@ -98,7 +101,8 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
       const multiselect = component.find(LookupMultiSelect).at(0);
       expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
-      expect(multiselect.props().optionsValue).toEqual('id');
+      expect(multiselect.props().optionsValue).toEqual('value');
+      expect(multiselect.props().lookup).toBeDefined();
 
       const datepicker = component.find(DatePicker);
       expect(datepicker.length).toBe(1);

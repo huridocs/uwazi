@@ -122,7 +122,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
               ? flattenDeep(
                   _value.value.map(v => ({ ...v, value: `${_value.parent}: ${v.value}` }))
                 )
-              : _value
+              : { ..._value, ...(_value.parent && { value: `${_value.parent}: ${_value.value}` }) }
           )
         );
 

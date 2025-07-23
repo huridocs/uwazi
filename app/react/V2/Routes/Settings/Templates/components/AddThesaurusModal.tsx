@@ -6,6 +6,7 @@ import thesauriAPI from 'V2/api/thesauri';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { sanitizeThesaurusName } from 'shared/sanitizationUtils';
 
 interface AddThesaurusModalProps {
   onClose: () => void;
@@ -26,7 +27,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
 
   const save = async () => {
     const newThesaurus: ThesaurusSchema = {
-      name: name.trim(),
+      name: sanitizeThesaurusName(name),
       values: [],
     };
     const savedThesaurus = await thesauriAPI.save(newThesaurus);
@@ -39,7 +40,7 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
 
   const handleSave = async () => {
     const isDuplicateName = thesauri.some(
-      thesaurus => thesaurus.name.toLowerCase() === name.trim().toLowerCase()
+      thesaurus => thesaurus.name.toLowerCase() === sanitizeThesaurusName(name).toLowerCase()
     );
 
     if (isDuplicateName) {
@@ -89,7 +90,11 @@ export const AddThesaurusModal = ({ onClose }: AddThesaurusModalProps) => {
             <Button styling="outline" onClick={handleClose}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button color="success" onClick={handleSave} disabled={isSaving || !name.trim()}>
+            <Button
+              color="success"
+              onClick={handleSave}
+              disabled={isSaving || !sanitizeThesaurusName(name)}
+            >
               <Translate>Save</Translate>
             </Button>
           </div>

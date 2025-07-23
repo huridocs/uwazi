@@ -169,7 +169,7 @@ const EditThesaurus = () => {
                       type: 'success',
                       text: <Translate>Thesauri updated.</Translate>,
                     });
-                    await navigate(`../edit/${savedThesaurus._id}`);
+                    await navigate(`../edit/${savedThesaurus._id}`, { replace: true });
                     setIsImporting(false);
                   }}
                   onFailure={() => {

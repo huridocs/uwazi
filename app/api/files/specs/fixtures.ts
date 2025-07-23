@@ -15,7 +15,8 @@ const restrictedUploadId2 = db.id();
 const readOnlyUploadId = db.id();
 const customFileId = db.id();
 const allowedPublicTemplate = fixturesFactory.id('template');
-const importTemplate = db.id();
+const importTemplate = db.id('507f1f77bcf86cd799439011');
+const thesaurusId = db.id('507f1f77bcf86cd799439012');
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
@@ -197,7 +198,23 @@ const fixtures: DBFixture = {
   ],
   templates: [
     { _id: allowedPublicTemplate, default: true, name: 'mydoc', properties: [] },
-    { _id: importTemplate, default: true, name: 'import', properties: [] },
+    {
+      _id: importTemplate,
+      default: true,
+      name: 'import',
+      properties: [{ name: 'select_with_spaces', type: 'select', content: thesaurusId }],
+    },
+  ],
+  dictionaries: [
+    {
+      _id: thesaurusId,
+      name: 'Select with spaces',
+      values: [
+        { _id: db.id(), id: 'item1', label: 'Item1' },
+        { _id: db.id(), id: 'item2', label: ' Item2 ' },
+        { _id: db.id(), id: 'normal_item', label: 'Normal Item' },
+      ],
+    },
   ],
   settings: [
     {

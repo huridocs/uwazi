@@ -2,57 +2,63 @@ import _ from 'lodash';
 
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
-import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
-import { LabelInfo, determineParentChildRelationship, generateMetadataValue } from './select';
-import { csvConstants } from '../csvDefinitions';
+import {
+  LabelInfo,
+  generateMetadataValue,
+  splitMultiselectLabels,
+  normalizeMultiselectLabels,
+} from './shared';
 
-function labelNotNull(label: string | null): label is string {
-  return label !== null;
-}
-
-function splitMultiselectLabels(labelString: string): {
-  labelInfos: LabelInfo[];
-} {
-  if (!labelString) {
-    return { labelInfos: [] };
-  }
-  const labels = labelString
-    .split(csvConstants.multiValueSeparator)
-    .map(l => l.trim())
-    .filter(l => l.length > 0);
-  const labelInfos: LabelInfo[] = [];
-  labels.forEach(label => {
-    const labelInfo = determineParentChildRelationship(label);
-    if (labelInfo) labelInfos.push(labelInfo);
-  });
-
-  return { labelInfos };
-}
-
-function normalizeMultiselectLabels(labelArray: string[]): string[] {
-  const normalizedLabels = labelArray.map(l => normalizeThesaurusLabel(l)).filter(labelNotNull);
-  return Array.from(new Set(normalizedLabels));
-}
+type ParserResult = {
+  data: MetadataObjectSchema[];
+  warnings: Array<{ property: string; value: string; reason: string }>;
+};
 
 const multiselect = async (
   entityToImport: RawEntity,
   property: PropertySchema
-): Promise<MetadataObjectSchema[]> => {
+): Promise<ParserResult> => {
   const currentThesaurus = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
+  const propValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+  const warnings: Array<{ property: string; value: string; reason: string }> = [];
 
-  const info = _.uniqBy(
-    splitMultiselectLabels(entityToImport.propertiesFromColumns[ensure<string>(property.name)])
-      .labelInfos,
-    i => i.child?.normalizedLabel || i.normalizedLabel
-  );
+  if (!propValue) {
+    return { data: [], warnings: [] };
+  }
+
+  const { labelInfos, parsingFailures } = splitMultiselectLabels(propValue);
+
+  if (parsingFailures.length > 0) {
+    warnings.push({
+      property: property.name,
+      value: propValue,
+      reason: `${parsingFailures.length} value(s) have invalid format`,
+    });
+  }
+
+  const info = _.uniqBy(labelInfos, i => i.child?.normalizedLabel || i.normalizedLabel);
 
   const values = info.map(i => generateMetadataValue(currentThesaurus, i));
 
-  return values;
+  const validValues = values.filter(
+    v => v !== null && v.value !== undefined && v.value !== null
+  ) as MetadataObjectSchema[];
+
+  const invalidValues = values.filter(v => v === null || v.value === undefined || v.value === null);
+
+  if (invalidValues.length > 0) {
+    warnings.push({
+      property: property.name,
+      value: propValue,
+      reason: `${invalidValues.length} thesaurus value(s) not found`,
+    });
+  }
+
+  return { data: validValues, warnings };
 };
 
 export default multiselect;

@@ -1,22 +1,10 @@
-name: e2e puppeteer
+name: E2E Puppeteer
 
 on:
-  pull_request:
-    branches: [development, staging, production]
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
-      - converted_to_draft
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
   e2e-puppeteer:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -29,22 +17,45 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: 🍃 Install mongosh
+      - name: Cache MongoDB tools
+        id: cache-mongodb
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/bin
+          key: ${{ runner.os }}-ubuntu-24.04-mongodb-tools-6.0
+
+      - name: Install MongoDB tools if not cached
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-          sudo apt-get update
-          sudo apt-get install -y mongodb-mongosh
-          sudo apt-get install -y mongodb-org-tools
+          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
+            echo "MongoDB tools found in cache"
+            export PATH="$HOME/.local/bin:$PATH"
+          else
+            echo "Installing MongoDB tools..."
+            # Add MongoDB repo if not already present
+            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
+              sudo apt-get update -qq
+              sudo apt-get install -y wget gnupg
+              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+            fi
+
+            # Install MongoDB tools
+            sudo apt-get update -qq
+            sudo apt-get install -y mongodb-mongosh mongodb-org-tools
+            
+            # Copy to cache location for next run
+            mkdir -p ~/.local/bin
+            sudo cp /usr/bin/mongosh ~/.local/bin/
+            sudo cp /usr/bin/mongorestore ~/.local/bin/
+            sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
+          fi
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: 6.0
           mongodb-replica-set: test-rs
-      - name: Checkout reposistory
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
@@ -56,24 +67,23 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: sudo apt update
-      - run: sudo apt-get install poppler-utils
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v4
+      - name: Install poppler-utils
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+      - name: Set PATH for poppler-utils
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify poppler-utils installation
+        run: |
+          pdftotext -v
+          pdftoppm -v
+          pdfinfo -v
+      - name: Download production build artifact
+        uses: actions/download-artifact@v4
         with:
+          name: prod
           path: ./prod
-          key: >-
-            ${{ runner.os }}-build-${{ github.ref }}-${{ github.sha }}-
-            ${{ hashFiles('app/**/*.*') }}-
-            ${{ hashFiles('database/**/*.*') }}-
-            ${{ hashFiles('**/yarn.lock') }}-
-            ${{ hashFiles('**/webpack.production.config.js') }}-
-            ${{ hashFiles('**/.babelrc') }}-
-            ${{ hashFiles('webpack/**/config.js') }}-
-      - name: build production
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: yarn production-build
       - run: yarn e2e-fixtures
         env:
           DBHOST: localhost:27017
@@ -95,5 +105,10 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
       - name: Print server output
-        run: cat output.txt
+        run: |
+          echo "📁 Startup logs:"
+          cat .github/logs/start-uwazi-logs.txt || echo "Startup log file not found"
+          echo
+          echo "📁 Health-check logs:"
+          cat .github/logs/health-check-logs.txt || echo "Health-check log file not found"
         if: failure()

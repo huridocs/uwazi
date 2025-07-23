@@ -123,6 +123,32 @@ describe('csvLoader thesauri', () => {
       mockedFile.mockRestore();
     });
 
+    it('should sanitize thesaurus values during import (trim spaces, normalize empty patterns)', async () => {
+      const csv = `English, Spanish, French
+                   "  value  with   spaces  ", "  valor con espacios  ", "  valeur avec espaces  "
+                   "N/A", "N/A", "N/A"
+                   "null", "null", "null"
+                   "normal value", "valor normal", "valeur normale"`;
+
+      const mockedFile = mockCsvFileReadStream(csv);
+      const updated = await loader.loadThesauri('mockedFileFromString', thesauri1Id, {
+        language: 'en',
+      });
+
+      // Should sanitize spaces and normalize empty patterns
+      expect(updated!.values!.map(v => v.label)).toEqual([
+        'value1',
+        'value2',
+        'Value3',
+        ' value4 ',
+        'new value',
+        'value with spaces', // trimmed
+        'normal value', // normal value preserved
+        // N/A and null should be normalized to empty strings and not added
+      ]);
+      mockedFile.mockRestore();
+    });
+
     describe('nesting', () => {
       it('should allow nesting thesauri by prefixing the children', async () => {
         const { _id } = await thesauri.save({ name: 'nestedThesauri' });
@@ -172,6 +198,48 @@ describe('csvLoader thesauri', () => {
           value2: 'valeur2',
           value3: 'valeur3',
           value4: 'valeur4',
+        });
+
+        mockedFile.mockRestore();
+      });
+
+      it('should sanitize nested thesaurus values (parent and child values)', async () => {
+        const { _id } = await thesauri.save({ name: 'sanitizedNestedThesauri' });
+
+        const csv = `English, Spanish, French
+          parent with spaces  ,   padre con espacios  ,   parent avec espaces  
+        -   child with spaces  , -   hijo con espacios  , -   enfant avec espaces  `;
+
+        const mockedFile = mockCsvFileReadStream(csv);
+        const updated = await loader.loadThesauri('mockedFileFromString', _id, {
+          language: 'en',
+        });
+
+        expect(updated).toMatchObject({
+          name: 'sanitizedNestedThesauri',
+          values: [
+            {
+              label: 'parent with spaces', // trimmed
+              values: [
+                {
+                  label: 'child with spaces', // trimmed
+                },
+              ],
+            },
+          ],
+        });
+
+        // Check translations for sanitized values
+        expect(await getTranslation('es', _id)).toMatchObject({
+          sanitizedNestedThesauri: 'sanitizedNestedThesauri',
+          'parent with spaces': 'padre con espacios',
+          'child with spaces': 'hijo con espacios',
+        });
+
+        expect(await getTranslation('fr', _id)).toMatchObject({
+          sanitizedNestedThesauri: 'sanitizedNestedThesauri',
+          'parent with spaces': 'parent avec espaces',
+          'child with spaces': 'enfant avec espaces',
         });
 
         mockedFile.mockRestore();

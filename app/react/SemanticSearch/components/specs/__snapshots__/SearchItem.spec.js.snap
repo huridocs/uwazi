@@ -23,7 +23,7 @@ exports[`SearchItem should render search details with link to results page  1`] 
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="trash-alt"
           size="sm"
         />
@@ -57,7 +57,7 @@ exports[`SearchItem when search status is inProgress should render in-progress i
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="trash-alt"
           size="sm"
         />
@@ -67,7 +67,7 @@ exports[`SearchItem when search status is inProgress should render in-progress i
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="stop"
           size="sm"
         />
@@ -106,7 +106,7 @@ exports[`SearchItem when search status is stopped should render progress bar and
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="trash-alt"
           size="sm"
         />
@@ -116,7 +116,7 @@ exports[`SearchItem when search status is stopped should render progress bar and
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="play"
           size="sm"
         />

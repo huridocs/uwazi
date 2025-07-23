@@ -13,7 +13,7 @@ exports[`MultiSelect should display a not found message when there are no option
       <div
         className="form-group"
       >
-        <Connect(Icon)
+        <Icon
           icon="search"
           onClick={[Function]}
         />
@@ -47,12 +47,12 @@ exports[`MultiSelect should display a not found message when there are no option
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="caret-down"
         />
          
         <span>
-          -5
+          0
            
           <Translate>
             x more
@@ -83,7 +83,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       <div
         className="form-group"
       >
-        <Connect(Icon)
+        <Icon
           icon="search"
           onClick={[Function]}
         />
@@ -120,7 +120,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       <span
         className="multiselectItem-icon"
       >
-        <Connect(Icon)
+        <Icon
           className="checkbox-empty"
           icon={
             Array [
@@ -129,15 +129,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
             ]
           }
         />
-        <Connect(Icon)
+        <Icon
           className="checkbox-checked"
           icon="check"
         />
-        <Connect(Icon)
+        <Icon
           className="checkbox-partial"
           icon="minus"
         />
-        <Connect(Icon)
+        <Icon
           className="checkbox-group"
           icon={
             Array [
@@ -146,11 +146,11 @@ exports[`MultiSelect should not render an empty group 1`] = `
             ]
           }
         />
-        <Connect(Icon)
+        <Icon
           className="chevron-right"
           icon="chevron-right"
         />
-        <Connect(Icon)
+        <Icon
           className="chevron-down"
           icon="chevron-down"
         />
@@ -200,7 +200,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       <span
         className="multiselectItem-icon"
       >
-        <Connect(Icon)
+        <Icon
           className="checkbox-empty"
           icon={
             Array [
@@ -209,15 +209,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
             ]
           }
         />
-        <Connect(Icon)
+        <Icon
           className="checkbox-checked"
           icon="check"
         />
-        <Connect(Icon)
+        <Icon
           className="checkbox-partial"
           icon="minus"
         />
-        <Connect(Icon)
+        <Icon
           className="checkbox-group"
           icon={
             Array [
@@ -226,11 +226,11 @@ exports[`MultiSelect should not render an empty group 1`] = `
             ]
           }
         />
-        <Connect(Icon)
+        <Icon
           className="chevron-right"
           icon="chevron-right"
         />
-        <Connect(Icon)
+        <Icon
           className="chevron-down"
           icon="chevron-down"
         />
@@ -281,7 +281,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         <span
           className="multiselectItem-icon"
         >
-          <Connect(Icon)
+          <Icon
             className="checkbox-empty"
             icon={
               Array [
@@ -290,15 +290,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
               ]
             }
           />
-          <Connect(Icon)
+          <Icon
             className="checkbox-checked"
             icon="check"
           />
-          <Connect(Icon)
+          <Icon
             className="checkbox-partial"
             icon="minus"
           />
-          <Connect(Icon)
+          <Icon
             className="checkbox-group"
             icon={
               Array [
@@ -307,11 +307,11 @@ exports[`MultiSelect should not render an empty group 1`] = `
               ]
             }
           />
-          <Connect(Icon)
+          <Icon
             className="chevron-right"
             icon="chevron-right"
           />
-          <Connect(Icon)
+          <Icon
             className="chevron-down"
             icon="chevron-down"
           />
@@ -338,7 +338,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         className="multiselectItem-action"
         onClick={[Function]}
       >
-        <Connect(Icon)
+        <Icon
           icon="caret-down"
         />
       </span>
@@ -372,7 +372,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
             <span
               className="multiselectItem-icon"
             >
-              <Connect(Icon)
+              <Icon
                 className="checkbox-empty"
                 icon={
                   Array [
@@ -381,15 +381,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
                   ]
                 }
               />
-              <Connect(Icon)
+              <Icon
                 className="checkbox-checked"
                 icon="check"
               />
-              <Connect(Icon)
+              <Icon
                 className="checkbox-partial"
                 icon="minus"
               />
-              <Connect(Icon)
+              <Icon
                 className="checkbox-group"
                 icon={
                   Array [
@@ -398,11 +398,11 @@ exports[`MultiSelect should not render an empty group 1`] = `
                   ]
                 }
               />
-              <Connect(Icon)
+              <Icon
                 className="chevron-right"
                 icon="chevron-right"
               />
-              <Connect(Icon)
+              <Icon
                 className="chevron-down"
                 icon="chevron-down"
               />
@@ -452,7 +452,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
             <span
               className="multiselectItem-icon"
             >
-              <Connect(Icon)
+              <Icon
                 className="checkbox-empty"
                 icon={
                   Array [
@@ -461,15 +461,15 @@ exports[`MultiSelect should not render an empty group 1`] = `
                   ]
                 }
               />
-              <Connect(Icon)
+              <Icon
                 className="checkbox-checked"
                 icon="check"
               />
-              <Connect(Icon)
+              <Icon
                 className="checkbox-partial"
                 icon="minus"
               />
-              <Connect(Icon)
+              <Icon
                 className="checkbox-group"
                 icon={
                   Array [
@@ -478,11 +478,11 @@ exports[`MultiSelect should not render an empty group 1`] = `
                   ]
                 }
               />
-              <Connect(Icon)
+              <Icon
                 className="chevron-right"
                 icon="chevron-right"
               />
-              <Connect(Icon)
+              <Icon
                 className="chevron-down"
                 icon="chevron-down"
               />
@@ -523,12 +523,12 @@ exports[`MultiSelect should not render an empty group 1`] = `
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="caret-down"
         />
          
         <span>
-          -2
+          0
            
           <Translate>
             x more
