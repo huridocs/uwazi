@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import { clearCookiesAndLogin } from './helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login';
 import {
   clickOnCreateEntity,
   editPropertyForExtractor,
   saveEntity,
   waitForLegacyNotifications,
-} from './helpers';
+} from '../helpers';
 
 describe('PDF display', () => {
   before(() => {

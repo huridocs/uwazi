@@ -14,7 +14,7 @@ exports[`SemanticSearchPanel should render SearchList with searches from the sta
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </button>

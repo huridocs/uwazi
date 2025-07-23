@@ -2,7 +2,7 @@
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
-import { Tooltip } from 'flowbite-react';
+import { Truncate } from 'V2/Components/UI/Truncate';
 
 const parseMarkdownMarker = (
   line: string,
@@ -55,8 +55,6 @@ const Translate = ({
   const text = translationContext.values[(translationKey || children)!] || children;
   const lines = text ? text.split('\n') : [];
 
-  const requiresTruncation = truncate && lines.some(line => line.length > truncate);
-
   const renderText = () =>
     lines.map((line, index) => {
       const boldMatches = parseMarkdownBoldMarker(line);
@@ -72,12 +70,7 @@ const Translate = ({
       );
     });
 
-  const renderTruncatedText = () => (
-    // eslint-disable-next-line react/style-prop-object
-    <Tooltip id="translate-tooltip" content={renderText()} style="light">
-      {lines[0].slice(0, truncate)}...
-    </Tooltip>
-  );
+  const renderTruncatedText = () => <Truncate maxLength={truncate}>{renderText()}</Truncate>;
 
   return (
     <span
@@ -94,7 +87,7 @@ const Translate = ({
       }}
       className={`${activeClassName} ${className || ''}`}
     >
-      {requiresTruncation ? renderTruncatedText() : renderText()}
+      {truncate ? renderTruncatedText() : renderText()}
     </span>
   );
 };

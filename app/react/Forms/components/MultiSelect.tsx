@@ -313,17 +313,14 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return this.moveNoValueOptionToBottom(partitionedOptions);
   }
 
-  moreLessLabel(totalOptions: Option[]) {
-    const { totalPossibleOptions } = this.props;
-    const amount = totalPossibleOptions || totalOptions.length;
-
+  moreLessLabel(amount: number) {
     if (this.state.showAll) {
       return <Translate>x less</Translate>;
     }
 
     return (
       <span>
-        {amount - this.props.optionsToShow} <Translate>x more</Translate>
+        {amount} <Translate>x more</Translate>
       </span>
     );
   }
@@ -481,11 +478,17 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
     return (
       <li className="multiselectActions">
-        <ShowIf if={totalOptions.length > this.props.optionsToShow}>
+        <ShowIf
+          if={
+            (totalOptions.length > this.props.optionsToShow &&
+              totalOptions.length > renderedOptions.length) ||
+            this.state.showAll
+          }
+        >
           <button onClick={this.showAll} className="btn btn-xs btn-default" type="button">
             <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
             &nbsp;
-            {this.moreLessLabel(totalOptions)}
+            {this.moreLessLabel(totalOptions.length - renderedOptions.length)}
           </button>
         </ShowIf>
         {totalPossibleOptions > totalOptions.length && this.state.showAll && (

@@ -290,6 +290,27 @@ describe('Metadata', () => {
       ];
       testSnapshot();
     });
+
+    it('should show parent values if present', () => {
+      props.metadata = [
+        {
+          label: 'Inherited select',
+          name: 'inherited_select',
+          type: 'inherit',
+          inheritedType: 'select',
+          value: [
+            {
+              value: 'Item A',
+              parent: 'Group 2',
+            },
+            {
+              value: 'Item 1',
+            },
+          ],
+        },
+      ];
+      testSnapshot();
+    });
   });
 
   describe('markdown with HTML', () => {

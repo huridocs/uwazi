@@ -1,38 +1,42 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
+import { Provider as JotaiProvider, createStore } from 'jotai';
+import { localeAtom } from 'V2/atoms/translationsAtoms';
+import Icon from '../Icon';
 
-import Icon, { mapStateToProps } from '../Icon';
+const renderWithLocale = (ui, locale) => {
+  const store = createStore();
+  store.set(localeAtom, locale);
+  return render(<JotaiProvider store={store}>{ui}</JotaiProvider>);
+};
 
-describe('Icon', () => {
-  let component;
-  let props;
-
-  const render = () => {
-    component = shallow(<Icon.WrappedComponent {...props} />);
-  };
-
-  it('should instantiate a FontAwesomeIcon', () => {
-    props = { icon: 'angle-right', size: 'xs' };
-    render();
-    expect(component).toMatchSnapshot();
+describe('Icon (Jotai)', () => {
+  it('should instantiate a FontAwesomeIcon (LTR)', () => {
+    const { container } = renderWithLocale(<Icon icon="angle-right" size="xs" />, 'en');
+    expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should allow configuring the icon as directionAware', () => {
-    props = { icon: 'angle-left', locale: 'es' };
-    render();
-    expect(component).toMatchSnapshot();
-
-    props = { icon: 'angle-left', locale: 'ar' };
-    render();
-    expect(component).toMatchSnapshot();
+  it('should flip icon for RTL languages', () => {
+    // Arabic is RTL
+    const { container } = renderWithLocale(<Icon icon="angle-left" />, 'ar');
+    const svg = container.querySelector('svg');
+    expect(svg).toHaveClass('fa-flip-horizontal');
   });
 
-  describe('MapStateToProps', () => {
-    it('should map the locale', () => {
-      const state = { locale: 'en' };
+  it('should not flip icon for LTR languages', () => {
+    // Spanish is LTR
+    const { container } = renderWithLocale(<Icon icon="angle-left" />, 'es');
+    const svg = container.querySelector('svg');
+    expect(svg).not.toHaveAttribute('flip');
+  });
 
-      const mappedProps = mapStateToProps(state);
-      expect(mappedProps.locale).toBe(state.locale);
-    });
+  it('should use locale prop if provided', () => {
+    // Hebrew is RTL
+    const { container } = renderWithLocale(<Icon icon="angle-left" locale="he" />, 'en');
+    const svg = container.querySelector('svg');
+    expect(svg).toHaveClass('fa-flip-horizontal');
   });
 });

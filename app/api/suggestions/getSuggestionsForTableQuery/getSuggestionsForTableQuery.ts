@@ -225,8 +225,6 @@ export class GetSuggestionsForTableQuery {
         entityTemplateId: '$template',
         sharedId: 1,
         language: 1,
-        currentValue:
-          extractor.property === 'title' ? '$title' : `$metadata.${extractor.property}.value`,
 
         _id: '$suggestion._id',
         propertyName: '$suggestion.propertyName',
@@ -241,6 +239,13 @@ export class GetSuggestionsForTableQuery {
         page: '$file.page',
         extractedMetadata: '$file.extractedMetadata',
         selectionRectangle: '$file.selectionRectangle',
+        currentValue: {
+          $cond: {
+            if: { $eq: [extractor.property, 'title'] },
+            then: [{ $ifNull: ['$title', null] }],
+            else: `$metadata.${extractor.property}.value`,
+          },
+        },
       },
     });
   }
@@ -253,8 +258,6 @@ export class GetSuggestionsForTableQuery {
         entityTemplateId: '$template',
         sharedId: 1,
         language: 1,
-        currentValue:
-          extractor.property === 'title' ? '$title' : `$metadata.${extractor.property}.value`,
 
         _id: '$suggestion._id',
         propertyName: '$suggestion.propertyName',
@@ -264,6 +267,13 @@ export class GetSuggestionsForTableQuery {
         state: '$suggestion.state',
         date: '$suggestion.date',
         error: '$suggestion.error',
+        currentValue: {
+          $cond: {
+            if: { $eq: [extractor.property, 'title'] },
+            then: [{ $ifNull: ['$title', null] }],
+            else: `$metadata.${extractor.property}.value`,
+          },
+        },
       },
     });
   }

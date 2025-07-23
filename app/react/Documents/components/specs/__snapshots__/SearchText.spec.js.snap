@@ -4,7 +4,7 @@ exports[`SearchText blankState when there is no search term should render a blan
 <div
   className="blank-state"
 >
-  <Connect(Icon)
+  <Icon
     icon="search"
   />
   <h4>
@@ -28,7 +28,7 @@ exports[`SearchText blankState when there is search term should render a no matc
 <div
   className="blank-state"
 >
-  <Connect(Icon)
+  <Icon
     icon="search"
   />
   <h4>
