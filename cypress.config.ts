@@ -1,5 +1,11 @@
 import fs from 'fs';
 import { defineConfig } from 'cypress';
+import webpackConfig from './webpack.config';
+
+const cypressWebpackConfig = {
+  ...webpackConfig,
+  cache: false, // disable cache for Cypress component testing
+};
 
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
@@ -56,6 +62,7 @@ export default defineConfig({
     devServer: {
       framework: 'react',
       bundler: 'webpack',
+      webpackConfig: cypressWebpackConfig,
     },
     specPattern: 'app/react/**/*.cy.tsx',
   },
