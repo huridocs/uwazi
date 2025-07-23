@@ -35,7 +35,7 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </button>
@@ -46,7 +46,7 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
     <div
       className="alert alert-warning"
     >
-      <Connect(Icon)
+      <Icon
         icon="exclamation-triangle"
         size="2x"
       />
@@ -55,7 +55,7 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
           Warning: you are editing multiple entities. Fields marked with a
         </Translate>
          
-        <Connect(Icon)
+        <Icon
           icon="exclamation-triangle"
         />
          
@@ -96,7 +96,7 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
       <span
@@ -114,7 +114,7 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
       form="multiEdit"
       type="submit"
     >
-      <Connect(Icon)
+      <Icon
         icon="save"
       />
       <span
@@ -145,7 +145,7 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </button>
@@ -156,7 +156,7 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
     <div
       className="alert alert-warning"
     >
-      <Connect(Icon)
+      <Icon
         icon="exclamation-triangle"
         size="2x"
       />
@@ -165,7 +165,7 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
           Warning: you are editing multiple entities. Fields marked with a
         </Translate>
          
-        <Connect(Icon)
+        <Icon
           icon="exclamation-triangle"
         />
          
@@ -217,7 +217,7 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
       onClick={[Function]}
       type="button"
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
       <span
@@ -235,7 +235,7 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
       form="multiEdit"
       type="submit"
     >
-      <Connect(Icon)
+      <Icon
         icon="save"
       />
       <span

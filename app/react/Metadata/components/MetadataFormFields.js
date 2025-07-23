@@ -178,7 +178,7 @@ class MetadataFormFields extends Component {
             .get(property.name)
             .toJS()
             .forEach(o => {
-              thesauri.push({ id: o.value, label: o.label });
+              thesauri.push({ value: o.value, label: o.label });
             });
         }
 
@@ -186,7 +186,7 @@ class MetadataFormFields extends Component {
           <LookupMultiSelect
             lookup={getSuggestions.bind(null, property.content ? [property.content] : [])}
             model={_model}
-            optionsValue="id"
+            optionsValue="value"
             options={thesauri}
             totalPossibleOptions={totalPossibleOptions}
             prefix={_model}

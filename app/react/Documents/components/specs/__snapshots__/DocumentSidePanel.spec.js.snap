@@ -6,7 +6,7 @@ exports[`DocumentSidePanel Tabs when doc passed has toc toc edition should show 
   onClick={[Function]}
   type="button"
 >
-  <Connect(Icon)
+  <Icon
     icon="pencil-alt"
   />
   <span

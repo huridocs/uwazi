@@ -5,7 +5,7 @@ exports[`Icon should render the back button to the provided url 1`] = `
   className="btn btn-default extra-class"
   to="/some/url"
 >
-  <Connect(Icon)
+  <Icon
     icon="arrow-left"
   />
   <span

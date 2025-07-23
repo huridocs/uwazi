@@ -16,7 +16,7 @@ exports[`Alert should display the message 1`] = `
     <span
       className="alert-icon"
     >
-      <Connect(Icon)
+      <Icon
         icon="info-circle"
       />
     </span>
@@ -29,7 +29,7 @@ exports[`Alert should display the message 1`] = `
       className="alert-close"
       onClick={[Function]}
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </a>
@@ -47,7 +47,7 @@ exports[`Alert should display the message 2`] = `
     <span
       className="alert-icon"
     >
-      <Connect(Icon)
+      <Icon
         icon="exclamation-triangle"
       />
     </span>
@@ -60,7 +60,7 @@ exports[`Alert should display the message 2`] = `
       className="alert-close"
       onClick={[Function]}
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </a>
@@ -78,7 +78,7 @@ exports[`Alert should display the message 3`] = `
     <span
       className="alert-icon"
     >
-      <Connect(Icon)
+      <Icon
         icon="exclamation-triangle"
       />
     </span>
@@ -91,7 +91,7 @@ exports[`Alert should display the message 3`] = `
       className="alert-close"
       onClick={[Function]}
     >
-      <Connect(Icon)
+      <Icon
         icon="times"
       />
     </a>

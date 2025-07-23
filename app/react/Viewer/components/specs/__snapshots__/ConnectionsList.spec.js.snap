@@ -115,7 +115,7 @@ exports[`ConnectionsList when there are no references should render a blank stat
 <div
   className="blank-state"
 >
-  <Connect(Icon)
+  <Icon
     icon="sitemap"
   />
   <h4>
@@ -139,7 +139,7 @@ exports[`ConnectionsList when there are no references should render a blank stat
 <div
   className="blank-state"
 >
-  <Connect(Icon)
+  <Icon
     icon="sitemap"
   />
   <h4>
