@@ -633,34 +633,42 @@ class InformationExtraction {
     emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', message);
   };
 
-  getAndSendMaterialsForPDF = async (
-    extractor: EnforcedWithId<IXExtractorType>,
-    model: IXModelType,
-    computedBatch: boolean
-  ) => {
+  getAndSendMaterialsForPDF = async ({
+    extractor,
+    model,
+    computedBatch,
+  }: {
+    extractor: EnforcedWithId<IXExtractorType>;
+    model: IXModelType;
+    computedBatch: boolean;
+  }) => {
     const extractorId = extractor._id;
     const batchSize = await this.determineBatchSize(extractorId, model, 'pdf', computedBatch);
-    const files = await getFilesForSuggestions(extractorId, batchSize);
+    const filesForSuggestions = await getFilesForSuggestions(extractorId, batchSize);
 
-    if (files.length === 0) {
+    if (!filesForSuggestions.length) {
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return [];
     }
 
-    await this.sendMaterialsForPDF(files, extractor);
-    return files;
+    await this.sendMaterialsForPDF(filesForSuggestions, extractor);
+    return filesForSuggestions;
   };
 
-  getAndSendMaterialsForProperty = async (
-    extractor: EnforcedWithId<IXExtractorType>,
-    model: IXModelType,
-    computedBatch: boolean
-  ) => {
+  getAndSendMaterialsForProperty = async ({
+    extractor,
+    model,
+    computedBatch,
+  }: {
+    extractor: EnforcedWithId<IXExtractorType>;
+    model: IXModelType;
+    computedBatch: boolean;
+  }) => {
     const extractorId = extractor._id;
     const batchSize = await this.determineBatchSize(extractorId, model, 'property', computedBatch);
     const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
-    if (entitiesForSuggestions.length === 0) {
+    if (!entitiesForSuggestions.length) {
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return [];
     }
@@ -695,26 +703,16 @@ class InformationExtraction {
     model: IXModelType,
     computedBatch: boolean = true
   ) => {
+    const processingParams = { extractor, model, computedBatch };
+
     if (extractor.source.pdf) {
-      const filesForSuggestions = await this.getAndSendMaterialsForPDF(
-        extractor,
-        model,
-        computedBatch
-      );
-      if (filesForSuggestions.length === 0) {
-        return;
-      }
+      const filesForSuggestions = await this.getAndSendMaterialsForPDF(processingParams);
+      if (!filesForSuggestions.length) return;
     }
 
     if (extractor.source.property) {
-      const entitiesForSuggestions = await this.getAndSendMaterialsForProperty(
-        extractor,
-        model,
-        computedBatch
-      );
-      if (entitiesForSuggestions.length === 0) {
-        return;
-      }
+      const entitiesForSuggestions = await this.getAndSendMaterialsForProperty(processingParams);
+      if (!entitiesForSuggestions.length) return;
     }
 
     await this.startSuggestionsTask(extractor);
