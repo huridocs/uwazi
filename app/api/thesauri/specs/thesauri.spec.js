@@ -21,8 +21,8 @@ const factory = getFixturesFactory();
 
 describe('thesauri', () => {
   beforeEach(async () => {
-    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => {
