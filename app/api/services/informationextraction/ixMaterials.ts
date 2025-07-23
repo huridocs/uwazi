@@ -396,7 +396,6 @@ async function getFileIdsWithReadySegmentations(
   return allFileIds.slice(0, targetLimit);
 }
 
-
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const targetLimit = limit || BATCH_SIZE_FOR_PDF;
 

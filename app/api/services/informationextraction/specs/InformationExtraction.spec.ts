@@ -986,13 +986,6 @@ describe('InformationExtraction', () => {
       await SegmentationModel.delete({});
       await IXSuggestionsModel.delete({});
 
-
-
-      await testingDB.mongodb!.collection('entities').insertMany([
-        factory.entity('entity1', 'templateToSegmentA'),
-        factory.entity('entity2', 'templateToSegmentA'),
-      ]);
-
       await filesModel.save({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1011,7 +1004,7 @@ describe('InformationExtraction', () => {
         extractedMetadata: [],
       });
 
-       await IXSuggestionsModel.save({
+      await IXSuggestionsModel.save({
         fileId: factory.id('F1'),
         entityId: 'entity1',
         language: 'en',
@@ -1029,7 +1022,6 @@ describe('InformationExtraction', () => {
           error: false,
         },
       });
-
 
       await IXSuggestionsModel.save({
         fileId: factory.id('F2'),
@@ -1074,7 +1066,9 @@ describe('InformationExtraction', () => {
       // eslint-disable-next-line no-console
       //console.log('After getSuggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
 
-      const suggestions = await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') });
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId: factory.id('prop1extractor'),
+      });
       expect(suggestions.length).toBe(2);
 
       const failedSuggestions = suggestions.filter(s => s.status === 'failed');
