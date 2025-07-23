@@ -40,7 +40,7 @@ jest.mock('V2/Components/PDFViewer', () => ({
   PDF: ({ onSelect }: any) => {
     const handleTextSelection = () => {
       const mockSelection = {
-        text: 'Selected text from PDF',
+        text: 'Selected text from\nPDF',
         selectionRectangles: [
           {
             page: 1,
