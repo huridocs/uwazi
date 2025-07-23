@@ -345,6 +345,7 @@ async function getFileIdsWithReadySegmentations(
   let hasMore = true;
 
   while (hasMore && allFileIds.length < targetLimit) {
+    // eslint-disable-next-line no-await-in-loop
     const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
       limit: batchSize,
       skip,
@@ -357,6 +358,7 @@ async function getFileIdsWithReadySegmentations(
     const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
 
     if (fileIds.length > 0) {
+      // eslint-disable-next-line no-await-in-loop
       const segmentations = await SegmentationModel.get(
         { fileID: { $in: fileIds } },
         'fileID status'

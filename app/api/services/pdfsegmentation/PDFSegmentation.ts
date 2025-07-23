@@ -125,9 +125,6 @@ class PDFSegmentation {
         segmentation.status === 'failed' &&
         (segmentation.retryCount || 0) < PDFSegmentation.MAX_RETRY_COUNT
     );
-    const retryableFailedSegmentedFiles = retryableFailedSegmentations.map(
-      segmentation => segmentation.fileID
-    );
 
     const files = (await filesModel.get(
       {
@@ -162,14 +159,6 @@ class PDFSegmentation {
           retryCount: segmentation.retryCount,
         })),
     ];
-
-    if (retryableFailedSegmentedFiles.length > 0) {
-      await SegmentationModel.delete({
-        fileID: { $in: retryableFailedSegmentedFiles },
-        status: 'failed',
-        retryCount: { $lt: PDFSegmentation.MAX_RETRY_COUNT },
-      });
-    }
 
     return allFilesToProcess;
   };
