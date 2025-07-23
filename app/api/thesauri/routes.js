@@ -97,13 +97,6 @@ const routes = app => {
     }
   );
 
-  app.get('/api/thesauri', (_, res, next) => {
-    thesauri
-      .getAll()
-      .then(output => res.json(output))
-      .catch(next);
-  });
-
   app.get(
     '/api/dictionaries',
     validation.validateRequest({
