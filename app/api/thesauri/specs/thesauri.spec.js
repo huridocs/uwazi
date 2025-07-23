@@ -21,13 +21,13 @@ const factory = getFixturesFactory();
 
 describe('thesauri', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await testingEnvironment.tearDown();
     search.indexEntities.mockRestore();
+    await testingEnvironment.tearDown();
   });
 
   describe('get()', () => {
