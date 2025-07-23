@@ -17,6 +17,7 @@ import {
   relationshipAcceptanceFixtureBase,
   selectAcceptanceFixtureBase,
   shared2AgeSuggestionId,
+  shared2esId,
   suggestionId,
 } from './fixtures';
 import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery';
@@ -58,6 +59,7 @@ type SuggestionBase = Pick<
   | 'date'
   | 'status'
   | 'error'
+  | 'entityLanguageId'
 >;
 
 const prepareAndAcceptSuggestion = async (
@@ -91,7 +93,11 @@ const prepareAndAcceptSuggestion = async (
   return { acceptedSuggestion, metadataValues, allFiles };
 };
 
-const selectSuggestionBase = (propertyName: string, extractorName: string): SuggestionBase => ({
+const selectSuggestionBase = (
+  propertyName: string,
+  extractorName: string,
+  language: string
+): SuggestionBase => ({
   fileId: factory.id('fileForentityWithSelects'),
   entityId: 'entityWithSelects',
   entityTemplate: factory.id('templateWithSelects').toString(),
@@ -100,6 +106,7 @@ const selectSuggestionBase = (propertyName: string, extractorName: string): Sugg
   date: 5,
   status: 'ready' as 'ready',
   error: '',
+  entityLanguageId: factory.id(`entityWithSelects_${language}`),
 });
 
 const prepareAndAcceptSelectSuggestion = async (
@@ -113,7 +120,7 @@ const prepareAndAcceptSelectSuggestion = async (
   } = {}
 ) =>
   prepareAndAcceptSuggestion(
-    selectSuggestionBase(propertyName, extractorName),
+    selectSuggestionBase(propertyName, extractorName, language),
     suggestedValue,
     language,
     propertyName,
@@ -123,7 +130,8 @@ const prepareAndAcceptSelectSuggestion = async (
 
 const relationshipSuggestionBase = (
   propertyName: string,
-  extractorName: string
+  extractorName: string,
+  language: string
 ): SuggestionBase => ({
   fileId: factory.id('fileForEntityWithRelationships'),
   entityId: 'entityWithRelationships_sId',
@@ -133,6 +141,7 @@ const relationshipSuggestionBase = (
   date: 5,
   status: 'ready' as 'ready',
   error: '',
+  entityLanguageId: factory.id(`entityWithRelationships_sId_${language}`),
 });
 
 const prepareAndAcceptRelationshipSuggestion = async (
@@ -146,7 +155,7 @@ const prepareAndAcceptRelationshipSuggestion = async (
   } = {}
 ) =>
   prepareAndAcceptSuggestion(
-    relationshipSuggestionBase(propertyName, extractorName),
+    relationshipSuggestionBase(propertyName, extractorName, language),
     suggestedValue,
     language,
     propertyName,
@@ -167,7 +176,6 @@ describe('suggestions', () => {
     describe('general', () => {
       beforeAll(async () => {
         await testingEnvironment.setUp(fixtures);
-        await Suggestions.updateStates({});
       });
 
       it('should accept suggestions', async () => {
@@ -175,10 +183,11 @@ describe('suggestions', () => {
           extractorId: factory.id('super_powers_extractor'),
         });
         const labelMismatchedSuggestions = suggestions.filter(
-          (sug: any) => sug.state.labeled && !sug.state.match
+          (sug: any) => sug.state.withSuggestion && !sug.state.match
         );
 
         const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
+
         await Suggestions.accept(
           labelMismatchedSuggestions.map((sug: any) => ({
             _id: sug._id,
@@ -200,11 +209,13 @@ describe('suggestions', () => {
             language: 'es',
             entityId: 'shared2',
             currentValue: 'scientific knowledge es',
+            entityLanguageId: shared2esId,
           },
           {
             language: 'en',
             entityId: 'shared3',
             currentValue: 'puts up with Bruce Wayne',
+            entityLanguageId: factory.id('Alfred-english-entity'),
           },
         ]);
       });
@@ -259,7 +270,6 @@ describe('suggestions', () => {
     describe('numeric/date', () => {
       beforeAll(async () => {
         await testingEnvironment.setUp(fixtures);
-        await Suggestions.updateStates({});
       });
 
       it('should update entities of all languages if property name is numeric or date', async () => {
