@@ -614,64 +614,73 @@ class InformationExtraction {
   determineBatchSize = async (
     extractorId: ObjectIdSchema,
     model: IXModelType,
-    source: 'pdf' | 'property'
+    source: 'pdf' | 'property',
+    computedBatch: boolean
   ) => {
     const MAX_BATCH_SIZE = source === 'pdf' ? BATCH_SIZE_FOR_PDF : BATCH_SIZE_FOR_PROPERTY;
+    if (!computedBatch) {
+      return MAX_BATCH_SIZE;
+    }
+
     const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
     const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
     const batchSize = model.testRun ? Math.min(remaining, MAX_BATCH_SIZE) : undefined;
     return batchSize;
   };
 
-  stopModelAndEmitReadyCompleted = async (extractorId: ObjectIdSchema) => {
+  stopModelAndEmitReadyMessage = async (extractorId: ObjectIdSchema, message: string) => {
     await this.stopModel(extractorId);
-    emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
+    emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', message);
   };
 
-  stopModelAndEmitReadyTestCompleted = async (extractorId: ObjectIdSchema) => {
-    await this.stopModel(extractorId);
-    emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Test completed');
-  };
-
-  sendMaterialsAndTaskSuggestions = async (
+  getAndSendMaterialsForPDF = async (
     extractor: EnforcedWithId<IXExtractorType>,
-    model: IXModelType
+    model: IXModelType,
+    computedBatch: boolean
   ) => {
     const extractorId = extractor._id;
-    if (extractor.source.pdf) {
-      const batchSize = await this.determineBatchSize(extractorId, model, 'pdf');
-      const files = await getFilesForSuggestions(extractorId, batchSize);
+    const batchSize = await this.determineBatchSize(extractorId, model, 'pdf', computedBatch);
+    const files = await getFilesForSuggestions(extractorId, batchSize);
 
-      if (files.length === 0) {
-        await this.stopModelAndEmitReadyCompleted(extractorId);
-        return;
-      }
-
-      await this.sendMaterialsForPDF(files, extractor);
+    if (files.length === 0) {
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
+      return [];
     }
 
-    if (extractor.source.property) {
-      const batchSize = await this.determineBatchSize(extractorId, model, 'property');
-      const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
+    await this.sendMaterialsForPDF(files, extractor);
+    return files;
+  };
 
-      if (entitiesForSuggestions.length === 0) {
-        await this.stopModelAndEmitReadyCompleted(extractorId);
-        return;
-      }
+  getAndSendMaterialsForProperty = async (
+    extractor: EnforcedWithId<IXExtractorType>,
+    model: IXModelType,
+    computedBatch: boolean
+  ) => {
+    const extractorId = extractor._id;
+    const batchSize = await this.determineBatchSize(extractorId, model, 'property', computedBatch);
+    const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
-      await this.sendMaterialsForProperty(
-        entitiesForSuggestions,
-        extractor,
-        await this.serviceUrl(),
-        'prediction_data'
-      );
+    if (entitiesForSuggestions.length === 0) {
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
+      return [];
     }
 
+    await this.sendMaterialsForProperty(
+      entitiesForSuggestions,
+      extractor,
+      await this.serviceUrl(),
+      'prediction_data'
+    );
+
+    return entitiesForSuggestions;
+  };
+
+  startSuggestionsTask = async (extractor: EnforcedWithId<IXExtractorType>) => {
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
       params: {
-        id: extractorId.toString(),
+        id: extractor._id.toString(),
         metadata: {
           extractor_name: extractor.name || '',
           property: extractor.property || '',
@@ -679,6 +688,36 @@ class InformationExtraction {
         },
       },
     });
+  };
+
+  sendMaterialsAndTaskSuggestions = async (
+    extractor: EnforcedWithId<IXExtractorType>,
+    model: IXModelType,
+    computedBatch: boolean = true
+  ) => {
+    if (extractor.source.pdf) {
+      const filesForSuggestions = await this.getAndSendMaterialsForPDF(
+        extractor,
+        model,
+        computedBatch
+      );
+      if (filesForSuggestions.length === 0) {
+        return;
+      }
+    }
+
+    if (extractor.source.property) {
+      const entitiesForSuggestions = await this.getAndSendMaterialsForProperty(
+        extractor,
+        model,
+        computedBatch
+      );
+      if (entitiesForSuggestions.length === 0) {
+        return;
+      }
+    }
+
+    await this.startSuggestionsTask(extractor);
   };
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
@@ -691,7 +730,7 @@ class InformationExtraction {
     if (model.testRun) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
       if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
-        await this.stopModelAndEmitReadyTestCompleted(extractorId);
+        await this.stopModelAndEmitReadyMessage(extractorId, 'Test completed');
       }
     }
 
@@ -699,7 +738,14 @@ class InformationExtraction {
   };
 
   findSuggestionsForIds = async (extractorId: ObjectIdSchema, sharedIds: string[]) => {
-    const [model] = await ixmodels.get({ extractorId });
+    const [[extractor], [model]] = await Promise.all([
+      Extractors.get({ _id: extractorId }),
+      ixmodels.get({ extractorId }),
+    ]);
+
+    if (!extractor) {
+      throw new Error('Extractor not found');
+    }
 
     if (!model || model.status !== ModelStatus.ready) {
       throw new ModelNotReadyError(extractorId.toString());
@@ -716,7 +762,7 @@ class InformationExtraction {
       findingSuggestions: true,
     });
 
-    await this.getSuggestions(extractorId);
+    await this.sendMaterialsAndTaskSuggestions(extractor, model, false);
 
     const [updatedModel] = await ixmodels.get({ extractorId });
 
