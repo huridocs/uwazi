@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /* eslint-disable max-statements */
 import moment from 'moment';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -62,6 +63,7 @@ describe('Information Extraction: Extracting from text source', () => {
     });
 
     await IXExternalService.start();
+    // eslint-disable-next-line no-empty-function
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
