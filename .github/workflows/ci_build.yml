@@ -19,7 +19,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: Get Cypress version
         id: cypress-version
-        run: echo "version=$(yarn info cypress version | tr -d '\n')" >> $GITHUB_OUTPUT
+        run: echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
 
       - name: Cache Cypress
         uses: actions/cache@v4
