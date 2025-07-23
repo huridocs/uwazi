@@ -986,6 +986,13 @@ describe('InformationExtraction', () => {
       await SegmentationModel.delete({});
       await IXSuggestionsModel.delete({});
 
+
+
+      await testingDB.mongodb!.collection('entities').insertMany([
+        factory.entity('entity1', 'templateToSegmentA'),
+        factory.entity('entity2', 'templateToSegmentA'),
+      ]);
+
       await filesModel.save({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1004,6 +1011,45 @@ describe('InformationExtraction', () => {
         extractedMetadata: [],
       });
 
+       await IXSuggestionsModel.save({
+        fileId: factory.id('F1'),
+        entityId: 'entity1',
+        language: 'en',
+        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
+        date: 100,
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
+
+      await IXSuggestionsModel.save({
+        fileId: factory.id('F2'),
+        entityId: 'entity2',
+        language: 'en',
+        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
+        date: 100,
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+      });
+
       await SegmentationModel.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1018,13 +1064,25 @@ describe('InformationExtraction', () => {
         retryCount: 2,
       });
 
+      // Debug: log suggestions before getSuggestions
+      // eslint-disable-next-line no-console
+      //console.log('Before getSuggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
+
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      // Debug: log suggestions after getSuggestions
+      // eslint-disable-next-line no-console
+      //console.log('After getSuggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
 
       const suggestions = await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') });
       expect(suggestions.length).toBe(2);
 
       const failedSuggestions = suggestions.filter(s => s.status === 'failed');
       expect(failedSuggestions.length).toBe(2);
+
+      // Debug: log all suggestions after assertions
+      // eslint-disable-next-line no-console
+      //console.log('Final suggestions:', await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') }));
 
       failedSuggestions.forEach(suggestion => {
         expect(suggestion.status).toBe('failed');

@@ -331,7 +331,6 @@ async function getFileIdsWithReadySegmentations(
   const query: UwaziFilterQuery<any> = {
     extractorId,
     date: { $lt: currentModel.creationDate },
-    'state.error': { $ne: true },
   };
 
   if (currentModel.testRun) {
@@ -339,27 +338,25 @@ async function getFileIdsWithReadySegmentations(
   }
 
   const batchSize = 100;
-  const maxSkip = 10000;
-  const totalBatches = Math.ceil(maxSkip / batchSize);
-
   const allFileIds: ObjectIdSchema[] = [];
   const suggestionsWithFailedSegmentations: any[] = [];
 
-  const batchPromises = Array.from({ length: totalBatches }, (_, i) => i * batchSize).map(
-    async skip => {
-      if (allFileIds.length >= targetLimit) return;
+  let skip = 0;
+  let hasMore = true;
 
-      const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-        limit: batchSize,
-        skip,
-      });
+  while (hasMore && allFileIds.length < targetLimit) {
+    const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
+      limit: batchSize,
+      skip,
+    });
 
-      if (suggestions.length === 0) return;
+    if (!suggestions.length) {
+      break;
+    }
 
-      const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
+    const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
 
-      if (!fileIds.length) return;
-
+    if (fileIds.length > 0) {
       const segmentations = await SegmentationModel.get(
         { fileID: { $in: fileIds } },
         'fileID status'
@@ -369,37 +366,36 @@ async function getFileIdsWithReadySegmentations(
         .filter(seg => seg.status === 'ready' && seg.fileID)
         .map(seg => seg.fileID!);
 
-      // Find suggestions for files with failed segmentations
       const failedSegmentationFileIds = segmentations
         .filter(seg => seg.status === 'failed' && seg.fileID)
         .map(seg => seg.fileID!);
 
-      const suggestionsForFailedFiles = suggestions.filter(s => {
-        if (!s.fileId) return false;
-        const fileIdString = s.fileId.toString();
-        return failedSegmentationFileIds.some(failedId => failedId === fileIdString);
-      });
+      const failedSuggestions = suggestions.filter(s =>
+        failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
+      );
 
       allFileIds.push(...readySegmentationFileIds);
-      suggestionsWithFailedSegmentations.push(...suggestionsForFailedFiles);
+      suggestionsWithFailedSegmentations.push(...failedSuggestions);
     }
-  );
 
-  await Promise.all(batchPromises);
+    skip += batchSize;
+    hasMore = suggestions.length === batchSize;
+  }
 
-  // Mark suggestions for files with failed segmentations
-  if (suggestionsWithFailedSegmentations.length > 0) {
+  if (suggestionsWithFailedSegmentations.length) {
     const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
       ...suggestion,
       'state.error': true,
       'state.obsolete': false,
       status: 'failed',
     }));
+
     await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
   }
 
   return allFileIds.slice(0, targetLimit);
 }
+
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
   const targetLimit = limit || BATCH_SIZE_FOR_PDF;
