@@ -2,6 +2,11 @@ import fs from 'fs';
 import { defineConfig } from 'cypress';
 import webpackConfig from './webpack.config';
 
+const cypressWebpackConfig = {
+  ...webpackConfig,
+  cache: false, // disable cache for Cypress component testing
+};
+
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
 const retries = process.env.CYPRESS_RETRIES ? parseInt(process.env.CYPRESS_RETRIES, 10) : 0;
@@ -33,7 +38,6 @@ export default defineConfig({
           }
         }
       });
-
       on('before:browser:launch', (browser, launchOptions) => {
         if (browser.name === 'chrome' && browser.isHeadless) {
           launchOptions.args.push('--window-size=1280,768');
@@ -58,7 +62,7 @@ export default defineConfig({
     devServer: {
       framework: 'react',
       bundler: 'webpack',
-      webpackConfig,
+      webpackConfig: cypressWebpackConfig,
     },
     specPattern: 'app/react/**/*.cy.tsx',
   },
