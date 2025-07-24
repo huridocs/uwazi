@@ -7,7 +7,8 @@ import LibraryRoot from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { LibraryCards } from 'app/Library/LibraryCards';
 import { LibraryTable } from 'app/Library/LibraryTable';
-import { PreserveSettings, Settings } from 'app/Settings';
+import { Preserve } from 'V2/Routes/Settings/Preserve/Preserve';
+import { Settings } from 'V2/Routes/Settings/Settings';
 import { Login } from 'app/Users/Login';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
@@ -134,11 +135,16 @@ const getRoutesLayout = (
         loader={usersLoader(headers)}
         action={userAction()}
       />
-      <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
+      <Route path="preserve" element={adminsOnlyRoute(<Preserve />)} />
       <Route path="pages">
         <Route index element={adminsOnlyRoute(<PagesList />)} loader={pagesListLoader(headers)} />
         <Route
-          path="page/:sharedId?"
+          path="new"
+          element={adminsOnlyRoute(<PageEditor />)}
+          loader={pageEditorLoader(headers)}
+        />
+        <Route
+          path="edit/:sharedId?"
           element={adminsOnlyRoute(<PageEditor />)}
           loader={pageEditorLoader(headers)}
         />

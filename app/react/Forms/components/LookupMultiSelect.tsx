@@ -7,6 +7,7 @@ interface LookupMultiSelectProps extends MultiSelectProps<string[]> {
 }
 
 interface LookupMultiSelectState {
+  preloadedOptions: Option[];
   lookupOptions: Option[];
   selectedOptions: Option[];
   totalPossibleOptions: number;
@@ -31,6 +32,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   constructor(props: LookupMultiSelectProps) {
     super(props);
     this.state = {
+      preloadedOptions: props.options,
       lookupOptions: [],
       selectedOptions: [],
       totalPossibleOptions: props.totalPossibleOptions,
@@ -39,6 +41,26 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     this.onFilter = debounce(this.onFilter.bind(this), debounceTime) as (
       searchTerm: string
     ) => Promise<void>;
+  }
+
+  async componentDidMount() {
+    if (this.props.lookup) {
+      const { options, count } = await this.props.lookup('');
+      const combinedOptions = [...this.props.options, ...options].filter(
+        uniqueOptions(this.props.optionsValue)
+      );
+      this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
+    }
+  }
+
+  async componentDidUpdate(prevProps: LookupMultiSelectProps) {
+    if (prevProps.lookup !== this.props.lookup) {
+      const { options, count } = await this.props.lookup('');
+      const combinedOptions = [...this.props.options, ...options].filter(
+        uniqueOptions(this.props.optionsValue)
+      );
+      this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
+    }
   }
 
   onChange(value: string[]) {
@@ -53,29 +75,23 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   async onFilter(searchTerm: string) {
-    if (searchTerm.length) {
-      const { options, count } = await this.props.lookup(searchTerm);
-
-      const lookupOptions = options.map((o: Option) => ({
-        ...o,
-        [this.props.optionsValue]: o.value,
-        [this.props.optionsLabel]: o.label,
-      }));
-
-      this.setState({ lookupOptions, totalPossibleOptions: count });
+    if (!this.props.lookup) {
+      return;
     }
+    const { options, count } = await this.props.lookup(searchTerm);
 
-    if (!searchTerm.length) {
-      this.setState({
-        lookupOptions: [],
-        totalPossibleOptions: this.props.totalPossibleOptions,
-      });
-    }
+    const lookupOptions = options.map((o: Option) => ({
+      ...o,
+      [this.props.optionsValue]: o.value,
+      [this.props.optionsLabel]: o.label,
+    }));
+
+    this.setState({ lookupOptions, totalPossibleOptions: count });
   }
 
   combineOptions(): Option[] {
     return [
-      ...this.props.options,
+      ...this.state.preloadedOptions,
       ...this.state.lookupOptions,
       ...this.state.selectedOptions,
     ].filter(uniqueOptions(this.props.optionsValue));

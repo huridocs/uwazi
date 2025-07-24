@@ -15,6 +15,8 @@ import { sequentialPromises } from 'shared/asyncUtils';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
+import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { inspect } from 'util';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
@@ -22,7 +24,6 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -872,6 +873,7 @@ const search = {
   },
 
   async bulkIndex(docs, action = 'index') {
+    inspect(new Error('who calls ?'));
     return bulkIndex(docs, action);
   },
 
@@ -979,15 +981,17 @@ const search = {
 
     const body = queryBuilder.query();
 
-    body.query.bool.must = [
-      {
-        multi_match: {
-          query: searchTerm,
-          type: 'bool_prefix',
-          fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram', 'title.sayt_ngram'],
+    if (searchTerm) {
+      body.query.bool.must = [
+        {
+          multi_match: {
+            query: searchTerm,
+            type: 'bool_prefix',
+            fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram', 'title.sayt_ngram'],
+          },
         },
-      },
-    ];
+      ];
+    }
 
     delete body.aggregations;
 

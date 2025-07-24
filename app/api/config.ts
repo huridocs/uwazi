@@ -1,6 +1,9 @@
 import uniqueID from 'shared/uniqueID';
+import dotenv from 'dotenv';
 import { Tenant } from './tenants/tenantContext';
 import { version } from '../../package.json';
+
+dotenv.config();
 
 const {
   ACTIVITY_LOGS_FOLDER,
@@ -82,7 +85,7 @@ export const config = {
       esReplicas: 0,
       deactivateTestJob: false,
       paragraphExtraction: FEATURE_FLAG_PARAGRAPH_EXTRACTION === 'true' || false,
-      improvedTemplatesSave: false,
+      templatesDenormalizationPerfImprovements: false,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,

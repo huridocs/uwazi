@@ -2,13 +2,13 @@
 import React from 'react';
 import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
-import { useAtom, useSetAtom } from 'jotai';
-import { isEqual, remove } from 'lodash';
+import { useSetAtom } from 'jotai';
+import { isEqual } from 'lodash';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
 import ThesauriAPI from 'V2/api/thesauri';
-import { thesauriAtom, notificationAtom } from 'app/V2/atoms';
+import { notificationAtom } from 'app/V2/atoms';
 import { Table } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { addSelection, sanitizeThesaurusValues } from './helpers';
@@ -40,12 +40,11 @@ const ThesaurusForm = ({
 
   const navigate = useNavigate();
   const revalidator = useRevalidator();
-  const [thesauri, setThesauri] = useAtom(thesauriAtom);
   const setNotifications = useSetAtom(notificationAtom);
 
   const handleRevalidate = async (savedThesaurus: ClientThesaurus) => {
     if (!thesaurus?._id) {
-      await navigate(`../edit/${savedThesaurus._id}`);
+      await navigate(`../edit/${savedThesaurus._id}`, { replace: true });
     } else {
       await revalidator.revalidate();
     }
@@ -54,11 +53,6 @@ const ThesaurusForm = ({
   const saveThesaurus = async (data: ClientThesaurus) => {
     const thesaurusToUpdate = { ...data, values: sanitizeThesaurusValues(thesaurusValues) };
     const savedThesaurus = await ThesauriAPI.save(thesaurusToUpdate);
-    if (thesauri.find(item => item._id === savedThesaurus._id)) {
-      remove(thesauri, item => item._id === savedThesaurus._id);
-    }
-    thesauri.push(savedThesaurus);
-    setThesauri([...thesauri]);
     setValue('_id', savedThesaurus._id);
     setNotifications({
       type: 'success',

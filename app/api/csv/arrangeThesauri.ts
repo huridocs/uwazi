@@ -17,8 +17,10 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect';
-import { LabelInfoBase } from './typeParsers/select';
+import { determineParentChildRelationship } from './typeParsers/select';
 import { headerWithLanguage } from './csvDefinitions';
+import { sanitizeStringValue } from './sanitizationUtils';
+import { LabelInfoBase } from './typeParsers/shared';
 
 class ArrangeThesauriError extends Error {
   row: CSVRow;
@@ -130,24 +132,106 @@ const isNewLabel = (
   map: ThesaurusMap,
   parentInfo: LabelInfoBase,
   childInfo: LabelInfoBase
-): boolean =>
-  !map.normalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel) &&
-  !map.newNormalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel);
+): boolean => {
+  const hasInExisting = map.normalizedLabelsPerParent.has(
+    parentInfo.normalizedLabel,
+    childInfo.normalizedLabel
+  );
+  const hasInNew = map.newNormalizedLabelsPerParent.has(
+    parentInfo.normalizedLabel,
+    childInfo.normalizedLabel
+  );
+  const isNew = !hasInExisting && !hasInNew;
+
+  return isNew;
+};
+
+function sanitizeLabelInfo(labelInfo: LabelInfo, propertyName: string): LabelInfo {
+  const sanitizedLabel = sanitizeStringValue(labelInfo.label, propertyName).value;
+
+  if (labelInfo.child) {
+    const sanitizedChildLabel = sanitizeStringValue(labelInfo.child.label, propertyName).value;
+
+    return {
+      label: sanitizedLabel,
+      normalizedLabel: normalizeThesaurusLabel(sanitizedLabel) || '',
+      child: {
+        label: sanitizedChildLabel,
+        normalizedLabel: normalizeThesaurusLabel(sanitizedChildLabel) || '',
+      },
+    };
+  }
+
+  return {
+    label: sanitizedLabel,
+    normalizedLabel: normalizeThesaurusLabel(sanitizedLabel) || '',
+    child: null,
+  };
+}
+
+function parseParentChildWithSpaces(value: string): LabelInfo | null {
+  if (!value) return null;
+
+  const separator = '::';
+  const parts = value.split(separator);
+
+  if (parts.length > 2) {
+    return null;
+  }
+
+  if (parts.length === 1) {
+    const trimmedLabel = parts[0].trim();
+    const normalizedLabel = normalizeThesaurusLabel(trimmedLabel);
+    if (!normalizedLabel) return null;
+
+    return {
+      label: trimmedLabel,
+      normalizedLabel,
+      child: null,
+    };
+  }
+
+  const parentLabel = parts[0].trim();
+  const childLabel = parts[1].trim();
+
+  const normalizedParentLabel = normalizeThesaurusLabel(parentLabel);
+  const normalizedChildLabel = normalizeThesaurusLabel(childLabel);
+
+  if (!normalizedParentLabel || !normalizedChildLabel) {
+    return null;
+  }
+
+  return {
+    label: parentLabel,
+    normalizedLabel: normalizedParentLabel,
+    child: {
+      label: childLabel,
+      normalizedLabel: normalizedChildLabel,
+    },
+  };
+}
 
 const pushNewLabel = (
   map: ThesaurusMap,
   labelInfo: LabelInfo,
-  parentInfo: LabelInfoBase,
-  childInfo: LabelInfoBase,
-  newKeys: Set<string>
+  newKeys: Set<string>,
+  propertyName: string
 ) => {
-  map.newInfos.push(labelInfo);
+  const sanitizedLabelInfo = sanitizeLabelInfo(labelInfo, propertyName);
+  const sanitizedParentInfo = sanitizedLabelInfo.child
+    ? sanitizedLabelInfo
+    : { label: sanitizedLabelInfo.label, normalizedLabel: sanitizedLabelInfo.normalizedLabel };
+  const sanitizedChildInfo = sanitizedLabelInfo.child
+    ? sanitizedLabelInfo.child
+    : sanitizedLabelInfo;
+
+  map.newInfos.push(sanitizedLabelInfo);
   const addition = map.newNormalizedLabelsPerParent.add(
-    parentInfo.normalizedLabel,
-    childInfo.normalizedLabel
+    sanitizedParentInfo.normalizedLabel,
+    sanitizedChildInfo.normalizedLabel
   );
-  if (addition.indexWasNew) newKeys.add(parentInfo.label);
-  if (addition.valueWasNew) newKeys.add(childInfo.label);
+  if (addition.indexWasNew) newKeys.add(sanitizedParentInfo.label);
+  if (addition.valueWasNew) newKeys.add(sanitizedChildInfo.label);
 };
 
 const tryAddingLabel = (
@@ -167,7 +251,7 @@ const tryAddingLabel = (
   const newKeys: Set<string> = new Set();
 
   if (isNewLabel(map, parentInfo, childInfo)) {
-    pushNewLabel(map, labelInfo, parentInfo, childInfo, newKeys);
+    pushNewLabel(map, labelInfo, newKeys, name);
   }
   return newKeys;
 };
@@ -193,23 +277,92 @@ const handleRow = (
   thesauriValueData: ThesaurusMaps,
   headersWithoutLanguage: string[],
   languagesPerHeader: Record<string, Set<string>>,
-  defaultLanguage: string
+  defaultLanguage: string,
+  template: TemplateSchema
 ): void => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
+
   headersWithoutLanguage.forEach(header => {
-    const { labelInfos } = splitMultiselectLabels(safeNamedRow[header]);
-    labelInfos.forEach(labelInfo => {
-      tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
-    });
+    const property = template.properties?.find(p => p.name === header);
+    const isMultiselect = property?.type === 'multiselect';
+
+    if (isMultiselect) {
+      const result = splitMultiselectLabels(safeNamedRow[header]);
+      result.labelInfos.forEach(labelInfo => {
+        tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
+      });
+    } else {
+      let labelInfo = determineParentChildRelationship(safeNamedRow[header]);
+
+      if (!labelInfo && safeNamedRow[header]) {
+        const sanitizedValue = sanitizeStringValue(safeNamedRow[header], header).value;
+        labelInfo = determineParentChildRelationship(sanitizedValue);
+      }
+
+      if (!labelInfo && safeNamedRow[header]) {
+        labelInfo = parseParentChildWithSpaces(safeNamedRow[header]);
+      }
+
+      if (labelInfo) {
+        tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
+      }
+    }
   });
+
   Object.keys(languagesPerHeader).forEach(header => {
-    const { labelInfos: keyInfos } = splitMultiselectLabels(
-      safeNamedRow[headerWithLanguage(header, defaultLanguage)]
-    );
+    const defaultLanguageHeader = headerWithLanguage(header, defaultLanguage);
+
+    const property = template.properties?.find(p => p.name === header);
+    const isMultiselect = property?.type === 'multiselect';
+
+    let keyInfos: LabelInfo[] = [];
+    if (isMultiselect) {
+      const result = splitMultiselectLabels(safeNamedRow[defaultLanguageHeader]);
+      keyInfos = result.labelInfos;
+    } else {
+      let labelInfo = determineParentChildRelationship(safeNamedRow[defaultLanguageHeader]);
+
+      if (!labelInfo && safeNamedRow[defaultLanguageHeader]) {
+        const sanitizedValue = sanitizeStringValue(
+          safeNamedRow[defaultLanguageHeader],
+          header
+        ).value;
+        labelInfo = determineParentChildRelationship(sanitizedValue);
+      }
+
+      if (!labelInfo && safeNamedRow[defaultLanguageHeader]) {
+        labelInfo = parseParentChildWithSpaces(safeNamedRow[defaultLanguageHeader]);
+      }
+
+      if (labelInfo) {
+        keyInfos = [labelInfo];
+      }
+    }
+
     const potentialTranslations = Array.from(languagesPerHeader[header])
       .map(lang => {
         const fullHeader = headerWithLanguage(header, lang);
-        const { labelInfos } = splitMultiselectLabels(safeNamedRow[fullHeader]);
+        let labelInfos: LabelInfo[] = [];
+        if (isMultiselect) {
+          const result = splitMultiselectLabels(safeNamedRow[fullHeader]);
+          labelInfos = result.labelInfos;
+        } else {
+          let labelInfo = determineParentChildRelationship(safeNamedRow[fullHeader]);
+
+          if (!labelInfo && safeNamedRow[fullHeader]) {
+            const sanitizedValue = sanitizeStringValue(safeNamedRow[fullHeader], header).value;
+            labelInfo = determineParentChildRelationship(sanitizedValue);
+          }
+
+          if (!labelInfo && safeNamedRow[fullHeader]) {
+            labelInfo = parseParentChildWithSpaces(safeNamedRow[fullHeader]);
+          }
+
+          if (labelInfo) {
+            labelInfos = [labelInfo];
+          }
+        }
+
         const ptrs: (string | undefined)[][] = [];
         labelInfos.forEach((labelInfo, i) => {
           const keyInfo = keyInfos[i];
@@ -312,7 +465,8 @@ const arrangeThesauri = async (
         thesaurusMaps,
         headersWithoutLanguage,
         languagesPerHeader,
-        defaultLanguage
+        defaultLanguage,
+        template
       )
     )
     .onError(async (e: Error, row: CSVRow, index: number) => {

@@ -17,12 +17,14 @@ type SuggestionsAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
   _id: any;
   propertyName: string;
   currentValue: CurrentValue[];
+  labeledValue: CurrentValue[];
 };
 
 type PostProcessedAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
   _id: any;
   propertyName: string;
   currentValue: SuggestionValues['currentValue'];
+  labeledValue: CurrentValue[];
 };
 
 const getModelCreationDateStage = () => [

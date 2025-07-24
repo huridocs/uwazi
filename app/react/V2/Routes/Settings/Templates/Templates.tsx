@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { Translate, I18NLink, t } from 'app/I18N';
+import { Translate, I18NLinkV2 as I18NLink, t } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI/Table/Table';
@@ -104,11 +104,7 @@ const Templates = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-templates"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-templates">
       <SettingsContent>
         <SettingsContent.Header title="Templates" />
         <SettingsContent.Body>

@@ -70,11 +70,7 @@ const Account = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-account"
-    >
+    <div className="w-full h-full overflow-y-auto" data-testid="settings-account">
       <SettingsContent>
         <SettingsContent.Header title="Account" />
         <SettingsContent.Body>

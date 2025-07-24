@@ -14,14 +14,14 @@ const commonPropertyTitle: ClientProperty = {
 
 const commonPropertyDateAdded: ClientProperty = {
   label: 'Date added',
-  name: 'date_added',
+  name: 'creationDate',
   type: 'date',
   isCommonProperty: true,
 };
 
 const commonPropertyDateModified: ClientProperty = {
   label: 'Date modified',
-  name: 'date_modified',
+  name: 'editDate',
   type: 'date',
   isCommonProperty: true,
 };

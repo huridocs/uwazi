@@ -32,7 +32,7 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
         onClick={[Function]}
         type="button"
       >
-        <Connect(Icon)
+        <Icon
           icon="pencil-alt"
         />
          

@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { groupBy } from 'lodash';
 
 import translations from 'api/i18n';
 import { EnforcedWithId } from 'api/odm';
@@ -114,8 +115,15 @@ export class CSVLoader extends EventEmitter {
     );
     const indexedTranslations = await getTranslations();
 
+    const warnings: Array<{ property: string; value: string; reason: string; index: number }> = [];
+    const feedbackCallback = (
+      warning: { property: string; value: string; reason: string },
+      index: number
+    ) => {
+      warnings.push({ ...warning, index });
+    };
     await csv(await file.readStream(), this.stopOnError)
-      .onRow(async (row: CSVRow) => {
+      .onRow(async (row: CSVRow, index: number) => {
         const { rawEntity, rawTranslations } = extractEntity(
           row,
           availableLanguages,
@@ -125,7 +133,12 @@ export class CSVLoader extends EventEmitter {
           newNameGeneration
         );
         if (rawEntity) {
-          const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });
+          const entity = await importEntity(rawEntity, template, file, {
+            ...options,
+            dateFormat,
+            feedbackCallback: error => feedbackCallback(error, index),
+          });
+
           await translateEntity(
             entity,
             rawTranslations,
@@ -143,6 +156,19 @@ export class CSVLoader extends EventEmitter {
         this.emit('loadError', e, toSafeName(row), index);
       })
       .read();
+
+    if (warnings.length > 0) {
+      const groupedWarnings = groupBy(warnings, warning => warning.reason);
+      Object.keys(groupedWarnings).forEach(key => {
+        groupedWarnings[key] = groupedWarnings[key].map(warning => ({
+          index: warning.index,
+          property: warning.property,
+          value: warning.value,
+          reason: '',
+        }));
+      });
+      this.emit('rowExceptions', groupedWarnings);
+    }
 
     this.throwErrors();
   }

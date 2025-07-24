@@ -70,7 +70,7 @@ const UsernameCell = ({ cell }: CellContext<User, User['username']>) => {
   const userIsBlocked = cell.row.original.accountLocked;
   return (
     <div className="flex gap-1 items-start">
-      <span className={userIsBlocked ? 'text-error-600' : ''}>{cell.getValue()}</span>
+      <span className={userIsBlocked ? 'text-error-800' : ''}>{cell.getValue()}</span>
       {userIsBlocked && (
         <Tooltip
           content={t('System', 'Account locked', null, false)}

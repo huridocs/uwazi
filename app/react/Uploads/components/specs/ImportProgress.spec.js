@@ -17,6 +17,7 @@ describe('ImportProgress', () => {
         importProgress: 5,
         importError: Immutable.fromJS({}),
         importEnd: false,
+        importRowExceptions: Immutable.fromJS({}),
       },
       close: jasmine.createSpy('close'),
     };
@@ -55,6 +56,29 @@ describe('ImportProgress', () => {
 
     it('should render a state for end', () => {
       props.importState.importEnd = true;
+      expectSnapshot();
+    });
+
+    it('should render a state for end with row exceptions', () => {
+      props.importState.importEnd = true;
+      props.importState.importRowExceptions = Immutable.fromJS({
+        'Sanitized entries skipped in import': [
+          {
+            index: 0,
+            property: 'select_with_spaces',
+            reason: '',
+            value: ' Item2 ',
+          },
+        ],
+        'Another warning type': [
+          {
+            index: 1,
+            property: 'another_property',
+            reason: 'Invalid format',
+            value: 'invalid_value',
+          },
+        ],
+      });
       expectSnapshot();
     });
   });

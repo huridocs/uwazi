@@ -108,7 +108,7 @@ exports[`ContactForm should render the ContactForm 1`] = `
     className="btn btn-success"
     type="submit"
   >
-    <Connect(Icon)
+    <Icon
       icon="paper-plane"
     />
      

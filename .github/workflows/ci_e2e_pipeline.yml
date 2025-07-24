@@ -1,0 +1,30 @@
+name: E2E Pipeline
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development, staging, production]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/ci_build.yml
+
+  e2e_cypress:
+    needs: build
+    uses: ./.github/workflows/ci_e2e_cypress.yml
+
+  e2e_puppeteer:
+    needs: build
+    uses: ./.github/workflows/ci_e2e_puppeteer.yml
+
+  check_translations:
+    needs: build
+    uses: ./.github/workflows/ci_check_translations.yml

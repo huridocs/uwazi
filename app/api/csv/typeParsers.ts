@@ -3,6 +3,12 @@ import url from 'url';
 import { RawEntity } from 'api/csv/entityRow';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
+import { sanitizeMetadataValue, SanitizationWarning } from './sanitizationUtils';
+
+export interface ParserResult {
+  data: MetadataObjectSchema[];
+  warnings: SanitizationWarning[];
+}
 
 import moment from 'moment';
 import generatedid from './typeParsers/generatedid';
@@ -15,9 +21,26 @@ import { csvConstants } from './csvDefinitions';
 const defaultParser = async (
   entityToImport: RawEntity,
   property: PropertySchema
-): Promise<MetadataObjectSchema[]> => [
-  { value: entityToImport.propertiesFromColumns[ensure<string>(property.name)] },
-];
+): Promise<ParserResult> => {
+  const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+  const sanitizationResult = sanitizeMetadataValue(
+    rawValue,
+    ensure<string>(property.name),
+    property.type
+  );
+
+  if (sanitizationResult.value === '') {
+    return {
+      data: [],
+      warnings: sanitizationResult.warnings,
+    };
+  }
+
+  return {
+    data: [{ value: sanitizationResult.value }],
+    warnings: sanitizationResult.warnings,
+  };
+};
 
 const parseDateValue = (dateValue: string, dateFormat: string) => {
   const allowedFormats = [
@@ -64,64 +87,152 @@ export default {
   relationship,
   newRelationship: defaultParser,
 
-  async numeric(
-    entityToImport: RawEntity,
-    property: PropertySchema
-  ): Promise<MetadataObjectSchema[]> {
-    const value = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
-    return Number.isNaN(Number(value)) ? [{ value }] : [{ value: Number(value) }];
+  async numeric(entityToImport: RawEntity, property: PropertySchema): Promise<ParserResult> {
+    const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+    const sanitizationResult = sanitizeMetadataValue(
+      rawValue,
+      ensure<string>(property.name),
+      property.type
+    );
+
+    if (sanitizationResult.value === '') {
+      return {
+        data: [],
+        warnings: sanitizationResult.warnings,
+      };
+    }
+
+    const value = sanitizationResult.value;
+    const data = Number.isNaN(Number(value)) ? [{ value }] : [{ value: Number(value) }];
+    return {
+      data,
+      warnings: sanitizationResult.warnings,
+    };
   },
 
   async date(
     entityToImport: RawEntity,
     property: PropertySchema,
     dateFormat: string
-  ): Promise<MetadataObjectSchema[]> {
-    const date = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
-    return [parseDate(date, dateFormat)];
+  ): Promise<ParserResult> {
+    const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+    const sanitizationResult = sanitizeMetadataValue(
+      rawValue,
+      ensure<string>(property.name),
+      property.type
+    );
+
+    if (sanitizationResult.value === '') {
+      return {
+        data: [],
+        warnings: sanitizationResult.warnings,
+      };
+    }
+
+    const date = sanitizationResult.value;
+    return {
+      data: [parseDate(date, dateFormat)],
+      warnings: sanitizationResult.warnings,
+    };
   },
 
   async multidate(
     entityToImport: RawEntity,
     property: PropertySchema,
     dateFormat: string
-  ): Promise<MetadataObjectSchema[]> {
-    const dates = parseMultiValue(
-      entityToImport.propertiesFromColumns[ensure<string>(property.name)]
+  ): Promise<ParserResult> {
+    const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+    const sanitizationResult = sanitizeMetadataValue(
+      rawValue,
+      ensure<string>(property.name),
+      property.type
     );
-    return dates.map(date => parseDate(date, dateFormat));
+
+    if (sanitizationResult.value === '') {
+      return {
+        data: [],
+        warnings: sanitizationResult.warnings,
+      };
+    }
+
+    const dates = parseMultiValue(sanitizationResult.value);
+    return {
+      data: dates.map(date => parseDate(date, dateFormat)),
+      warnings: sanitizationResult.warnings,
+    };
   },
 
   async daterange(
     entityToImport: RawEntity,
     property: PropertySchema,
     dateFormat: string
-  ): Promise<MetadataObjectSchema[]> {
-    const range = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
-    return [parseDateRange(range, dateFormat)];
+  ): Promise<ParserResult> {
+    const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+    const sanitizationResult = sanitizeMetadataValue(
+      rawValue,
+      ensure<string>(property.name),
+      property.type
+    );
+
+    if (sanitizationResult.value === '') {
+      return {
+        data: [],
+        warnings: sanitizationResult.warnings,
+      };
+    }
+
+    const range = sanitizationResult.value;
+    return {
+      data: [parseDateRange(range, dateFormat)],
+      warnings: sanitizationResult.warnings,
+    };
   },
 
   async multidaterange(
     entityToImport: RawEntity,
     property: PropertySchema,
     dateFormat: string
-  ): Promise<MetadataObjectSchema[]> {
-    const ranges = parseMultiValue(
-      entityToImport.propertiesFromColumns[ensure<string>(property.name)]
+  ): Promise<ParserResult> {
+    const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+    const sanitizationResult = sanitizeMetadataValue(
+      rawValue,
+      ensure<string>(property.name),
+      property.type
     );
-    return ranges.map(range => parseDateRange(range, dateFormat));
+
+    if (sanitizationResult.value === '') {
+      return {
+        data: [],
+        warnings: sanitizationResult.warnings,
+      };
+    }
+
+    const ranges = parseMultiValue(sanitizationResult.value);
+    return {
+      data: ranges.map(range => parseDateRange(range, dateFormat)),
+      warnings: sanitizationResult.warnings,
+    };
   },
 
-  async link(
-    entityToImport: RawEntity,
-    property: PropertySchema
-  ): Promise<MetadataObjectSchema[] | null> {
-    let [label, linkUrl] = entityToImport.propertiesFromColumns[
-      ensure<string>(property.name)
-    ].split(csvConstants.multiValueSeparator);
+  async link(entityToImport: RawEntity, property: PropertySchema): Promise<ParserResult | null> {
+    const rawValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+    const sanitizationResult = sanitizeMetadataValue(
+      rawValue,
+      ensure<string>(property.name),
+      property.type
+    );
+
+    if (sanitizationResult.value === '') {
+      return {
+        data: [],
+        warnings: sanitizationResult.warnings,
+      };
+    }
+
+    let [label, linkUrl] = sanitizationResult.value.split(csvConstants.multiValueSeparator);
 
     if (!linkUrl) {
-      linkUrl = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
+      linkUrl = sanitizationResult.value;
       label = linkUrl;
     }
 
@@ -129,13 +240,16 @@ export default {
       return null;
     }
 
-    return [
-      {
-        value: {
-          label,
-          url: linkUrl,
+    return {
+      data: [
+        {
+          value: {
+            label,
+            url: linkUrl,
+          },
         },
-      },
-    ];
+      ],
+      warnings: sanitizationResult.warnings,
+    };
   },
 };

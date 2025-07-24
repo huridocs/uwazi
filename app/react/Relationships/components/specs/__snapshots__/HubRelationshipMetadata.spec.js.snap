@@ -104,7 +104,7 @@ exports[`HubRelationshipMetadata should render the metadata correctly when text 
           <span
             className="quoteIconStart"
           >
-            <Connect(Icon)
+            <Icon
               icon="quote-left"
             />
           </span>
@@ -112,7 +112,7 @@ exports[`HubRelationshipMetadata should render the metadata correctly when text 
           <span
             className="quoteIconEnd"
           >
-            <Connect(Icon)
+            <Icon
               icon="quote-right"
             />
           </span>
@@ -133,7 +133,7 @@ exports[`HubRelationshipMetadata should render the text quote correctly 1`] = `
     <span
       className="quoteIconStart"
     >
-      <Connect(Icon)
+      <Icon
         icon="quote-left"
       />
     </span>
@@ -141,7 +141,7 @@ exports[`HubRelationshipMetadata should render the text quote correctly 1`] = `
     <span
       className="quoteIconEnd"
     >
-      <Connect(Icon)
+      <Icon
         icon="quote-right"
       />
     </span>

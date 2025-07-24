@@ -253,7 +253,7 @@ exports[`Login submit() on response failure when authorization failure should se
               className="form-text"
             >
               <p>
-                <Connect(Icon)
+                <Icon
                   icon="exclamation-triangle"
                 />
                 <span>
