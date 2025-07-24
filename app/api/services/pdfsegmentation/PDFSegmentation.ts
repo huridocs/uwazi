@@ -17,7 +17,6 @@ import { SegmentationModel } from './segmentationModel';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';
-  static MAX_RETRY_COUNT = 3;
 
   public segmentationTaskManager: TaskManager;
 
@@ -69,93 +68,33 @@ class PDFSegmentation {
     }
   };
 
-  storeProcess = async (fileID: ObjectIdSchema, filename: string, processing = true) => {
-    const [existingSegmentation] = await SegmentationModel.get({ fileID });
-
-    if (existingSegmentation) {
-      if (
-        existingSegmentation.status === 'failed' &&
-        (existingSegmentation.retryCount || 0) >= PDFSegmentation.MAX_RETRY_COUNT
-      ) {
-        return;
-      }
-      await SegmentationModel.save({
-        ...existingSegmentation,
-        status: processing ? 'processing' : 'failed',
-        retryCount: processing ? 0 : (existingSegmentation.retryCount || 0) + 1,
-      });
-    } else {
-      await SegmentationModel.save({
-        fileID,
-        filename,
-        status: processing ? 'processing' : 'failed',
-        retryCount: processing ? 0 : 1,
-      });
-    }
-  };
+  storeProcess = async (fileID: ObjectIdSchema, filename: string, processing = true) =>
+    SegmentationModel.save({
+      fileID,
+      filename,
+      status: processing ? 'processing' : 'failed',
+    });
 
   getFilesToSegment = async (): Promise<{ filename: string; _id: ObjectIdSchema }[]> => {
-    const segmentations = (await SegmentationModel.get({
-      fileID: { $exists: true },
-    })) as SegmentationType[];
+    const segmentations = (await SegmentationModel.get(
+      { fileID: { $exists: true } },
+      'fileID'
+    )) as (SegmentationType & { fileID: string })[];
 
-    const successfullySegmentedFiles = segmentations
-      .filter(segmentation => segmentation.status === 'ready')
-      .map(segmentation => segmentation.fileID);
-
-    const processingFiles = segmentations
-      .filter(segmentation => segmentation.status === 'processing')
-      .map(segmentation => segmentation.fileID);
-
-    const permanentlyFailedSegmentedFiles = segmentations
-      .filter(
-        segmentation =>
-          segmentation.status === 'failed' &&
-          (segmentation.retryCount || 0) >= PDFSegmentation.MAX_RETRY_COUNT
-      )
-      .map(segmentation => segmentation.fileID);
-
-    const retryableFailedSegmentations = segmentations.filter(
-      segmentation =>
-        segmentation.status === 'failed' &&
-        (segmentation.retryCount || 0) < PDFSegmentation.MAX_RETRY_COUNT
-    );
+    const segmentedFiles = segmentations.map(segmentation => segmentation.fileID);
 
     const files = (await filesModel.get(
       {
         type: 'document',
         filename: { $exists: true },
         status: 'ready',
-        _id: {
-          $nin: [
-            ...successfullySegmentedFiles,
-            ...processingFiles,
-            ...permanentlyFailedSegmentedFiles,
-          ],
-        },
+        _id: { $nin: segmentedFiles },
       },
       'filename',
       { limit: this.batchSize }
     )) as (FileType & { filename: string; _id: ObjectIdSchema })[];
 
-    const allFilesToProcess = [
-      ...files.map(file => ({ _id: file._id, filename: file.filename })),
-      ...retryableFailedSegmentations
-        .filter(
-          segmentation =>
-            segmentation.fileID &&
-            segmentation.filename &&
-            !processingFiles.includes(segmentation.fileID)
-        )
-        .map(segmentation => ({
-          _id: segmentation.fileID!,
-          filename: segmentation.filename!,
-          status: segmentation.status,
-          retryCount: segmentation.retryCount,
-        })),
-    ];
-
-    return allFilesToProcess;
+    return files.map(file => ({ _id: file._id, filename: file.filename }));
   };
 
   segmentPdfs = async () => {
@@ -233,13 +172,11 @@ class PDFSegmentation {
   saveSegmentationError = async (filename: string) => {
     const [segmentation] = await SegmentationModel.get({ filename });
     if (segmentation) {
-      const currentRetryCount = segmentation.retryCount || 0;
       await SegmentationModel.save({
         ...segmentation,
         filename,
         autoexpire: null,
         status: 'failed',
-        retryCount: currentRetryCount + 1,
       });
     }
   };

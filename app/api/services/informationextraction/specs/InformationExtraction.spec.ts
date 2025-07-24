@@ -948,7 +948,6 @@ describe('InformationExtraction', () => {
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'failed',
-        retryCount: 1,
       });
 
       // Segmentation with ready status for documentC
@@ -1046,14 +1045,12 @@ describe('InformationExtraction', () => {
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'failed',
-        retryCount: 1,
       });
 
       await SegmentationModel.save({
         fileID: factory.id('F2'),
         filename: 'documentB.pdf',
         status: 'failed',
-        retryCount: 2,
       });
 
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
@@ -1219,7 +1216,6 @@ describe('InformationExtraction', () => {
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
         status: 'failed',
-        retryCount: 1,
       });
 
       await SegmentationModel.save({
@@ -1269,7 +1265,6 @@ describe('InformationExtraction', () => {
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'failed',
-        retryCount: 1,
       });
 
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
@@ -1308,7 +1303,6 @@ describe('InformationExtraction', () => {
         fileID: factory.id('F1'),
         filename: 'document1.pdf',
         status: 'failed',
-        retryCount: 1,
       });
 
       await SegmentationModel.save({
@@ -1377,6 +1371,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should create suggestions for all files regardless of segmentation status', async () => {
+      // Segmentations with different statuses
       await SegmentationModel.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1395,7 +1390,6 @@ describe('InformationExtraction', () => {
         fileID: factory.id('F3'),
         filename: 'documentC.pdf',
         status: 'failed',
-        retryCount: 1,
       });
 
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
