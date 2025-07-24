@@ -46,7 +46,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   async componentDidMount() {
     if (this.props.lookup) {
       const { options, count } = await this.props.lookup('');
-      const combinedOptions = [...options, ...this.props.options].filter(
+      const combinedOptions = [...this.props.options, ...options].filter(
         uniqueOptions(this.props.optionsValue)
       );
       this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
@@ -56,7 +56,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   async componentDidUpdate(prevProps: LookupMultiSelectProps) {
     if (prevProps.lookup !== this.props.lookup) {
       const { options, count } = await this.props.lookup('');
-      const combinedOptions = [...options, ...this.props.options].filter(
+      const combinedOptions = [...this.props.options, ...options].filter(
         uniqueOptions(this.props.optionsValue)
       );
       this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });

@@ -14,26 +14,33 @@ const SelectFilter = ({
   lookup = null,
   totalPossibleOptions = 0,
   allowSelectGroup = false,
-}) => (
-  <ul className="search__filter is-active">
-    <li>
-      {label}
-      {showBoolSwitch && <Switcher model={`${model}.and`} prefix={prefix} onChange={onChange} />}
-    </li>
-    <li className="wide">
-      <LookupMultiSelect
-        model={`${model}.values`}
-        prefix={prefix}
-        options={options}
-        onChange={onChange}
-        sort={sort}
-        lookup={lookup}
-        totalPossibleOptions={totalPossibleOptions}
-        allowSelectGroup={allowSelectGroup}
-      />
-    </li>
-  </ul>
-);
+}) => {
+  if (model === '.filters.color') {
+    console.log('model', model);
+    console.log('lookup', lookup);
+    console.log('options', options);
+  }
+  return (
+    <ul className="search__filter is-active">
+      <li>
+        {label}
+        {showBoolSwitch && <Switcher model={`${model}.and`} prefix={prefix} onChange={onChange} />}
+      </li>
+      <li className="wide">
+        <LookupMultiSelect
+          model={`${model}.values`}
+          prefix={prefix}
+          options={options}
+          onChange={onChange}
+          sort={sort}
+          lookup={lookup}
+          totalPossibleOptions={totalPossibleOptions}
+          allowSelectGroup={allowSelectGroup}
+        />
+      </li>
+    </ul>
+  );
+};
 
 SelectFilter.propTypes = {
   model: PropTypes.string.isRequired,

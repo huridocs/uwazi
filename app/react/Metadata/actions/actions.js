@@ -201,6 +201,7 @@ export function multipleUpdate(entities, values) {
 }
 
 export async function getSuggestions(templates, searchTerm = '') {
+  templates = templates.filter(template => template !== 'any');
   const request = new RequestParams({ searchTerm, templates });
   return searchAPI.getSuggestions(request);
 }

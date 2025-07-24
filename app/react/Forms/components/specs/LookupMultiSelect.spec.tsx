@@ -86,6 +86,52 @@ describe('LookupMultiSelect (React Testing Library)', () => {
     });
   });
 
+  it('should favor preloaded options over lookup options since lookup options dont have children in some scenarios', async () => {
+    const preloadedOptions = [
+      {
+        label: 'Parent',
+        value: 'parent',
+        id: 'parent',
+        results: 1,
+        options: [
+          { label: 'Child 1', value: 'child-1', results: 1 },
+          { label: 'Child 2', value: 'child-2', results: 1 },
+        ],
+      },
+    ];
+    const lookup = jest.fn(async () => ({
+      options: [
+        { label: 'Parent', value: 'parent', results: 1 }, // duplicate, but without children
+      ],
+      count: 3,
+    }));
+    render(
+      <LookupMultiSelect
+        options={preloadedOptions}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+    // Wait for lookup to complete
+    await waitFor(() => expect(lookup).toHaveBeenCalled());
+    // The Parent option should be rendered as a group (with children)
+    expect(screen.getByLabelText('Parent')).toBeInTheDocument();
+
+    // Click the expand/caret button to show children
+    const parentLi = screen.getByLabelText('Parent').closest('li');
+    const expandButton = parentLi?.querySelector('.multiselectItem-action');
+    if (expandButton) {
+      await userEvent.click(expandButton);
+    }
+
+    // Now the children should be visible
+    expect(screen.getByLabelText('Child 1')).toBeInTheDocument();
+    expect(screen.getByLabelText('Child 2')).toBeInTheDocument();
+    // There should be only one Parent rendered (as a group)
+    expect(screen.getAllByLabelText('Parent').length).toBe(1);
+  });
+
   it('should render a search bar input when there are more than 5 options', async () => {
     const lookup = jest.fn(async term =>
       term === ''
