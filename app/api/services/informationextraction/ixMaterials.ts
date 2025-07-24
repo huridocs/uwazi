@@ -18,11 +18,12 @@ import { FileType } from 'shared/types/fileType';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
+import { UwaziFilterQuery } from 'api/odm';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure } from 'shared/tsUtils';
 import { LanguageUtils } from 'shared/language';
-import { UwaziFilterQuery } from 'api/odm';
-import { Entity } from 'api/entities.v2/model/Entity';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Extractors } from './ixextractors';
 
 const BATCH_SIZE_FOR_PDF = 50;
@@ -97,7 +98,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
   const segmentationForFiles = (await SegmentationModel.get(
     { filename: { $in: filesNames } },
-    'filename segmentation xmlname'
+    'filename segmentation xmlname status'
   )) as (SegmentationType & { filename: string })[];
 
   const segmentationDictionary = Object.assign(
@@ -308,24 +309,92 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
-async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+async function getFileIdsWithReadySegmentations(
+  extractorId: ObjectIdSchema,
+  limit: number
+): Promise<ObjectIdSchema[]> {
   const [currentModel] = await ixmodels.get({ extractorId });
+
+  const targetLimit = limit || BATCH_SIZE_FOR_PDF;
 
   const query: UwaziFilterQuery<any> = {
     extractorId,
     date: { $lt: currentModel.creationDate },
-    'state.error': { $ne: true },
   };
 
   if (currentModel.testRun) {
     query.trainingSample = { $ne: true };
   }
 
-  const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-    limit: limit || BATCH_SIZE_FOR_PDF,
-  });
+  const batchSize = 100;
+  const allFileIds: ObjectIdSchema[] = [];
+  const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
 
-  const fileIds = suggestions.filter(x => x.fileId).map(x => x.fileId);
+  let skip = 0;
+  let hasMore = true;
+
+  while (hasMore && allFileIds.length < targetLimit) {
+    // eslint-disable-next-line no-await-in-loop
+    const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
+      limit: batchSize,
+      skip,
+    });
+
+    if (!suggestions.length) {
+      break;
+    }
+
+    const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
+
+    if (fileIds.length > 0) {
+      // eslint-disable-next-line no-await-in-loop
+      const segmentations = await SegmentationModel.get(
+        { fileID: { $in: fileIds } },
+        'fileID status'
+      );
+
+      const readySegmentationFileIds = segmentations
+        .filter(seg => seg.status === 'ready' && seg.fileID)
+        .map(seg => seg.fileID!);
+
+      const failedSegmentationFileIds = segmentations
+        .filter(seg => seg.status === 'failed' && seg.fileID)
+        .map(seg => seg.fileID!);
+
+      const failedSuggestions = suggestions.filter(s =>
+        failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
+      );
+
+      allFileIds.push(...readySegmentationFileIds);
+      suggestionsWithFailedSegmentations.push(...failedSuggestions);
+    }
+
+    skip += batchSize;
+    hasMore = suggestions.length === batchSize;
+  }
+
+  if (suggestionsWithFailedSegmentations.length) {
+    const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
+      ...suggestion,
+      'state.error': true,
+      'state.obsolete': false,
+      status: 'failed' as IXSuggestionType['status'],
+    }));
+
+    await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
+  }
+
+  return allFileIds.slice(0, targetLimit);
+}
+
+async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+  const targetLimit = limit || BATCH_SIZE_FOR_PDF;
+
+  const allFileIds = await getFileIdsWithReadySegmentations(extractorId, targetLimit);
+
+  if (allFileIds.length === 0) {
+    return [];
+  }
 
   const files = (await filesModel.get(
     {
@@ -335,7 +404,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
           filename: { $exists: true },
           language: { $exists: true },
         },
-        { _id: { $in: fileIds } },
+        { _id: { $in: allFileIds } },
       ],
     },
     'extractedMetadata entity language filename'

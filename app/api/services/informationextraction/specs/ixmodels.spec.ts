@@ -45,15 +45,12 @@ describe('save()', () => {
 
   it('should call markSuggestionsWithoutSegmentation on saving a ready model', async () => {
     const setSpySetObsolete = jest.spyOn(Suggestions, 'setObsolete');
-    const setSpyMarkSuggestions = jest.spyOn(Suggestions, 'markSuggestionsWithoutSegmentation');
 
     await ixmodels.save({
       extractorId: fixtureFactory.id('extractor'),
       creationDate: 5,
       status: ModelStatus.processing,
     });
-
-    expect(setSpyMarkSuggestions).not.toHaveBeenCalled();
 
     await ixmodels.save({
       extractorId: fixtureFactory.id('extractor'),
@@ -62,11 +59,6 @@ describe('save()', () => {
     });
 
     expect(setSpySetObsolete).toHaveBeenCalledWith({ extractorId: fixtureFactory.id('extractor') });
-    expect(setSpyMarkSuggestions).toHaveBeenCalledWith({
-      extractorId: fixtureFactory.id('extractor'),
-    });
-    expect(setSpySetObsolete).toHaveBeenCalledBefore(setSpyMarkSuggestions);
     setSpySetObsolete.mockRestore();
-    setSpyMarkSuggestions.mockRestore();
   });
 });

@@ -7,6 +7,7 @@ interface LookupMultiSelectProps extends MultiSelectProps<string[]> {
 }
 
 interface LookupMultiSelectState {
+  preloadedOptions: Option[];
   lookupOptions: Option[];
   selectedOptions: Option[];
   totalPossibleOptions: number;
@@ -31,6 +32,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   constructor(props: LookupMultiSelectProps) {
     super(props);
     this.state = {
+      preloadedOptions: props.options,
       lookupOptions: [],
       selectedOptions: [],
       totalPossibleOptions: props.totalPossibleOptions,
@@ -42,12 +44,22 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   async componentDidMount() {
-    await this.onFilter('');
+    if (this.props.lookup) {
+      const { options, count } = await this.props.lookup('');
+      const combinedOptions = [...options, ...this.props.options].filter(
+        uniqueOptions(this.props.optionsValue)
+      );
+      this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
+    }
   }
 
   async componentDidUpdate(prevProps: LookupMultiSelectProps) {
     if (prevProps.lookup !== this.props.lookup) {
-      await this.onFilter('');
+      const { options, count } = await this.props.lookup('');
+      const combinedOptions = [...options, ...this.props.options].filter(
+        uniqueOptions(this.props.optionsValue)
+      );
+      this.setState({ preloadedOptions: combinedOptions, totalPossibleOptions: count });
     }
   }
 
@@ -79,7 +91,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   combineOptions(): Option[] {
     return [
-      ...this.props.options,
+      ...this.state.preloadedOptions,
       ...this.state.lookupOptions,
       ...this.state.selectedOptions,
     ].filter(uniqueOptions(this.props.optionsValue));
