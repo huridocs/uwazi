@@ -29,6 +29,7 @@ const CodeEditorComponent = ({
           language,
           tabSize: 2,
           automaticLayout: true,
+          fontFamily: 'Consolas, "Courier New", monospace',
         });
 
         editor.current.changeViewZones(accessor => {
