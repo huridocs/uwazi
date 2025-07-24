@@ -193,10 +193,8 @@ const Suggestions = {
 
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
-  saveMultiple: async (_suggestions: IXSuggestionType[]) => {
-    const toUpdate = await IXSuggestionsModel.saveMultiple(_suggestions);
-    if (toUpdate.length > 0) await updateStates({ _id: { $in: toUpdate.map(s => s._id) } });
-  },
+  saveMultiple: async (_suggestions: IXSuggestionType[]) =>
+    IXSuggestionsModel.saveMultiple(_suggestions),
 
   createMultiple: async (_suggestions: IXSuggestionType[]) =>
     IXSuggestionsModel.db.createMany(_suggestions),
@@ -224,7 +222,6 @@ const Suggestions = {
 
     await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);
     await updateExtractedMetadata(suggestions, property);
-    await Suggestions.updateStates({ _id: { $in: acceptedIds.map(id => new ObjectId(id)) } });
   },
 
   deleteByEntityId: async (sharedId: string) => {

@@ -8,10 +8,11 @@ import { FileType } from 'shared/types/fileType';
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXModelType } from 'shared/types/IXModelType';
+import { TemplateSchema } from 'shared/types/templateType';
 import ixmodels, { TEST_RUN_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {
-  extractor: EnforcedWithId<IXExtractorType>;
+  extractor: IXExtractorType;
 };
 
 type ExtractCurrentValueInput = {
@@ -37,6 +38,15 @@ type SaveModelProcessOptions = {
 export class IXServices {
   static async getTargetProperty({ extractor }: GetTargetPropertyInput) {
     const template = await templatesModel.getById(extractor.templates[0]);
+    const property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(p => p.name === extractor.property)
+        : template?.properties?.find(p => p.name === extractor.property);
+
+    return property!;
+  }
+
+  static extractTargetProperty(extractor: IXExtractorType, template: TemplateSchema) {
     const property =
       extractor.property === 'title'
         ? template?.commonProperties?.find(p => p.name === extractor.property)
@@ -96,9 +106,9 @@ export class IXServices {
       return entity.title!;
     }
 
-    const values = entity.metadata?.[targetProperty.name]?.map(i => String(i.value));
-    if (!values) {
-      return null;
+    const values = entity.metadata?.[targetProperty.name]?.map(i => i.value);
+    if (!values?.length) {
+      return isMultiValued ? [] : '';
     }
 
     return isMultiValued ? values : values[0];

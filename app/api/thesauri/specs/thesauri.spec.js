@@ -26,8 +26,8 @@ describe('thesauri', () => {
   });
 
   afterAll(async () => {
-    await testingEnvironment.tearDown();
     search.indexEntities.mockRestore();
+    await testingEnvironment.tearDown();
   });
 
   describe('get()', () => {
@@ -54,6 +54,8 @@ describe('thesauri', () => {
     });
 
     it('should return all thesauri including unpublished documents if user', async () => {
+      const elasticIndex = 'thesauri.spec.elastic.index';
+      await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
       const dictionaries = await thesauri.get(null, 'es', 'user');
       expect(dictionaries.length).toBe(6);
       expect(dictionaries[4].values.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
