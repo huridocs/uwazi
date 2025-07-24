@@ -350,6 +350,7 @@ const formatSuggestionPdfSource = (
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema,
   message: InternalIXResultsMessage
+  // eslint-disable-next-line max-params
 ) => {
   const suggestion: IXSuggestionType = {
     ...currentSuggestion,

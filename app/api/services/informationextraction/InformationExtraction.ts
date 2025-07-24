@@ -42,6 +42,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors, ModelNotReadyError } from './ixextractors';
@@ -462,6 +463,25 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
+  async appendSuggestionModelData(
+    extractor: EnforcedWithId<IXExtractorType>,
+    currentSuggestion: EnforcedWithId<IXSuggestionType>
+  ) {
+    const [model] = await ixmodels.get({ extractorId: extractor._id });
+
+    if (model.findSuggestionsRunTimestamp) {
+      return {
+        ...currentSuggestion,
+        modelData: {
+          ...(currentSuggestion.modelData || {}),
+          findSuggestionsRunTimestamp: model.findSuggestionsRunTimestamp,
+        },
+      };
+    }
+
+    return currentSuggestion;
+  }
+
   async saveSuggestionsForTextSource(
     extractor: EnforcedWithId<IXExtractorType>,
     rawSuggestions: RawSuggestion[],
@@ -476,11 +496,13 @@ class InformationExtraction {
 
       const extractionKey = new ExtractionKey(rawSuggestion.entity_name);
 
-      const [currentSuggestion] = await IXSuggestionsModel.get({
+      const [originalSuggestion] = await IXSuggestionsModel.get({
         entityId: extractionKey.entitySharedId,
         extractorId: extractor._id,
         language: extractionKey.language,
       });
+
+      const currentSuggestion = await this.appendSuggestionModelData(extractor, originalSuggestion);
 
       const suggestion = formatSuggestionFacade.formatSuggestionTextSource(
         targetProperty,
@@ -515,11 +537,16 @@ class InformationExtraction {
           return Promise.resolve();
         }
 
-        const [currentSuggestion] = await IXSuggestionsModel.get({
+        const [originalSuggestion] = await IXSuggestionsModel.get({
           entityId: entity.sharedId,
           extractorId: extractor._id,
           fileId: segmentation.fileID,
         });
+
+        const currentSuggestion = await this.appendSuggestionModelData(
+          extractor,
+          originalSuggestion
+        );
 
         const suggestion = formatSuggestionFacade.formatSuggestionPdfSource(
           targetProperty,
