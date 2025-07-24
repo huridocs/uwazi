@@ -6,7 +6,6 @@ const props = {
   autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours
   fileID: { type: mongoose.Schema.Types.ObjectId, ref: 'File' },
   status: { type: String, enum: ['processing', 'failed', 'ready'], default: 'processing' },
-  retryCount: { type: Number, default: 0 },
 };
 
 const mongoSchema = new mongoose.Schema(props, {

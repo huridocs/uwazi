@@ -22,7 +22,6 @@ export interface SegmentationType {
   filename?: string;
   xmlname?: string;
   status?: 'processing' | 'failed' | 'ready';
-  retryCount?: number;
   segmentation?: {
     page_width?: number;
     page_height?: number;
