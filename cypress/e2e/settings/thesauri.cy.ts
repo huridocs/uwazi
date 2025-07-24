@@ -272,9 +272,7 @@ describe('Thesauri configuration', () => {
 
   it('should reflect the changes in the Entities', () => {
     cy.intercept('GET', '/api/search?*').as('search');
-    cy.visit('http://localhost:3000/library');
-    cy.contains('.multiselectItem-name', 'Restricted').click();
-    cy.wait('@search');
+    cy.contains('a', 'Library').click();
     cy.contains('.multiselectItem-name', 'País').click();
     cy.wait('@search');
     cy.contains('.item-document', 'País select').click();
