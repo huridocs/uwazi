@@ -131,6 +131,42 @@ const fixturesOneHundredFiles: DBFixture = {
   ),
 };
 
+const fixturesWithFailedSegmentations: DBFixture = {
+  settings,
+  entities: [
+    factory.entity('A1', 'templateToSegmentA'),
+    factory.entity('A2', 'templateToSegmentA'),
+    factory.entity('A3', 'templateToSegmentA'),
+    factory.entity('A4', 'templateToSegmentA'),
+  ],
+  files: [
+    factory.file('F1', {
+      filename: 'document1.pdf',
+      entity: 'A1',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F2', {
+      filename: 'document2.pdf',
+      entity: 'A2',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F3', {
+      filename: 'document3.pdf',
+      entity: 'A3',
+      type: 'document',
+      status: 'ready',
+    }),
+    factory.file('F4', {
+      filename: 'document4.pdf',
+      entity: 'A4',
+      type: 'document',
+      status: 'ready',
+    }),
+  ],
+};
+
 export {
   fixturesPdfNameA,
   fixturesPdfNameB,
@@ -139,4 +175,5 @@ export {
   fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
+  fixturesWithFailedSegmentations,
 };

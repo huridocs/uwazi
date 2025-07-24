@@ -11,6 +11,7 @@ import {
   fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
+  fixturesWithFailedSegmentations,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
 import { storage } from 'api/files';
@@ -163,7 +164,139 @@ describe('PDFSegmentation', () => {
 
     await segmentPdfs.segmentPdfs();
 
+    // With batch size 50, should process 4 files: 3 ready files (F2, F3, F4, F5) + 1 failed file (F6) for retry
+    // The processing file (F1) is excluded
     expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(4);
+  });
+
+  it('should retry failed segmentations', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesWithFailedSegmentations);
+
+    await dbOne.collection('segmentations').insertMany([
+      {
+        _id: testingDB.id(),
+        fileID: fixturesWithFailedSegmentations.files![0]._id,
+        filename: 'document1.pdf',
+        status: 'failed',
+      },
+      {
+        _id: testingDB.id(),
+        fileID: fixturesWithFailedSegmentations.files![1]._id,
+        filename: 'document2.pdf',
+        status: 'ready',
+      },
+    ]);
+
+    segmentPdfs.segmentationTaskManager!.countPendingTasks = async () => Promise.resolve(0);
+
+    await segmentPdfs.segmentPdfs();
+
+    // Since the files don't exist in storage, they should be marked as failed
+    // The startTask should not be called because the files are not found
+    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(0);
+
+    // Verify that the failed segmentation records were deleted and new failed ones were created
+    await tenants.run(async () => {
+      const segmentations = await SegmentationModel.get();
+
+      // Should have segmentations for the files that were processed
+      expect(segmentations.length).toBeGreaterThanOrEqual(2);
+
+      // Should have failed segmentations for the files that don't exist
+      const failedSegmentations = segmentations.filter(s => s.status === 'failed');
+      expect(failedSegmentations.length).toBeGreaterThanOrEqual(2);
+
+      // Should have the original successful segmentation
+      const successfulSegmentations = segmentations.filter(s => s.status === 'ready');
+      expect(successfulSegmentations.length).toBeGreaterThanOrEqual(1);
+    }, 'tenantOne');
+  });
+
+  it('should retry failed segmentations with existing files', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
+
+    await dbOne.collection('segmentations').insertMany([
+      {
+        _id: testingDB.id(),
+        fileID: fixturesFiveFiles.files![0]._id,
+        filename: fixturesFiveFiles.files![0].filename,
+        status: 'failed',
+      },
+      {
+        _id: testingDB.id(),
+        fileID: fixturesFiveFiles.files![1]._id,
+        filename: fixturesFiveFiles.files![1].filename,
+        status: 'ready',
+      },
+    ]);
+
+    segmentPdfs.segmentationTaskManager!.countPendingTasks = async () => Promise.resolve(0);
+
+    await segmentPdfs.segmentPdfs();
+
+    // With batch size 50, should process 5 files: 2 failed files for retry (F1 + F6) + 3 new files (F3, F4, F5)
+    // The ready file (F2) should be excluded
+    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(5);
+
+    // Verify that the failed segmentation records were deleted
+    await tenants.run(async () => {
+      const segmentations = await SegmentationModel.get();
+
+      // Should have segmentations for the files that were processed
+      expect(segmentations.length).toBeGreaterThanOrEqual(5);
+
+      // Should not have any failed segmentations (they were deleted for retry)
+      const failedSegmentations = segmentations.filter(s => s.status === 'failed');
+      expect(failedSegmentations.length).toBe(0);
+
+      // Should have the original successful segmentation
+      const successfulSegmentations = segmentations.filter(s => s.status === 'ready');
+      expect(successfulSegmentations.length).toBeGreaterThanOrEqual(1);
+    }, 'tenantOne');
+  });
+
+  it('should not retry failed segmentations that have exceeded the retry limit', async () => {
+    await fixturer.clearAllAndLoad(dbOne, fixturesFiveFiles);
+
+    // Insert a segmentation that has exceeded the retry limit
+    await dbOne.collection('segmentations').insertMany([
+      {
+        _id: testingDB.id(),
+        fileID: fixturesFiveFiles.files![0]._id,
+        filename: fixturesFiveFiles.files![0].filename,
+        status: 'failed',
+        retryCount: 3, // Max retry count reached
+      },
+      {
+        _id: testingDB.id(),
+        fileID: fixturesFiveFiles.files![1]._id,
+        filename: fixturesFiveFiles.files![1].filename,
+        status: 'ready',
+      },
+    ]);
+
+    segmentPdfs.segmentationTaskManager!.countPendingTasks = async () => Promise.resolve(0);
+
+    await segmentPdfs.segmentPdfs();
+
+    // Should process 3 files: 3 ready files (F3, F4, F5)
+    // The maxed-out failed file and the ready file should be excluded
+    expect(segmentPdfs.segmentationTaskManager?.startTask).toHaveBeenCalledTimes(3);
+
+    // Verify that the maxed-out failed segmentation was not processed
+    await tenants.run(async () => {
+      const segmentations = await SegmentationModel.get();
+
+      // Should have the maxed-out failed segmentation still present (unchanged)
+      const maxedOutFailedSegmentations = segmentations.filter(
+        s => s.status === 'failed' && s.retryCount === 3
+      );
+      expect(maxedOutFailedSegmentations.length).toBe(1);
+
+      // Should have the original successful segmentation
+      const successfulSegmentations = segmentations.filter(s => s.status === 'ready');
+      expect(successfulSegmentations.length).toBeGreaterThanOrEqual(1);
+    }, 'tenantOne');
   });
 
   describe('if the file is missing', () => {
@@ -305,8 +438,66 @@ describe('PDFSegmentation', () => {
           expect(segmentation.filename).toBe(fixturesPdfNameA);
           expect(segmentation.fileID).toEqual(fixturesOneFile.files![0]._id);
           expect(segmentation.autoexpire).toBe(null);
+          expect(segmentation.retryCount).toBe(1);
           expect(segmentations.length).toBe(1);
         }, tenantOne.name);
+      });
+
+      it('should increment retry count on subsequent failures', async () => {
+        await segmentPdfs.processResults({
+          tenant: tenantOne.name,
+          params: { filename: 'documentA.pdf' },
+          data_url: 'http://localhost:1235/results',
+          file_url: 'http://localhost:1235/file',
+          task: 'segmentation',
+          success: false,
+        });
+
+        await segmentPdfs.processResults({
+          tenant: tenantOne.name,
+          params: { filename: 'documentA.pdf' },
+          data_url: 'http://localhost:1235/results',
+          file_url: 'http://localhost:1235/file',
+          task: 'segmentation',
+          success: false,
+        });
+
+        await tenants.run(async () => {
+          const segmentations = await SegmentationModel.get();
+          const [segmentation] = segmentations;
+          expect(segmentation.status).toBe('failed');
+          expect(segmentation.filename).toBe(fixturesPdfNameA);
+          expect(segmentation.retryCount).toBe(2);
+          expect(segmentations.length).toBe(1);
+        }, tenantOne.name);
+      });
+
+      it('should not create duplicate entries when retrying failed segmentations', async () => {
+        await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
+
+        await tenants.run(async () => {
+          await SegmentationModel.save({
+            fileID: fixturesOneFile.files![0]._id,
+            filename: fixturesOneFile.files![0].filename,
+            status: 'failed',
+            retryCount: 0,
+          });
+        }, 'tenantOne');
+
+        // Now run segmentation to retry the failed file
+        segmentPdfs.segmentationTaskManager!.countPendingTasks = async () => Promise.resolve(0);
+        await segmentPdfs.segmentPdfs();
+
+        await tenants.run(async () => {
+          const segmentations = await SegmentationModel.get();
+
+          // Should have exactly one segmentation entry
+          expect(segmentations.length).toBe(1);
+
+          // Should be in processing status
+          expect(segmentations[0].status).toBe('processing');
+          expect(segmentations[0].filename).toBe(fixturesOneFile.files![0].filename);
+        }, 'tenantOne');
       });
     });
   });

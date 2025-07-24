@@ -3,7 +3,6 @@ import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel as model } from './IXModelsModel';
-import { IXExtractorModel } from './IXExtractorModel';
 
 const TEST_RUN_SUGGESTIONS_SIZE = 1000;
 
@@ -17,12 +16,7 @@ export default {
   save: async (ixmodel: IXModelType) => {
     const saved = await model.save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
-      const extractor = await IXExtractorModel.getById(ixmodel.extractorId);
       await Suggestions.setObsolete({ extractorId: saved.extractorId });
-
-      if (extractor?.source.pdf) {
-        await Suggestions.markSuggestionsWithoutSegmentation({ extractorId: saved.extractorId });
-      }
     }
     return saved;
   },

@@ -477,6 +477,27 @@ const fixtures: DBFixture = {
       status: 'processing',
     },
     {
+      _id: factory.id('S16'),
+      filename: fixturesPdfNameA,
+      xmlname: 'documentA.xml',
+      fileID: factory.id('F15'),
+      status: 'ready',
+      segmentation: {
+        page_height: 841,
+        page_width: 595,
+        paragraphs: [
+          {
+            left: 58,
+            top: 63,
+            width: 457,
+            height: 15,
+            page_number: 1,
+            text: 'something',
+          },
+        ],
+      },
+    },
+    {
       _id: factory.id('S7'),
       filename: fixturesPdfNameG,
       xmlname: 'documentG.xml',
