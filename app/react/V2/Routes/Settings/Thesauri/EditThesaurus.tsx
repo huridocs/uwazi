@@ -10,7 +10,6 @@ import { ClientThesaurus } from 'app/apiResponseTypes';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, ConfirmNavigationModal } from 'V2/Components/UI';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import {
   addGroupSubmit,
@@ -163,7 +162,7 @@ const EditThesaurus = () => {
                   }}
                   disabled={isEmpty(getValues().name)}
                   getThesaurus={getCurrentStatus}
-                  onSuccess={async (savedThesaurus: ThesaurusSchema) => {
+                  onSuccess={async (savedThesaurus: ClientThesaurus) => {
                     setValue('_id', savedThesaurus._id);
                     setNotifications({
                       type: 'success',

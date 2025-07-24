@@ -153,7 +153,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
           api.get('user', requestParams),
           api.get('settings', requestParams),
           api.get('templates', requestParams),
-          api.get('thesauris', requestParams),
+          api.get('dictionaries', requestParams),
           api.get('relationTypes', requestParams),
           Promise.resolve({ json: { rows: translations } }),
         ])

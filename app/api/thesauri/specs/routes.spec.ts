@@ -45,4 +45,16 @@ describe('Thesauri routes', () => {
       expect(values.some(v => v.label === 'Value 2')).toBe(true);
     });
   });
+
+  describe('/api/thesauri', () => {
+    it('should call thesauri.find with correct params', async () => {
+      jest.spyOn(thesauri, 'find').mockImplementation(async () => Promise.resolve({ rows: [] }));
+
+      await request(app).get('/api/thesauri').expect(200);
+      expect(thesauri.find).toHaveBeenNthCalledWith(1, undefined);
+
+      await request(app).get('/api/thesauri?_id=any_id').expect(200);
+      expect(thesauri.find).toHaveBeenNthCalledWith(2, { _id: 'any_id' });
+    });
+  });
 });

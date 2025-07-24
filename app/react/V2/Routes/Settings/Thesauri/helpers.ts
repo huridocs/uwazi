@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
-import ThesauriAPI from 'V2/api/thesauri';
+import { get as getThesauri } from 'V2/api/thesauri';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { httpRequest } from 'shared/superagent';
 import uniqueID from 'shared/uniqueID';
@@ -75,7 +75,7 @@ const importThesaurus = async (
 const editThesaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { _id } }) =>
-    (await ThesauriAPI.getThesauri({ _id }, headers))[0];
+    (await getThesauri({ _id }, headers))[0];
 
 const emptyThesaurus = () => ({
   label: '',
