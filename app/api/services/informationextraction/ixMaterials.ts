@@ -24,6 +24,7 @@ import { LanguageUtils } from 'shared/language';
 import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { IXModelType } from 'shared/types/IXModelType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Extractors } from './ixextractors';
 
 const BATCH_SIZE_FOR_PDF = 50;
@@ -98,7 +99,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
 
   const segmentationForFiles = (await SegmentationModel.get(
     { filename: { $in: filesNames } },
-    'filename segmentation xmlname'
+    'filename segmentation xmlname status'
   )) as (SegmentationType & { filename: string })[];
 
   const segmentationDictionary = Object.assign(
@@ -369,6 +370,84 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
+async function getFileIdsWithReadySegmentations(
+  extractorId: ObjectIdSchema,
+  limit: number
+): Promise<ObjectIdSchema[]> {
+  const [currentModel] = await ixmodels.get({ extractorId });
+
+  const targetLimit = limit || BATCH_SIZE_FOR_PDF;
+
+  const query: UwaziFilterQuery<any> = {
+    extractorId,
+    date: { $lt: currentModel.creationDate },
+  };
+
+  if (currentModel.testRun) {
+    query.trainingSample = { $ne: true };
+  }
+
+  const batchSize = 100;
+  const allFileIds: ObjectIdSchema[] = [];
+  const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
+
+  let skip = 0;
+  let hasMore = true;
+
+  while (hasMore && allFileIds.length < targetLimit) {
+    // eslint-disable-next-line no-await-in-loop
+    const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
+      limit: batchSize,
+      skip,
+    });
+
+    if (!suggestions.length) {
+      break;
+    }
+
+    const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
+
+    if (fileIds.length > 0) {
+      // eslint-disable-next-line no-await-in-loop
+      const segmentations = await SegmentationModel.get(
+        { fileID: { $in: fileIds } },
+        'fileID status'
+      );
+
+      const readySegmentationFileIds = segmentations
+        .filter(seg => seg.status === 'ready' && seg.fileID)
+        .map(seg => seg.fileID!);
+
+      const failedSegmentationFileIds = segmentations
+        .filter(seg => seg.status === 'failed' && seg.fileID)
+        .map(seg => seg.fileID!);
+
+      const failedSuggestions = suggestions.filter(s =>
+        failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
+      );
+
+      allFileIds.push(...readySegmentationFileIds);
+      suggestionsWithFailedSegmentations.push(...failedSuggestions);
+    }
+
+    skip += batchSize;
+    hasMore = suggestions.length === batchSize;
+  }
+
+  if (suggestionsWithFailedSegmentations.length) {
+    const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
+      ...suggestion,
+      'state.error': true,
+      'state.obsolete': false,
+      status: 'failed' as IXSuggestionType['status'],
+    }));
+
+    await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
+  }
+
+  return allFileIds.slice(0, targetLimit);
+}
+
 async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
   if (!model.findSuggestionsSharedIds?.length) {
     await ixmodels.save({
@@ -396,23 +475,15 @@ async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZ
   return filesQuery;
 }
 
-async function getFilesForSuggestionsQuery(
-  extractorId: ObjectIdSchema,
-  model: EnforcedWithId<IXModelType>,
-  BATCH_SIZE: number
-) {
-  const suggestionsQuery = {
-    ...conformSuggestionsQuery(extractorId, model),
-    fileId: { $exists: true, $ne: null },
-  };
-  const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', { limit: BATCH_SIZE });
+async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SIZE: number) {
+  const allFileIds = await getFileIdsWithReadySegmentations(extractorId, BATCH_SIZE);
 
-  if (!suggestions.length) {
+  if (allFileIds.length === 0) {
     return null;
   }
 
   const filesQuery = {
-    _id: { $in: suggestions.map(s => s.fileId) },
+    _id: { $in: allFileIds },
     type: 'document',
     filename: { $exists: true },
     language: { $exists: true },
@@ -438,7 +509,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
   if (model.findSuggestionsRunTimestamp) {
     filesQuery = await getFilesForIdsQuery(model, BATCH_SIZE);
   } else {
-    filesQuery = await getFilesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
+    filesQuery = await getFilesForSuggestionsQuery(extractorId, BATCH_SIZE);
   }
 
   if (!filesQuery) {
