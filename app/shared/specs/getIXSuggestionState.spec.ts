@@ -4,7 +4,6 @@ import { getSuggestionState, SuggestionValues } from '../getIXSuggestionState';
 
 describe('getIXSuggestionState', () => {
   describe('getSuggestionState', () => {
-
     const emptySuggestion: SuggestionValues = {
       currentValue: '',
       date: 1234,
@@ -12,9 +11,9 @@ describe('getIXSuggestionState', () => {
       obsolete: false,
       error: '',
       segment: null,
-      status: null
+      status: null,
     };
-    
+
     it('should mark when suggestedValue, labeledValue and currentValue are empty', () => {
       const state = getSuggestionState(emptySuggestion, 'text');
 
@@ -350,7 +349,9 @@ describe('getIXSuggestionState', () => {
       const values: SuggestionValues = {
         ...emptySuggestion,
         currentValue: 'value1',
-        suggestedValue: <SuggestionOptionValue[]>[{ id: 'value1', label: 'Label 1', segment: 'context for value1' }],
+        suggestedValue: <SuggestionOptionValue[]>[
+          { id: 'value1', label: 'Label 1', segment: 'context for value1' },
+        ],
       };
 
       const state = getSuggestionState(values, 'select');
