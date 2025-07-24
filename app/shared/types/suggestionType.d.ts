@@ -58,6 +58,7 @@ export interface IXSuggestionAggregation {
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
+  entityLanguageId?: ObjectId;
   extractorId: ObjectIdSchema;
   entityTemplate: string;
   fileId?: ObjectIdSchema;
@@ -79,6 +80,8 @@ export interface IXSuggestionType {
     page?: string;
   }[];
   trainingSample?: boolean;
+  entityTitle?: string;
+  currentValue?: PropertyValueSchema | PropertyValueSchema[];
 }
 
 export interface IXSuggestionStateType {

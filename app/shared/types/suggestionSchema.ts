@@ -109,6 +109,10 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    entityLanguageId: {
+      type: 'object',
+      tsType: 'ObjectId',
+    },
     extractorId: objectIdSchema,
     entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
@@ -132,6 +136,16 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
     trainingSample: { type: 'boolean' },
+    entityTitle: { type: 'string' },
+    currentValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
   },
   required: [
     'propertyName',

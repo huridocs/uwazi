@@ -478,7 +478,13 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
     return (
       <li className="multiselectActions">
-        <ShowIf if={totalOptions.length > this.props.optionsToShow}>
+        <ShowIf
+          if={
+            (totalOptions.length > this.props.optionsToShow &&
+              totalOptions.length > renderedOptions.length) ||
+            this.state.showAll
+          }
+        >
           <button onClick={this.showAll} className="btn btn-xs btn-default" type="button">
             <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
             &nbsp;

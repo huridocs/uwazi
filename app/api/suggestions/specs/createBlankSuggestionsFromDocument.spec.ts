@@ -36,7 +36,9 @@ const fixtures: DBFixture = {
     factory.template('template_3', [factory.property('target_text', 'text')]),
   ],
   entities: [
-    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_1', 'template_1'),
+    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_1', 'template_1', {
+      target_text: [{ value: 'text_target_value' }],
+    }),
     ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_2', 'template_1'),
     ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_3', 'template_2'),
     ...factory.entityInMultipleLanguages(['en', 'es'], 'entity_4', 'template_3'),
@@ -62,9 +64,11 @@ describe('CreateBlankSuggestionsFromDocument', () => {
     const suggestions = await testingEnvironment.db.getAllFrom('ixsuggestions');
 
     expect(suggestions).toHaveLength(2);
+
     const fromExtractor1 = suggestions?.filter(
       s => s.extractorId.toString() === factory.id('extractor_1').toString()
     );
+
     const fromExtractor4 = suggestions?.filter(
       s => s.extractorId.toString() === factory.id('extractor_4').toString()
     );
@@ -75,7 +79,27 @@ describe('CreateBlankSuggestionsFromDocument', () => {
         entityId: 'entity_1',
         entityTemplate: factory.id('template_1').toString(),
         fileId: factory.id('document_1'),
+
         language: 'en',
+        propertyName: 'target_text',
+        status: 'ready' as any,
+        suggestedValue: '',
+        error: '',
+        segment: '',
+        date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+
+        currentValue: 'text_target_value',
+        entityTitle: 'entity_1',
       },
     ]);
 
@@ -85,7 +109,27 @@ describe('CreateBlankSuggestionsFromDocument', () => {
         entityId: 'entity_1',
         entityTemplate: factory.id('template_1').toString(),
         fileId: factory.id('document_1'),
+
         language: 'en',
+        propertyName: 'target_text',
+        status: 'ready' as any,
+        suggestedValue: '',
+        error: '',
+        segment: '',
+        date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+
+        currentValue: 'text_target_value',
+        entityTitle: 'entity_1',
       },
     ]);
   });

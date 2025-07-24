@@ -53,12 +53,12 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
       'label'
     );
 
-    options.unshift({ value: 'any', label: t('System', 'Any entity', null, false) });
+    options.unshift({ value: '', label: t('System', 'Any entity', null, false) });
     return options;
   }, [templates, templateId]);
 
   const selectedTemplate = useMemo(() => {
-    if (content === 'any') return null;
+    if (content === '') return null;
     return templates.find(template => template._id === content);
   }, [content, templates]);
 

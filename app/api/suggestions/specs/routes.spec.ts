@@ -226,7 +226,6 @@ describe('aggregation routes', () => {
   describe('GET /api/suggestions/aggregation', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(stateFilterFixtures);
-      await Suggestions.updateStates({});
     });
 
     describe('validation', () => {
@@ -254,8 +253,8 @@ describe('aggregation routes', () => {
         labeled: 8,
         nonLabeled: 10,
         match: 4,
-        mismatch: 8,
-        obsolete: 4,
+        mismatch: 14,
+        obsolete: 2,
         error: 2,
       });
     });

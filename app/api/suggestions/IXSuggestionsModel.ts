@@ -11,16 +11,13 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-mongoSchema.index({ entityId: 1 });
-mongoSchema.index({ fileId: 1 });
-mongoSchema.index({ extractorId: 1, entityId: 1, fileId: 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.match': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.withSuggestion': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.hasContext': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.obsolete': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.error': 1 });
-mongoSchema.index({ date: 1, state: -1 });
-mongoSchema.index({ extractorId: 1 });
+
+mongoSchema.index({ extractorId: 1, date: 1, state: -1 });
 
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 
