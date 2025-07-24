@@ -124,6 +124,12 @@ const fixtures: DBFixture = {
       ['extractor_source_text_target_text_template'],
       { property: 'source_text' }
     ),
+    fixturesFactory.ixExtractor(
+      'extractor_source_text_target_text_2',
+      'target_text',
+      ['extractor_source_text_target_text_template'],
+      { property: 'source_text' }
+    ),
     fixturesFactory.ixExtractor('extractor_source_pdf_target_text', 'target_text', [
       'extractor_source_text_target_text_template',
     ]),
@@ -204,19 +210,6 @@ afterAll(async () => {
 
 describe(`On ${EntityUpdatedEvent.name}`, () => {
   let updateSpy: jest.SpyInstance;
-  const extractedBefore = {
-    _id: db.id(),
-    sharedId: 'sid',
-    title: 'title',
-    template: fixturesFactory.id(extractedTemplateName),
-    metadata: {
-      not_extracted_property_1: [{ value: 'text' }],
-      not_extracted_property_2: [{ value: 0 }],
-      extracted_property_1: [{ value: 'text' }],
-      extracted_property_2: [{ value: 0 }],
-    },
-    language: 'en',
-  };
 
   beforeAll(async () => {
     updateSpy = jest.spyOn(Suggestions, 'updateStates');
@@ -228,101 +221,6 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 
   afterAll(() => {
     updateSpy.mockRestore();
-  });
-
-  it('should not act if the feature is not configured', async () => {
-    await disableFeatures();
-
-    await applicationEventsBus.emit(
-      new EntityUpdatedEvent({
-        before: [extractedBefore],
-        after: [
-          {
-            ...extractedBefore.metadata,
-            extracted_property_1: [{ value: 'new text' }],
-          },
-        ],
-        targetLanguageKey: 'en',
-      })
-    );
-
-    expect(updateSpy).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    {
-      before: {
-        _id: db.id(),
-        sharedId: 'sid',
-        title: 'title',
-        template: fixturesFactory.id(notExtractedTemplateName),
-        metadata: { some_property: [{ value: 'text' }] },
-        language: 'en',
-      },
-      afterMetadata: { some_property: [{ value: 'other_text' }] },
-      called: false,
-      message: 'should not update suggestions, if template is not set up',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: extractedBefore.metadata,
-      called: false,
-      message: 'should not update suggestions, if no metadata changed',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: {
-        ...extractedBefore.metadata,
-        not_extracted_property_1: [{ value: 'new text' }],
-        not_extracted_property_2: [{ value: 1 }],
-      },
-      called: false,
-      message: 'should not update suggestions, if no relevant metadata changed',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: {
-        ...extractedBefore.metadata,
-        extracted_property_1: [{ value: 'new text' }],
-      },
-      called: true,
-      message: 'should update suggestions, if only relevant metadata changed',
-    },
-    {
-      before: extractedBefore,
-      afterMetadata: {
-        not_extracted_property_1: [{ value: 'new text' }],
-        not_extracted_property_2: [{ value: 1 }],
-        extracted_property_1: [{ value: 'new text' }],
-        extracted_property_2: [{ value: 1 }],
-      },
-      called: true,
-      message: 'should update suggestions, if relevant metadata is also changed',
-    },
-  ])('$message', async ({ before, afterMetadata, called }) => {
-    const after = {
-      ...before,
-      metadata: afterMetadata,
-    };
-    await applicationEventsBus.emit(
-      new EntityUpdatedEvent({ before: [before], after: [after], targetLanguageKey: 'en' })
-    );
-    if (called) {
-      expect(updateSpy).toHaveBeenCalled();
-    } else {
-      expect(updateSpy).not.toHaveBeenCalled();
-    }
-  });
-
-  it('should update suggestions, if title is configured and changed', async () => {
-    const after = {
-      ...extractedBefore,
-      title: 'new title',
-    };
-    await applicationEventsBus.emit(
-      new EntityUpdatedEvent({ before: [extractedBefore], after: [after], targetLanguageKey: 'en' })
-    );
-    expect(updateSpy).toHaveBeenCalled();
   });
 
   it.each([
@@ -374,116 +272,6 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
       sharedId: 'entity for new file',
       newTemplate: fixturesFactory.id(notExtractedTemplateName),
       expectedSuggestions: [],
-    },
-    {
-      case: 'should create suggestions if template is changed from not configured to configured',
-      sharedId: 'entity with template not in config',
-      newTemplate: fixturesFactory.id(extractedTemplateName),
-      expectedSuggestions: [
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_1',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity with template not in config',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_1',
-          fileId: fixturesFactory.id('entfile2'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_2',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity with template not in config',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_2',
-          fileId: fixturesFactory.id('entfile2'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'multiselect_property',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity with template not in config',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'multiselect_property',
-          fileId: fixturesFactory.id('entfile2'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'relationship_property',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity with template not in config',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'relationship_property',
-          fileId: fixturesFactory.id('entfile2'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'select_property',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity with template not in config',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'select_property',
-          fileId: fixturesFactory.id('entfile2'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'title',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity with template not in config',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'title',
-          fileId: fixturesFactory.id('entfile2'),
-        },
-      ],
-    },
-    {
-      case: 'should update suggestions if template is changed from configured to another configured',
-      sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(otherExtractedTemplateName),
-      expectedSuggestions: [
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
-          propertyName: 'extracted_property_1',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
-          propertyName: 'extracted_property_2_1',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
-          propertyName: 'extracted_property_2_2',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
-          propertyName: 'title',
-          fileId: fixturesFactory.id('entfile'),
-        },
-      ],
     },
   ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
     const current = await entities.getById(sharedId, 'en');
@@ -618,12 +406,22 @@ describe('On EntityCreatedEvent', () => {
         targetLanguageKey: 'en',
         entities: [
           {
+            title: 'any_title',
             sharedId: 'any_shared_id_1',
             template: fixturesFactory.id('extractor_source_text_target_text_template'),
+            metadata: {
+              target_text: [{ value: 'target_text_value' }],
+            },
+            language: 'en',
           },
           {
+            title: 'any_title',
             sharedId: 'any_shared_id_1',
             template: fixturesFactory.id('extractor_source_text_target_text_template'),
+            metadata: {
+              target_text: [{ value: 'target_text_value' }],
+            },
+            language: 'pt',
           },
         ],
       })
@@ -641,6 +439,20 @@ describe('On EntityCreatedEvent', () => {
         segment: '',
         suggestedValue: '',
         date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
       },
       {
         language: 'pt',
@@ -653,10 +465,96 @@ describe('On EntityCreatedEvent', () => {
         segment: '',
         suggestedValue: '',
         date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
+      },
+
+      {
+        language: 'en',
+        entityId: 'any_shared_id_1',
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
+        extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
+        propertyName: 'target_text',
+        status: 'ready',
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
+      },
+      {
+        language: 'pt',
+        entityId: 'any_shared_id_1',
+        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
+        extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
+        propertyName: 'target_text',
+        status: 'ready',
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: expect.any(Number),
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        currentValue: 'target_text_value',
+        entityTitle: 'any_title',
+        trainingSample: false,
+        suggestedText: '',
       },
     ]);
 
     saveSpy.mockRestore();
+  });
+
+  it('should not create Suggestions if there are no Extractors', async () => {
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+    await applicationEventsBus.emit(
+      new EntityCreatedEvent({
+        targetLanguageKey: 'en',
+        entities: [
+          {
+            template: fixturesFactory.id('template_without_extractors'),
+          },
+          {
+            template: fixturesFactory.id('template_without_extractors'),
+          },
+        ],
+      })
+    );
+
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 });
 

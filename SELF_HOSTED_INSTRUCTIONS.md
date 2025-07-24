@@ -25,7 +25,7 @@ mkdir -p uwazi/log uwazi/uploaded_documents uwazi/custom_uploads uwazi/temporal_
 
 `tar xvf uwazi.tgz`
 
-- Rename to the `prod` folder to `lastest` and delete the .tar file:
+- Rename the `prod` folder to `latest` and delete the .tar file:
 
 `mv prod latest && rm uwazi.tgz`
 

@@ -499,48 +499,6 @@ describe('Information Extraction: Extracting from text source', () => {
       });
     });
 
-    it('should create the suggestions placeholder with status processing', async () => {
-      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
-      const suggestions = await IXSuggestionsModel.get({
-        extractorId: factory.id('sourceTextExtractor1'),
-      });
-
-      const [enSuggestion] = suggestions.filter(s => s.language === 'en');
-      const [esSuggestion] = suggestions.filter(s => s.language === 'es');
-
-      expect(enSuggestion).toMatchObject({
-        language: 'en',
-        entityId: 'A1',
-        status: 'processing',
-        state: {
-          labeled: true,
-          withValue: true,
-          obsolete: true,
-          processing: true,
-          withSuggestion: false,
-          hasContext: false,
-          error: false,
-          match: null,
-        },
-      });
-
-      expect(esSuggestion).toMatchObject({
-        language: 'es',
-        entityId: 'entity_without_label_data',
-        status: 'processing',
-        state: {
-          processing: true,
-          obsolete: true,
-          withValue: false,
-          labeled: false,
-          match: null,
-          withSuggestion: false,
-          hasContext: false,
-          error: false,
-        },
-      });
-    });
-
     it('should stop the model when there are no materials left to send', async () => {
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));

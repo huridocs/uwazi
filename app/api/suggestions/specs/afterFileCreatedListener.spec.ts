@@ -27,19 +27,15 @@ const createSut = (props?: Props) => {
       get: jest.fn().mockResolvedValue({ features: { metadataExtraction: { url: 'any_url' } } }),
     });
 
-  const updateSuggestionsState = jest.fn();
-
   new AfterFileUpdatedListener(eventBus, () => ({
     eventBus,
     settingsDS,
     createBlankSuggestionsFromDocument,
-    updateSuggestionsState,
     logger: createMockLogger(),
   })).start();
 
   return {
     createBlankSuggestionsFromDocument,
-    updateSuggestionsState,
     eventBus,
   };
 };
@@ -47,7 +43,7 @@ const createSut = (props?: Props) => {
 describe('AfterFileUpdatedListener', () => {
   describe('when Document is created', () => {
     it('should call CreateBlankSuggestionsFromDocument with correct params', async () => {
-      const { createBlankSuggestionsFromDocument, updateSuggestionsState, eventBus } = createSut();
+      const { createBlankSuggestionsFromDocument, eventBus } = createSut();
       const before = factory.document('document_1', {
         entity: 'entity_1',
         status: 'processing',
@@ -62,7 +58,6 @@ describe('AfterFileUpdatedListener', () => {
       await eventBus.emit(new FileUpdatedEvent({ before, after }));
 
       expect(createBlankSuggestionsFromDocument.execute).toHaveBeenCalledWith({ file: after });
-      expect(updateSuggestionsState).not.toHaveBeenCalled();
     });
 
     it('should not call CreateBlankSuggestionsFromDocument for Files different from Documents', async () => {
@@ -153,48 +148,6 @@ describe('AfterFileUpdatedListener', () => {
     });
   });
 
-  describe('when Document is updated', () => {
-    it('should call updateSuggestionsState with correct params', async () => {
-      const { eventBus, updateSuggestionsState, createBlankSuggestionsFromDocument } = createSut();
-      const before = factory.document('document_1', {
-        entity: 'entity_1',
-        language: 'en',
-        status: 'ready',
-      });
-
-      const after = factory.document('document_1', {
-        entity: 'entity_1',
-        language: 'en',
-        status: 'ready',
-        extractedMetadata: [{ name: 'any_name' }],
-      });
-
-      await eventBus.emit(new FileUpdatedEvent({ before, after }));
-
-      expect(updateSuggestionsState).toHaveBeenCalledWith({ fileId: factory.id('document_1') });
-      expect(createBlankSuggestionsFromDocument.execute).not.toHaveBeenCalled();
-    });
-
-    it('should not call updateSuggestionsState if extracted metadata did not change', async () => {
-      const { eventBus, updateSuggestionsState } = createSut();
-      const before = factory.document('document_1', {
-        entity: 'entity_1',
-        status: 'ready',
-        language: 'en',
-      });
-
-      const after = factory.document('document_1', {
-        entity: 'entity_1',
-        language: 'en',
-        status: 'ready',
-      });
-
-      await eventBus.emit(new FileUpdatedEvent({ before, after }));
-
-      expect(updateSuggestionsState).not.toHaveBeenCalled();
-    });
-  });
-
   it('should not call Use cases when feature flag is disabled', async () => {
     const settingsDS = TestUtils.mockClass<SettingsDataSource>({
       get: jest.fn().mockResolvedValue({ features: {} }),
@@ -218,7 +171,7 @@ describe('AfterFileUpdatedListener', () => {
   });
 
   it('should not call Use cases for documents not ready', async () => {
-    const { createBlankSuggestionsFromDocument, updateSuggestionsState, eventBus } = createSut();
+    const { createBlankSuggestionsFromDocument, eventBus } = createSut();
     const before = factory.document('file_1', {
       entity: 'entity_1',
       status: 'processing',
@@ -233,6 +186,5 @@ describe('AfterFileUpdatedListener', () => {
     await eventBus.emit(new FileUpdatedEvent({ before, after }));
 
     expect(createBlankSuggestionsFromDocument.execute).not.toHaveBeenCalled();
-    expect(updateSuggestionsState).not.toHaveBeenCalled();
   });
 });
