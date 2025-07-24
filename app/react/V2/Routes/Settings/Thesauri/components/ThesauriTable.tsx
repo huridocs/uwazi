@@ -4,11 +4,9 @@ import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { Table } from 'V2/Components/UI';
 import { ClientThesaurus, Template } from 'app/apiResponseTypes';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { columnsThesauri } from './TableComponents';
 
 interface ThesauriRow extends ClientThesaurus {
-  _id: ObjectIdSchema;
   rowId: string;
   disableRowSelection?: boolean;
   templates: Template[];

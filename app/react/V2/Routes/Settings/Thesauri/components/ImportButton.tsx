@@ -2,7 +2,7 @@ import React, { ChangeEventHandler } from 'react';
 import { Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
 import { Button } from 'app/V2/Components/UI';
-import ThesauriAPI from 'app/V2/api/thesauri';
+import { importThesaurus } from 'app/V2/api/thesauri';
 
 const ImportButton = ({
   onSuccess,
@@ -21,7 +21,7 @@ const ImportButton = ({
     if (e.target.files && e.target.files[0]) {
       try {
         const thesaurus = getThesaurus();
-        const data = await ThesauriAPI.importThesaurus(thesaurus, e.target.files[0]);
+        const data = await importThesaurus(thesaurus, e.target.files[0]);
         onSuccess(data);
       } catch (ex) {
         onFailure(ex);
