@@ -1,6 +1,10 @@
 import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { IXSuggestionStateType, IXSuggestionType, SuggestionOptionValue } from './types/suggestionType';
+import {
+  IXSuggestionStateType,
+  IXSuggestionType,
+  SuggestionOptionValue,
+} from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,

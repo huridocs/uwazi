@@ -655,35 +655,36 @@ describe('formatSuggestion', () => {
       { id: 'related_3_id', label: 'related_3_title', segment: 'context for related 3' },
     ]);
     expect(suggestion.segment).toBe('new context');
-  it('should fallback to empty string when suggested date is incorrect', () => {
-    const inputs = {
-      property: properties.date,
-      rawSuggestion: validRawSuggestions.date,
-      currentSuggestion: currentSuggestions.date,
-      entity: entities.date,
-    };
+    it('should fallback to empty string when suggested date is incorrect', () => {
+      const inputs = {
+        property: properties.date,
+        rawSuggestion: validRawSuggestions.date,
+        currentSuggestion: currentSuggestions.date,
+        entity: entities.date,
+      };
 
-    const suggestion1 = formatSuggestionFacade.formatSuggestionPdfSource(
-      inputs.property,
-      { ...inputs.rawSuggestion, text: '' },
-      inputs.currentSuggestion,
-      inputs.entity,
-      successMessage
-    );
+      const suggestion1 = formatSuggestionFacade.formatSuggestionPdfSource(
+        inputs.property,
+        { ...inputs.rawSuggestion, text: '' },
+        inputs.currentSuggestion,
+        inputs.entity,
+        successMessage
+      );
 
-    const suggestion2 = formatSuggestionFacade.formatSuggestionTextSource(
-      inputs.property,
-      { ...inputs.rawSuggestion, text: '' },
-      inputs.currentSuggestion,
-      successMessage
-    );
+      const suggestion2 = formatSuggestionFacade.formatSuggestionTextSource(
+        inputs.property,
+        { ...inputs.rawSuggestion, text: '' },
+        inputs.currentSuggestion,
+        successMessage
+      );
 
-    expect(suggestion1).toMatchObject({
-      suggestedValue: '',
-    });
+      expect(suggestion1).toMatchObject({
+        suggestedValue: '',
+      });
 
-    expect(suggestion2).toMatchObject({
-      suggestedValue: '',
+      expect(suggestion2).toMatchObject({
+        suggestedValue: '',
+      });
     });
   });
 });
