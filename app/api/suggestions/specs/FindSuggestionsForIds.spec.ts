@@ -29,7 +29,7 @@ const fixtures: DBFixture = {
       _id: factory.id('settings'),
       features: {
         metadataExtraction: {
-          url: 'http://localhost:1005',
+          url: 'http://localhost:2308',
         },
       },
     },
@@ -80,13 +80,11 @@ describe('FindSuggestionsForIds', () => {
 
   beforeAll(async () => {
     // Set up external service mock
-    IXExternalService = new ExternalDummyService(1005, 'information_extraction', {
+    IXExternalService = new ExternalDummyService(2308, 'information_extraction', {
       materialsData: '(/labeled_data|/prediction_data)',
       resultsData: '/suggestions_results',
     });
     await IXExternalService.start();
-
-    await testingEnvironment.setUp(fixtures);
 
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
@@ -105,42 +103,7 @@ describe('FindSuggestionsForIds', () => {
 
   beforeEach(async () => {
     IXExternalService.reset();
-
-    // Reset the model state before each test to avoid interference
-    await testingEnvironment.db.getCollection('ixmodels')?.updateOne(
-      { _id: modelId },
-      {
-        $set: {
-          status: ModelStatus.ready,
-          creationDate: Date.now(),
-          totalSuggestionsToFind: 100,
-          findingSuggestions: false,
-        },
-        $unset: {
-          findSuggestionsRunTimestamp: '',
-          findSuggestionsSharedIds: '',
-        },
-      }
-    );
-  });
-
-  afterEach(async () => {
-    // Clean up any test-specific state
-    await testingEnvironment.db.getCollection('ixmodels')?.updateOne(
-      { _id: modelId },
-      {
-        $set: {
-          status: ModelStatus.ready,
-          creationDate: Date.now(),
-          totalSuggestionsToFind: 100,
-          findingSuggestions: false,
-        },
-        $unset: {
-          findSuggestionsRunTimestamp: '',
-          findSuggestionsSharedIds: '',
-        },
-      }
-    );
+    await testingEnvironment.setUp(fixtures);
   });
 
   describe('execute', () => {
