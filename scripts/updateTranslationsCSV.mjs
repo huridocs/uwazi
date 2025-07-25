@@ -253,7 +253,6 @@ async function checkTranslations(dir) {
   reportNoTranslateElement(textsWithoutTranslateElement);
   reportObsoleteTranslations(unusedTranslationsKeys);
 
-  console.log('textsNotInTranslations', textsNotInTranslations);
   if (dryRun) {
     return;
   }
