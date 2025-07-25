@@ -97,6 +97,15 @@ const routes = app => {
     }
   );
 
+  app.get('/api/thesauri', (req, res, next) => {
+    const input = req?.query?._id ? { _id: req.query._id } : undefined;
+
+    thesauri
+      .find(input)
+      .then(output => res.json(output))
+      .catch(next);
+  });
+
   app.get(
     '/api/dictionaries',
     validation.validateRequest({

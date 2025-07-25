@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 import {
   generateIds,
@@ -245,7 +246,6 @@ const thesauri = {
       optionsCount: countPerTemplate[template._id.toString()],
     });
   },
-
   getById(id) {
     return model.getById(id);
   },
@@ -273,6 +273,14 @@ const thesauri = {
     }
 
     return dictionaries;
+  },
+
+  async find(input) {
+    const dictionaries = await model.db.find(input);
+
+    return {
+      rows: dictionaries,
+    };
   },
 
   dictionaries(query) {

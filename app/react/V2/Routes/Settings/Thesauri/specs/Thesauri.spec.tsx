@@ -33,14 +33,11 @@ const mockDeleteThesauri = deleteFn.mockImplementation((_params, _headers) => ({
 const mockSaveThesauri = saveFn.mockImplementation(_params => savedThesaurus);
 
 jest.mock('app/V2/api/thesauri', () => ({
-  __esModule: true,
-  default: {
-    ...jest.requireActual('app/V2/api/thesauri').default,
-    getThesauri: (params: { _id: string }, headers?: IncomingHttpHeaders) =>
-      mockUseLoaderData(params, headers),
-    delete: (params: { _id: string }) => mockDeleteThesauri(params),
-    save: (params: { _id: string }) => mockSaveThesauri(params),
-  },
+  ...jest.requireActual('app/V2/api/thesauri'),
+  get: (params: { _id?: string }, headers?: IncomingHttpHeaders) =>
+    mockUseLoaderData(params, headers),
+  deleteThesauri: (params: { _id: string }) => mockDeleteThesauri(params),
+  save: (thesaurus: any) => mockSaveThesauri(thesaurus),
 }));
 
 describe('Settings Thesauri', () => {
