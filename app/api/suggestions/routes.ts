@@ -16,6 +16,7 @@ import {
 import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
+import { FindSuggestionsForIds } from './useCases/FindSuggestionsForIds';
 
 const IX = new InformationExtraction();
 
@@ -173,10 +174,11 @@ export const suggestionsRoutes = (app: Application) => {
     findSuggestionsRequestValidation,
     async (req, res, _next) => {
       const { extractorId, sharedIds } = req.body;
-      const output = await IX.findSuggestionsForIds(
-        ObjectId.createFromHexString(extractorId),
-        sharedIds
-      );
+      const findSuggestionsForIds = new FindSuggestionsForIds(IX);
+      const output = await findSuggestionsForIds.execute({
+        extractorId: ObjectId.createFromHexString(extractorId),
+        sharedIds,
+      });
       res.status(202).json(output);
     }
   );

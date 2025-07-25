@@ -45,7 +45,7 @@ import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
-import { Extractors, ModelNotReadyError } from './ixextractors';
+import { Extractors } from './ixextractors';
 import {
   CommonSuggestion,
   RawSuggestion,
@@ -750,38 +750,6 @@ class InformationExtraction {
     }
 
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
-  };
-
-  findSuggestionsForIds = async (extractorId: ObjectIdSchema, sharedIds: string[]) => {
-    const [[extractor], [model]] = await Promise.all([
-      Extractors.get({ _id: extractorId }),
-      ixmodels.get({ extractorId }),
-    ]);
-
-    if (!extractor) {
-      throw new Error('Extractor not found');
-    }
-
-    if (!model || model.status !== ModelStatus.ready) {
-      throw new ModelNotReadyError(extractorId.toString());
-    }
-
-    if (model.findSuggestionsRunTimestamp) {
-      throw new Error('A find suggestions process is already running for this extractor.');
-    }
-
-    await ixmodels.save({
-      ...model,
-      findSuggestionsRunTimestamp: Date.now(),
-      findSuggestionsSharedIds: sharedIds,
-      findingSuggestions: true,
-    });
-
-    await this.sendMaterialsAndTaskSuggestions(extractor, model, false);
-
-    const [updatedModel] = await ixmodels.get({ extractorId });
-
-    return this.getSuggestionsStatus(extractorId, updatedModel!);
   };
 
   trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
