@@ -5,7 +5,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
 @layer base {
-  .tw-content * {
+  .tw-content *:not(.monaco-code-editor-container):not(.monaco-code-editor-container *) {
     font-family: 'Inter', sans-serif !important;
   }
 }

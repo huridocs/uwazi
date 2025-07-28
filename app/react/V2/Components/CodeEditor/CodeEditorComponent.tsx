@@ -99,7 +99,9 @@ const CodeEditorComponent = ({
     return fallbackElement || <div />;
   }
 
-  return <div className="w-full h-full border !font-mono" dir="ltr" ref={container} />;
+  return (
+    <div className="w-full h-full border monaco-code-editor-container" dir="ltr" ref={container} />
+  );
 };
 
 export type { CodeEditorProps, CodeEditorInstance };
