@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
@@ -10,6 +12,8 @@ import csvtojson from 'csvtojson';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import _ from 'lodash';
+
+const dryRun = process.argv.includes('--dry');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -240,12 +244,18 @@ async function checkTranslations(dir) {
   const translations = await getKeysFromRepository();
 
   const unusedTranslationsKeys = await findUnusedTranslations(files, translations);
-  const textsNotInTranslations = await findMissingTranslations(files, translations);
+  let textsNotInTranslations = await findMissingTranslations(files, translations);
   const textsWithoutTranslateElement = getTextWithoutTranslateElement(textsNotInTranslations);
+
+  textsNotInTranslations = _.uniqBy(textsNotInTranslations, 'key');
 
   reportnotInTranslations(textsNotInTranslations);
   reportNoTranslateElement(textsWithoutTranslateElement);
   reportObsoleteTranslations(unusedTranslationsKeys);
+
+  if (dryRun) {
+    return;
+  }
 
   await updateContents(unusedTranslationsKeys, textsNotInTranslations);
 }
