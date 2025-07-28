@@ -688,4 +688,27 @@ describe('formatSuggestion', () => {
     ]);
     expect(suggestion.segment).toBe('new context');
   });
+
+  it('should handle suggestions without segment_text in values for multiselect', () => {
+    const rawSuggestion = {
+      ...validRawSuggestions.multiselect,
+      values: [
+        { id: 'C_id', label: 'C' },
+        { id: 'D_id', label: 'D' },
+      ],
+    };
+    const suggestion = formatSuggestionFacade.formatSuggestionPdfSource(
+      properties.multiselect,
+      rawSuggestion,
+      currentSuggestions.multiselect,
+      entities.multiselect,
+      successMessage
+    );
+
+    expect(suggestion.suggestedValue).toEqual([
+      { id: 'C_id', label: 'C' },
+      { id: 'D_id', label: 'D' },
+    ]);
+    expect(suggestion.segment).toBe('new context');
+  });
 });

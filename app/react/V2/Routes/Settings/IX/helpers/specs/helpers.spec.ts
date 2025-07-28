@@ -485,5 +485,53 @@ describe('helpers', () => {
         isChild: true,
       });
     });
+
+    it('should handle multiselect suggestions with suggestions as array of ids', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: ['value1', 'value2'],
+        currentValue: [''],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'value1',
+        currentValue: '',
+        rowId: 'suggestion1-value1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: 'value2',
+        currentValue: '',
+        rowId: 'suggestion1-value2',
+        isChild: true,
+      });
+    });
   });
 });
