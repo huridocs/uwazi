@@ -13,13 +13,32 @@ type CodeEditorProps = {
   fallbackElement?: React.ReactElement;
 };
 
-const mountEditor = async (callback: () => void) => {
-  await document.fonts.ready.then(() => {
-    monaco.editor.remeasureFonts();
-    callback();
+const createMonacoEditor = (
+  container: HTMLDivElement,
+  language: string,
+  initialValue?: string
+): CodeEditorInstance => {
+  const editor = monaco.editor.create(container, {
+    value: initialValue,
+    language,
+    tabSize: 2,
+    automaticLayout: true,
+    fontFamily: 'Consolas, "Courier New", monospace',
+    fontLigatures: false,
   });
+
+  editor.changeViewZones(accessor => {
+    accessor.addZone({
+      afterLineNumber: 0,
+      heightInPx: 8,
+      domNode: document.createElement('SPAN'),
+    });
+  });
+
+  return editor;
 };
 
+// eslint-disable-next-line max-statements
 const CodeEditorComponent = ({
   language,
   intialValue,
@@ -29,33 +48,38 @@ const CodeEditorComponent = ({
   const container = useRef<HTMLDivElement>(null);
   const editor = useRef<CodeEditorInstance>();
   const [hasError, setHasError] = useState(false);
+  const [fontsReady, setFontsReady] = useState(false);
+  const [editorReady, setEditorReady] = useState(false);
 
   useEffect(() => {
-    if (container.current && !editor.current) {
-      mountEditor(() => {
-        editor.current = monaco.editor.create(container.current!, {
-          value: intialValue,
-          language,
-          tabSize: 2,
-          automaticLayout: true,
-          fontFamily: 'Consolas, "Courier New", monospace',
-          fontLigatures: false,
+    if (isClient) {
+      document.fonts.ready
+        .then(() => {
+          monaco.editor.remeasureFonts();
+          setFontsReady(true);
+        })
+        .catch(e => {
+          setHasError(true);
+          const error = new Error('Code editor error', { cause: e });
+          captureException(error);
         });
+    } else {
+      setFontsReady(true);
+    }
+  }, []);
 
-        editor.current.changeViewZones(accessor => {
-          accessor.addZone({
-            afterLineNumber: 0,
-            heightInPx: 8,
-            domNode: document.createElement('SPAN'),
-          });
-        });
-      }).catch(e => {
+  useEffect(() => {
+    if (!editor.current && !hasError && fontsReady && container.current) {
+      try {
+        editor.current = createMonacoEditor(container.current, language, intialValue);
+        setEditorReady(true);
+      } catch (e) {
         setHasError(true);
         if (isClient) {
           const error = new Error('Code editor error', { cause: e });
           captureException(error);
         }
-      });
+      }
     }
 
     return () => {
@@ -63,13 +87,13 @@ const CodeEditorComponent = ({
         editor.current.dispose();
       }
     };
-  }, [intialValue, language]);
+  }, [language, fontsReady, hasError, intialValue]);
 
   useEffect(() => {
-    if (onMount && editor.current) {
+    if (onMount && editorReady && editor.current) {
       onMount(editor.current);
     }
-  }, []);
+  }, [editorReady, onMount]);
 
   if (hasError) {
     return fallbackElement || <div />;
