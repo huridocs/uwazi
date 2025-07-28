@@ -29,6 +29,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./node_modules
+          ~/.cache/Cypress
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
