@@ -1,6 +1,6 @@
 import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { IXSuggestionStateType } from './types/suggestionType';
+import { IXSuggestionStateType, IXSuggestionType } from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,
@@ -13,18 +13,14 @@ const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
 
 type CurrentValue = string | number | null;
 
-type SuggestedValue = string[] | string | null;
-
 interface SuggestionValues {
-  currentValue: CurrentValue | CurrentValue[];
-  labeledValue: string | null;
-  suggestedValue: SuggestedValue;
-  modelCreationDate: number;
+  currentValue: IXSuggestionType['currentValue'];
+  suggestedValue: IXSuggestionType['currentValue'];
   error: string;
   date: number;
   segment: string | null;
-  state: string | null;
   status: string | null;
+  obsolete: boolean;
 }
 
 const sameValueSet = (first: string[], second: string[]) => setsEqual(first || [], second || []);
@@ -117,8 +113,8 @@ class IXSuggestionState implements IXSuggestionStateType {
     }
   }
 
-  setObsolete({ modelCreationDate, date }: SuggestionValues) {
-    if (date < modelCreationDate) {
+  setObsolete({ obsolete }: SuggestionValues) {
+    if (obsolete) {
       this.obsolete = true;
       this.match = undefined;
     }

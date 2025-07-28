@@ -56,7 +56,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
       const processedEntityIds: string[] = [];
 
-      await ArrayUtils.parallelFor(files, async file => {
+      await ArrayUtils.runInBatches({ array: files, batchSize: 1 }, async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -67,7 +67,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
         const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
           ? !propertyValue
-          : !propertyLabeledData;
+          : false;
 
         if (!xmlExists || missingData) return;
 
@@ -152,15 +152,21 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
     const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
 
-    if (!noExtractedData && propertyLabeledData) {
+    if (!noExtractedData) {
       data = {
         ...data,
-        label_text: propertyValue || propertyLabeledData?.selection?.text,
-        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
-          const { page, ...rectangle } = r;
-          return { ...rectangle, page_number: page };
-        }),
+        label_text: propertyValue,
       };
+
+      if (propertyLabeledData) {
+        data = {
+          ...data,
+          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
+            const { page, ...rectangle } = r;
+            return { ...rectangle, page_number: page };
+          }),
+        };
+      }
     }
 
     if (noExtractedData) {

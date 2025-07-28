@@ -12,13 +12,11 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { Template } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { cloneDeep } from 'lodash';
-import { IndexTypes } from 'shared/data_utils/objectIndex';
 
 type Input = {
   entities: MultiLanguageEntity[];
   language: string;
   modifiedRelationshipsProps: V1RelationshipProperty[];
-  templates: Record<IndexTypes, Template>;
 };
 
 type Output = any;
@@ -31,7 +29,7 @@ type Dependencies = {
 class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute({ entities, language, modifiedRelationshipsProps, templates }: Input) {
+  async execute({ entities, language, modifiedRelationshipsProps }: Input) {
     const relations = new RelationsV1Collection(
       await this.dependencies.relationshipsV1DS.getByEntitySharedIds(entities.map(e => e.sharedId))
     );
@@ -40,9 +38,12 @@ class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
       e.createMetadataValuesFromRelationships(modifiedRelationshipsProps, relations)
     );
 
-    const relatedEntities = await this.dependencies.entitiesDS
-      .getEntitiesByRelatedProperties(modifiedEntities, modifiedRelationshipsProps, templates)
-      .indexed(e => e.sharedId);
+    const relatedEntities = await (
+      await this.dependencies.entitiesDS.getEntitiesByRelatedProperties(
+        modifiedEntities,
+        modifiedRelationshipsProps
+      )
+    ).indexed(e => e.sharedId);
 
     modifiedEntities.forEach(entity => entity.denormalizeRelationshipProps(relatedEntities));
 
@@ -67,11 +68,14 @@ export const denormalizeTemplateEntities = async (
   limit = 200
 ) => {
   const transactionManager = DefaultTransactionManager();
-  const entitiesDS = new MongoMultiLanguageEntityDataSource(getConnection(), transactionManager);
+  const entitiesDS = new MongoMultiLanguageEntityDataSource(
+    getConnection(),
+    transactionManager,
+    DefaultTemplatesDataSource(transactionManager)
+  );
   const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
-  const templates = await templatesDS.getAll().indexed(t => t.id);
-  const resultSet = entitiesDS.getEntitiesByTemplateId(template.id, templates);
+
+  const resultSet = await entitiesDS.getEntitiesByTemplateId(template.id);
 
   const useCase = new DenormalizeAfterTemplateUpdate({
     entitiesDS,
@@ -86,7 +90,6 @@ export const denormalizeTemplateEntities = async (
       entities: await resultSet.nextBatch(limit),
       language,
       modifiedRelationshipsProps,
-      templates,
     });
   }
 };

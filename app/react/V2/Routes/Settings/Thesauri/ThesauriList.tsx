@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
-import ThesauriAPI from 'app/V2/api/thesauri';
+import * as ThesauriAPI from 'app/V2/api/thesauri';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, ConfirmationModal } from 'app/V2/Components/UI';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
@@ -14,7 +14,7 @@ import type { ThesauriRow } from './components/ThesauriTable';
 const thesauriLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
-    ThesauriAPI.getThesauri({}, headers);
+    ThesauriAPI.get({}, headers);
 
 const ThesauriList = () => {
   const revalidator = useRevalidator();
@@ -48,8 +48,8 @@ const ThesauriList = () => {
 
   const deleteSelectedThesauri = async () => {
     try {
-      const requests = selectedThesauri.map(thesaurus =>
-        ThesauriAPI.delete({ _id: thesaurus._id.toString() })
+      const requests = selectedThesauri.map(async thesaurus =>
+        ThesauriAPI.deleteThesauri({ _id: thesaurus._id })
       );
       await Promise.all(requests);
       setNotifications({

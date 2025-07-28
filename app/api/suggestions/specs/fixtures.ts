@@ -192,6 +192,17 @@ const fixtures: DBFixture = {
       page: 3,
       status: 'processing',
       error: '',
+      state: {
+        processing: true,
+        obsolete: true,
+        labeled: true,
+        withValue: true,
+        hasContext: false,
+        withSuggestion: false,
+        match: false,
+        error: false,
+      },
+      entityLanguageId: shared2enId,
     },
     {
       fileId: factory.id('F2'),
@@ -206,6 +217,17 @@ const fixtures: DBFixture = {
       page: 5,
       status: 'ready',
       error: '',
+      entityLanguageId: shared2enId,
+      state: {
+        hasContext: true,
+        labeled: true,
+        withSuggestion: true,
+        withValue: true,
+        match: true,
+        processing: false,
+        obsolete: false,
+        error: false,
+      },
     },
     {
       _id: shared2AgeSuggestionId,
@@ -236,6 +258,17 @@ const fixtures: DBFixture = {
       page: 5,
       status: 'ready',
       error: '',
+      entityLanguageId: shared2esId,
+      state: {
+        hasContext: true,
+        labeled: true,
+        withSuggestion: true,
+        withValue: true,
+        error: false,
+        obsolete: false,
+        processing: false,
+        match: false,
+      },
     },
     {
       entityId: 'shared3',
@@ -276,6 +309,17 @@ const fixtures: DBFixture = {
       page: 3,
       status: 'ready',
       error: '',
+      entityLanguageId: factory.id('Alfred-english-entity'),
+      state: {
+        hasContext: true,
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+        match: false,
+      },
     },
     {
       entityId: 'shared4',
@@ -879,6 +923,7 @@ const fixtures: DBFixture = {
           name: 'super_powers',
         },
       ],
+      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
     },
     {
       _id: heroTemplateId,
@@ -903,6 +948,7 @@ const fixtures: DBFixture = {
     },
     {
       _id: factory.id('template1'),
+      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
       properties: [
         {
           label: 'Super powers',
@@ -1170,6 +1216,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'en',
         suggestedValue: 'test-labeled-match',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: true,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1184,6 +1240,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'es',
         suggestedValue: 'test-labeled-match',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: true,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1198,6 +1264,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'en',
         suggestedValue: 'test-labeled-mismatch-mismatch',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1212,6 +1288,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'es',
         suggestedValue: 'test-labeled-mismatch-mismatch',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1226,6 +1312,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'en',
         suggestedValue: '',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1240,6 +1336,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'es',
         suggestedValue: '',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1254,6 +1360,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'en',
         suggestedValue: 'test-unlabeled-no-context',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          match: false,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1268,6 +1384,16 @@ const stateFilterFixtures: DBFixture = {
         date: 1001,
         language: 'es',
         suggestedValue: 'test-unlabeled-no-context',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          match: false,
+          hasContext: false,
+          error: false,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1283,6 +1409,16 @@ const stateFilterFixtures: DBFixture = {
         language: 'en',
         suggestedValue: 'test-unlabeled-obsolete',
         segment: 'test-unlabeled-obsolete',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          error: false,
+          obsolete: true,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1298,6 +1434,16 @@ const stateFilterFixtures: DBFixture = {
         language: 'es',
         suggestedValue: 'test-unlabeled-obsolete',
         segment: 'test-unlabeled-obsolete',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          error: false,
+          obsolete: true,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1313,6 +1459,16 @@ const stateFilterFixtures: DBFixture = {
         language: 'en',
         suggestedValue: 'test-unlabeled-processing',
         segment: 'test-unlabeled-processing',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          error: false,
+          obsolete: false,
+          processing: true,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1328,6 +1484,16 @@ const stateFilterFixtures: DBFixture = {
         language: 'es',
         suggestedValue: 'test-unlabeled-processing',
         segment: 'test-unlabeled-processing',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          error: false,
+          obsolete: false,
+          processing: true,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1344,6 +1510,16 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unlabeled-error',
         segment: 'test-unlabeled-error',
         error: 'some error happened',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          error: true,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1360,6 +1536,16 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unlabeled-error',
         segment: 'test-unlabeled-error',
         error: 'some error happened',
+        state: {
+          labeled: false,
+          withValue: false,
+          withSuggestion: true,
+          hasContext: true,
+          match: false,
+          error: true,
+          obsolete: false,
+          processing: false,
+        },
       }
     ),
     factory.ixSuggestion_deprecated(
@@ -1398,6 +1584,16 @@ const stateFilterFixtures: DBFixture = {
       segment: '',
       status: 'ready',
       error: '',
+      state: {
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        hasContext: false,
+        match: false,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
     }),
 
     factory.ixSuggestion({
@@ -1412,6 +1608,16 @@ const stateFilterFixtures: DBFixture = {
       segment: '',
       status: 'ready',
       error: '',
+      state: {
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        hasContext: false,
+        match: false,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
     }),
 
     factory.ixSuggestion({
@@ -1427,8 +1633,14 @@ const stateFilterFixtures: DBFixture = {
       status: 'ready',
       error: '',
       state: {
+        labeled: true,
+        withValue: true,
         match: true,
+        withSuggestion: true,
+        error: false,
         hasContext: false,
+        obsolete: false,
+        processing: false,
       },
     }),
 
@@ -1445,8 +1657,14 @@ const stateFilterFixtures: DBFixture = {
       status: 'ready',
       error: '',
       state: {
+        labeled: true,
+        withValue: true,
         match: true,
+        withSuggestion: true,
+        error: false,
         hasContext: false,
+        obsolete: false,
+        processing: false,
       },
     }),
   ],
@@ -1694,7 +1912,7 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
     },
     // ---------- with relationship
     {
-      _id: testingDB.id(),
+      _id: factory.id('entityWithRelationships_sId_en'),
       sharedId: 'entityWithRelationships_sId',
       title: 'entityWithRelationships',
       language: 'en',
@@ -1739,7 +1957,7 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
       template: factory.id('rel_template'),
     },
     {
-      _id: testingDB.id(),
+      _id: factory.id('entityWithRelationships_sId_es'),
       sharedId: 'entityWithRelationships_sId',
       title: 'entityWithRelationshipsEs',
       language: 'es',

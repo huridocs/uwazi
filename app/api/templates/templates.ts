@@ -247,6 +247,7 @@ export default {
 
     const relationshipPropsWithChangedRelData =
       currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
+
     const newRelationshipProps = currentTemplateV2
       .selectNewProperties(newTemplate)
       .filter(p => p.type === 'relationship');

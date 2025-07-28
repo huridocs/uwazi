@@ -5,8 +5,6 @@ import { CreateBlankSuggestionsForPdf } from './createBlankSuggestionsForPdf';
 import { CreateBlankSuggestionsForProperty } from './createBlankSuggestionsForProperty';
 
 export type CreateBlankSuggestionsInput = {
-  templateId: string;
-  isMultiValued: boolean;
   extractor: IXExtractorType;
   targetProperty: PropertySchema;
   entities: Required<

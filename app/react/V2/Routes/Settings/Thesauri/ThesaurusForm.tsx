@@ -7,7 +7,7 @@ import { isEqual } from 'lodash';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
-import ThesauriAPI from 'V2/api/thesauri';
+import * as thesauriAPI from 'V2/api/thesauri';
 import { notificationAtom } from 'app/V2/atoms';
 import { Table } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
@@ -52,7 +52,7 @@ const ThesaurusForm = ({
 
   const saveThesaurus = async (data: ClientThesaurus) => {
     const thesaurusToUpdate = { ...data, values: sanitizeThesaurusValues(thesaurusValues) };
-    const savedThesaurus = await ThesauriAPI.save(thesaurusToUpdate);
+    const savedThesaurus = await thesauriAPI.save(thesaurusToUpdate);
     setValue('_id', savedThesaurus._id);
     setNotifications({
       type: 'success',

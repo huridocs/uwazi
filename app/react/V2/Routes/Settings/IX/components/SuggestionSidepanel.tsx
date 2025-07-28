@@ -309,7 +309,8 @@ const SuggestionSidepanel = ({
           setSelectionError(undefined);
         }
       } else {
-        setValue('field', selectedText.text, { shouldDirty: true });
+        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
+        setValue('field', sanitizedText, { shouldDirty: true });
       }
     }
   };

@@ -33,6 +33,6 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
       return res;
     }, {});
 
-    return withConnectedData(relationships, connectedDocuments);
+    return withConnectedData(relationships, connectedDocuments) as Relation[];
   }
 }
