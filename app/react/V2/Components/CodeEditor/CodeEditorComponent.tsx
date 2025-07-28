@@ -1,6 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
+import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
+import { isClient } from 'app/utils';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
@@ -9,6 +11,13 @@ type CodeEditorProps = {
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
   fallbackElement?: React.ReactElement;
+};
+
+const mountEditor = async (callback: () => void) => {
+  await document.fonts.ready.then(() => {
+    monaco.editor.remeasureFonts();
+    callback();
+  });
 };
 
 const CodeEditorComponent = ({
@@ -23,8 +32,8 @@ const CodeEditorComponent = ({
 
   useEffect(() => {
     if (container.current && !editor.current) {
-      try {
-        editor.current = monaco.editor.create(container.current, {
+      mountEditor(() => {
+        editor.current = monaco.editor.create(container.current!, {
           value: intialValue,
           language,
           tabSize: 2,
@@ -40,9 +49,13 @@ const CodeEditorComponent = ({
             domNode: document.createElement('SPAN'),
           });
         });
-      } catch (_error) {
+      }).catch(e => {
         setHasError(true);
-      }
+        if (isClient) {
+          const error = new Error('Code editor error', { cause: e });
+          captureException(error);
+        }
+      });
     }
 
     return () => {
@@ -50,7 +63,7 @@ const CodeEditorComponent = ({
         editor.current.dispose();
       }
     };
-  }, [language]);
+  }, [intialValue, language]);
 
   useEffect(() => {
     if (onMount && editor.current) {
