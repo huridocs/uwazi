@@ -3,7 +3,9 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TextHighlight } from 'V2/Components/PDFViewer/types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 
-type SuggestionValue = null | string | number;
+type SuggestionOptionValue = { id: string; label: string; segment?: string };
+
+type SuggestionValue = null | string | number | SuggestionOptionValue;
 
 type EntitySuggestion = Omit<EntitySuggestionType, '_id' | 'suggestedValue' | 'currentValue'> & {
   _id: string;

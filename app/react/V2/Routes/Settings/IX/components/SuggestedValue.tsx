@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
+import { get } from 'lodash';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { secondsToDate } from 'V2/shared/dateHelpers';
@@ -77,7 +78,9 @@ const SuggestedValue = ({
       return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
     }
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      const label = getLabelFromThesaurus(suggestion.suggestedValue as string, thesaurus);
+      const suggestedValueId =
+        get(suggestion.suggestedValue, 'id') || (suggestion.suggestedValue as string);
+      const label = getLabelFromThesaurus(suggestedValueId, thesaurus);
       return <Translate context={content}>{label}</Translate>;
     }
     return suggestion.suggestedValue!.toString();

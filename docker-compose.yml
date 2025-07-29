@@ -2,7 +2,7 @@ services:
   elasticsearch:
     build:
       context: .
-      dockerfile: elastic-icu-7.17.7.Dockerfile
+      dockerfile: elastic-icu-8.18.0.Dockerfile
     container_name: uwazi-elasticsearch
     volumes:
       - esdata01:/usr/share/elasticsearch/data
@@ -14,6 +14,7 @@ services:
       - discovery.type=single-node
       - 'ES_JAVA_OPTS=-Xms2g -Xmx2g'
       - cluster.routing.allocation.disk.threshold_enabled=false
+      - xpack.security.enabled=false
 
   mongo:
     image: "mongo:6.0"
