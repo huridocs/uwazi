@@ -170,7 +170,12 @@ function entityForTrainingQuery(
   const query: UwaziFilterQuery<any> = { template: { $in: templates } };
 
   if (fromProperty) {
-    query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
+    // TEST!!
+    if (fromProperty === 'title') {
+      query.title = { $ne: '' };
+    } else {
+      query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
+    }
   }
 
   if (toProperty === 'title') {
@@ -222,20 +227,16 @@ function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWit
 
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
   if (!model.findSuggestionsSharedIds?.length) {
-    await ixmodels.save({
-      ...model,
-      findSuggestionsRunTimestamp: undefined,
-      findSuggestionsSharedIds: undefined,
-    });
+    await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
 
   const sharedIdsToProcess = model.findSuggestionsSharedIds!.slice(0, BATCH_SIZE);
 
-  await ixmodels.save({
-    ...model,
-    findSuggestionsSharedIds: model.findSuggestionsSharedIds!.slice(BATCH_SIZE),
-  });
+  await ixmodels.updateMany(
+    { _id: model._id },
+    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds!.slice(BATCH_SIZE) } }
+  );
 
   const entityQuery = { sharedId: { $in: sharedIdsToProcess } };
 
@@ -255,8 +256,8 @@ async function getEntitiesForSuggestionsQuery(
   }
 
   const entityQuery = {
-    sharedId: { $in: suggestions.map(s => s.entityId) },
-    language: { $in: suggestions.map(s => s.language) },
+    sharedId: { $in: [...new Set(suggestions.map(s => s.entityId))] },
+    language: { $in: [...new Set(suggestions.map(s => s.language))] },
   };
 
   return entityQuery;

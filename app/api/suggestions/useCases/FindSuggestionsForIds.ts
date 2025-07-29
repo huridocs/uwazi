@@ -62,11 +62,15 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
     model: EnforcedWithId<IXModelType>,
     sharedIds: string[]
   ) {
-    await ixmodels.save({
-      ...model,
-      findSuggestionsRunTimestamp: Date.now(),
-      findSuggestionsSharedIds: sharedIds,
-      findingSuggestions: true,
-    });
+    // This cannot be a ixmodels.save because it would set suggestions as obsolete
+    await ixmodels.updateMany(
+      { _id: model._id },
+      {
+        ...model,
+        findSuggestionsRunTimestamp: Date.now(),
+        findSuggestionsSharedIds: sharedIds,
+        findingSuggestions: true,
+      }
+    );
   }
 }
