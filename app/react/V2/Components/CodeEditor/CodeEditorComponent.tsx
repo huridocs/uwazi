@@ -87,7 +87,7 @@ const CodeEditorComponent = ({
         editor.current.dispose();
       }
     };
-  }, [language, fontsReady, hasError, intialValue]);
+  }, [language, fontsReady, hasError]);
 
   useEffect(() => {
     if (onMount && editorReady && editor.current) {
