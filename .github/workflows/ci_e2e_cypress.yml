@@ -134,6 +134,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: huridocs/dummy_extractor_services
+          ref: multi-option-segment
           path: dummy_extractor_services
       - name: Setup dummy services
         if: matrix.needs_setup
