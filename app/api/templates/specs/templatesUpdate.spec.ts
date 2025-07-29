@@ -54,23 +54,23 @@ async function updateTemplate(template: TemplateSchema, featureFlag: boolean) {
   if (!featureFlag) {
     return templates.save(template, 'en');
   }
-  await new Promise<void>((resolve, reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    templates.save(template, 'en', true, async () => resolve()).catch(reject);
+  return new Promise<void>((resolve, reject) => {
+    templates
+      .save(template, 'en', true, async error => {
+        if (error) {
+          reject(error);
+        }
+        return resolve();
+      })
+      .catch(reject);
   });
 }
 
 async function setUpFixtures(_fixtures: DBFixture, featureFlag: boolean) {
   await testingEnvironment.setUp(_fixtures, 'templates_denorm_flow');
-  try {
-    await Promise.all(
-      (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-    );
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    throw e;
-  }
+  await Promise.all(
+    (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+  );
 
   testingTenants.changeCurrentTenant({
     featureFlags: { templatesDenormalizationPerfImprovements: featureFlag },
@@ -153,7 +153,7 @@ describe('templates save', () => {
   };
   describe.each([
     // prettier-ignore
-    // { featureFlag: false },
+    { featureFlag: false },
     { featureFlag: true },
   ])('templates denormalization scenarios (feature flag -> $featureFlag)', ({ featureFlag }) => {
     beforeAll(async () => {

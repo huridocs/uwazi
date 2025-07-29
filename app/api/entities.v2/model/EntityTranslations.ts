@@ -1,7 +1,10 @@
+import { inspect } from 'util';
+
 import { TemplateProperty } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { IndexTypes } from 'shared/data_utils/objectIndex';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+
 import { EntityMappers } from '../database/EntityMapper';
 import { BaseMetadataValue, Entity, EntityMetadata } from './Entity';
 import { MultiLanguageEntity } from './MultiLanguageEntity';
@@ -40,7 +43,7 @@ export class EntityTranslations {
     } else if (property.type === 'text') {
       this.setSingleLanguageValue(property, value, language);
     } else {
-      throw new Error(`setValue is not implemented for property: ${property}`);
+      throw new Error(`setValue is not implemented for property: ${inspect(property)}`);
     }
   }
 

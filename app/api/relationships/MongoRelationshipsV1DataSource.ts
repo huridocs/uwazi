@@ -24,11 +24,11 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
         sharedId: { $in: relationships.map(r => r.entity) },
         language: 'en',
       },
-      ['template', 'title']
+      ['sharedId', 'template', 'title']
     );
 
     const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
-      //@ts-ignore
+      // @ts-ignore sharedId can not be null, this is a misstype on v1 types
       res[doc.sharedId] = doc;
       return res;
     }, {});

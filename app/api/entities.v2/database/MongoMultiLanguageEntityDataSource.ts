@@ -2,6 +2,7 @@ import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDat
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TemplateProperty } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { Db, Filter, ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
@@ -28,21 +29,17 @@ export class MongoMultiLanguageEntityDataSource
     this.templateDS = templatesDS;
   }
 
-  async bulkUpdate(
-    entitiesToSave: MultiLanguageEntity[],
-    properties: V1RelationshipProperty[] = []
-  ) {
+  async bulkUpdate(entitiesToSave: MultiLanguageEntity[], properties: TemplateProperty[] = []) {
     await this.getCollection().bulkWrite(
       entitiesToSave
         .map(entity =>
           entity.getLanguages().map(language => {
-            const $set = properties.reduce<{ [k: string]: any }>((propertyName, property) => {
+            const $set = properties.reduce<{ [k: string]: any }>((setOperation, property) => {
               const value = entity.getValue(property, language);
               if (value) {
-                // eslint-disable-next-line no-param-reassign
-                propertyName[`metadata.${property.name}`] = value;
+                return { ...setOperation, [`metadata.${property.name}`]: value };
               }
-              return propertyName;
+              return setOperation;
             }, {});
             return {
               updateOne: {

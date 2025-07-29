@@ -169,7 +169,7 @@ export default {
     template: TemplateSchema,
     language: string,
     reindex = true,
-    onTemplateProcessed: () => Promise<void> = async () => {}
+    onTemplateProcessed: (error?:Error) => Promise<void> = async () => {}
   ) {
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
@@ -274,7 +274,7 @@ export default {
     template: TemplateSchema,
     language: string,
     _reindex = true,
-    onTemplateProcessed: () => Promise<void> = async () => {}
+    onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
   ) {
     const templateStructureChanges = await checkIfReindex(template);
     const reindex = _reindex && templateStructureChanges && !template.synced;
@@ -328,7 +328,8 @@ export default {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
         .then(async () => onTemplateProcessed())
-        .then(async () => model.save({ _id: template._id, processing: false }));
+        .then(async () => model.save({ _id: template._id, processing: false }))
+        .catch(async (error) => onTemplateProcessed(error));
     }
 
     await applicationEventsBus.emit(

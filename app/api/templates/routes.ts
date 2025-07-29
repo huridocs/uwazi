@@ -3,7 +3,7 @@ import { inspect } from 'util';
 import settings from 'api/settings';
 import { reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
-import { createError, validation } from '../utils';
+import { createError, handleError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 import { tenants } from 'api/tenants';
@@ -30,7 +30,10 @@ export default (app: Application) => {
       const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
-        templates.save(template, req.language, !fullReindex, async () => {
+        templates.save(template, req.language, !fullReindex, async (error?: Error) => {
+          if (error) {
+            handleError(error, { req });
+          }
           if (fullReindex) {
             await reindexAllTemplates();
             req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
