@@ -1,6 +1,10 @@
 import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { IXSuggestionStateType, IXSuggestionType } from './types/suggestionType';
+import {
+  IXSuggestionStateType,
+  IXSuggestionType,
+  SuggestionOptionValue,
+} from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,
@@ -12,6 +16,7 @@ const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
   propertyIsMultiselect(propertyType) || propertyIsRelationship(propertyType);
 
 type CurrentValue = string | number | null;
+type SuggestedValue = string | SuggestionOptionValue[] | null;
 
 interface SuggestionValues {
   currentValue: IXSuggestionType['currentValue'];
@@ -25,14 +30,33 @@ interface SuggestionValues {
 
 const sameValueSet = (first: string[], second: string[]) => setsEqual(first || [], second || []);
 
+const normalizeToIds = (value: CurrentValue | CurrentValue[] | SuggestedValue): string[] => {
+  const toId = (v: any): string | null => {
+    if (v == null) return null;
+    if (typeof v === 'object' && typeof v.id === 'string') return v.id;
+    return String(v);
+  };
+
+  if (value == null) return [];
+
+  const array = Array.isArray(value) ? value : [value];
+  return array.map(toId).filter((id): id is string => Boolean(id));
+};
+
 const EQUALITIES: Record<string, (first: any, second: any) => boolean> = {
   date: isSameDate,
   multiselect: sameValueSet,
   relationship: sameValueSet,
 };
 
-const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
-  EQUALITIES[type] ? EQUALITIES[type](first, second) : first === second;
+const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) => {
+  const equalityFn = EQUALITIES[type];
+  if (equalityFn) {
+    return equalityFn(normalizeToIds(first), normalizeToIds(second));
+  }
+
+  return normalizeToIds(first)[0] === normalizeToIds(second)[0];
+};
 
 class IXSuggestionState implements IXSuggestionStateType {
   labeled = false;

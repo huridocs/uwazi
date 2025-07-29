@@ -6,7 +6,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider as AtomProvider } from 'jotai';
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import { TestRouterContext } from 'V2/testing/TestRouterContext';
 import { SuggestionSidepanel } from '../SuggestionSidepanel';
 import { loaderData, suggestion1, textProperty, numericProperty, dateProperty } from './fixtures';
@@ -158,6 +158,56 @@ describe('SuggestionSidepanel', () => {
         const inputField = screen.getByDisplayValue('2022-01-01');
         expect(inputField).toHaveValue('2022-01-01');
       });
+    });
+  });
+
+  describe('Multiselect suggestions without segment_context', () => {
+    it('should handle multiselect suggestions with old structure (string array)', async () => {
+      const multiselectProperty: ClientPropertySchema = {
+        _id: 'multiselect_property',
+        label: 'Multiselect Property',
+        name: 'multiselect_property',
+        type: 'multiselect' as any,
+        content: 'thesaurus1',
+      };
+
+      const suggestionWithOldStructure = {
+        ...suggestion1,
+        propertyName: 'multiselect_property',
+        suggestedValue: [
+          '0c9d5eeb-56f4-4728-b179-20a75741155e',
+          '1d0e6ffc-67g5-5839-c280-31b86852266f',
+        ],
+      };
+
+      render(
+        <TestRouterContext loaderData={loaderData}>
+          <AtomProvider>
+            <SuggestionSidepanel
+              showSidepanel
+              setShowSidepanel={setShowSidepanelSpy}
+              onEntitySave={onEntitySaveSpy}
+              suggestion={suggestionWithOldStructure}
+              property={multiselectProperty}
+            />
+          </AtomProvider>
+        </TestRouterContext>
+      );
+
+      // Verify the sidepanel renders without errors
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      // Verify that the component handles the string array format without crashing
+      // The key test is that the component processes the old structure correctly
+      // and doesn't throw errors when dealing with string arrays instead of objects
+      expect(screen.getByText('Multiselect Property')).toBeInTheDocument();
+
+      // Verify that the multiselect interface is rendered
+      expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
+
+      // The component should handle the string array format gracefully
+      // even if the thesaurus data is not available in the test environment
+      expect(screen.getByText('No items available')).toBeInTheDocument();
     });
   });
 });

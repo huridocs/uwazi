@@ -62,6 +62,7 @@ export const ValuesSelectionSuggestionSchema = {
         properties: {
           id: { type: 'string', minLength: 1 },
           label: { type: 'string', minLength: 1 },
+          segment_text: { type: 'string' },
         },
         required: ['id', 'label'],
       },
@@ -96,6 +97,18 @@ export const IXSuggestionStateSchema = {
   ],
 };
 
+export const suggestionOptionValueSchema = {
+  type: 'object',
+  title: 'SuggestionOptionValue',
+  required: ['id'],
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string', minLength: 1 },
+    label: { type: 'string' },
+    segment: { type: 'string' },
+  },
+};
+
 export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
@@ -105,6 +118,7 @@ export const IXSuggestionSchema = {
     propertyTypes,
     propertyValueSchema,
     IXSuggestionStateSchema,
+    suggestionOptionValueSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -123,6 +137,10 @@ export const IXSuggestionSchema = {
         {
           type: 'array',
           items: propertyValueSchema,
+        },
+        {
+          type: 'array',
+          items: suggestionOptionValueSchema,
         },
       ],
     },
@@ -161,7 +179,13 @@ export const EntitySuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'EntitySuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
+  definitions: {
+    objectIdSchema,
+    propertyTypes,
+    propertyValueSchema,
+    IXSuggestionStateSchema,
+    suggestionOptionValueSchema,
+  },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },

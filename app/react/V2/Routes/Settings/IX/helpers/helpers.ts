@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-import { uniqBy } from 'lodash';
+import { get, uniqBy } from 'lodash';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { t } from 'app/I18N';
 import { RadioProps } from 'V2/Components/Forms';
 import { ClientIXExtractorType } from 'V2/shared/types';
-import { SuggestionValue, TableSuggestion, MultiValueSuggestion } from '../types';
+import { TableSuggestion, MultiValueSuggestion } from '../types';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
@@ -26,7 +26,10 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
 
   const { subRows, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
-    const valuePresent = currentValues.find(v => v === suggestedValue);
+    const suggestedValueId = get(suggestedValue, 'id') || suggestedValue;
+    const valuePresent = currentValues.find(v => {
+      return v === suggestedValue || v === get(suggestedValue, 'id');
+    });
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);
     }
@@ -39,7 +42,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       disableRowSelection: true,
       isChild: true,
       entityTitle: '',
-      rowId: `${suggestion.rowId}-${suggestedValue}`,
+      rowId: `${suggestion.rowId}-${suggestedValueId}`,
     });
   });
 
@@ -186,16 +189,31 @@ const getMetadataFromProperty = (
 
 const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
   acceptedSuggestions.map(acceptedSuggestion => {
-    let addedValues: SuggestionValue[] | undefined;
-    let removedValues: SuggestionValue[] | undefined;
+    let addedValues: string[] | undefined;
+    let removedValues: string[] | undefined;
 
     if (acceptedSuggestion.isChild) {
-      addedValues = acceptedSuggestion.suggestedValue
-        ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
-        : undefined;
-      removedValues = acceptedSuggestion.currentValue
-        ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
-        : undefined;
+      if (acceptedSuggestion.suggestedValue) {
+        const suggestedValue = acceptedSuggestion.suggestedValue;
+        if (
+          typeof suggestedValue === 'object' &&
+          suggestedValue !== null &&
+          'id' in suggestedValue
+        ) {
+          addedValues = [suggestedValue.id];
+        } else if (typeof suggestedValue === 'string' || typeof suggestedValue === 'number') {
+          addedValues = [String(suggestedValue)];
+        }
+      }
+
+      if (acceptedSuggestion.currentValue) {
+        const currentValue = acceptedSuggestion.currentValue;
+        if (typeof currentValue === 'object' && currentValue !== null && 'id' in currentValue) {
+          removedValues = [currentValue.id];
+        } else if (typeof currentValue === 'string' || typeof currentValue === 'number') {
+          removedValues = [String(currentValue)];
+        }
+      }
     }
 
     return {

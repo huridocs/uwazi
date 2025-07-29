@@ -1,20 +1,21 @@
 /* eslint-disable max-statements */
+import { SuggestionOptionValue } from 'shared/types/suggestionType';
 import { getSuggestionState, SuggestionValues } from '../getIXSuggestionState';
 
 describe('getIXSuggestionState', () => {
   describe('getSuggestionState', () => {
-    it('should mark when suggestedValue, labeledValue and currentValue are empty', () => {
-      const values: SuggestionValues = {
-        currentValue: '',
-        date: 1234,
-        suggestedValue: '',
-        obsolete: false,
-        error: '',
-        segment: '',
-        status: 'ready',
-      };
+    const emptySuggestion: SuggestionValues = {
+      currentValue: '',
+      date: 1234,
+      suggestedValue: '',
+      obsolete: false,
+      error: '',
+      segment: null,
+      status: null,
+    };
 
-      const state = getSuggestionState(values, 'text');
+    it('should mark when suggestedValue, labeledValue and currentValue are empty', () => {
+      const state = getSuggestionState(emptySuggestion, 'text');
 
       expect(state).toEqual({
         labeled: false,
@@ -30,11 +31,8 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when labeledValue has value and suggestedValue is empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'Some value',
-        date: 1234,
-        suggestedValue: '',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -55,11 +53,8 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when currentValue has value and suggestedValue, labeledValue are empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'some value',
-        date: 1234,
-        suggestedValue: '',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -80,13 +75,11 @@ describe('getIXSuggestionState', () => {
 
     it('should mark error when error is not empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'some value',
-        date: 1234,
         error: 'some error occurred',
-        obsolete: false,
         segment: '',
         status: 'error',
-        suggestedValue: '',
       };
 
       const state = getSuggestionState(values, 'text');
@@ -105,11 +98,9 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when currentValue = suggestedValue, labeledValue is not empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'some label value',
-        date: 1234,
         suggestedValue: 'some label value',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -130,11 +121,9 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when currentValue = suggestedValue, labeledValue are empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'some value',
-        date: 1234,
         suggestedValue: 'some value',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -155,11 +144,9 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when currentValue != suggestedValue, labeledValue is empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'some other value',
-        date: 1234,
         suggestedValue: 'some value',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -180,11 +167,9 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when currentValue != suggestedValue, labeledValue is not empty', () => {
       const values: SuggestionValues = {
+        ...emptySuggestion,
         currentValue: 'some other value',
-        date: 1234,
         suggestedValue: 'some value',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -205,11 +190,8 @@ describe('getIXSuggestionState', () => {
 
     it('should mark when currentValue != suggestedValue, labeledValue is empty', () => {
       const values: SuggestionValues = {
-        currentValue: '',
-        date: 1234,
+        ...emptySuggestion,
         suggestedValue: 'some value',
-        error: '',
-        obsolete: false,
         segment: '',
         status: 'ready',
       };
@@ -230,11 +212,9 @@ describe('getIXSuggestionState', () => {
 
     it('should mark obsolete when modelCreationDate < date', () => {
       const values: SuggestionValues = {
-        currentValue: '',
-        date: 1234,
+        ...emptySuggestion,
         suggestedValue: 'some value',
         obsolete: true,
-        error: '',
         segment: '',
         status: 'ready',
       };
@@ -255,12 +235,9 @@ describe('getIXSuggestionState', () => {
 
     it('should mark processing when status is processing and set obsolete as true', () => {
       const values: SuggestionValues = {
-        currentValue: '',
-        date: 1234,
+        ...emptySuggestion,
         suggestedValue: 'some value',
         status: 'processing',
-        error: '',
-        obsolete: false,
         segment: '',
       };
 
@@ -274,6 +251,143 @@ describe('getIXSuggestionState', () => {
         hasContext: false,
         obsolete: true,
         processing: true,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with matching IDs for multiselect', () => {
+      const values: SuggestionValues = {
+        ...emptySuggestion,
+        currentValue: ['value1', 'value2'],
+        suggestedValue: <SuggestionOptionValue[]>[
+          { id: 'value1', label: 'Label 1' },
+          { id: 'value2', label: 'Label 2' },
+        ],
+      };
+
+      const state = getSuggestionState(values, 'multiselect');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark no match when suggestedValue contains objects with non-matching IDs for multiselect', () => {
+      const values: SuggestionValues = {
+        ...emptySuggestion,
+        currentValue: ['value1', 'value3'],
+        suggestedValue: <SuggestionOptionValue[]>[
+          { id: 'value1', label: 'Label 1' },
+          { id: 'value2', label: 'Label 2' },
+        ],
+      };
+
+      const state = getSuggestionState(values, 'multiselect');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with matching ID for select', () => {
+      const values: SuggestionValues = {
+        ...emptySuggestion,
+        currentValue: 'value1',
+        suggestedValue: <SuggestionOptionValue[]>[{ id: 'value1', label: 'Label 1' }],
+      };
+
+      const state = getSuggestionState(values, 'select');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark no match when suggestedValue contains objects with non-matching ID for select', () => {
+      const values: SuggestionValues = {
+        ...emptySuggestion,
+        currentValue: 'value2',
+        suggestedValue: <SuggestionOptionValue[]>[{ id: 'value1', label: 'Label 1' }],
+      };
+
+      const state = getSuggestionState(values, 'select');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with segment_text and matching ID for select', () => {
+      const values: SuggestionValues = {
+        ...emptySuggestion,
+        currentValue: 'value1',
+        suggestedValue: <SuggestionOptionValue[]>[
+          { id: 'value1', label: 'Label 1', segment: 'context for value1' },
+        ],
+      };
+
+      const state = getSuggestionState(values, 'select');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark match when suggestedValue contains objects with segment_text and matching IDs for multiselect', () => {
+      const values: SuggestionValues = {
+        ...emptySuggestion,
+        currentValue: ['value1', 'value2'],
+        suggestedValue: <SuggestionOptionValue[]>[
+          { id: 'value1', label: 'Label 1', segment: 'context for value1' },
+          { id: 'value2', label: 'Label 2', segment: 'context for value2' },
+        ],
+      };
+
+      const state = getSuggestionState(values, 'multiselect');
+
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
         error: false,
       });
     });
