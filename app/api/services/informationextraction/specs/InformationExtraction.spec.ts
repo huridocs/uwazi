@@ -2088,21 +2088,27 @@ describe('InformationExtraction', () => {
             ...expectedBase,
             fileId: factory.id('F17'),
             entityId: 'A17',
-            suggestedValue: ['A'],
+            suggestedValue: [{ id: 'A', label: 'A' }],
             segment: 'it is A',
           },
           {
             ...expectedBase,
             fileId: factory.id('F18'),
             entityId: 'A18',
-            suggestedValue: ['B', 'C'],
+            suggestedValue: [
+              { id: 'B', label: 'B' },
+              { id: 'C', label: 'C' },
+            ],
             segment: 'it is B or C',
           },
           {
             ...expectedBase,
             fileId: factory.id('F19'),
             entityId: 'A19',
-            suggestedValue: ['A', 'C'],
+            suggestedValue: [
+              { id: 'A', label: 'A' },
+              { id: 'C', label: 'C' },
+            ],
             segment: 'it is A or C',
             state: {
               ...expectedBase.state,
@@ -2190,14 +2196,17 @@ describe('InformationExtraction', () => {
             ...expectedBase,
             fileId: factory.id('F21'),
             entityId: 'A21',
-            suggestedValue: ['P1sharedId'],
+            suggestedValue: [{ id: 'P1sharedId', label: 'P1' }],
             segment: 'it is P1',
           },
           {
             ...expectedBase,
             fileId: factory.id('F22'),
             entityId: 'A22',
-            suggestedValue: ['P1sharedId', 'P2sharedId'],
+            suggestedValue: [
+              { id: 'P1sharedId', label: 'P1' },
+              { id: 'P2sharedId', label: 'P2' },
+            ],
             segment: 'it is P1 or P2',
             state: {
               ...expectedBase.state,
@@ -2208,7 +2217,7 @@ describe('InformationExtraction', () => {
             ...expectedBase,
             fileId: factory.id('F23'),
             entityId: 'A23',
-            suggestedValue: ['P3sharedId'],
+            suggestedValue: [{ id: 'P3sharedId', label: 'P3' }],
             segment: 'it is P3',
             state: {
               ...expectedBase.state,

@@ -16,12 +16,12 @@ describe('Code editor', () => {
 
   it('should be able to edit', () => {
     mount(<HTMLEditor />);
-    cy.contains('<p>Subtitle or tagline goes here</p>').then(element => {
-      cy.wrap(element).click();
-      cy.wrap(element).focused().type('{ctrl}a');
-      cy.wrap(element).focused().type('{del}');
-    });
-
+    cy.get('div[role="code"]').should('exist');
+    cy.get('div[dir="ltr"]').should('exist');
+    cy.contains('<h1>Main Heading</h1>').should('exist');
+    cy.get('div[dir="ltr"]').click();
+    cy.get('body').type('{ctrl}a');
+    cy.get('body').type('{del}');
     cy.contains('<h1>Main Heading</h1>').should('not.exist');
   });
 
