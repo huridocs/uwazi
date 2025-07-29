@@ -5,8 +5,9 @@
 import * as translate from 'app/I18N/translateFunction';
 import { formatOptions } from '../../components/ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
-import { getAvailableSources } from '../helpers';
+import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';
 import { extractors, templates, templatesWithCommonProperties } from './fixtures';
+import { MultiValueSuggestion } from '../../types';
 
 describe('helpers', () => {
   describe('formatOptions', () => {
@@ -367,6 +368,459 @@ describe('helpers', () => {
         { label: 'Title', value: 'title', defaultChecked: false },
         { label: 'Opinión', value: 'opini_n', defaultChecked: false },
         { label: 'Descripción', value: 'descripcion', defaultChecked: true },
+      ]);
+    });
+  });
+
+  describe('generateChildrenRows', () => {
+    it('should generate child rows for multiselect with segment', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: [
+          { id: 'value1', label: 'Value 1', segment: 'context for value1' },
+          { id: 'value2', label: 'Value 2', segment: 'context for value2' },
+        ],
+        currentValue: ['value1', 'value3'],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: { id: 'value1', label: 'Value 1', segment: 'context for value1' },
+        currentValue: 'value1',
+        rowId: 'suggestion1-value1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: { id: 'value2', label: 'Value 2', segment: 'context for value2' },
+        currentValue: '',
+        rowId: 'suggestion1-value2',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'value3',
+        rowId: 'suggestion1-value3',
+        isChild: true,
+      });
+    });
+
+    it('should generate child rows for multiselect without segment', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: ['value1', 'value2'],
+        currentValue: ['value1', 'value3'],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'value1',
+        currentValue: 'value1',
+        rowId: 'suggestion1-value1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: 'value2',
+        currentValue: '',
+        rowId: 'suggestion1-value2',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'value3',
+        rowId: 'suggestion1-value3',
+        isChild: true,
+      });
+    });
+
+    it('should handle multiselect suggestions with suggestions as array of ids', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: ['value1', 'value2'],
+        currentValue: [''],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'value1',
+        currentValue: '',
+        rowId: 'suggestion1-value1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: 'value2',
+        currentValue: '',
+        rowId: 'suggestion1-value2',
+        isChild: true,
+      });
+    });
+  });
+
+  describe('formatAccepted', () => {
+    const createTestSuggestion = (overrides: any = {}) => ({
+      _id: 'suggestion1',
+      sharedId: 'shared1',
+      entityId: 'entity1',
+      isChild: true,
+      rowId: 'suggestion1',
+      extractorSource: { pdf: true },
+      date: 1234567890,
+      extractorId: 'extractor1',
+      entityTemplateId: 'template1',
+      fileId: 'file1',
+      entityTitle: 'Test Entity',
+      propertyName: 'testProperty',
+      segment: 'main segment',
+      language: 'en',
+      state: {
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      },
+      ...overrides,
+    });
+
+    it('should format accepted suggestions with object values (extracting IDs)', () => {
+      const acceptedSuggestions = [
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          isChild: true,
+          suggestedValue: { id: 'option1', label: 'Option 1', segment: 'segment1' },
+          currentValue: { id: 'option2', label: 'Option 2', segment: 'segment2' },
+          rowId: 'suggestion1',
+          extractorSource: { pdf: true },
+          date: 1234567890,
+          extractorId: 'extractor1',
+          entityTemplateId: 'template1',
+          fileId: 'file1',
+          entityTitle: 'Test Entity',
+          propertyName: 'testProperty',
+          segment: 'main segment',
+          language: 'en',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+        },
+        {
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          isChild: true,
+          suggestedValue: { id: 'option3', label: 'Option 3' },
+          currentValue: null,
+          rowId: 'suggestion2',
+          extractorSource: { pdf: true },
+          date: 1234567890,
+          extractorId: 'extractor1',
+          entityTemplateId: 'template1',
+          fileId: 'file1',
+          entityTitle: 'Test Entity',
+          propertyName: 'testProperty',
+          segment: 'main segment',
+          language: 'en',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+        },
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: ['option1'],
+          removedValues: ['option2'],
+        },
+        {
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          addedValues: ['option3'],
+          removedValues: undefined,
+        },
+      ]);
+    });
+
+    it('should format accepted suggestions with string values', () => {
+      const acceptedSuggestions = [
+        createTestSuggestion({
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          suggestedValue: 'option1',
+          currentValue: 'option2',
+        }),
+        createTestSuggestion({
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          suggestedValue: 'option3',
+          currentValue: null,
+        }),
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: ['option1'],
+          removedValues: ['option2'],
+        },
+        {
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          addedValues: ['option3'],
+          removedValues: undefined,
+        },
+      ]);
+    });
+
+    it('should format accepted suggestions with number values', () => {
+      const acceptedSuggestions = [
+        createTestSuggestion({
+          suggestedValue: 123,
+          currentValue: 456,
+        }),
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: ['123'],
+          removedValues: ['456'],
+        },
+      ]);
+    });
+
+    it('should handle non-child suggestions (should not process)', () => {
+      const acceptedSuggestions = [
+        createTestSuggestion({
+          isChild: false,
+          suggestedValue: { id: 'option1', label: 'Option 1' },
+          currentValue: { id: 'option2', label: 'Option 2' },
+        }),
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: undefined,
+          removedValues: undefined,
+        },
+      ]);
+    });
+
+    it('should handle null and undefined values', () => {
+      const acceptedSuggestions = [
+        createTestSuggestion({
+          suggestedValue: null,
+          currentValue: undefined,
+        }),
+        createTestSuggestion({
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          suggestedValue: undefined,
+          currentValue: null,
+        }),
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: undefined,
+          removedValues: undefined,
+        },
+        {
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          addedValues: undefined,
+          removedValues: undefined,
+        },
+      ]);
+    });
+
+    it('should handle mixed value types in the same array', () => {
+      const acceptedSuggestions = [
+        createTestSuggestion({
+          suggestedValue: { id: 'option1', label: 'Option 1' },
+          currentValue: 'stringValue',
+        }),
+        createTestSuggestion({
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          suggestedValue: 123,
+          currentValue: { id: 'option2', label: 'Option 2' },
+        }),
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: ['option1'],
+          removedValues: ['stringValue'],
+        },
+        {
+          _id: 'suggestion2',
+          sharedId: 'shared2',
+          entityId: 'entity2',
+          addedValues: ['123'],
+          removedValues: ['option2'],
+        },
+      ]);
+    });
+
+    it('should handle empty array of suggestions', () => {
+      const acceptedSuggestions: any[] = [];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should preserve all required fields in the output', () => {
+      const acceptedSuggestions = [
+        createTestSuggestion({
+          suggestedValue: { id: 'option1', label: 'Option 1' },
+          currentValue: { id: 'option2', label: 'Option 2' },
+        }),
+      ];
+
+      const result = formatAccepted(acceptedSuggestions);
+
+      expect(result).toEqual([
+        {
+          _id: 'suggestion1',
+          sharedId: 'shared1',
+          entityId: 'entity1',
+          addedValues: ['option1'],
+          removedValues: ['option2'],
+        },
       ]);
     });
   });

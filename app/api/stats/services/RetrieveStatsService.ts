@@ -39,18 +39,40 @@ export class RetrieveStatsService {
       .toArray();
 
     const dbStats = await this.db.stats();
-    const elasticIndex = await elastic.cat.indices({
-      pretty: true,
-      format: 'application/json',
-      bytes: 'b',
-      h: 'store.size',
-    });
 
-    const elasticSize = parseInt(elasticIndex.body[0]['store.size'], 10);
+    try {
+      const elasticIndex = await elastic.cat.indices({
+        pretty: true,
+        bytes: 'b',
+        h: 'store.size',
+      });
 
-    return {
-      total: (filesSize?.totalSize || this.NO_FILES_SIZE) + elasticSize + dbStats.storageSize,
-    };
+      let elasticSize = 0;
+
+      if (typeof elasticIndex.body === 'string') {
+        // Plain text response (Elasticsearch 8.x behavior)
+        const sizeStr = (elasticIndex.body as string).trim();
+        elasticSize = parseInt(sizeStr, 10);
+      } else if (
+        elasticIndex.body &&
+        Array.isArray(elasticIndex.body) &&
+        elasticIndex.body[0] &&
+        elasticIndex.body[0]['store.size']
+      ) {
+        // JSON response (Elasticsearch 7.x behavior)
+        elasticSize = parseInt(elasticIndex.body[0]['store.size'], 10);
+      } else {
+        elasticSize = 0;
+      }
+
+      return {
+        total: (filesSize?.totalSize || this.NO_FILES_SIZE) + elasticSize + dbStats.storageSize,
+      };
+    } catch (error) {
+      return {
+        total: (filesSize?.totalSize || this.NO_FILES_SIZE) + dbStats.storageSize,
+      };
+    }
   }
 
   private async calculateEntityStats() {
