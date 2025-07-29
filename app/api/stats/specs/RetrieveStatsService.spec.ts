@@ -60,7 +60,6 @@ describe('RetrieveStats', () => {
 
     expect(elasticMock).toHaveBeenCalledWith({
       pretty: true,
-      format: 'application/json',
       bytes: 'b',
       h: 'store.size',
     });
