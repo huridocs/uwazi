@@ -33,7 +33,7 @@ export default {
   ) => {
     const [current] = await model.get({ extractorId });
 
-    await model.save({
+    const updatedModel = await model.save({
       ...current,
       extractorId,
       findingSuggestions: true,
@@ -43,8 +43,7 @@ export default {
     });
 
     // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
-    // TEST!!!
-    await unsetFindSuggestionsData(current._id);
+    await unsetFindSuggestionsData(updatedModel._id);
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
     const [current] = await model.get({ extractorId });
