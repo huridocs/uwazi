@@ -60,7 +60,7 @@ const Basic: Story = {
         </ul>
       </div>
     ),
-    height: '',
+    maxHeight: '',
     defaultOpen: false,
   },
 };
