@@ -169,7 +169,7 @@ export default {
     template: TemplateSchema,
     language: string,
     reindex = true,
-    onTemplateProcessed: (error?:Error) => Promise<void> = async () => {}
+    onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
   ) {
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
@@ -329,7 +329,7 @@ export default {
       this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
         .then(async () => onTemplateProcessed())
         .then(async () => model.save({ _id: template._id, processing: false }))
-        .catch(async (error) => onTemplateProcessed(error));
+        .catch(async error => onTemplateProcessed(error));
     }
 
     await applicationEventsBus.emit(

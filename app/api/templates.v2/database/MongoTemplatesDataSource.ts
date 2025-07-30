@@ -9,6 +9,8 @@ import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './schemas/TemplateDBO';
 import { Template } from '../model/Template';
 import { TemplateMappers } from './TemplateMappers';
+import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { ObjectId } from 'mongodb';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -53,6 +55,38 @@ export class MongoTemplatesDataSource
           mapPropertyQuery(template.properties.query),
           MongoIdHandler.mapToApp(template._id),
           template.properties.denormalizedProperty
+        )
+    );
+  }
+
+  getV1RelationshipPropertiesByIds(propertyIds: string[]) {
+    const cursor = this.getCollection().aggregate([
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties.type': 'relationship',
+          'properties._id': { $in: propertyIds.map(id => new ObjectId(id)) },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
+        },
+      },
+    ]);
+
+    return new MongoResultSet(
+      cursor,
+      template =>
+        new V1RelationshipProperty(
+          template.properties._id,
+          template.properties.name,
+          template.properties.label,
+          template.properties.relationType,
+          template._id,
+          template.properties.content,
+          template.properties.inherit?.property
         )
     );
   }

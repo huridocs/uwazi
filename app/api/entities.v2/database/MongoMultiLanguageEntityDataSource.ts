@@ -54,6 +54,19 @@ export class MongoMultiLanguageEntityDataSource
     );
   }
 
+  async getSharedIdsByTemplateId(templateId: string) {
+    const cursor = this.getCollection().find(
+      {
+        language: 'en',
+        template: new ObjectId(templateId),
+      },
+      {
+        projection: { sharedId: 1 },
+      }
+    );
+    return new MongoResultSet(cursor, e => e.sharedId);
+  }
+
   async getEntitiesByTemplateId(templateId: string) {
     return this.getByQuery({ template: new ObjectId(templateId) });
   }

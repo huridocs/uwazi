@@ -2,11 +2,13 @@ import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
+import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 
 export interface TemplatesDataSource {
   getAll(): ResultSet<Template>;
   getAllTemplatesIds(): ResultSet<string>;
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
+  getV1RelationshipPropertiesByIds(ids?: string[]): ResultSet<V1RelationshipProperty>;
   getAllProperties(): ResultSet<Property>;
   getAllTextProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;

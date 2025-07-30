@@ -30,7 +30,7 @@
     "dev-server": "nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
-    "dev-queue": "node --no-experimental-fetch --inspect=9230 ./scripts/run.js ../app/queueWorker.ts",
+    "dev-queue": "node --no-experimental-fetch --max-old-space-size=512 --inspect=9230 ./scripts/run.js ../app/queueWorker.ts",
     "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
     "denormalize-all-entities": "tsx ./scripts/scripts.v2/denormalizeAllEntities.ts",
     "generateAutomaticTranslationConfig": "node --no-experimental-fetch ./scripts/run.js ../scripts/scripts.v2/generateAutomaticTranslationConfig.ts",

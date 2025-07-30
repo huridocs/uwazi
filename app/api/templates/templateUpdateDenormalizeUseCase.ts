@@ -2,46 +2,66 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { MultiLanguageEntity } from 'api/entities.v2/model/MultiLanguageEntity';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
+import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import {
+  UserAwareDispatchable,
+  UserAwareDispatchableParams,
+} from 'api/queue.v2/application/contracts/UserAwareDispatchable';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { Template } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { tenants } from 'api/tenants';
 import { cloneDeep } from 'lodash';
 
 type Input = {
-  entities: MultiLanguageEntity[];
+  entitiesIds: string[];
   language: string;
-  modifiedRelationshipsProps: V1RelationshipProperty[];
+  modifiedRelationshipsProps: string[];
 };
 
 type Output = any;
 
 type Dependencies = {
-  entitiesDS: MongoMultiLanguageEntityDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
+  templatesDS: TemplatesDataSource;
 };
 
-class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
+export class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute({ entities, language, modifiedRelationshipsProps }: Input) {
+  async execute({ entitiesIds, language, modifiedRelationshipsProps }: Input) {
+    const relationshipProps = await this.dependencies.templatesDS
+      .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
+      .all();
+
+    const entities = await (
+      await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
+    ).all();
+
     const relations = new RelationsV1Collection(
       await this.dependencies.relationshipsV1DS.getByEntitySharedIds(entities.map(e => e.sharedId))
     );
 
     const modifiedEntities = cloneDeep(entities).map(e =>
-      e.createMetadataValuesFromRelationships(modifiedRelationshipsProps, relations)
+      e.createMetadataValuesFromRelationships(relationshipProps, relations)
     );
 
     const relatedEntities = await (
       await this.dependencies.entitiesDS.getEntitiesByRelatedProperties(
         modifiedEntities,
-        modifiedRelationshipsProps
+        relationshipProps
       )
     ).indexed(e => e.sharedId);
 
@@ -57,9 +77,35 @@ class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
       )
     );
 
-    await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, modifiedRelationshipsProps);
+    await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, relationshipProps);
   }
 }
+
+type DenormalizeV1RelationshipsJobParams = UserAwareDispatchableParams & {
+  entitiesIds: string[];
+  language: string;
+  modifiedRelationshipsProps: string[];
+};
+
+type JobDependencies = {
+  useCase: DenormalizeAfterTemplateUpdate;
+};
+
+export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<DenormalizeV1RelationshipsJobParams> {
+  public constructor(private dependencies: JobDependencies) {
+    super();
+  }
+
+  async handle() {
+    await this.dependencies.useCase.execute({
+      entitiesIds: this.params.entitiesIds,
+      language: this.params.language,
+      modifiedRelationshipsProps: this.params.modifiedRelationshipsProps,
+    });
+  }
+}
+
+export { PXCreateParagraphsJob };
 
 export const denormalizeTemplateEntities = async (
   template: Template,
@@ -74,22 +120,39 @@ export const denormalizeTemplateEntities = async (
     DefaultTemplatesDataSource(transactionManager)
   );
   const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
 
-  const resultSet = await entitiesDS.getEntitiesByTemplateId(template.id);
+  const resultSet = await entitiesDS.getSharedIdsByTemplateId(template.id);
 
   const useCase = new DenormalizeAfterTemplateUpdate({
     entitiesDS,
     relationshipsV1DS,
+    templatesDS,
   });
+
+  let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
+    DenormalizeV1RelationshipsJob: async () => new DenormalizeV1RelationshipsJob({ useCase }),
+  });
+
+  if (process.env.NODE_ENV !== 'test') {
+    dispatcher = await DefaultDispatcher(tenants.current().name);
+  }
+
+  const userId = permissionsContext.getUserInContext()?._id?.toString();
+  if (!userId) {
+    throw new Error('This process can not be started without a user');
+  }
 
   // eslint-disable-next-line no-await-in-loop
   while (await resultSet.hasNext()) {
     // eslint-disable-next-line no-await-in-loop
-    await useCase.execute({
+    await dispatcher.dispatch(DenormalizeV1RelationshipsJob, {
       // eslint-disable-next-line no-await-in-loop
-      entities: await resultSet.nextBatch(limit),
+      entitiesIds: await resultSet.nextBatch(limit),
       language,
-      modifiedRelationshipsProps,
+      modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
+      tenantName: tenants.current().name,
+      userId,
     });
   }
 };
