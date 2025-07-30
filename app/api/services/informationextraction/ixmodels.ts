@@ -73,7 +73,6 @@ export default {
     });
 
     // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
-    // TEST!!!
     await unsetFindSuggestionsData(current._id);
   },
   unsetFindSuggestionsData,
