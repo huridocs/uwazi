@@ -97,6 +97,15 @@ export const IXSuggestionStateSchema = {
   ],
 };
 
+export const IXSuggestionsModelDataSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'IXSuggestionsModelData',
+  properties: {
+    findSuggestionsRunTimestamp: { type: 'number' },
+  },
+};
+
 export const suggestionOptionValueSchema = {
   type: 'object',
   title: 'SuggestionOptionValue',
@@ -151,6 +160,7 @@ export const IXSuggestionSchema = {
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     state: IXSuggestionStateSchema,
     date: { type: 'number' },
+    modelData: IXSuggestionsModelDataSchema,
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
     trainingSample: { type: 'boolean' },

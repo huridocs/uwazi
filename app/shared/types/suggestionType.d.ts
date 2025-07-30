@@ -71,6 +71,7 @@ export interface IXSuggestionType {
   status?: 'processing' | 'failed' | 'ready';
   state?: IXSuggestionStateType;
   date?: number;
+  modelData?: IXSuggestionsModelData;
   error?: string;
   selectionRectangles?: {
     top: number;
@@ -93,6 +94,10 @@ export interface IXSuggestionStateType {
   obsolete: boolean;
   processing: boolean;
   error: boolean;
+}
+
+export interface IXSuggestionsModelData {
+  findSuggestionsRunTimestamp?: number;
 }
 
 export interface IXSuggestionsQuery {
