@@ -423,9 +423,51 @@ describe('formatSuggestion', () => {
       entities.text,
       successMessage
     );
+
     expect(result).toEqual({
       ...currentSuggestions.text,
       date: expect.any(Number),
+      suggestedValue: 'recommended_value',
+      segment: 'new context',
+      selectionRectangles: [
+        {
+          top: 0,
+          left: 0,
+          width: 0,
+          height: 0,
+          page: '1',
+        },
+      ],
+    });
+  });
+
+  it('should keep model-specific properties', async () => {
+    const property = properties.text;
+    const currentSuggestion = {
+      ...currentSuggestions.text,
+      modelData: {
+        findSuggestionsRunTimestamp: 1234,
+      },
+    };
+
+    const rawSuggestion = {
+      ...validRawSuggestions.text,
+      extra: 'extra',
+    };
+    const result = await formatSuggestionFacade.formatSuggestionPdfSource(
+      property,
+      rawSuggestion,
+      currentSuggestion,
+      entities.text,
+      successMessage
+    );
+
+    expect(result).toEqual({
+      ...currentSuggestions.text,
+      date: expect.any(Number),
+      modelData: {
+        findSuggestionsRunTimestamp: 1234,
+      },
       suggestedValue: 'recommended_value',
       segment: 'new context',
       selectionRectangles: [

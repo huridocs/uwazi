@@ -16,6 +16,7 @@ import {
 import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
+import { FindSuggestionsForIds } from './useCases/FindSuggestionsForIds';
 
 const IX = new InformationExtraction();
 
@@ -34,6 +35,21 @@ function extractorIdRequestValidation(root = 'body') {
     },
   });
 }
+
+const findSuggestionsRequestValidation = validateAndCoerceRequest({
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['extractorId', 'sharedIds'],
+      properties: {
+        extractorId: { type: 'string' },
+        sharedIds: { type: 'array', items: { type: 'string' } },
+      },
+    },
+  },
+});
 
 export const suggestionsRoutes = (app: Application) => {
   app.get(
@@ -147,6 +163,22 @@ export const suggestionsRoutes = (app: Application) => {
     async (req, res, _next) => {
       const output = await IX.testModel(ObjectId.createFromHexString(req.body.extractorId));
 
+      res.status(202).json(output);
+    }
+  );
+
+  app.post(
+    '/api/suggestions/find',
+    serviceMiddleware,
+    needsAuthorization(['admin', 'editor']),
+    findSuggestionsRequestValidation,
+    async (req, res, _next) => {
+      const { extractorId, sharedIds } = req.body;
+      const findSuggestionsForIds = new FindSuggestionsForIds(IX);
+      const output = await findSuggestionsForIds.execute({
+        extractorId: ObjectId.createFromHexString(extractorId),
+        sharedIds,
+      });
       res.status(202).json(output);
     }
   );

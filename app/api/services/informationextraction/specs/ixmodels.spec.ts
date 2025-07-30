@@ -3,6 +3,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import { ModelStatus } from 'shared/types/IXModelSchema';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import ixmodels from '../ixmodels';
 
 expect.extend({ toHaveBeenCalledBefore });
@@ -10,11 +11,22 @@ expect.extend({ toHaveBeenCalledBefore });
 const fixtureFactory = getFixturesFactory();
 
 describe('save()', () => {
+  const fixtures = {
+    settings: [{ languages: [{ default: true, label: 'English', key: 'en' as LanguageISO6391 }] }],
+    ixextractors: [fixtureFactory.ixExtractor('extractor', 'target_text', ['template'])],
+  };
+
+  const model = fixtureFactory.ixModel('model', 'extractor');
+  model.findSuggestionsRunTimestamp = 1;
+  model.findSuggestionsSharedIds = ['entity1', 'entity2'];
+
+  const fixturesWithModel = {
+    ...fixtures,
+    ixmodels: [model],
+  };
+
   beforeAll(async () => {
-    await testingEnvironment.setUp({
-      settings: [{ languages: [{ default: true, label: 'English', key: 'en' }] }],
-      ixextractors: [fixtureFactory.ixExtractor('extractor', 'target_text', ['template'])],
-    });
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
@@ -43,22 +55,43 @@ describe('save()', () => {
     setSpy.mockRestore();
   });
 
-  it('should call markSuggestionsWithoutSegmentation on saving a ready model', async () => {
-    const setSpySetObsolete = jest.spyOn(Suggestions, 'setObsolete');
+  describe('additional methods', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixturesWithModel);
+    });
+    describe('startTraining', () => {
+      // TODO: test that the model is updated with the new values
+      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+        await ixmodels.startTraining(fixtureFactory.id('extractor'));
 
-    await ixmodels.save({
-      extractorId: fixtureFactory.id('extractor'),
-      creationDate: 5,
-      status: ModelStatus.processing,
+        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+
+        expect(updatedModel.findSuggestionsRunTimestamp).toBeUndefined();
+        expect(updatedModel.findSuggestionsSharedIds).toBeUndefined();
+      });
     });
 
-    await ixmodels.save({
-      extractorId: fixtureFactory.id('extractor'),
-      creationDate: 5,
-      status: ModelStatus.ready,
+    describe('stopTraining', () => {
+      // TODO: test that the model is updated with the new values
+      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+        await ixmodels.stopTraining(fixtureFactory.id('extractor'));
+
+        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+
+        expect(updatedModel.findSuggestionsRunTimestamp).toBeUndefined();
+        expect(updatedModel.findSuggestionsSharedIds).toBeUndefined();
+      });
     });
 
-    expect(setSpySetObsolete).toHaveBeenCalledWith({ extractorId: fixtureFactory.id('extractor') });
-    setSpySetObsolete.mockRestore();
+    describe('unsetFindSuggestionsData', () => {
+      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+        await ixmodels.unsetFindSuggestionsData(model._id!);
+
+        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+
+        expect(updatedModel.findSuggestionsRunTimestamp).toBeUndefined();
+        expect(updatedModel.findSuggestionsSharedIds).toBeUndefined();
+      });
+    });
   });
 });
