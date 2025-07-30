@@ -18,6 +18,7 @@ export { FileIcon } from './FileIcon';
 export { NeedAuthorization } from './NeedAuthorization';
 export { ConfirmNavigationModal } from './ConfirmNavigationModal';
 export { Truncate } from './Truncate';
+export { VerticalDrawer } from './VerticalDrawer';
 
 export type { PillColor } from './Pill';
 export type { TableProps, TableRow } from './Table';

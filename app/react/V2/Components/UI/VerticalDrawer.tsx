@@ -22,9 +22,7 @@ const VerticalDrawer = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <div>{title}</div>
-        </div>
+        <div className="flex-1">{title}</div>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -41,7 +39,7 @@ const VerticalDrawer = ({
         </div>
       </div>
 
-      {isOpen && <div className={maxHeight}>{children}</div>}
+      {isOpen && <div className={`${maxHeight} overflow-y-auto`}>{children}</div>}
     </div>
   );
 };
