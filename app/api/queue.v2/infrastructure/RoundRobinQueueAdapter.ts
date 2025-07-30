@@ -26,6 +26,8 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   }
 
   async pickJob(queueName: string): Promise<Job | null> {
+    await this.markExceededRetryJobsAsFailed(queueName);
+
     const result = await this.findAndUpdateJob(queueName, this.latestTenants);
     let job: Job | null = null;
     if (result) {

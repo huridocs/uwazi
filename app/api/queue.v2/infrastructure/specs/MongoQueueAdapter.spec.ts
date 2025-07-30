@@ -302,4 +302,46 @@ describe('Failed Jobs', () => {
       'Failed to mark job as failed'
     );
   });
+
+  it('should automatically mark jobs that exceed maxRetries as failed when picking jobs', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    const exceededRetryJob = {
+      _id: new ObjectId(),
+      queue: 'queue name',
+      name: 'exceeded retry job',
+      params: {},
+      namespace: 'namespace',
+      lockedUntil: 0,
+      createdAt: NOW_VALUE,
+      retryCount: 5, // Exceeds maxRetries of 3
+      failed: false,
+      options: {
+        lockWindow: 1000,
+        maxRetries: 3,
+      },
+    };
+
+    await testingDB.mongodb?.collection('jobs').insertOne(exceededRetryJob);
+
+    await adapter.pickJob('queue name');
+
+    const mainJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
+    const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+
+    expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
+    expect(failedJobs!).toHaveLength(1);
+    expect(failedJobs![0]).toMatchObject({
+      queue: 'queue name',
+      name: 'exceeded retry job',
+      retryCount: 5,
+      failed: true,
+      options: {
+        lockWindow: 1000,
+        maxRetries: 3,
+      },
+    });
+  });
 });
