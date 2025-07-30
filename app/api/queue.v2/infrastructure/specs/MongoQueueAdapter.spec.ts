@@ -410,15 +410,15 @@ describe('Failed Jobs', () => {
     // All exceeded retry jobs should be moved to failed jobs collection
     expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
     expect(failedJobs!).toHaveLength(3);
-    
+
     // Verify all jobs are in failed collection with correct failed status
     const failedJobNames = failedJobs!.map(job => job.name).sort();
     expect(failedJobNames).toEqual([
       'exceeded retry job 1',
-      'exceeded retry job 2', 
-      'exceeded retry job 3'
+      'exceeded retry job 2',
+      'exceeded retry job 3',
     ]);
-    
+
     // Verify all jobs have failed: true
     failedJobs!.forEach(job => {
       expect(job.failed).toBe(true);
