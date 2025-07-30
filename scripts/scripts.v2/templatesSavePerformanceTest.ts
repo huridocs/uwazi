@@ -342,6 +342,7 @@ async function runTest(numberOfEntities: number) {
           },
           'en',
           true,
+          false,
           async error => {
             if (error) {
               reject(error);

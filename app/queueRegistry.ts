@@ -129,6 +129,7 @@ export function registerJobs(
     const transactionManager = DefaultTransactionManager();
 
     return new DenormalizeV1RelationshipsJob({
+      templatesDS: DefaultTemplatesDataSource(transactionManager),
       useCase: new DenormalizeAfterTemplateUpdate({
         entitiesDS: new MongoMultiLanguageEntityDataSource(
           getConnection(),

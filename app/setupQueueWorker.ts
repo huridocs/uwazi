@@ -1,6 +1,8 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
 import { config } from 'api/config';
+import { registerEventListeners } from 'api/eventListeners';
+import { applicationEventsBus } from 'api/eventsbus';
 import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
 import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';
 import { SystemLogger, withFeature } from 'api/log.v2/infrastructure/StandardLogger';
@@ -10,13 +12,11 @@ import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { RoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { QueueWorker, QueueWorkerErrorHandler } from 'api/queue.v2/infrastructure/QueueWorker';
+import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { tenants } from 'api/tenants';
 import { prettifyError } from 'api/utils/handleError';
-import { setupWorkerSockets } from 'api/socketio/setupSockets';
-import { registerEventListeners } from 'api/eventListeners';
-import { applicationEventsBus } from 'api/eventsbus';
-import { registerJobs } from './queueRegistry';
 import { initSentry } from './initSentry';
+import { registerJobs } from './queueRegistry';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -73,6 +73,7 @@ export function setupQueueWorker(props?: Props) {
 
   if (standAloneProcess) {
     initSentry();
+    setupWorkerSockets();
   }
 
   logger.info('Starting worker');

@@ -9,7 +9,7 @@ import { applicationEventsBus } from 'api/eventsbus';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import { search } from 'api/search';
-import { updateMapping } from 'api/search/entitiesIndex';
+import { reindexAll, updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
 import { tenants } from 'api/tenants';
@@ -36,6 +36,16 @@ import {
 } from './utils';
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
+import templates from '.';
+
+const reindexAllTemplates = async (fullReindex: boolean) => {
+  const allTemplates = await templates.get();
+  if (fullReindex) {
+    return reindexAll(allTemplates, search);
+  }
+
+  return Promise.resolve();
+};
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -169,6 +179,7 @@ export default {
     template: TemplateSchema,
     language: string,
     reindex = true,
+    fullReindex = false,
     onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
   ) {
     template.properties = template.properties || [];
@@ -181,12 +192,12 @@ export default {
 
     await this.swapNamesValidation(mappedTemplate);
 
-    if (reindex) {
+    if (reindex && !fullReindex) {
       await updateMapping([mappedTemplate]);
     }
 
     return mappedTemplate._id
-      ? this._update(mappedTemplate, language, reindex, onTemplateProcessed)
+      ? this._update(mappedTemplate, language, reindex, fullReindex, onTemplateProcessed)
       : _save(mappedTemplate);
   },
 
@@ -263,17 +274,20 @@ export default {
         50,
         reindex
       );
+      return true;
     }
 
     if (reindex) {
       await search.indexEntities({ template: template._id });
     }
+    return false;
   },
 
   async _update(
     template: TemplateSchema,
     language: string,
     _reindex = true,
+    fullReindex = false,
     onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
   ) {
     const templateStructureChanges = await checkIfReindex(template);
@@ -300,7 +314,7 @@ export default {
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     }
 
-    await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    const newGeneratedIdProps = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     if (
       templateStructureChanges &&
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
@@ -326,9 +340,17 @@ export default {
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
-        .then(async () => onTemplateProcessed())
-        .then(async () => model.save({ _id: template._id, processing: false }))
+      reindexAllTemplates(fullReindex)
+        .then(async () =>
+          this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
+        )
+        .then(async denormalizationExecuted => {
+          if (!denormalizationExecuted) {
+            await onTemplateProcessed().then(async () =>
+              model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } })
+            );
+          }
+        })
         .catch(async error => onTemplateProcessed(error));
     }
 

@@ -1,16 +1,16 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
+import { Template } from '../model/Template';
+import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './schemas/TemplateDBO';
-import { Template } from '../model/Template';
 import { TemplateMappers } from './TemplateMappers';
-import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
-import { ObjectId } from 'mongodb';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -185,4 +185,29 @@ export class MongoTemplatesDataSource
   async getById(id: Template['id']): Promise<Template | undefined> {
     return (await this.getByIds([id]).first()) || undefined;
   }
+
+  // Proof of concept
+  async updateDenormalizationProcess(id: Template['id']) {
+    const result = await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $inc: { completedJobs: 1 } },
+      { returnDocument: 'after' }
+    );
+    return { total: result.totalJobs, completed: result.completedJobs };
+  }
+
+  async updateDenormalizationTotalJobs(id: Template['id']) {
+    await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $inc: { totalJobs: 1 } }
+    );
+  }
+
+  async completeProcessing(templateId: string) {
+    await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(templateId) },
+      { $unset: { totalJobs: true, completedJobs: true, processing: true } }
+    );
+  }
+  // Proof of concept
 }

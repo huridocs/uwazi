@@ -5,6 +5,7 @@ import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fiel
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
+import * as setupSockets from 'api/socketio/setupSockets';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { EntitySchema } from 'shared/types/entityType';
@@ -55,12 +56,13 @@ async function updateTemplate(template: TemplateSchema, featureFlag: boolean) {
     return templates.save(template, 'en');
   }
   return new Promise<void>((resolve, reject) => {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => resolve());
     templates
-      .save(template, 'en', true, async error => {
+      .save(template, 'en', true, false, async error => {
         if (error) {
           reject(error);
         }
-        return resolve();
+        resolve();
       })
       .catch(reject);
   });
@@ -686,10 +688,7 @@ describe('templates save', () => {
         propertyWithNameChanged,
       ]);
 
-      await new Promise<void>(resolve => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        templates.save(template, 'en', true, async () => resolve());
-      });
+      await updateTemplate(template, true);
 
       await expect(updateTemplate(modifiedTemplate, true)).resolves.not.toThrow();
     });

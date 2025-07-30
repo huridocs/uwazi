@@ -17,6 +17,7 @@ import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
+import { emitToTenant } from 'api/socketio/setupSockets';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { Template } from 'api/templates.v2/model/Template';
@@ -83,12 +84,14 @@ export class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
 
 type DenormalizeV1RelationshipsJobParams = UserAwareDispatchableParams & {
   entitiesIds: string[];
+  templateId: string;
   language: string;
   modifiedRelationshipsProps: string[];
 };
 
 type JobDependencies = {
   useCase: DenormalizeAfterTemplateUpdate;
+  templatesDS: TemplatesDataSource;
 };
 
 export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<DenormalizeV1RelationshipsJobParams> {
@@ -102,6 +105,14 @@ export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<Denorma
       language: this.params.language,
       modifiedRelationshipsProps: this.params.modifiedRelationshipsProps,
     });
+
+    const jobs = await this.dependencies.templatesDS.updateDenormalizationProcess(
+      this.params.templateId
+    );
+    if (jobs.total === jobs.completed) {
+      this.dependencies.templatesDS.completeProcessing(this.params.templateId);
+      emitToTenant(this.tenantName, 'templateProcessed', this.params.templateId);
+    }
   }
 }
 
@@ -131,7 +142,8 @@ export const denormalizeTemplateEntities = async (
   });
 
   let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
-    DenormalizeV1RelationshipsJob: async () => new DenormalizeV1RelationshipsJob({ useCase }),
+    DenormalizeV1RelationshipsJob: async () =>
+      new DenormalizeV1RelationshipsJob({ useCase, templatesDS }),
   });
 
   if (process.env.NODE_ENV !== 'test') {
@@ -146,9 +158,12 @@ export const denormalizeTemplateEntities = async (
   // eslint-disable-next-line no-await-in-loop
   while (await resultSet.hasNext()) {
     // eslint-disable-next-line no-await-in-loop
+    await templatesDS.updateDenormalizationTotalJobs(template.id);
+    // eslint-disable-next-line no-await-in-loop
     await dispatcher.dispatch(DenormalizeV1RelationshipsJob, {
       // eslint-disable-next-line no-await-in-loop
       entitiesIds: await resultSet.nextBatch(limit),
+      templateId: template.id,
       language,
       modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
       tenantName: tenants.current().name,

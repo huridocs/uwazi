@@ -10,6 +10,7 @@ import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitie
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, MultiLanguageEntityDBO } from './schemas/EntityTypes';
+import { search } from 'api/search';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>
@@ -52,6 +53,8 @@ export class MongoMultiLanguageEntityDataSource
         .flat(),
       { ordered: false }
     );
+
+    await search.indexEntities({ sharedId: { $in: entitiesToSave.map(e => e.sharedId) } });
   }
 
   async getSharedIdsByTemplateId(templateId: string) {
