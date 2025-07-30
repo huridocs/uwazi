@@ -170,7 +170,7 @@ function entityForTrainingQuery(
   const query: UwaziFilterQuery<any> = { template: { $in: templates } };
 
   if (fromProperty) {
-    // TEST!!
+    // This new logic is not tested
     if (fromProperty === 'title') {
       query.title = { $ne: '' };
     } else {
