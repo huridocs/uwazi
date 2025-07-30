@@ -53,15 +53,18 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       })
       .toArray();
 
-    await Promise.all(
-      exceededRetryJobs.map(async jobDBO => {
-        const job: Job = {
-          ...jobDBO,
-          id: jobDBO._id.toHexString(),
-        };
-        return this.markJobAsFailed(job);
-      })
-    );
+    if (exceededRetryJobs.length === 0) {
+      return;
+    }
+
+    if (exceededRetryJobs.length > 0) {
+      await this.getCollection(this.failedJobsCollectionName).insertMany(
+        exceededRetryJobs.map(job => ({ ...job, failed: true }))
+      );
+
+      const jobIds = exceededRetryJobs.map(job => job._id);
+      await this.getCollection().deleteMany({ _id: { $in: jobIds } });
+    }
   }
 
   async pickJob(queueName: string): Promise<Job | null> {
