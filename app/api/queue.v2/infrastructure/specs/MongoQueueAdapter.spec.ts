@@ -344,4 +344,84 @@ describe('Failed Jobs', () => {
       },
     });
   });
+
+  it('should handle multiple exceeded retry jobs efficiently in batch operations', async () => {
+    const adapter = DefaultTestingQueueAdapter();
+    const NOW_VALUE = 1;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
+
+    // Create multiple jobs that have exceeded their maxRetries
+    const exceededRetryJobs = [
+      {
+        _id: new ObjectId(),
+        queue: 'queue name',
+        name: 'exceeded retry job 1',
+        params: {},
+        namespace: 'namespace1',
+        lockedUntil: 0,
+        createdAt: NOW_VALUE,
+        retryCount: 5, // Exceeds maxRetries of 3
+        failed: false,
+        options: {
+          lockWindow: 1000,
+          maxRetries: 3,
+        },
+      },
+      {
+        _id: new ObjectId(),
+        queue: 'queue name',
+        name: 'exceeded retry job 2',
+        params: {},
+        namespace: 'namespace2',
+        lockedUntil: 0,
+        createdAt: NOW_VALUE + 1,
+        retryCount: 6, // Exceeds maxRetries of 3
+        failed: false,
+        options: {
+          lockWindow: 1000,
+          maxRetries: 3,
+        },
+      },
+      {
+        _id: new ObjectId(),
+        queue: 'queue name',
+        name: 'exceeded retry job 3',
+        params: {},
+        namespace: 'namespace3',
+        lockedUntil: 0,
+        createdAt: NOW_VALUE + 2,
+        retryCount: 4, // Exceeds maxRetries of 3
+        failed: false,
+        options: {
+          lockWindow: 1000,
+          maxRetries: 3,
+        },
+      },
+    ];
+
+    await testingDB.mongodb?.collection('jobs').insertMany(exceededRetryJobs);
+
+    // Pick a job - this should trigger the batch check for exceeded retry jobs
+    await adapter.pickJob('queue name');
+
+    const mainJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
+    const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+
+    // All exceeded retry jobs should be moved to failed jobs collection
+    expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
+    expect(failedJobs!).toHaveLength(3);
+    
+    // Verify all jobs are in failed collection with correct failed status
+    const failedJobNames = failedJobs!.map(job => job.name).sort();
+    expect(failedJobNames).toEqual([
+      'exceeded retry job 1',
+      'exceeded retry job 2', 
+      'exceeded retry job 3'
+    ]);
+    
+    // Verify all jobs have failed: true
+    failedJobs!.forEach(job => {
+      expect(job.failed).toBe(true);
+    });
+  });
 });
