@@ -80,6 +80,7 @@ it('should only return non-locked jobs', async () => {
     retryCount: 0,
     options: {
       lockWindow: 1000,
+      maxRetries: 3,
     },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
@@ -105,6 +106,7 @@ it('should only return non-locked jobs', async () => {
     retryCount: 1,
     options: {
       lockWindow: 1000,
+      maxRetries: 3,
     },
   });
   expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([
@@ -131,6 +133,7 @@ it('should atomically get a job, lock it for 1000ms and increase retryCount by 1
     retryCount: 0,
     options: {
       lockWindow: 1000,
+      maxRetries: 3,
     },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
@@ -147,6 +150,7 @@ it('should atomically get a job, lock it for 1000ms and increase retryCount by 1
     retryCount: 1,
     options: {
       lockWindow: 1000,
+      maxRetries: 3,
     },
   });
 });
@@ -157,6 +161,11 @@ const job1 = {
   message: 'a simple message',
   lockedUntil: 0,
   createdAt: 1,
+  retryCount: 0,
+  options: {
+    lockWindow: 1000,
+    maxRetries: 3,
+  },
 };
 const job2 = {
   _id: new ObjectId(),
@@ -164,6 +173,11 @@ const job2 = {
   message: 'another simple message',
   lockedUntil: 0,
   createdAt: 2,
+  retryCount: 0,
+  options: {
+    lockWindow: 1000,
+    maxRetries: 3,
+  },
 };
 
 it.each([
@@ -303,48 +317,6 @@ describe('Failed Jobs', () => {
     );
   });
 
-  it('should automatically mark jobs that exceed maxRetries as failed when picking jobs', async () => {
-    const adapter = DefaultTestingQueueAdapter();
-    const NOW_VALUE = 1;
-    jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
-
-    const exceededRetryJob = {
-      _id: new ObjectId(),
-      queue: 'queue name',
-      name: 'exceeded retry job',
-      params: {},
-      namespace: 'namespace',
-      lockedUntil: 0,
-      createdAt: NOW_VALUE,
-      retryCount: 5, // Exceeds maxRetries of 3
-      failed: false,
-      options: {
-        lockWindow: 1000,
-        maxRetries: 3,
-      },
-    };
-
-    await testingDB.mongodb?.collection('jobs').insertOne(exceededRetryJob);
-
-    await adapter.pickJob('queue name');
-
-    const mainJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
-    const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
-
-    expect(mainJobs).toEqual([OTHER_QUEUE_JOB]);
-    expect(failedJobs!).toHaveLength(1);
-    expect(failedJobs![0]).toMatchObject({
-      queue: 'queue name',
-      name: 'exceeded retry job',
-      retryCount: 5,
-      failed: true,
-      options: {
-        lockWindow: 1000,
-        maxRetries: 3,
-      },
-    });
-  });
-
   it('should handle multiple exceeded retry jobs efficiently in batch operations', async () => {
     const adapter = DefaultTestingQueueAdapter();
     const NOW_VALUE = 1;
@@ -424,4 +396,72 @@ describe('Failed Jobs', () => {
       expect(job.failed).toBe(true);
     });
   });
+});
+
+it('should not pick jobs that have exceeded maxRetries', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  const NOW_VALUE = 1;
+  jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
+
+  // Create a job that has exceeded maxRetries
+  const exceededJob = {
+    _id: new ObjectId(),
+    queue: 'queue name',
+    name: 'exceeded job',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: 0,
+    retryCount: 3, // Already at maxRetries
+    failed: false,
+    options: {
+      lockWindow: 1000,
+      maxRetries: 3,
+    },
+  };
+
+  // Create a normal job that hasn't exceeded maxRetries
+  const normalJob = {
+    _id: new ObjectId(),
+    queue: 'queue name',
+    name: 'normal job',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: 0,
+    retryCount: 1, // Below maxRetries
+    failed: false,
+    options: {
+      lockWindow: 1000,
+      maxRetries: 3,
+    },
+  };
+
+  await testingDB.mongodb?.collection('jobs').insertMany([exceededJob, normalJob]);
+
+  const result = await adapter.pickJob('queue name');
+
+  // Should pick the normal job, not the exceeded job
+  expect(result).toEqual({
+    id: normalJob._id.toHexString(),
+    queue: 'queue name',
+    name: 'normal job',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: NOW_VALUE + 1000,
+    retryCount: 2, // Incremented from 1
+    failed: false,
+    options: {
+      lockWindow: 1000,
+      maxRetries: 3,
+    },
+  });
+
+  const remainingJobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
+  expect(remainingJobs!).toHaveLength(2); // OTHER_QUEUE_JOB + normalJob (updated) - exceeded job moved to failed
+
+  const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+  expect(failedJobs!).toHaveLength(1); // exceeded job should be in failed collection
+
+  const exceededJobAfter = failedJobs!.find(job => job.name === 'exceeded job');
+  expect(exceededJobAfter?.retryCount).toBe(3); // Should remain unchanged
+  expect(exceededJobAfter?.failed).toBe(true); // Should be marked as failed
 });

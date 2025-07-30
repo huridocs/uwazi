@@ -11,7 +11,12 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },
         namespace: { $nin: excludeTenants },
-        $or: [{ failed: false }, { failed: undefined }, { failed: { $exists: false } }],
+        $and: [
+          { $or: [{ failed: false }, { failed: undefined }, { failed: { $exists: false } }] },
+          {
+            $expr: { $lt: ['$retryCount', '$options.maxRetries'] },
+          },
+        ],
       },
       [
         {

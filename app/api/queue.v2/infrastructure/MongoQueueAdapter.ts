@@ -74,7 +74,12 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },
-        $or: [{ failed: false }, { failed: { $exists: false } }],
+        $and: [
+          { $or: [{ failed: false }, { failed: { $exists: false } }] },
+          {
+            $expr: { $lt: ['$retryCount', '$options.maxRetries'] },
+          },
+        ],
       },
       [
         {
