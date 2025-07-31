@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { emitToTenant } from 'api/socketio/setupSockets';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { storage } from 'api/files';
 import urljoin from 'url-join';
 import request from 'shared/JSONRequest';
@@ -49,14 +48,10 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
   async execute({ extractor }: Input): Promise<Output> {
     try {
-      const files = await getFilesForTraining(extractor?.templates, extractor?.property);
-      if (!files.length) {
-        throw new NoFilesForTraining();
-      }
-
+      const { process } = await getFilesForTraining(extractor);
       const processedEntityIds: string[] = [];
 
-      await ArrayUtils.runInBatches({ array: files, batchSize: 1 }, async file => {
+      await process(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -83,6 +78,10 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
         processedEntityIds.push(file.entity);
       });
+
+      if (!processedEntityIds.length) {
+        throw new NoFilesForTraining();
+      }
 
       await Suggestions.markSuggestionsAsTrainingSamples(
         processedEntityIds,
