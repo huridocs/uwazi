@@ -42,12 +42,44 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     });
   }
 
+  protected async markExceededRetryJobsAsFailed(queueName: string): Promise<void> {
+    const exceededRetryJobs = await this.getCollection()
+      .find({
+        queue: queueName,
+        retryCount: { $exists: true },
+        'options.maxRetries': { $exists: true },
+        $expr: { $gte: ['$retryCount', '$options.maxRetries'] },
+        $or: [{ failed: false }, { failed: { $exists: false } }],
+      })
+      .toArray();
+
+    if (exceededRetryJobs.length === 0) {
+      return;
+    }
+
+    if (exceededRetryJobs.length > 0) {
+      await this.getCollection(this.failedJobsCollectionName).insertMany(
+        exceededRetryJobs.map(job => ({ ...job, failed: true }))
+      );
+
+      const jobIds = exceededRetryJobs.map(job => job._id);
+      await this.getCollection().deleteMany({ _id: { $in: jobIds } });
+    }
+  }
+
   async pickJob(queueName: string): Promise<Job | null> {
+    await this.markExceededRetryJobsAsFailed(queueName);
+
     const result = await this.getCollection().findOneAndUpdate(
       {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },
-        $or: [{ failed: false }, { failed: { $exists: false } }],
+        $and: [
+          { $or: [{ failed: false }, { failed: { $exists: false } }] },
+          {
+            $expr: { $lt: ['$retryCount', '$options.maxRetries'] },
+          },
+        ],
       },
       [
         {
