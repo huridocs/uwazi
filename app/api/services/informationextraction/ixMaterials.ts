@@ -5,6 +5,7 @@
 import moment from 'moment';
 import {
   ExtractedMetadataSchema,
+  LanguageISO6391,
   ObjectIdSchema,
   PropertyTypeSchema,
 } from 'shared/types/commonTypes';
@@ -24,6 +25,7 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { PipelineBuilder } from 'api/suggestions/queryBuilder';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { ObjectId } from 'mongodb';
 import { Extractors } from './ixextractors';
 import { IXServices } from './IXServices';
 
@@ -309,7 +311,9 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       ],
     },
   });
-  pipeline.add({ $unwind: '$entityLanguage' });
+  pipeline.add({
+    $unwind: '$entityLanguage',
+  });
 
   pipeline.add({
     $lookup: {
@@ -334,7 +338,9 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       ],
     },
   });
-  pipeline.add({ $unwind: '$file' });
+  pipeline.add({
+    $unwind: '$file',
+  });
 
   pipeline.add({
     $lookup: {
@@ -348,18 +354,30 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       ],
     },
   });
-  pipeline.add({ $unwind: '$segmentation' });
+  pipeline.add({
+    $unwind: '$segmentation',
+  });
 
   const targetProperty = await IXServices.getTargetProperty({ extractor });
   const cursor = IXSuggestionsModel.db.aggregateCursor(pipeline.build()).cursor();
 
-  const process = async (callback: (item: any) => Promise<void>) => {
+  const process = async (
+    callback: (item: {
+      _id: ObjectId;
+      language: LanguageISO6391;
+      extractedMetadata: any;
+      entity: string;
+      segmentation: any;
+      propertyValue: any;
+      propertyType: PropertyTypeSchema;
+    }) => Promise<void>
+  ) => {
     await cursor.eachAsync(
       async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
         let propertyValue;
 
         if (propertyTypeIsWithoutExtractedMetadata(targetProperty.type)) {
-          propertyValue = entityLanguage.metadata.map(({ value, label }) => ({
+          propertyValue = entityLanguage.metadata.map(({ value, label }: any) => ({
             value: ensure<string>(value),
             label: ensure<string>(label),
           }));
@@ -372,11 +390,10 @@ async function getFilesForTraining(extractor: IXExtractorType) {
               .format('YYYY-MM-DD');
           }
         }
-
         const parsed = {
           _id: fileId,
           language,
-          extractedMetadata: file.extractedMetadata || [],
+          extractedMetadata: file?.extractedMetadata || [],
           entity: entityId,
           segmentation,
           propertyValue,

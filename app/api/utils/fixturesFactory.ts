@@ -222,16 +222,24 @@ function getFixturesFactory() {
       filename?: string | undefined,
       language: string = 'en',
       originalname: string | undefined = undefined,
-      extractedMetadata: ExtractedMetadataSchema[] = []
-    ): WithId<FileType> => ({
-      _id: idMapper(id),
-      entity,
-      language,
-      type,
-      filename: filename || id,
-      originalname: originalname || filename,
-      extractedMetadata,
-    }),
+      extractedMetadata: ExtractedMetadataSchema[] = [],
+      status: FileType['status'] = undefined
+    ): WithId<FileType> => {
+      const file: WithId<FileType> = {
+        _id: idMapper(id),
+        entity,
+        language,
+        type,
+        filename: filename || id,
+        originalname: originalname || filename,
+        extractedMetadata,
+      };
+
+      if (status) {
+        file.status = status;
+      }
+      return file;
+    },
 
     relationType: (name: string): { _id: ObjectId; name: string } => ({
       _id: idMapper(name),
