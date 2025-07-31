@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { TestingRoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';
@@ -87,6 +88,52 @@ describe('RoundRobinQueueAdapter', () => {
 
       const pickedJobs: string[] = await pickJobs(adapter);
       expect(pickedJobs).toEqual(['testTenant2', 'testTenant3', 'testTenant2']);
+    });
+
+    it('should automatically mark jobs that exceed maxRetries as failed when picking jobs', async () => {
+      adapter = TestingRoundRobinQueueAdapter();
+      const now = Date.now();
+
+      // Create a job that has exceeded its maxRetries by directly inserting it into the database
+      const exceededRetryJobData = {
+        _id: new ObjectId(),
+        queue: 'test-queue',
+        name: 'test-job',
+        params: {},
+        namespace: 'testTenant1',
+        lockedUntil: 0,
+        createdAt: now,
+        retryCount: 5, // Exceeds maxRetries of 3
+        failed: false,
+        options: {
+          lockWindow: 1000,
+          maxRetries: 3,
+        },
+      };
+
+      await testingDB.mongodb?.collection('jobs').insertOne(exceededRetryJobData);
+
+      await pushJobsForNamespaces(adapter, [
+        ['testTenant2', 2],
+        ['testTenant3', 1],
+      ]);
+
+      const pickedJobs: string[] = await pickJobs(adapter);
+
+      const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
+
+      expect(pickedJobs).toEqual(['testTenant2', 'testTenant3', 'testTenant2']);
+
+      expect(failedJobs!).toHaveLength(1);
+      expect(failedJobs![0]).toMatchObject({
+        namespace: 'testTenant1',
+        retryCount: 5,
+        failed: true,
+        options: {
+          lockWindow: 1000,
+          maxRetries: 3,
+        },
+      });
     });
   });
 

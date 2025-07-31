@@ -11,7 +11,12 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
         queue: queueName,
         lockedUntil: { $lt: Date.now() },
         namespace: { $nin: excludeTenants },
-        $or: [{ failed: false }, { failed: undefined }, { failed: { $exists: false } }],
+        $and: [
+          { $or: [{ failed: false }, { failed: undefined }, { failed: { $exists: false } }] },
+          {
+            $expr: { $lt: ['$retryCount', '$options.maxRetries'] },
+          },
+        ],
       },
       [
         {
@@ -26,6 +31,8 @@ export class RoundRobinMongoQueueAdapter extends MongoQueueAdapter {
   }
 
   async pickJob(queueName: string): Promise<Job | null> {
+    await this.markExceededRetryJobsAsFailed(queueName);
+
     const result = await this.findAndUpdateJob(queueName, this.latestTenants);
     let job: Job | null = null;
     if (result) {
