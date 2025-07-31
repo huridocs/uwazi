@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -180,5 +181,18 @@ class ExtractorNotFound extends Error {
   }
 }
 
+class ModelNotReadyError extends Error {
+  constructor(extractorId: string) {
+    super(`Model for extractor with ID ${extractorId} is not ready.`);
+  }
+}
+
 export type { AllowedPropertyTypes };
-export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed, ExtractorNotFound, Extractors };
+export {
+  ALLOWED_PROPERTY_TYPES,
+  typeIsAllowed,
+  checkTypeIsAllowed,
+  ExtractorNotFound,
+  ModelNotReadyError,
+  Extractors,
+};

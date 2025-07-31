@@ -186,28 +186,26 @@ export class MongoTemplatesDataSource
     return (await this.getByIds([id]).first()) || undefined;
   }
 
-  // Proof of concept
-  async updateDenormalizationProcess(id: Template['id']) {
+  async incrementProcessingTracking(id: Template['id']) {
     const result = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $inc: { completedJobs: 1 } },
+      { $inc: { 'processing.completedJobs': 1 } },
       { returnDocument: 'after' }
     );
     return { total: result.totalJobs, completed: result.completedJobs };
   }
 
-  async updateDenormalizationTotalJobs(id: Template['id']) {
+  async incrementProcessingTotalJobs(id: Template['id']) {
     await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $inc: { totalJobs: 1 } }
+      { $inc: { 'processing.totalJobs': 1 } }
     );
   }
 
   async completeProcessing(templateId: string) {
     await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(templateId) },
-      { $unset: { totalJobs: true, completedJobs: true, processing: true } }
+      { $unset: { processing: true } }
     );
   }
-  // Proof of concept
 }

@@ -16,6 +16,7 @@ export interface TemplatesDataSource {
   getByIds(ids: Template['id'][]): ResultSet<Template>;
   getByNames(names: Template['name'][]): ResultSet<Template>;
   getById(id: Template['id']): Promise<Template | undefined>;
-  updateDenormalizationProcess(id: Template['id']): Promise<{ total: number; completed: number }>;
-  updateDenormalizationTotalJobs(id: Template['id']): Promise<void>;
+  incrementProcessingTracking(id: Template['id']): Promise<{ total: number; completed: number }>;
+  incrementProcessingTotalJobs(id: Template['id']): Promise<void>;
+  completeProcessing(templateId: string): Promise<void>;
 }

@@ -29,6 +29,8 @@ type Input = {
   entitiesIds: string[];
   language: string;
   modifiedRelationshipsProps: string[];
+  templateId: string;
+  onAllEntitiesDenormalized: () => void;
 };
 
 type Output = any;
@@ -39,10 +41,16 @@ type Dependencies = {
   templatesDS: TemplatesDataSource;
 };
 
-export class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
+export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute({ entitiesIds, language, modifiedRelationshipsProps }: Input) {
+  async execute({
+    entitiesIds,
+    language,
+    modifiedRelationshipsProps,
+    templateId,
+    onAllEntitiesDenormalized,
+  }: Input) {
     const relationshipProps = await this.dependencies.templatesDS
       .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
       .all();
@@ -79,6 +87,11 @@ export class DenormalizeAfterTemplateUpdate implements UseCase<Input, Output> {
     );
 
     await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, relationshipProps);
+    const jobs = await this.dependencies.templatesDS.incrementProcessingTracking(templateId);
+    if (jobs.total === jobs.completed) {
+      await this.dependencies.templatesDS.completeProcessing(templateId);
+      onAllEntitiesDenormalized();
+    }
   }
 }
 
@@ -90,7 +103,7 @@ type DenormalizeV1RelationshipsJobParams = UserAwareDispatchableParams & {
 };
 
 type JobDependencies = {
-  useCase: DenormalizeAfterTemplateUpdate;
+  useCase: TemplateUpdateDenormalizeEntitiesBatch;
   templatesDS: TemplatesDataSource;
 };
 
@@ -104,15 +117,10 @@ export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<Denorma
       entitiesIds: this.params.entitiesIds,
       language: this.params.language,
       modifiedRelationshipsProps: this.params.modifiedRelationshipsProps,
+      templateId: this.params.templateId,
+      onAllEntitiesDenormalized: () =>
+        emitToTenant(this.tenantName, 'templateProcessed', this.params.templateId),
     });
-
-    const jobs = await this.dependencies.templatesDS.updateDenormalizationProcess(
-      this.params.templateId
-    );
-    if (jobs.total === jobs.completed) {
-      this.dependencies.templatesDS.completeProcessing(this.params.templateId);
-      emitToTenant(this.tenantName, 'templateProcessed', this.params.templateId);
-    }
   }
 }
 
@@ -135,7 +143,7 @@ export const denormalizeTemplateEntities = async (
 
   const resultSet = await entitiesDS.getSharedIdsByTemplateId(template.id);
 
-  const useCase = new DenormalizeAfterTemplateUpdate({
+  const useCase = new TemplateUpdateDenormalizeEntitiesBatch({
     entitiesDS,
     relationshipsV1DS,
     templatesDS,
@@ -158,7 +166,7 @@ export const denormalizeTemplateEntities = async (
   // eslint-disable-next-line no-await-in-loop
   while (await resultSet.hasNext()) {
     // eslint-disable-next-line no-await-in-loop
-    await templatesDS.updateDenormalizationTotalJobs(template.id);
+    await templatesDS.incrementProcessingTotalJobs(template.id);
     // eslint-disable-next-line no-await-in-loop
     await dispatcher.dispatch(DenormalizeV1RelationshipsJob, {
       // eslint-disable-next-line no-await-in-loop

@@ -23,7 +23,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import {
-  DenormalizeAfterTemplateUpdate,
+  TemplateUpdateDenormalizeEntitiesBatch,
   DenormalizeV1RelationshipsJob,
 } from 'api/templates/templateUpdateDenormalizeUseCase';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
@@ -130,7 +130,7 @@ export function registerJobs(
 
     return new DenormalizeV1RelationshipsJob({
       templatesDS: DefaultTemplatesDataSource(transactionManager),
-      useCase: new DenormalizeAfterTemplateUpdate({
+      useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: new MongoMultiLanguageEntityDataSource(
           getConnection(),
           transactionManager,

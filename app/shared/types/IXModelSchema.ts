@@ -20,6 +20,8 @@ export const IXModelSchema = {
     creationDate: { type: 'number' },
     status: { type: 'string', enum: Object.values(ModelStatus), default: ModelStatus.processing },
     findingSuggestions: { type: 'boolean', default: true },
+    findSuggestionsRunTimestamp: { type: 'number', optional: true },
+    findSuggestionsSharedIds: { type: 'array', items: { type: 'string' }, optional: true },
     testRun: { type: 'boolean' },
     testRunSuggestionsToFind: { type: 'number' },
     totalSuggestionsToFind: { type: 'number' },

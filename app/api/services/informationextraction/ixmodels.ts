@@ -10,6 +10,13 @@ type StartTrainingOptions = {
   testRun?: boolean;
 };
 
+const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
+  await model.updateMany(
+    { _id: ixModelId },
+    { $unset: { findSuggestionsRunTimestamp: '', findSuggestionsSharedIds: '' } }
+  );
+};
+
 export default {
   get: model.get.bind(model),
   delete: model.delete.bind(model),
@@ -26,7 +33,7 @@ export default {
   ) => {
     const [current] = await model.get({ extractorId });
 
-    await model.save({
+    const updatedModel = await model.save({
       ...current,
       extractorId,
       findingSuggestions: true,
@@ -34,6 +41,9 @@ export default {
       testRun,
       testRunSuggestionsToFind: TEST_RUN_SUGGESTIONS_SIZE,
     });
+
+    // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
+    await unsetFindSuggestionsData(updatedModel._id);
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
     const [current] = await model.get({ extractorId });
@@ -61,7 +71,12 @@ export default {
       findingSuggestions: false,
       status: ModelStatus.ready,
     });
+
+    // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
+    await unsetFindSuggestionsData(current._id);
   },
+  unsetFindSuggestionsData,
+  updateMany: model.updateMany.bind(model),
 };
 
 export { TEST_RUN_SUGGESTIONS_SIZE };

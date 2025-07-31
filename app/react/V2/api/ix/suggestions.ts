@@ -4,7 +4,6 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { IXSuggestionsQuery } from 'shared/types/suggestionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionValue } from 'app/V2/Routes/Settings/IX/types';
-import { socket } from 'app/socket';
 
 const get = async (
   parameters: {
@@ -50,34 +49,10 @@ const findSuggestions = async (extractorId: string, headers?: IncomingHttpHeader
   return response.json;
 };
 
-const findSelectedSuggestions = async (extractorId: string, suggestionIds: string[]) => {
-  /* TODO: Implement real API call
-  const params = new RequestParams({ extractorId, suggestionIds });
+const findSelectedSuggestions = async (extractorId: string, sharedIds: string[]) => {
+  const params = new RequestParams({ extractorId, sharedIds });
   const response = await api.post('suggestions/find', params);
   return response.json;
-  */
-
-  /**** FAKE IMPLEMENTATION ****/
-  //@ts-ignore
-  const callbacks = socket._callbacks.$ix_model_status;
-  if (callbacks?.length) {
-    setTimeout(() => {
-      callbacks[0](extractorId, 'processing_suggestions', '', {
-        processed: Math.floor(suggestionIds.length / 2),
-        total: suggestionIds.length,
-      });
-    }, 3000);
-
-    setTimeout(() => {
-      callbacks[0](extractorId, 'ready', '', {
-        processed: suggestionIds.length,
-        total: suggestionIds.length,
-      });
-    }, 8000);
-  }
-
-  return Promise.resolve({ success: true, data: [] });
-  /**** END FAKE IMPLEMENTATION ****/
 };
 
 const status = async (extractorId: string, headers?: IncomingHttpHeaders) => {

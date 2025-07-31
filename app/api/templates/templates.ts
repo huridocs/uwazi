@@ -37,6 +37,7 @@ import {
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
 import templates from '.';
+import { inspect } from 'util';
 
 const reindexAllTemplates = async (fullReindex: boolean) => {
   const allTemplates = await templates.get();
@@ -259,6 +260,7 @@ export default {
     const relationshipPropsWithChangedRelData =
       currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
 
+    let denormalizationExecuted = false;
     const newRelationshipProps = currentTemplateV2
       .selectNewProperties(newTemplate)
       .filter(p => p.type === 'relationship');
@@ -274,13 +276,13 @@ export default {
         50,
         reindex
       );
-      return true;
+      denormalizationExecuted = true;
     }
 
     if (reindex) {
       await search.indexEntities({ template: template._id });
     }
-    return false;
+    return denormalizationExecuted;
   },
 
   async _update(
@@ -299,7 +301,7 @@ export default {
     if (
       templateStructureChanges &&
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements &&
-      currentTemplate.processing
+      currentTemplate.processing?.active
     ) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
@@ -320,11 +322,14 @@ export default {
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
       // eslint-disable-next-line no-param-reassign
-      template.processing = true;
+      template.processing = {
+        ...template.processing,
+        active: true,
+      };
     }
     if (!tenants.current().featureFlags?.templatesDenormalizationPerfImprovements) {
       // eslint-disable-next-line no-param-reassign
-      template.processing = undefined;
+      template.processing = {};
       await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
     }
     const savedTemplate = await model.save(template, undefined);

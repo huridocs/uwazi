@@ -16,6 +16,4 @@ export interface TemplateDBO extends TemplateSchema {
   _id: ObjectId;
   properties: (PropertySchema | RelationshipPropertyDBO)[];
   commonProperties: [PropertySchema, ...PropertySchema[]];
-  totalJobs: number;
-  completedJobs: number;
 }

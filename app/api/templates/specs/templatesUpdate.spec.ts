@@ -10,6 +10,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from '../templates';
+import { inspect } from 'util';
 
 const f = getFixturesFactory();
 
@@ -53,14 +54,18 @@ afterAll(async () => {
 
 async function updateTemplate(template: TemplateSchema, featureFlag: boolean) {
   if (!featureFlag) {
-    return templates.save(template, 'en');
+    try {
+      return templates.save(template, 'en');
+    } catch (e) {
+      console.log(inspect(e));
+    }
   }
   return new Promise<void>((resolve, reject) => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => resolve());
     templates
       .save(template, 'en', true, false, async error => {
         if (error) {
-          reject(error);
+          reject(inspect(error));
         }
         resolve();
       })
@@ -652,7 +657,9 @@ describe('templates save', () => {
                 f.relationshipProp('rel_prop', 'templateA'),
                 f.property('text_property_b'),
               ]),
-              processing: true,
+              processing: {
+                active: true,
+              },
             },
             f.template('templateC', [f.property('text_property_2')]),
           ],
@@ -706,7 +713,9 @@ describe('templates save', () => {
                 f.relationshipProp('rel_prop', 'templateA'),
                 f.property('text_property_b'),
               ]),
-              processing: true,
+              processing: {
+                active: true,
+              },
             },
             f.template('templateC', [f.property('text_property_2')]),
           ],
@@ -715,7 +724,7 @@ describe('templates save', () => {
       );
 
       const template = f.template('templateB');
-      template.processing = true;
+      template.processing = { active: true };
       const savedTemplate = await templates.save(template, 'en');
       expect(savedTemplate.processing).toBeUndefined();
     });
