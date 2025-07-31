@@ -36,6 +36,7 @@ import {
 } from './types';
 import { useEventHandler } from './hooks/useEventHandler';
 import { ixAcceptedSuggestions } from './components/ixSuggestionsAtom';
+import { PDFSidepanel } from './components/PDFSidepanel';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -383,7 +384,15 @@ const IXSuggestions = () => {
       />
 
       <SuggestionSidepanel
-        showSidepanel={sidepanel === 'pdf' || sidepanel === 'property'}
+        showSidepanel={sidepanel === 'property'}
+        property={property}
+        setShowSidepanel={closeSidepanel}
+        suggestion={sidepanelSuggestion}
+        onEntitySave={onEntitySave}
+      />
+
+      <PDFSidepanel
+        showSidepanel={sidepanel === 'pdf'}
         property={property}
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}

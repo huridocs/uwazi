@@ -14,14 +14,14 @@ const VerticalDrawer = ({
   title,
   children,
   maxHeight = 'h-fit',
-  className = 'bg-white border-t border-gray-200 shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] px-4 py-2',
+  className = 'bg-white border-t border-gray-200 shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)]',
   defaultOpen = false,
 }: VerticalDrawerProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-gray-50 px-4 py-2">
         <div className="flex-1">{title}</div>
         <div className="flex items-center gap-2">
           <button
@@ -39,7 +39,7 @@ const VerticalDrawer = ({
         </div>
       </div>
 
-      {isOpen && <div className={`${maxHeight} overflow-y-auto`}>{children}</div>}
+      {isOpen && <div className={`${maxHeight} overflow-y-auto px-4 py-2`}>{children}</div>}
     </div>
   );
 };
