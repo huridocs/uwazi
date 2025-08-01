@@ -39,7 +39,12 @@ const VerticalDrawer = ({
         </div>
       </div>
 
-      {isOpen && <div className={`${maxHeight} overflow-y-auto px-4 py-2`}>{children}</div>}
+      <div
+        aria-hidden={isOpen ? 'false' : 'true'}
+        className={`${isOpen ? '' : 'hidden'} ${maxHeight} overflow-y-auto px-4 py-2`}
+      >
+        {children}
+      </div>
     </div>
   );
 };

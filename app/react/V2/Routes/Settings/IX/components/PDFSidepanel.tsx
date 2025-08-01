@@ -12,7 +12,6 @@ import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom } from 'V2/atoms';
 import { TableSuggestion } from '../types';
 import {
-  coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
@@ -96,21 +95,16 @@ const PDFSidepanel = ({
   const { isSubmitting, isDirty } = formContext.formState;
   const { handleSubmit } = formContext;
 
-  // eslint-disable-next-line max-statements
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
-    let metadata = value.field;
-
-    if (property?.type === 'date' && isDirty && metadata) {
-      metadata = (await coerceValue('date', metadata as string, pdfFile?.language || 'en'))?.value;
-    }
-
-    const entityToSave = { ...entity };
-
-    entityToSave.__extractedMetadata = { fileID: pdfFile?._id, selections };
-
-    const savedEntity = await handleEntitySave(entityToSave, property, metadata, template, isDirty);
+    const savedEntity = await handleEntitySave(
+      { ...entity, __extractedMetadata: { fileID: pdfFile?._id, selections } },
+      property,
+      value.field,
+      template,
+      isDirty
+    );
 
     if (savedEntity instanceof FetchResponseError) {
       const details = (savedEntity as FetchResponseError)?.json.prettyMessage;

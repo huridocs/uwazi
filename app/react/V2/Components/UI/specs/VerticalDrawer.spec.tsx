@@ -16,7 +16,7 @@ describe('VerticalDrawer', () => {
     render(<VerticalDrawer {...defaultProps} />);
     expect(screen.getByText('Test Drawer')).toBeInTheDocument();
     expect(screen.getByText('Open')).toBeInTheDocument();
-    expect(screen.queryByTestId('drawer-content')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('drawer-content')).not.toBeVisible();
   });
 
   it('should render with defaultOpen prop set to true', () => {
