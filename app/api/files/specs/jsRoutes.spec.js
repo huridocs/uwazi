@@ -40,7 +40,7 @@ describe('upload routes', () => {
       dontDeleteFiles.includes(filename)
     );
     await deleteFiles(filesToDelete);
-    cb();
+    await cb();
   };
 
   beforeEach(async () => {
