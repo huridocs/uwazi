@@ -36,7 +36,7 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
-import { FileWithAggregation, NoLabeledEntities, NoSegmentedFiles } from '../ixMaterials';
+import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials';
 import { TEST_RUN_SUGGESTIONS_SIZE } from '../ixmodels';
 
 let informationExtractionForJob: InformationExtraction;
@@ -242,19 +242,15 @@ describe('InformationExtraction', () => {
 
       const xmlC = await readDocument('C');
 
-      const xmlD = await readDocument('D');
-
-      const xmlE = await readDocument('E');
-
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
         id: factory.id('prop1extractor').toString(),
         tenant: 'tenant1',
       });
 
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC, xmlD, xmlE]));
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml'].sort()
+        ['documentA.xml', 'documentC.xml'].sort()
       );
     });
 
@@ -299,7 +295,7 @@ describe('InformationExtraction', () => {
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
-      expect(IXExternalService.materials.length).toBe(4);
+      expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
         xml_file_name: 'documentA.xml',
         id: factory.id('prop1extractor').toString(),
@@ -317,7 +313,7 @@ describe('InformationExtraction', () => {
         page_width: 595,
         page_height: 841,
         language_iso: 'en',
-        label_text: 'labeled text',
+        label_text: '1088985600',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
     });
@@ -432,22 +428,13 @@ describe('InformationExtraction', () => {
     it('should sanitize dates before sending', async () => {
       await informationExtraction.trainModel(factory.id('prop2extractor'));
 
-      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
-        xml_file_name: 'documentA.xml',
+      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentD.xml')).toEqual({
+        xml_file_name: 'documentD.xml',
         id: factory.id('prop2extractor').toString(),
         tenant: 'tenant1',
-        xml_segments_boxes: [
-          {
-            left: 58,
-            top: 63,
-            width: 457,
-            height: 15,
-            page_number: 1,
-            text: 'something',
-          },
-        ],
-        page_width: 595,
-        page_height: 841,
+        xml_segments_boxes: [],
+        page_height: 1,
+        page_width: 2,
         language_iso: 'en',
         label_text: '2011-03-04',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
@@ -488,6 +475,7 @@ describe('InformationExtraction', () => {
         label_text: 'any_rich_text_value_english',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
+
       expect(suggestion2).toEqual({
         id: extractorId.toString(),
         xml_file_name: xml2,
@@ -733,7 +721,7 @@ describe('InformationExtraction', () => {
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
-        { message: NoSegmentedFiles.defaultMessage }
+        { message: NoFilesForTraining.defaultMessage }
       );
     });
 
@@ -751,7 +739,7 @@ describe('InformationExtraction', () => {
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
-        { message: NoSegmentedFiles.defaultMessage }
+        { message: NoFilesForTraining.defaultMessage }
       );
     });
   });
@@ -764,19 +752,14 @@ describe('InformationExtraction', () => {
 
       const xmlC = await readDocument('C');
 
-      const xmlD = await readDocument('D');
-
-      const xmlE = await readDocument('E');
-
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
         id: factory.id('prop1extractor').toString(),
         tenant: 'tenant1',
       });
-
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC, xmlD, xmlE]));
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentC.xml', 'documentD.xml', 'documentE.xml'].sort()
+        ['documentA.xml', 'documentC.xml'].sort()
       );
     });
 

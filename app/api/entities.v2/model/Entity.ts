@@ -18,6 +18,11 @@ type EntityMetadata = BaseMetadataValue | InheritedResultValue;
 
 type Metadata = Record<string, EntityMetadata[]>;
 
+type Icon = {
+  label: string;
+  type: string;
+};
+
 export class Entity {
   readonly _id: string;
 
@@ -28,6 +33,8 @@ export class Entity {
   readonly template: string;
 
   title: string;
+
+  icon?: Icon;
 
   metadata: Metadata;
 
@@ -40,6 +47,7 @@ export class Entity {
     title: string,
     template: string,
     metadata: Metadata,
+    icon?: Icon,
     obsoleteMetadata?: string[]
   ) {
     this._id = _id;
@@ -48,6 +56,7 @@ export class Entity {
     this.title = title;
     this.template = template;
     this.metadata = metadata;
+    this.icon = icon;
     this.obsoleteMetadata = obsoleteMetadata ?? [];
   }
 
@@ -89,4 +98,4 @@ export class Entity {
   }
 }
 
-export type { Metadata, EntityMetadata, MetadataValue };
+export type { Metadata, EntityMetadata, MetadataValue, BaseMetadataValue };

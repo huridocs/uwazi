@@ -338,22 +338,31 @@ const fixtures: DBFixture = {
     ),
   ],
   files: [
-    factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
-      {
-        name: 'property1',
-        selection: {
-          text: 'something not in the entity',
-          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+    factory.fileDeprecated(
+      'F1',
+      'A1',
+      'document',
+      fixturesPdfNameA,
+      'other',
+      '',
+      [
+        {
+          name: 'property1',
+          selection: {
+            text: 'something not in the entity',
+            selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+          },
         },
-      },
-      {
-        name: 'property2',
-        selection: {
-          text: 'Fri Mar 04 2011',
-          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+        {
+          name: 'property2',
+          selection: {
+            text: 'Fri Mar 04 2011',
+            selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+          },
         },
-      },
-    ]),
+      ],
+      'ready'
+    ),
     factory.fileDeprecated('F2', 'A2', 'document', fixturesPdfNameB, 'eng', '', [
       {
         name: 'text',
@@ -363,35 +372,53 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.fileDeprecated('F3', 'A3', 'document', fixturesPdfNameC, 'eng', '', [
-      {
-        name: 'property1',
-        selection: {
-          text: 'something',
-          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+    factory.fileDeprecated(
+      'F3',
+      'A3',
+      'document',
+      fixturesPdfNameC,
+      'eng',
+      '',
+      [
+        {
+          name: 'property1',
+          selection: {
+            text: 'something',
+            selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+          },
         },
-      },
-    ]),
-    factory.fileDeprecated('F4', 'A1', 'document', fixturesPdfNameD, 'eng', '', [
-      {
-        name: 'property2',
-        selection: {
-          text: 'something',
-          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+      ],
+      'ready'
+    ),
+    factory.fileDeprecated(
+      'F4',
+      'A1',
+      'document',
+      fixturesPdfNameD,
+      'eng',
+      '',
+      [
+        {
+          name: 'property2',
+          selection: {
+            text: 'something',
+            selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+          },
         },
-      },
-    ]),
+      ],
+      'ready'
+    ),
     factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameE, 'eng'),
     factory.fileDeprecated('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
-    factory.fileDeprecated('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
+    factory.fileDeprecated('F15', 'A15', 'document', fixturesPdfNameA, 'eng', '', [], 'ready'),
     factory.fileDeprecated('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
-    factory.fileDeprecated('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
-    factory.fileDeprecated('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
-    factory.fileDeprecated('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
+    factory.fileDeprecated('F17', 'A17', 'document', fixturesPdfNameG, 'eng', '', [], 'ready'),
+    factory.fileDeprecated('F18', 'A18', 'document', fixturesPdfNameH, 'eng', '', [], 'ready'),
+    factory.fileDeprecated('F19', 'A19', 'document', fixturesPdfNameI, 'eng', '', [], 'ready'),
     factory.fileDeprecated('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
-    factory.fileDeprecated('F21', 'A21', 'document', fixturesPdfNameK, 'eng'),
-    factory.fileDeprecated('F22', 'A22', 'document', fixturesPdfNameL, 'eng'),
-    factory.fileDeprecated('F23', 'A23', 'document', fixturesPdfNameM, 'eng'),
+    factory.fileDeprecated('F21', 'A21', 'document', fixturesPdfNameK, 'eng', '', [], 'ready'),
+    factory.fileDeprecated('F22', 'A22', 'document', fixturesPdfNameL, 'eng', '', [], 'ready'),
+    factory.fileDeprecated('F23', 'A23', 'document', fixturesPdfNameM, 'eng', '', [], 'ready'),
     factory.document('FileWithoutSegmentations', {
       language: 'en',
       filename: pdfWithouTSegmentations,
@@ -419,6 +446,7 @@ const fixtures: DBFixture = {
           },
         },
       ],
+      status: 'ready',
     }),
     factory.document('extractor_target_rich_text_source_pdf_entity_1_f1_es', {
       language: 'es',
@@ -433,6 +461,7 @@ const fixtures: DBFixture = {
           },
         },
       ],
+      status: 'ready',
     }),
 
     factory.document('extractor_source_pdf_target_text_entity_1_f1_en', {
@@ -448,12 +477,14 @@ const fixtures: DBFixture = {
           },
         },
       ],
+      status: 'ready',
     }),
 
     factory.document('extractor_source_pdf_target_text_entity_2_f1_en', {
       language: 'en',
       filename: 'extractor_source_pdf_target_text_entity_2_f1_en',
       entity: 'extractor_source_pdf_target_text_entity_2',
+      status: 'ready',
     }),
   ],
   segmentations: [
@@ -781,6 +812,7 @@ const fixtures: DBFixture = {
       date: 100,
       currentValue: 1088985600,
       entityTitle: 'A1',
+      entityLanguageId: factory.id('A1-en'),
     },
     {
       fileId: factory.id('F3'),
@@ -794,6 +826,9 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: 2,
+      entityTitle: 'A3',
+      entityLanguageId: factory.id('A3-en'),
     },
 
     {
@@ -809,6 +844,7 @@ const fixtures: DBFixture = {
       date: 100,
       currentValue: 2,
       entityTitle: 'A3',
+      entityLanguageId: factory.id('A3-en'),
     },
 
     {
@@ -823,6 +859,9 @@ const fixtures: DBFixture = {
       status: 'processing',
       page: 1,
       date: 100,
+      entityTitle: 'A1',
+      entityLanguageId: factory.id('A1-en'),
+      currentValue: 1299196800,
     },
     {
       fileId: factory.id('F4'),
@@ -836,6 +875,9 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 100,
+      currentValue: 1299196800,
+      entityTitle: 'A1',
+      entityLanguageId: factory.id('A1-en'),
     },
     {
       fileId: factory.id('F4'),
@@ -849,6 +891,9 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 220,
+      currentValue: 1299196800,
+      entityTitle: 'A1',
+      entityLanguageId: factory.id('A1-en'),
     },
     {
       fileId: factory.id('F4'),
@@ -862,6 +907,9 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 190,
+      currentValue: 1299196800,
+      entityTitle: 'A1',
+      entityLanguageId: factory.id('A1-en'),
     },
     {
       fileId: factory.id('F4'),
@@ -875,6 +923,9 @@ const fixtures: DBFixture = {
       status: 'ready',
       page: 1,
       date: 220,
+      currentValue: 1299196800,
+      entityTitle: 'A1',
+      entityLanguageId: factory.id('A1-en'),
     },
     {
       fileId: factory.id('F15'),
@@ -934,6 +985,7 @@ const fixtures: DBFixture = {
       date: 100,
       currentValue: ['A'],
       entityTitle: 'A17',
+      entityLanguageId: factory.id('A17-en'),
     },
     {
       _id: factory.id('SUG18'),
@@ -949,6 +1001,7 @@ const fixtures: DBFixture = {
       date: 100,
       currentValue: ['B', 'C'],
       entityTitle: 'A18',
+      entityLanguageId: factory.id('A18-en'),
     },
     {
       _id: factory.id('SUG19'),
@@ -963,7 +1016,8 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
       currentValue: [],
-      entityTitle: 'A18',
+      entityTitle: 'A19',
+      entityLanguageId: factory.id('A19-en'),
     },
     {
       _id: factory.id('SUG17B'),
@@ -1023,6 +1077,7 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
       currentValue: ['P1sharedId'],
+      entityLanguageId: factory.id('A21-en'),
     },
     {
       _id: factory.id('SUG22'),
@@ -1037,6 +1092,7 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
       currentValue: ['P1sharedId', 'P3sharedId'],
+      entityLanguageId: factory.id('A22-en'),
     },
     {
       _id: factory.id('SUG23'),
@@ -1051,6 +1107,7 @@ const fixtures: DBFixture = {
       page: 1,
       date: 100,
       currentValue: [],
+      entityLanguageId: factory.id('A23-en'),
     },
     {
       extractorId: factory.id('sourceTextExtractor1'),
@@ -1235,6 +1292,9 @@ const fixtures: DBFixture = {
       status: 'ready',
       date: 100,
       fileId: factory.id('extractor_source_pdf_target_text_entity_1_f1_en'),
+      entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1-en'),
+      currentValue: 'any_target_text_value_en',
+      entityTitle: 'extractor_source_pdf_target_text_entity_1',
     },
     {
       extractorId: factory.id('extractor_source_pdf_target_text'),
@@ -1247,6 +1307,90 @@ const fixtures: DBFixture = {
       status: 'ready',
       date: 100,
       fileId: factory.id('extractor_source_pdf_target_text_entity_2_f1_en'),
+      entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1-en'),
+      currentValue: 'any_target_text_value_en',
+      entityTitle: 'extractor_source_pdf_target_text_entity_2',
+    },
+
+    {
+      extractorId: factory.id('extractor_target_rich_text_source_pdf'),
+      entityId: 'extractor_target_rich_text_source_pdf_entity_1',
+      entityTemplate: factory.idString('extractor_target_rich_text_source_pdf_template'),
+      language: 'en',
+      propertyName: 'target_rich_text',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+      entityTitle: 'extractor_target_rich_text_source_pdf_entity_1',
+      currentValue: 'any_rich_text_value_english',
+      entityLanguageId: factory.id('extractor_target_rich_text_source_pdf_entity_1-en'),
+      fileId: factory.id('extractor_target_rich_text_source_pdf_entity_1_f1_en'),
+    },
+
+    {
+      extractorId: factory.id('extractor_target_rich_text_source_pdf'),
+      entityId: 'extractor_target_rich_text_source_pdf_entity_1',
+      entityTemplate: factory.idString('extractor_target_rich_text_source_pdf_template'),
+      language: 'es',
+      propertyName: 'target_rich_text',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      date: 100,
+      entityTitle: 'extractor_target_rich_text_source_pdf_entity_1',
+      currentValue: 'any_rich_text_value_spanish',
+      entityLanguageId: factory.id('extractor_target_rich_text_source_pdf_entity_1-es'),
+      fileId: factory.id('extractor_target_rich_text_source_pdf_entity_1_f1_es'),
+    },
+
+    {
+      fileId: factory.id('F21'),
+      entityId: 'A21',
+      entityTemplate: factory.id('templateToSegmentF').toString(),
+      language: 'en',
+      propertyName: 'property_relationship_to_any',
+      extractorId: factory.id('extractorWithRelationshipToAny'),
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      page: 1,
+      date: 100,
+      currentValue: ['P1sharedId'],
+      entityTitle: 'A21',
+      entityLanguageId: factory.id('A21-en'),
+    },
+    {
+      fileId: factory.id('F22'),
+      entityId: 'A22',
+      entityTemplate: factory.id('templateToSegmentF').toString(),
+      language: 'en',
+      propertyName: 'property_relationship_to_any',
+      extractorId: factory.id('extractorWithRelationshipToAny'),
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      page: 1,
+      date: 100,
+      currentValue: ['P1', 'A1'],
+      entityTitle: 'A22',
+      entityLanguageId: factory.id('A22-en'),
+    },
+    {
+      fileId: factory.id('F23'),
+      entityId: 'A23',
+      entityTemplate: factory.id('templateToSegmentF').toString(),
+      language: 'en',
+      propertyName: 'property_relationship_to_any',
+      extractorId: factory.id('extractorWithRelationshipToAny'),
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      page: 1,
+      date: 100,
+      currentValue: [],
+      entityTitle: 'A23',
+      entityLanguageId: factory.id('A23-en'),
     },
   ],
   ixmodels: [

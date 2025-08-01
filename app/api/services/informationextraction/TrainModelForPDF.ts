@@ -1,11 +1,9 @@
 /* eslint-disable max-statements */
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { emitToTenant } from 'api/socketio/setupSockets';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { storage } from 'api/files';
 import urljoin from 'url-join';
 import request from 'shared/JSONRequest';
-import { LanguageUtils } from 'shared/language';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { EnforcedWithId } from 'api/odm';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -17,11 +15,7 @@ import {
   propertyTypeIsWithoutExtractedMetadata,
 } from './ixMaterials';
 import { IXWebSocketEvents } from './WebSocketEvents';
-import {
-  CommonMaterialsData,
-  defaultTrainingLanguage,
-  MaterialsData,
-} from './InformationExtraction';
+import { CommonMaterialsData, MaterialsData } from './InformationExtraction';
 import { IXTaskService } from './TaskService';
 import ixmodels from './ixmodels';
 
@@ -49,19 +43,15 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
   async execute({ extractor }: Input): Promise<Output> {
     try {
-      const files = await getFilesForTraining(extractor?.templates, extractor?.property);
-      if (!files.length) {
-        throw new NoFilesForTraining();
-      }
-
+      const { process } = await getFilesForTraining(extractor);
       const processedEntityIds: string[] = [];
 
-      await ArrayUtils.runInBatches({ array: files, batchSize: 1 }, async file => {
+      await process(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
         const propertyLabeledData = file.extractedMetadata?.find(
-          labeledData => labeledData.name === extractor.property
+          (labeledData: any) => labeledData.name === extractor.property
         );
         const { propertyValue, propertyType } = file;
 
@@ -83,6 +73,10 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
         processedEntityIds.push(file.entity);
       });
+
+      if (!processedEntityIds.length) {
+        throw new NoFilesForTraining();
+      }
 
       await Suggestions.markSuggestionsAsTrainingSamples(
         processedEntityIds,
@@ -145,10 +139,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
     file: FileWithAggregation,
     _data: CommonMaterialsData
   ): MaterialsData {
-    const languageIso =
-      LanguageUtils.fromISO639_3(file.language!, false)?.ISO639_1 || defaultTrainingLanguage;
-
-    let data: MaterialsData = { ..._data, language_iso: languageIso };
+    let data: MaterialsData = { ..._data, language_iso: file.language };
 
     const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
 

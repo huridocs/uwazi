@@ -46,7 +46,7 @@ const forceGC = async () => {
 
 const getMeasurements = async (
   callback: () => Promise<void>,
-  withFeatureFlag: boolean = false
+  featureFlag: boolean = false
 ): Promise<{ perf: number; memoryDelta: ReturnType<typeof getMemoryUsage> }> => {
   await forceGC();
 
@@ -56,9 +56,7 @@ const getMeasurements = async (
   // Setup tenant
   tenants.add({
     ...tenant,
-    ...(withFeatureFlag
-      ? { featureFlags: { templatesDenormalizationPerfImprovements: true } }
-      : {}),
+    featureFlags: { templatesDenormalizationPerfImprovements: featureFlag }
   });
 
   const start = performance.now();
@@ -290,6 +288,14 @@ async function runTest(numberOfEntities: number) {
           'thesauri3.5',
         ]),
       ],
+      users: [
+        {
+          _id: f.id('admin_user'),
+          username: 'admin',
+          role: 'admin',
+          email: 'admin@uwazitesting.com',
+        },
+      ],
       settings: [
         {
           languages: [
@@ -322,7 +328,7 @@ async function runTest(numberOfEntities: number) {
       );
     },
     async () => {
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve, reject) => {
         templates.save(
           {
             ...template2,
@@ -336,7 +342,13 @@ async function runTest(numberOfEntities: number) {
           },
           'en',
           true,
-          async () => resolve()
+          false,
+          async error => {
+            if (error) {
+              reject(error);
+            }
+            resolve();
+          }
         );
       });
     },
@@ -344,6 +356,7 @@ async function runTest(numberOfEntities: number) {
   );
 }
 async function run() {
+  process.env.NODE_ENV = 'test';
   await DB.connect(config.DBHOST, config.DBAUTH);
   try {
     console.log('Starting performance tests...');
@@ -351,8 +364,15 @@ async function run() {
 
     tenants.add(tenant);
 
+    // @ts-ignore
     await tenants.run(async () => {
-      permissionsContext.setCommandContext();
+      permissionsContext.setUserInContext({
+        _id: f.id('admin_user'),
+        role: 'admin',
+        username: 'admin',
+        email: 'admin@uwazitesting.com',
+      });
+      // permissionsContext.setCommandContext();
       await runTest(10);
       await runTest(300);
       await runTest(600);
