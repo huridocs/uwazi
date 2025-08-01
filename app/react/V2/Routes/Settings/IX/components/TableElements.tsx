@@ -138,16 +138,6 @@ const CurrentValueCell = ({
   cell: CellContext<TableSuggestion, TableSuggestion['currentValue']>;
   allProperties: ClientPropertySchema[];
 }) => {
-  if (cell.row.original.state.obsolete) {
-    return (
-      <div className="flex gap-1 text-xs font-bold text-gray-500">
-        <span>
-          <Translate>Obsolete</Translate>
-        </span>
-      </div>
-    );
-  }
-
   if (cell.row.original.state.error) {
     return (
       <div className="flex gap-1 text-xs font-bold text-gray-500">

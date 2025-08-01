@@ -320,11 +320,12 @@ const IXSuggestions = () => {
                 size="small"
                 type="button"
                 styling="outline"
+                disabled={selected.some(s => s.state.obsolete || s.state.error)}
                 onClick={async () => {
                   await acceptSuggestions(selected);
                 }}
               >
-                <Translate>Accept suggestion</Translate>
+                <Translate>Accept suggestions</Translate>
               </Button>
               <div className="text-sm font-semibold text-center text-gray-900">
                 <span className="font-light text-gray-500">
@@ -426,7 +427,7 @@ const IXSuggestionsLoader =
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
-
+    console.log('suggestionsList', suggestionsList);
     const suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,
       rowId: suggestion._id,
