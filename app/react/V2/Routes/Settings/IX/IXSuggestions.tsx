@@ -320,7 +320,9 @@ const IXSuggestions = () => {
                 size="small"
                 type="button"
                 styling="outline"
-                disabled={selected.some(s => s.state.obsolete || s.state.error)}
+                disabled={selected.some(
+                  s => s.state.obsolete || s.state.error || s.state.processing
+                )}
                 onClick={async () => {
                   await acceptSuggestions(selected);
                 }}
@@ -427,12 +429,10 @@ const IXSuggestionsLoader =
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
-    console.log('suggestionsList', suggestionsList);
     const suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,
       rowId: suggestion._id,
-      disableRowSelection:
-        suggestion.state.obsolete || suggestion.state.processing || suggestion.state.error,
+      disableRowSelection: suggestion.state.processing,
       extractorSource: extractors[0].source,
     }));
 
