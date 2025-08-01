@@ -104,6 +104,35 @@ const Suggestions = {
           $match: { extractorId },
         },
         {
+          $lookup: {
+            from: 'ixmodels',
+            let: {
+              localFieldExtractorId: '$extractorId',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$extractorId', '$$localFieldExtractorId'],
+                  },
+                },
+              },
+            ],
+            as: 'model',
+          },
+        },
+        {
+          $addFields: { model: { $arrayElemAt: ['$model', 0] } },
+        },
+        {
+          $addFields: {
+            modelCreationDate: '$model.creationDate',
+          },
+        },
+        {
+          $unset: 'model',
+        },
+        {
           $group: {
             _id: null,
             total: { $sum: 1 },
@@ -141,6 +170,27 @@ const Suggestions = {
             },
             obsolete: { $sum: { $cond: ['$state.obsolete', 1, 0] } },
             error: { $sum: { $cond: ['$state.error', 1, 0] } },
+            noContext: { $sum: { $cond: [{ $not: '$state.hasContext' }, 1, 0] } },
+            nonProcessed: {
+              $sum: {
+                $cond: [
+                  {
+                    $or: [
+                      { $not: '$modelData.findSuggestionsRunTimestamp' }, // No timestamp (new/blank suggestions)
+                      {
+                        $and: [
+                          '$modelData.findSuggestionsRunTimestamp',
+                          '$modelCreationDate', // Model exists
+                          { $lt: ['$modelData.findSuggestionsRunTimestamp', '$modelCreationDate'] }, // Older than model training
+                        ],
+                      },
+                    ],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
           },
         },
       ]);
@@ -154,6 +204,8 @@ const Suggestions = {
       mismatch: 0,
       obsolete: 0,
       error: 0,
+      noContext: 0,
+      nonProcessed: 0,
     };
 
     return results;

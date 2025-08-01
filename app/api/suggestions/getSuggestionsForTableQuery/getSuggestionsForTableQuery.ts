@@ -1,10 +1,9 @@
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { IXSuggestionsQuery, SuggestionCustomFilter } from 'shared/types/suggestionType';
 import { ObjectId } from 'mongodb';
-import { IXExtractorType } from 'shared/types/extractorType';
 import templates from 'api/templates';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
-import { getMatchStage, translateCustomFilter } from '../pipelineStages';
+import { getMatchStage } from '../pipelineStages';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { PipelineBuilder } from '../queryBuilder';
 import { Pagination } from '../pagination';
@@ -43,12 +42,16 @@ export class GetSuggestionsForTableQuery {
       currentPage: input?.pagination?.number,
     });
 
-    const [matchQuery] = getMatchStage(new ObjectId(extractorId), input.filter, false);
-    const total = await IXSuggestionsModel.db.countDocuments(matchQuery.$match!);
+    const { matchStage, includeNonProcessedFilter } = getMatchStage(
+      new ObjectId(extractorId),
+      input.filter,
+      false
+    );
+    const total = await IXSuggestionsModel.db.countDocuments(matchStage[0].$match!);
 
-    const orFilters = input.filter && translateCustomFilter(input.filter);
+    this.pipelineBuilder.add(matchStage[0]);
 
-    this.applyMatchStage(extractor, orFilters);
+    this.applyNonProcessedFilter(includeNonProcessedFilter);
 
     this.pipelineBuilder.add({
       $sort: sorter.$sort,
@@ -86,14 +89,57 @@ export class GetSuggestionsForTableQuery {
       totalPages: pagination.calculateNumberOfPages(total),
     };
   }
+  private applyNonProcessedFilter(needsNonProcessedFilter: boolean) {
+    if (needsNonProcessedFilter) {
 
-  private applyMatchStage(extractor: IXExtractorType, orFilters?: Record<string, boolean>[]) {
-    this.pipelineBuilder.add({
-      $match: {
-        extractorId: extractor._id,
-        ...(orFilters?.length ? { $or: orFilters } : {}),
-      },
-    });
+      this.pipelineBuilder.add({
+        $lookup: {
+          from: 'ixmodels',
+          let: {
+            localFieldExtractorId: '$extractorId',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$extractorId', '$$localFieldExtractorId'],
+                },
+              },
+            },
+          ],
+          as: 'model',
+        },
+      });
+
+      this.pipelineBuilder.add({
+        $addFields: { model: { $arrayElemAt: ['$model', 0] } },
+      });
+
+      this.pipelineBuilder.add({
+        $addFields: {
+          modelCreationDate: '$model.creationDate',
+        },
+      });
+
+      this.pipelineBuilder.add({
+        $match: {
+          $or: [
+            { $not: ['$modelData.findSuggestionsRunTimestamp'] },
+            {
+              $and: [
+                { $ne: ['$modelData.findSuggestionsRunTimestamp', null] },
+                { $ne: ['$modelCreationDate', null] },
+                { $lt: ['$modelData.findSuggestionsRunTimestamp', '$modelCreationDate'] },
+              ],
+            },
+          ],
+        },
+      });
+
+      this.pipelineBuilder.add({
+        $unset: 'model',
+      });
+    }
   }
 
   private applyPropertiesProjectStage() {
