@@ -189,16 +189,20 @@ export class MongoTemplatesDataSource
   async incrementProcessingTracking(id: Template['id']) {
     const result = await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(id) },
+      // @ts-ignore when updating nested objects ts cant infer the proper type
       { $inc: { 'processing.completedJobs': 1 } },
       { returnDocument: 'after' }
     );
-    return { total: result.totalJobs, completed: result.completedJobs };
+    return {
+      total: result?.processing?.totalJobs || 1,
+      completed: result?.processing?.completedJobs || 0,
+    };
   }
 
-  async incrementProcessingTotalJobs(id: Template['id']) {
+  async setProcessingTotalJobs(id: Template['id'], totalJobs: number) {
     await this.getCollection().findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $inc: { 'processing.totalJobs': 1 } }
+      { $set: { 'processing.totalJobs': totalJobs, 'processing.active': true } }
     );
   }
 

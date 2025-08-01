@@ -57,6 +57,13 @@ export class MongoMultiLanguageEntityDataSource
     await search.indexEntities({ sharedId: { $in: entitiesToSave.map(e => e.sharedId) } });
   }
 
+  async countByTemplateId(templateId: string) {
+    return this.getCollection().countDocuments({
+      language: 'en',
+      template: new ObjectId(templateId),
+    });
+  }
+
   async getSharedIdsByTemplateId(templateId: string) {
     const cursor = this.getCollection().find(
       {
