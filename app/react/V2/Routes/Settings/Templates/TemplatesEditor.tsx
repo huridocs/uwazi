@@ -271,12 +271,6 @@ const TemplatesEditor = () => {
     setShowConfigPropertyPanel(true);
   };
 
-  template.processing = {
-    active: true,
-    completedJobs: 20,
-    totalJobs: 23,
-  };
-
   const progress = useMemo(
     () => ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
     [template.processing]
