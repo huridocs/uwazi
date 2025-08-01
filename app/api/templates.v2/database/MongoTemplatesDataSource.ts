@@ -192,7 +192,7 @@ export class MongoTemplatesDataSource
       { $inc: { 'processing.completedJobs': 1 } },
       { returnDocument: 'after' }
     );
-    return { total: result.totalJobs, completed: result.completedJobs };
+    return { total: result.processing.totalJobs, completed: result.processing.completedJobs };
   }
 
   async incrementProcessingTotalJobs(id: Template['id']) {
