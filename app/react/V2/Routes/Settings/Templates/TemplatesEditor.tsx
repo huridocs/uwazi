@@ -148,7 +148,12 @@ const TemplatesEditor = () => {
   }, [template, commonProperties, properties]);
 
   const checkPendingChanges = useCallback(
-    () => !isEqual(loadedTemplate, getCurrentStatus()),
+    //ignore processing
+    () =>
+      !isEqual(
+        { ...loadedTemplate, processing: undefined },
+        { ...getCurrentStatus(), processing: undefined }
+      ),
     [getCurrentStatus, loadedTemplate]
   );
 
