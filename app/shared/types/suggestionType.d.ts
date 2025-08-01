@@ -53,6 +53,7 @@ export interface IXSuggestionAggregation {
   mismatch: number;
   obsolete: number;
   error: number;
+  noContext: number;
 }
 
 export interface IXSuggestionType {
@@ -120,6 +121,7 @@ export interface SuggestionCustomFilter {
   nonLabeled: boolean;
   obsolete: boolean;
   error: boolean;
+  noContext: boolean;
 }
 
 export interface IXSuggestionsFilter {
