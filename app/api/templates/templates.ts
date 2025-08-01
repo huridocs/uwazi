@@ -183,6 +183,8 @@ export default {
     fullReindex = false,
     onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
   ) {
+    // processing can not be saved from this interface, its an internal tracking property
+    delete template.processing;
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
     template.properties = await denormalizeInheritedProperties(template);

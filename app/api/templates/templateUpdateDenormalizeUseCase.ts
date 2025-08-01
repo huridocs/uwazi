@@ -123,7 +123,7 @@ export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<Denorma
       modifiedRelationshipsProps: this.params.modifiedRelationshipsProps,
       templateId: this.params.templateId,
       onAllEntitiesDenormalized: () =>
-        emitToTenant(this.tenantName, 'templateProcessed', this.params.templateId),
+        emitToTenant(this.tenantName, 'templateProcessed', { templateId: this.params.templateId }),
       onProgress: (processing: { active: boolean; totalJobs: number; completedJobs: number }) =>
         emitToTenant(this.tenantName, 'templateProcessing', {
           templateId: this.params.templateId,
