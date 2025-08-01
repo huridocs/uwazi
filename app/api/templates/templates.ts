@@ -36,17 +36,6 @@ import {
 } from './utils';
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
-import templates from '.';
-import { inspect } from 'util';
-
-const reindexAllTemplates = async (fullReindex: boolean) => {
-  const allTemplates = await templates.get();
-  if (fullReindex) {
-    return reindexAll(allTemplates, search);
-  }
-
-  return Promise.resolve();
-};
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -287,6 +276,15 @@ export default {
     return denormalizationExecuted;
   },
 
+  async reindexAllTemplates(fullReindex: boolean) {
+    const allTemplates = await this.get();
+    if (fullReindex) {
+      return reindexAll(allTemplates, search);
+    }
+
+    return Promise.resolve();
+  },
+
   async _update(
     template: TemplateSchema,
     language: string,
@@ -318,7 +316,7 @@ export default {
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     }
 
-    const newGeneratedIdProps = await checkAndFillGeneratedIdProperties(currentTemplate, template);
+    await checkAndFillGeneratedIdProperties(currentTemplate, template);
     if (
       templateStructureChanges &&
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
@@ -347,7 +345,7 @@ export default {
       tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
     ) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      reindexAllTemplates(fullReindex)
+      this.reindexAllTemplates(fullReindex)
         .then(async () =>
           this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
         )
