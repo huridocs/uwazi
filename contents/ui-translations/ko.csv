@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,이메일이 필요합니다.
 Accept,수락
 Accept suggestion,Accept suggestion
+Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,계정
 Account locked,Account locked
@@ -551,6 +552,7 @@ Not Found,Not Found
 Nothing selected,Nothing selected
 Number of sentences above threshold,임계값 이상 문장 수
 Obsolete,Obsolete
+obsolete,obsolete
 OCR,OCR (광학 문자 인식)
 OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
 OCR completed,OCR 완료

@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,จำเป็นต้องใช้อีเมล
 Accept,ตกลง
 Accept suggestion,Accept suggestion
+Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,บัญชี
 Account locked,Account locked
@@ -551,6 +552,7 @@ Not Found,Not Found
 Nothing selected,Nothing selected
 Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
 Obsolete,Obsolete
+obsolete,obsolete
 OCR,OCR
 OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
 OCR completed,OCR completed
