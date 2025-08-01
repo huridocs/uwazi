@@ -1,12 +1,12 @@
+import { search } from 'api/search';
+import { reindexAll } from 'api/search/entitiesIndex';
+import settings from 'api/settings';
+import { tenants } from 'api/tenants';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
-import settings from 'api/settings';
-import { reindexAll } from 'api/search/entitiesIndex';
-import { search } from 'api/search';
-import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import { createError, handleError, validation } from '../utils';
 import templates from './templates';
-import { tenants } from 'api/tenants';
 
 const reindexAllTemplates = async () => {
   const allTemplates = await templates.get();
@@ -30,13 +30,11 @@ export default (app: Application) => {
       const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
-        templates.save(template, req.language, !fullReindex, async () => {
-          if (fullReindex) {
-            await reindexAllTemplates();
-            req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
-          } else {
-            req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
+        templates.save(template, req.language, !fullReindex, fullReindex, async (error?: Error) => {
+          if (error) {
+            handleError(error, { req });
           }
+          req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
         })
       );
 
