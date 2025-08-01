@@ -633,6 +633,8 @@ describe('getSuggestionsForTableQuery', () => {
         mismatch: false,
         nonLabeled: false,
         obsolete: false,
+        noContext: false,
+        nonProcessed: false,
       },
     };
 
@@ -649,6 +651,8 @@ describe('getSuggestionsForTableQuery', () => {
         filter: {
           ...input.filter,
           match: true,
+          noContext: false,
+          nonProcessed: false,
         },
       }),
       sut.execute({
@@ -656,6 +660,8 @@ describe('getSuggestionsForTableQuery', () => {
         filter: {
           ...input.filter,
           mismatch: true,
+          noContext: false,
+          nonProcessed: false,
         },
       }),
       sut.execute({
@@ -663,6 +669,8 @@ describe('getSuggestionsForTableQuery', () => {
         filter: {
           ...input.filter,
           labeled: true,
+          noContext: false,
+          nonProcessed: false,
         },
       }),
       sut.execute({
@@ -670,6 +678,8 @@ describe('getSuggestionsForTableQuery', () => {
         filter: {
           ...input.filter,
           nonLabeled: true,
+          noContext: false,
+          nonProcessed: false,
         },
       }),
       sut.execute({
@@ -677,6 +687,8 @@ describe('getSuggestionsForTableQuery', () => {
         filter: {
           ...input.filter,
           error: true,
+          noContext: false,
+          nonProcessed: false,
         },
       }),
       sut.execute({
@@ -684,6 +696,8 @@ describe('getSuggestionsForTableQuery', () => {
         filter: {
           ...input.filter,
           obsolete: true,
+          noContext: false,
+          nonProcessed: false,
         },
       }),
     ]);
@@ -716,6 +730,7 @@ describe('getSuggestionsForTableQuery', () => {
         mismatch: false,
         nonLabeled: false,
         obsolete: false,
+        noContext: false,
       },
     };
 

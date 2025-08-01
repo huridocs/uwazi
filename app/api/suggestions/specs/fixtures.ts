@@ -2082,6 +2082,96 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
   ],
 };
 
+export const comprehensiveTestFixtures = {
+  ixsuggestions: [
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: true, match: true, hasContext: true, obsolete: false, error: false },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 1500 }
+    }),
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: true, match: false, hasContext: true, obsolete: false, error: false },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 1500 }
+    }),
+    
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: true, hasContext: false, obsolete: false, error: false },
+      status: 'ready',
+      modelData: undefined
+    }),
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: false, hasContext: false, obsolete: false, error: false },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 500 }
+    }),
+    
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: false, obsolete: true, hasContext: true, error: false },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 800 }
+    }),
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: false, obsolete: true, hasContext: false, error: false },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 600 }
+    }),
+    
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: false, obsolete: false, error: true, hasContext: true },
+      status: 'failed',
+      modelData: { findSuggestionsRunTimestamp: 1200 }
+    }),
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: false, obsolete: false, error: true, hasContext: false },
+      status: 'failed',
+      modelData: undefined
+    }),
+    
+    factory.ixSuggestion({ 
+      extractorId: factory.id('test_extractor'), 
+      state: { labeled: false, match: false, obsolete: false, error: false, hasContext: true },
+      status: 'processing',
+      modelData: undefined
+    }),
+    
+    factory.ixSuggestion({ 
+      extractorId: factory.id('another_extractor'), 
+      state: { labeled: true, match: true, obsolete: false, error: false, hasContext: true },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 1500 }
+    }),
+    factory.ixSuggestion({ 
+      extractorId: factory.id('another_extractor'), 
+      state: { labeled: false, match: false, obsolete: true, error: false, hasContext: false },
+      status: 'ready',
+      modelData: { findSuggestionsRunTimestamp: 500 }
+    }),
+  ],
+  ixmodels: [
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1000,
+      extractorId: factory.id('test_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1000,
+      extractorId: factory.id('another_extractor'),
+    },
+  ],
+};
+
 export {
   factory,
   file2Id,
