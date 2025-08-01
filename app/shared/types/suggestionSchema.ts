@@ -260,8 +260,18 @@ export const SuggestionCustomFilterSchema = {
     obsolete: { type: 'boolean' },
     error: { type: 'boolean' },
     noContext: { type: 'boolean' },
+    nonProcessed: { type: 'boolean' },
   },
-  required: ['labeled', 'nonLabeled', 'match', 'mismatch', 'obsolete', 'error', 'noContext'],
+  required: [
+    'labeled',
+    'nonLabeled',
+    'match',
+    'mismatch',
+    'obsolete',
+    'error',
+    'noContext',
+    'nonProcessed',
+  ],
 };
 
 export const SuggestionsQueryFilterSchema = {
@@ -329,6 +339,7 @@ export const IXSuggestionAggregationSchema = {
     'obsolete',
     'error',
     'noContext',
+    'nonProcessed',
   ],
   properties: {
     total: { type: 'number' },
@@ -339,5 +350,6 @@ export const IXSuggestionAggregationSchema = {
     obsolete: { type: 'number' },
     error: { type: 'number' },
     noContext: { type: 'number' },
+    nonProcessed: { type: 'number' },
   },
 };
