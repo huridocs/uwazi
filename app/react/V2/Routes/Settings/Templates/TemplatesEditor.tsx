@@ -271,24 +271,26 @@ const TemplatesEditor = () => {
     setShowConfigPropertyPanel(true);
   };
 
+  template.processing = {
+    active: true,
+    completedJobs: 20,
+    totalJobs: 23,
+  };
+
+  const progress = useMemo(
+    () => ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+    [template.processing]
+  );
+
   const progressBar = (
     <div className="w-full flex flex-col gap-2">
       <div className="flex justify-between mb-1">
         <Translate className="text-base font-medium text-gray-500 text-xs">
           Processing template...
         </Translate>
-        <span className="text-sm font-medium text-gray-500">
-          {((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) *
-            100}
-          %
-        </span>
+        <span className="text-sm font-medium text-gray-500">{progress.toFixed(2)}%</span>
       </div>
-      <ProgressBar
-        progress={
-          ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100
-        }
-        color="gray"
-      />
+      <ProgressBar progress={progress} color="gray" />
     </div>
   );
 
