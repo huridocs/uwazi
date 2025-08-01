@@ -4,14 +4,12 @@ import { tenants } from 'api/tenants';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import entities from './entities';
+import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
 
 export const bulkDenormalizeEntitiesFromTemplateSave = async (
   template: TemplateSchema,
   language: string,
   relPropertiesThatChanged: V1RelationshipProperty[],
-  preloadedData: {
-    allTemplates: TemplateSchema[];
-  },
   limit = 200,
   reindex = true
 ) => {
@@ -33,10 +31,9 @@ export const bulkDenormalizeEntitiesFromTemplateSave = async (
     await process(0, totalRows);
   } else {
     await denormalizeTemplateEntities(
-      template,
+      TemplateInputMappers.toApp(template),
       language,
       relPropertiesThatChanged,
-      preloadedData,
       limit
     );
   }

@@ -2,7 +2,9 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
 import { PXCreateParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsFactory';
 import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
 import { PXExtractionServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractionServiceFactory';
@@ -10,17 +12,22 @@ import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrast
 import { PXExtractParagraphsFromEntityJob } from 'api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
-import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { IXTaskService } from 'api/services/informationextraction/TaskService';
 import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelForPDF';
 import { TrainModelForText } from 'api/services/informationextraction/TrainModelForText';
+import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
 import settings from 'api/settings';
-import { IXTaskService } from 'api/services/informationextraction/TaskService';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
-import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
-import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import {
+  TemplateUpdateDenormalizeEntitiesBatch,
+  DenormalizeV1RelationshipsJob,
+} from 'api/templates/templateUpdateDenormalizeUseCase';
+import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
+import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
 
 function randomIntFromInterval(min: number, max: number) {
   // min and max included
@@ -115,6 +122,23 @@ export function registerJobs(
       tenantName,
       trainModelForPDF: new TrainModelForPDF({ tenantName, serviceUrl, iXTaskService }),
       trainModelForText: new TrainModelForText({ iXTaskService, tenantName, serviceUrl }),
+    });
+  });
+
+  register(DenormalizeV1RelationshipsJob, async () => {
+    const transactionManager = DefaultTransactionManager();
+
+    return new DenormalizeV1RelationshipsJob({
+      templatesDS: DefaultTemplatesDataSource(transactionManager),
+      useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+        entitiesDS: new MongoMultiLanguageEntityDataSource(
+          getConnection(),
+          transactionManager,
+          DefaultTemplatesDataSource(transactionManager)
+        ),
+        relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+        templatesDS: DefaultTemplatesDataSource(transactionManager),
+      }),
     });
   });
 }

@@ -1,14 +1,18 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
+import { V1RelationshipProperty } from './V1RelationshipProperty';
+import { CommonProperty } from './CommonProperty';
+
+type TemplateProperty = Property | V1RelationshipProperty;
 
 class Template {
   readonly id: string;
 
   readonly name: string;
 
-  readonly properties: Property[] = [];
+  readonly properties: TemplateProperty[] = [];
 
-  readonly commonProperties: Property[] = [];
+  readonly commonProperties: CommonProperty[] = [];
 
   constructor(
     id: string,
@@ -83,6 +87,11 @@ class Template {
   getPropertiesByType(type: PropertyTypes) {
     return this.properties.filter(p => p.type === type);
   }
+
+  getRelationshipProperties(): V1RelationshipProperty[] {
+    return this.properties.filter((p): p is V1RelationshipProperty => p.type === 'relationship');
+  }
 }
 
+export type { TemplateProperty };
 export { Template };
