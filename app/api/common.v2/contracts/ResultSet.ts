@@ -1,3 +1,5 @@
+import { IndexTypes } from 'shared/data_utils/objectIndex';
+
 export type BreakLoopSignal = Promise<void | boolean> | void | boolean;
 
 export interface ResultSet<T> {
@@ -9,4 +11,5 @@ export interface ResultSet<T> {
   find(predicate: (item: T) => Promise<boolean> | boolean): Promise<T | null>;
   every(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
   some(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
+  indexed(predicate: (item: T) => string | number): Promise<Record<IndexTypes, Awaited<T>>>;
 }

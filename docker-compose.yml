@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: elastic-icu-8.18.0.Dockerfile
     container_name: uwazi-elasticsearch
+    mem_limit: 4g
     volumes:
       - esdata01:/usr/share/elasticsearch/data
     ports:

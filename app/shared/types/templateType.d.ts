@@ -10,7 +10,11 @@ export interface TemplateSchema {
   default?: boolean;
   entityViewPage?: string;
   synced?: boolean;
-  processing?: boolean;
+  processing?: {
+    active?: boolean;
+    totalJobs?: number;
+    completedJobs?: number;
+  };
   /**
    * @minItems 1
    */

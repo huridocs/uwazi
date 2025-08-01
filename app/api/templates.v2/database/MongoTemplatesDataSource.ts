@@ -1,13 +1,15 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
+import { Template } from '../model/Template';
+import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './schemas/TemplateDBO';
-import { Template } from '../model/Template';
 import { TemplateMappers } from './TemplateMappers';
 
 export class MongoTemplatesDataSource
@@ -53,6 +55,38 @@ export class MongoTemplatesDataSource
           mapPropertyQuery(template.properties.query),
           MongoIdHandler.mapToApp(template._id),
           template.properties.denormalizedProperty
+        )
+    );
+  }
+
+  getV1RelationshipPropertiesByIds(propertyIds: string[]) {
+    const cursor = this.getCollection().aggregate([
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties.type': 'relationship',
+          'properties._id': { $in: propertyIds.map(id => new ObjectId(id)) },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
+        },
+      },
+    ]);
+
+    return new MongoResultSet(
+      cursor,
+      template =>
+        new V1RelationshipProperty(
+          template.properties._id,
+          template.properties.name,
+          template.properties.label,
+          template.properties.relationType,
+          template._id,
+          template.properties.content,
+          template.properties.inherit?.property
         )
     );
   }
@@ -150,5 +184,32 @@ export class MongoTemplatesDataSource
 
   async getById(id: Template['id']): Promise<Template | undefined> {
     return (await this.getByIds([id]).first()) || undefined;
+  }
+
+  async incrementProcessingTracking(id: Template['id']) {
+    const result = await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      // @ts-ignore when updating nested objects ts cant infer the proper type
+      { $inc: { 'processing.completedJobs': 1 } },
+      { returnDocument: 'after' }
+    );
+    return {
+      total: result?.processing?.totalJobs || 1,
+      completed: result?.processing?.completedJobs || 0,
+    };
+  }
+
+  async setProcessingTotalJobs(id: Template['id'], totalJobs: number) {
+    await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { 'processing.totalJobs': totalJobs, 'processing.active': true } }
+    );
+  }
+
+  async completeProcessing(templateId: string) {
+    await this.getCollection().findOneAndUpdate(
+      { _id: new ObjectId(templateId) },
+      { $unset: { processing: true } }
+    );
   }
 }

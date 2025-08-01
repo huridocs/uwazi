@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Table, ConfirmNavigationModal, ConfirmationModal } from 'V2/Components/UI';
+import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from 'V2/Components/UI';
 import { Translate } from 'app/I18N/Translate';
 import { IncomingHttpHeaders } from 'http';
 import {
@@ -20,8 +20,6 @@ import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from 'V2/atoms';
 import uniqueID from 'shared/uniqueID';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { Tooltip } from 'flowbite-react';
 import { socket } from 'app/socket';
 import {
   cleanProperty,
@@ -84,7 +82,11 @@ const TemplatesEditor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const ENTITY_COUNT_THRESHOLD = 3000;
 
-  const handleTemplateProcessed = async () => {
+  const handleTemplateProcessed = async (data: { templateId: string }) => {
+    if (data.templateId !== template._id) {
+      return;
+    }
+
     await revalidator.revalidate();
     setNotifications({
       type: 'success',
@@ -92,10 +94,27 @@ const TemplatesEditor = () => {
     });
   };
 
+  const handleTemplateProcessing = async (data: {
+    templateId: string;
+    processing: {
+      active: boolean;
+      completedJobs: number;
+      totalJobs: number;
+    };
+  }) => {
+    if (data.templateId !== template._id) {
+      return;
+    }
+
+    setTemplate({ ...template, processing: data.processing });
+  };
+
   useEffect(() => {
     socket.on('templateProcessed', handleTemplateProcessed);
+    socket.on('templateProcessing', handleTemplateProcessing);
     return () => {
       socket.off('templateProcessed', handleTemplateProcessed);
+      socket.off('templateProcessing', handleTemplateProcessing);
     };
   });
 
@@ -109,7 +128,7 @@ const TemplatesEditor = () => {
 
   useEffect(() => {
     setTemplate(loadedTemplate);
-    if (loadedTemplate.processing) {
+    if (loadedTemplate.processing?.active) {
       setNotifications({
         type: 'warning',
         text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
@@ -129,7 +148,12 @@ const TemplatesEditor = () => {
   }, [template, commonProperties, properties]);
 
   const checkPendingChanges = useCallback(
-    () => !isEqual(loadedTemplate, getCurrentStatus()),
+    //ignore processing
+    () =>
+      !isEqual(
+        { ...loadedTemplate, processing: undefined },
+        { ...getCurrentStatus(), processing: undefined }
+      ),
     [getCurrentStatus, loadedTemplate]
   );
 
@@ -177,7 +201,7 @@ const TemplatesEditor = () => {
     const savedTemplate = await templatesAPI.save(templateToSave);
     await revalidator.revalidate();
 
-    if (savedTemplate.processing) {
+    if (savedTemplate.processing?.active) {
       setNotifications({
         type: 'warning',
         text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
@@ -252,29 +276,33 @@ const TemplatesEditor = () => {
     setShowConfigPropertyPanel(true);
   };
 
-  const headerTitle = template.processing ? (
-    <Tooltip
-      content={<Translate>Template is being processed. Please wait for it to finish.</Translate>}
-      placement="right"
-      // eslint-disable-next-line react/style-prop-object
-      style="light"
-    >
-      <div className="flex items-center gap-2">
-        {template.name}
-        <ExclamationTriangleIcon className="w-5 h-5 text-warning-500" />
+  const progress = useMemo(
+    () => ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+    [template.processing]
+  );
+
+  const progressBar = (
+    <div className="w-full flex flex-col gap-2">
+      <div className="flex justify-between mb-1">
+        <Translate className="text-base font-medium text-gray-500 text-xs">
+          Processing template...
+        </Translate>
+        <span className="text-sm font-medium text-gray-500">{progress.toFixed(2)}%</span>
       </div>
-    </Tooltip>
-  ) : (
-    template.name
+      <ProgressBar progress={progress} color="gray" />
+    </div>
   );
 
   return (
     <div className="w-full h-full overflow-y-auto">
       <SettingsContent>
         <SettingsContent.Header
-          title={headerTitle}
+          title={template.name}
           path={new Map([['Templates', '/settings/templates']])}
-        />
+          className="flex items-center gap-2"
+        >
+          {template.processing?.active && progressBar}
+        </SettingsContent.Header>
         <SettingsContent.Body>
           <Table
             columns={propertyColumns(handleEditProperty)}

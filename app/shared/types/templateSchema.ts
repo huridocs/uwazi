@@ -297,7 +297,15 @@ export const templateSchema = {
     default: { type: 'boolean', default: false },
     entityViewPage: { type: 'string', default: '' },
     synced: { type: 'boolean' },
-    processing: { type: 'boolean' },
+    processing: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        active: { type: 'boolean' },
+        totalJobs: { type: 'number' },
+        completedJobs: { type: 'number' },
+      },
+    },
     commonProperties: {
       type: 'array',
       requireTitleProperty: true,
