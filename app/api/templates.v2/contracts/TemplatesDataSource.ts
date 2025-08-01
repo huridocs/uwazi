@@ -17,6 +17,6 @@ export interface TemplatesDataSource {
   getByNames(names: Template['name'][]): ResultSet<Template>;
   getById(id: Template['id']): Promise<Template | undefined>;
   incrementProcessingTracking(id: Template['id']): Promise<{ total: number; completed: number }>;
-  incrementProcessingTotalJobs(id: Template['id']): Promise<void>;
   completeProcessing(templateId: string): Promise<void>;
+  setProcessingTotalJobs(templateId: string, totalJobs: number): Promise<void>;
 }

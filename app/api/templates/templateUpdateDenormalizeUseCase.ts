@@ -31,6 +31,7 @@ type Input = {
   modifiedRelationshipsProps: string[];
   templateId: string;
   onAllEntitiesDenormalized: () => void;
+  onProgress: (progress: { active: boolean; totalJobs: number; completedJobs: number }) => void;
 };
 
 type Output = any;
@@ -50,6 +51,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     modifiedRelationshipsProps,
     templateId,
     onAllEntitiesDenormalized,
+    onProgress,
   }: Input) {
     const relationshipProps = await this.dependencies.templatesDS
       .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
@@ -91,6 +93,8 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     if (jobs.total === jobs.completed) {
       await this.dependencies.templatesDS.completeProcessing(templateId);
       onAllEntitiesDenormalized();
+    } else if (jobs.completed % 10 === 0) {
+      onProgress({ active: true, totalJobs: jobs.total, completedJobs: jobs.completed });
     }
   }
 }
@@ -120,6 +124,11 @@ export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<Denorma
       templateId: this.params.templateId,
       onAllEntitiesDenormalized: () =>
         emitToTenant(this.tenantName, 'templateProcessed', this.params.templateId),
+      onProgress: (processing: { active: boolean; totalJobs: number; completedJobs: number }) =>
+        emitToTenant(this.tenantName, 'templateProcessing', {
+          templateId: this.params.templateId,
+          processing,
+        }),
     });
   }
 }
@@ -141,8 +150,6 @@ export const denormalizeTemplateEntities = async (
   const relationshipsV1DS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
 
-  const resultSet = await entitiesDS.getSharedIdsByTemplateId(template.id);
-
   const useCase = new TemplateUpdateDenormalizeEntitiesBatch({
     entitiesDS,
     relationshipsV1DS,
@@ -163,10 +170,12 @@ export const denormalizeTemplateEntities = async (
     throw new Error('This process can not be started without a user');
   }
 
+  const resultSet = await entitiesDS.getSharedIdsByTemplateId(template.id);
+  const totalJobs = Math.ceil((await entitiesDS.countByTemplateId(template.id)) / limit);
+  await templatesDS.setProcessingTotalJobs(template.id, totalJobs);
+
   // eslint-disable-next-line no-await-in-loop
   while (await resultSet.hasNext()) {
-    // eslint-disable-next-line no-await-in-loop
-    await templatesDS.incrementProcessingTotalJobs(template.id);
     // eslint-disable-next-line no-await-in-loop
     await dispatcher.dispatch(DenormalizeV1RelationshipsJob, {
       // eslint-disable-next-line no-await-in-loop
