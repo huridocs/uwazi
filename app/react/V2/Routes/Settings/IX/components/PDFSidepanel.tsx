@@ -22,6 +22,7 @@ import {
 } from './sidepanelFunctions';
 import { SidepanelForms } from './SidepanelForms';
 import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from './atoms';
+import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -49,6 +50,7 @@ const PDFSidepanel = ({
   const [highlights, setHighlights] = useAtom(highlightsAtom);
   const [selectionError, setSelectionError] = useAtom(selectionErrorAtom);
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
+  const [selectAndSearch, setSelectAndSearch] = useAtom(selectAndSearchAtom);
   const selections = useAtomValue(selectionsAtom);
   const pdfScalingValue = useAtomValue(pdfScaleAtom);
   const setNotifications = useSetAtom(notificationAtom);
@@ -209,7 +211,10 @@ const PDFSidepanel = ({
                     {property?.label}
                   </Translate>
                   {SELECT_TYPES.includes(property?.type || '') && (
-                    <ToggleButton size="small">
+                    <ToggleButton
+                      size="small"
+                      onToggle={() => setSelectAndSearch(!selectAndSearch)}
+                    >
                       <Translate className="font-medium text-xs text-gray-900">
                         Select & Search
                       </Translate>

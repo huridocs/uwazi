@@ -15,6 +15,7 @@ import { loadValuesAndSuggestions } from './sidepanelFunctions';
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
+import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
 
 type SidepanelFormsProps = {
   handleClickToFill: () => Promise<void>;
@@ -23,6 +24,7 @@ type SidepanelFormsProps = {
   clearSelectionButton?: ReactNode;
 };
 
+// eslint-disable-next-line max-statements
 const Select = ({
   property,
   suggestion,
@@ -35,6 +37,7 @@ const Select = ({
   const thesauris = useAtomValue(thesauriAtom);
   const { control, getValues } = useFormContext();
   const selectedtext = useAtomValue(textSelectionAtom);
+  const selectAndSearch = useAtomValue(selectAndSearchAtom);
 
   const thesaurus = thesauris.find(thes => thes._id === property.content);
 
@@ -127,7 +130,7 @@ const Select = ({
       });
       setOptions(multiselectOptions);
     }
-  }, [getValues, property, suggestion?.suggestedValue, thesaurus?.values]);
+  }, [getValues, property, suggestion, thesaurus]);
 
   const lookupSearch = async (searchTerm: string): Promise<MultiselectListOption[]> => {
     if (!searchTerm) {
@@ -170,7 +173,7 @@ const Select = ({
             items={options}
             checkboxes
             singleSelect={property.type === 'select'}
-            search={selectedtext?.text}
+            search={selectAndSearch ? selectedtext?.text : ''}
             suggestions
             onSearch={property.type === 'relationship' ? lookupSearch : undefined}
           />
