@@ -371,12 +371,12 @@ const MultiselectList = ({
       </div>
 
       {availableItems.length === 0 && !searching && (
-        <div className="flex w-full h-full justify-center items-start min-h-[400px]">
+        <div className="flex w-full h-full justify-center items-start min-h-fit">
           {renderChild(blankState)}
         </div>
       )}
       <ul
-        className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow min-h-[400px]'}`}
+        className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow min-h-fit'}`}
         ref={optionsRef}
       >
         {availableItems.map(renderItem)}

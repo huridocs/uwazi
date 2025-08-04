@@ -1,29 +1,26 @@
 /* eslint-disable max-lines */
-/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { captureException } from '@sentry/react';
-import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema } from 'app/istore';
 import { isClient } from 'app/utils';
 import { lookup } from 'V2/api/search';
 import { InputField, MultiselectList, MultiselectListOption, Textarea } from 'V2/Components/Forms';
 import { Button } from 'V2/Components/UI';
-import { selectionHandlers } from 'V2/Components/PDFViewer';
 import { thesauriAtom } from 'V2/atoms';
 import { loadValuesAndSuggestions } from './sidepanelFunctions';
-import { highlightsAtom, selectionsAtom, selectionErrorAtom, textSelectionAtom } from './atoms';
+import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 
 type SidepanelFormsProps = {
+  handleClickToFill: () => Promise<void>;
   property?: ClientPropertySchema;
   suggestion?: TableSuggestion;
-  file?: FileType;
-  handleClickToFill: () => Promise<void>;
+  clearSelectionButton?: ReactNode;
 };
 
 const Select = ({
@@ -161,7 +158,7 @@ const Select = ({
   };
 
   return (
-    <div className="px-4 pb-4 overflow-y-scroll max-h-60">
+    <div className="px-4 pb-4 h-60">
       <Controller
         control={control}
         name="field"
@@ -187,12 +184,12 @@ const TextInput = ({
   handleClickToFill,
   property,
   suggestion,
-  file,
+  clearSelectionButton,
 }: {
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
-  file: SidepanelFormsProps['file'];
   handleClickToFill: SidepanelFormsProps['handleClickToFill'];
+  clearSelectionButton: SidepanelFormsProps['clearSelectionButton'];
 }) => {
   const {
     register,
@@ -200,9 +197,7 @@ const TextInput = ({
     formState: { errors, isSubmitting },
   } = useFormContext();
 
-  const [highlights, setHighlights] = useAtom(highlightsAtom);
   const selectionError = useAtomValue(selectionErrorAtom);
-  const setSelections = useSetAtom(selectionsAtom);
 
   const templateId = suggestion?.entityTemplateId;
 
@@ -231,6 +226,7 @@ const TextInput = ({
           hideLabel
           type={inputType}
           hasErrors={errors.field?.type === 'required' || !!selectionError}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...register('field', {
             required: property.required || property.name === 'title',
             valueAsDate: property.type === 'date' || undefined,
@@ -247,26 +243,7 @@ const TextInput = ({
           <Translate className="">Click to fill</Translate>
         </Button>
       </div>
-      {suggestion?.extractorSource.pdf && (
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  file?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
-      )}
+      {clearSelectionButton}
     </div>
   );
 };
@@ -274,22 +251,19 @@ const TextInput = ({
 const Markdown = ({
   handleClickToFill,
   suggestion,
-  file,
   property,
+  clearSelectionButton,
 }: {
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
-  file: SidepanelFormsProps['file'];
   handleClickToFill: SidepanelFormsProps['handleClickToFill'];
+  clearSelectionButton: SidepanelFormsProps['clearSelectionButton'];
 }) => {
   const {
     control,
     setValue,
     formState: { isSubmitting, errors },
   } = useFormContext();
-
-  const [highlights, setHighlights] = useAtom(highlightsAtom);
-  const setSelections = useSetAtom(selectionsAtom);
   const selectionError = useAtomValue(selectionErrorAtom);
   const templateId = suggestion?.entityTemplateId;
 
@@ -323,32 +297,17 @@ const Markdown = ({
           <Translate className="">Click to fill</Translate>
         </Button>
       </div>
-      {suggestion?.extractorSource.pdf && (
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  file?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
-      )}
+      {clearSelectionButton}
     </div>
   );
 };
 
-// eslint-disable-next-line max-statements
-const SidepanelForms = ({ property, suggestion, file, handleClickToFill }: SidepanelFormsProps) => {
+const SidepanelForms = ({
+  property,
+  suggestion,
+  handleClickToFill,
+  clearSelectionButton,
+}: SidepanelFormsProps) => {
   if (!property) {
     return '';
   }
@@ -365,8 +324,8 @@ const SidepanelForms = ({ property, suggestion, file, handleClickToFill }: Sidep
         <TextInput
           handleClickToFill={handleClickToFill}
           suggestion={suggestion}
-          file={file}
           property={property}
+          clearSelectionButton={clearSelectionButton}
         />
       );
     case 'markdown':
@@ -374,8 +333,8 @@ const SidepanelForms = ({ property, suggestion, file, handleClickToFill }: Sidep
         <Markdown
           handleClickToFill={handleClickToFill}
           suggestion={suggestion}
-          file={file}
           property={property}
+          clearSelectionButton={clearSelectionButton}
         />
       );
     default:

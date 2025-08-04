@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
@@ -221,8 +222,27 @@ const PDFSidepanel = ({
               <SidepanelForms
                 property={property}
                 suggestion={suggestion}
-                file={pdfFile}
                 handleClickToFill={handleClickToFill}
+                clearSelectionButton={
+                  <div className="sm:text-right" data-testid="ix-clear-button-container">
+                    <Button
+                      type="button"
+                      styling="outline"
+                      disabled={Boolean(!highlights) || isSubmitting}
+                      onClick={() => {
+                        setHighlights(undefined);
+                        setSelections(
+                          selectionHandlers.deleteFileSelection(
+                            { name: suggestion?.propertyName || '' },
+                            pdfFile?.extractedMetadata
+                          )
+                        );
+                      }}
+                    >
+                      <Translate>Clear</Translate>
+                    </Button>
+                  </div>
+                }
               />
             </VerticalDrawer>
             <div className="flex justify-end gap-2 px-4 py-2 border-t border-gray-200">
