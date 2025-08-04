@@ -36,14 +36,14 @@ jobs:
         id: cypress-version
         run: |
           echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
-      - name: Cache Cypress
-        id: cache-cypress
+      - name: Get Cypress from cache
+        id: cypress-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
       - name: Install Cypress
-        if: steps.cache-cypress.outputs.cache-hit != 'true'
+        if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
       - name: generate global css
         run: yarn tailwind
