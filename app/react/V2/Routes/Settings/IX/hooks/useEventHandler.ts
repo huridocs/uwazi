@@ -32,7 +32,7 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       _message,
       data
     ) => {
-      if (eventExtractorId === extractorId) {
+      if (eventExtractorId === extractorId && modelStatus !== ixStatus.ready) {
         updateStatus(modelStatus, data);
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
