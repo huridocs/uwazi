@@ -32,6 +32,8 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      - name: Install Cypress
+        run: npx cypress install
       - name: generate global css
         run: yarn tailwind
       - name: Cypress run
