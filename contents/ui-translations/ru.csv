@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,Требутся электронная почта
 Accept,Принять
 Accept suggestion,Accept suggestion
+Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Аккаунт
 Account locked,Account locked
@@ -548,6 +549,7 @@ Not Found,Not Found
 Nothing selected,Nothing selected
 Number of sentences above threshold,Количество предложений выше порога
 Obsolete,Obsolete
+obsolete,obsolete
 OCR,Оптическое распознавание символов
 OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
 OCR completed,Оптическое распознавание символов завершено
