@@ -52,7 +52,7 @@ const Basic: Story = {
   args: {
     title: 'Resolución de la Corte IDH. Supervisión de cumplimient',
     children: (
-      <div className="p-4">
+      <div className="p-4" data-testid="drawer-content">
         <ul>
           <li>1 - item 1</li>
           <li>2 - item 2</li>
