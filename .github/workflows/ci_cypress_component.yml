@@ -41,5 +41,4 @@ jobs:
           component: true
           config-file: cypress.config.ts
           headed: false
-          cache: 'yarn'
         timeout-minutes: 15
