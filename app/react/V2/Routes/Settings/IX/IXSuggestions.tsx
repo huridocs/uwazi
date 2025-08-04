@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -70,10 +70,8 @@ const IXSuggestions = () => {
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
@@ -183,12 +181,25 @@ const IXSuggestions = () => {
     setSidepanel('none');
   };
 
-  useEffect(() => {
+  const handleSortingChange = useCallback((sortingState: SortingState) => {
     keepRowOrder.current = false;
-    const navigatePromise = async (path: string) => navigate(path, { replace: true });
-    const newUrl = updateSortingUrl(sorting, location.pathname, searchParams);
-    navigatePromise(newUrl).catch(_e => {});
-  }, [sorting, searchParams]);
+    if (sortingState.length === 0) {
+      return;
+    }
+    const sortingObject = sortingState[0];
+    const sortingParams = {
+      property: sortingObject.id || '',
+      order: sortingObject.desc ? 'desc' : 'asc',
+    };
+
+    setSearchParams(prev => {
+      const newSearchParams = new URLSearchParams(prev);
+      newSearchParams.set('sort', JSON.stringify(sortingParams));
+      return newSearchParams;
+    });
+    //setSearchParams is not a stable function, should not be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const template = templates.find(t => t._id === extractor.templates[0]);
@@ -250,9 +261,7 @@ const IXSuggestions = () => {
               acceptSuggestions,
               openSidepanel
             )}
-            sortingFn={sortingState => {
-              setSorting(sortingState);
-            }}
+            sortingFn={handleSortingChange}
             onChange={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)
