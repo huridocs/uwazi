@@ -92,7 +92,15 @@ const SuggestedValue = ({
         <span className="text-gray-500">{getCurrentValue()}</span>
       </Truncate>
       <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs">
-        <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
+        {suggestion.state.obsolete && (
+          <span className="text-gray-400 italic">
+            (<Translate>obsolete</Translate>) {getSuggestedValue()}
+          </span>
+        )}
+
+        {!suggestion.state.obsolete && !suggestion.state.error && (
+          <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
+        )}
       </Truncate>
     </div>
   );
