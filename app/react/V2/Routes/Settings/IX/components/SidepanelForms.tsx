@@ -47,7 +47,7 @@ const Select = ({
   const thesaurus = thesauris.find(thes => thes._id === property.content);
 
   useEffect(() => {
-    if (!intitialOptionsRef.current.length && property?.type === 'relationship') {
+    if (property?.type === 'relationship') {
       const currentValues = (getValues('field') as string[]) || [];
       const suggestions = (suggestion?.suggestedValue as string[]) || [];
 
@@ -166,7 +166,7 @@ const Select = ({
   };
 
   return (
-    <div className="px-4 pb-4 overflow-y-scroll">
+    <div className="px-4 pb-4 overflow-y-scroll max-h-60">
       <Controller
         control={control}
         name="field"
@@ -237,7 +237,7 @@ const TextInput = ({
           type={inputType}
           hasErrors={errors.field?.type === 'required' || !!selectionError}
           {...register('field', {
-            required: property.required,
+            required: property.required || property.name === 'title',
             valueAsDate: property.type === 'date' || undefined,
           })}
         />

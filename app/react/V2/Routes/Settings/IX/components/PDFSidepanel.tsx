@@ -158,7 +158,6 @@ const PDFSidepanel = ({
           <form onSubmit={handleSubmit(onSubmit)}>
             <VerticalDrawer
               defaultOpen
-              maxHeight="max-h-[40%]"
               title={
                 <div className="flex gap-4 items-center">
                   <Translate
