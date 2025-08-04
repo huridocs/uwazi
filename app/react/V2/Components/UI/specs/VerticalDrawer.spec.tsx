@@ -16,25 +16,30 @@ describe('VerticalDrawer', () => {
     render(<VerticalDrawer {...defaultProps} />);
     expect(screen.getByText('Test Drawer')).toBeInTheDocument();
     expect(screen.getByText('Open')).toBeInTheDocument();
-    expect(screen.queryByTestId('drawer-content')).not.toBeVisible();
+    const contentElement = screen.getByTestId('drawer-content').parentElement;
+    expect(contentElement).toHaveClass('hidden');
   });
 
   it('should render with defaultOpen prop set to true', () => {
     render(<VerticalDrawer {...defaultProps} defaultOpen />);
     expect(screen.getByText('Test Drawer')).toBeInTheDocument();
     expect(screen.getByText('Close')).toBeInTheDocument();
-    expect(screen.getByTestId('drawer-content')).toBeInTheDocument();
+    const contentElement = screen.getByTestId('drawer-content').parentElement;
+    expect(contentElement).not.toHaveClass('hidden');
   });
 
   it('should toggle content visibility when button is clicked', () => {
     render(<VerticalDrawer {...defaultProps} />);
     const button = screen.getByText('Open');
-    expect(screen.queryByTestId('drawer-content')).not.toBeInTheDocument();
+    const contentElement = screen.getByTestId('drawer-content').parentElement;
+    expect(contentElement).toHaveClass('hidden');
+
     fireEvent.click(button);
-    expect(screen.getByTestId('drawer-content')).toBeInTheDocument();
+    expect(contentElement).not.toHaveClass('hidden');
     expect(screen.getByText('Close')).toBeInTheDocument();
+
     fireEvent.click(button);
-    expect(screen.queryByTestId('drawer-content')).not.toBeInTheDocument();
+    expect(contentElement).toHaveClass('hidden');
     expect(screen.getByText('Open')).toBeInTheDocument();
   });
 });
