@@ -2,26 +2,24 @@ import React from 'react';
 
 interface ProgressBarProps {
   progress: number;
-  color?: 'gray' | 'primary' | 'secondary' | 'success' | 'error' | 'warning';
+  color?: 'gray' | 'primary' | 'success' | 'error' | 'warning';
   className?: string;
 }
 
-const getColor = (color: 'gray' | 'primary' | 'secondary' | 'success' | 'error' | 'warning') => {
+const getColor = (color: 'gray' | 'primary' | 'success' | 'error' | 'warning') => {
   switch (color) {
     case 'gray':
-      return 'bg-gray-600';
+      return 'bg-gray-500';
     case 'primary':
-      return 'bg-primary-600';
-    case 'secondary':
-      return 'bg-secondary-600';
+      return 'bg-primary-500';
     case 'success':
-      return 'bg-success-600';
+      return 'bg-success-500';
     case 'error':
-      return 'bg-error-600';
+      return 'bg-error-500';
     case 'warning':
-      return 'bg-warning-600';
+      return 'bg-warning-500';
     default:
-      return 'bg-gray-600';
+      return 'bg-gray-500';
   }
 };
 

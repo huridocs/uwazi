@@ -12,7 +12,7 @@ const meta: Meta<typeof ProgressBar> = {
     },
     color: {
       control: { type: 'select' },
-      options: ['gray', 'primary', 'secondary', 'success', 'danger', 'warning'],
+      options: ['gray', 'primary', 'success', 'error', 'warning'],
       description: 'Color theme of the progress bar',
     },
     className: {
@@ -40,38 +40,6 @@ const Basic: Story = {
   },
 };
 
-const Complete: Story = {
-  ...Primary,
-  args: {
-    progress: 100,
-    color: 'success',
-  },
-};
-
-const Empty: Story = {
-  ...Primary,
-  args: {
-    progress: 0,
-    color: 'gray',
-  },
-};
-
-const Danger: Story = {
-  ...Primary,
-  args: {
-    progress: 75,
-    color: 'error',
-  },
-};
-
-const Warning: Story = {
-  ...Primary,
-  args: {
-    progress: 25,
-    color: 'warning',
-  },
-};
-
-export { Basic, Complete, Empty, Danger, Warning };
+export { Basic };
 
 export default meta;
