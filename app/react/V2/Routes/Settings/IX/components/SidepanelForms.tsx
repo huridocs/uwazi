@@ -13,22 +13,17 @@ import { lookup } from 'V2/api/search';
 import { InputField, MultiselectList, MultiselectListOption, Textarea } from 'V2/Components/Forms';
 import { Button } from 'V2/Components/UI';
 import { selectionHandlers } from 'V2/Components/PDFViewer';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
-import { pdfScaleAtom, thesauriAtom } from 'V2/atoms';
-import { coerceValue, loadValuesAndSuggestions } from './sidepanelFunctions';
+import { thesauriAtom } from 'V2/atoms';
+import { loadValuesAndSuggestions } from './sidepanelFunctions';
 import { highlightsAtom, selectionsAtom, selectionErrorAtom, textSelectionAtom } from './atoms';
 import { TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
-
-enum HighlightColors {
-  CURRENT = '#B1F7A3',
-  NEW = '#F27DA5',
-}
 
 type SidepanelFormsProps = {
   property?: ClientPropertySchema;
   suggestion?: TableSuggestion;
   file?: FileType;
+  handleClickToFill: () => Promise<void>;
 };
 
 const Select = ({
@@ -47,7 +42,7 @@ const Select = ({
   const thesaurus = thesauris.find(thes => thes._id === property.content);
 
   useEffect(() => {
-    if (property?.type === 'relationship') {
+    if (suggestion && property?.type === 'relationship') {
       const currentValues = (getValues('field') as string[]) || [];
       const suggestions = (suggestion?.suggestedValue as string[]) || [];
 
@@ -194,10 +189,10 @@ const TextInput = ({
   suggestion,
   file,
 }: {
-  handleClickToFill: () => Promise<void>;
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
   file: SidepanelFormsProps['file'];
+  handleClickToFill: SidepanelFormsProps['handleClickToFill'];
 }) => {
   const {
     register,
@@ -282,10 +277,10 @@ const Markdown = ({
   file,
   property,
 }: {
-  handleClickToFill: () => Promise<void>;
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
   file: SidepanelFormsProps['file'];
+  handleClickToFill: SidepanelFormsProps['handleClickToFill'];
 }) => {
   const {
     control,
@@ -353,58 +348,10 @@ const Markdown = ({
 };
 
 // eslint-disable-next-line max-statements
-const SidepanelForms = ({ property, suggestion, file }: SidepanelFormsProps) => {
-  const selectedText = useAtomValue(textSelectionAtom);
-  const pdfScalingValue = useAtomValue(pdfScaleAtom);
-  const setHighlights = useSetAtom(highlightsAtom);
-  const setSelections = useSetAtom(selectionsAtom);
-  const setSelectionError = useSetAtom(selectionErrorAtom);
-
-  const { setValue } = useFormContext();
-
+const SidepanelForms = ({ property, suggestion, file, handleClickToFill }: SidepanelFormsProps) => {
   if (!property) {
     return '';
   }
-
-  // eslint-disable-next-line max-statements
-  const handleClickToFill = async () => {
-    if (selectedText) {
-      if (selectedText.selectionRectangles) {
-        const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
-          selectedText,
-          pdfScalingValue,
-          true
-        );
-
-        setHighlights(
-          selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
-        );
-        setSelections(
-          selectionHandlers.updateFileSelection(
-            { name: suggestion?.propertyName || '', id: property._id as string },
-            file?.extractedMetadata,
-            normalizedSelections
-          )
-        );
-      }
-
-      if (property.type === 'date' || property.type === 'numeric') {
-        const coercedValue = await coerceValue(property.type, selectedText.text, file?.language);
-
-        if (!coercedValue?.success) {
-          setSelectionError('Value cannot be transformed to the correct type');
-        } else {
-          const value =
-            property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
-          setValue('field', value, { shouldDirty: true });
-          setSelectionError(undefined);
-        }
-      } else {
-        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
-        setValue('field', sanitizedText, { shouldDirty: true });
-      }
-    }
-  };
 
   switch (property?.type) {
     case 'select':

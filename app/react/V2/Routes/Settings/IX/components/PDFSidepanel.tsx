@@ -9,19 +9,18 @@ import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { Button, Sidepanel, ToggleButton, VerticalDrawer } from 'V2/Components/UI';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
-import { notificationAtom } from 'V2/atoms';
+import { notificationAtom, pdfScaleAtom } from 'V2/atoms';
+import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { TableSuggestion } from '../types';
 import {
+  coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
 } from './sidepanelFunctions';
 import { SidepanelForms } from './SidepanelForms';
-import { highlightsAtom } from './atoms/highlightsAtom';
-import { selectionErrorAtom } from './atoms/selectionErrorAtom';
-import { textSelectionAtom } from './atoms/textSelectionAtom';
-import { selectionsAtom } from './atoms/selectionsAtom';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from './atoms';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -50,7 +49,9 @@ const PDFSidepanel = ({
   const [selectionError, setSelectionError] = useAtom(selectionErrorAtom);
   const [selectedText, setSelectedText] = useAtom(textSelectionAtom);
   const selections = useAtomValue(selectionsAtom);
+  const pdfScalingValue = useAtomValue(pdfScaleAtom);
   const setNotifications = useSetAtom(notificationAtom);
+  const setSelections = useSetAtom(selectionsAtom);
 
   useEffect(() => {
     if (suggestion) {
@@ -93,7 +94,7 @@ const PDFSidepanel = ({
   });
 
   const { isSubmitting, isDirty } = formContext.formState;
-  const { handleSubmit } = formContext;
+  const { handleSubmit, setValue } = formContext;
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -120,6 +121,46 @@ const PDFSidepanel = ({
     }
 
     handleClose();
+  };
+
+  // eslint-disable-next-line max-statements
+  const handleClickToFill = async () => {
+    if (selectedText) {
+      if (selectedText.selectionRectangles) {
+        const normalizedSelections = selectionHandlers.adjustSelectionsToScale(
+          selectedText,
+          pdfScalingValue,
+          true
+        );
+
+        setHighlights(
+          selectionHandlers.getHighlightsFromSelection(normalizedSelections, HighlightColors.NEW)
+        );
+        setSelections(
+          selectionHandlers.updateFileSelection(
+            { name: suggestion?.propertyName || '', id: property?._id as string },
+            pdfFile?.extractedMetadata,
+            normalizedSelections
+          )
+        );
+      }
+
+      if (property?.type === 'date' || property?.type === 'numeric') {
+        const coercedValue = await coerceValue(property.type, selectedText.text, pdfFile?.language);
+
+        if (!coercedValue?.success) {
+          setSelectionError('Value cannot be transformed to the correct type');
+        } else {
+          const value =
+            property.type === 'date' ? secondsToISODate(coercedValue.value) : coercedValue.value;
+          setValue('field', value, { shouldDirty: true });
+          setSelectionError(undefined);
+        }
+      } else {
+        const sanitizedText = selectedText.text?.replace(/[\n\r]/g, ' ');
+        setValue('field', sanitizedText, { shouldDirty: true });
+      }
+    }
   };
 
   return (
@@ -177,7 +218,12 @@ const PDFSidepanel = ({
                 </div>
               }
             >
-              <SidepanelForms property={property} suggestion={suggestion} file={pdfFile} />
+              <SidepanelForms
+                property={property}
+                suggestion={suggestion}
+                file={pdfFile}
+                handleClickToFill={handleClickToFill}
+              />
             </VerticalDrawer>
             <div className="flex justify-end gap-2 px-4 py-2 border-t border-gray-200">
               <Button type="button" styling="outline" disabled={isSubmitting} onClick={handleClose}>
