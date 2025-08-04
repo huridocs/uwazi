@@ -94,18 +94,22 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
       - name: Get Cypress version
         id: cypress-version
         run: |
           echo "version=$(yarn info cypress version --silent | head -n 1)" >> $GITHUB_OUTPUT
-      - name: Cache Cypress if not cached
-        id: cache-cypress
+      - name: Get Cypress from cache
+        id: cypress-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cypress-${{ steps.cypress-version.outputs.version }}
-      - name: install dependencies
-        run: yarn install
+      - name: Install Cypress
+        if: steps.cypress-cache.outputs.cache-hit != 'true'
+        run: npx cypress install
+
       - name: Install poppler-utils
         run: |
           sudo apt-get update -qq

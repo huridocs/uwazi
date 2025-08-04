@@ -264,7 +264,7 @@ describe('Information Extraction', () => {
       cy.checkA11y();
       cy.contains('button', 'Find suggestions').click();
       cy.wait('@trainSuggestions');
-      cy.contains('tr', 'Obsolete').contains('button', 'Accept').should('be.disabled');
+      cy.contains('tr', 'obsolete').contains('button', 'Accept').should('be.disabled');
       cy.contains('2023');
     });
 
