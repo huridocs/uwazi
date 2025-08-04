@@ -212,10 +212,9 @@ const IXSuggestions = () => {
     }
 
     if (property?.type === 'multiselect' || property?.type === 'relationship') {
-      const flatenedSuggestions = newSuggestions.map(suggestion =>
-        generateChildrenRows(suggestion as MultiValueSuggestion)
+      setCurrentSuggestions(() =>
+        newSuggestions.map(suggestion => generateChildrenRows(suggestion as MultiValueSuggestion))
       );
-      setCurrentSuggestions(flatenedSuggestions);
     } else {
       setCurrentSuggestions(
         newSuggestions.map(

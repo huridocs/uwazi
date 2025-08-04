@@ -19,7 +19,7 @@ import { useLoaderData } from 'react-router';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
-import { Highlights, TableSuggestion } from '../types';
+import { Highlights, SuggestionValue, TableSuggestion } from '../types';
 import {
   coerceValue,
   getFormValue,
@@ -32,6 +32,16 @@ import { MultiselectItemLabel } from './MultiselectItemLabel';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
+
+const getSuggestionValues = (suggestedValue: SuggestionValue[] | undefined): string[] => {
+  if (!suggestedValue) return [];
+  return suggestedValue.map(s => {
+    if (s && typeof s === 'object' && 'id' in s) {
+      return s.id;
+    }
+    return String(s);
+  });
+};
 
 interface SuggestionSidepanelProps {
   showSidepanel: boolean;
@@ -98,34 +108,34 @@ const SuggestionSidepanel = ({
   useEffect(() => {
     if (property?.type === 'select' || property?.type === 'multiselect') {
       const currentValues = (getValues('field') as string[]) || [];
-      const suggestions = (suggestion?.suggestedValue as string[]) || [];
+      const suggestions = getSuggestionValues(suggestion?.suggestedValue as SuggestionValue[]);
 
       const _options: MultiselectListOption[] = [];
       thesaurus?.values.forEach((value: any) => {
         _options.push({
           label: (
             <MultiselectItemLabel
-              isSelected={currentValues.includes(value)}
-              isSuggested={suggestions.includes(value)}
+              isSelected={currentValues.includes(value.id)}
+              isSuggested={suggestions.includes(value.id)}
               label={value.label}
               property={property}
             />
           ),
           searchLabel: value.label.toLowerCase(),
           value: value.id,
-          suggested: (suggestion?.suggestedValue as string[])?.includes(value.id),
+          suggested: suggestions.includes(value.id),
           items: value.values?.map((subValue: any) => ({
             label: (
               <MultiselectItemLabel
-                isSelected={currentValues.includes(value)}
-                isSuggested={suggestions.includes(value)}
+                isSelected={currentValues.includes(value.id)}
+                isSuggested={suggestions.includes(value.id)}
                 label={subValue.label}
                 property={property}
               />
             ),
             searchLabel: subValue.label.toLowerCase(),
             value: subValue.id,
-            suggested: (suggestion?.suggestedValue as string[])?.includes(subValue.id),
+            suggested: suggestions.includes(subValue.id),
           })),
         });
       });
@@ -168,7 +178,7 @@ const SuggestionSidepanel = ({
   useEffect(() => {
     if (showSidepanel && property?.type === 'relationship') {
       const currentValues = (getValues('field') as string[]) || [];
-      const suggestions = (suggestion?.suggestedValue as string[]) || [];
+      const suggestions = getSuggestionValues(suggestion?.suggestedValue as SuggestionValue[]);
 
       Promise.all([
         lookup({ entityTitle: '', template: property?.content }),
@@ -176,7 +186,7 @@ const SuggestionSidepanel = ({
           ? [
               loadValuesAndSuggestions(
                 suggestion.currentValue as string[],
-                suggestion.suggestedValue as string[],
+                suggestions,
                 suggestion.language
               ),
             ]
@@ -197,7 +207,7 @@ const SuggestionSidepanel = ({
                   ),
                   value: option.sharedId!,
                   searchLabel: option.title!,
-                  suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId!),
+                  suggested: suggestions.includes(option.sharedId!),
                 });
               }
 
@@ -383,7 +393,7 @@ const SuggestionSidepanel = ({
     });
 
     const currentValues = (getValues('field') as string[]) || [];
-    const suggestions = (suggestion?.suggestedValue as string[]) || [];
+    const suggestions = getSuggestionValues(suggestion?.suggestedValue as SuggestionValue[]);
 
     return response.rows.map(option => ({
       label: (
@@ -396,7 +406,7 @@ const SuggestionSidepanel = ({
       ),
       value: option.sharedId,
       searchLabel: option.title,
-      suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId),
+      suggested: suggestions.includes(option.sharedId),
     }));
   };
 
