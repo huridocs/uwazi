@@ -69,6 +69,7 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
+All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -544,6 +545,7 @@ No valid target template available,No valid target template available
 No value,ไม่มีค่า
 No Value,ไม่มีค่า
 "No, cancel","No, cancel"
+Non processed,Non processed
 Non-labeled,Non-labeled
 Normal view,มุมมองปกติ
 Not already been use as source template in another extractor,Not already been use as source template in another extractor

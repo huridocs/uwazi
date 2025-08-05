@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
 import { FiltersSidepanel } from '../FiltersSidepanel';
 
@@ -85,11 +85,11 @@ describe('FiltersSidepanel', () => {
     expect(mockSetSearchParams).toHaveBeenCalledWith(expect.any(Function));
 
     const setSearchParamsCall = mockSetSearchParams.mock.calls[0][0];
-    const mockSearchParams = new URLSearchParams();
-    setSearchParamsCall(mockSearchParams);
+    const testSearchParams = new URLSearchParams();
+    setSearchParamsCall(testSearchParams);
 
-    expect(mockSearchParams.get('page')).toBe('1');
-    expect(mockSearchParams.get('filter')).toBe(
+    expect(testSearchParams.get('page')).toBe('1');
+    expect(testSearchParams.get('filter')).toBe(
       JSON.stringify({
         labeled: true,
         nonLabeled: false,
@@ -123,10 +123,10 @@ describe('FiltersSidepanel', () => {
     expect(mockSetSearchParams).toHaveBeenCalledWith(expect.any(Function));
 
     const setSearchParamsCall = mockSetSearchParams.mock.calls[0][0];
-    const mockSearchParams = new URLSearchParams();
-    setSearchParamsCall(mockSearchParams);
+    const testSearchParams = new URLSearchParams();
+    setSearchParamsCall(testSearchParams);
 
-    expect(mockSearchParams.has('filter')).toBe(false);
+    expect(testSearchParams.has('filter')).toBe(false);
 
     expect(setShowSidepanel).toHaveBeenCalledWith(false);
   });
@@ -213,7 +213,7 @@ describe('FiltersSidepanel', () => {
   });
 
   it('should reset form to default values when cleared', async () => {
-    const { setShowSidepanel } = renderComponent();
+    renderComponent();
 
     fireEvent.click(screen.getByLabelText('Labeled'));
     fireEvent.click(screen.getByLabelText('Match'));

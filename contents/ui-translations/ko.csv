@@ -69,6 +69,7 @@ Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -544,6 +545,7 @@ No valid target template available,No valid target template available
 No value,값 없음
 No Value,값 없음
 "No, cancel","No, cancel"
+Non processed,Non processed
 Non-labeled,Non-labeled
 Normal view,일반 뷰
 Not already been use as source template in another extractor,Not already been use as source template in another extractor
