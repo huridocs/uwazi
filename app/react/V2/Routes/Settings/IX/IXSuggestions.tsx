@@ -6,7 +6,6 @@ import {
   LoaderFunction,
   useLoaderData,
   useLocation,
-  useNavigate,
   useRevalidator,
   useSearchParams,
 } from 'react-router';
@@ -25,7 +24,7 @@ import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { SuggestionSidepanel } from './components/SuggestionSidepanel';
-import { generateChildrenRows, formatAccepted, updateSortingUrl } from './helpers';
+import { generateChildrenRows, formatAccepted } from './helpers';
 import {
   TableSuggestion,
   MultiValueSuggestion,

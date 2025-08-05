@@ -4,4 +4,3 @@ export {
   getMetadataFromProperty,
   formatAccepted,
 } from './helpers';
-export { updateSortingUrl } from './updateSortingUrl';
