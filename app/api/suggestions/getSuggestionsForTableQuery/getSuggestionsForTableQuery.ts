@@ -94,15 +94,11 @@ export class GetSuggestionsForTableQuery {
       this.pipelineBuilder.add({
         $lookup: {
           from: 'ixmodels',
-          let: {
-            localFieldExtractorId: '$extractorId',
-          },
+          let: { localFieldExtractorId: '$extractorId' },
           pipeline: [
             {
               $match: {
-                $expr: {
-                  $eq: ['$extractorId', '$$localFieldExtractorId'],
-                },
+                $expr: { $eq: ['$extractorId', '$$localFieldExtractorId'] },
               },
             },
           ],
@@ -115,28 +111,27 @@ export class GetSuggestionsForTableQuery {
       });
 
       this.pipelineBuilder.add({
-        $addFields: {
-          modelCreationDate: '$model.creationDate',
-        },
-      });
-
-      this.pipelineBuilder.add({
         $match: {
           $or: [
-            { $not: ['$modelData.findSuggestionsRunTimestamp'] },
             {
               $and: [
-                { $ne: ['$modelData.findSuggestionsRunTimestamp', null] },
-                { $ne: ['$modelCreationDate', null] },
-                { $lt: ['$modelData.findSuggestionsRunTimestamp', '$modelCreationDate'] },
+                { 'model.findSuggestionsRunTimestamp': null },
+                { 'model.creationDate': { $ne: null } },
+                {
+                  $expr: { $gt: ['$date', '$model.creationDate'] },
+                },
+              ],
+            },
+            {
+              $and: [
+                { 'model.findSuggestionsRunTimestamp': { $ne: null } },
+                {
+                  $expr: { $gt: ['$date', '$model.findSuggestionsRunTimestamp'] },
+                },
               ],
             },
           ],
         },
-      });
-
-      this.pipelineBuilder.add({
-        $unset: 'model',
       });
     }
   }

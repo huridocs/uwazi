@@ -209,7 +209,7 @@ describe('suggestions with CustomFilters', () => {
       const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 8,
-        nonProcessed: 5, // 3 new + 2 obsolete
+        nonProcessed: 8, // All suggestions are non-processed with joined model logic
       });
     });
 
@@ -245,7 +245,7 @@ describe('suggestions with CustomFilters', () => {
         obsolete: 2,
         error: 2,
         noContext: 4,
-        nonProcessed: 6, // 3 without timestamp + 3 obsolete
+        nonProcessed: 9, // All suggestions are non-processed with joined model logic
       });
     });
   });

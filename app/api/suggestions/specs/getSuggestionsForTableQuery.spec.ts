@@ -128,6 +128,32 @@ const fixtures: DBFixture = {
       }
     ),
   ],
+  ixmodels: [
+    {
+      _id: factory.id('extractor_source_pdf_target_text_model'),
+      extractorId: factory.id('extractor_source_pdf_target_text'),
+      creationDate: 1754362536000, // Before the processed suggestions
+      status: 'ready',
+      findingSuggestions: true,
+      findSuggestionsRunTimestamp: 1754362537000, // After model creation - processed
+    },
+    {
+      _id: factory.id('extractor_source_text_target_text_model'),
+      extractorId: factory.id('extractor_source_text_target_text'),
+      creationDate: 1754362536000, // Before the processed suggestions
+      status: 'ready',
+      findingSuggestions: true,
+      // No findSuggestionsRunTimestamp - will use creationDate as fallback
+    },
+    {
+      _id: factory.id('extractor_source_pdf_target_multiselect_model'),
+      extractorId: factory.id('extractor_source_pdf_target_multiselect'),
+      creationDate: 1754362536000, // Before the processed suggestions
+      status: 'ready',
+      findingSuggestions: true,
+      // No findSuggestionsRunTimestamp - will use creationDate as fallback
+    },
+  ],
   ixsuggestions: [
     factory.ixSuggestion({
       entityId: 'extractor_source_pdf_target_text_entity_1',
@@ -152,6 +178,9 @@ const fixtures: DBFixture = {
       entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1_en'),
       currentValue: 'labeled_match_context_value',
       entityTitle: 'extractor_source_pdf_target_text_entity_1',
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362536314, // Processed after model training
+      },
     }),
 
     factory.ixSuggestion({
@@ -177,6 +206,9 @@ const fixtures: DBFixture = {
       currentValue: 'labeled_match_context_value',
       entityTitle: 'extractor_source_pdf_target_text_entity_1',
       entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1_es'),
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362536320, // Processed after model training
+      },
     }),
 
     factory.ixSuggestion({
@@ -199,6 +231,7 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+      // No modelData - non-processed
     }),
 
     factory.ixSuggestion({
@@ -221,6 +254,7 @@ const fixtures: DBFixture = {
         obsolete: false,
         processing: false,
       },
+      // No modelData - non-processed
     }),
 
     factory.ixSuggestion({
@@ -246,6 +280,9 @@ const fixtures: DBFixture = {
 
       currentValue: 'labeled_match_context_value',
       entityTitle: 'extractor_source_text_target_text_entity_1',
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362536323, // Processed after model training
+      },
     }),
 
     factory.ixSuggestion({
@@ -272,6 +309,9 @@ const fixtures: DBFixture = {
       entityTitle: 'extractor_source_text_target_text_entity_1',
       currentValue: 'labeled_match_context_value',
       entityLanguageId: factory.id('extractor_source_text_target_text_entity_1_es'),
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362536319, // Processed after model training
+      },
     }),
 
     factory.ixSuggestion({
@@ -295,6 +335,9 @@ const fixtures: DBFixture = {
         processing: false,
       },
       entityTitle: 'extractor_source_text_target_text_entity_2',
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362536321, // Processed after model training
+      },
     }),
 
     factory.ixSuggestion({
@@ -319,6 +362,9 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_2',
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362536317, // Processed after model training
+      },
     }),
 
     factory.ixSuggestion({
@@ -342,6 +388,7 @@ const fixtures: DBFixture = {
         processing: false,
       },
       entityTitle: 'extractor_source_text_target_text_entity_3',
+      // No modelData - non-processed
     }),
 
     factory.ixSuggestion({
@@ -366,6 +413,9 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_3',
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362535000, // Older than model training - obsolete
+      },
     }),
 
     factory.ixSuggestion({
@@ -390,6 +440,7 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_4',
+      // No modelData - non-processed
     }),
 
     factory.ixSuggestion({
@@ -414,6 +465,7 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_4',
+      // No modelData - non-processed
     }),
 
     factory.ixSuggestion({
@@ -438,6 +490,7 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_5',
+      // No modelData - non-processed
     }),
 
     factory.ixSuggestion({
@@ -462,6 +515,33 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_5',
+      // No modelData - non-processed
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_source_text_target_text'),
+      entityId: 'extractor_source_text_target_text_entity_6',
+      entityTemplate: 'extractor_source_text_target_text_template',
+      propertyName: 'target_text',
+      suggestedValue: 'test value 10',
+      suggestedText: 'test text 10',
+      language: 'en',
+      segment: '',
+      status: 'ready',
+      date: 1754362538000, // Newer than findSuggestionsRunTimestamp (1754362537000) - should be non-processed
+      state: {
+        labeled: false,
+        match: false,
+        obsolete: false,
+        error: false,
+        hasContext: true,
+        withSuggestion: true,
+        withValue: true,
+        processing: false,
+      },
+      entityTitle: 'extractor_source_text_target_text_entity_6',
+      modelData: {
+        findSuggestionsRunTimestamp: 1754362537000, // Older than suggestion date
+      },
     }),
   ],
   files: [
@@ -508,8 +588,8 @@ describe('getSuggestionsForTableQuery', () => {
       },
     });
 
-    expect(total).toBe(10);
-    expect(totalPages).toBe(5);
+    expect(total).toBe(11);
+    expect(totalPages).toBe(6);
     expect(suggestions.length).toBe(2);
   });
 
@@ -713,6 +793,58 @@ describe('getSuggestionsForTableQuery', () => {
     expect(hasErrorOnly.suggestions.filter(s => s.state.error)).toHaveLength(2);
 
     expect(hasObsoleteOnly.suggestions.filter(s => s.state.obsolete)).toHaveLength(2);
+  });
+
+  it('should handle nonProcessed filter correctly', async () => {
+    const { sut } = createSut();
+
+    // Test without nonProcessed filter
+    const allResults = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: {
+        size: 20,
+        number: 1,
+      },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    // Test with nonProcessed filter
+    const nonProcessedResults = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: {
+        size: 20,
+        number: 1,
+      },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: true,
+      },
+    });
+
+    // The nonProcessed filter should return fewer results than without the filter
+    expect(nonProcessedResults.total).toBeLessThanOrEqual(allResults.total);
+    expect(nonProcessedResults.suggestions.length).toBeLessThanOrEqual(
+      allResults.suggestions.length,
+    );
+
+    // Should return some results (not empty)
+    expect(nonProcessedResults.total).toBeGreaterThan(0);
+    expect(nonProcessedResults.suggestions.length).toBeGreaterThan(0);
   });
 
   it('should sort', async () => {

@@ -106,15 +106,11 @@ const Suggestions = {
         {
           $lookup: {
             from: 'ixmodels',
-            let: {
-              localFieldExtractorId: '$extractorId',
-            },
+            let: { localFieldExtractorId: '$extractorId' },
             pipeline: [
               {
                 $match: {
-                  $expr: {
-                    $eq: ['$extractorId', '$$localFieldExtractorId'],
-                  },
+                  $expr: { $eq: ['$extractorId', '$$localFieldExtractorId'] },
                 },
               },
             ],
@@ -123,14 +119,6 @@ const Suggestions = {
         },
         {
           $addFields: { model: { $arrayElemAt: ['$model', 0] } },
-        },
-        {
-          $addFields: {
-            modelCreationDate: '$model.creationDate',
-          },
-        },
-        {
-          $unset: 'model',
         },
         {
           $group: {
@@ -176,12 +164,17 @@ const Suggestions = {
                 $cond: [
                   {
                     $or: [
-                      { $not: '$modelData.findSuggestionsRunTimestamp' }, // No timestamp (new/blank suggestions)
                       {
                         $and: [
-                          '$modelData.findSuggestionsRunTimestamp',
-                          '$modelCreationDate', // Model exists
-                          { $lt: ['$modelData.findSuggestionsRunTimestamp', '$modelCreationDate'] }, // Older than model training
+                          { $eq: ['$model.findSuggestionsRunTimestamp', null] },
+                          '$model.creationDate', // Model exists
+                          { $gt: ['$date', '$model.creationDate'] }, // Suggestion date newer than model creation
+                        ],
+                      },
+                      {
+                        $and: [
+                          { $ne: ['$model.findSuggestionsRunTimestamp', null] },
+                          { $gt: ['$date', '$model.findSuggestionsRunTimestamp'] }, // Suggestion date newer than processing timestamp
                         ],
                       },
                     ],
