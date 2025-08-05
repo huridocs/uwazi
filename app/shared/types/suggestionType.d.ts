@@ -117,9 +117,9 @@ export interface IXSuggestionsQuery {
 
 export interface SuggestionCustomFilter {
   labeled: boolean;
-  nonLabeled: boolean;
   match: boolean;
   mismatch: boolean;
+  nonLabeled: boolean;
   obsolete: boolean;
   error: boolean;
   noContext: boolean;
