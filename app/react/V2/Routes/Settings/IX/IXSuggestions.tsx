@@ -385,13 +385,13 @@ const IXSuggestions = () => {
         aggregation={aggregation}
       />
 
-      <SuggestionSidepanel
+      {/* <SuggestionSidepanel
         showSidepanel={sidepanel === 'property'}
         property={property}
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
         onEntitySave={onEntitySave}
-      />
+      /> */}
 
       <PDFSidepanel
         showSidepanel={sidepanel === 'pdf'}

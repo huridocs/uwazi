@@ -197,6 +197,7 @@ const ExtractorModal = ({
 
         <div className={`${step !== 1 && 'hidden'}`}>
           <MultiselectList
+            className="max-h-96"
             selectedValues={values || []}
             items={options}
             onChange={setValues}

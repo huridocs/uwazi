@@ -13,9 +13,36 @@ import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
 import { loadValuesAndSuggestions } from './sidepanelFunctions';
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
-import { TableSuggestion } from '../types';
+import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
+
+const updateOptionsWithSelection = (
+  options: MultiselectListOption[],
+  selectedValues?: string[]
+): MultiselectListOption[] =>
+  options.map(option => ({
+    ...option,
+    label: React.cloneElement(option.label as React.ReactElement, {
+      isSelected: selectedValues?.includes(option.value),
+    }),
+    items: option.items?.map(subItem => ({
+      ...subItem,
+      label: React.cloneElement(subItem.label as React.ReactElement, {
+        isSelected: selectedValues?.includes(subItem.value),
+      }),
+    })),
+  }));
+
+const getSuggestionValues = (suggestedValue?: SuggestionValue[] | SuggestionValue): string[] => {
+  if (!Array.isArray(suggestedValue)) return [String(suggestedValue)];
+  return suggestedValue.map(value => {
+    if (value && typeof value === 'object' && 'id' in value) {
+      return value.id;
+    }
+    return String(value);
+  });
+};
 
 type SidepanelFormsProps = {
   handleClickToFill: () => Promise<void>;
@@ -24,27 +51,90 @@ type SidepanelFormsProps = {
   clearSelectionButton?: ReactNode;
 };
 
-// eslint-disable-next-line max-statements
-const Select = ({
+const Selects = ({
   property,
   suggestion,
 }: {
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
 }) => {
-  const [options, setOptions] = useState<MultiselectListOption[]>([]);
-  const intitialOptionsRef = useRef<MultiselectListOption[]>([]);
-  const thesauris = useAtomValue(thesauriAtom);
-  const { control, getValues } = useFormContext();
+  const { control } = useFormContext();
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
+  const thesauri = useAtomValue(thesauriAtom);
+  const thesaurus = thesauri.find(item => item._id === property.content);
+  const suggestions = getSuggestionValues(suggestion?.suggestedValue);
 
-  const thesaurus = thesauris.find(thes => thes._id === property.content);
+  const options = thesaurus?.values.map((value: any) => ({
+    label: (
+      <MultiselectItemLabel
+        isSuggested={suggestions.includes(value.id)}
+        label={value.label}
+        property={property}
+      />
+    ),
+    searchLabel: value.label.toLowerCase(),
+    value: value.id,
+    suggested: suggestions?.includes(value.id),
+    items: value.values?.map((subValue: any) => ({
+      label: (
+        <MultiselectItemLabel
+          isSuggested={suggestions.includes(subValue.id)}
+          label={subValue.label}
+          property={property}
+        />
+      ),
+      searchLabel: subValue.label.toLowerCase(),
+      value: subValue.id,
+      suggested: suggestions?.includes(subValue.id),
+    })),
+  }));
+
+  return (
+    <div className="px-4 pb-4 h-60">
+      <Controller
+        control={control}
+        name="field"
+        rules={{ required: property?.required }}
+        render={({ field: { value, onChange } }) => {
+          const items = updateOptionsWithSelection(options || [], value);
+
+          return (
+            <MultiselectList
+              onChange={onChange}
+              selectedValues={value}
+              items={items}
+              checkboxes
+              singleSelect={property.type === 'select'}
+              search={selectAndSearch ? selectedtext?.text : undefined}
+              suggestions
+            />
+          );
+        }}
+      />
+    </div>
+  );
+};
+
+// eslint-disable-next-line max-statements
+const Relationships = ({
+  property,
+  suggestion,
+}: {
+  property: ClientPropertySchema;
+  suggestion: SidepanelFormsProps['suggestion'];
+}) => {
+  const intitialOptionsRef = useRef<MultiselectListOption[]>([]);
+  const thesauri = useAtomValue(thesauriAtom);
+  const { control, watch } = useFormContext();
+  const selectedtext = useAtomValue(textSelectionAtom);
+  const selectAndSearch = useAtomValue(selectAndSearchAtom);
+  const thesaurus = thesauri.find(item => item._id === property.content);
+  const currentValues = watch('field');
 
   useEffect(() => {
     if (suggestion && property?.type === 'relationship') {
-      const currentValues = (getValues('field') as string[]) || [];
-      const suggestions = (suggestion?.suggestedValue as string[]) || [];
+      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
 
       Promise.all([
         lookup({ entityTitle: '', template: property?.content }),
@@ -52,7 +142,7 @@ const Select = ({
           ? [
               loadValuesAndSuggestions(
                 suggestion.currentValue as string[],
-                suggestion.suggestedValue as string[],
+                suggestions,
                 suggestion.language
               ),
             ]
@@ -65,7 +155,6 @@ const Select = ({
                 acc.push({
                   label: (
                     <MultiselectItemLabel
-                      isSelected={currentValues.includes(option.sharedId!)}
                       isSuggested={suggestions.includes(option.sharedId!)}
                       label={option.title!}
                       property={property}
@@ -73,7 +162,7 @@ const Select = ({
                   ),
                   value: option.sharedId!,
                   searchLabel: option.title!,
-                  suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId!),
+                  suggested: suggestions?.includes(option.sharedId!),
                 });
               }
 
@@ -82,7 +171,6 @@ const Select = ({
             [] as MultiselectListOption[]
           );
 
-          setOptions(intialOptions);
           intitialOptionsRef.current = intialOptions;
         })
         .catch(e => {
@@ -92,49 +180,47 @@ const Select = ({
           }
         });
     }
-  }, [getValues, property, suggestion]);
+  }, [property, suggestion]);
 
   useEffect(() => {
     if (property?.type === 'select' || property?.type === 'multiselect') {
-      const currentValues = (getValues('field') as string[]) || [];
-      const suggestions = (suggestion?.suggestedValue as string[]) || [];
+      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
 
       const multiselectOptions: MultiselectListOption[] = [];
       thesaurus?.values.forEach((value: any) => {
         multiselectOptions.push({
           label: (
             <MultiselectItemLabel
-              isSelected={currentValues.includes(value)}
-              isSuggested={suggestions.includes(value)}
+              isSuggested={suggestions.includes(value.id)}
               label={value.label}
               property={property}
             />
           ),
           searchLabel: value.label.toLowerCase(),
           value: value.id,
-          suggested: (suggestion?.suggestedValue as string[])?.includes(value.id),
+          suggested: suggestions?.includes(value.id),
           items: value.values?.map((subValue: any) => ({
             label: (
               <MultiselectItemLabel
-                isSelected={currentValues.includes(value)}
-                isSuggested={suggestions.includes(value)}
+                isSuggested={suggestions.includes(subValue.id)}
                 label={subValue.label}
                 property={property}
               />
             ),
             searchLabel: subValue.label.toLowerCase(),
             value: subValue.id,
-            suggested: (suggestion?.suggestedValue as string[])?.includes(subValue.id),
+            suggested: suggestions?.includes(subValue.id),
           })),
         });
       });
-      setOptions(multiselectOptions);
+
+      intitialOptionsRef.current = multiselectOptions;
     }
-  }, [getValues, property, suggestion, thesaurus]);
+  }, [property, suggestion, thesaurus]);
 
   const lookupSearch = async (searchTerm: string): Promise<MultiselectListOption[]> => {
     if (!searchTerm) {
-      return intitialOptionsRef.current;
+      return updateOptionsWithSelection(intitialOptionsRef.current, currentValues as string[]);
     }
 
     const response = await lookup({
@@ -142,13 +228,12 @@ const Select = ({
       template: property?.content,
     });
 
-    const currentValues = (getValues('field') as string[]) || [];
-    const suggestions = (suggestion?.suggestedValue as string[]) || [];
+    const suggestions = getSuggestionValues(suggestion?.suggestedValue);
 
-    return response.rows.map(option => ({
+    const newOptions = response.rows.map(option => ({
       label: (
         <MultiselectItemLabel
-          isSelected={currentValues.includes(option.sharedId)}
+          isSelected={Array.isArray(currentValues) && currentValues.includes(option.sharedId)}
           isSuggested={suggestions.includes(option.sharedId)}
           label={option.title}
           property={property!}
@@ -156,8 +241,10 @@ const Select = ({
       ),
       value: option.sharedId,
       searchLabel: option.title,
-      suggested: (suggestion?.suggestedValue as string[])?.includes(option.sharedId),
+      suggested: suggestions?.includes(option.sharedId),
     }));
+
+    return updateOptionsWithSelection(newOptions, currentValues);
   };
 
   return (
@@ -166,11 +253,11 @@ const Select = ({
         control={control}
         name="field"
         rules={{ required: property?.required }}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { value, onChange } }) => (
           <MultiselectList
             onChange={onChange}
-            selectedValues={value as string[]}
-            items={options}
+            selectedValues={value}
+            items={updateOptionsWithSelection(intitialOptionsRef.current, value as string[])}
             checkboxes
             singleSelect={property.type === 'select'}
             search={selectAndSearch ? selectedtext?.text : ''}
@@ -311,15 +398,12 @@ const SidepanelForms = ({
   handleClickToFill,
   clearSelectionButton,
 }: SidepanelFormsProps) => {
-  if (!property) {
-    return '';
-  }
-
   switch (property?.type) {
     case 'select':
     case 'multiselect':
+      return <Selects suggestion={suggestion} property={property} />;
     case 'relationship':
-      return <Select suggestion={suggestion} property={property} />;
+      return <Relationships suggestion={suggestion} property={property} />;
     case 'text':
     case 'date':
     case 'numeric':
