@@ -26,6 +26,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { PipelineBuilder } from 'api/suggestions/queryBuilder';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { ObjectId } from 'mongodb';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { Extractors } from './ixextractors';
 import { IXServices } from './IXServices';
 
@@ -191,20 +192,6 @@ async function getEntitiesForTraining(
   return entities;
 }
 
-function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWithId<IXModelType>) {
-  const suggestionsQuery: UwaziFilterQuery<any> = {
-    extractorId,
-    date: { $lt: model.creationDate },
-    'state.error': { $ne: true },
-  };
-
-  if (model.testRun) {
-    suggestionsQuery.trainingSample = { $ne: true };
-  }
-
-  return suggestionsQuery;
-}
-
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
   if (!model.findSuggestionsSharedIds?.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
@@ -228,8 +215,8 @@ async function getEntitiesForSuggestionsQuery(
   model: EnforcedWithId<IXModelType>,
   BATCH_SIZE: number
 ) {
-  const suggestionsQuery = conformSuggestionsQuery(extractorId, model);
-  const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', { limit: BATCH_SIZE });
+  // Use balanced sampling for all suggestion finding (both test runs and regular runs)
+  const suggestions = await Suggestions.getBalancedSample(extractorId, model, BATCH_SIZE);
 
   if (!suggestions.length) {
     return null;
@@ -413,37 +400,35 @@ async function getFileIdsWithReadySegmentations(
   limit: number
 ): Promise<ObjectIdSchema[]> {
   const [currentModel] = await ixmodels.get({ extractorId });
-
   const targetLimit = limit || BATCH_SIZE_FOR_PDF;
 
-  const query: UwaziFilterQuery<any> = {
+  // Use balanced sampling for all suggestion finding (both test runs and regular runs)
+  // Get extra suggestions since some might have failed segmentations
+  const suggestions = await Suggestions.getBalancedSample(
     extractorId,
-    date: { $lt: currentModel.creationDate },
-  };
+    currentModel,
+    targetLimit * 3
+  );
 
-  if (currentModel.testRun) {
-    query.trainingSample = { $ne: true };
-  }
-
-  const batchSize = 100;
   const allFileIds: ObjectIdSchema[] = [];
   const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
 
-  let skip = 0;
-  let hasMore = true;
+  if (!suggestions.length) {
+    return [];
+  }
 
-  while (hasMore && allFileIds.length < targetLimit) {
-    // eslint-disable-next-line no-await-in-loop
-    const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-      limit: batchSize,
-      skip,
-    });
+  // Process suggestions in batches to check segmentation status (keep existing batching logic)
+  const batchSize = 100;
+  let suggestionIndex = 0;
 
-    if (!suggestions.length) {
+  while (suggestionIndex < suggestions.length && allFileIds.length < targetLimit) {
+    const currentBatch = suggestions.slice(suggestionIndex, suggestionIndex + batchSize);
+
+    if (!currentBatch.length) {
       break;
     }
 
-    const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
+    const fileIds = currentBatch.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
 
     if (fileIds.length > 0) {
       // eslint-disable-next-line no-await-in-loop
@@ -460,7 +445,7 @@ async function getFileIdsWithReadySegmentations(
         .filter(seg => seg.status === 'failed')
         .map(seg => seg.fileID!);
 
-      const failedSuggestions = suggestions.filter(s =>
+      const failedSuggestions = currentBatch.filter(s =>
         failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
       );
 
@@ -468,10 +453,10 @@ async function getFileIdsWithReadySegmentations(
       suggestionsWithFailedSegmentations.push(...failedSuggestions);
     }
 
-    skip += batchSize;
-    hasMore = suggestions.length === batchSize;
+    suggestionIndex += batchSize;
   }
 
+  // Keep ALL existing error handling logic unchanged
   if (suggestionsWithFailedSegmentations.length) {
     const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
       ...suggestion,
