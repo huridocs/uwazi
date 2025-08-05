@@ -839,7 +839,7 @@ describe('getSuggestionsForTableQuery', () => {
     // The nonProcessed filter should return fewer results than without the filter
     expect(nonProcessedResults.total).toBeLessThanOrEqual(allResults.total);
     expect(nonProcessedResults.suggestions.length).toBeLessThanOrEqual(
-      allResults.suggestions.length,
+      allResults.suggestions.length
     );
 
     // Should return some results (not empty)
