@@ -156,7 +156,7 @@ describe('suggestions with CustomFilters', () => {
             status: 'ready',
             modelData: { findSuggestionsRunTimestamp: undefined },
           }),
-          
+
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
@@ -167,7 +167,7 @@ describe('suggestions with CustomFilters', () => {
             status: 'ready',
             modelData: { findSuggestionsRunTimestamp: 800 },
           }),
-          
+
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
@@ -183,7 +183,7 @@ describe('suggestions with CustomFilters', () => {
             status: 'ready',
             modelData: { findSuggestionsRunTimestamp: 3000 },
           }),
-          
+
           f.ixSuggestion({
             extractorId: f.id('another_extractor'),
             status: 'ready',

@@ -91,7 +91,6 @@ export class GetSuggestionsForTableQuery {
   }
   private applyNonProcessedFilter(needsNonProcessedFilter: boolean) {
     if (needsNonProcessedFilter) {
-
       this.pipelineBuilder.add({
         $lookup: {
           from: 'ixmodels',

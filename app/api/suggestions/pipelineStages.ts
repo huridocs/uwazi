@@ -40,7 +40,7 @@ export const getMatchStage = (
 ) => {
   const matchQuery: FilterQuery<IXSuggestionType> = baseQueryFragment(extractorId);
   let includeNonProcessedFilter = false;
-  
+
   if (customFilter) {
     const orFilters = translateCustomFilter(customFilter);
     if (orFilters.length > 0) matchQuery.$or = orFilters;
