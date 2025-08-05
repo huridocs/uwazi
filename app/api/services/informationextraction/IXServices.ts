@@ -63,13 +63,9 @@ export class IXServices {
     let totalSuggestions = allPossibleSuggestions;
 
     if (model.testRun) {
-      const usedForTraining = await IXSuggestionsModel.count({
-        extractorId,
-        trainingSample: { $eq: true },
-      });
       totalSuggestions = Math.min(
         model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
-        allPossibleSuggestions - usedForTraining
+        allPossibleSuggestions
       );
     }
 

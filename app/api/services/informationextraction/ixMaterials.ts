@@ -453,11 +453,11 @@ async function getFileIdsWithReadySegmentations(
       );
 
       const readySegmentationFileIds = segmentations
-        .filter(seg => seg.status === 'ready' && seg.fileID)
+        .filter(seg => seg.status === 'ready')
         .map(seg => seg.fileID!);
 
       const failedSegmentationFileIds = segmentations
-        .filter(seg => seg.status === 'failed' && seg.fileID)
+        .filter(seg => seg.status === 'failed')
         .map(seg => seg.fileID!);
 
       const failedSuggestions = suggestions.filter(s =>
