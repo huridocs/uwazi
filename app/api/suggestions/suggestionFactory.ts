@@ -94,7 +94,7 @@ export class SuggestionFactory {
       entityTitle: entity.title,
       currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
       suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
-      date: Date.now(),
+      date: null,
       status: 'ready',
 
       error: '',

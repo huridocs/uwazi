@@ -72,7 +72,7 @@ export interface IXSuggestionType {
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   state?: IXSuggestionStateType;
-  date?: number;
+  date?: number | null;
   modelData?: IXSuggestionsModelData;
   error?: string;
   selectionRectangles?: {

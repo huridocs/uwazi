@@ -159,7 +159,7 @@ export const IXSuggestionSchema = {
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     state: IXSuggestionStateSchema,
-    date: { type: 'number' },
+    date: { type: ['number', 'null'] },
     modelData: IXSuggestionsModelDataSchema,
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
