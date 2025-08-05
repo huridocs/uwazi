@@ -104,23 +104,6 @@ const Suggestions = {
           $match: { extractorId },
         },
         {
-          $lookup: {
-            from: 'ixmodels',
-            let: { localFieldExtractorId: '$extractorId' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ['$extractorId', '$$localFieldExtractorId'] },
-                },
-              },
-            ],
-            as: 'model',
-          },
-        },
-        {
-          $addFields: { model: { $arrayElemAt: ['$model', 0] } },
-        },
-        {
           $group: {
             _id: null,
             total: { $sum: 1 },
@@ -161,27 +144,7 @@ const Suggestions = {
             noContext: { $sum: { $cond: [{ $not: '$state.hasContext' }, 1, 0] } },
             nonProcessed: {
               $sum: {
-                $cond: [
-                  {
-                    $or: [
-                      {
-                        $and: [
-                          { $eq: ['$model.findSuggestionsRunTimestamp', null] },
-                          '$model.creationDate', // Model exists
-                          { $gt: ['$date', '$model.creationDate'] }, // Suggestion date newer than model creation
-                        ],
-                      },
-                      {
-                        $and: [
-                          { $ne: ['$model.findSuggestionsRunTimestamp', null] },
-                          { $gt: ['$date', '$model.findSuggestionsRunTimestamp'] }, // Suggestion date newer than processing timestamp
-                        ],
-                      },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
+                $cond: [{ $eq: ['$date', null] }, 1, 0],
               },
             },
           },

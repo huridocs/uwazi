@@ -134,7 +134,7 @@ describe('suggestions with CustomFilters', () => {
       const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 4,
-        nonProcessed: 4,
+        nonProcessed: 0,
       });
     });
 
@@ -144,57 +144,53 @@ describe('suggestions with CustomFilters', () => {
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
-            modelData: undefined,
+            modelData: {},
+            date: null, // New suggestion - not processed
           }),
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
             modelData: {},
+            date: 500,
           }),
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: undefined },
-          }),
-
-          f.ixSuggestion({
-            extractorId: f.id('test_extractor'),
-            status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: 500 }, // older than model (1000)
-          }),
-          f.ixSuggestion({
-            extractorId: f.id('test_extractor'),
-            status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: 800 },
+            modelData: {},
+            date: 800,
           }),
 
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: 1500 }, // newer than model (1000)
+            modelData: {},
+            date: 1500,
           }),
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: 2000 },
+            modelData: {},
+            date: 2000,
           }),
           f.ixSuggestion({
             extractorId: f.id('test_extractor'),
             status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: 3000 },
+            modelData: {},
+            date: 3000,
           }),
 
           f.ixSuggestion({
             extractorId: f.id('another_extractor'),
             status: 'ready',
-            modelData: { findSuggestionsRunTimestamp: 500 },
+            modelData: {},
+            date: 500,
           }),
         ],
         ixmodels: [
           {
             _id: testingDB.id(),
             status: 'ready',
-            creationDate: 1000, // model training timestamp
+            creationDate: 1000,
             extractorId: f.id('test_extractor'),
           },
           {
@@ -208,8 +204,8 @@ describe('suggestions with CustomFilters', () => {
 
       const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
-        total: 8,
-        nonProcessed: 8, // All suggestions are non-processed with joined model logic
+        total: 6,
+        nonProcessed: 1,
       });
     });
 
@@ -245,7 +241,7 @@ describe('suggestions with CustomFilters', () => {
         obsolete: 2,
         error: 2,
         noContext: 4,
-        nonProcessed: 9, // All suggestions are non-processed with joined model logic
+        nonProcessed: 3,
       });
     });
   });

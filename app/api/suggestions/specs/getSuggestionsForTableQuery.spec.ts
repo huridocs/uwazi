@@ -135,7 +135,6 @@ const fixtures: DBFixture = {
       creationDate: 1754362536000, // Before the processed suggestions
       status: 'ready',
       findingSuggestions: true,
-      findSuggestionsRunTimestamp: 1754362537000, // After model creation - processed
     },
     {
       _id: factory.id('extractor_source_text_target_text_model'),
@@ -143,7 +142,6 @@ const fixtures: DBFixture = {
       creationDate: 1754362536000, // Before the processed suggestions
       status: 'ready',
       findingSuggestions: true,
-      // No findSuggestionsRunTimestamp - will use creationDate as fallback
     },
     {
       _id: factory.id('extractor_source_pdf_target_multiselect_model'),
@@ -151,7 +149,6 @@ const fixtures: DBFixture = {
       creationDate: 1754362536000, // Before the processed suggestions
       status: 'ready',
       findingSuggestions: true,
-      // No findSuggestionsRunTimestamp - will use creationDate as fallback
     },
   ],
   ixsuggestions: [
@@ -178,9 +175,8 @@ const fixtures: DBFixture = {
       entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1_en'),
       currentValue: 'labeled_match_context_value',
       entityTitle: 'extractor_source_pdf_target_text_entity_1',
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362536314, // Processed after model training
-      },
+      date: 1754362536314,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -206,9 +202,8 @@ const fixtures: DBFixture = {
       currentValue: 'labeled_match_context_value',
       entityTitle: 'extractor_source_pdf_target_text_entity_1',
       entityLanguageId: factory.id('extractor_source_pdf_target_text_entity_1_es'),
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362536320, // Processed after model training
-      },
+      date: 1754362536320,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -280,9 +275,8 @@ const fixtures: DBFixture = {
 
       currentValue: 'labeled_match_context_value',
       entityTitle: 'extractor_source_text_target_text_entity_1',
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362536323, // Processed after model training
-      },
+      date: 1754362536323,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -309,9 +303,8 @@ const fixtures: DBFixture = {
       entityTitle: 'extractor_source_text_target_text_entity_1',
       currentValue: 'labeled_match_context_value',
       entityLanguageId: factory.id('extractor_source_text_target_text_entity_1_es'),
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362536319, // Processed after model training
-      },
+      date: 1754362536319,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -335,9 +328,8 @@ const fixtures: DBFixture = {
         processing: false,
       },
       entityTitle: 'extractor_source_text_target_text_entity_2',
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362536321, // Processed after model training
-      },
+      date: 1754362536321,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -362,9 +354,8 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_2',
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362536317, // Processed after model training
-      },
+      date: 1754362536317,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -413,9 +404,8 @@ const fixtures: DBFixture = {
       },
 
       entityTitle: 'extractor_source_text_target_text_entity_3',
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362535000, // Older than model training - obsolete
-      },
+      date: 1754362535000,
+      modelData: {},
     }),
 
     factory.ixSuggestion({
@@ -527,7 +517,7 @@ const fixtures: DBFixture = {
       language: 'en',
       segment: '',
       status: 'ready',
-      date: 1754362538000, // Newer than findSuggestionsRunTimestamp (1754362537000) - should be non-processed
+      date: 1754362538000,
       state: {
         labeled: false,
         match: false,
@@ -539,9 +529,30 @@ const fixtures: DBFixture = {
         processing: false,
       },
       entityTitle: 'extractor_source_text_target_text_entity_6',
-      modelData: {
-        findSuggestionsRunTimestamp: 1754362537000, // Older than suggestion date
+      modelData: {},
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_source_text_target_text'),
+      entityId: 'extractor_source_text_target_text_entity_7',
+      entityTemplate: 'extractor_source_text_target_text_template',
+      propertyName: 'target_text',
+      suggestedValue: 'new suggestion',
+      language: 'en',
+      segment: '',
+      status: 'ready',
+      date: null,
+      state: {
+        labeled: false,
+        match: false,
+        obsolete: false,
+        error: false,
+        hasContext: false,
+        withSuggestion: true,
+        withValue: false,
+        processing: false,
       },
+      entityTitle: 'extractor_source_text_target_text_entity_7',
+      modelData: {},
     }),
   ],
   files: [

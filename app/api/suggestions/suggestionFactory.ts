@@ -65,7 +65,7 @@ export class SuggestionFactory {
       propertyName: extractor.property,
       language,
       suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
-      date: new Date().getTime(),
+      date: null,
       status: 'ready' as any,
       error: '',
       segment: '',

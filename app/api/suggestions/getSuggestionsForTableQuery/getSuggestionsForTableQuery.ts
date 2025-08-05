@@ -92,45 +92,8 @@ export class GetSuggestionsForTableQuery {
   private applyNonProcessedFilter(needsNonProcessedFilter: boolean) {
     if (needsNonProcessedFilter) {
       this.pipelineBuilder.add({
-        $lookup: {
-          from: 'ixmodels',
-          let: { localFieldExtractorId: '$extractorId' },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ['$extractorId', '$$localFieldExtractorId'] },
-              },
-            },
-          ],
-          as: 'model',
-        },
-      });
-
-      this.pipelineBuilder.add({
-        $addFields: { model: { $arrayElemAt: ['$model', 0] } },
-      });
-
-      this.pipelineBuilder.add({
         $match: {
-          $or: [
-            {
-              $and: [
-                { 'model.findSuggestionsRunTimestamp': null },
-                { 'model.creationDate': { $ne: null } },
-                {
-                  $expr: { $gt: ['$date', '$model.creationDate'] },
-                },
-              ],
-            },
-            {
-              $and: [
-                { 'model.findSuggestionsRunTimestamp': { $ne: null } },
-                {
-                  $expr: { $gt: ['$date', '$model.findSuggestionsRunTimestamp'] },
-                },
-              ],
-            },
-          ],
+          date: null,
         },
       });
     }
