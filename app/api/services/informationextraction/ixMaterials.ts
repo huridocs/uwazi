@@ -488,20 +488,16 @@ async function getFileIdsWithReadySegmentations(
 
 async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
   if (!model.findSuggestionsSharedIds?.length) {
-    await ixmodels.save({
-      ...model,
-      findSuggestionsRunTimestamp: undefined,
-      findSuggestionsSharedIds: undefined,
-    });
+    await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
 
-  const sharedIdsToProcess = model.findSuggestionsSharedIds.slice(0, BATCH_SIZE);
+  const sharedIdsToProcess = model.findSuggestionsSharedIds!.slice(0, BATCH_SIZE);
 
-  await ixmodels.save({
-    ...model,
-    findSuggestionsSharedIds: model.findSuggestionsSharedIds.slice(BATCH_SIZE),
-  });
+  await ixmodels.updateMany(
+    { _id: model._id },
+    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds!.slice(BATCH_SIZE) } }
+  );
 
   const filesQuery = {
     entity: { $in: sharedIdsToProcess },

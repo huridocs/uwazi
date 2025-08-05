@@ -11,6 +11,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
 Accept suggestion,Accept suggestion
+Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Account,Cuenta
 Account locked,Account locked
@@ -549,6 +550,7 @@ Not Found,No encontrado
 Nothing selected,Nothing selected
 Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
+obsolete,obsolete
 OCR,ROC
 OCR button tip,Esto procesará el documento para reconocer su texto. El archivo original se agregará como un archivo de soporte.
 OCR completed,ROC completado

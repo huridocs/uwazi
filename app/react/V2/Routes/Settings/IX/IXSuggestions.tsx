@@ -212,10 +212,9 @@ const IXSuggestions = () => {
     }
 
     if (property?.type === 'multiselect' || property?.type === 'relationship') {
-      const flatenedSuggestions = newSuggestions.map(suggestion =>
-        generateChildrenRows(suggestion as MultiValueSuggestion)
+      setCurrentSuggestions(() =>
+        newSuggestions.map(suggestion => generateChildrenRows(suggestion as MultiValueSuggestion))
       );
-      setCurrentSuggestions(flatenedSuggestions);
     } else {
       setCurrentSuggestions(
         newSuggestions.map(
@@ -320,11 +319,14 @@ const IXSuggestions = () => {
                 size="small"
                 type="button"
                 styling="outline"
+                disabled={selected.some(
+                  s => s.state.obsolete || s.state.error || s.state.processing
+                )}
                 onClick={async () => {
                   await acceptSuggestions(selected);
                 }}
               >
-                <Translate>Accept suggestion</Translate>
+                <Translate>Accept suggestions</Translate>
               </Button>
               <div className="text-sm font-semibold text-center text-gray-900">
                 <span className="font-light text-gray-500">
@@ -426,12 +428,10 @@ const IXSuggestionsLoader =
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
-
     const suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,
       rowId: suggestion._id,
-      disableRowSelection:
-        suggestion.state.obsolete || suggestion.state.processing || suggestion.state.error,
+      disableRowSelection: suggestion.state.processing,
       extractorSource: extractors[0].source,
     }));
 

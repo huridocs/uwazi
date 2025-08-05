@@ -27,9 +27,9 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const { subRows, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
     const suggestedValueId = get(suggestedValue, 'id') || suggestedValue;
-    const valuePresent = currentValues.find(v => {
-      return v === suggestedValue || v === get(suggestedValue, 'id');
-    });
+    const valuePresent = currentValues.find(
+      v => v === suggestedValue || v === get(suggestedValue, 'id')
+    );
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);
     }
@@ -188,13 +188,14 @@ const getMetadataFromProperty = (
 };
 
 const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
+  // eslint-disable-next-line max-statements
   acceptedSuggestions.map(acceptedSuggestion => {
     let addedValues: string[] | undefined;
     let removedValues: string[] | undefined;
 
     if (acceptedSuggestion.isChild) {
       if (acceptedSuggestion.suggestedValue) {
-        const suggestedValue = acceptedSuggestion.suggestedValue;
+        const { suggestedValue } = acceptedSuggestion;
         if (
           typeof suggestedValue === 'object' &&
           suggestedValue !== null &&
@@ -207,7 +208,7 @@ const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
       }
 
       if (acceptedSuggestion.currentValue) {
-        const currentValue = acceptedSuggestion.currentValue;
+        const { currentValue } = acceptedSuggestion;
         if (typeof currentValue === 'object' && currentValue !== null && 'id' in currentValue) {
           removedValues = [currentValue.id];
         } else if (typeof currentValue === 'string' || typeof currentValue === 'number') {
