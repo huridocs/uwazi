@@ -54,14 +54,26 @@ describe('suggestions with CustomFilters', () => {
     it('should return count of obsolete suggestions', async () => {
       await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { obsolete: true } }),
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { obsolete: true } }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: 1000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: 1000,
+          }),
           f.ixSuggestion({
             extractorId: f.id('another_extractor'),
             state: { obsolete: true },
           }),
           f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { obsolete: false } }),
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: {} }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: null,
+          }),
         ],
       });
 
@@ -75,9 +87,17 @@ describe('suggestions with CustomFilters', () => {
     it('should return count of errors in suggestions', async () => {
       await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { error: true } }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { error: true },
+            date: 1000,
+          }),
           f.ixSuggestion({ extractorId: f.id('another_extractor'), state: { error: true } }),
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: {} }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { error: true },
+            date: null,
+          }),
         ],
       });
 
@@ -91,21 +111,33 @@ describe('suggestions with CustomFilters', () => {
     it('should return count of noContext suggestions', async () => {
       await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { hasContext: false } }),
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { hasContext: false } }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: 1000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: 1000,
+          }),
           f.ixSuggestion({
             extractorId: f.id('another_extractor'),
             state: { hasContext: false },
           }),
           f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { hasContext: true } }),
-          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: {} }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: null,
+          }),
         ],
       });
 
       const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 4,
-        noContext: 3,
+        noContext: 2,
       });
     });
 
@@ -239,9 +271,175 @@ describe('suggestions with CustomFilters', () => {
         match: 2,
         mismatch: 7,
         obsolete: 2,
-        error: 2,
-        noContext: 4,
+        error: 1,
+        noContext: 2,
         nonProcessed: 3,
+      });
+    });
+
+    // Test filtering logic for pipelineStages.ts
+    it('should filter obsolete suggestions excluding new suggestions', async () => {
+      await testingDB.setupFixturesAndContext({
+        ixsuggestions: [
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: 1000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: 2000,
+          }),
+          // New obsolete suggestions - should be excluded
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: null,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true },
+            date: null,
+          }),
+          // Non-obsolete suggestions - should be excluded
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: false },
+            date: 1000,
+          }),
+        ],
+      });
+
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 5,
+        obsolete: 2, // Only processed obsolete suggestions
+      });
+    });
+
+    it('should filter error suggestions excluding new suggestions', async () => {
+      await testingDB.setupFixturesAndContext({
+        ixsuggestions: [
+          // Processed error suggestions - should be included
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { error: true },
+            date: 1000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { error: true },
+            date: 2000,
+          }),
+          // New error suggestions - should be excluded
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { error: true },
+            date: null,
+          }),
+          // Non-error suggestions - should be excluded
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { error: false },
+            date: 1000,
+          }),
+        ],
+      });
+
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 4,
+        error: 2, // Only processed error suggestions
+      });
+    });
+
+    it('should filter noContext suggestions excluding new suggestions', async () => {
+      await testingDB.setupFixturesAndContext({
+        ixsuggestions: [
+          // Processed noContext suggestions - should be included
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: 1000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: 2000,
+          }),
+          // New noContext suggestions - should be excluded
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: null,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: false },
+            date: null,
+          }),
+          // Has context suggestions - should be excluded
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { hasContext: true },
+            date: 1000,
+          }),
+        ],
+      });
+
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 5,
+        noContext: 2, // Only processed noContext suggestions
+      });
+    });
+
+    it('should handle mixed states with new suggestions properly', async () => {
+      await testingDB.setupFixturesAndContext({
+        ixsuggestions: [
+          // Processed suggestions with various states
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true, error: false, hasContext: true },
+            date: 1000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: false, error: true, hasContext: false },
+            date: 2000,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: false, error: false, hasContext: false },
+            date: 3000,
+          }),
+          // New suggestions with various states - should be excluded from all counts
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: true, error: false, hasContext: true },
+            date: null,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: false, error: true, hasContext: false },
+            date: null,
+          }),
+          f.ixSuggestion({
+            extractorId: f.id('test_extractor'),
+            state: { obsolete: false, error: false, hasContext: false },
+            date: null,
+          }),
+        ],
+      });
+
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 6,
+        obsolete: 1, // Only processed obsolete
+        error: 1, // Only processed error
+        noContext: 2, // Only processed noContext (2 processed suggestions)
+        nonProcessed: 3, // All new suggestions
       });
     });
   });

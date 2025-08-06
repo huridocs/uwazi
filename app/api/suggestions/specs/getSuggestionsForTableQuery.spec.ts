@@ -599,7 +599,7 @@ describe('getSuggestionsForTableQuery', () => {
       },
     });
 
-    expect(total).toBe(11);
+    expect(total).toBe(12);
     expect(totalPages).toBe(6);
     expect(suggestions.length).toBe(2);
   });

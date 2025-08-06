@@ -15,9 +15,15 @@ export const filterFragments = {
   nonLabeled: { 'state.labeled': false },
   match: { 'state.match': true },
   mismatch: { 'state.match': false },
-  obsolete: { 'state.obsolete': true },
-  error: { 'state.error': true },
-  noContext: { 'state.hasContext': false },
+  obsolete: {
+    $and: [{ $ne: ['$date', null] }, { 'state.obsolete': true }],
+  },
+  error: {
+    $and: [{ $ne: ['$date', null] }, { 'state.error': true }],
+  },
+  noContext: {
+    $and: [{ $ne: ['$date', null] }, { 'state.hasContext': false }],
+  },
 };
 
 export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {

@@ -139,9 +139,39 @@ const Suggestions = {
                 ],
               },
             },
-            obsolete: { $sum: { $cond: ['$state.obsolete', 1, 0] } },
-            error: { $sum: { $cond: ['$state.error', 1, 0] } },
-            noContext: { $sum: { $cond: [{ $not: '$state.hasContext' }, 1, 0] } },
+            obsolete: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [{ $ne: ['$date', null] }, '$state.obsolete'],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            error: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [{ $ne: ['$date', null] }, '$state.error'],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            noContext: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [{ $ne: ['$date', null] }, { $not: '$state.hasContext' }],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
             nonProcessed: {
               $sum: {
                 $cond: [{ $eq: ['$date', null] }, 1, 0],
