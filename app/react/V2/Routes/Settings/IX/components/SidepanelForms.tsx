@@ -8,7 +8,13 @@ import { Translate } from 'app/I18N';
 import { ClientPropertySchema } from 'app/istore';
 import { isClient } from 'app/utils';
 import { lookup } from 'V2/api/search';
-import { InputField, MultiselectList, MultiselectListOption, Textarea } from 'V2/Components/Forms';
+import {
+  defaultSearch,
+  InputField,
+  MultiselectList,
+  MultiselectListOption,
+  Textarea,
+} from 'V2/Components/Forms';
 import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
 import { loadValuesAndSuggestions } from './sidepanelFunctions';
@@ -62,9 +68,8 @@ const Selects = ({
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const thesaurus = thesauri.find(item => item._id === property.content);
   const suggestions = getSuggestionValues(suggestion?.suggestedValue);
-
+  const thesaurus = thesauri.find(item => item._id === property.content);
   const options = thesaurus?.values.map((value: any) => ({
     label: (
       <MultiselectItemLabel
@@ -89,6 +94,7 @@ const Selects = ({
       suggested: suggestions?.includes(subValue.id),
     })),
   }));
+  const [items, setItems] = useState<MultiselectListOption[]>(options || []);
 
   return (
     <div className="px-4 pb-4 h-60">
@@ -97,13 +103,16 @@ const Selects = ({
         name="field"
         rules={{ required: property?.required }}
         render={({ field: { value, onChange } }) => {
-          const items = updateOptionsWithSelection(options || [], value);
+          const itemsWithSuggestions = updateOptionsWithSelection(items || [], value);
 
           return (
             <MultiselectList
               onChange={onChange}
+              onSearch={s => {
+                setItems(() => defaultSearch(s, options));
+              }}
               selectedValues={value}
-              items={items}
+              items={itemsWithSuggestions}
               checkboxes
               singleSelect={property.type === 'select'}
               search={selectAndSearch ? selectedtext?.text : undefined}
