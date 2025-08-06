@@ -471,44 +471,89 @@ async function getFileIdsWithReadySegmentations(
   return allFileIds.slice(0, targetLimit);
 }
 
-async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
+function createBaseFileQuery() {
+  return {
+    type: 'document' as const,
+    filename: { $exists: true },
+    language: { $exists: true },
+  };
+}
+
+async function filterFileIdsByReadySegmentations(
+  fileIds: ObjectIdSchema[]
+): Promise<ObjectIdSchema[]> {
+  if (!fileIds.length) return [];
+
+  const segmentations = await SegmentationModel.get(
+    { fileID: { $in: fileIds }, status: 'ready' },
+    'fileID'
+  );
+
+  return segmentations.map(s => s.fileID!);
+}
+
+function createFilesQueryByIds(fileIds: ObjectIdSchema[]) {
+  return {
+    _id: { $in: fileIds },
+    ...createBaseFileQuery(),
+  };
+}
+
+function createFilesQueryByEntities(entityIds: string[]) {
+  return {
+    entity: { $in: entityIds },
+    ...createBaseFileQuery(),
+  };
+}
+
+async function getNextSharedIdsBatch(
+  model: EnforcedWithId<IXModelType>,
+  batchSize: number
+): Promise<string[] | null> {
   if (!model.findSuggestionsSharedIds?.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
 
-  const sharedIdsToProcess = model.findSuggestionsSharedIds!.slice(0, BATCH_SIZE);
+  const sharedIdsToProcess = model.findSuggestionsSharedIds.slice(0, batchSize);
 
   await ixmodels.updateMany(
     { _id: model._id },
-    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds!.slice(BATCH_SIZE) } }
+    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds.slice(batchSize) } }
   );
 
-  const filesQuery = {
-    entity: { $in: sharedIdsToProcess },
-    type: 'document',
-    filename: { $exists: true },
-    language: { $exists: true },
-  };
-
-  return filesQuery;
+  return sharedIdsToProcess;
 }
 
-async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SIZE: number) {
-  const allFileIds = await getFileIdsWithReadySegmentations(extractorId, BATCH_SIZE);
+async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
+  const sharedIds = await getNextSharedIdsBatch(model, BATCH_SIZE);
 
-  if (allFileIds.length === 0) {
+  if (!sharedIds) {
     return null;
   }
 
-  const filesQuery = {
-    _id: { $in: allFileIds },
-    type: 'document',
-    filename: { $exists: true },
-    language: { $exists: true },
-  };
+  // Get all files for these entities
+  const allFiles = await filesModel.get(createFilesQueryByEntities(sharedIds));
 
-  return filesQuery;
+  // Filter to only files with ready segmentations
+  const allFileIds = allFiles.map(f => f._id);
+  const readyFileIds = await filterFileIdsByReadySegmentations(allFileIds);
+
+  if (!readyFileIds.length) {
+    return null;
+  }
+
+  return createFilesQueryByIds(readyFileIds);
+}
+
+async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SIZE: number) {
+  const readyFileIds = await getFileIdsWithReadySegmentations(extractorId, BATCH_SIZE);
+
+  if (!readyFileIds.length) {
+    return null;
+  }
+
+  return createFilesQueryByIds(readyFileIds);
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
