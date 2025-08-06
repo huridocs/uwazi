@@ -1,7 +1,7 @@
-import React from 'react';
-import { MultiselectList } from 'V2/Components/UI';
+import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
+import { defaultSearch, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates';
 import { formatTemplatesToOptions } from '../../../../../utils/formatters';
@@ -12,14 +12,16 @@ const Body = () => {
   const targetTemplateOptions = formatTemplatesToOptions(
     templates.filter(filterPXQualifiedTemplates)
   );
+  const [options, setOptions] = useState<MultiselectListOption[]>(targetTemplateOptions);
   return (
     <div>
       <MultiselectList
         selectedValues={[targetTemplateId]}
-        items={targetTemplateOptions}
+        items={options}
         onChange={selected => {
           setTargetTemplateId(selected[0]);
         }}
+        onSearch={s => setOptions(() => defaultSearch(s, targetTemplateOptions))}
         singleSelect
         className="min-h-[400px]"
         hideFilters

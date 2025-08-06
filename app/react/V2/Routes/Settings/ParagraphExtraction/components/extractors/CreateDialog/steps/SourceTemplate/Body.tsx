@@ -1,10 +1,10 @@
-import React from 'react';
-import { MultiselectList } from 'V2/Components/UI';
-import { formatTemplatesToOptions } from 'app/V2/Routes/Settings/ParagraphExtraction/utils/formatters';
+import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'app/V2/atoms';
 import { useLoaderData } from 'react-router';
-import { Extractor } from 'app/V2/shared/ParagraphExtractionTypes';
+import { formatTemplatesToOptions } from 'V2/Routes/Settings/ParagraphExtraction/utils/formatters';
+import { MultiselectListOption, MultiselectList, defaultSearch } from 'V2/Components/Forms';
+import { templatesAtom } from 'V2/atoms';
+import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 
 const Body = () => {
@@ -20,15 +20,17 @@ const Body = () => {
         template => !extractors.some(extractor => extractor.sourceTemplateId === template._id)
       )
   );
+  const [options, setOptions] = useState<MultiselectListOption[]>(sourceTemplateOptions);
 
   return (
     <div>
       <MultiselectList
         selectedValues={[sourceTemplateId]}
-        items={sourceTemplateOptions}
+        items={options}
         onChange={selected => {
           setSourceTemplateId(selected[0]);
         }}
+        onSearch={s => setOptions(() => defaultSearch(s, sourceTemplateOptions))}
         allowSelelectAll={false}
         singleSelect
         className="min-h-[400px]"
