@@ -8,8 +8,8 @@ import userEvent from '@testing-library/user-event';
 import { Provider as AtomProvider } from 'jotai';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import { TestRouterContext } from 'V2/testing/TestRouterContext';
-import { SuggestionSidepanel } from '../SuggestionSidepanel';
 import { loaderData, suggestion1, textProperty, numericProperty, dateProperty } from './fixtures';
+import { PDFSidepanel } from '../PDFSidepanel';
 
 jest.mock('V2/api/entities', () => ({
   getById: jest.fn().mockResolvedValue([
@@ -93,7 +93,7 @@ describe('SuggestionSidepanel', () => {
     render(
       <TestRouterContext loaderData={loaderData}>
         <AtomProvider>
-          <SuggestionSidepanel
+          <PDFSidepanel
             showSidepanel
             setShowSidepanel={setShowSidepanelSpy}
             onEntitySave={onEntitySaveSpy}
@@ -183,7 +183,7 @@ describe('SuggestionSidepanel', () => {
       render(
         <TestRouterContext loaderData={loaderData}>
           <AtomProvider>
-            <SuggestionSidepanel
+            <PDFSidepanel
               showSidepanel
               setShowSidepanel={setShowSidepanelSpy}
               onEntitySave={onEntitySaveSpy}
@@ -194,19 +194,9 @@ describe('SuggestionSidepanel', () => {
         </TestRouterContext>
       );
 
-      // Verify the sidepanel renders without errors
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
-
-      // Verify that the component handles the string array format without crashing
-      // The key test is that the component processes the old structure correctly
-      // and doesn't throw errors when dealing with string arrays instead of objects
       expect(screen.getByText('Multiselect Property')).toBeInTheDocument();
-
-      // Verify that the multiselect interface is rendered
       expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
-
-      // The component should handle the string array format gracefully
-      // even if the thesaurus data is not available in the test environment
       expect(screen.getByText('No items available')).toBeInTheDocument();
     });
   });
