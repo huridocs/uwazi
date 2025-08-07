@@ -9,7 +9,7 @@ const suggestion1: TableSuggestion = {
   sharedId: 'shared1',
   fileId: 'file1',
   entityTitle: 'Test Entity Title',
-  propertyName: 'testProperty',
+  propertyName: 'text_property',
   suggestedValue: 'suggested value',
   currentValue: 'current value',
   segment: 'test segment',
@@ -76,7 +76,6 @@ const entity1: ClientEntitySchema = {
   title: 'Test Entity Title',
   sharedId: 'shared1',
   metadata: {
-    testProperty: [{ value: 'current value' }],
     text_property: [{ value: 'current text value' }],
     numeric_property: [{ value: 42 }],
     date_property: [{ value: 1640995200 }],

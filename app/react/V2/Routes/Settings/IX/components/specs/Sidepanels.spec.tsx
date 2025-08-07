@@ -90,7 +90,6 @@ jest.mock('V2/api/entities', () => ({
       title: 'Test Entity Title',
       sharedId: 'shared1',
       metadata: {
-        testProperty: [{ value: 'current value' }],
         text_property: [{ value: 'current text value' }],
         numeric_property: [{ value: 42 }],
         date_property: [{ value: 1640995200 }],
@@ -183,7 +182,7 @@ jest.mock('V2/Components/PDFViewer', () => ({
       .mockReturnValue({ 1: [{ left: 100, top: 100, width: 200, height: 20 }] }),
     updateFileSelection: jest.fn().mockReturnValue([
       {
-        name: 'testProperty',
+        name: 'text_property',
         id: 'property1',
         selectionRectangles: [
           {
@@ -434,7 +433,7 @@ describe('Sidepanel forms', () => {
               selections: [
                 {
                   id: 'property1',
-                  name: 'testProperty',
+                  name: 'text_property',
                   selectionRectangles: [{ height: 20, left: 100, page: 1, top: 100, width: 200 }],
                 },
               ],
