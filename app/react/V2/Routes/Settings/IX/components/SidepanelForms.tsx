@@ -125,7 +125,6 @@ const Selects = ({
   );
 };
 
-// eslint-disable-next-line max-statements
 const Relationships = ({
   property,
   suggestion,
@@ -134,12 +133,10 @@ const Relationships = ({
   suggestion: SidepanelFormsProps['suggestion'];
 }) => {
   const intitialOptionsRef = useRef<MultiselectListOption[]>([]);
-  const thesauri = useAtomValue(thesauriAtom);
-  const { control, watch } = useFormContext();
+  const { control } = useFormContext();
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
-  const thesaurus = thesauri.find(item => item._id === property.content);
-  const currentValues = watch('field');
+  const [options, setOptions] = useState<MultiselectListOption[]>([]);
 
   useEffect(() => {
     if (suggestion && property?.type === 'relationship') {
@@ -181,6 +178,7 @@ const Relationships = ({
           );
 
           intitialOptionsRef.current = intialOptions;
+          setOptions(intialOptions);
         })
         .catch(e => {
           if (isClient) {
@@ -191,69 +189,32 @@ const Relationships = ({
     }
   }, [property, suggestion]);
 
-  useEffect(() => {
-    if (property?.type === 'select' || property?.type === 'multiselect') {
-      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
-
-      const multiselectOptions: MultiselectListOption[] = [];
-      thesaurus?.values.forEach((value: any) => {
-        multiselectOptions.push({
-          label: (
-            <MultiselectItemLabel
-              isSuggested={suggestions.includes(value.id)}
-              label={value.label}
-              property={property}
-            />
-          ),
-          searchLabel: value.label.toLowerCase(),
-          value: value.id,
-          suggested: suggestions?.includes(value.id),
-          items: value.values?.map((subValue: any) => ({
-            label: (
-              <MultiselectItemLabel
-                isSuggested={suggestions.includes(subValue.id)}
-                label={subValue.label}
-                property={property}
-              />
-            ),
-            searchLabel: subValue.label.toLowerCase(),
-            value: subValue.id,
-            suggested: suggestions?.includes(subValue.id),
-          })),
-        });
+  const lookupSearch = async (searchTerm: string) => {
+    if (!searchTerm) {
+      setOptions(intitialOptionsRef.current);
+    } else {
+      const response = await lookup({
+        entityTitle: searchTerm || '',
+        template: property?.content,
       });
 
-      intitialOptionsRef.current = multiselectOptions;
+      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
+
+      setOptions(() =>
+        response.rows.map(option => ({
+          label: (
+            <MultiselectItemLabel
+              isSuggested={suggestions.includes(option.sharedId)}
+              label={option.title}
+              property={property!}
+            />
+          ),
+          value: option.sharedId,
+          searchLabel: option.title,
+          suggested: suggestions?.includes(option.sharedId),
+        }))
+      );
     }
-  }, [property, suggestion, thesaurus]);
-
-  const lookupSearch = async (searchTerm: string): Promise<MultiselectListOption[]> => {
-    if (!searchTerm) {
-      return updateOptionsWithSelection(intitialOptionsRef.current, currentValues as string[]);
-    }
-
-    const response = await lookup({
-      entityTitle: searchTerm || '',
-      template: property?.content,
-    });
-
-    const suggestions = getSuggestionValues(suggestion?.suggestedValue);
-
-    const newOptions = response.rows.map(option => ({
-      label: (
-        <MultiselectItemLabel
-          isSelected={Array.isArray(currentValues) && currentValues.includes(option.sharedId)}
-          isSuggested={suggestions.includes(option.sharedId)}
-          label={option.title}
-          property={property!}
-        />
-      ),
-      value: option.sharedId,
-      searchLabel: option.title,
-      suggested: suggestions?.includes(option.sharedId),
-    }));
-
-    return updateOptionsWithSelection(newOptions, currentValues);
   };
 
   return (
@@ -262,18 +223,22 @@ const Relationships = ({
         control={control}
         name="field"
         rules={{ required: property?.required }}
-        render={({ field: { value, onChange } }) => (
-          <MultiselectList
-            onChange={onChange}
-            selectedValues={value}
-            items={updateOptionsWithSelection(intitialOptionsRef.current, value as string[])}
-            checkboxes
-            singleSelect={property.type === 'select'}
-            search={selectAndSearch ? selectedtext?.text : ''}
-            suggestions
-            onSearch={property.type === 'relationship' ? lookupSearch : undefined}
-          />
-        )}
+        render={({ field: { value, onChange } }) => {
+          const itemsWithSuggestions = updateOptionsWithSelection(options || [], value);
+
+          return (
+            <MultiselectList
+              onChange={onChange}
+              selectedValues={value}
+              items={itemsWithSuggestions}
+              checkboxes
+              singleSelect={property.type === 'select'}
+              search={selectAndSearch ? selectedtext?.text : ''}
+              suggestions
+              onSearch={lookupSearch}
+            />
+          );
+        }}
       />
     </div>
   );

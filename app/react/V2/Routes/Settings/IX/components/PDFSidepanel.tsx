@@ -88,6 +88,9 @@ const PDFSidepanel = ({
     setPdfFile(undefined);
     setEntity(undefined);
     setShowSidepanel(false);
+    setSelectAndSearch(false);
+    setSelectedText(undefined);
+    setSelectionError(undefined);
   };
 
   const formContext = useForm({
