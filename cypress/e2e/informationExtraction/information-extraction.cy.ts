@@ -342,6 +342,7 @@ describe('Information Extraction', () => {
         .setSelection('The Spectacular Spider-Man');
 
       cy.contains('button', 'Click to fill').click();
+      cy.get('div.highlight-rectangle').scrollIntoView();
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', 'The Spectacular Spider-Man');
