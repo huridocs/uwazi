@@ -47,6 +47,7 @@ const fixtures: DBFixture = {
       property: 'text',
     }),
     factory.ixExtractor('prop2extractor', 'property2', ['templateToSegmentA']),
+    factory.ixExtractor('testDateNullExtractor', 'testProperty', ['templateToSegmentA']),
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
     factory.ixExtractor('prop5extractor', 'property5', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),

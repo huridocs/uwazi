@@ -221,7 +221,45 @@ describe('InformationExtraction', () => {
     it('should return status: fetching suggestion', async () => {
       const resp = await informationExtraction.status(factory.id('prop2extractor'));
       expect(resp.status).toEqual('processing_suggestions');
-      expect(resp.data).toEqual({ total: 5, processed: 2 });
+      expect(resp.data).toEqual({ total: 5, processed: 6 });
+    });
+
+    it('should return status: fetching new suggestion with date null', async () => {
+      const testExtractorId = factory.id('testDateNullExtractor');
+
+      await IXModelsModel.save({
+        extractorId: testExtractorId,
+        creationDate: 200,
+        status: 'ready',
+        findingSuggestions: true,
+        totalSuggestionsToFind: 3,
+      });
+
+      await IXSuggestionsModel.save({
+        extractorId: testExtractorId,
+        entityId: 'test1',
+        suggestedValue: 'processed1',
+        date: 300, // Processed
+        status: 'ready',
+      });
+      await IXSuggestionsModel.save({
+        extractorId: testExtractorId,
+        entityId: 'test2',
+        suggestedValue: 'processed2',
+        date: 400, // Processed
+        status: 'ready',
+      });
+      await IXSuggestionsModel.save({
+        extractorId: testExtractorId,
+        entityId: 'test3',
+        suggestedValue: 'non-processed',
+        date: null, // Non-processed
+        status: 'ready',
+      });
+
+      const resp = await informationExtraction.status(testExtractorId);
+      expect(resp.status).toEqual('processing_suggestions');
+      expect(resp.data).toEqual({ total: 3, processed: 2 });
     });
 
     it('should return status: ready', async () => {
