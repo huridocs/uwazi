@@ -110,7 +110,7 @@ const Suggestions = {
 
     // Get counts for balanced allocation
     const [unlabeledCount, labeledCount] = await Promise.all([
-      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': false }),
+      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': { $ne: true } }),
       IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': true }),
     ]);
 
@@ -135,7 +135,7 @@ const Suggestions = {
       {
         $facet: {
           unlabeled: [
-            { $match: { ...baseQuery, 'state.labeled': false } },
+            { $match: { ...baseQuery, 'state.labeled': { $ne: true } } },
             { $sample: { size: unlabeledSampleSize } },
           ],
           labeled: [

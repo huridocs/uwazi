@@ -410,12 +410,12 @@ async function getFileIdsWithReadySegmentations(
     targetLimit * 3
   );
 
-  const allFileIds: ObjectIdSchema[] = [];
-  const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
-
   if (!suggestions.length) {
     return [];
   }
+
+  const allFileIds: ObjectIdSchema[] = [];
+  const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
 
   // Process suggestions in batches to check segmentation status (keep existing batching logic)
   const batchSize = 100;
@@ -460,10 +460,13 @@ async function getFileIdsWithReadySegmentations(
   if (suggestionsWithFailedSegmentations.length) {
     const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
       ...suggestion,
-      'state.error': true,
-      'state.obsolete': false,
+      state: {
+        ...suggestion.state,
+        error: true,
+        obsolete: false,
+      },
       status: 'failed' as IXSuggestionType['status'],
-    }));
+    })) as Partial<IXSuggestionType>[];
 
     await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
   }
