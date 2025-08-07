@@ -194,7 +194,7 @@ async function getEntitiesForTraining(
 function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWithId<IXModelType>) {
   const suggestionsQuery: UwaziFilterQuery<any> = {
     extractorId,
-    date: { $lt: model.creationDate },
+    $or: [{ date: null }, { 'state.obsolete': true }],
     'state.error': { $ne: true },
   };
 
@@ -418,7 +418,7 @@ async function getFileIdsWithReadySegmentations(
 
   const query: UwaziFilterQuery<any> = {
     extractorId,
-    date: { $lt: currentModel.creationDate },
+    $or: [{ date: null }, { 'state.obsolete': true }],
   };
 
   if (currentModel.testRun) {

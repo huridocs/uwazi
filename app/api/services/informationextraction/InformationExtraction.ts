@@ -591,7 +591,7 @@ class InformationExtraction {
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
-      date: { $gt: model.creationDate },
+      date: { $ne: null },
     });
     return {
       total: model.totalSuggestionsToFind,

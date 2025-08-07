@@ -804,6 +804,80 @@ describe('getSuggestionsForTableQuery', () => {
     expect(hasErrorOnly.suggestions.filter(s => s.state.error)).toHaveLength(2);
 
     expect(hasObsoleteOnly.suggestions.filter(s => s.state.obsolete)).toHaveLength(2);
+
+    // Test that the count filters work correctly
+    expect(hasMatchOnly.total).toBeGreaterThan(0);
+    expect(hasMismatchOnly.total).toBeGreaterThan(0);
+    expect(hasLabeledOnly.total).toBeGreaterThan(0);
+    expect(hasNonLabeledOnly.total).toBeGreaterThan(0);
+    expect(hasErrorOnly.total).toBeGreaterThan(0);
+    expect(hasObsoleteOnly.total).toBeGreaterThan(0);
+  });
+
+  it('should handle count filters correctly for pagination', async () => {
+    const { sut } = createSut();
+
+    const matchResult = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: { size: 10, number: 1 },
+      filter: {
+        match: true,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    const errorResult = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: { size: 10, number: 1 },
+      filter: {
+        match: false,
+        error: true,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    const obsoleteResult = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: { size: 10, number: 1 },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: true,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    // Log the actual values to see what's happening
+    console.log('Count results:', {
+      match: matchResult.total,
+      error: errorResult.total,
+      obsolete: obsoleteResult.total,
+      matchSuggestions: matchResult.suggestions.length,
+      errorSuggestions: errorResult.suggestions.length,
+      obsoleteSuggestions: obsoleteResult.suggestions.length,
+    });
+
+    // The test data has suggestions with different states
+    // Looking at the database output, there are suggestions with error: true and obsolete: true
+    // that have date: { $ne: null }, so these filters should return 2 each
+    expect(matchResult.total).toBe(2);
+    expect(errorResult.total).toBe(2);
+    expect(obsoleteResult.total).toBe(2);
   });
 
   it('should handle nonProcessed filter correctly', async () => {

@@ -16,13 +16,16 @@ export const filterFragments = {
   match: { 'state.match': true },
   mismatch: { 'state.match': false },
   obsolete: {
-    $and: [{ $ne: ['$date', null] }, { 'state.obsolete': true }],
+    date: { $ne: null },
+    'state.obsolete': true,
   },
   error: {
-    $and: [{ $ne: ['$date', null] }, { 'state.error': true }],
+    date: { $ne: null },
+    'state.error': true,
   },
   noContext: {
-    $and: [{ $ne: ['$date', null] }, { 'state.hasContext': false }],
+    date: { $ne: null },
+    'state.hasContext': false,
   },
 };
 
