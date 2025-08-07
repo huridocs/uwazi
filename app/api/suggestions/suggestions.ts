@@ -16,6 +16,7 @@ import {
   propertyTypeIsWithoutExtractedMetadata,
 } from 'api/services/informationextraction/ixMaterials';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { IXModelType } from 'shared/types/IXModelType';
 import { registerEventListeners } from './eventListeners';
 import { updateStates } from './updateState';
 import {
@@ -94,6 +95,70 @@ const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
   getByExtractor: async (extractorId: ObjectIdSchema) => IXSuggestionsModel.get({ extractorId }),
+
+  // Balanced sampling for suggestion finding (both test runs and regular runs)
+  getBalancedSample: async (
+    extractorId: ObjectIdSchema,
+    model: EnforcedWithId<IXModelType>,
+    maxTotal: number
+  ): Promise<IXSuggestionType[]> => {
+    const baseQuery = {
+      extractorId,
+      date: { $lt: model.creationDate },
+      'state.error': { $ne: true },
+    };
+
+    // Get counts for balanced allocation
+    const [unlabeledCount, labeledCount] = await Promise.all([
+      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': { $ne: true } }),
+      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': true }),
+    ]);
+
+    // Calculate optimal allocation
+    const idealHalf = Math.floor(maxTotal / 2);
+    let unlabeledSampleSize = Math.min(idealHalf, unlabeledCount);
+    let labeledSampleSize = Math.min(idealHalf, labeledCount);
+
+    // Reallocate unused slots
+    const totalUsed = unlabeledSampleSize + labeledSampleSize;
+    const remainingSlots = maxTotal - totalUsed;
+
+    if (remainingSlots > 0) {
+      if (unlabeledCount > unlabeledSampleSize) {
+        unlabeledSampleSize = Math.min(unlabeledCount, unlabeledSampleSize + remainingSlots);
+      } else if (labeledCount > labeledSampleSize) {
+        labeledSampleSize = Math.min(labeledCount, labeledSampleSize + remainingSlots);
+      }
+    }
+
+    const pipeline = [
+      {
+        $facet: {
+          unlabeled: [
+            { $match: { ...baseQuery, 'state.labeled': { $ne: true } } },
+            { $sample: { size: unlabeledSampleSize } },
+          ],
+          labeled: [
+            { $match: { ...baseQuery, 'state.labeled': true } },
+            { $sample: { size: labeledSampleSize } },
+          ],
+        },
+      },
+      {
+        $project: {
+          suggestions: { $concatArrays: ['$unlabeled', '$labeled'] },
+        },
+      },
+      {
+        $unwind: '$suggestions',
+      },
+      {
+        $replaceRoot: { newRoot: '$suggestions' },
+      },
+    ];
+
+    return (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
+  },
 
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
     const extractorId = new ObjectId(_extractorId);

@@ -808,6 +808,9 @@ class InformationExtraction {
       {}
     );
 
+    // TEST!!!
+    await ixmodels.unsetFindSuggestionsData(extractorId);
+
     if (res) {
       return { status: 'ready', message: 'Ready' };
     }

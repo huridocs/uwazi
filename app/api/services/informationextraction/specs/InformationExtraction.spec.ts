@@ -1557,7 +1557,7 @@ describe('InformationExtraction', () => {
         );
       });
 
-      it('should only process a subset of suggestions, excluding the ones that are training samples', async () => {
+      it('should only process a subset of suggestions', async () => {
         await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
         await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
         const [model] = await IXModelsModel.get({
@@ -1569,8 +1569,8 @@ describe('InformationExtraction', () => {
           extractorId: factory.id('sourceTextExtractor1'),
           status: 'processing',
         });
-        expect(suggestionsInProcessing.length).toBe(1);
-        expect(suggestionsInProcessing[0].entityId).toBe('entity_without_label_data');
+        expect(suggestionsInProcessing.length).toBe(3);
+        expect(suggestionsInProcessing.map(s => s.entityId)).toContain('entity_without_label_data');
         expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
           1,
           'tenant1',

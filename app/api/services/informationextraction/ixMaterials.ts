@@ -26,6 +26,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { PipelineBuilder } from 'api/suggestions/queryBuilder';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { ObjectId } from 'mongodb';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { Extractors } from './ixextractors';
 import { IXServices } from './IXServices';
 
@@ -191,20 +192,6 @@ async function getEntitiesForTraining(
   return entities;
 }
 
-function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWithId<IXModelType>) {
-  const suggestionsQuery: UwaziFilterQuery<any> = {
-    extractorId,
-    date: { $lt: model.creationDate },
-    'state.error': { $ne: true },
-  };
-
-  if (model.testRun) {
-    suggestionsQuery.trainingSample = { $ne: true };
-  }
-
-  return suggestionsQuery;
-}
-
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
   if (!model.findSuggestionsSharedIds?.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
@@ -228,8 +215,8 @@ async function getEntitiesForSuggestionsQuery(
   model: EnforcedWithId<IXModelType>,
   BATCH_SIZE: number
 ) {
-  const suggestionsQuery = conformSuggestionsQuery(extractorId, model);
-  const suggestions = await IXSuggestionsModel.get(suggestionsQuery, '', { limit: BATCH_SIZE });
+  // Use balanced sampling for all suggestion finding (both test runs and regular runs)
+  const suggestions = await Suggestions.getBalancedSample(extractorId, model, BATCH_SIZE);
 
   if (!suggestions.length) {
     return null;
@@ -413,37 +400,35 @@ async function getFileIdsWithReadySegmentations(
   limit: number
 ): Promise<ObjectIdSchema[]> {
   const [currentModel] = await ixmodels.get({ extractorId });
-
   const targetLimit = limit || BATCH_SIZE_FOR_PDF;
 
-  const query: UwaziFilterQuery<any> = {
+  // Use balanced sampling for all suggestion finding (both test runs and regular runs)
+  // Get extra suggestions since some might have failed segmentations
+  const suggestions = await Suggestions.getBalancedSample(
     extractorId,
-    date: { $lt: currentModel.creationDate },
-  };
+    currentModel,
+    targetLimit * 3
+  );
 
-  if (currentModel.testRun) {
-    query.trainingSample = { $ne: true };
+  if (!suggestions.length) {
+    return [];
   }
 
-  const batchSize = 100;
   const allFileIds: ObjectIdSchema[] = [];
   const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
 
-  let skip = 0;
-  let hasMore = true;
+  // Process suggestions in batches to check segmentation status (keep existing batching logic)
+  const batchSize = 100;
+  let suggestionIndex = 0;
 
-  while (hasMore && allFileIds.length < targetLimit) {
-    // eslint-disable-next-line no-await-in-loop
-    const suggestions = await IXSuggestionsModel.get(query, 'fileId', {
-      limit: batchSize,
-      skip,
-    });
+  while (suggestionIndex < suggestions.length && allFileIds.length < targetLimit) {
+    const currentBatch = suggestions.slice(suggestionIndex, suggestionIndex + batchSize);
 
-    if (!suggestions.length) {
+    if (!currentBatch.length) {
       break;
     }
 
-    const fileIds = suggestions.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
+    const fileIds = currentBatch.map(s => s.fileId).filter((id): id is ObjectIdSchema => !!id);
 
     if (fileIds.length > 0) {
       // eslint-disable-next-line no-await-in-loop
@@ -453,14 +438,14 @@ async function getFileIdsWithReadySegmentations(
       );
 
       const readySegmentationFileIds = segmentations
-        .filter(seg => seg.status === 'ready' && seg.fileID)
+        .filter(seg => seg.status === 'ready')
         .map(seg => seg.fileID!);
 
       const failedSegmentationFileIds = segmentations
-        .filter(seg => seg.status === 'failed' && seg.fileID)
+        .filter(seg => seg.status === 'failed')
         .map(seg => seg.fileID!);
 
-      const failedSuggestions = suggestions.filter(s =>
+      const failedSuggestions = currentBatch.filter(s =>
         failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
       );
 
@@ -468,17 +453,20 @@ async function getFileIdsWithReadySegmentations(
       suggestionsWithFailedSegmentations.push(...failedSuggestions);
     }
 
-    skip += batchSize;
-    hasMore = suggestions.length === batchSize;
+    suggestionIndex += batchSize;
   }
 
+  // Keep ALL existing error handling logic unchanged
   if (suggestionsWithFailedSegmentations.length) {
     const modifiedSuggestions = suggestionsWithFailedSegmentations.map(suggestion => ({
       ...suggestion,
-      'state.error': true,
-      'state.obsolete': false,
+      state: {
+        ...suggestion.state,
+        error: true,
+        obsolete: false,
+      },
       status: 'failed' as IXSuggestionType['status'],
-    }));
+    })) as Partial<IXSuggestionType>[];
 
     await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
   }
@@ -486,44 +474,89 @@ async function getFileIdsWithReadySegmentations(
   return allFileIds.slice(0, targetLimit);
 }
 
-async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
+function createBaseFileQuery() {
+  return {
+    type: 'document' as const,
+    filename: { $exists: true },
+    language: { $exists: true },
+  };
+}
+
+async function filterFileIdsByReadySegmentations(
+  fileIds: ObjectIdSchema[]
+): Promise<ObjectIdSchema[]> {
+  if (!fileIds.length) return [];
+
+  const segmentations = await SegmentationModel.get(
+    { fileID: { $in: fileIds }, status: 'ready' },
+    'fileID'
+  );
+
+  return segmentations.map(s => s.fileID!);
+}
+
+function createFilesQueryByIds(fileIds: ObjectIdSchema[]) {
+  return {
+    _id: { $in: fileIds },
+    ...createBaseFileQuery(),
+  };
+}
+
+function createFilesQueryByEntities(entityIds: string[]) {
+  return {
+    entity: { $in: entityIds },
+    ...createBaseFileQuery(),
+  };
+}
+
+async function getNextSharedIdsBatch(
+  model: EnforcedWithId<IXModelType>,
+  batchSize: number
+): Promise<string[] | null> {
   if (!model.findSuggestionsSharedIds?.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
 
-  const sharedIdsToProcess = model.findSuggestionsSharedIds!.slice(0, BATCH_SIZE);
+  const sharedIdsToProcess = model.findSuggestionsSharedIds.slice(0, batchSize);
 
   await ixmodels.updateMany(
     { _id: model._id },
-    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds!.slice(BATCH_SIZE) } }
+    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds.slice(batchSize) } }
   );
 
-  const filesQuery = {
-    entity: { $in: sharedIdsToProcess },
-    type: 'document',
-    filename: { $exists: true },
-    language: { $exists: true },
-  };
-
-  return filesQuery;
+  return sharedIdsToProcess;
 }
 
-async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SIZE: number) {
-  const allFileIds = await getFileIdsWithReadySegmentations(extractorId, BATCH_SIZE);
+async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
+  const sharedIds = await getNextSharedIdsBatch(model, BATCH_SIZE);
 
-  if (allFileIds.length === 0) {
+  if (!sharedIds) {
     return null;
   }
 
-  const filesQuery = {
-    _id: { $in: allFileIds },
-    type: 'document',
-    filename: { $exists: true },
-    language: { $exists: true },
-  };
+  // Get all files for these entities
+  const allFiles = await filesModel.get(createFilesQueryByEntities(sharedIds));
 
-  return filesQuery;
+  // Filter to only files with ready segmentations
+  const allFileIds = allFiles.map(f => f._id);
+  const readyFileIds = await filterFileIdsByReadySegmentations(allFileIds);
+
+  if (!readyFileIds.length) {
+    return null;
+  }
+
+  return createFilesQueryByIds(readyFileIds);
+}
+
+async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SIZE: number) {
+  const readyFileIds = await getFileIdsWithReadySegmentations(extractorId, BATCH_SIZE);
+
+  if (!readyFileIds.length) {
+    return null;
+  }
+
+  return createFilesQueryByIds(readyFileIds);
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
