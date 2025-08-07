@@ -154,7 +154,7 @@ jest.mock('V2/Components/PDFViewer', () => ({
   PDF: ({ onSelect }: any) => {
     const handleTextSelection = () => {
       const mockSelection = {
-        text: 'Selected text from\nPDF',
+        text: 'Selected text from PDF',
         selectionRectangles: [
           {
             page: 1,
@@ -473,6 +473,60 @@ describe('Sidepanel forms', () => {
       expect(screen.getByText('Option 1')).toBeInTheDocument();
       expect(screen.getByText('Option 2')).toBeInTheDocument();
       expect(screen.getByText('Suggested Option')).toBeInTheDocument();
+    });
+  });
+
+  describe('Select and search', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should do the initial search, select text, then search and populate the field when the toggle is on', async () => {
+      const { lookup } = jest.requireMock('V2/api/search');
+
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+      renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      expect(lookup).toHaveBeenCalledWith({
+        entityTitle: '',
+        template: 'template2',
+      });
+
+      fireEvent.click(screen.getByTestId('selectable-text'));
+      fireEvent.click(screen.getByText('Select & Search'));
+
+      await waitFor(() => {
+        expect(lookup).toHaveBeenCalledWith({
+          entityTitle: 'Selected text from PDF',
+          template: 'template2',
+        });
+      });
+
+      const searchInput = screen.getByPlaceholderText('Search');
+      expect(searchInput).toHaveValue('Selected text from PDF');
+    });
+
+    it('should do the initial search, and not populate the field or do more searches when the toggle is off', async () => {
+      const { lookup } = jest.requireMock('V2/api/search');
+
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+      renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      expect(lookup).toHaveBeenCalledWith({
+        entityTitle: '',
+        template: 'template2',
+      });
+
+      fireEvent.click(screen.getByTestId('selectable-text'));
+
+      await waitFor(() => {
+        expect(lookup).toHaveBeenCalledTimes(1);
+      });
+
+      const searchInput = screen.getByPlaceholderText('Search');
+      expect(searchInput).toHaveValue('');
     });
   });
 });
