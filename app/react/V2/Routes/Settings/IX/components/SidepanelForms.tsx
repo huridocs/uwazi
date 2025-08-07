@@ -295,6 +295,11 @@ const TextInput = ({
             required: property.required || property.name === 'title',
             valueAsDate: property.type === 'date' || undefined,
           })}
+          errorMessage={
+            errors.field?.type === 'required' && (
+              <Translate className="sr-only">This field is required</Translate>
+            )
+          }
         />
       </div>
       <div>
@@ -348,6 +353,11 @@ const Markdown = ({
             disabled={isSubmitting}
             hasErrors={errors.field?.type === 'required' || !!selectionError}
             clearFieldAction={() => setValue('field', '')}
+            errorMessage={
+              errors.field?.type === 'required' && (
+                <Translate className="sr-only">This field is required</Translate>
+              )
+            }
           />
         )}
       />
