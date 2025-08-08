@@ -1836,6 +1836,7 @@ describe('InformationExtraction', () => {
         },
       ]);
 
+
       await informationExtraction.processResults({
         params: { id: factory.id('prop2extractor').toString() },
         tenant: 'tenant1',
@@ -1861,11 +1862,14 @@ describe('InformationExtraction', () => {
           status: 'failed',
           error: 'Issue calculation suggestion',
           state: {
+            labeled: false,
+            withValue: false,
             match: null,
             withSuggestion: false,
             hasContext: false,
             processing: false,
             error: true,
+            obsolete: false,
           },
         })
       );
