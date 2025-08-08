@@ -421,7 +421,10 @@ async function getFileIdsWithReadySegmentations(
 
   const query: UwaziFilterQuery<any> = {
     extractorId,
-    $or: [{ date: null }, { 'state.obsolete': true }],
+    $or: [
+      { date: null }, // New suggestions that haven't been processed
+      { date: { $lt: currentModel.creationDate } } // Original logic: suggestions older than the model
+    ],
   };
 
   if (currentModel.testRun) {

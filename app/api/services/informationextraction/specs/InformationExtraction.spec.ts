@@ -287,9 +287,8 @@ describe('InformationExtraction', () => {
       });
 
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
-      // Updated expectation: we now have both processed and non-processed suggestions
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentA.xml', 'documentC.xml', 'documentC.xml'].sort()
+        ['documentA.xml', 'documentC.xml'].sort()
       );
     });
 
@@ -305,11 +304,10 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(IXExternalService.files.length).toBe(4);
+      expect(IXExternalService.files.length).toBe(2);
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlH]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentG.xml', 'documentG.xml', 'documentH.xml', 'documentH.xml'].sort()
+        ['documentG.xml', 'documentH.xml'].sort()
       );
     });
 
@@ -325,19 +323,17 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(IXExternalService.files.length).toBe(3);
+      expect(IXExternalService.files.length).toBe(2);
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentK.xml', 'documentK.xml', 'documentL.xml'].sort()
+        ['documentK.xml', 'documentK.xml', 'documentL.xml', 'documentM.xml'].sort()
       );
     });
 
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(IXExternalService.materials.length).toBe(4);
+      expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
         xml_file_name: 'documentA.xml',
         id: factory.id('prop1extractor').toString(),
@@ -398,8 +394,7 @@ describe('InformationExtraction', () => {
     it('should send labeled data (multiselect)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(IXExternalService.materials.length).toBe(4);
+      expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentG.xml')).toEqual({
         xml_file_name: 'documentG.xml',
         id: factory.id('extractorWithMultiselect').toString(),
@@ -429,8 +424,7 @@ describe('InformationExtraction', () => {
     it('should send labeled data (relationship)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(IXExternalService.materials.length).toBe(3);
+      expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentL.xml')).toEqual({
         xml_file_name: 'documentL.xml',
         id: factory.id('extractorWithRelationship').toString(),
@@ -802,9 +796,8 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlA, xmlC]));
-      // Updated expectation: we now have both processed and non-processed suggestions
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentA.xml', 'documentA.xml', 'documentC.xml', 'documentC.xml'].sort()
+        ['documentA.xml', 'documentC.xml'].sort()
       );
     });
 
@@ -900,7 +893,6 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
 
-      // Updated expectation: we now have both processed and non-processed suggestions
       expect(IXExternalService.filesNames.sort()).toEqual([
         'documentG.xml',
         'documentH.xml',
@@ -980,7 +972,6 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
 
-      // Updated expectation: we now have both processed and non-processed suggestions
       expect(IXExternalService.filesNames.sort()).toEqual(
         ['documentK.xml', 'documentL.xml', 'documentM.xml'].sort()
       );
@@ -1525,8 +1516,7 @@ describe('InformationExtraction', () => {
       const suggestions = await IXSuggestionsModel.get({
         extractorId: factory.id('prop1extractor'),
       });
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(suggestions.length).toBe(4);
+      expect(suggestions.length).toBe(2);
 
       // But only send the ready one for processing
       expect(IXExternalService.filesNames).toEqual(['documentA.xml']);
@@ -1555,8 +1545,7 @@ describe('InformationExtraction', () => {
       const suggestions = await IXSuggestionsModel.get({
         extractorId: factory.id('prop1extractor'),
       });
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(suggestions.length).toBe(4);
+      expect(suggestions.length).toBe(2);
       expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
         expect.objectContaining({
           entityId: 'A1',
@@ -1618,7 +1607,6 @@ describe('InformationExtraction', () => {
           extractorId: factory.id('sourceTextExtractor1'),
           status: 'processing',
         });
-        // Updated expectation: we now have both processed and non-processed suggestions
         expect(suggestionsInProcessing.length).toBe(1);
         expect(suggestionsInProcessing[0].entityId).toBe('entity_without_label_data');
         expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
@@ -1637,8 +1625,7 @@ describe('InformationExtraction', () => {
           extractorId: factory.id('prop1extractor'),
           status: 'processing',
         });
-        // Updated expectation: we now have both processed and non-processed suggestions
-        expect(suggestions.length).toBe(2);
+        expect(suggestions.length).toBe(1);
       });
     });
   });
@@ -1848,9 +1835,6 @@ describe('InformationExtraction', () => {
           segment_text: '',
         },
       ]);
-
-      // Create a suggestion to be processed
-      await saveSuggestionProcess('F4', 'A1', 'eng', 'prop2extractor');
 
       await informationExtraction.processResults({
         params: { id: factory.id('prop2extractor').toString() },
