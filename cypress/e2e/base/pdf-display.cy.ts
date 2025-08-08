@@ -175,7 +175,7 @@ describe('PDF display', () => {
         cy.contains('button', 'Create Extractor').click();
         cy.getByTestId('modal').within(() => {
           cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
-          editPropertyForExtractor('firstTemplate', 'Document', 'Text');
+          editPropertyForExtractor('Document', 'Text');
           cy.contains('button', 'Next').click();
           cy.contains('Text');
           cy.contains('button', 'Create').click();
