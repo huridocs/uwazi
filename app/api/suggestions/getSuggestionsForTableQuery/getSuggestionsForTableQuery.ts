@@ -51,7 +51,13 @@ export class GetSuggestionsForTableQuery {
 
     this.pipelineBuilder.add(matchStage[0]);
 
-    this.applyNonProcessedFilter(includeNonProcessedFilter);
+    if (includeNonProcessedFilter) {
+      this.pipelineBuilder.add({
+        $match: {
+          date: null,
+        },
+      });
+    }
 
     this.pipelineBuilder.add({
       $sort: sorter.$sort,
@@ -88,15 +94,6 @@ export class GetSuggestionsForTableQuery {
       total,
       totalPages: pagination.calculateNumberOfPages(total),
     };
-  }
-  private applyNonProcessedFilter(needsNonProcessedFilter: boolean) {
-    if (needsNonProcessedFilter) {
-      this.pipelineBuilder.add({
-        $match: {
-          date: null,
-        },
-      });
-    }
   }
 
   private applyPropertiesProjectStage() {

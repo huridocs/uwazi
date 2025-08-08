@@ -195,8 +195,8 @@ function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWit
   const suggestionsQuery: UwaziFilterQuery<any> = {
     extractorId,
     $or: [
-      { date: null }, // New suggestions that haven't been processed
-      { date: { $lt: model.creationDate } } // Original logic: suggestions older than the model
+      { date: null },
+      { date: { $lt: model.creationDate } }
     ],
     'state.error': { $ne: true },
   };
@@ -422,8 +422,8 @@ async function getFileIdsWithReadySegmentations(
   const query: UwaziFilterQuery<any> = {
     extractorId,
     $or: [
-      { date: null }, // New suggestions that haven't been processed
-      { date: { $lt: currentModel.creationDate } } // Original logic: suggestions older than the model
+      { date: null },
+      { date: { $lt: currentModel.creationDate } }
     ],
   };
 

@@ -592,8 +592,8 @@ class InformationExtraction {
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
       $and: [
-        { date: { $ne: null } }, // New suggestions that haven't been processed
-        { date: { $gt: model.creationDate } }, // Original logic: suggestions older than the model
+        { date: { $ne: null } },
+        { date: { $gt: model.creationDate } },
       ],
     });
     return {
