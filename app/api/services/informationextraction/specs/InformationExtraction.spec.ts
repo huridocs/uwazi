@@ -326,7 +326,7 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.files.length).toBe(2);
       expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentK.xml', 'documentK.xml', 'documentL.xml', 'documentM.xml'].sort()
+        ['documentK.xml', 'documentL.xml'].sort()
       );
     });
 
