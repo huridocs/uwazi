@@ -175,7 +175,7 @@ describe('PDF display', () => {
         cy.contains('button', 'Create Extractor').click();
         cy.getByTestId('modal').within(() => {
           cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
-          editPropertyForExtractor('firstTemplate', 'Document', 'Text');
+          editPropertyForExtractor('Document', 'Text');
           cy.contains('button', 'Next').click();
           cy.contains('Text');
           cy.contains('button', 'Create').click();
@@ -212,12 +212,19 @@ describe('PDF display', () => {
       it('should only render visible pages', () => {
         cy.get('#page-2-container .page').should('be.visible');
         cy.get('#page-2-container .page').should('not.be.empty');
-        cy.get('#page-3-container .page').should('be.empty');
-        cy.get('#page-7-container').scrollIntoView();
-        cy.get('#page-7-container').should('be.visible');
+        cy.get('#page-4-container .page').should('be.empty');
+
+        cy.get('aside > div:first-child').then(() => {
+          cy.get('#page-7-container').then($page7 => {
+            const page7Top = $page7[0].offsetTop;
+            cy.get('aside > div:first-child').scrollTo(0, page7Top);
+          });
+        });
+
+        cy.get('#page-7-container').should('exist');
         cy.get('#page-7-container .page').should('not.be.empty');
         cy.get('#page-2-container .page').should('be.empty');
-        cy.get('#page-3-container .page').should('be.empty');
+        cy.get('#page-4-container .page').should('be.empty');
         cy.contains('span[role="presentation"]', '1.3 Consideraciones de la Corte').should(
           'be.visible'
         );

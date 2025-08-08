@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { MultiselectList } from 'V2/Components/Forms';
+import { defaultSearch, MultiselectList } from 'V2/Components/Forms';
 import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures';
 
 const meta: Meta<typeof MultiselectList> = {
@@ -12,14 +12,15 @@ type Story = StoryObj<typeof MultiselectList>;
 
 const StoryComponent = ({ args }: any) => {
   const [searchAndFocus, setSearchAndFocus] = useState('');
+  const [selectItems, setSelectItems] = useState(args.items);
 
   return (
     <>
       <div className="tw-content">
-        <div className="w-full p-4 m-auto md:w-1/2 min-h-[300px]">
+        <div className="w-full p-4 h-96 overflow-y-auto">
           <MultiselectList
             label={args.label}
-            items={args.items}
+            items={selectItems}
             hasErrors={args.hasErrors}
             checkboxes={args.checkboxes}
             foldableGroups={args.foldableGroups}
@@ -27,7 +28,10 @@ const StoryComponent = ({ args }: any) => {
             startOnSelected={args.startOnSelected}
             selectedValues={args.selectedValues}
             search={searchAndFocus}
-            onSearch={args.onSearch}
+            onSearch={async term => {
+              const newItems = await args.onSearch(term, args.items);
+              setSelectItems(newItems);
+            }}
           />
         </div>
       </div>
@@ -55,6 +59,7 @@ const Basic: Story = {
     allowSelelectAll: false,
     startOnSelected: false,
     items,
+    onSearch: defaultSearch,
   },
 };
 

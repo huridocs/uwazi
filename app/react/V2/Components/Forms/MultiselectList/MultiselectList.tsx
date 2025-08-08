@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import React, { useEffect, useState, useRef } from 'react';
 import { isString } from 'lodash';
-import { captureException } from '@sentry/react';
 import { t, Translate } from 'app/I18N';
-import { debounce, isClient } from 'app/utils';
+import { debounce } from 'app/utils';
 import { Label } from '../Label';
 import { Checkbox } from '../Checkbox';
 import { MultiselectListButtonItem } from './MultiselectListButtonItem';
@@ -23,7 +22,7 @@ interface MultiselectListOption {
 interface MultiselectListProps {
   items: MultiselectListOption[];
   onChange?: (selectedValues: string[]) => void;
-  onSearch?: (search: string, items?: MultiselectListOption[]) => Promise<MultiselectListOption[]>;
+  onSearch?: (search: string) => any;
   selectedValues?: string[];
   label?: string | React.ReactNode;
   hasErrors?: boolean;
@@ -38,13 +37,13 @@ interface MultiselectListProps {
   itemClassName?: string;
   itemContainerClassName?: string;
   hideFilters?: boolean;
-  blankState?: string | React.ReactNode;
+  noItems?: string | React.ReactNode;
 }
 
-const renderChild = (child: string | React.ReactNode) =>
-  isString(child) ? <Translate>{child}</Translate> : child;
+const WrapChild = ({ children }: { children: string | React.ReactNode }) =>
+  isString(children) ? <Translate>{children}</Translate> : children;
 
-const defaultSearch = async (search: string, items?: MultiselectListOption[]) => {
+const defaultSearch = (search: string, items?: MultiselectListOption[]) => {
   const filtered: MultiselectListOption[] = [];
 
   const labelIncludesSearch = (_label: string) => {
@@ -75,13 +74,14 @@ const defaultSearch = async (search: string, items?: MultiselectListOption[]) =>
     }
   });
 
-  return Promise.resolve(filtered);
+  return filtered;
 };
 
+// eslint-disable-next-line max-statements
 const MultiselectList = ({
   items,
   onChange,
-  onSearch = defaultSearch,
+  onSearch,
   className = '',
   label,
   hasErrors,
@@ -96,26 +96,20 @@ const MultiselectList = ({
   hideFilters = false,
   itemClassName,
   itemContainerClassName,
-  blankState = <Translate>No items available</Translate>,
+  noItems = <Translate>No items available</Translate>,
 }: MultiselectListProps) => {
   const [selections, setSelections] = useState<string[]>(selectedValues || []);
-  const [availableItems, setAvailableItems] = useState(items);
+  const [availableItems, setAvailableItems] = useState<MultiselectListOption[] | undefined>(items);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selections.length));
   const [searchTerm, setSearchTerm] = useState(search);
-  const [openGroups, setOpenGroups] = useState<string[]>([]);
-  const [searching, setSearching] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [openGroups, setOpenGroups] = useState<string[] | undefined>([]);
   const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
     new Set(selectedValues)
   );
-  const [isDirty, setIsDirty] = useState(false);
   const optionsRef = useRef<HTMLUListElement>(null);
 
-  const debouncedSearchRef = useRef(
-    debounce(async (term: string, itemList: MultiselectListOption[]) => {
-      const results = await onSearch(term, itemList);
-      setAvailableItems(results || []);
-    }, 500)
-  );
+  const debouncedSearch = useRef(onSearch ? debounce(onSearch, 300) : undefined).current;
 
   useEffect(() => {
     setAvailableItems(items);
@@ -129,22 +123,33 @@ const MultiselectList = ({
 
   useEffect(() => {
     setSearchTerm(search);
+    setIsDirty(true);
+    return () => {
+      setIsDirty(false);
+      setSearchTerm('');
+    };
   }, [search]);
 
   useEffect(() => {
+    if (isDirty && debouncedSearch) {
+      debouncedSearch(searchTerm);
+    }
+  }, [debouncedSearch, isDirty, searchTerm]);
+
+  useEffect(() => {
     if (startOnSelected) {
-      const groupsToExpand = items
-        .filter(item => item.items?.some(childItem => selectedValues?.includes(childItem.value)))
+      const groupsToExpand = availableItems
+        ?.filter(item => item.items?.some(childItem => selectedValues?.includes(childItem.value)))
         .map(item => item.value);
 
       setOpenGroups(groupsToExpand);
     }
-  }, [items, selectedValues, startOnSelected]);
+  }, [availableItems, selectedValues, startOnSelected]);
 
   useEffect(() => {
     const newSet = new Set<string>(selections);
 
-    items.forEach(item => {
+    availableItems?.forEach(item => {
       if (item.suggested) {
         newSet.add(item.value);
       }
@@ -159,33 +164,7 @@ const MultiselectList = ({
     });
 
     setSelectedOrSuggestedItems(newSet);
-  }, [items, selections]);
-
-  useEffect(() => {
-    if (!isDirty && searchTerm) {
-      setIsDirty(true);
-    }
-
-    if (isDirty) {
-      setSearching(true);
-
-      debouncedSearchRef.current(searchTerm, items)?.catch(e => {
-        if (isClient) {
-          captureException(new Error('Error in useEffect', { cause: e }));
-        }
-      });
-
-      setSearching(false);
-    }
-  }, [isDirty, items, searchTerm]);
-
-  useEffect(
-    () => () => {
-      setIsDirty(false);
-      setSearchTerm('');
-    },
-    []
-  );
+  }, [availableItems, selections]);
 
   const handleSelect = (_value: string) => {
     let newValues;
@@ -204,7 +183,7 @@ const MultiselectList = ({
   const handleSelectAll = () => {
     const allValues: string[] = [];
 
-    items.forEach(item => {
+    availableItems?.forEach(item => {
       if (item.items?.length) {
         item.items?.forEach(subItem => allValues.push(subItem.value));
       } else {
@@ -217,10 +196,10 @@ const MultiselectList = ({
   };
 
   const handleGroupToggle = (groupKey: string) => {
-    if (openGroups.includes(groupKey)) {
+    if (openGroups?.includes(groupKey)) {
       setOpenGroups(openGroups.filter(group => group !== groupKey));
     } else {
-      setOpenGroups([...openGroups, groupKey]);
+      setOpenGroups([...(openGroups || []), groupKey]);
     }
   };
 
@@ -262,8 +241,6 @@ const MultiselectList = ({
     );
   };
 
-  const isGroupOpen = (groupKey: string) => openGroups.includes(groupKey);
-
   const renderItem = (item: MultiselectListOption) => {
     const itemHasSelectedChildren = item.items?.some(
       childItem => selections.includes(childItem.value) || childItem.suggested
@@ -282,13 +259,13 @@ const MultiselectList = ({
   };
 
   const renderGroup = (group: MultiselectListOption) => {
-    const isOpen = isGroupOpen(group.value);
+    const isOpen = openGroups?.includes(group.value);
 
     return (
       <MultiselectListGroup
         key={group.value}
         label={group.label}
-        isOpen={isOpen}
+        isOpen={!!isOpen}
         foldable={foldableGroups}
         onClick={() => handleGroupToggle(group.value)}
         itemContainerClassName={itemContainerClassName}
@@ -317,8 +294,8 @@ const MultiselectList = ({
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
+    <div className={`flex flex-col h-full ${className}`}>
+      <div className="w-full mb-2 bg-white">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -326,15 +303,15 @@ const MultiselectList = ({
           id="search-multiselect"
           label="search-multiselect"
           hideLabel
-          onChange={e => {
-            if (!isDirty) {
-              setIsDirty(true);
-            }
-            setSearchTerm(e.currentTarget.value);
-          }}
           placeholder={t('System', 'Search', null, false)}
           value={searchTerm}
-          clearFieldAction={() => setSearchTerm('')}
+          clearFieldAction={() => {
+            setSearchTerm('');
+          }}
+          onChange={e => {
+            setSearchTerm(e.currentTarget.value);
+            setIsDirty(true);
+          }}
         />
         {!hideFilters && (
           <div className="flex mx-1 my-4 flex-nowrap" data-testid="multiselectlist-filters">
@@ -370,19 +347,19 @@ const MultiselectList = ({
         )}
       </div>
 
-      {availableItems.length === 0 && !searching && (
-        <div className="flex w-full h-full justify-center items-start min-h-[400px]">
-          {renderChild(blankState)}
+      {availableItems?.length === 0 && (
+        <div className="flex grow w-full h-full justify-center items-start">
+          <WrapChild>{noItems}</WrapChild>
         </div>
       )}
       <ul
-        className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow min-h-[400px]'}`}
+        className={`${itemContainerClassName ?? ' w-full grow px-2 pt-2 overflow-y-auto'}`}
         ref={optionsRef}
       >
-        {availableItems.map(renderItem)}
+        {availableItems?.map(renderItem)}
       </ul>
     </div>
   );
 };
-export { MultiselectList };
+export { MultiselectList, defaultSearch };
 export type { MultiselectListOption };

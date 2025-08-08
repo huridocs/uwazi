@@ -13,8 +13,8 @@ const ToggleButtonContainer = (args: ToggleButtonProps) => {
   const [show, setShow] = useState(false);
   return (
     <div className="tw-content">
-      <ToggleButton onToggle={() => setShow(!show)} disabled={args.disabled}>
-        <div className="ml-2">{args.children}</div>
+      <ToggleButton onToggle={() => setShow(!show)} disabled={args.disabled} size={args.size}>
+        <div>{args.children}</div>
       </ToggleButton>
       {show && <p className="pt-3">This text appears and hides using the above toggle</p>}
     </div>
@@ -29,6 +29,7 @@ const Basic: Story = {
   args: {
     children: 'My toggle button',
     disabled: false,
+    size: 'regular',
   },
 };
 

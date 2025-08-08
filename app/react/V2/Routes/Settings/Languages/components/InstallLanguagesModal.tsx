@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Translate, I18NApi } from 'app/I18N';
 import { Button, Modal } from 'app/V2/Components/UI';
-import { MultiselectList } from 'app/V2/Components/Forms';
+import { defaultSearch, MultiselectList, MultiselectListOption } from 'app/V2/Components/Forms';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useApiCaller } from 'app/V2/CustomHooks/useApiCaller';
@@ -24,6 +24,8 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
       })),
     [languages]
   );
+
+  const [options, setOptions] = useState<MultiselectListOption[]>(items);
 
   const install = async () => {
     setShowModal(false);
@@ -49,7 +51,13 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
         <Translate className="block px-2 pt-4 text-justify text-gray-700">
           This action may take some time while we add the extra language to the entire collection.
         </Translate>
-        <MultiselectList items={items} onChange={s => setSelected(s)} />
+        <div className="h-96 pt-2">
+          <MultiselectList
+            items={options}
+            onChange={s => setSelected(s)}
+            onSearch={s => setOptions(() => defaultSearch(s, items))}
+          />
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">

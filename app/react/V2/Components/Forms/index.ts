@@ -9,7 +9,7 @@ export { Checkbox } from './Checkbox';
 export { EnableButtonCheckbox } from './EnableButtonCheckbox';
 export { ColorPicker } from './ColorPicker';
 export { DatePicker, DateRangePicker } from './DatePicker/DatePicker';
-export { MultiselectList } from './MultiselectList/MultiselectList';
+export { MultiselectList, defaultSearch } from './MultiselectList/MultiselectList';
 export { Textarea } from './Textarea';
 export type { RadioProps } from './RadioSelect';
 export type { MultiSelectProps } from './MultiSelect';

@@ -1,11 +1,6 @@
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import {
-  ExtractedMetadataSchema,
-  MetadataObjectSchema,
-  PropertyValueSchema,
-} from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { FileType } from 'shared/types/fileType';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import * as entitiesAPI from 'V2/api/entities';
 import * as filesAPI from 'V2/api/files';
@@ -123,16 +118,6 @@ const handleEntitySave = async (
   return entitiesAPI.save(entityToSave);
 };
 
-const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadataSchema[]) => {
-  if (file && newSelections) {
-    const fileToSave = { ...file };
-    fileToSave.extractedMetadata = newSelections;
-    return filesAPI.update(fileToSave);
-  }
-
-  return undefined;
-};
-
 const coerceValue = async (
   propertyType: 'date' | 'numeric',
   text: string | Date | undefined,
@@ -164,7 +149,6 @@ export {
   loadSidepanelData,
   loadValuesAndSuggestions,
   handleEntitySave,
-  handleFileSave,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
 };
