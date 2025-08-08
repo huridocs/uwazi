@@ -591,10 +591,7 @@ class InformationExtraction {
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
-      $and: [
-        { date: { $ne: null } },
-        { date: { $gt: model.creationDate } },
-      ],
+      $and: [{ date: { $ne: null } }, { date: { $gt: model.creationDate } }],
     });
     return {
       total: model.totalSuggestionsToFind,
@@ -810,6 +807,9 @@ class InformationExtraction {
       { $set: { findingSuggestions: false, status: ModelStatus.ready } },
       {}
     );
+
+    // TEST!!!
+    await ixmodels.unsetFindSuggestionsData(extractorId);
 
     if (res) {
       return { status: 'ready', message: 'Ready' };
