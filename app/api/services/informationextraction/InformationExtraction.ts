@@ -591,7 +591,10 @@ class InformationExtraction {
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
-      date: { $ne: null },
+      $and: [
+        { date: { $ne: null } }, // New suggestions that haven't been processed
+        { date: { $gt: model.creationDate } }, // Original logic: suggestions older than the model
+      ],
     });
     return {
       total: model.totalSuggestionsToFind,
