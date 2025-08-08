@@ -194,7 +194,10 @@ async function getEntitiesForTraining(
 function conformSuggestionsQuery(extractorId: ObjectIdSchema, model: EnforcedWithId<IXModelType>) {
   const suggestionsQuery: UwaziFilterQuery<any> = {
     extractorId,
-    $or: [{ date: null }, { 'state.obsolete': true }],
+    $or: [
+      { date: null }, // New suggestions that haven't been processed
+      { date: { $lt: model.creationDate } } // Original logic: suggestions older than the model
+    ],
     'state.error': { $ne: true },
   };
 
