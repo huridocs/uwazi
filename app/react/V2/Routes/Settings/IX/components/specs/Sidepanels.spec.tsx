@@ -528,5 +528,19 @@ describe('Sidepanel forms', () => {
       const searchInput = screen.getByPlaceholderText('Search');
       expect(searchInput).toHaveValue('');
     });
+
+    it('should not clear the field when toggling select and search off', async () => {
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+      renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('selectable-text'));
+      fireEvent.click(screen.getByText('Select & Search'));
+      const searchInput = screen.getByPlaceholderText('Search');
+      expect(searchInput).toHaveValue('Selected text from PDF');
+
+      fireEvent.click(screen.getByText('Select & Search'));
+      expect(searchInput).toHaveValue('Selected text from PDF');
+    });
   });
 });

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { captureException } from '@sentry/react';
@@ -50,6 +50,13 @@ const getSuggestionValues = (suggestedValue?: SuggestionValue[] | SuggestionValu
   });
 };
 
+const calculateSearchText = (toggle: boolean, previousText?: string, nextText?: string) => {
+  if (toggle) {
+    return nextText || '';
+  }
+  return previousText || '';
+};
+
 type SidepanelFormsProps = {
   handleClickToFill: () => Promise<void>;
   property?: ClientPropertySchema;
@@ -65,36 +72,41 @@ const Selects = ({
   suggestion: SidepanelFormsProps['suggestion'];
 }) => {
   const { control } = useFormContext();
+  const thesauri = useAtomValue(thesauriAtom);
+  const thesaurus = thesauri.find(item => item._id === property.content);
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
-  const thesauri = useAtomValue(thesauriAtom);
+  const searchTextRef = useRef('');
   const suggestions = getSuggestionValues(suggestion?.suggestedValue);
-  const thesaurus = thesauri.find(item => item._id === property.content);
-  const options = thesaurus?.values.map((value: any) => ({
-    label: (
-      <MultiselectItemLabel
-        isSuggested={suggestions.includes(value.id)}
-        label={value.label}
-        property={property}
-      />
-    ),
-    searchLabel: value.label.toLowerCase(),
-    value: value.id,
-    suggested: suggestions?.includes(value.id),
-    items: value.values?.map((subValue: any) => ({
-      label: (
-        <MultiselectItemLabel
-          isSuggested={suggestions.includes(subValue.id)}
-          label={subValue.label}
-          property={property}
-        />
-      ),
-      searchLabel: subValue.label.toLowerCase(),
-      value: subValue.id,
-      suggested: suggestions?.includes(subValue.id),
-    })),
-  }));
-  const [items, setItems] = useState<MultiselectListOption[]>(options || []);
+  const intialOptions = useMemo(
+    () =>
+      thesaurus?.values.map((value: any) => ({
+        label: (
+          <MultiselectItemLabel
+            isSuggested={suggestions.includes(value.id)}
+            label={value.label}
+            property={property}
+          />
+        ),
+        searchLabel: value.label.toLowerCase(),
+        value: value.id,
+        suggested: suggestions?.includes(value.id),
+        items: value.values?.map((subValue: any) => ({
+          label: (
+            <MultiselectItemLabel
+              isSuggested={suggestions.includes(subValue.id)}
+              label={subValue.label}
+              property={property}
+            />
+          ),
+          searchLabel: subValue.label.toLowerCase(),
+          value: subValue.id,
+          suggested: suggestions?.includes(subValue.id),
+        })),
+      })),
+    [property, suggestions, thesaurus]
+  );
+  const [items, setItems] = useState<MultiselectListOption[]>(intialOptions || []);
 
   return (
     <div className="h-60">
@@ -104,18 +116,23 @@ const Selects = ({
         rules={{ required: property?.required }}
         render={({ field: { value, onChange } }) => {
           const itemsWithSuggestions = updateOptionsWithSelection(items || [], value);
+          searchTextRef.current = calculateSearchText(
+            !!selectAndSearch,
+            searchTextRef.current,
+            selectedtext?.text
+          );
 
           return (
             <MultiselectList
               onChange={onChange}
               onSearch={s => {
-                setItems(() => defaultSearch(s, options));
+                setItems(() => defaultSearch(s, intialOptions));
               }}
               selectedValues={value}
               items={itemsWithSuggestions}
               checkboxes
               singleSelect={property.type === 'select'}
-              search={selectAndSearch ? selectedtext?.text : undefined}
+              search={searchTextRef.current}
               suggestions
             />
           );
@@ -137,6 +154,7 @@ const Relationships = ({
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
   const [options, setOptions] = useState<MultiselectListOption[]>([]);
+  const searchTextRef = useRef('');
 
   useEffect(() => {
     if (suggestion && property?.type === 'relationship') {
@@ -225,6 +243,11 @@ const Relationships = ({
         rules={{ required: property?.required }}
         render={({ field: { value, onChange } }) => {
           const itemsWithSuggestions = updateOptionsWithSelection(options || [], value);
+          searchTextRef.current = calculateSearchText(
+            !!selectAndSearch,
+            searchTextRef.current,
+            selectedtext?.text
+          );
 
           return (
             <MultiselectList
@@ -233,7 +256,7 @@ const Relationships = ({
               items={itemsWithSuggestions}
               checkboxes
               singleSelect={property.type === 'select'}
-              search={selectAndSearch ? selectedtext?.text : ''}
+              search={searchTextRef.current}
               suggestions
               onSearch={lookupSearch}
             />

@@ -123,11 +123,7 @@ const MultiselectList = ({
 
   useEffect(() => {
     setSearchTerm(search);
-
-    if (search) {
-      setIsDirty(true);
-    }
-
+    setIsDirty(true);
     return () => {
       setIsDirty(false);
       setSearchTerm('');

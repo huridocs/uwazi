@@ -274,11 +274,11 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
                 value: 'item2',
               },
             ]}
-            itemClassName="bg-gray-50"
+            itemClassName="bg-red-50"
           />
         </div>
       );
-      cy.get('li').should('have.class', 'bg-gray-50');
+      cy.get('li').should('have.class', 'bg-red-50');
     });
 
     it('should apply the default class name to each item if no custom class name is provided', () => {
@@ -359,7 +359,6 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           <MultiselectList
             onChange={() => {}}
             items={[]}
-            selectedValues={['MGT']}
             itemContainerClassName="custom-container-class"
           />
         </div>
@@ -373,7 +372,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           <MultiselectList onChange={() => {}} items={[]} />
         </div>
       );
-      cy.get('ul').should('have.class', 'w-full px-2 pt-2 grow');
+      cy.get('ul').should('have.class', 'w-full grow px-2 pt-2 overflow-y-auto');
     });
   });
 
