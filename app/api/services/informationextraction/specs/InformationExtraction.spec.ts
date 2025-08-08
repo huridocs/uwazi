@@ -904,11 +904,12 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.filesNames.sort()).toEqual([
         'documentG.xml',
         'documentH.xml',
+        'documentI.xml',
       ]);
-      expect(IXExternalService.files.length).toBe(2);
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlH]));
+      expect(IXExternalService.files.length).toBe(3);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlH, xmlI]));
 
-      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.length).toBe(3);
       const sortedMaterials = sortByStrings(IXExternalService.materials, [
         (m: any) => m.xml_file_name,
       ]);
@@ -955,6 +956,14 @@ describe('InformationExtraction', () => {
             },
           ],
         },
+        {
+          xml_file_name: 'documentI.xml',
+          id: factory.id('extractorWithMultiselect').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [],
+        },
       ]);
     });
 
@@ -973,12 +982,12 @@ describe('InformationExtraction', () => {
 
       // Updated expectation: we now have both processed and non-processed suggestions
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentK.xml']
+        ['documentK.xml', 'documentL.xml', 'documentM.xml'].sort()
       );
-      expect(IXExternalService.files.length).toBe(1);
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK]));
+      expect(IXExternalService.files.length).toBe(3);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL, xmlM]));
 
-      expect(IXExternalService.materials.length).toBe(1);
+      expect(IXExternalService.materials.length).toBe(3);
       const sortedMaterials = sortByStrings(IXExternalService.materials, [
         (m: any) => m.xml_file_name,
       ]);
@@ -995,6 +1004,48 @@ describe('InformationExtraction', () => {
               left: 1,
               page_number: 1,
               text: 'P1',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+        {
+          xml_file_name: 'documentL.xml',
+          id: factory.id('extractorWithRelationship').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P1',
+              top: 1,
+              width: 1,
+            },
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P2',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+        {
+          xml_file_name: 'documentM.xml',
+          id: factory.id('extractorWithRelationship').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P3',
               top: 1,
               width: 1,
             },
@@ -1482,6 +1533,23 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.files.length).toBe(1);
     });
 
+    it('should create the task for the suggestions', async () => {
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+
+      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+        params: {
+          id: factory.id('prop1extractor').toString(),
+          metadata: {
+            extractor_name: 'prop1extractor',
+            property: 'property1',
+            templates: expect.anything(),
+          },
+        },
+        tenant: 'tenant1',
+        task: 'suggestions',
+      });
+    });
+
     it('should create the suggestions placeholder with status processing', async () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
       const suggestions = await IXSuggestionsModel.get({
@@ -1508,13 +1576,10 @@ describe('InformationExtraction', () => {
     });
 
     it('should stop the model when all the suggestions are done', async () => {
-      // The model should stop after processing all suggestions with date: null
-      // Since there's only one suggestion with date: null, it should stop after processing it
+      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
       const [model] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
-      // The model might not stop immediately due to the date: null logic
-      // This is expected behavior with the new logic
-      expect(model.findingSuggestions).toBe(true);
+      expect(model.findingSuggestions).toBe(false);
     });
 
     describe('testRun', () => {
@@ -1634,10 +1699,27 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop1extractor'),
       });
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(suggestions.length).toBe(0);
-      // The suggestions are not being processed because they have date: null and the processResults logic
-      // is not finding them. This is expected behavior with the date: null logic.
+      expect(suggestions.length).toBe(2);
+      expect(suggestions.find(s => s.suggestedValue === 'suggestion_text_1')).toEqual(
+        expect.objectContaining({
+          entityId: 'A1',
+          language: 'en',
+          propertyName: 'property1',
+          suggestedValue: 'suggestion_text_1',
+          segment: 'segment_text_1',
+          status: 'ready',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
+        })
+      );
     });
 
     it('should save different language suggestions for the same entity', async () => {
@@ -1692,11 +1774,45 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop1extractor'),
       });
 
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(suggestions.length).toBe(1);
-      // The suggestions are not being processed because they have date: null and the processResults logic
-      // is not finding them. This is expected behavior with the date: null logic.
+      expect(suggestions.length).toBe(2);
 
+      expect(suggestions.find(s => s.language === 'other')).toEqual(
+        expect.objectContaining({
+          language: 'other',
+          propertyName: 'property1',
+          status: 'ready',
+          suggestedValue: 'text_in_other_language',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
+        })
+      );
+
+      expect(suggestions.find(s => s.language === 'en')).toEqual(
+        expect.objectContaining({
+          language: 'en',
+          propertyName: 'property1',
+          status: 'ready',
+          suggestedValue: 'text_in_eng_language',
+          state: {
+            labeled: false,
+            withValue: false,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
+        })
+      );
     });
 
     it('should store non-configured languages as default language suggestion', async () => {
@@ -1751,8 +1867,7 @@ describe('InformationExtraction', () => {
       });
 
       expect(suggestions.length).toBe(1);
-      const failedSuggestion = suggestions[0];
-      expect(failedSuggestion).toEqual(
+      expect(suggestions[0]).toEqual(
         expect.objectContaining({
           entityId: 'A1',
           language: 'en',
@@ -1762,12 +1877,9 @@ describe('InformationExtraction', () => {
           status: 'failed',
           error: 'Issue calculation suggestion',
           state: {
-            labeled: false,
-            withValue: false,
-            withSuggestion: false,
             match: null,
+            withSuggestion: false,
             hasContext: false,
-            obsolete: false,
             processing: false,
             error: true,
           },
@@ -1800,10 +1912,9 @@ describe('InformationExtraction', () => {
 
         const suggestionsText = await IXSuggestionsModel.get({
           status: 'ready',
-                  extractorId: factory.id('prop1extractor'),
-      });
-      // Updated expectation: we now have both processed and non-processed suggestions
-      expect(suggestionsText.length).toBe(0);
+          extractorId: factory.id('prop1extractor'),
+        });
+        expect(suggestionsText.length).toBe(1);
       });
     });
 
@@ -2012,6 +2123,23 @@ describe('InformationExtraction', () => {
         expect(sorted).toMatchObject([
           {
             ...expectedBase,
+            fileId: factory.id('F17'),
+            entityId: 'A17',
+            suggestedValue: [{ id: 'A', label: 'A' }],
+            segment: 'it is A',
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F18'),
+            entityId: 'A18',
+            suggestedValue: [
+              { id: 'B', label: 'B' },
+              { id: 'C', label: 'C' },
+            ],
+            segment: 'it is B or C',
+          },
+          {
+            ...expectedBase,
             fileId: factory.id('F19'),
             entityId: 'A19',
             suggestedValue: [
@@ -2103,6 +2231,13 @@ describe('InformationExtraction', () => {
         };
 
         expect(sorted).toMatchObject([
+          {
+            ...expectedBase,
+            fileId: factory.id('F21'),
+            entityId: 'A21',
+            suggestedValue: [{ id: 'P1sharedId', label: 'P1' }],
+            segment: 'it is P1',
+          },
           {
             ...expectedBase,
             fileId: factory.id('F22'),
