@@ -65,9 +65,9 @@ describe('Information Extraction', () => {
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
 
-        editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
+        editPropertyForExtractor('Ordenes del presidente', 'Title');
 
-        editPropertyForExtractor('secondTemplate', 'Causa', 'Title');
+        editPropertyForExtractor('Causa', 'Title');
 
         cy.contains('button', 'Next').click();
         cy.contains('Title');
@@ -83,7 +83,7 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type('Titles from all templates', { delay: 0 });
-        editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
+        editPropertyForExtractor('Ordenes del presidente', 'Title');
         cy.contains('button', 'Select all').click();
         cy.contains('button', 'Next').click();
         checkTemplatesList([
@@ -109,9 +109,9 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
         cy.contains('button', 'Select all').should('not.exist');
-        editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
+        editPropertyForExtractor('Ordenes del presidente', 'Title');
         cy.contains('button', 'Select all').should('exist');
-        editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title', false);
+        editPropertyForExtractor('Ordenes del presidente', 'Title', false);
         cy.contains('button', 'Select all').should('not.exist');
         cy.contains('button', 'Cancel').click();
       });
@@ -122,7 +122,7 @@ describe('Information Extraction', () => {
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type('Fechas from relevant templates', { delay: 0 });
 
-        editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Fecha');
+        editPropertyForExtractor('Ordenes de la corte', 'Fecha');
         cy.contains('button', 'Select all').click();
         cy.contains('button', 'Next').click();
         checkTemplatesList([
@@ -145,10 +145,10 @@ describe('Information Extraction', () => {
         });
       cy.contains('button', 'Edit Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input[id="extractor-name"]').type(' edited', { delay: 0 });
         cy.get('label[for="filter_true"]').click();
-        editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Title');
-        editPropertyForExtractor('causa', 'Causa', 'Title', false);
+        cy.get('input[id="extractor-name"]').type(' edited', { delay: 0 });
+        editPropertyForExtractor('Causa', 'Title', false);
+        editPropertyForExtractor('Ordenes de la corte', 'Title');
         cy.contains('button', 'Next').click();
         checkTemplatesList(['Ordenes de la corte', 'Ordenes del presidente']);
         cy.contains('button', 'Update').click();
@@ -211,7 +211,7 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
-        editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
+        editPropertyForExtractor('Ordenes del presidente', 'Title');
         cy.contains('button', 'Next').click();
         cy.contains('button', 'Create').click();
       });
@@ -342,6 +342,7 @@ describe('Information Extraction', () => {
         .setSelection('The Spectacular Spider-Man');
 
       cy.contains('button', 'Click to fill').click();
+      cy.get('div.highlight-rectangle').scrollIntoView();
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', 'The Spectacular Spider-Man');

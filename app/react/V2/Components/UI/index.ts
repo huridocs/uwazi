@@ -7,7 +7,6 @@ export { ToggleButton } from './ToggleButton';
 export { NotificationsContainer } from './NotificationsContainer';
 export { Tabs } from './Tabs';
 export { Sidepanel } from './Sidepanel';
-export { MultiselectList } from '../Forms/MultiselectList/MultiselectList';
 export { ConfirmationModal } from './ConfirmationModal';
 export { Card } from './Card';
 export { CopyValueInput } from './CopyValueInput';
@@ -19,6 +18,7 @@ export { FileIcon } from './FileIcon';
 export { NeedAuthorization } from './NeedAuthorization';
 export { ConfirmNavigationModal } from './ConfirmNavigationModal';
 export { Truncate } from './Truncate';
+export { VerticalDrawer } from './VerticalDrawer';
 
 export type { PillColor } from './Pill';
 export type { TableProps, TableRow } from './Table';

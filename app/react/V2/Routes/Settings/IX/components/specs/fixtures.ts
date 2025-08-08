@@ -1,4 +1,4 @@
-import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../types';
 
 const suggestion1: TableSuggestion = {
@@ -9,7 +9,7 @@ const suggestion1: TableSuggestion = {
   sharedId: 'shared1',
   fileId: 'file1',
   entityTitle: 'Test Entity Title',
-  propertyName: 'testProperty',
+  propertyName: 'text_property',
   suggestedValue: 'suggested value',
   currentValue: 'current value',
   segment: 'test segment',
@@ -49,11 +49,65 @@ const dateProperty: ClientPropertySchema = {
   type: 'date',
 };
 
+const selectProperty: ClientPropertySchema = {
+  _id: 'selectProperty',
+  label: 'Select Property',
+  name: 'select_property',
+  type: 'select',
+  content: 'thesaurus1',
+};
+
+const relationshipProperty: ClientPropertySchema = {
+  _id: 'relationshipProperty',
+  label: 'Relationship Property',
+  name: 'relationship_property',
+  type: 'relationship',
+  content: 'template2',
+};
+
 const template1: ClientTemplateSchema = {
   _id: 'template1',
   name: 'Test Template',
-  properties: [numericProperty, textProperty, dateProperty],
+  properties: [numericProperty, textProperty, dateProperty, selectProperty, relationshipProperty],
 };
+
+const entity1: ClientEntitySchema = {
+  _id: 'entity1',
+  title: 'Test Entity Title',
+  sharedId: 'shared1',
+  metadata: {
+    text_property: [{ value: 'current text value' }],
+    numeric_property: [{ value: 42 }],
+    date_property: [{ value: 1640995200 }],
+    markdown_property: [{ value: 'current markdown value' }],
+    select_property: [{ value: 'option1' }],
+    relationship_property: [{ value: 'entity2' }],
+  },
+};
+
+const thesauri = [
+  {
+    _id: 'thesaurus1',
+    name: 'Test Thesaurus',
+    values: [
+      {
+        id: 'option1',
+        label: 'Option 1',
+        values: [],
+      },
+      {
+        id: 'option2',
+        label: 'Option 2',
+        values: [],
+      },
+      {
+        id: 'suggested_option',
+        label: 'Suggested Option',
+        values: [],
+      },
+    ],
+  },
+];
 
 const loaderData: IXSuggestionsLoaderResponse = {
   suggestions: [],
@@ -74,4 +128,15 @@ const loaderData: IXSuggestionsLoaderResponse = {
   total: 10,
 };
 
-export { loaderData, suggestion1, textProperty, numericProperty, dateProperty };
+export {
+  loaderData,
+  suggestion1,
+  textProperty,
+  numericProperty,
+  dateProperty,
+  selectProperty,
+  relationshipProperty,
+  template1,
+  entity1,
+  thesauri,
+};

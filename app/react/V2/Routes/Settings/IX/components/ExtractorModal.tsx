@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { ClientIXExtractorType } from 'V2/shared/types';
-import { InputField } from 'app/V2/Components/Forms/InputField';
-import { RadioSelect } from 'app/V2/Components/Forms';
+import { InputField } from 'V2/Components/Forms/InputField';
+import { defaultSearch, MultiselectList, RadioSelect } from 'V2/Components/Forms';
+import { Modal, Button, Pill } from 'V2/Components/UI';
 import { propertyIcons } from '../../../../Components/UI/Icons';
 import { getAvailableSources } from '../helpers';
 import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions';
@@ -173,6 +173,11 @@ const ExtractorModal = ({
     }
   };
 
+  const onSearch = (search: string) => {
+    const newItems = defaultSearch(search, formatOptions(values, templates));
+    setOptions(newItems);
+  };
+
   return (
     <Modal size="xxl">
       <Modal.Header>
@@ -195,11 +200,12 @@ const ExtractorModal = ({
           }}
         />
 
-        <div className={`${step !== 1 && 'hidden'}`}>
+        <div className={`${step !== 1 ? 'hidden' : ''} pt-2 h-96`}>
           <MultiselectList
             selectedValues={values || []}
             items={options}
             onChange={setValues}
+            onSearch={onSearch}
             checkboxes
             foldableGroups
             allowSelelectAll={values.length > 0}
