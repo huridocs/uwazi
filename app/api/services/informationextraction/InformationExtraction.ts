@@ -589,6 +589,17 @@ class InformationExtraction {
   };
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
+    // If a find suggestions run is active, compute per-run entity progress using IDs
+    if (model.findingSuggestions && model.findSuggestionsRunTimestamp) {
+      const remainingIds = Array.isArray(model.findSuggestionsSharedIds)
+        ? model.findSuggestionsSharedIds.length
+        : 0;
+      const total = model.findSuggestionsInitialSharedIdsCount ?? remainingIds;
+      const processed = Math.max(0, total - remainingIds);
+      return { total, processed };
+    }
+
+    // Default behavior for training/test runs: count suggestions since creationDate
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
       date: { $gt: model.creationDate },
