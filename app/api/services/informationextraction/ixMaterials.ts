@@ -406,7 +406,6 @@ async function getFileIdsWithReadySegmentations(
   // Get extra suggestions since some might have failed segmentations
   const suggestions = await Suggestions.getBalancedSample(
     extractorId,
-
     currentModel,
     targetLimit * 3
   );
