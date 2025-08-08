@@ -14,7 +14,7 @@ const Body = () => {
   );
   const [options, setOptions] = useState<MultiselectListOption[]>(targetTemplateOptions);
   return (
-    <div>
+    <div className="h-96 pt-2">
       <MultiselectList
         selectedValues={[targetTemplateId]}
         items={options}
@@ -23,9 +23,7 @@ const Body = () => {
         }}
         onSearch={s => setOptions(() => defaultSearch(s, targetTemplateOptions))}
         singleSelect
-        className="min-h-[400px]"
         hideFilters
-        itemContainerClassName="max-h-[400px] overflow-y-auto my-4"
       />
     </div>
   );

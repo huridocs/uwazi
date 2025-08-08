@@ -19,7 +19,6 @@ const StoryComponent = ({ args }: any) => {
       <div className="tw-content">
         <div className="w-full p-4 h-96 overflow-y-auto">
           <MultiselectList
-            className="max-h-[500px]"
             label={args.label}
             items={selectItems}
             hasErrors={args.hasErrors}

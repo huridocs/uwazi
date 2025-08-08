@@ -298,8 +298,8 @@ const MultiselectList = ({
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
+    <div className={`flex flex-col h-full ${className}`}>
+      <div className="w-full mb-2 bg-white">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -352,12 +352,12 @@ const MultiselectList = ({
       </div>
 
       {availableItems?.length === 0 && (
-        <div className="flex w-full h-full justify-center items-start min-h-fit">
+        <div className="flex grow w-full h-full justify-center items-start">
           <WrapChild>{noItems}</WrapChild>
         </div>
       )}
       <ul
-        className={`${itemContainerClassName ?? ' w-full px-2 pt-2 grow min-h-fit'}`}
+        className={`${itemContainerClassName ?? ' w-full grow px-2 pt-2 overflow-y-auto'}`}
         ref={optionsRef}
       >
         {availableItems?.map(renderItem)}

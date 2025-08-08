@@ -97,7 +97,7 @@ const Selects = ({
   const [items, setItems] = useState<MultiselectListOption[]>(options || []);
 
   return (
-    <div className="px-4 pb-4 h-60">
+    <div className="h-60">
       <Controller
         control={control}
         name="field"
@@ -218,7 +218,7 @@ const Relationships = ({
   };
 
   return (
-    <div className="px-4 pb-4 h-60">
+    <div className="h-60">
       <Controller
         control={control}
         name="field"
