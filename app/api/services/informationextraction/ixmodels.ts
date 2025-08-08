@@ -13,7 +13,13 @@ type StartTrainingOptions = {
 const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
   await model.updateMany(
     { _id: ixModelId },
-    { $unset: { findSuggestionsRunTimestamp: '', findSuggestionsSharedIds: '' } }
+    {
+      $unset: {
+        findSuggestionsRunTimestamp: '',
+        findSuggestionsSharedIds: '',
+        findSuggestionsInitialSharedIdsCount: '',
+      },
+    }
   );
 };
 

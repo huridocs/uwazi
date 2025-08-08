@@ -70,6 +70,7 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
         findSuggestionsRunTimestamp: Date.now(),
         findSuggestionsSharedIds: sharedIds,
         findingSuggestions: true,
+        findSuggestionsInitialSharedIdsCount: sharedIds.length,
       }
     );
   }

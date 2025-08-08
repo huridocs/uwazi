@@ -182,7 +182,7 @@ describe('FindSuggestionsForIds', () => {
 
       // Verify the process initiated correctly
       expect(result).toEqual({
-        total: 100, // From fixture (BUG: should be 2, not 100!)
+        total: 2,
         processed: expect.any(Number),
       });
 
@@ -257,7 +257,7 @@ describe('FindSuggestionsForIds', () => {
       expect(updatedModel.findSuggestionsRunTimestamp).toBeDefined();
       expect(updatedModel.findSuggestionsSharedIds).toEqual([]);
 
-      expect(result.total).toBe(50);
+      expect(result).toEqual({ processed: 1, total: 1 });
     });
   });
 });

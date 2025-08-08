@@ -11,6 +11,7 @@ export interface IXModelType {
   findingSuggestions?: boolean;
   findSuggestionsRunTimestamp?: number;
   findSuggestionsSharedIds?: string[];
+  findSuggestionsInitialSharedIdsCount?: number;
   testRun?: boolean;
   testRunSuggestionsToFind?: number;
   totalSuggestionsToFind?: number;
