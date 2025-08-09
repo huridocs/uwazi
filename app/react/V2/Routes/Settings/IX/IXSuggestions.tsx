@@ -24,7 +24,6 @@ import { FunnelIcon } from '@heroicons/react/24/solid';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { SuggestionSidepanel } from './components/SuggestionSidepanel';
 import { generateChildrenRows, formatAccepted, updateSortingUrl } from './helpers';
 import {
   TableSuggestion,
@@ -36,6 +35,8 @@ import {
 } from './types';
 import { useEventHandler } from './hooks/useEventHandler';
 import { ixAcceptedSuggestions } from './components/ixSuggestionsAtom';
+import { PDFSidepanel } from './components/PDFSidepanel';
+import { PropertySidepanel } from './components/PropertySidepanel';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -384,8 +385,16 @@ const IXSuggestions = () => {
         aggregation={aggregation}
       />
 
-      <SuggestionSidepanel
-        showSidepanel={sidepanel === 'pdf' || sidepanel === 'property'}
+      <PropertySidepanel
+        showSidepanel={sidepanel === 'property'}
+        property={property}
+        setShowSidepanel={closeSidepanel}
+        suggestion={sidepanelSuggestion}
+        onEntitySave={onEntitySave}
+      />
+
+      <PDFSidepanel
+        showSidepanel={sidepanel === 'pdf'}
         property={property}
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}

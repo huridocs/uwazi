@@ -15,8 +15,18 @@ export const filterFragments = {
   nonLabeled: { 'state.labeled': false },
   match: { 'state.match': true },
   mismatch: { 'state.match': false },
-  obsolete: { 'state.obsolete': true },
-  error: { 'state.error': true },
+  obsolete: {
+    date: { $ne: null },
+    'state.obsolete': true,
+  },
+  error: {
+    date: { $ne: null },
+    'state.error': true,
+  },
+  noContext: {
+    date: { $ne: null },
+    'state.hasContext': false,
+  },
 };
 
 export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
@@ -27,6 +37,7 @@ export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   if (customFilter.mismatch) orFilters.push(filterFragments.mismatch);
   if (customFilter.obsolete) orFilters.push(filterFragments.obsolete);
   if (customFilter.error) orFilters.push(filterFragments.error);
+  if (customFilter.noContext) orFilters.push(filterFragments.noContext);
 
   return orFilters;
 };
@@ -37,9 +48,12 @@ export const getMatchStage = (
   countOnly = false
 ) => {
   const matchQuery: FilterQuery<IXSuggestionType> = baseQueryFragment(extractorId);
+  let includeNonProcessedFilter = false;
+
   if (customFilter) {
     const orFilters = translateCustomFilter(customFilter);
     if (orFilters.length > 0) matchQuery.$or = orFilters;
+    includeNonProcessedFilter = customFilter.nonProcessed;
   }
 
   const countExpression = countOnly ? [{ $count: 'count' }] : [];
@@ -51,14 +65,17 @@ export const getMatchStage = (
     ...countExpression,
   ];
 
-  return matchStage as [
-    {
-      $match: FilterQuery<IXSuggestionType>;
-    },
-    {
-      $count: string;
-    },
-  ];
+  return {
+    matchStage: matchStage as [
+      {
+        $match: FilterQuery<IXSuggestionType>;
+      },
+      {
+        $count: string;
+      },
+    ],
+    includeNonProcessedFilter,
+  };
 };
 
 export const getEntityStage = (languages: LanguagesListSchema) => {

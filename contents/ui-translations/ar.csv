@@ -69,6 +69,7 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
+All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -543,6 +544,7 @@ No valid target template available,No valid target template available
 No value,لا قيمة
 No Value,لا قيمة
 "No, cancel","No, cancel"
+Non processed,Non processed
 Non-labeled,Non-labeled
 Normal view,معاينة عادية
 Not already been use as source template in another extractor,Not already been use as source template in another extractor

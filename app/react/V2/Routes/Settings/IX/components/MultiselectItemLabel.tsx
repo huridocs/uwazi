@@ -8,10 +8,10 @@ const MultiselectItemLabel = ({
   label,
   property,
 }: {
-  isSelected: boolean;
   isSuggested: boolean;
   label: string;
   property: ClientPropertySchema;
+  isSelected?: boolean;
 }) => {
   const matchingStyles = 'bg-success-50 text-success-800';
   const nonMatchingStyles = 'bg-orange-50 text-orange-800';

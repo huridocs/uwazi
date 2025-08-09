@@ -69,6 +69,7 @@ Admins,Admins
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
+All data,Все данные
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -541,6 +542,7 @@ No valid target template available,No valid target template available
 No value,Нет значения
 No Value,Нет значения
 "No, cancel","No, cancel"
+Non processed,Необработанные
 Non-labeled,Non-labeled
 Normal view,Нормальный вид
 Not already been use as source template in another extractor,Not already been use as source template in another extractor

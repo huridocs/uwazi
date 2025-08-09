@@ -104,7 +104,7 @@ const Suggestions = {
   ): Promise<IXSuggestionType[]> => {
     const baseQuery = {
       extractorId,
-      date: { $lt: model.creationDate },
+      $or: [{ date: null }, { date: { $lt: model.creationDate } }],
       'state.error': { $ne: true },
     };
 
@@ -204,8 +204,44 @@ const Suggestions = {
                 ],
               },
             },
-            obsolete: { $sum: { $cond: ['$state.obsolete', 1, 0] } },
-            error: { $sum: { $cond: ['$state.error', 1, 0] } },
+            obsolete: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [{ $ne: ['$date', null] }, '$state.obsolete'],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            error: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [{ $ne: ['$date', null] }, '$state.error'],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            noContext: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [{ $ne: ['$date', null] }, { $not: '$state.hasContext' }],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            nonProcessed: {
+              $sum: {
+                $cond: [{ $eq: ['$date', null] }, 1, 0],
+              },
+            },
           },
         },
       ]);
@@ -219,6 +255,8 @@ const Suggestions = {
       mismatch: 0,
       obsolete: 0,
       error: 0,
+      noContext: 0,
+      nonProcessed: 0,
     };
 
     return results;

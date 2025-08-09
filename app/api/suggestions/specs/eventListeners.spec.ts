@@ -438,7 +438,7 @@ describe('On EntityCreatedEvent', () => {
         error: '',
         segment: '',
         suggestedValue: '',
-        date: expect.any(Number),
+        date: null,
         state: {
           labeled: true,
           withValue: true,
@@ -464,7 +464,7 @@ describe('On EntityCreatedEvent', () => {
         error: '',
         segment: '',
         suggestedValue: '',
-        date: expect.any(Number),
+        date: null,
         state: {
           labeled: true,
           withValue: true,
@@ -491,7 +491,7 @@ describe('On EntityCreatedEvent', () => {
         error: '',
         segment: '',
         suggestedValue: '',
-        date: expect.any(Number),
+        date: null,
         state: {
           labeled: true,
           withValue: true,
@@ -517,7 +517,7 @@ describe('On EntityCreatedEvent', () => {
         error: '',
         segment: '',
         suggestedValue: '',
-        date: expect.any(Number),
+        date: null,
         state: {
           labeled: true,
           withValue: true,

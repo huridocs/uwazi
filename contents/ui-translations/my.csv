@@ -69,6 +69,7 @@ Admins,Admins
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
+All data,All data
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -544,6 +545,7 @@ No valid target template available,No valid target template available
 No value,တန်ဖိုးမရှိပါ
 No Value,တန်ဖိုးမရှိပါ
 "No, cancel","No, cancel"
+Non processed,Non processed
 Non-labeled,Non-labeled
 Normal view,ပုံမှန် မြင်ကွင်း
 Not already been use as source template in another extractor,Not already been use as source template in another extractor

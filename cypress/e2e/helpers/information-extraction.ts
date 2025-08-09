@@ -1,12 +1,13 @@
-const editPropertyForExtractor = (
-  alias: string,
-  templateName: string,
-  property: string,
-  shouldUnfold = true
-) => {
-  cy.contains('span', templateName).as(alias);
-  if (shouldUnfold) cy.get(`@${alias}`).click();
-  cy.get(`@${alias}`).parent().parent().contains('span', property).click();
+const editPropertyForExtractor = (templateName: string, property: string, shouldUnfold = true) => {
+  cy.contains('li', templateName).scrollIntoView();
+
+  cy.contains('li', templateName).within(() => {
+    if (shouldUnfold) {
+      cy.contains('button', 'Group').click();
+    }
+    cy.contains('span', property).should('be.visible');
+    cy.contains('span', property).click();
+  });
 };
 
 export { editPropertyForExtractor };

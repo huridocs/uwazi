@@ -107,7 +107,7 @@ const _saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXEx
     extractorId: extractor._id,
     propertyName: extractor.property,
     status: 'processing',
-    date: new Date().getTime(),
+    date: null,
   };
 
   return Suggestions.save(suggestion);
@@ -1089,7 +1089,7 @@ describe('InformationExtraction', () => {
         language: 'en',
         propertyName: 'property1',
         extractorId: factory.id('prop1extractor'),
-        date: 100,
+        date: null,
         state: {
           labeled: false,
           withValue: false,
@@ -1108,7 +1108,7 @@ describe('InformationExtraction', () => {
         language: 'en',
         propertyName: 'property1',
         extractorId: factory.id('prop1extractor'),
-        date: 100,
+        date: null,
         state: {
           labeled: false,
           withValue: false,
@@ -1411,7 +1411,7 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity1',
         fileId: factory.id('F1'),
-        date: 100,
+        date: null,
         state: {
           labeled: false,
           withValue: false,
@@ -1429,7 +1429,7 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity2',
         fileId: factory.id('F2'),
-        date: 100,
+        date: null,
         state: {
           labeled: false,
           withValue: false,
@@ -1823,11 +1823,14 @@ describe('InformationExtraction', () => {
           status: 'failed',
           error: 'Issue calculation suggestion',
           state: {
+            labeled: false,
+            withValue: false,
             match: null,
             withSuggestion: false,
             hasContext: false,
             processing: false,
             error: true,
+            obsolete: false,
           },
         })
       );
@@ -2098,6 +2101,8 @@ describe('InformationExtraction', () => {
               withValue: false,
               labeled: false,
               match: false,
+              withSuggestion: true,
+              hasContext: true,
             },
           },
         ]);
@@ -2207,6 +2212,8 @@ describe('InformationExtraction', () => {
               withValue: false,
               labeled: false,
               match: false,
+              withSuggestion: true,
+              hasContext: true,
             },
           },
         ]);

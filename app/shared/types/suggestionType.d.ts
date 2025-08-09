@@ -53,6 +53,8 @@ export interface IXSuggestionAggregation {
   mismatch: number;
   obsolete: number;
   error: number;
+  noContext: number;
+  nonProcessed: number;
 }
 
 export interface IXSuggestionType {
@@ -70,7 +72,7 @@ export interface IXSuggestionType {
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   state?: IXSuggestionStateType;
-  date?: number;
+  date?: number | null;
   modelData?: IXSuggestionsModelData;
   error?: string;
   selectionRectangles?: {
@@ -120,6 +122,8 @@ export interface SuggestionCustomFilter {
   nonLabeled: boolean;
   obsolete: boolean;
   error: boolean;
+  noContext: boolean;
+  nonProcessed: boolean;
 }
 
 export interface IXSuggestionsFilter {

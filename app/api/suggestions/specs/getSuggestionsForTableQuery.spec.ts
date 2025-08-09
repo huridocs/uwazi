@@ -633,6 +633,8 @@ describe('getSuggestionsForTableQuery', () => {
         mismatch: false,
         nonLabeled: false,
         obsolete: false,
+        noContext: false,
+        nonProcessed: false,
       },
     };
 
@@ -716,6 +718,8 @@ describe('getSuggestionsForTableQuery', () => {
         mismatch: false,
         nonLabeled: false,
         obsolete: false,
+        noContext: false,
+        nonProcessed: false,
       },
     };
 
@@ -791,5 +795,122 @@ describe('getSuggestionsForTableQuery', () => {
         )
       ).toMatchObject({ suggestedValue: [] });
     });
+  });
+
+  it('should handle count filters correctly for pagination', async () => {
+    const { sut } = createSut();
+
+    const matchResult = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: { size: 10, number: 1 },
+      filter: {
+        match: true,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    const errorResult = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: { size: 10, number: 1 },
+      filter: {
+        match: false,
+        error: true,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    const obsoleteResult = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: { size: 10, number: 1 },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: true,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    // Test that filters return the expected counts based on test data
+    expect(matchResult.total).toBe(2);
+    expect(errorResult.total).toBe(2);
+    expect(obsoleteResult.total).toBe(2);
+
+    // Test that the filter functionality works (returns proper structure)
+    expect(matchResult).toHaveProperty('total');
+    expect(matchResult).toHaveProperty('suggestions');
+    expect(errorResult).toHaveProperty('total');
+    expect(errorResult).toHaveProperty('suggestions');
+    expect(obsoleteResult).toHaveProperty('total');
+    expect(obsoleteResult).toHaveProperty('suggestions');
+  });
+
+  it('should handle nonProcessed filter correctly', async () => {
+    const { sut } = createSut();
+
+    // Test without nonProcessed filter
+    const allResults = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: {
+        size: 20,
+        number: 1,
+      },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+      },
+    });
+
+    // Test with nonProcessed filter
+    const nonProcessedResults = await sut.execute({
+      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      pagination: {
+        size: 20,
+        number: 1,
+      },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: true,
+      },
+    });
+
+    // Test that the filter functionality works (returns proper structure)
+    expect(allResults).toHaveProperty('total');
+    expect(allResults).toHaveProperty('suggestions');
+    expect(nonProcessedResults).toHaveProperty('total');
+    expect(nonProcessedResults).toHaveProperty('suggestions');
+
+    // Test that both filters return the expected counts based on test data
+    expect(allResults.total).toBe(10);
+    expect(nonProcessedResults.total).toBe(10);
+
+    // The nonProcessed filter should return a subset of all results (or same if no nonProcessed data)
+    expect(nonProcessedResults.total).toBeLessThanOrEqual(allResults.total);
   });
 });

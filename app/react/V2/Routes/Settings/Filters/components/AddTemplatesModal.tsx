@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Button, Modal } from 'app/V2/Components/UI';
-import { MultiselectList } from 'app/V2/Components/Forms';
+import { defaultSearch, MultiselectList, MultiselectListOption } from 'app/V2/Components/Forms';
 import { ClientTemplateSchema } from 'app/istore';
 
 type AddTemplateModalProps = {
@@ -11,13 +11,14 @@ type AddTemplateModalProps = {
 };
 
 const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps) => {
-  const [selected, setSelected] = useState<string[]>([]);
-
   const items = templates?.map(template => ({
     label: template.name,
     value: template._id,
     searchLabel: template.name,
   }));
+
+  const [selected, setSelected] = useState<string[]>([]);
+  const [options, setOptions] = useState<MultiselectListOption[]>(items || []);
 
   return (
     <Modal size="lg">
@@ -27,11 +28,13 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
         </h1>
         <Modal.CloseButton onClick={() => onCancel(false)} />
       </Modal.Header>
-      <Modal.Body className="pt-4">
+      <Modal.Body className="pt-4 h-96">
         <MultiselectList
-          className="pt-4 max-h-96"
-          items={items || []}
+          items={options || []}
           onChange={s => setSelected(s)}
+          onSearch={s => {
+            setOptions(() => defaultSearch(s, items));
+          }}
         />
       </Modal.Body>
       <Modal.Footer>

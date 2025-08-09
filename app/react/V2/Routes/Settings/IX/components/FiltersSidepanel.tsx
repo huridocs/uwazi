@@ -21,6 +21,8 @@ interface IXFilters {
   mismatch: boolean;
   obsolete: boolean;
   error: boolean;
+  noContext: boolean;
+  nonProcessed: boolean;
 }
 
 const FiltersSidepanel = ({
@@ -37,6 +39,8 @@ const FiltersSidepanel = ({
     mismatch: false,
     obsolete: false,
     error: false,
+    noContext: false,
+    nonProcessed: false,
   };
 
   let initialFilters = defaultFilter;
@@ -89,7 +93,10 @@ const FiltersSidepanel = ({
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
         <Sidepanel.Body className="flex flex-col flex-grow gap-4">
           <Card>
-            <div className="flex items-center space-x-0.5">
+            <div className="text-sm font-semibold text-gray-700 mb-2">
+              <Translate>All data</Translate>
+            </div>
+            <div className="flex items-center space-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Labeled</Translate>}
                 {...register('labeled')}
@@ -112,8 +119,51 @@ const FiltersSidepanel = ({
               <div className="flex-none font-mono font-bold">{aggregation.nonLabeled}</div>
             </div>
           </Card>
+
           <Card>
-            <div className="flex items-center space-x-0.5">
+            <div className="text-sm font-semibold text-gray-700 mb-2">
+              <Translate>Status</Translate>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Non processed</Translate>}
+                {...register('nonProcessed')}
+                onChange={e => {
+                  checkOption(e, 'nonProcessed');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.nonProcessed}</div>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Obsolete</Translate>}
+                {...register('obsolete')}
+                onChange={e => {
+                  checkOption(e, 'obsolete');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.obsolete}</div>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Error</Translate>}
+                {...register('error')}
+                onChange={e => {
+                  checkOption(e, 'error');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.error}</div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="text-sm font-semibold text-gray-700 mb-2">
+              <Translate>Processed</Translate>
+            </div>
+            <div className="flex items-center space-x-1">
               <Checkbox
                 label={<Translate className="font-normal">Match</Translate>}
                 {...register('match')}
@@ -135,29 +185,16 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.mismatch}</div>
             </div>
-          </Card>
-          <Card>
-            <div className="flex items-center space-x-0.5">
-              <Checkbox
-                label={<Translate className="font-normal">Obsolete</Translate>}
-                {...register('obsolete')}
-                onChange={e => {
-                  checkOption(e, 'obsolete');
-                }}
-              />
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
-              <div className="flex-none font-mono font-bold">{aggregation.obsolete}</div>
-            </div>
             <div className="flex items-center space-x-1">
               <Checkbox
-                label={<Translate className="font-normal">Error</Translate>}
-                {...register('error')}
+                label={<Translate className="font-normal">No context</Translate>}
+                {...register('noContext')}
                 onChange={e => {
-                  checkOption(e, 'error');
+                  checkOption(e, 'noContext');
                 }}
               />
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
-              <div className="flex-none font-mono font-bold">{aggregation.error}</div>
+              <div className="flex-none font-mono font-bold">{aggregation.noContext}</div>
             </div>
           </Card>
         </Sidepanel.Body>

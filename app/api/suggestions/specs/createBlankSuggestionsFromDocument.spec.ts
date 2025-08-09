@@ -86,7 +86,7 @@ describe('CreateBlankSuggestionsFromDocument', () => {
         suggestedValue: '',
         error: '',
         segment: '',
-        date: expect.any(Number),
+        date: null,
         state: {
           labeled: true,
           withValue: true,
@@ -116,7 +116,7 @@ describe('CreateBlankSuggestionsFromDocument', () => {
         suggestedValue: '',
         error: '',
         segment: '',
-        date: expect.any(Number),
+        date: null,
         state: {
           labeled: true,
           withValue: true,

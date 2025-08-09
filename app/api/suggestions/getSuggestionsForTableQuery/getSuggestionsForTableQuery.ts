@@ -1,10 +1,9 @@
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { IXSuggestionsQuery, SuggestionCustomFilter } from 'shared/types/suggestionType';
 import { ObjectId } from 'mongodb';
-import { IXExtractorType } from 'shared/types/extractorType';
 import templates from 'api/templates';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
-import { getMatchStage, translateCustomFilter } from '../pipelineStages';
+import { getMatchStage } from '../pipelineStages';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { PipelineBuilder } from '../queryBuilder';
 import { Pagination } from '../pagination';
@@ -43,12 +42,22 @@ export class GetSuggestionsForTableQuery {
       currentPage: input?.pagination?.number,
     });
 
-    const [matchQuery] = getMatchStage(new ObjectId(extractorId), input.filter, false);
-    const total = await IXSuggestionsModel.db.countDocuments(matchQuery.$match!);
+    const { matchStage, includeNonProcessedFilter } = getMatchStage(
+      new ObjectId(extractorId),
+      input.filter,
+      false
+    );
+    const total = await IXSuggestionsModel.db.countDocuments(matchStage[0].$match!);
 
-    const orFilters = input.filter && translateCustomFilter(input.filter);
+    this.pipelineBuilder.add(matchStage[0]);
 
-    this.applyMatchStage(extractor, orFilters);
+    if (includeNonProcessedFilter) {
+      this.pipelineBuilder.add({
+        $match: {
+          date: null,
+        },
+      });
+    }
 
     this.pipelineBuilder.add({
       $sort: sorter.$sort,
@@ -85,15 +94,6 @@ export class GetSuggestionsForTableQuery {
       total,
       totalPages: pagination.calculateNumberOfPages(total),
     };
-  }
-
-  private applyMatchStage(extractor: IXExtractorType, orFilters?: Record<string, boolean>[]) {
-    this.pipelineBuilder.add({
-      $match: {
-        extractorId: extractor._id,
-        ...(orFilters?.length ? { $or: orFilters } : {}),
-      },
-    });
   }
 
   private applyPropertiesProjectStage() {

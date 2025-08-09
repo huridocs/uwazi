@@ -69,6 +69,7 @@ Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
+All data,Tous les données
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -543,6 +544,7 @@ No valid target template available,No valid target template available
 No value,Aucune valeur
 No Value,Aucune valeur
 "No, cancel","No, cancel"
+Non processed,Non traités
 Non-labeled,Non-labeled
 Normal view,Normal view
 Not already been use as source template in another extractor,Not already been use as source template in another extractor

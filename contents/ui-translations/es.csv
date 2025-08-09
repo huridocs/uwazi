@@ -69,6 +69,7 @@ Admins,Admins
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
+All data,Todos los datos
 All editing options will be disabled.,All editing options will be disabled.
 All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
@@ -542,6 +543,7 @@ No valid target template available,No valid target template available
 No value,Sin valor
 No Value,Sin valor
 "No, cancel","No, cancelar"
+Non processed,No procesados
 Non-labeled,Non-labeled
 Normal view,Vista normal
 Not already been use as source template in another extractor,Not already been use as source template in another extractor

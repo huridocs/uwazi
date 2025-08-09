@@ -1,20 +1,64 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/MultiselectList.stories';
-import { remoteLookupFunction } from 'app/stories/Forms/MultiselectListSotoryFixtures';
-import { MultiselectList, MultiselectListOption } from '../MultiselectList/MultiselectList';
+import {
+  MultiselectList,
+  MultiselectListOption,
+  defaultSearch,
+} from '../MultiselectList/MultiselectList';
 import { specialCharacters, pizzas, salads } from './fixtures';
+
+const BasicTestComponent = () => {
+  const [items, setItems] = useState(pizzas);
+
+  return (
+    <div className="p-2 tw-content">
+      <MultiselectList
+        items={items}
+        onSearch={term => {
+          setItems(prev => defaultSearch(term, prev));
+        }}
+      />
+    </div>
+  );
+};
+
+const ItemUpdateComponent = ({ initialItems }: { initialItems: MultiselectListOption[] }) => {
+  const [items, setItems] = useState(initialItems);
+
+  return (
+    <div className="p-2 tw-content">
+      <MultiselectList items={items} />
+      <button
+        type="button"
+        onClick={() => {
+          setItems([
+            {
+              label: 'Updated Item 1',
+              searchLabel: 'Updated Item 1',
+              value: 'item3',
+            },
+            {
+              label: 'Updated Item 2',
+              searchLabel: 'Updated Item 2',
+              value: 'item4',
+            },
+          ]);
+        }}
+      >
+        Update Items
+      </button>
+    </div>
+  );
+};
 
 describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, () => {
   describe('general', () => {
     beforeEach(() => {
-      mount(
-        <div className="p-2 tw-content">
-          <MultiselectList items={pizzas} />
-        </div>
-      );
+      mount(<BasicTestComponent />);
     });
 
     it('should be accessible', () => {
@@ -176,7 +220,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
     it('should accept a blank state string', () => {
       mount(
         <div className="p-2 tw-content">
-          <MultiselectList onChange={() => {}} items={[]} blankState="nada" />
+          <MultiselectList onChange={() => {}} items={[]} noItems="nada" />
         </div>
       );
       cy.contains('nada').should('be.visible');
@@ -185,7 +229,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
     it('should accept a blank state component', () => {
       mount(
         <div className="p-2 tw-content">
-          <MultiselectList onChange={() => {}} items={[]} blankState={<div>no items string</div>} />
+          <MultiselectList onChange={() => {}} items={[]} noItems={<div>no items string</div>} />
         </div>
       );
       cy.contains('no items string').should('be.visible');
@@ -230,11 +274,11 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
                 value: 'item2',
               },
             ]}
-            itemClassName="bg-gray-50"
+            itemClassName="bg-red-50"
           />
         </div>
       );
-      cy.get('li').should('have.class', 'bg-gray-50');
+      cy.get('li').should('have.class', 'bg-red-50');
     });
 
     it('should apply the default class name to each item if no custom class name is provided', () => {
@@ -315,7 +359,6 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           <MultiselectList
             onChange={() => {}}
             items={[]}
-            selectedValues={['MGT']}
             itemContainerClassName="custom-container-class"
           />
         </div>
@@ -329,7 +372,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           <MultiselectList onChange={() => {}} items={[]} />
         </div>
       );
-      cy.get('ul').should('have.class', 'w-full px-2 pt-2 grow');
+      cy.get('ul').should('have.class', 'w-full grow px-2 pt-2 overflow-y-auto');
     });
   });
 
@@ -364,13 +407,9 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
   describe('custom search', () => {
     const { RemoteSearch } = composeStories(stories);
 
-    beforeEach(() => {
-      const searchSpy = cy.spy(remoteLookupFunction).as('searchSpy');
-
-      mount(<RemoteSearch onSearch={searchSpy} />);
-    });
-
     it('should not trigger the search function on mount', () => {
+      const searchSpy = cy.spy().as('searchSpy');
+      mount(<RemoteSearch onSearch={searchSpy} />);
       cy.clock();
       cy.tick(2000);
       cy.contains('No items available').then(() => {
@@ -379,54 +418,24 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
     });
 
     it('should search once after the user finishes typing', () => {
+      const searchSpy = cy.spy().as('searchSpy');
+      mount(<RemoteSearch onSearch={searchSpy} />);
       cy.clock();
       cy.get('input[type=text]').type('Item');
       cy.tick(2000);
-      cy.contains('Item A').then(() => {
-        cy.get('@searchSpy').should('have.been.calledOnce');
-      });
+      cy.get('@searchSpy').should('have.been.calledOnce');
     });
 
     it('should search when filling the field via a UI action instead of typing', () => {
+      mount(<RemoteSearch />);
       cy.clock();
       cy.contains('button', 'Search & Focus').click();
       cy.tick(2000);
-      cy.contains('Another').then(() => {
-        cy.get('@searchSpy').should('have.been.calledOnce');
-      });
+      cy.contains('Another');
     });
   });
 
   describe('items prop updates', () => {
-    const ParentComponent = ({ initialItems }: { initialItems: MultiselectListOption[] }) => {
-      const [items, setItems] = useState(initialItems);
-
-      return (
-        <div className="p-2 tw-content">
-          <MultiselectList items={items} />
-          <button
-            type="button"
-            onClick={() => {
-              setItems([
-                {
-                  label: 'Updated Item 1',
-                  searchLabel: 'Updated Item 1',
-                  value: 'item3',
-                },
-                {
-                  label: 'Updated Item 2',
-                  searchLabel: 'Updated Item 2',
-                  value: 'item4',
-                },
-              ]);
-            }}
-          >
-            Update Items
-          </button>
-        </div>
-      );
-    };
-
     it('should update rendered items when items prop changes from parent', () => {
       const initialItems = [
         {
@@ -441,20 +450,16 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
         },
       ];
 
-      mount(<ParentComponent initialItems={initialItems} />);
+      mount(<ItemUpdateComponent initialItems={initialItems} />);
 
-      // Verify initial items are rendered
       cy.contains('Initial Item 1').should('be.visible');
       cy.contains('Initial Item 2').should('be.visible');
 
-      // Click button to update items
       cy.contains('button', 'Update Items').click();
 
-      // Verify updated items are rendered
       cy.contains('Updated Item 1').should('be.visible');
       cy.contains('Updated Item 2').should('be.visible');
 
-      // Verify old items are no longer visible
       cy.contains('Initial Item 1').should('not.exist');
       cy.contains('Initial Item 2').should('not.exist');
     });

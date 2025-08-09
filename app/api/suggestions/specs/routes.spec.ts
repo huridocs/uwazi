@@ -256,6 +256,8 @@ describe('aggregation routes', () => {
         mismatch: 14,
         obsolete: 2,
         error: 2,
+        noContext: 12,
+        nonProcessed: 0,
       });
     });
   });

@@ -65,7 +65,7 @@ export class SuggestionFactory {
       propertyName: extractor.property,
       language,
       suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
-      date: new Date().getTime(),
+      date: null,
       status: 'ready' as any,
       error: '',
       segment: '',
@@ -94,7 +94,7 @@ export class SuggestionFactory {
       entityTitle: entity.title,
       currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
       suggestedValue: propertyTypeIsMultiValued(targetProperty.type) ? [] : '',
-      date: Date.now(),
+      date: null,
       status: 'ready',
 
       error: '',

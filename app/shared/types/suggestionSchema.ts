@@ -159,7 +159,7 @@ export const IXSuggestionSchema = {
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     state: IXSuggestionStateSchema,
-    date: { type: 'number' },
+    date: { type: ['number', 'null'] },
     modelData: IXSuggestionsModelDataSchema,
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
@@ -259,8 +259,19 @@ export const SuggestionCustomFilterSchema = {
     nonLabeled: { type: 'boolean' },
     obsolete: { type: 'boolean' },
     error: { type: 'boolean' },
+    noContext: { type: 'boolean' },
+    nonProcessed: { type: 'boolean' },
   },
-  required: ['labeled', 'nonLabeled', 'match', 'mismatch', 'obsolete', 'error'],
+  required: [
+    'labeled',
+    'nonLabeled',
+    'match',
+    'mismatch',
+    'obsolete',
+    'error',
+    'noContext',
+    'nonProcessed',
+  ],
 };
 
 export const SuggestionsQueryFilterSchema = {
@@ -319,7 +330,17 @@ export const IXSuggestionAggregationSchema = {
   type: 'object',
   title: 'IXSuggestionAggregation',
   additionalProperties: false,
-  required: ['total', 'labeled', 'nonLabeled', 'match', 'mismatch', 'obsolete', 'error'],
+  required: [
+    'total',
+    'labeled',
+    'nonLabeled',
+    'match',
+    'mismatch',
+    'obsolete',
+    'error',
+    'noContext',
+    'nonProcessed',
+  ],
   properties: {
     total: { type: 'number' },
     labeled: { type: 'number' },
@@ -328,5 +349,7 @@ export const IXSuggestionAggregationSchema = {
     mismatch: { type: 'number' },
     obsolete: { type: 'number' },
     error: { type: 'number' },
+    noContext: { type: 'number' },
+    nonProcessed: { type: 'number' },
   },
 };
