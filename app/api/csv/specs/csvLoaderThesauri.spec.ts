@@ -149,6 +149,55 @@ describe('csvLoader thesauri', () => {
       mockedFile.mockRestore();
     });
 
+    it('should use default language for internal values', async () => {
+      await settings.setDefaultLanguage('es');
+
+      const { _id } = await thesauri.save({
+        name: 'colorsThesaurus',
+        values: [{ label: 'existing color' }],
+      });
+
+      const csv = `Spanish, English
+                   Blanco, White
+                   Negro, Black
+                   Rojo, Red`;
+
+      const mockedFile = mockCsvFileReadStream(csv);
+
+      result = await loader.loadThesauri('mockedFileFromString', _id, {
+        language: 'en',
+      });
+
+      expect(result!.values!.map(v => v.label)).toEqual([
+        'existing color',
+        'Blanco',
+        'Negro',
+        'Rojo',
+      ]);
+
+      const spanishTranslations = await getTranslation('es', _id);
+      expect(spanishTranslations).toMatchObject({
+        colorsThesaurus: 'colorsThesaurus',
+        'existing color': 'existing color',
+        Blanco: 'Blanco',
+        Negro: 'Negro',
+        Rojo: 'Rojo',
+      });
+
+      const englishTranslations = await getTranslation('en', _id);
+      expect(englishTranslations).toMatchObject({
+        colorsThesaurus: 'colorsThesaurus',
+        'existing color': 'existing color',
+        Blanco: 'White',
+        Negro: 'Black',
+        Rojo: 'Red',
+      });
+
+      mockedFile.mockRestore();
+
+      await settings.setDefaultLanguage('en');
+    });
+
     describe('nesting', () => {
       it('should allow nesting thesauri by prefixing the children', async () => {
         const { _id } = await thesauri.save({ name: 'nestedThesauri' });
