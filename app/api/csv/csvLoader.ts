@@ -181,16 +181,19 @@ export class CSVLoader extends EventEmitter {
   ) {
     const file = importFile(csvPath);
     const settingsData = await settings.get();
-    const defaultLanguage = settingsData.languages?.find(l => l.default)?.key || language  ; 
+    const defaultLanguage = settingsData.languages?.find(l => l.default)?.key;
+    
+    const languageToUse = defaultLanguage || language;
     
     const availableLanguages: string[] = ensure<LanguageSchema[]>(settingsData.languages)
       .map((l: LanguageSchema) => l.key)
-      .filter((l: string) => l !== defaultLanguage);
+      .filter((l: string) => l !== languageToUse);
 
     const fileStream = await file.readStream();
     const { thesauriValues: thesaurusValues, thesauriTranslations } = await thesauriFromStream(
       fileStream,
-      defaultLanguage,
+      languageToUse,
+      language,
       availableLanguages
     );
 

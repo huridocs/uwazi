@@ -98,25 +98,42 @@ const validate = (rows: ParsedRow[]) => {
   });
 };
 
-const getLanguagesToTranslate = (iso6391Languages: string[], rows: ParsedRow[]) =>
-  availableLanguages
-    .filter(l => iso6391Languages.includes(l.key) && Object.keys(rows[0]).includes(l.label))
-    .reduce<Record<string, string>>((map, lang) => ({ ...map, [lang.key]: lang.label }), {});
+const getAvailableLanguageLabels = (rows: ParsedRow[]): Record<string, string> => {
+  const availableColumns = Object.keys(rows[0] || {});
+  return availableLanguages
+    .filter((l: LanguageSchema) => availableColumns.includes(l.label))
+    .reduce<Record<string, string>>((map, lang: LanguageSchema) => ({ ...map, [lang.key]: lang.label }), {});
+};
 
 async function thesauriFromStream(
   readStream: Readable,
-  language: string,
+  primaryLanguage: string,
+  fallbackLanguage: string,
   iso6391Languages: string[]
 ) {
   const rows: CSVRow[] = await csvtojson({ delimiter: [',', ';'] }).fromStream(readStream);
   const parsedRows = parseRows(rows);
   validate(parsedRows);
 
-  const languageLabel: string = ensure<LanguageSchema>(
-    availableLanguages.find(l => l.key === language)
-  ).label;
+  const availableLanguageLabels = getAvailableLanguageLabels(parsedRows);
+  
+  let languageLabel: string;
+  
+  if (availableLanguageLabels[primaryLanguage]) {
+    languageLabel = availableLanguageLabels[primaryLanguage];
+  } else if (availableLanguageLabels[fallbackLanguage]) {
+    languageLabel = availableLanguageLabels[fallbackLanguage];
+  } else {
+    const availableColumns = Object.keys(parsedRows[0] || {});
+    languageLabel = availableColumns[0];
+  }
 
-  const languagesToTranslate = getLanguagesToTranslate(iso6391Languages, parsedRows);
+  const supportedLanguageLabels = Object.fromEntries(
+    Object.entries(availableLanguageLabels).filter(([key]) => iso6391Languages.includes(key))
+  );
+  const languagesToTranslate = Object.fromEntries(
+    Object.entries(supportedLanguageLabels).filter(([key]) => key !== primaryLanguage)
+  );
 
   return {
     thesauriValues: buildThesauriValues(parsedRows, languageLabel),
