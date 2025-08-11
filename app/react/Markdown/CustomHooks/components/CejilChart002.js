@@ -49,7 +49,7 @@ function prepareData(countries, setA, setB) {
   });
 }
 
-function mapStateToProps({}, { filterProperty = 'mandatos_de_la_corte' }) {
+function mapStateToProps({ filterProperty = 'mandatos_de_la_corte' }) {
   return { getData, prepareData, filterProperty };
 }
 

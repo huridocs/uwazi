@@ -1,4 +1,3 @@
-import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
