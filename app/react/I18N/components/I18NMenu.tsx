@@ -1,5 +1,4 @@
 /* eslint-disable react/no-multi-comp */
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Location, useLocation } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
@@ -15,9 +14,9 @@ const locationSearch = (location: Location) => {
   return cleanSearch === '?' ? '' : cleanSearch;
 };
 
-const prepareValues = (languages: LanguagesListSchema, locale: string, location: Location) => {
+const prepareValues = (locale: string, location: Location, languages?: LanguagesListSchema) => {
   const selectedLanguage =
-    languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
+    languages?.find(lang => lang.key === locale) || languages?.find(lang => lang.default);
 
   const urlLocation = { ...location };
 
@@ -27,7 +26,7 @@ const prepareValues = (languages: LanguagesListSchema, locale: string, location:
     urlLocation.search = locationSearch(location);
   }
 
-  return { languages, selectedLanguage, urlLocation, path };
+  return { selectedLanguage, urlLocation, path };
 };
 
 const SVGCircle = ({ fill }: { fill: string }) => (
@@ -43,26 +42,20 @@ const I18NMenu = () => {
   const user = useAtomValue(userAtom);
   const { languages: languageList } = useAtomValue(settingsAtom);
 
-  if (!languageList || languageList.length < 1 || (languageList.length <= 1 && !user?._id)) {
-    return <div className="no-i18nmenu" />;
-  }
-
   const location = useLocation();
 
   const menuRef = useRef(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const { languages, selectedLanguage, path, urlLocation } = prepareValues(
-    languageList,
-    locale,
-    location
-  );
+  const { selectedLanguage, path, urlLocation } = prepareValues(locale, location, languageList);
 
   useEffect(() => {
-    if (locale !== selectedLanguage?.key) {
+    if (selectedLanguage && locale !== selectedLanguage.key) {
       window.location.assign(path);
     }
-  }, [languages.length]);
+    //we only care about running this effect if the available languages change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [languageList]);
 
   useOnClickOutsideElement<HTMLDivElement>(
     menuRef,
@@ -70,6 +63,10 @@ const I18NMenu = () => {
       setDropdownOpen(false);
     }, [])
   );
+
+  if (!languageList || languageList.length < 1 || (languageList.length <= 1 && !user?._id)) {
+    return <div className="no-i18nmenu" />;
+  }
 
   return (
     <li
@@ -116,7 +113,7 @@ const I18NMenu = () => {
           </button>
 
           <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
-            {languages.map(language => {
+            {languageList?.map(language => {
               const url = `/${language.key}${path}${
                 path.match('document') ? '' : urlLocation.search
               }`;
