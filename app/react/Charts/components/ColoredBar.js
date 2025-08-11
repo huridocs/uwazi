@@ -12,7 +12,6 @@ const ColoredBar = props => {
 
 ColoredBar.defaultProps = {
   color: 'default',
-  index: 0,
 };
 
 ColoredBar.propTypes = {
