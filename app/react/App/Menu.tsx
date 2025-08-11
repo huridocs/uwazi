@@ -3,6 +3,7 @@ import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { fromJS } from 'immutable';
+import { useAtomValue } from 'jotai';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N';
@@ -14,6 +15,7 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { IStore } from 'app/istore';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import { settingsAtom, userAtom } from 'V2/atoms';
 import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {
@@ -23,14 +25,12 @@ interface MenuProps {
 }
 
 const mapStateToProps = (state: IStore) => {
-  const { user, settings, library } = state;
+  const { settings, library } = state;
   return {
-    user,
     librarySearch: library.search,
     libraryFilters: library.filters,
     links: settings.collection.get('links'),
     defaultLibraryView: settings.collection.get('defaultLibraryView'),
-    privateInstance: settings.collection.get('private'),
   };
 };
 
@@ -50,15 +50,15 @@ type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
-  user,
   className,
   toggleMobileMenu,
   setSidePanelView,
   showSemanticSearch,
   links = fromJS([]),
   defaultLibraryView = 'cards',
-  privateInstance,
 }: mappedProps) => {
+  const user = useAtomValue(userAtom);
+  const { private: privateInstance } = useAtomValue(settingsAtom);
   const hideMobileMenu = () => toggleMobileMenu(false);
 
   const getLink = (
@@ -97,8 +97,6 @@ const MenuComponent = ({
     // @ts-ignore
     return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(newParams)}`;
   };
-
-  const currentUser = user.toJS();
 
   const navLinks = links
     .map((link, index) => {
@@ -170,7 +168,7 @@ const MenuComponent = ({
               </button>
             </li>
           </FeatureToggleSemanticSearch>
-          {(!privateInstance || (privateInstance === true && currentUser._id)) && (
+          {(!privateInstance || (privateInstance === true && user?._id)) && (
             <li className="menuNav-item">
               {getLink(
                 libraryUrl(),
@@ -203,14 +201,14 @@ const MenuComponent = ({
             </li>
           </NeedAuthorization>
           {(() => {
-            if (!currentUser._id) {
+            if (!user?._id) {
               return (
                 <I18NLinkV2
                   to="/login"
                   className="menuNav-btn btn btn-default menuNav-item"
                   activeClassname="active-link"
                   aria-label={t('System', 'Sign in', null, false)}
-                  localized={false}
+                  localized={!privateInstance}
                 >
                   <Icon icon="power-off" />
                   <span className="tab-link-label">
