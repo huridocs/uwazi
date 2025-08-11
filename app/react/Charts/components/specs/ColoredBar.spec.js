@@ -17,7 +17,8 @@ describe('ColoredBar', () => {
     component = shallow(<ColoredBar {...props} />);
   };
 
-  it('should render a rectangle passing props with the passed index color', () => {
+  it('should render a rectangle passing props with the index color', () => {
+    props.index = 0;
     render();
     const { fill, stroke } = component.find(Rectangle).props();
     expect(fill).toBe(colorScheme[0]);

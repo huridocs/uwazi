@@ -25,6 +25,9 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       }
     }
   >
+    <CartesianGrid
+      strokeDasharray="2 4"
+    />
     <XAxis
       allowDataOverflow={false}
       allowDecimals={true}
@@ -69,8 +72,47 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       width={60}
       yAxisId={0}
     />
-    <CartesianGrid
-      strokeDasharray="2 4"
+    <Bar
+      activeBar={false}
+      animationBegin={0}
+      animationDuration={400}
+      animationEasing="ease"
+      data={Array []}
+      dataKey="setAValue"
+      hide={false}
+      isAnimationActive={true}
+      layout="vertical"
+      legendType="rect"
+      minPointSize={0}
+      shape={
+        <ColoredBar
+          color="default"
+        />
+      }
+      stackId="unique"
+      xAxisId={0}
+      yAxisId={0}
+    />
+    <Bar
+      activeBar={false}
+      animationBegin={0}
+      animationDuration={400}
+      animationEasing="ease"
+      data={Array []}
+      dataKey="setBValue"
+      hide={false}
+      isAnimationActive={true}
+      layout="vertical"
+      legendType="rect"
+      minPointSize={0}
+      shape={
+        <ColoredBar
+          color="light"
+        />
+      }
+      stackId="unique"
+      xAxisId={0}
+      yAxisId={0}
     />
     <Tooltip
       accessibilityLayer={false}
@@ -132,52 +174,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       }
       wrapperStyle={Object {}}
     />
-    <Bar
-      activeBar={false}
-      animationBegin={0}
-      animationDuration={400}
-      animationEasing="ease"
-      data={Array []}
-      dataKey="setAValue"
-      fill="#D24040"
-      hide={false}
-      isAnimationActive={true}
-      layout="vertical"
-      legendType="rect"
-      minPointSize={0}
-      shape={
-        <ColoredBar
-          color="default"
-          index={0}
-        />
-      }
-      stackId="unique"
-      xAxisId={0}
-      yAxisId={0}
-    />
-    <Bar
-      activeBar={false}
-      animationBegin={0}
-      animationDuration={400}
-      animationEasing="ease"
-      data={Array []}
-      dataKey="setBValue"
-      fill="#D24040"
-      hide={false}
-      isAnimationActive={true}
-      layout="vertical"
-      legendType="rect"
-      minPointSize={0}
-      shape={
-        <ColoredBar
-          color="light"
-          index={0}
-        />
-      }
-      stackId="unique"
-      xAxisId={0}
-      yAxisId={0}
-    />
     <Legend
       align="center"
       iconSize={14}
@@ -220,6 +216,9 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       }
     }
   >
+    <CartesianGrid
+      strokeDasharray="2 4"
+    />
     <XAxis
       allowDataOverflow={false}
       allowDecimals={true}
@@ -264,8 +263,47 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       width={60}
       yAxisId={0}
     />
-    <CartesianGrid
-      strokeDasharray="2 4"
+    <Bar
+      activeBar={false}
+      animationBegin={0}
+      animationDuration={400}
+      animationEasing="ease"
+      data={Array []}
+      dataKey="setAValue"
+      hide={false}
+      isAnimationActive={true}
+      layout="vertical"
+      legendType="rect"
+      minPointSize={0}
+      shape={
+        <ColoredBar
+          color="default"
+        />
+      }
+      stackId="unique"
+      xAxisId={0}
+      yAxisId={0}
+    />
+    <Bar
+      activeBar={false}
+      animationBegin={0}
+      animationDuration={400}
+      animationEasing="ease"
+      data={Array []}
+      dataKey="setBValue"
+      hide={false}
+      isAnimationActive={true}
+      layout="vertical"
+      legendType="rect"
+      minPointSize={0}
+      shape={
+        <ColoredBar
+          color="light"
+        />
+      }
+      stackId="unique"
+      xAxisId={0}
+      yAxisId={0}
     />
     <Tooltip
       accessibilityLayer={false}
@@ -317,52 +355,6 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
         }
       }
       wrapperStyle={Object {}}
-    />
-    <Bar
-      activeBar={false}
-      animationBegin={0}
-      animationDuration={400}
-      animationEasing="ease"
-      data={Array []}
-      dataKey="setAValue"
-      fill="#D24040"
-      hide={false}
-      isAnimationActive={true}
-      layout="vertical"
-      legendType="rect"
-      minPointSize={0}
-      shape={
-        <ColoredBar
-          color="default"
-          index={0}
-        />
-      }
-      stackId="unique"
-      xAxisId={0}
-      yAxisId={0}
-    />
-    <Bar
-      activeBar={false}
-      animationBegin={0}
-      animationDuration={400}
-      animationEasing="ease"
-      data={Array []}
-      dataKey="setBValue"
-      fill="#D24040"
-      hide={false}
-      isAnimationActive={true}
-      layout="vertical"
-      legendType="rect"
-      minPointSize={0}
-      shape={
-        <ColoredBar
-          color="light"
-          index={0}
-        />
-      }
-      stackId="unique"
-      xAxisId={0}
-      yAxisId={0}
     />
     <Legend
       align="center"
