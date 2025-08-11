@@ -1,9 +1,9 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { fromJS } from 'immutable';
-import { useAtomValue } from 'jotai';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N';
@@ -15,7 +15,6 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { IStore } from 'app/istore';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
-import { settingsAtom, userAtom } from 'V2/atoms';
 import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {
@@ -25,12 +24,14 @@ interface MenuProps {
 }
 
 const mapStateToProps = (state: IStore) => {
-  const { settings, library } = state;
+  const { user, settings, library } = state;
   return {
+    user,
     librarySearch: library.search,
     libraryFilters: library.filters,
     links: settings.collection.get('links'),
     defaultLibraryView: settings.collection.get('defaultLibraryView'),
+    privateInstance: settings.collection.get('private'),
   };
 };
 
@@ -50,41 +51,16 @@ type mappedProps = ConnectedProps<typeof connector> & MenuProps;
 const MenuComponent = ({
   librarySearch,
   libraryFilters,
+  user,
   className,
   toggleMobileMenu,
   setSidePanelView,
   showSemanticSearch,
   links = fromJS([]),
   defaultLibraryView = 'cards',
+  privateInstance,
 }: mappedProps) => {
-  const user = useAtomValue(userAtom);
-  const { private: privateInstance } = useAtomValue(settingsAtom);
   const hideMobileMenu = () => toggleMobileMenu(false);
-
-  const getLink = (
-    to: string,
-    text: string,
-    icon: string,
-    linkClassName?: string,
-    onclick?: (args: any) => any
-    // eslint-disable-next-line max-params
-  ) => (
-    <I18NLink
-      to={to}
-      onClick={(args: any) => {
-        if (onclick) onclick(args);
-        hideMobileMenu();
-      }}
-      className={`menuNav-btn btn btn-default ${linkClassName}`}
-      activeclassname="active-link"
-      aria-label={t('System', text, null, false)}
-    >
-      <Icon icon={icon} />
-      <span className="tab-link-label">
-        <Translate>{text}</Translate>
-      </span>
-    </I18NLink>
-  );
 
   const libraryUrl = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -168,26 +144,60 @@ const MenuComponent = ({
               </button>
             </li>
           </FeatureToggleSemanticSearch>
-          {(!privateInstance || (privateInstance === true && user?._id)) && (
+          {(!privateInstance || (privateInstance === true && user?.get('_id'))) && (
             <li className="menuNav-item">
-              {getLink(
-                libraryUrl(),
-                'Library',
-                //@ts-ignore
-                libraryViewInfo[defaultLibraryView].icon,
-                'public-documents',
-                setLibraryView
-              )}
+              <I18NLink
+                to={libraryUrl()}
+                onClick={() => {
+                  setLibraryView();
+                  hideMobileMenu();
+                }}
+                className="menuNav-btn btn btn-default public-documents"
+                activeclassname="active-link"
+                aria-label={t('System', 'Library', null, false)}
+              >
+                {/* @ts-expect-error */}
+                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
+                <span className="tab-link-label">
+                  <Translate>Library</Translate>
+                </span>
+              </I18NLink>
             </li>
           )}
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="menuNav-item only-desktop">
-              {getLink('/settings/account', 'Settings', 'cog', 'settings-section')}
+              <I18NLink
+                to="/settings/account"
+                onClick={() => {
+                  hideMobileMenu();
+                }}
+                className="menuNav-btn btn btn-default settings-section"
+                activeclassname="active-link"
+                aria-label={t('System', 'Settings', null, false)}
+              >
+                <Icon icon="cog" />
+                <span className="tab-link-label">
+                  <Translate>Settings</Translate>
+                </span>
+              </I18NLink>
             </li>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="menuNav-item only-mobile">
-              {getLink('/settings', 'Settings', 'cog', 'settings-section')}
+              <I18NLink
+                to="/settings/account"
+                onClick={() => {
+                  hideMobileMenu();
+                }}
+                className="menuNav-btn btn btn-default settings-section"
+                activeclassname="active-link"
+                aria-label={t('System', 'Settings', null, false)}
+              >
+                <Icon icon="cog" />
+                <span className="tab-link-label">
+                  <Translate>Settings</Translate>
+                </span>
+              </I18NLink>
             </li>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
@@ -201,7 +211,7 @@ const MenuComponent = ({
             </li>
           </NeedAuthorization>
           {(() => {
-            if (!user?._id) {
+            if (!user?.get('_id')) {
               return (
                 <I18NLinkV2
                   to="/login"
