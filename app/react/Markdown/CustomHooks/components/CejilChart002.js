@@ -49,8 +49,8 @@ function prepareData(countries, setA, setB) {
   });
 }
 
-function mapStateToProps({ thesauris }, { filterProperty = 'mandatos_de_la_corte' }) {
-  return { thesauris, getData, prepareData, filterProperty };
+function mapStateToProps({}, { filterProperty = 'mandatos_de_la_corte' }) {
+  return { getData, prepareData, filterProperty };
 }
 
 export default connect(mapStateToProps)(CejilChart);

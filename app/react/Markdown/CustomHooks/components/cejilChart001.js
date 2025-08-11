@@ -61,8 +61,8 @@ function prepareData(countries, setA, setB) {
   });
 }
 
-export function mapStateToProps({ templates, thesauris }) {
-  return { templates, thesauris, getData, prepareData };
+export function mapStateToProps({ templates }) {
+  return { templates, getData, prepareData };
 }
 
 export default connect(mapStateToProps)(CejilChart);
