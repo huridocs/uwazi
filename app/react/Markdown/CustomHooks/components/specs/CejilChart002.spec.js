@@ -11,7 +11,7 @@ import CejilChart, {
   male,
   female,
 } from '../CejilChart002';
-import { countriesTemplate, countryKey } from '../CejilChart';
+import { countryKey } from '../CejilChart';
 
 describe('CejilChart002', () => {
   let props;
@@ -20,9 +20,10 @@ describe('CejilChart002', () => {
     const response = { aggregations: { all: {} } };
     response.aggregations.all[countryKey] = {
       buckets: [
-        { key: 'keyA', filtered: { doc_count: count.a } },
-        { key: 'keyB', filtered: { doc_count: count.b } },
+        { key: 'keyA', label: 'labelA', filtered: { doc_count: count.a } },
+        { key: 'keyB', label: 'labelB', filtered: { doc_count: count.b } },
         { key: 'missing', filtered: { doc_count: 1 } },
+        { key: 'any', filtered: { doc_count: 5 } },
       ],
     };
     return response;
@@ -40,16 +41,7 @@ describe('CejilChart002', () => {
   beforeEach(() => {
     props = mapStateToProps(
       {
-        thesauris: fromJS([
-          {
-            _id: countriesTemplate,
-            values: [
-              { id: 'keyA', label: 'labelA' },
-              { id: 'keyB', label: 'labelB' },
-            ],
-          },
-          { _id: 'otherThesauri' },
-        ]),
+        thesauris: fromJS([{ _id: 'otherThesauri' }]),
       },
       {}
     );

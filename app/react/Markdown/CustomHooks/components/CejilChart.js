@@ -22,7 +22,10 @@ class CejilChart extends Component {
 
       let data = arrayUtils.sortValues(
         aggregations.all[countryKey].buckets
-          .filter(country => country.filtered.doc_count && country.key !== 'any')
+          .filter(
+            country =>
+              country.filtered.doc_count && country.key !== 'any' && country.key !== 'missing'
+          )
           .map(_country => {
             const country = _country;
             country.results = country.filtered.doc_count;
