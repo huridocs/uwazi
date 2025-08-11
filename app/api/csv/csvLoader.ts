@@ -182,9 +182,9 @@ export class CSVLoader extends EventEmitter {
     const file = importFile(csvPath);
     const settingsData = await settings.get();
     const defaultLanguage = settingsData.languages?.find(l => l.default)?.key;
-    
+
     const languageToUse = defaultLanguage || language;
-    
+
     const availableLanguages: string[] = ensure<LanguageSchema[]>(settingsData.languages)
       .map((l: LanguageSchema) => l.key)
       .filter((l: string) => l !== languageToUse);

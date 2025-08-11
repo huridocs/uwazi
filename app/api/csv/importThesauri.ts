@@ -102,7 +102,9 @@ const getAvailableLanguageLabels = (rows: ParsedRow[]): Record<string, string> =
   const availableColumns = Object.keys(rows[0] || {});
   return availableLanguages
     .filter((l: LanguageSchema) => availableColumns.includes(l.label))
-    .reduce<Record<string, string>>((map, lang: LanguageSchema) => ({ ...map, [lang.key]: lang.label }), {});
+    .reduce<
+      Record<string, string>
+    >((map, lang: LanguageSchema) => ({ ...map, [lang.key]: lang.label }), {});
 };
 
 async function thesauriFromStream(
@@ -116,9 +118,9 @@ async function thesauriFromStream(
   validate(parsedRows);
 
   const availableLanguageLabels = getAvailableLanguageLabels(parsedRows);
-  
+
   let languageLabel: string;
-  
+
   if (availableLanguageLabels[primaryLanguage]) {
     languageLabel = availableLanguageLabels[primaryLanguage];
   } else if (availableLanguageLabels[fallbackLanguage]) {
