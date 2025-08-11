@@ -185,7 +185,7 @@ const MenuComponent = ({
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="menuNav-item only-mobile">
               <I18NLink
-                to="/settings/account"
+                to="/settings"
                 onClick={() => {
                   hideMobileMenu();
                 }}
