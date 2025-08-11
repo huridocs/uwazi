@@ -3,13 +3,13 @@ import { NavLinkProps, NavLink } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from 'V2/atoms';
 
-type I18NLinkProps = NavLinkProps & { to: string; activeClassname?: string };
+type I18NLinkProps = NavLinkProps & { to: string; activeClassname?: string; localized?: boolean };
 
 const I18NLink = (props: I18NLinkProps) => {
-  const { to: link, className, activeClassname, ...rest } = props;
+  const { to: link, className, activeClassname, localized = true, ...rest } = props;
   const locale = useAtomValue(localeAtom);
   const parsedLink = link.startsWith('/') ? link.slice(1) : link;
-  const to = locale ? `/${locale}/${parsedLink}` : `/${parsedLink}`;
+  const to = locale && localized ? `/${locale}/${parsedLink}` : `/${parsedLink}`;
 
   return (
     <NavLink
@@ -21,4 +21,5 @@ const I18NLink = (props: I18NLinkProps) => {
   );
 };
 
+export type { I18NLinkProps };
 export { I18NLink };

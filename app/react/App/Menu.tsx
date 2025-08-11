@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { fromJS } from 'immutable';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
-import { I18NLink, I18NMenu, t, Translate } from 'app/I18N';
+import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from 'app/I18N';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { showSemanticSearch as showSemanticSearchAction } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
@@ -204,7 +204,20 @@ const MenuComponent = ({
           </NeedAuthorization>
           {(() => {
             if (!currentUser._id) {
-              return <li className="menuNav-item">{getLink('/login', 'Sign in', 'power-off')}</li>;
+              return (
+                <I18NLinkV2
+                  to="/login"
+                  className="menuNav-btn btn btn-default menuNav-item"
+                  activeClassname="active-link"
+                  aria-label={t('System', 'Sign in', null, false)}
+                  localized={false}
+                >
+                  <Icon icon="power-off" />
+                  <span className="tab-link-label">
+                    <Translate>Sign in</Translate>
+                  </span>
+                </I18NLinkV2>
+              );
             }
             return null;
           })()}
