@@ -91,6 +91,7 @@ const PDFSidepanel = ({
     setSelectAndSearch(false);
     setSelectedText(undefined);
     setSelectionError(undefined);
+    setHighlights(undefined);
   };
 
   const formContext = useForm({
@@ -177,7 +178,7 @@ const PDFSidepanel = ({
       title={entity?.title}
       closeSidepanelFunction={handleClose}
     >
-      <Sidepanel.Body>
+      <Sidepanel.Body className="overflow-y-auto">
         {pdfFile && (
           <PDF
             fileUrl={`/api/files/${pdfFile.filename}`}

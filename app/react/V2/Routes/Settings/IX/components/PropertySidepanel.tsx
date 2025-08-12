@@ -130,7 +130,7 @@ const PropertySidepanel = ({
       title={entity?.title}
       closeSidepanelFunction={handleClose}
     >
-      <Sidepanel.Body>
+      <Sidepanel.Body className="overflow-y-auto">
         <TextProperty
           propertyName={suggestion?.extractorSource.property}
           entity={entity}
