@@ -34,7 +34,7 @@ const getFormValue = (
     }
 
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value);
+      value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value) || [];
     }
   }
 
