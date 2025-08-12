@@ -218,8 +218,8 @@ export class ExternalDummyService {
 
   async start(redisUrl?: string) {
     if (redisUrl) {
-      this.redisClient = await Redis.createClient(redisUrl);
-      this.redisSMQ = await new RedisSMQ({ client: this.redisClient });
+      this.redisClient = Redis.createClient(redisUrl);
+      this.redisSMQ = new RedisSMQ({ client: this.redisClient });
       await this.resetQueue();
     }
     const start = new Promise<void>(resolve => {
@@ -232,7 +232,7 @@ export class ExternalDummyService {
   }
 
   async stop() {
-    await this.redisClient?.end(true);
+    this.redisClient?.end(true);
     if (this.server) {
       await new Promise<void>((resolve, reject) => {
         this.server!.close(err => {

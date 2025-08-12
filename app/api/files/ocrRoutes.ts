@@ -59,7 +59,7 @@ const ocrRoutes = (app: Application) => {
     async (req, res) => {
       const file = await fileFromRequest(req);
 
-      await ocrManager.addToQueue(file);
+      await ocrManager().addToQueue(file);
 
       res.sendStatus(200);
     }

@@ -7,7 +7,7 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { PropertyValueSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { Button, Sidepanel, ToggleButton, VerticalDrawer } from 'V2/Components/UI';
+import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { TableSuggestion } from '../types';
@@ -127,10 +127,10 @@ const PropertySidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       size="large"
-      title={entity?.title}
+      title={<Truncate maxLength={80}>{entity?.title}</Truncate>}
       closeSidepanelFunction={handleClose}
     >
-      <Sidepanel.Body>
+      <Sidepanel.Body className="overflow-y-auto">
         <TextProperty
           propertyName={suggestion?.extractorSource.property}
           entity={entity}

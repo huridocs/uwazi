@@ -8,7 +8,7 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { PropertyValueSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import { Button, Sidepanel, ToggleButton, VerticalDrawer } from 'V2/Components/UI';
+import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom } from 'V2/atoms';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
@@ -91,6 +91,7 @@ const PDFSidepanel = ({
     setSelectAndSearch(false);
     setSelectedText(undefined);
     setSelectionError(undefined);
+    setHighlights(undefined);
   };
 
   const formContext = useForm({
@@ -174,10 +175,10 @@ const PDFSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       size="large"
-      title={entity?.title}
+      title={<Truncate maxLength={80}>{entity?.title}</Truncate>}
       closeSidepanelFunction={handleClose}
     >
-      <Sidepanel.Body>
+      <Sidepanel.Body className="overflow-y-auto">
         {pdfFile && (
           <PDF
             fileUrl={`/api/files/${pdfFile.filename}`}

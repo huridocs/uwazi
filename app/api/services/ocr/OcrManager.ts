@@ -227,5 +227,12 @@ class OcrManager {
   }
 }
 
-const ocrManager = new OcrManager();
+let manager: OcrManager;
+
+const ocrManager = () => {
+  if (!manager) {
+    manager = new OcrManager();
+  }
+  return manager;
+};
 export { ocrManager, OcrManager, isEnabled as isOcrEnabled, getStatus as getOcrStatus };
