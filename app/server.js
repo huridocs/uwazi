@@ -35,6 +35,7 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
 import { initSentry } from './initSentry';
 import { setupQueueWorker } from './setupQueueWorker';
+import { Redis } from 'api/infrastructure/Redis';
 
 mongoose.Promise = Promise;
 
@@ -67,12 +68,16 @@ const gracefullShutdown = () => {
       process.exit(1);
     }
 
-    DB.disconnect().then(() => {
-      process.stdout.write('Disconnected from database\r\n');
-
-      process.stdout.write('Server closed succesfully\r\n');
-      process.exit(0);
-    });
+    Redis.disconnect()
+      .then(() => {
+        process.stdout.write('Disconnected from Redis\r\n');
+        return DB.disconnect();
+      })
+      .then(() => {
+        process.stdout.write('Disconnected from database\r\n');
+        process.stdout.write('Server closed succesfully\r\n');
+        process.exit(0);
+      });
   });
   closeSockets();
 };
@@ -107,6 +112,7 @@ app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', config.DBHOST);
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
+  await Redis.connect();
   await tenants.setupTenants();
   authRoutes(app);
   versionRoutes(app);

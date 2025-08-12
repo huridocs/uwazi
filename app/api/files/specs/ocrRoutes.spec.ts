@@ -95,7 +95,7 @@ describe('OCR service', () => {
   });
 
   beforeAll(() => {
-    ocrManager.start();
+    ocrManager().start();
   });
 
   afterAll(async () => {

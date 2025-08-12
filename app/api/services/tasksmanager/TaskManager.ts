@@ -1,9 +1,10 @@
 /* eslint-disable no-await-in-loop */
 import RedisSMQ, { QueueMessage } from 'rsmq';
-import Redis, { RedisClient } from 'redis';
+import { RedisClient } from 'redis';
 import { Repeater } from 'api/utils/Repeater';
 import { config } from 'api/config';
 import { handleError } from 'api/utils';
+import { Redis } from 'api/infrastructure/Redis';
 
 type DefaultTaskType = string;
 
@@ -50,38 +51,26 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
     this.service = service;
     this.taskQueue = `${config.ENVIRONMENT}_${service.serviceName}_tasks`;
     this.resultsQueue = `${config.ENVIRONMENT}_${service.serviceName}_results`;
-    const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
-    this.redisClient = Redis.createClient(redisUrl);
+    this.redisClient = Redis.redisClient;
     this.redisSMQ = new RedisSMQ({ client: this.redisClient });
 
     this.subscribeToEvents();
   }
 
   subscribeToEvents() {
-    this.redisClient.on('error', (error: any | undefined) => {
-      if (error && error.code !== 'ECONNREFUSED') {
-        throw error;
+    this.redisSMQ.createQueue({ qname: this.taskQueue, maxsize: -1 }, (err: Error | undefined) => {
+      if (err && err.name !== 'queueExists') {
+        throw err;
       }
     });
-
-    this.redisClient.on('connect', () => {
-      this.redisSMQ.createQueue(
-        { qname: this.taskQueue, maxsize: -1 },
-        (err: Error | undefined) => {
-          if (err && err.name !== 'queueExists') {
-            throw err;
-          }
+    this.redisSMQ.createQueue(
+      { qname: this.resultsQueue, maxsize: -1 },
+      (err: Error | undefined) => {
+        if (err && err.name !== 'queueExists') {
+          throw err;
         }
-      );
-      this.redisSMQ.createQueue(
-        { qname: this.resultsQueue, maxsize: -1 },
-        (err: Error | undefined) => {
-          if (err && err.name !== 'queueExists') {
-            throw err;
-          }
-        }
-      );
-    });
+      }
+    );
   }
 
   async countPendingTasks(): Promise<number> {
@@ -138,6 +127,5 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
     if (this.repeater) {
       await this.repeater.stop();
     }
-    await this.redisClient.end(true);
   }
 }

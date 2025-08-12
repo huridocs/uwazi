@@ -14,6 +14,7 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
+import { Redis } from 'api/infrastructure/Redis';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {
@@ -69,6 +70,7 @@ beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
   await testingEnvironment.setTenant('tenant');
   mockLogger = createMockLogger();
+  await Redis.connect();
   taskManager = new TaskManager<ATTaskMessage>({
     serviceName: RequestEntityTranslation.SERVICE_NAME,
   });
@@ -86,6 +88,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  await Redis.disconnect();
   await testingEnvironment.tearDown();
 });
 

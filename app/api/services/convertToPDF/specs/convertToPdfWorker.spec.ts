@@ -1,25 +1,22 @@
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
-import { config } from 'api/config';
 import { files, storage, testingUploadPaths } from 'api/files';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { tenants } from 'api/tenants';
-import testingDB from 'api/utils/testing_db';
+import { Redis } from 'api/infrastructure/Redis';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import * as setupSockets from 'api/socketio/setupSockets';
+import { tenants } from 'api/tenants';
 import * as handleError from 'api/utils/handleError.js';
+import testingDB from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { ObjectId } from 'mongodb';
-import Redis from 'redis';
 import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
 
 describe('convertToPdfWorker', () => {
-  const worker = new ConvertToPdfWorker();
-  const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
-  const redisClient = Redis.createClient(redisUrl);
-  const redisSMQ = new RedisSMQ({ client: redisClient });
+  let worker: ConvertToPdfWorker;
+  let redisSMQ: RedisSMQ;
 
   const recreateRedisQueue = async () => {
     try {
@@ -33,6 +30,9 @@ describe('convertToPdfWorker', () => {
   };
 
   beforeAll(async () => {
+    const redisClient = await Redis.connect();
+    worker = new ConvertToPdfWorker();
+    redisSMQ = new RedisSMQ({ client: redisClient });
     await testingDB.connect({ defaultTenant: false });
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
     await testingEnvironment.setUp({
@@ -73,7 +73,7 @@ describe('convertToPdfWorker', () => {
   });
 
   afterAll(async () => {
-    redisClient.end(true);
+    await Redis.disconnect();
     await testingEnvironment.tearDown();
     await worker.stop();
   });
