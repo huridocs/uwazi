@@ -51,7 +51,7 @@ type TableProps<T extends TableRow<T>> = {
   enableSelections?: boolean;
   initialSelection?: T[];
   defaultSorting?: SortingState;
-  sortingFn?: (sorting: SortingState) => void;
+  sortingState?: [SortingState, React.Dispatch<React.SetStateAction<SortingState>>];
   header?: React.ReactNode;
   actions?: React.ReactNode;
   footer?: React.ReactNode;
@@ -67,7 +67,7 @@ const Table = <T extends TableRow<T>>({
   dnd,
   enableSelections,
   defaultSorting,
-  sortingFn,
+  sortingState,
   header,
   actions,
   footer,
@@ -82,7 +82,7 @@ const Table = <T extends TableRow<T>>({
     [initialSelection]
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
-  const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
+  const [internalSorting, setInternalSorting] = useState<SortingState>(defaultSorting || []);
 
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const { memoizedColumns, groupColumnIndex } = useMemo<{
@@ -128,14 +128,14 @@ const Table = <T extends TableRow<T>>({
     data: dataState,
     columns: memoizedColumns,
     state: {
-      sorting: sortingState,
+      sorting: sortingState ? sortingState[0] : internalSorting,
       ...(rowSelection && { rowSelection }),
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    manualSorting: Boolean(sortingFn),
-    onSortingChange: setSortingState,
+    manualSorting: Boolean(sortingState),
+    onSortingChange: sortingState ? sortingState[1] : setInternalSorting,
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
@@ -151,21 +151,15 @@ const Table = <T extends TableRow<T>>({
 
   useEffect(() => {
     if (onChange) {
-      if (sortingState.length) {
+      if (internalSorting.length) {
         const sortedState = table.getSortedRowModel().rows.map(row => row.original);
-        onChange({ rows: sortedState, selectedRows: rowSelection, sortingState });
+        onChange({ rows: sortedState, selectedRows: rowSelection, sortingState: internalSorting });
       } else {
-        onChange({ rows: dataState, selectedRows: rowSelection, sortingState });
+        onChange({ rows: dataState, selectedRows: rowSelection, sortingState: internalSorting });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataState, rowSelection, sortingState]);
-
-  useEffect(() => {
-    if (sortingFn) {
-      sortingFn(sortingState);
-    }
-  }, [sortingFn, sortingState]);
+  }, [dataState, rowSelection, internalSorting]);
 
   const collapseAll = () => {
     table.getRowModel().rows.forEach(row => {
@@ -193,7 +187,7 @@ const Table = <T extends TableRow<T>>({
     if (active && over && active.id !== over.id) {
       setDataState(() => {
         let tableRows = dataState;
-        if (sortingState.length) {
+        if (internalSorting.length) {
           table.resetSorting();
           tableRows = table.getSortedRowModel().rows.map(row => row.original);
         }
