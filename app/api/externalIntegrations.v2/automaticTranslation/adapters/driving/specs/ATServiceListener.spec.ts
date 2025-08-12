@@ -3,11 +3,12 @@ import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automat
 import { SaveEntityTranslations } from 'api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import Redis from 'redis';
 import RedisSMQ from 'rsmq';
 import { UserSchema } from 'shared/types/userType';
 import waitForExpect from 'wait-for-expect';
 import { ATServiceListener } from '../ATServiceListener';
+import { Redis } from 'api/infrastructure/Redis';
+import { RedisClient } from 'redis';
 
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
   // @ts-ignore
@@ -22,13 +23,13 @@ const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
 
 describe('ATServiceListener', () => {
   let listener: ATServiceListener;
-  let redisClient: Redis.RedisClient;
+  let redisClient: RedisClient;
   let redisSMQ: RedisSMQ;
   let executeSpy: jest.Mock<any, any, any>;
   let userInContext: UserSchema | undefined = {} as UserSchema;
-  const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
 
   beforeEach(async () => {
+    redisClient = await Redis.connect();
     await testingEnvironment.setUp({
       settings: [{ features: { automaticTranslation: { active: true } } }],
     });
@@ -41,7 +42,6 @@ describe('ATServiceListener', () => {
     });
 
     listener = new ATServiceListener(prepareATFactory(executeSpy));
-    redisClient = Redis.createClient(redisUrl);
     redisSMQ = new RedisSMQ({ client: redisClient });
 
     const recreateQueue = async (queueName: string): Promise<void> => {
@@ -67,7 +67,7 @@ describe('ATServiceListener', () => {
   });
 
   afterAll(async () => {
-    redisClient.end(true);
+    await Redis.disconnect();
     await listener.stop();
     await testingEnvironment.tearDown();
   });

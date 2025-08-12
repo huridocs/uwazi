@@ -1,13 +1,13 @@
-import { createClient, RedisClient } from 'redis';
-import * as cookie from 'cookie';
-import { Server } from 'http';
-import { Server as SocketIoServer } from 'socket.io';
-import { Application, Request, Response, NextFunction } from 'express';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { Emitter } from '@socket.io/redis-emitter';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
-import { createAdapter } from '@socket.io/redis-adapter';
 import { handleError } from 'api/utils';
-import { Emitter } from '@socket.io/redis-emitter';
+import * as cookie from 'cookie';
+import { Application, NextFunction, Request, Response } from 'express';
+import { Server } from 'http';
+import { RedisClient } from 'redis';
+import { Server as SocketIoServer } from 'socket.io';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
@@ -86,11 +86,10 @@ const setupApiSockets = (server: Server, app: Application) => {
   });
 };
 
-const setupWorkerSockets = () => {
+const setupWorkerSockets = (redisClient: RedisClient) => {
   if (io) {
     return;
   }
-  const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
   redisClient.on('error', error => {
     throw error;
   });
@@ -109,4 +108,4 @@ const endSocketServer = () => {
   subClient.end(true);
 };
 
-export { setupApiSockets, setupWorkerSockets, emitToTenant, closeSockets, endSocketServer };
+export { closeSockets, emitToTenant, endSocketServer, setupApiSockets, setupWorkerSockets };

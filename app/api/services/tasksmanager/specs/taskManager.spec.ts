@@ -4,6 +4,7 @@ import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
 import { config } from 'api/config';
 import * as handleError from 'api/utils/handleError.js';
 import { ExternalDummyService } from './ExternalDummyService';
+import { Redis } from 'api/infrastructure/Redis';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;
@@ -22,16 +23,14 @@ describe('taskManager', () => {
     externalDummyService = new ExternalDummyService(1234, service.serviceName);
     await externalDummyService.start(redisUrl);
 
+    await Redis.connect();
     taskManager = new TaskManager(service);
     taskManager.subscribeToResults();
-
-    await new Promise(resolve => {
-      setTimeout(resolve, 100);
-    }); // wait for redis to be ready
   });
 
   afterAll(async () => {
     await externalDummyService.stop();
+    await Redis.disconnect();
     await taskManager?.stop();
   });
 
@@ -148,7 +147,7 @@ describe('taskManager', () => {
     it('taskManager should fail to start task', async () => {
       const task = { task: 'Spagueti', tenant: 'Konz' };
 
-      taskManager!.redisClient.end(true);
+      await Redis.disconnect();
 
       try {
         await taskManager?.startTask(task);

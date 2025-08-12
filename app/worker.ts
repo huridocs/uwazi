@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import { config } from 'api/config';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
+import { Redis } from 'api/infrastructure/Redis';
 import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DB } from 'api/odm';
 import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
@@ -34,12 +35,12 @@ DB.connect(config.DBHOST, config.DBAUTH)
   .then(async () => {
     await tenants.setupTenants();
     permissionsContext.setCommandContextAsDefault();
-    setupWorkerSockets();
+    setupWorkerSockets(await Redis.connect());
 
     systemLogger.info('[Worker] - ==> 📡 starting external services...');
 
     const services: Record<string, any> = {
-      ocr_manager: ocrManager,
+      ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
       px_paragraphs_results: new PXParagraphsResultListener(DefaultDispatcher),
       information_extractor: new InformationExtraction(),
@@ -108,6 +109,8 @@ DB.connect(config.DBHOST, config.DBAUTH)
           `[Worker Graceful shutdown] - These services [${notStoppedServices}] did not stop in time, initiating forceful shutdown...`
         );
       }
+      await DB.disconnect();
+      await Redis.disconnect();
 
       process.exit(0);
     });
