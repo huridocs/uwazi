@@ -50,6 +50,16 @@ describe('I18NLinkV2', () => {
     expect(link).toHaveAttribute('href', '/test');
   });
 
+  it('renders a link without a locale if localeAtom is empty', async () => {
+    testProps.locale = '';
+    testProps.to = '/contact';
+
+    renderComponent();
+
+    const link = await screen.findByText('My link');
+    expect(link.getAttribute('href')).toBe('/contact');
+  });
+
   it('should have the active classname', async () => {
     testProps.to = '/';
     testProps.localized = false;
