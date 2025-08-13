@@ -1,6 +1,7 @@
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { search } from 'api/search';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { TemplateProperty } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
@@ -10,7 +11,6 @@ import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitie
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, MultiLanguageEntityDBO } from './schemas/EntityTypes';
-import { search } from 'api/search';
 
 export class MongoMultiLanguageEntityDataSource
   extends MongoDataSource<EntityDBO>
@@ -58,22 +58,24 @@ export class MongoMultiLanguageEntityDataSource
   }
 
   async countByTemplateId(templateId: string) {
-    return this.getCollection().countDocuments({
-      language: 'en',
-      template: new ObjectId(templateId),
-    });
+    const aggregation = [
+      { $match: { template: new ObjectId(templateId) } },
+      { $group: { _id: '$sharedId' } },
+      { $count: 'count' },
+    ];
+
+    const result = await this.getCollection().aggregate(aggregation).toArray();
+    return result.length ? result[0].count : 0;
   }
 
   async getSharedIdsByTemplateId(templateId: string) {
-    const cursor = this.getCollection().find(
-      {
-        language: 'en',
-        template: new ObjectId(templateId),
-      },
-      {
-        projection: { sharedId: 1 },
-      }
-    );
+    const aggregation = [
+      { $match: { template: new ObjectId(templateId) } },
+      { $group: { _id: '$sharedId' } },
+      { $project: { _id: 0, sharedId: '$_id' } },
+    ];
+
+    const cursor = this.getCollection().aggregate(aggregation);
     return new MongoResultSet(cursor, e => e.sharedId);
   }
 

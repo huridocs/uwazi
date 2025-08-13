@@ -34,7 +34,9 @@ export default (app: Application) => {
           if (error) {
             handleError(error, { req });
           }
-          req.sockets.emitToCurrentTenant('templateProcessed', template._id.toString());
+          req.sockets.emitToCurrentTenant('templateProcessed', {
+            templateId: template._id.toString(),
+          });
         })
       );
 
