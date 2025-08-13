@@ -2,6 +2,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import entities from 'api/entities';
 import { withConnectedData } from './relationshipsHelpers';
 import { Relation } from './RelationsV1Collection';
+import settings from 'api/settings';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -19,10 +20,12 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
       })
       .toArray();
 
+    const language = (await settings.getDefaultLanguage()).key;
+
     const _connectedDocuments = await entities.getUnrestricted(
       {
         sharedId: { $in: relationships.map(r => r.entity) },
-        language: 'en',
+        language,
       },
       ['sharedId', 'template', 'title']
     );
