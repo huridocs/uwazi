@@ -17,7 +17,7 @@ import {
 } from 'V2/Components/Forms';
 import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
-import { loadValuesAndSuggestions } from './sidepanelFunctions';
+import { loadValuesAndSuggestions } from '../helpers';
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';

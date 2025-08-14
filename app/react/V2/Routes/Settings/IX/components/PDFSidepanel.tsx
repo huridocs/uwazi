@@ -19,7 +19,7 @@ import {
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from './sidepanelFunctions';
+} from '../helpers';
 import { SidepanelForms } from './SidepanelForms';
 import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from './atoms';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';

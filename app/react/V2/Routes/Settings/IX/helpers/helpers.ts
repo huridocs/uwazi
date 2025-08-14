@@ -6,10 +6,7 @@ import { t } from 'app/I18N';
 import { RadioProps } from 'V2/Components/Forms';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { TableSuggestion, MultiValueSuggestion } from '../types';
-import {
-  getPropertyNameFromExtractPair,
-  getTemplateFromExtractPair,
-} from '../components/sidepanelFunctions';
+import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
