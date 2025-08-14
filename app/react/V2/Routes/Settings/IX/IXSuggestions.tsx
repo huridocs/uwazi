@@ -34,7 +34,7 @@ import {
   EntitySuggestion,
 } from './types';
 import { useEventHandler } from './hooks/useEventHandler';
-import { ixAcceptedSuggestions } from './components/ixSuggestionsAtom';
+import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
 
@@ -78,7 +78,7 @@ const IXSuggestions = () => {
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
-  const setAcceptedSuggestionsAtom = useSetAtom(ixAcceptedSuggestions);
+  const setAcceptedSuggestionsAtom = useSetAtom(acceptedSuggestions);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];

@@ -21,7 +21,7 @@ import {
 } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-import { ixAcceptedSuggestions } from './ixSuggestionsAtom';
+import { acceptedSuggestions } from './atoms/acceptedSuggestions';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -168,7 +168,7 @@ const AcceptButton = ({
   cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
-  const [accepted, setAccepted] = useAtom(ixAcceptedSuggestions);
+  const [accepted, setAccepted] = useAtom(acceptedSuggestions);
   const { rowId } = cell.row.original;
   const isGreen = accepted?.has(rowId) || statusColor(cell.row.original) === 'green';
   const color = isGreen ? 'green' : statusColor(cell.row.original);
