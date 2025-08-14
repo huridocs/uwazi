@@ -130,7 +130,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       }
       if (type === 'relationship') {
         setValue('relationType', '');
-        setValue('content', 'any');
+        setValue('content', '');
       }
     }
     if (propertyToEdit) {
