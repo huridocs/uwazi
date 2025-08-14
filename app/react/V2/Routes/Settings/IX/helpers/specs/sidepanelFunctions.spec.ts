@@ -8,7 +8,9 @@ import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
   handleEntitySave,
+  getFormValue,
 } from '../sidepanelFunctions';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 
 jest.mock('V2/api/entities', () => ({
   formatter: {
@@ -16,6 +18,56 @@ jest.mock('V2/api/entities', () => ({
   },
   save: jest.fn().mockResolvedValue({ success: true }),
 }));
+
+const mockEntity: ClientEntitySchema = {
+  _id: 'entity1',
+  title: 'Test Entity',
+  sharedId: 'shared1',
+  metadata: {},
+} as ClientEntitySchema;
+
+const mockTextProperty: ClientPropertySchema = {
+  _id: 'prop1',
+  name: 'title',
+  type: 'text',
+  label: 'Title',
+} as ClientPropertySchema;
+
+const mockRelationshipProperty: ClientPropertySchema = {
+  _id: 'relProp1',
+  name: 'relatedEntities',
+  type: 'relationship',
+  label: 'Related Entities',
+  content: 'relContent1',
+} as ClientPropertySchema;
+
+const mockTemplate: TemplateSchema = {
+  _id: 'template1',
+  name: 'Test Template',
+  properties: [
+    mockRelationshipProperty,
+    {
+      _id: 'relProp2',
+      name: 'relatedEntities2',
+      type: 'relationship',
+      label: 'Related Entities 2',
+      content: 'relContent1', // Same content as relProp1
+    },
+    {
+      _id: 'relProp3',
+      name: 'relatedEntities3',
+      type: 'relationship',
+      label: 'Related Entities 3',
+      content: 'relContent2', // Different content
+    },
+    {
+      _id: 'textProp1',
+      name: 'description',
+      type: 'text',
+      label: 'Description',
+    },
+  ],
+} as TemplateSchema;
 
 describe('sidepanelFunctions', () => {
   describe('getPropertyNameFromExtractPair', () => {
@@ -47,56 +99,6 @@ describe('sidepanelFunctions', () => {
   });
 
   describe('handleEntitySave', () => {
-    const mockEntity: ClientEntitySchema = {
-      _id: 'entity1',
-      title: 'Test Entity',
-      sharedId: 'shared1',
-      metadata: {},
-    } as ClientEntitySchema;
-
-    const mockTextProperty: ClientPropertySchema = {
-      _id: 'prop1',
-      name: 'title',
-      type: 'text',
-      label: 'Title',
-    } as ClientPropertySchema;
-
-    const mockRelationshipProperty: ClientPropertySchema = {
-      _id: 'relProp1',
-      name: 'relatedEntities',
-      type: 'relationship',
-      label: 'Related Entities',
-      content: 'relContent1',
-    } as ClientPropertySchema;
-
-    const mockTemplate: TemplateSchema = {
-      _id: 'template1',
-      name: 'Test Template',
-      properties: [
-        mockRelationshipProperty,
-        {
-          _id: 'relProp2',
-          name: 'relatedEntities2',
-          type: 'relationship',
-          label: 'Related Entities 2',
-          content: 'relContent1', // Same content as relProp1
-        },
-        {
-          _id: 'relProp3',
-          name: 'relatedEntities3',
-          type: 'relationship',
-          label: 'Related Entities 3',
-          content: 'relContent2', // Different content
-        },
-        {
-          _id: 'textProp1',
-          name: 'description',
-          type: 'text',
-          label: 'Description',
-        },
-      ],
-    } as TemplateSchema;
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -176,6 +178,98 @@ describe('sidepanelFunctions', () => {
         sharedId: 'shared1',
         title: 'Test Entity',
       });
+    });
+  });
+
+  describe('getFormValue', () => {
+    it.each([
+      {
+        description: 'should return undefined when suggestion is missing',
+        suggestion: undefined,
+        entity: mockEntity,
+        type: undefined,
+        expected: undefined,
+      },
+      {
+        description: 'should return undefined when entity is missing',
+        suggestion: { propertyName: 'title' } as EntitySuggestionType,
+        entity: undefined,
+        type: undefined,
+        expected: undefined,
+      },
+      {
+        description: 'should return title when propertyName is title',
+        suggestion: { propertyName: 'title' } as EntitySuggestionType,
+        entity: mockEntity,
+        type: undefined,
+        expected: 'Test Entity',
+      },
+      {
+        description: 'should return empty string for non-title property with no metadata',
+        suggestion: { propertyName: 'description' } as EntitySuggestionType,
+        entity: { ...mockEntity, metadata: {} },
+        type: undefined,
+        expected: '',
+      },
+      {
+        description: 'should return first metadata value for non-title property',
+        suggestion: { propertyName: 'description' } as EntitySuggestionType,
+        entity: {
+          ...mockEntity,
+          metadata: { description: [{ value: 'Test Description' }] },
+        },
+        type: undefined,
+        expected: 'Test Description',
+      },
+      {
+        description: 'should convert date value to ISO format',
+        suggestion: { propertyName: 'date' } as EntitySuggestionType,
+        entity: {
+          ...mockEntity,
+          metadata: { date: [{ value: 1696624527 }] },
+        },
+        type: 'date',
+        expected: '2023-10-06',
+      },
+      {
+        description: 'should return array for select type',
+        suggestion: { propertyName: 'category' } as EntitySuggestionType,
+        entity: {
+          ...mockEntity,
+          metadata: { category: [{ value: 'cat1' }, { value: 'cat2' }] },
+        },
+        type: 'select',
+        expected: ['cat1', 'cat2'],
+      },
+      {
+        description: 'should return array for multiselect type',
+        suggestion: { propertyName: 'tags' } as EntitySuggestionType,
+        entity: {
+          ...mockEntity,
+          metadata: { tags: [{ value: 'tag1' }] },
+        },
+        type: 'multiselect',
+        expected: ['tag1'],
+      },
+      {
+        description: 'should return array for relationship type',
+        suggestion: { propertyName: 'related' } as EntitySuggestionType,
+        entity: {
+          ...mockEntity,
+          metadata: { related: [{ value: 'rel1' }, { value: 'rel2' }] },
+        },
+        type: 'relationship',
+        expected: ['rel1', 'rel2'],
+      },
+      {
+        description: 'should return empty array for select type with no metadata',
+        suggestion: { propertyName: 'empty' } as EntitySuggestionType,
+        entity: { ...mockEntity, metadata: {} },
+        type: 'select',
+        expected: [],
+      },
+    ])('$description', ({ suggestion, entity, type, expected }) => {
+      expect(getFormValue(suggestion, entity, type)).toEqual(expected);
     });
   });
 });
