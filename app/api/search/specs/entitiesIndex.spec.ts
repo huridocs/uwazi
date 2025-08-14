@@ -108,15 +108,28 @@ describe('entitiesIndex', () => {
   });
 
   describe('reindexAll', () => {
-    it('should reindex the entities', async () => {
+    it('should reindex the entities with fullText', async () => {
       const entities = [
-        { title: 'title1', language: 'en' },
-        { title: 'titulo1', language: 'es' },
-        { title: 'title2', language: 'en' },
-        { title: 'titulo2', language: 'es' },
+        { sharedId: 'title1', title: 'title1', language: 'en' },
+        { sharedId: 'titulo1', title: 'titulo1', language: 'es' },
+        { sharedId: 'title2', title: 'title2', language: 'en' },
+        { sharedId: 'titulo2', title: 'titulo2', language: 'es' },
       ];
 
-      await db.setupFixturesAndContext({ entities });
+      const files: FileType[] = [
+        {
+          entity: 'title1',
+          originalname: 'file1',
+          filename: 'file1',
+          type: 'document',
+          mimetype: 'application/pdf',
+          language: 'en',
+          fullText: { 1: 'page1', 2: 'page2' },
+          totalPages: 0,
+        },
+      ];
+
+      await db.setupFixturesAndContext({ entities, files });
       userFactory.mock({
         _id: 'user1',
         username: 'collaborator',
@@ -132,6 +145,7 @@ describe('entitiesIndex', () => {
 
       expect(await elasticTesting.getIndexedEntities('')).toEqual([
         expect.objectContaining({ title: 'title1' }),
+        expect.objectContaining({ fullText_other: 'page1\fpage2' }),
         expect.objectContaining({ title: 'titulo1' }),
         expect.objectContaining({ title: 'title2' }),
         expect.objectContaining({ title: 'titulo2' }),
