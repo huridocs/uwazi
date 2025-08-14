@@ -72,17 +72,16 @@ describe('Permisions system', () => {
     });
 
     it('should create an entity and check it is saved', () => {
+      cy.intercept('POST', 'api/entities').as('entitySave');
       cy.contains('button', 'Create entity').click();
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
-      cy.contains('Entity created').as('successMessage');
-      cy.get('@successMessage').should('exist');
+      cy.wait('@entitySave');
       cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
 
     it('should not be able to share the entity', () => {
-      selectRestrictedEntities();
       cy.contains('h2', 'Test title').click();
       cy.contains('button', 'Share').click();
       cy.contains('td', 'Public').should('not.exist');

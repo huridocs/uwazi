@@ -942,7 +942,7 @@ exports[`PDF display > Library > should check the document #0`] = `
 
 exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that the pdf renders and scrolls to the selection #0`] = `
 <div data-region-selector-id="2">
-  <div class="pdf-page" style="--scale-factor: 0.7761437908496732;">
+  <div class="pdf-page" style="--scale-factor: 0.7483660130718954;">
     <div
       class="page"
       data-page-number="2"
@@ -954,7 +954,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
       data-loaded="true"
     >
       <div class="canvasWrapper">
-        <canvas role="presentation" width="475" height="614"
+        <canvas role="presentation" width="458" height="592"
           ><span class="structTree"
             ><span role="group"
               ><span aria-owns="p18R_mc0"></span
@@ -1060,7 +1060,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20474);"
             >3.</span
           ><span
             role="presentation"
@@ -1071,19 +1071,19 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18276);"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*82.11px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18356);"
             >Los escritos de 17 de septiembre y 17 de noviembre de 2010, de 28
             de marzo, 13</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*94.35px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.22479);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*94.35px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.22562);"
             >de abril, 27 de mayo, 11 de agosto, 10 de octubre y 7 de diciembre
             de 2011 y de 10 de</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.19717);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.19797);"
             >febrero y 12 de abril de 2012, mediante los cuales</span
           ></span
         ><span class="markedContent" id="p18R_mc2"
@@ -1096,21 +1096,21 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*331.37px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14614);"
+            style="left: calc(var(--scale-factor)*331.37px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14691);"
             >la República de Colom</span
           ></span
         ><span class="markedContent" id="p18R_mc3"
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*446.23px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18047);"
+            style="left: calc(var(--scale-factor)*446.23px); top: calc(var(--scale-factor)*106.47px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18126);"
             >bia (en adelante</span
           ></span
         ><span class="markedContent" id="p18R_mc4"
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1859);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18669);"
             >“el Estado” o “Colombia”)</span
           ></span
         ><span class="markedContent" id="p18R_mc5"
@@ -1123,7 +1123,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*198.86px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17458);"
+            style="left: calc(var(--scale-factor)*198.86px); top: calc(var(--scale-factor)*118.59px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17537);"
             >informó sobre la implementación de las medidas provisionales
             y</span
           ></span
@@ -1131,7 +1131,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*130.71px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14027);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*130.71px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14103);"
             >presentó solicitudes de levantamiento respecto de algunos
             beneficiarios.</span
           ></span
@@ -1141,7 +1141,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20474);"
             >4.</span
           ><span
             role="presentation"
@@ -1152,25 +1152,25 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17685);"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*155.07px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17764);"
             >Los escritos de 12 de agosto, 14 y 26 de octubre y 24 de noviembre
             de 2010, de 3</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*167.19px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18154);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*167.19px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18234);"
             >de junio, 29 de noviembre y 2 y 26 de diciembre de 2011, y de 18 de
             abril y 21 de junio de</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*179.43px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14923);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*179.43px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15001);"
             >2012 y sus anexos, mediante los cuales los representantes de los
             beneficiarios (en adelante</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16166);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16244);"
             >“los</span
           ><span
             role="presentation"
@@ -1181,7 +1181,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*88.65px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15959);"
+            style="left: calc(var(--scale-factor)*88.65px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16037);"
             >representantes”)</span
           ><span
             role="presentation"
@@ -1192,7 +1192,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*181.08px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13758);"
+            style="left: calc(var(--scale-factor)*181.08px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13834);"
             >presentaron</span
           ><span
             role="presentation"
@@ -1203,7 +1203,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*249.30px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.078);"
+            style="left: calc(var(--scale-factor)*249.30px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.07872);"
             >sus</span
           ><span
             role="presentation"
@@ -1214,7 +1214,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*273.76px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10926);"
+            style="left: calc(var(--scale-factor)*273.76px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11);"
             >observaciones</span
           ><span
             role="presentation"
@@ -1236,7 +1236,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*366.42px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15165);"
+            style="left: calc(var(--scale-factor)*366.42px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15242);"
             >lo</span
           ><span
             role="presentation"
@@ -1247,7 +1247,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*382.95px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15358);"
+            style="left: calc(var(--scale-factor)*382.95px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15436);"
             >informado</span
           ><span
             role="presentation"
@@ -1258,7 +1258,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*442.03px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15512);"
+            style="left: calc(var(--scale-factor)*442.03px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1559);"
             >por</span
           ><span
             role="presentation"
@@ -1269,7 +1269,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*466.48px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11176);"
+            style="left: calc(var(--scale-factor)*466.48px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1125);"
             >el</span
           ><span
             role="presentation"
@@ -1280,7 +1280,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*482.90px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09053);"
+            style="left: calc(var(--scale-factor)*482.90px); top: calc(var(--scale-factor)*191.55px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09126);"
             >Estado</span
           ><span
             role="presentation"
@@ -1296,7 +1296,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*203.67px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13943);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*203.67px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14019);"
             >información adicional respecto a la implementación de las presentes
             medidas provisionales.</span
           ></span
@@ -1305,7 +1305,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20474);"
             >5.</span
           ><span
             role="presentation"
@@ -1316,13 +1316,13 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1789);"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*228.03px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1797);"
             >Las comunicaciones de 12 de abril, 26 de mayo, 14 de julio y 20 de
             septiembre de</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20947);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21029);"
             >2011 y de 13 de enero, 11 de abril y 8 de junio de 2012</span
           ><span
             role="presentation"
@@ -1332,12 +1332,12 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*358.99px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15695);"
+            style="left: calc(var(--scale-factor)*358.99px); top: calc(var(--scale-factor)*240.15px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15773);"
             >, mediante las cuales la Comisión</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15858);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15936);"
             >Interamericana</span
           ><span
             role="presentation"
@@ -1348,7 +1348,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*145.74px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10028);"
+            style="left: calc(var(--scale-factor)*145.74px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10102);"
             >de</span
           ><span
             role="presentation"
@@ -1359,7 +1359,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*164.32px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09657);"
+            style="left: calc(var(--scale-factor)*164.32px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.0973);"
             >Derechos</span
           ><span
             role="presentation"
@@ -1370,7 +1370,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*217.44px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10803);"
+            style="left: calc(var(--scale-factor)*217.44px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10878);"
             >Humanos</span
           ><span
             role="presentation"
@@ -1381,7 +1381,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*271.04px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17245);"
+            style="left: calc(var(--scale-factor)*271.04px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17324);"
             >(en</span
           ><span
             role="presentation"
@@ -1392,7 +1392,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*294.42px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13256);"
+            style="left: calc(var(--scale-factor)*294.42px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13332);"
             >adelante</span
           ><span
             role="presentation"
@@ -1403,7 +1403,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*344.05px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21389);"
+            style="left: calc(var(--scale-factor)*344.05px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21471);"
             >“la</span
           ><span
             role="presentation"
@@ -1414,7 +1414,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*363.95px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10388);"
+            style="left: calc(var(--scale-factor)*363.95px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10462);"
             >Comisión</span
           ><span
             role="presentation"
@@ -1425,7 +1425,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*416.23px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16756);"
+            style="left: calc(var(--scale-factor)*416.23px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16834);"
             >Interamericana”</span
           ><span
             role="presentation"
@@ -1447,12 +1447,12 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*516.49px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21389);"
+            style="left: calc(var(--scale-factor)*516.49px); top: calc(var(--scale-factor)*252.30px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21471);"
             >“la</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16303);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16381);"
             >Comisión”) presentó sus observaciones</span
           ><span
             role="presentation"
@@ -1463,12 +1463,12 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*271.25px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20513);"
+            style="left: calc(var(--scale-factor)*271.25px); top: calc(var(--scale-factor)*264.54px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20594);"
             >a los informes estatales y a las correspondientes</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13137);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*276.66px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13213);"
             >observaciones de los representantes.</span
           ></span
         ><span class="markedContent" id="p18R_mc12"></span
@@ -1476,7 +1476,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20474);"
             >6.</span
           ><span
             role="presentation"
@@ -1487,19 +1487,19 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1683);"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*300.90px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16909);"
             >Las notas de 22 de septiembre y 22 de noviembre de 2010 y de 6 de
             abril de 2011,</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*313.14px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16167);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*313.14px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16246);"
             >mediante las cuales la Secretaría de la Corte, siguiendo
             instrucciones de la Presidencia del</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16123);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16201);"
             >Tribunal,</span
           ><span
             role="presentation"
@@ -1510,7 +1510,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*114.50px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14088);"
+            style="left: calc(var(--scale-factor)*114.50px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14164);"
             >solicitó</span
           ><span
             role="presentation"
@@ -1521,7 +1521,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*156.68px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13143);"
+            style="left: calc(var(--scale-factor)*156.68px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13219);"
             >expresamente</span
           ><span
             role="presentation"
@@ -1543,7 +1543,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*249.02px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10546);"
+            style="left: calc(var(--scale-factor)*249.02px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1062);"
             >los</span
           ><span
             role="presentation"
@@ -1554,7 +1554,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*270.71px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13724);"
+            style="left: calc(var(--scale-factor)*270.71px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13801);"
             >representantes</span
           ><span
             role="presentation"
@@ -1565,7 +1565,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*353.68px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11648);"
+            style="left: calc(var(--scale-factor)*353.68px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11723);"
             >que</span
           ><span
             role="presentation"
@@ -1576,7 +1576,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*379.81px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10118);"
+            style="left: calc(var(--scale-factor)*379.81px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10192);"
             >en</span
           ><span
             role="presentation"
@@ -1587,7 +1587,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*399.60px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.078);"
+            style="left: calc(var(--scale-factor)*399.60px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.07872);"
             >sus</span
           ><span
             role="presentation"
@@ -1598,7 +1598,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*423.95px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1074);"
+            style="left: calc(var(--scale-factor)*423.95px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10814);"
             >observaciones</span
           ><span
             role="presentation"
@@ -1620,24 +1620,24 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*516.03px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10546);"
+            style="left: calc(var(--scale-factor)*516.03px); top: calc(var(--scale-factor)*325.26px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1062);"
             >los</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*337.38px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16964);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*337.38px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17042);"
             >informes estatales se refirieran a la solicitud de levantamiento de
             las medidas ordenadas a</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*349.50px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16233);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*349.50px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16311);"
             >favor del beneficiario William Rodríguez Quintero, así como a la
             solicitud del Estado de que</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1447);"
             >la</span
           ><span
             role="presentation"
@@ -1648,7 +1648,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*77.38px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11237);"
+            style="left: calc(var(--scale-factor)*77.38px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11312);"
             >Corte</span
           ><span
             role="presentation"
@@ -1659,7 +1659,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*110.48px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15242);"
+            style="left: calc(var(--scale-factor)*110.48px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1532);"
             >“evalúe</span
           ><span
             role="presentation"
@@ -1670,7 +1670,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*154.11px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1131);"
+            style="left: calc(var(--scale-factor)*154.11px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11385);"
             >[…]</span
           ><span
             role="presentation"
@@ -1681,7 +1681,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*177.48px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12848);"
+            style="left: calc(var(--scale-factor)*177.48px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12924);"
             >la</span
           ><span
             role="presentation"
@@ -1692,7 +1692,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*192.34px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13009);"
+            style="left: calc(var(--scale-factor)*192.34px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13085);"
             >vigencia</span
           ><span
             role="presentation"
@@ -1703,7 +1703,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*239.70px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21114);"
+            style="left: calc(var(--scale-factor)*239.70px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.21195);"
             >de las</span
           ><span
             role="presentation"
@@ -1714,7 +1714,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*277.93px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11735);"
+            style="left: calc(var(--scale-factor)*277.93px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11811);"
             >medidas</span
           ><span
             role="presentation"
@@ -1725,7 +1725,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*326.03px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12824);"
+            style="left: calc(var(--scale-factor)*326.03px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.129);"
             >provisionales</span
           ><span
             role="presentation"
@@ -1736,7 +1736,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*397.60px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13081);"
+            style="left: calc(var(--scale-factor)*397.60px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13157);"
             >otorgadas</span
           ><span
             role="presentation"
@@ -1758,7 +1758,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*465.83px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16317);"
+            style="left: calc(var(--scale-factor)*465.83px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16395);"
             >favor</span
           ><span
             role="presentation"
@@ -1785,18 +1785,18 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*516.44px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10467);"
+            style="left: calc(var(--scale-factor)*516.44px); top: calc(var(--scale-factor)*361.74px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10542);"
             >las</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*373.86px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16655);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*373.86px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16733);"
             >personas identificadas en el punto resolutivo No. 1 de la
             Resolución de la […] Corte […] de</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*385.98px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15494);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*385.98px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15572);"
             >26 de agosto de 2010”.</span
           ></span
         ><span class="markedContent" id="p18R_mc14"></span
@@ -1805,7 +1805,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*422.46px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14082);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*422.46px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14159);"
             >CONSIDERANDO QUE:</span
           ></span
         ><span class="markedContent" id="p18R_mc17"></span
@@ -1813,7 +1813,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20474);"
             >1.</span
           ><span
             role="presentation"
@@ -1824,13 +1824,13 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12144);"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*446.84px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12219);"
             >Colombia es Estado Parte de la Convención Americana sobre Derechos
             Humanos (en</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17686);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17765);"
             >adelante “la Convención Americana”</span
           ><span
             role="presentation"
@@ -1841,12 +1841,12 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*257.81px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.25924);"
+            style="left: calc(var(--scale-factor)*257.81px); top: calc(var(--scale-factor)*458.96px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.26009);"
             >o “la Convención”) desde el 31 de julio de 1973 y</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11054);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11129);"
             >reconoció</span
           ><span
             role="presentation"
@@ -1857,7 +1857,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*117.91px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14393);"
+            style="left: calc(var(--scale-factor)*117.91px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1447);"
             >la</span
           ><span
             role="presentation"
@@ -1868,7 +1868,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*134.44px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12252);"
+            style="left: calc(var(--scale-factor)*134.44px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12327);"
             >competencia</span
           ><span
             role="presentation"
@@ -1879,7 +1879,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*205.42px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10028);"
+            style="left: calc(var(--scale-factor)*205.42px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10102);"
             >de</span
           ><span
             role="presentation"
@@ -1890,7 +1890,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*225.20px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14393);"
+            style="left: calc(var(--scale-factor)*225.20px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1447);"
             >la</span
           ><span
             role="presentation"
@@ -1901,7 +1901,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*241.73px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11237);"
+            style="left: calc(var(--scale-factor)*241.73px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11312);"
             >Corte</span
           ><span
             role="presentation"
@@ -1912,7 +1912,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*276.51px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16458);"
+            style="left: calc(var(--scale-factor)*276.51px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16536);"
             >Interamericana,</span
           ><span
             role="presentation"
@@ -1923,7 +1923,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*364.64px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13787);"
+            style="left: calc(var(--scale-factor)*364.64px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13863);"
             >conforme</span
           ><span
             role="presentation"
@@ -1934,7 +1934,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*419.54px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12591);"
+            style="left: calc(var(--scale-factor)*419.54px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12667);"
             >al</span
           ><span
             role="presentation"
@@ -1945,7 +1945,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*436.08px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1416);"
+            style="left: calc(var(--scale-factor)*436.08px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14237);"
             >artículo</span
           ><span
             role="presentation"
@@ -1956,7 +1956,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*480.93px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1453);"
+            style="left: calc(var(--scale-factor)*480.93px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14607);"
             >62</span
           ><span
             role="presentation"
@@ -1967,7 +1967,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*501.31px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10028);"
+            style="left: calc(var(--scale-factor)*501.31px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10102);"
             >de</span
           ><span
             role="presentation"
@@ -1978,12 +1978,12 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*521.09px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14393);"
+            style="left: calc(var(--scale-factor)*521.09px); top: calc(var(--scale-factor)*471.08px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1447);"
             >la</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*483.32px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14872);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*483.32px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14949);"
             >Convención, el 21 de junio de 1985.</span
           ></span
         ><span class="markedContent" id="p18R_mc19"></span
@@ -1992,7 +1992,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20393);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.20474);"
             >2.</span
           ><span
             role="presentation"
@@ -2003,19 +2003,19 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15989);"
+            style="left: calc(var(--scale-factor)*102.98px); top: calc(var(--scale-factor)*519.68px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16067);"
             >La disposición establecida en el artículo 63.2 de la Convención
             confiere un carácter</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*531.92px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16961);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*531.92px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17039);"
             >obligatorio a la adopción, por parte del Estado, de las medidas
             provisionales que le ordene</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11959);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12035);"
             >este</span
           ><span
             role="presentation"
@@ -2026,7 +2026,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*90.22px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16434);"
+            style="left: calc(var(--scale-factor)*90.22px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16513);"
             >Tribunal,</span
           ><span
             role="presentation"
@@ -2037,7 +2037,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*141.64px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13128);"
+            style="left: calc(var(--scale-factor)*141.64px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13204);"
             >ya</span
           ><span
             role="presentation"
@@ -2048,7 +2048,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*160.36px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11648);"
+            style="left: calc(var(--scale-factor)*160.36px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11723);"
             >que</span
           ><span
             role="presentation"
@@ -2059,7 +2059,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*185.76px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11176);"
+            style="left: calc(var(--scale-factor)*185.76px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1125);"
             >el</span
           ><span
             role="presentation"
@@ -2070,7 +2070,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*201.34px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15342);"
+            style="left: calc(var(--scale-factor)*201.34px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15419);"
             >principio</span
           ><span
             role="presentation"
@@ -2081,7 +2081,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*250.84px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09588);"
+            style="left: calc(var(--scale-factor)*250.84px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09661);"
             >básico</span
           ><span
             role="presentation"
@@ -2092,7 +2092,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*289.10px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12649);"
+            style="left: calc(var(--scale-factor)*289.10px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12724);"
             >del</span
           ><span
             role="presentation"
@@ -2103,7 +2103,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*311.02px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09828);"
+            style="left: calc(var(--scale-factor)*311.02px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.09902);"
             >Derecho</span
           ><span
             role="presentation"
@@ -2114,7 +2114,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*359.35px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16933);"
+            style="left: calc(var(--scale-factor)*359.35px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.17012);"
             >Internacional,</span
           ><span
             role="presentation"
@@ -2125,7 +2125,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*435.97px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1148);"
+            style="left: calc(var(--scale-factor)*435.97px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11555);"
             >respaldado</span
           ><span
             role="presentation"
@@ -2136,7 +2136,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*497.61px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15512);"
+            style="left: calc(var(--scale-factor)*497.61px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1559);"
             >por</span
           ><span
             role="presentation"
@@ -2147,18 +2147,18 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*521.11px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14393);"
+            style="left: calc(var(--scale-factor)*521.11px); top: calc(var(--scale-factor)*544.04px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1447);"
             >la</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*556.16px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18246);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*556.16px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.18326);"
             >jurisprudencia internacional, ha señalado que los Estados deben
             cumplir sus obligaciones</span
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10923);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10997);"
             >convencionales</span
           ><span
             role="presentation"
@@ -2169,7 +2169,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*145.13px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10028);"
+            style="left: calc(var(--scale-factor)*145.13px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.10102);"
             >de</span
           ><span
             role="presentation"
@@ -2180,7 +2180,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*163.95px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12225);"
+            style="left: calc(var(--scale-factor)*163.95px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.123);"
             >buena</span
           ><span
             role="presentation"
@@ -2191,7 +2191,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*201.71px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13843);"
+            style="left: calc(var(--scale-factor)*201.71px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.13919);"
             >fe</span
           ><span
             role="presentation"
@@ -2207,7 +2207,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*222.53px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12789);"
+            style="left: calc(var(--scale-factor)*222.53px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12865);"
             >pacta</span
           ><span
             role="presentation"
@@ -2218,7 +2218,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*256.70px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.15933);"
+            style="left: calc(var(--scale-factor)*256.70px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.16011);"
             >sunt</span
           ><span
             role="presentation"
@@ -2229,7 +2229,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*285.24px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12475);"
+            style="left: calc(var(--scale-factor)*285.24px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12551);"
             >servanda</span
           ><span
             role="presentation"
@@ -2267,7 +2267,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*353.71px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.0712);"
+            style="left: calc(var(--scale-factor)*353.71px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.07192);"
             >Estas</span
           ><span
             role="presentation"
@@ -2278,7 +2278,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*387.18px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11187);"
+            style="left: calc(var(--scale-factor)*387.18px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11262);"
             >órdenes</span
           ><span
             role="presentation"
@@ -2289,7 +2289,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*433.93px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14596);"
+            style="left: calc(var(--scale-factor)*433.93px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14673);"
             >implican</span
           ><span
             role="presentation"
@@ -2300,7 +2300,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*482.47px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.1444);"
+            style="left: calc(var(--scale-factor)*482.47px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.14517);"
             >un</span
           ><span
             role="presentation"
@@ -2311,7 +2311,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*501.89px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.11952);"
+            style="left: calc(var(--scale-factor)*501.89px); top: calc(var(--scale-factor)*568.28px); font-size: calc(var(--scale-factor)*9.96px); font-family: sans-serif; transform: scaleX(1.12028);"
             >deber</span
           ></span
         ><span class="markedContent"></span
@@ -2333,7 +2333,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13799);"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14012);"
             >La Comisión Interamericana presentó estas observaciones</span
           ></span
         ><span class="markedContent" id="p18R_mc25"
@@ -2346,7 +2346,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*340.39px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.19748);"
+            style="left: calc(var(--scale-factor)*340.39px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.19973);"
             >el 8 de junio de 2012</span
           ></span
         ><span class="markedContent" id="p18R_mc26"
@@ -2359,14 +2359,14 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*433.27px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.15802);"
+            style="left: calc(var(--scale-factor)*433.27px); top: calc(var(--scale-factor)*622.80px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1602);"
             >sin haber podido contar</span
           ></span
         ><span class="markedContent" id="p18R_mc27"
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13372);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13585);"
             >previamente con las respectivas observaciones de los
             representantes</span
           ></span
@@ -2380,7 +2380,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*347.35px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12012);"
+            style="left: calc(var(--scale-factor)*347.35px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12222);"
             >al</span
           ></span
         ><span class="markedContent" id="p18R_mc29"
@@ -2393,7 +2393,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*357.55px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.15058);"
+            style="left: calc(var(--scale-factor)*357.55px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.15274);"
             >informe</span
           ></span
         ><span class="markedContent" id="p18R_mc30"></span
@@ -2407,21 +2407,21 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*391.63px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1645);"
+            style="left: calc(var(--scale-factor)*391.63px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.16668);"
             >estatal de 12 de abril de 2012</span
           ></span
         ><span class="markedContent" id="p18R_mc32"
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*515.02px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20597);"
+            style="left: calc(var(--scale-factor)*515.02px); top: calc(var(--scale-factor)*632.52px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.20824);"
             >, ya</span
           ></span
         ><span class="markedContent" id="p18R_mc33"
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*642.24px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14058);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*642.24px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14273);"
             >que éstos las presentaron el 21 de junio de 2012.</span
           ></span
         ><span class="markedContent" id="p18R_mc34"></span
@@ -2443,7 +2443,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14087);"
+            style="left: calc(var(--scale-factor)*98.42px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14302);"
             >Cfr. Asunto James y otros.</span
           ></span
         ><span class="markedContent" id="p18R_mc38"
@@ -2456,14 +2456,14 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*208.85px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.0916);"
+            style="left: calc(var(--scale-factor)*208.85px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09365);"
             >Medidas Provisio</span
           ></span
         ><span class="markedContent" id="p18R_mc39"
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*275.69px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1345);"
+            style="left: calc(var(--scale-factor)*275.69px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13663);"
             >nales respecto de Trinidad y Tobago.</span
           ></span
         ><span class="markedContent" id="p18R_mc40"
@@ -2476,7 +2476,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*427.63px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1096);"
+            style="left: calc(var(--scale-factor)*427.63px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11168);"
             >Resolución de la Corte</span
           ></span
         ><span class="markedContent" id="p18R_mc41"
@@ -2489,14 +2489,14 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*520.78px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09964);"
+            style="left: calc(var(--scale-factor)*520.78px); top: calc(var(--scale-factor)*661.68px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10171);"
             >de</span
           ></span
         ><span class="markedContent" id="p18R_mc42"
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.21942);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.22171);"
             >14 de junio de 1998, Considerando sexto;</span
           ></span
         ><span class="markedContent" id="p18R_mc43"
@@ -2509,21 +2509,21 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*248.57px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.18816);"
+            style="left: calc(var(--scale-factor)*248.57px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.19039);"
             >Asunto Alvarado Reyes y otros</span
           ></span
         ><span class="markedContent" id="p18R_mc44"
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*379.75px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.16811);"
+            style="left: calc(var(--scale-factor)*379.75px); top: calc(var(--scale-factor)*671.40px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1703);"
             >. Medidas Provisionales respecto de</span
           ></span
         ><span class="markedContent" id="p18R_mc45"
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12337);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12548);"
             >México. Resolución</span
           ><span
             role="presentation"
@@ -2534,7 +2534,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*145.50px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09964);"
+            style="left: calc(var(--scale-factor)*145.50px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10171);"
             >de</span
           ><span
             role="presentation"
@@ -2545,7 +2545,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*160.25px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11883);"
+            style="left: calc(var(--scale-factor)*160.25px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12093);"
             >la</span
           ><span
             role="presentation"
@@ -2556,7 +2556,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*172.12px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10518);"
+            style="left: calc(var(--scale-factor)*172.12px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10726);"
             >Corte</span
           ><span
             role="presentation"
@@ -2567,7 +2567,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*198.75px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.23834);"
+            style="left: calc(var(--scale-factor)*198.75px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.24067);"
             >de 26</span
           ><span
             role="presentation"
@@ -2578,7 +2578,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*228.48px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09964);"
+            style="left: calc(var(--scale-factor)*228.48px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10171);"
             >de</span
           ><span
             role="presentation"
@@ -2589,7 +2589,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*243.23px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1277);"
+            style="left: calc(var(--scale-factor)*243.23px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12981);"
             >mayo</span
           ><span
             role="presentation"
@@ -2600,7 +2600,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*270.21px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.21344);"
+            style="left: calc(var(--scale-factor)*270.21px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.21571);"
             >de 2010,</span
           ><span
             role="presentation"
@@ -2611,7 +2611,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*313.01px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09488);"
+            style="left: calc(var(--scale-factor)*313.01px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09694);"
             >Considerando</span
           ><span
             role="presentation"
@@ -2622,7 +2622,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*372.61px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.1708);"
+            style="left: calc(var(--scale-factor)*372.61px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.173);"
             >quinto,</span
           ><span
             role="presentation"
@@ -2646,7 +2646,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*415.75px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10694);"
+            style="left: calc(var(--scale-factor)*415.75px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10902);"
             >Asunto</span
           ><span
             role="presentation"
@@ -2657,7 +2657,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*448.38px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09964);"
+            style="left: calc(var(--scale-factor)*448.38px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10171);"
             >de</span
           ></span
         ><span class="markedContent" id="p18R_mc47"
@@ -2670,7 +2670,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*463.15px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.11883);"
+            style="left: calc(var(--scale-factor)*463.15px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12093);"
             >la</span
           ><span
             role="presentation"
@@ -2681,7 +2681,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*475.03px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.0884);"
+            style="left: calc(var(--scale-factor)*475.03px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09044);"
             >Fundación</span
           ><span
             role="presentation"
@@ -2692,14 +2692,14 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*520.72px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.09964);"
+            style="left: calc(var(--scale-factor)*520.72px); top: calc(var(--scale-factor)*681.12px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.10171);"
             >de</span
           ></span
         ><span class="markedContent" id="p18R_mc48"
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12161);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.12371);"
             >Antropología Forense.</span
           ></span
         ><span class="markedContent" id="p18R_mc49"
@@ -2712,7 +2712,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*155.30px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14419);"
+            style="left: calc(var(--scale-factor)*155.30px); top: calc(var(--scale-factor)*690.84px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.14634);"
             >Medidas Provisionales respecto de Guatemala. Resolución del
             Presidente de la Corte de 21</span
           ></span
@@ -2720,7 +2720,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
           ><br role="presentation" /><span
             role="presentation"
             dir="ltr"
-            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*700.56px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13478);"
+            style="left: calc(var(--scale-factor)*62.40px); top: calc(var(--scale-factor)*700.56px); font-size: calc(var(--scale-factor)*8.04px); font-family: sans-serif; transform: scaleX(1.13691);"
             >de julio de 2010, Considerando cuarto</span
           ></span
         ><span class="markedContent" id="p18R_mc51"
@@ -2737,7 +2737,7 @@ exports[`PDF display > IX sidepanel > pdf on the sidepanel > should check that t
     </div>
     <div
       class="highlight-rectangle"
-      style="top: 119.239px; left: 79.9205px; width: 331.79px; height: 8.94118px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
+      style="top: 114.971px; left: 77.0602px; width: 319.915px; height: 8.62118px; padding: 0px; margin: 0px; position: absolute; display: block; mix-blend-mode: darken; opacity: 0.5; background-color: rgb(177, 247, 163); z-index: 1;"
     ></div>
   </div>
 </div>

@@ -186,7 +186,7 @@ const reindexAll = async (tmpls, searchInstance) => {
   await elastic.indices.delete();
   await elastic.indices.create({ body: getTenantESMapping() });
   await updateMapping(tmpls);
-  return indexEntities({ query: {}, searchInstance });
+  return indexEntities({ query: {}, select: '+fullText', searchInstance });
 };
 
 export { IndexError, bulkIndex, indexEntities, updateMapping, reindexAll };

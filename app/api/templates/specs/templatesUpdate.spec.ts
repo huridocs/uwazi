@@ -2,15 +2,15 @@ import entities from 'api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
 import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
+import * as setupSockets from 'api/socketio/setupSockets';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
-import * as setupSockets from 'api/socketio/setupSockets';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { EntitySchema } from 'shared/types/entityType';
-import templates from '../templates';
 import { inspect } from 'util';
+import templates from '../templates';
 
 const f = getFixturesFactory();
 

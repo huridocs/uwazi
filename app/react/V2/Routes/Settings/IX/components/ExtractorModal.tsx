@@ -10,8 +10,11 @@ import { InputField } from 'V2/Components/Forms/InputField';
 import { defaultSearch, MultiselectList, RadioSelect } from 'V2/Components/Forms';
 import { Modal, Button, Pill } from 'V2/Components/UI';
 import { propertyIcons } from '../../../../Components/UI/Icons';
-import { getAvailableSources } from '../helpers';
-import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions';
+import {
+  getAvailableSources,
+  getPropertyNameFromExtractPair,
+  getTemplateFromExtractPair,
+} from '../helpers';
 
 const SUPPORTED_PROPERTIES = [
   'text',

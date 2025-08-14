@@ -134,13 +134,11 @@ const coerceValue = async (
   return undefined;
 };
 
-const getPropertyNameFromExtractPair = (extractorPair: string) => {
-  return extractorPair.substring(extractorPair.indexOf('-') + 1, extractorPair.length);
-};
+const getPropertyNameFromExtractPair = (extractorPair: string) =>
+  extractorPair.substring(extractorPair.indexOf('-') + 1, extractorPair.length);
 
-const getTemplateFromExtractPair = (extractorPair: string) => {
-  return extractorPair.substring(0, extractorPair.indexOf('-'));
-};
+const getTemplateFromExtractPair = (extractorPair: string) =>
+  extractorPair.substring(0, extractorPair.indexOf('-'));
 
 export {
   SELECT_TYPES,

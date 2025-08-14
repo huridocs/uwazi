@@ -13,7 +13,7 @@ import { translationsAtom, localeAtom } from './translationsAtoms';
 import { userAtom } from './userAtom';
 import { thesauriAtom } from './thesauriAtom';
 import { pdfScaleAtom } from './pdfScaleAtom';
-import { ixAcceptedSuggestions } from '../Routes/Settings/IX/components/ixSuggestionsAtom';
+import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
