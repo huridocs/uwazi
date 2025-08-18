@@ -50,7 +50,7 @@ const PropertySidepanel = ({
   const setNotifications = useSetAtom(notificationAtom);
 
   useEffect(() => {
-    if (suggestion) {
+    if (showSidepanel && suggestion) {
       loadSidepanelData(suggestion)
         .then(({ entity: suggestionEntity }) => {
           setEntity(suggestionEntity);
@@ -59,7 +59,7 @@ const PropertySidepanel = ({
           throw e;
         });
     }
-  }, [property, suggestion]);
+  }, [showSidepanel, suggestion]);
 
   const templateId = suggestion?.entityTemplateId;
   const template = templates.find(t => t._id.toString() === templateId);
