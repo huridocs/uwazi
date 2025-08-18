@@ -62,6 +62,7 @@ describe('FiltersSidepanel', () => {
     ]);
   });
 
+  // eslint-disable-next-line max-statements
   it('should allow users to select filter options and apply them', async () => {
     const { setShowSidepanel } = renderComponent();
 
@@ -105,6 +106,7 @@ describe('FiltersSidepanel', () => {
     expect(setShowSidepanel).toHaveBeenCalledWith(false);
   });
 
+  // eslint-disable-next-line max-statements
   it('should clear all selected filters when user clicks Clear all', async () => {
     const { setShowSidepanel } = renderComponent();
 
@@ -185,6 +187,7 @@ describe('FiltersSidepanel', () => {
     expect(screen.queryByText('Stats & Filters')).not.toBeInTheDocument();
   });
 
+  // eslint-disable-next-line max-statements
   it('should update individual checkbox states correctly', () => {
     renderComponent();
 
@@ -212,6 +215,7 @@ describe('FiltersSidepanel', () => {
     expect(mismatchCheckbox).not.toBeChecked();
   });
 
+  // eslint-disable-next-line max-statements
   it('should reset form to default values when cleared', async () => {
     renderComponent();
 
