@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -37,7 +37,7 @@ import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
 
-const SUGGESTIONS_PER_PAGE = 3;
+const SUGGESTIONS_PER_PAGE = 100;
 
 const ixmessages = {
   ready: 'Find suggestions',
@@ -71,6 +71,7 @@ const IXSuggestions = () => {
   }>({ status: currentStatus });
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const location = useLocation();
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
@@ -181,26 +182,6 @@ const IXSuggestions = () => {
     setSidepanel('none');
   };
 
-  const handleSortingChange = useCallback((sortingState: SortingState) => {
-    keepRowOrder.current = false;
-    if (sortingState.length === 0) {
-      return;
-    }
-    const sortingObject = sortingState[0];
-    const sortingParams = {
-      property: sortingObject.id || '',
-      order: sortingObject.desc ? 'desc' : 'asc',
-    };
-
-    setSearchParams(prev => {
-      const newSearchParams = new URLSearchParams(prev);
-      newSearchParams.set('sort', JSON.stringify(sortingParams));
-      return newSearchParams;
-    });
-    //setSearchParams is not a stable function, should not be in dependencies
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   useEffect(() => {
     const template = templates.find(t => t._id === extractor.templates[0]);
     const _property =
@@ -239,6 +220,26 @@ const IXSuggestions = () => {
 
   useEffect(() => () => setAcceptedSuggestionsAtom(new Set()), [setAcceptedSuggestionsAtom]);
 
+  useEffect(() => {
+    keepRowOrder.current = false;
+    if (sorting.length === 0) {
+      return;
+    }
+    const sortingObject = sorting[0];
+    const sortingParams = {
+      property: sortingObject.id || '',
+      order: sortingObject.desc ? 'desc' : 'asc',
+    };
+
+    setSearchParams(prev => {
+      const newSearchParams = new URLSearchParams(prev);
+      newSearchParams.set('sort', JSON.stringify(sortingParams));
+      return newSearchParams;
+    });
+    //setSearchParams is not a stable function, should not be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sorting]);
+
   useEventHandler({
     extractorId: extractor._id!,
     updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
@@ -260,7 +261,7 @@ const IXSuggestions = () => {
               acceptSuggestions,
               openSidepanel
             )}
-            sortingFn={handleSortingChange}
+            sortingState={[sorting, setSorting]}
             onChange={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)

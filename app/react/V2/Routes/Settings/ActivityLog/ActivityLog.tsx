@@ -44,7 +44,7 @@ const ActivityLog = () => {
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
 
   useEffect(() => {
-    const [currentSorting] = sorting || [];
+    const [currentSorting] = sorting;
     const { id: sortingProp, desc } = currentSorting || {};
     const sortingOrder = desc ? 'desc' : 'asc';
     if (
@@ -96,9 +96,7 @@ const ActivityLog = () => {
               data={activityLogData}
               columns={columns}
               defaultSorting={sorting}
-              sortingFn={sortingState => {
-                setSorting(sortingState);
-              }}
+              sortingState={[sorting, setSorting]}
               header={
                 <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
                   Activity Log
