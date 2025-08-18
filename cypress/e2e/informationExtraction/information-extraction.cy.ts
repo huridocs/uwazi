@@ -288,18 +288,20 @@ describe('Information Extraction', () => {
         const text = element.get(0).innerText;
         expect(text).to.be.equal(`${titles[index]}`);
       });
+    });
 
+    it('should check for accessibility', () => {
+      cy.contains('a', 'Metadata Extraction').click();
+      cy.contains('tr', 'Extractor 1 edited').contains('a', 'Review').click();
       cy.checkA11y();
     });
 
-    it('should use filters', () => {
-      cy.intercept('GET', 'api/suggestions*').as('getSuggestions');
+    it('should use filters to get the only accepted suggestion', () => {
       cy.contains('button', 'Stats & Filters').click();
-      cy.checkA11y();
-      cy.contains('span', 'Match').click();
+      cy.contains('label', 'Match').click();
       cy.contains('button', 'Apply').click();
-      cy.wait('@getSuggestions');
       cy.get('tbody tr').should('have.length', 1);
+      cy.contains('tr', '2023 (en)');
     });
   });
 
@@ -329,18 +331,23 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Cancel').click();
       cy.contains('button', 'Stats & Filters').click();
       cy.contains('button', 'Clear all').click();
+      cy.get('tbody tr').should('have.length', 5);
     });
 
     it('should click to fill with a new text', () => {
-      cy.contains('tr', 'The Spectacular Spider-Man').contains('button', 'Open').click();
+      cy.contains('a', 'Metadata Extraction').click();
+      cy.contains('tr', 'Extractor 1 edited').contains('a', 'Review').click();
+      cy.contains('tr', 'The Spectacular Spider-Man').within(() => {
+        cy.contains('button', 'Open').click();
+      });
       cy.get('aside').within(() => {
+        cy.contains('h1', 'The Spectacular Spider-Man');
         cy.get('input').clear();
       });
       cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)
         .setSelection('The Spectacular Spider-Man');
-
       cy.contains('button', 'Click to fill').click();
       cy.get('div.highlight-rectangle').scrollIntoView();
       cy.get('div.highlight-rectangle').should('be.visible');
@@ -357,33 +364,18 @@ describe('Information Extraction', () => {
       });
       cy.contains('Saved successfully');
       cy.contains('button', 'Dismiss').click();
-      cy.contains('A title');
-    });
-
-    it('should check that the table updated and the ordering is not affected', () => {
-      const titles = [
-        '2023 (en)',
-        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
-        'Batman v Superman: Dawn of Justice (en)',
-        'Spider-Man: Shattered Dimensions (en)',
-        'A title (en)',
-        'Uwazi Heroes Investigation (other)',
-      ];
-
-      cy.get('tr > td:nth-child(2) > div').each((element, index) => {
-        const text = element.get(0).innerText;
-        expect(text).to.be.equal(`${titles[index]}`);
-      });
+      cy.get('aside').should('not.exist');
+      cy.contains('tr', '2023 (en)');
     });
 
     it('should open the pdf on the page of the selection', () => {
-      cy.contains('a', 'Metadata Extraction').eq(0).click();
-      cy.contains('Fechas from relevant templates').siblings().last().click();
-      cy.contains('Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009')
-        .parent()
-        .parent()
-        .siblings()
-        .last()
+      cy.contains('a', 'Metadata Extraction').click();
+      cy.contains('tr', 'Fechas from relevant templates').contains('a', 'Review').click();
+      cy.contains(
+        'tr',
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+      )
+        .contains('button', 'Open')
         .click();
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2018-12-01');

@@ -58,9 +58,10 @@ const FiltersSidepanel = ({
 
   const submitFilters = async (filters: IXFilters) => {
     setSearchParams((prev: URLSearchParams) => {
-      prev.set('page', '1');
-      prev.set('filter', JSON.stringify(filters));
-      return prev;
+      const newSearchParams = new URLSearchParams(prev);
+      newSearchParams.set('page', '1');
+      newSearchParams.set('filter', JSON.stringify(filters));
+      return newSearchParams;
     });
     setShowSidepanel(false);
   };
