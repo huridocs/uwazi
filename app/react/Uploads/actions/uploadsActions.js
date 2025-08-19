@@ -58,8 +58,8 @@ export function newEntity(storeKey = 'uploads') {
 
 export function createDocument(newDoc) {
   return dispatch =>
-    api.post('documents', new RequestParams(newDoc)).then(response => {
-      const doc = response.json;
+    EntitiesApi.save(new RequestParams(newDoc)).then(response => {
+      const doc = response;
       dispatch({ type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId });
       dispatch({ type: types.ELEMENT_CREATED, doc });
       return doc;
