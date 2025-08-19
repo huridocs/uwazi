@@ -3,7 +3,7 @@
  */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { ClientPropertySchema } from 'app/istore';
 import { TestRouterContext } from 'V2/testing/TestRouterContext';
 import { TestAtomStoreProvider as AtomProvider } from 'V2/testing';
@@ -541,6 +541,50 @@ describe('Sidepanel forms', () => {
 
       fireEvent.click(screen.getByText('Select & Search'));
       expect(searchInput).toHaveValue('Selected text from PDF');
+    });
+  });
+
+  describe('data loading', () => {
+    it('should not fetch if its not open', async () => {
+      const { getById: entities } = jest.requireMock('V2/api/entities');
+      const { getById: files } = jest.requireMock('V2/api/files');
+
+      await act(async () => {
+        render(
+          <TestRouterContext loaderData={loaderData}>
+            <AtomProvider initialValues={[[thesauriAtom, thesauri]]}>
+              <PDFSidepanel
+                showSidepanel={false}
+                setShowSidepanel={jest.fn()}
+                onEntitySave={jest.fn()}
+                suggestion={suggestion1}
+                property={textProperty}
+              />
+            </AtomProvider>
+          </TestRouterContext>
+        );
+      });
+
+      expect(entities).not.toHaveBeenCalled();
+      expect(files).not.toHaveBeenCalled();
+
+      await act(async () => {
+        render(
+          <TestRouterContext loaderData={loaderData}>
+            <AtomProvider initialValues={[[thesauriAtom, thesauri]]}>
+              <PropertySidepanel
+                showSidepanel={false}
+                setShowSidepanel={jest.fn()}
+                onEntitySave={jest.fn()}
+                suggestion={suggestion1}
+                property={textProperty}
+              />
+            </AtomProvider>
+          </TestRouterContext>
+        );
+      });
+
+      expect(entities).not.toHaveBeenCalled();
     });
   });
 });
