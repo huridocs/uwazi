@@ -1,9 +1,12 @@
+/* eslint-disable max-statements */
 import { models } from 'api/odm';
 import { search } from 'api/search';
 import { storage } from 'api/files/storage';
 import 'api/utils/jasmineHelpers';
+import { ObjectId } from 'mongodb';
 
 import * as index from 'api/search/entitiesIndex';
+import { LanguageUtils } from 'shared/language';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes';
 
@@ -219,6 +222,47 @@ describe('sync', () => {
             { id: 'Filters', values: [{ key: 'Cause', value: 'Cause' }] },
           ],
         });
+      });
+    });
+
+    describe('when namespace is translationsV2', () => {
+      it('should correctly save for one document', async () => {
+        const translationsV2 = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          delete: jest.fn(),
+        };
+        models.translationsV2 = () => translationsV2;
+
+        const translationInput = {
+          _id: new ObjectId(),
+          language: LanguageUtils.fromISO639_1('es').ISO639_1,
+          key: 'Search',
+          value: 'Search',
+          context: {
+            type: 'Uwazi UI',
+            label: 'User Interface',
+            id: 'System',
+          },
+        };
+
+        req.body = {
+          namespace: 'translationsV2',
+          data: translationInput,
+        };
+
+        await routes.post('/api/sync', req);
+
+        expect(translationsV2.delete).toHaveBeenCalledWith(
+          { _id: '' },
+          {
+            language: translationInput.language,
+            key: translationInput.key,
+            'context.id': translationInput.context.id,
+          }
+        );
+        expect(translationsV2.save).toHaveBeenCalledWith(translationInput);
+        expect(translationsV2.saveMultiple).not.toHaveBeenCalled();
       });
     });
   });

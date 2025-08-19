@@ -1,4 +1,4 @@
-import { DeleteResult, ObjectId, OptionalId } from 'mongodb';
+import { DeleteResult, Filter, ObjectId, OptionalId } from 'mongodb';
 
 import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
@@ -43,7 +43,9 @@ export class MongoTranslationsSyncDataSource
     return this.getCollection().findOne({ _id: new ObjectId(translationId) });
   }
 
-  async delete(query: { _id: string }): Promise<DeleteResult> {
-    return this.getCollection().deleteOne({ _id: new ObjectId(query._id) });
+  async delete(query: { _id: string }, filter?: Filter<TranslationDBO>): Promise<DeleteResult> {
+    const param = filter || { _id: new ObjectId(query._id) };
+
+    return this.getCollection().deleteOne(param);
   }
 }

@@ -34,6 +34,8 @@ import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTransl
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { Db, ObjectId } from 'mongodb';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
@@ -96,6 +98,12 @@ async function applyFixtures(
 describe('syncWorker', () => {
   let server: Server;
   let server2: Server;
+  let testingDbs: {
+    host1db: Db | null;
+    host2db: Db | null;
+    target1db: Db | null;
+    target2db: Db | null;
+  };
 
   beforeAll(async () => {
     const app = express();
@@ -136,7 +144,7 @@ describe('syncWorker', () => {
       ...(await testingUploadPaths('syncWorker_target2_files')),
     });
 
-    await applyFixtures();
+    testingDbs = await applyFixtures();
 
     app.use(bodyParser.json() as RequestHandler);
     app.use(appContextMiddleware);
@@ -350,6 +358,14 @@ describe('syncWorker', () => {
   });
 
   it('should syncronize translations v2 that match configured properties', async () => {
+    await testingDbs.target1db!.collection('translationsV2').insertOne({
+      _id: new ObjectId(),
+      language: 'en',
+      key: 'System Key',
+      value: 'System Value',
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+    });
+
     await tenants.run(async () => {
       const transactionManager = DefaultTransactionManager();
       await new CreateTranslationsService(
@@ -420,7 +436,22 @@ describe('syncWorker', () => {
     await runAllTenants();
 
     await tenants.run(async () => {
+      const syncedTranslationsV2 = await getConnection()
+        .collection('translationsV2')
+        .find({})
+        .toArray();
       const syncedTranslations = await translations.get({});
+
+      expect(syncedTranslationsV2.filter(i => i.key === 'System Key')).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          language: 'en',
+          key: 'System Key',
+          value: 'System Value',
+          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+        },
+      ]);
+
       expect(syncedTranslations).toEqual([
         {
           contexts: [
