@@ -8,9 +8,7 @@ import * as types from 'app/Uploads/actions/actionTypes';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t } from 'app/I18N';
-
 import { APIURL } from '../../config.js';
-import api from '../../utils/api';
 import EntitiesApi from '../../Entities/EntitiesAPI';
 
 export function enterUploads() {
