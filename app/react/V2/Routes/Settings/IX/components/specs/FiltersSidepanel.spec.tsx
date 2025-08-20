@@ -100,6 +100,7 @@ describe('FiltersSidepanel', () => {
         error: false,
         noContext: false,
         nonProcessed: true,
+        accuracy: 0,
       })
     );
 

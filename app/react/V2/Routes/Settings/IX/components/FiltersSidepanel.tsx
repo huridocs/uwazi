@@ -23,6 +23,7 @@ interface IXFilters {
   error: boolean;
   noContext: boolean;
   nonProcessed: boolean;
+  accuracy: number;
 }
 
 const FiltersSidepanel = ({
@@ -41,6 +42,7 @@ const FiltersSidepanel = ({
     error: false,
     noContext: false,
     nonProcessed: false,
+    accuracy: 0,
   };
 
   let initialFilters = defaultFilter;
@@ -160,8 +162,9 @@ const FiltersSidepanel = ({
           </Card>
 
           <Card>
-            <div className="text-sm font-semibold text-gray-700 mb-2">
-              <Translate>Processed</Translate>
+            <div className="text-sm text-gray-700 mb-2">
+              <Translate className="font-semibold">Processed</Translate> (
+              <Translate>Accuracy</Translate> {aggregation.accuracy}%)
             </div>
             <div className="flex items-center space-x-1">
               <Checkbox
