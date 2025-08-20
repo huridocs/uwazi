@@ -57,7 +57,7 @@ const PDFSidepanel = ({
   const setSelections = useSetAtom(selectionsAtom);
 
   useEffect(() => {
-    if (suggestion) {
+    if (showSidepanel && suggestion) {
       loadSidepanelData(suggestion)
         .then(({ file, entity: suggestionEntity }) => {
           setPdfFile(file || undefined);
@@ -67,7 +67,7 @@ const PDFSidepanel = ({
           throw e;
         });
     }
-  }, [property, suggestion]);
+  }, [showSidepanel, suggestion]);
 
   useEffect(() => {
     if (showSidepanel && pdfFile?.extractedMetadata && suggestion) {

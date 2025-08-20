@@ -6,7 +6,6 @@ import {
   LoaderFunction,
   useLoaderData,
   useLocation,
-  useNavigate,
   useRevalidator,
   useSearchParams,
 } from 'react-router';
@@ -24,7 +23,7 @@ import { FunnelIcon } from '@heroicons/react/24/solid';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { generateChildrenRows, formatAccepted, updateSortingUrl } from './helpers';
+import { generateChildrenRows, formatAccepted } from './helpers';
 import {
   TableSuggestion,
   MultiValueSuggestion,
@@ -71,10 +70,9 @@ const IXSuggestions = () => {
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
@@ -185,13 +183,6 @@ const IXSuggestions = () => {
   };
 
   useEffect(() => {
-    keepRowOrder.current = false;
-    const navigatePromise = async (path: string) => navigate(path, { replace: true });
-    const newUrl = updateSortingUrl(sorting, location.pathname, searchParams);
-    navigatePromise(newUrl).catch(_e => {});
-  }, [sorting, searchParams]);
-
-  useEffect(() => {
     const template = templates.find(t => t._id === extractor.templates[0]);
     const _property =
       extractor.property === 'title'
@@ -229,6 +220,26 @@ const IXSuggestions = () => {
 
   useEffect(() => () => setAcceptedSuggestionsAtom(new Set()), [setAcceptedSuggestionsAtom]);
 
+  useEffect(() => {
+    keepRowOrder.current = false;
+    if (sorting.length === 0) {
+      return;
+    }
+    const sortingObject = sorting[0];
+    const sortingParams = {
+      property: sortingObject.id || '',
+      order: sortingObject.desc ? 'desc' : 'asc',
+    };
+
+    setSearchParams(prev => {
+      const newSearchParams = new URLSearchParams(prev);
+      newSearchParams.set('sort', JSON.stringify(sortingParams));
+      return newSearchParams;
+    });
+    //setSearchParams is not a stable function, should not be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sorting]);
+
   useEventHandler({
     extractorId: extractor._id!,
     updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
@@ -250,9 +261,7 @@ const IXSuggestions = () => {
               acceptSuggestions,
               openSidepanel
             )}
-            sortingFn={sortingState => {
-              setSorting(sortingState);
-            }}
+            sortingState={[sorting, setSorting]}
             onChange={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)

@@ -96,7 +96,7 @@ describe('uploadsActions', () => {
     describe('createDocument', () => {
       it('should create a document', done => {
         backend.restore();
-        backend.post(`${APIURL}documents`, {
+        backend.post(`${APIURL}entities`, {
           body: JSON.stringify({ _id: 'test', sharedId: 'sharedId' }),
         });
 

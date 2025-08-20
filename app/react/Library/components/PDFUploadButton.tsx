@@ -1,17 +1,19 @@
-import { Translate } from 'app/I18N';
-import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'app/UI';
-import React, { ChangeEvent, Dispatch, useMemo } from 'react';
+import React, { ChangeEvent, Dispatch } from 'react';
 import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { useAtomValue } from 'jotai';
+import { Translate } from 'app/I18N';
+import { Icon } from 'app/UI';
 import { EntitySchema } from 'shared/types/entityType';
-
+import { generateID } from 'shared/IDGenerator';
 import {
   uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
 } from 'app/Uploads/actions/uploadsActions';
-
 import { unselectAllDocuments as unselectAllDocumentsAction } from 'app/Library/actions/libraryActions';
-import { connect } from 'react-redux';
+import { ClientEntitySchema } from 'app/istore';
+import { templatesAtom } from 'V2/atoms';
+import { ClientTemplateSchema } from 'V2/shared/types';
 
 const extractTitle = (file: File) => {
   const title = file.name
@@ -19,7 +21,6 @@ const extractTitle = (file: File) => {
     .replace(/_/g, ' ')
     .replace(/-/g, ' ')
     .replace(/ {2}/g, ' ');
-
   return title.charAt(0).toUpperCase() + title.slice(1);
 };
 
@@ -32,21 +33,37 @@ interface PDFUploadActions {
 type PDFUploadButtonProps = PDFUploadActions;
 
 const onChangePDFs =
-  ({ createDocument, uploadDocument, unselectAllDocuments }: PDFUploadActions) =>
-  (e: ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target as HTMLInputElement;
-    const count = files?.length || 0;
+  ({
+    createDocument,
+    uploadDocument,
+    unselectAllDocuments,
+    templates,
+  }: PDFUploadActions & { templates: ClientTemplateSchema[] }) =>
+  async (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.target as HTMLInputElement;
+    const { files } = input;
 
-    // eslint-disable-next-line no-plusplus
-    for (let index = 0; index < count; index++) {
-      const file = files![index];
-      const doc = { title: extractTitle(file) };
-      createDocument(doc)
-        .then((newDoc: EntitySchema) => {
-          uploadDocument(newDoc.sharedId!, file);
-        })
-        .catch(() => {});
-    }
+    const hasGeneratedId = !!templates.some(
+      template =>
+        template.default &&
+        template.commonProperties?.some(
+          property => property.name === 'title' && property.generatedId
+        )
+    );
+
+    Array.from({ length: files?.length ?? 0 }).forEach(async (_, index) => {
+      const file = files?.[index];
+      if (file) {
+        try {
+          const newEntity = { title: hasGeneratedId ? generateID(3, 4, 4) : extractTitle(file) };
+          const entity = (await createDocument(newEntity)) as ClientEntitySchema;
+
+          if (entity.sharedId) {
+            uploadDocument(entity.sharedId, file);
+          }
+        } catch (_e) {}
+      }
+    });
 
     unselectAllDocuments();
   };
@@ -56,15 +73,7 @@ const PDFUploadButtonComponent = ({
   uploadDocument,
   unselectAllDocuments,
 }: PDFUploadButtonProps) => {
-  const onChangeHandler = useMemo(
-    () =>
-      onChangePDFs({
-        createDocument,
-        uploadDocument,
-        unselectAllDocuments,
-      }),
-    [createDocument, uploadDocument, unselectAllDocuments]
-  );
+  const templates = useAtomValue(templatesAtom);
 
   return (
     <label htmlFor="pdf-upload-button" className="btn btn-default">
@@ -78,24 +87,25 @@ const PDFUploadButtonComponent = ({
         style={{ display: 'none' }}
         accept="application/pdf"
         multiple
-        onChange={onChangeHandler}
+        onChange={onChangePDFs({
+          createDocument,
+          uploadDocument,
+          unselectAllDocuments,
+          templates,
+        })}
       />
     </label>
   );
 };
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
-  return bindActionCreators(
+const mapDispatchToProps = (dispatch: Dispatch<any>) =>
+  bindActionCreators(
     {
       uploadDocument: uploadDocumentAction,
       unselectAllDocuments: unselectAllDocumentsAction,
       createDocument: createDocumentAction,
     },
-    wrapDispatch(dispatch, 'library')
+    dispatch
   );
-}
 
-export const PDFUploadButton = connect<{}, PDFUploadActions>(
-  null,
-  mapDispatchToProps
-)(PDFUploadButtonComponent);
+export const PDFUploadButton = connect(null, mapDispatchToProps)(PDFUploadButtonComponent);
