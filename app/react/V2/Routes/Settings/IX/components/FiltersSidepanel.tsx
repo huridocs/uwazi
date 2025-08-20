@@ -23,7 +23,6 @@ interface IXFilters {
   error: boolean;
   noContext: boolean;
   nonProcessed: boolean;
-  accuracy: number;
 }
 
 const FiltersSidepanel = ({
@@ -42,7 +41,6 @@ const FiltersSidepanel = ({
     error: false,
     noContext: false,
     nonProcessed: false,
-    accuracy: 0,
   };
 
   let initialFilters = defaultFilter;
