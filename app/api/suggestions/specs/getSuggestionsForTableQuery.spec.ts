@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
 import { factory } from './fixtures';
@@ -617,7 +618,6 @@ describe('getSuggestionsForTableQuery', () => {
     });
   });
 
-  // eslint-disable-next-line max-statements
   it('should filter by status state', async () => {
     const { sut } = createSut();
     const input = {

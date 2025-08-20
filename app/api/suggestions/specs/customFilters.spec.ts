@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingDB } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { factory as f, stateFilterFixtures, comprehensiveTestFixtures } from './fixtures';
@@ -260,7 +261,7 @@ describe('suggestions with CustomFilters', () => {
       });
     });
 
-    it('should handle all states combined in a comprehensive test', async () => {
+    it('should handle all states combined', async () => {
       await testingDB.setupFixturesAndContext(comprehensiveTestFixtures);
 
       const result = await Suggestions.aggregate(f.id('test_extractor').toString());
@@ -268,12 +269,13 @@ describe('suggestions with CustomFilters', () => {
         total: 9,
         labeled: 2,
         nonLabeled: 7,
-        match: 2,
-        mismatch: 7,
+        match: 1,
+        mismatch: 2,
         obsolete: 2,
         error: 1,
-        noContext: 2,
+        noContext: 1,
         nonProcessed: 3,
+        accuracy: 50,
       });
     });
 
@@ -438,8 +440,9 @@ describe('suggestions with CustomFilters', () => {
         total: 6,
         obsolete: 1, // Only processed obsolete
         error: 1, // Only processed error
-        noContext: 2, // Only processed noContext (2 processed suggestions)
+        noContext: 1, // Only processed noContext (1 processed suggestion)
         nonProcessed: 3, // All new suggestions
+        accuracy: 0,
       });
     });
   });

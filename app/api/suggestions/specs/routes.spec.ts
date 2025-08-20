@@ -253,11 +253,12 @@ describe('aggregation routes', () => {
         labeled: 8,
         nonLabeled: 10,
         match: 4,
-        mismatch: 14,
+        mismatch: 10,
         obsolete: 2,
         error: 2,
         noContext: 12,
         nonProcessed: 0,
+        accuracy: 50,
       });
     });
   });

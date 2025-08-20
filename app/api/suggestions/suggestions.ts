@@ -169,9 +169,22 @@ const Suggestions = {
           $match: { extractorId },
         },
         {
+          // processed = has a date AND not obsolete AND not error
+          $set: {
+            processed: {
+              $and: [
+                { $ne: ['$date', null] },
+                { $not: '$state.obsolete' },
+                { $not: '$state.error' },
+              ],
+            },
+          },
+        },
+        {
           $group: {
             _id: null,
             total: { $sum: 1 },
+            // All data
             labeled: { $sum: { $cond: ['$state.labeled', 1, 0] } },
             nonLabeled: {
               $sum: {
@@ -188,20 +201,10 @@ const Suggestions = {
                 ],
               },
             },
-            match: { $sum: { $cond: ['$state.match', 1, 0] } },
-            mismatch: {
+            // Status
+            nonProcessed: {
               $sum: {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: ['$state.match', undefined] },
-                      { $ne: ['$state.match', null] },
-                      { $not: '$state.match' },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
+                $cond: [{ $eq: ['$date', null] }, 1, 0],
               },
             },
             obsolete: {
@@ -226,24 +229,51 @@ const Suggestions = {
                 ],
               },
             },
-            noContext: {
+            // Processed (exclude nonProcessed, obsolete, and error)
+            match: {
+              $sum: {
+                $cond: [{ $and: ['$processed', '$state.match'] }, 1, 0],
+              },
+            },
+            mismatch: {
               $sum: {
                 $cond: [
                   {
-                    $and: [{ $ne: ['$date', null] }, { $not: '$state.hasContext' }],
+                    $and: [
+                      '$processed',
+                      { $ne: ['$state.match', undefined] },
+                      { $ne: ['$state.match', null] },
+                      { $not: '$state.match' },
+                    ],
                   },
                   1,
                   0,
                 ],
               },
             },
-            nonProcessed: {
+            noContext: {
               $sum: {
-                $cond: [{ $eq: ['$date', null] }, 1, 0],
+                $cond: [{ $and: ['$processed', { $not: '$state.hasContext' }] }, 1, 0],
               },
+            },
+            // Support for accuracy calculation
+            processedLabeled: {
+              $sum: { $cond: [{ $and: ['$processed', '$state.labeled'] }, 1, 0] },
             },
           },
         },
+        {
+          $set: {
+            accuracy: {
+              $cond: [
+                { $gt: ['$processedLabeled', 0] },
+                { $round: [{ $multiply: [{ $divide: ['$match', '$processedLabeled'] }, 100] }, 2] },
+                0,
+              ],
+            },
+          },
+        },
+        { $unset: 'processedLabeled' },
       ]);
 
     const { _id, ...results } = aggregations[0] || {
@@ -257,6 +287,7 @@ const Suggestions = {
       error: 0,
       noContext: 0,
       nonProcessed: 0,
+      accuracy: 0,
     };
 
     return results;
