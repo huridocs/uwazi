@@ -119,9 +119,21 @@ export default (app: Application) => {
         req.body.data = await keepOnlyOneDefaultTemplate(req.body.data);
       }
 
-      await (Array.isArray(req.body.data)
-        ? models[req.body.namespace]().saveMultiple(req.body.data)
-        : models[req.body.namespace]().save(req.body.data));
+      if (req.body.namespace === 'translationsV2') {
+        await models[req.body.namespace]().delete(
+          { _id: '' },
+          {
+            language: req.body.data.language,
+            key: req.body.data.key,
+            'context.id': req.body.data.context.id,
+          }
+        );
+        await models[req.body.namespace]().save(req.body.data);
+      } else {
+        await (Array.isArray(req.body.data)
+          ? models[req.body.namespace]().saveMultiple(req.body.data)
+          : models[req.body.namespace]().save(req.body.data));
+      }
 
       await updateMappings(req);
       await indexEntities(req);
