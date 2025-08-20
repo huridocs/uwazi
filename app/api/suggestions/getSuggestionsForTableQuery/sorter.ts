@@ -29,7 +29,7 @@ export class Sorter {
 
   get $sort(): { date: 1; state: 1 } | Record<string, 1 | -1> {
     if (!this.isActive) {
-      return { date: 1, state: -1 };
+      return { entityTitle: 1 };
     }
 
     return { [this.field]: this.orderAsNumber };
