@@ -11,10 +11,11 @@ export const baseQueryFragment = (extractorId: ObjectId) => {
 };
 
 export const filterFragments = {
+  // All data
   labeled: { 'state.labeled': true },
   nonLabeled: { 'state.labeled': false },
-  match: { 'state.match': true },
-  mismatch: { 'state.match': false },
+  // Status
+  nonProcessed: { date: null },
   obsolete: {
     date: { $ne: null },
     'state.obsolete': true,
@@ -23,8 +24,23 @@ export const filterFragments = {
     date: { $ne: null },
     'state.error': true,
   },
+  // Processed (exclude nonProcessed, obsolete, and error)
+  match: {
+    date: { $ne: null },
+    'state.obsolete': { $ne: true },
+    'state.error': { $ne: true },
+    'state.match': true,
+  },
+  mismatch: {
+    date: { $ne: null },
+    'state.obsolete': { $ne: true },
+    'state.error': { $ne: true },
+    'state.match': false,
+  },
   noContext: {
     date: { $ne: null },
+    'state.obsolete': { $ne: true },
+    'state.error': { $ne: true },
     'state.hasContext': false,
   },
 };
@@ -38,7 +54,7 @@ export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   if (customFilter.obsolete) orFilters.push(filterFragments.obsolete);
   if (customFilter.error) orFilters.push(filterFragments.error);
   if (customFilter.noContext) orFilters.push(filterFragments.noContext);
-
+  if (customFilter.nonProcessed) orFilters.push(filterFragments.nonProcessed);
   return orFilters;
 };
 
@@ -48,12 +64,10 @@ export const getMatchStage = (
   countOnly = false
 ) => {
   const matchQuery: FilterQuery<IXSuggestionType> = baseQueryFragment(extractorId);
-  let includeNonProcessedFilter = false;
 
   if (customFilter) {
     const orFilters = translateCustomFilter(customFilter);
     if (orFilters.length > 0) matchQuery.$or = orFilters;
-    includeNonProcessedFilter = customFilter.nonProcessed;
   }
 
   const countExpression = countOnly ? [{ $count: 'count' }] : [];
@@ -65,16 +79,8 @@ export const getMatchStage = (
     ...countExpression,
   ];
 
-  return {
-    matchStage: matchStage as [
-      {
-        $match: FilterQuery<IXSuggestionType>;
-      },
-      {
-        $count: string;
-      },
-    ],
-    includeNonProcessedFilter,
+  return { matchStage } as {
+    matchStage: [{ $match: FilterQuery<IXSuggestionType> }, { $count: string }];
   };
 };
 

@@ -464,6 +464,71 @@ const fixtures: DBFixture = {
 
       entityTitle: 'extractor_source_text_target_text_entity_5',
     }),
+
+    // Extra nonProcessed suggestions for multiselect extractor (date: null)
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_source_pdf_target_multiselect'),
+      entityId: 'extractor_source_pdf_target_multiselect_entity_1',
+      entityTemplate: 'extractor_source_pdf_target_multiselect_template',
+      propertyName: 'target_multiselect',
+      language: 'en',
+      segment: '',
+      status: 'ready',
+      fileId: factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_np_1'),
+      date: null,
+      state: {
+        match: false,
+        labeled: false,
+        hasContext: false,
+        withValue: false,
+        withSuggestion: false,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_source_pdf_target_multiselect'),
+      entityId: 'extractor_source_pdf_target_multiselect_entity_1',
+      entityTemplate: 'extractor_source_pdf_target_multiselect_template',
+      propertyName: 'target_multiselect',
+      language: 'es',
+      segment: '',
+      status: 'ready',
+      fileId: factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_np_2'),
+      date: null,
+      state: {
+        match: false,
+        labeled: false,
+        hasContext: false,
+        withValue: false,
+        withSuggestion: false,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
+    }),
+    factory.ixSuggestion({
+      extractorId: factory.id('extractor_source_pdf_target_multiselect'),
+      entityId: 'extractor_source_pdf_target_multiselect_entity_1',
+      entityTemplate: 'extractor_source_pdf_target_multiselect_template',
+      propertyName: 'target_multiselect',
+      language: 'en',
+      segment: '',
+      status: 'ready',
+      fileId: factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_np_3'),
+      date: null,
+      state: {
+        match: false,
+        labeled: false,
+        hasContext: false,
+        withValue: false,
+        withSuggestion: false,
+        error: false,
+        obsolete: false,
+        processing: false,
+      },
+    }),
   ],
   files: [
     factory.document('extractor_source_pdf_target_text_entity_1_pdf_1', {
@@ -864,7 +929,7 @@ describe('getSuggestionsForTableQuery', () => {
 
     // Test without nonProcessed filter
     const allResults = await sut.execute({
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
       pagination: {
         size: 20,
         number: 1,
@@ -883,7 +948,7 @@ describe('getSuggestionsForTableQuery', () => {
 
     // Test with nonProcessed filter
     const nonProcessedResults = await sut.execute({
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
+      extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
       pagination: {
         size: 20,
         number: 1,
@@ -907,8 +972,8 @@ describe('getSuggestionsForTableQuery', () => {
     expect(nonProcessedResults).toHaveProperty('suggestions');
 
     // Test that both filters return the expected counts based on test data
-    expect(allResults.total).toBe(10);
-    expect(nonProcessedResults.total).toBe(10);
+    expect(allResults.total).toBe(4); // 1 processed + 3 nonProcessed
+    expect(nonProcessedResults.total).toBe(3);
 
     // The nonProcessed filter should return a subset of all results (or same if no nonProcessed data)
     expect(nonProcessedResults.total).toBeLessThanOrEqual(allResults.total);

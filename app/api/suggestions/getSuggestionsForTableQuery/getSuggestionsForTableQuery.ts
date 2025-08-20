@@ -42,22 +42,10 @@ export class GetSuggestionsForTableQuery {
       currentPage: input?.pagination?.number,
     });
 
-    const { matchStage, includeNonProcessedFilter } = getMatchStage(
-      new ObjectId(extractorId),
-      input.filter,
-      false
-    );
+    const { matchStage } = getMatchStage(new ObjectId(extractorId), input.filter, false);
     const total = await IXSuggestionsModel.db.countDocuments(matchStage[0].$match!);
 
     this.pipelineBuilder.add(matchStage[0]);
-
-    if (includeNonProcessedFilter) {
-      this.pipelineBuilder.add({
-        $match: {
-          date: null,
-        },
-      });
-    }
 
     this.pipelineBuilder.add({
       $sort: sorter.$sort,
