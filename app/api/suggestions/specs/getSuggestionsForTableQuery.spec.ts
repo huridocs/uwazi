@@ -519,12 +519,12 @@ describe('getSuggestionsForTableQuery', () => {
     const { suggestions } = await sut.execute({
       extractorId: extractorId.toString(),
       pagination: {
-        size: 2,
+        size: 10,
         number: 1,
       },
     });
 
-    expect(suggestions[0]).toMatchObject({
+    expect(suggestions[1]).toMatchObject({
       extractorId: factory.id('extractor_source_pdf_target_text'),
       fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_1'),
       language: 'en',
@@ -551,7 +551,7 @@ describe('getSuggestionsForTableQuery', () => {
       },
     });
 
-    expect(suggestions[1]).toMatchObject({
+    expect(suggestions[2]).toMatchObject({
       extractorId,
       fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_2'),
       language: 'es',
