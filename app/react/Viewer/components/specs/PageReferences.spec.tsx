@@ -36,6 +36,11 @@ describe('FormConfigInput', () => {
       targetDocReferences: Immutable.fromJS([]),
       references: Immutable.fromJS([
         { _id: '1', entity: 'ab42', reference: { selectionRectangles: [{ page: '2' }] } },
+        {
+          _id: '6',
+          entity: 'df57',
+          reference: { selectionRectangles: [{ page: '4', width: 100 }] },
+        },
         { _id: '2', entity: 'ab42', reference: { selectionRectangles: [{ page: '3' }] } },
         {
           _id: '3',
@@ -56,11 +61,6 @@ describe('FormConfigInput', () => {
           _id: '5',
           entity: 'ce87',
           reference: { selectionRectangles: [{ page: '3', width: 101 }] },
-        },
-        {
-          _id: '6',
-          entity: 'df57',
-          reference: { selectionRectangles: [{ page: '4', width: 100 }] },
         },
         {
           _id: '7',
@@ -95,8 +95,13 @@ describe('FormConfigInput', () => {
 
   it('should group references with same selection rectangles', () => {
     const result = groupByRectangle(store.getState() as IStore);
+    JSON.stringify(result, null, 2);
     expect(result).toEqual([
       [{ _id: '1', length: 1, start: { page: '2' }, end: { page: '2' } }],
+      [
+        { _id: '6', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
+        { _id: '7', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
+      ],
       [{ _id: '2', length: 1, start: { page: '3' }, end: { page: '3' } }],
       [{ _id: '3', length: 2, start: { page: '3' }, end: { page: '4' } }],
       [
@@ -108,10 +113,6 @@ describe('FormConfigInput', () => {
         },
       ],
       [{ _id: '5', length: 1, start: { page: '3', width: 101 }, end: { page: '3', width: 101 } }],
-      [
-        { _id: '6', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
-        { _id: '7', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
-      ],
     ]);
   });
 

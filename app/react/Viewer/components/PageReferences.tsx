@@ -135,14 +135,12 @@ const groupByRectangle = createSelector(
 
       if (reference?.get('template') || !reference) return groups;
 
-      let hasGroup = false;
-
       const rectangles = reference.get('reference')?.get('selectionRectangles');
 
       if (!rectangles?.size) return groups;
 
-      groups?.forEach(refGroups => {
-        refGroups.forEach(refGroup => {
+      const hasGroup = groups?.some(refGroups =>
+        refGroups.some(refGroup => {
           if (
             refGroup.length === rectangles.size &&
             refGroup.start.page === rectangles.get(0).get('page') &&
@@ -150,20 +148,21 @@ const groupByRectangle = createSelector(
             refGroup.end.page === rectangles.get(rectangles.size - 1).get('page') &&
             refGroup.end.width === rectangles.get(rectangles.size - 1).get('width')
           ) {
-            hasGroup = true;
             refGroups.push({
               _id: reference.get('_id')!.toString(),
               length: rectangles.size,
               start: rectangles.get(0).toJS(),
               end: rectangles.get(rectangles.size - 1).toJS(),
             });
+            return true;
           }
-        });
-      });
+          return false;
+        })
+      );
 
       if (hasGroup) return groups;
 
-      groups!.push([
+      groups.push([
         {
           _id: reference.get('_id')!.toString(),
           length: rectangles.size,
