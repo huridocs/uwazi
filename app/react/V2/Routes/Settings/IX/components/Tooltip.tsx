@@ -10,11 +10,9 @@ const Contents = ({ content }: TooltipProps) => {
   switch (content) {
     case 'accuracy':
       return (
-        <Translate>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla consectetur lacinia tortor
-          vel tempus. In sed eleifend enim, auctor rhoncus tellus. Aenean vitae vestibulum diam.
-          Quisque dapibus in quam eu mattis. Donec vehicula erat ligula, vitae auctor lorem luctus
-          in. In porttitor nisi vitae ante pretium mattis.
+        <Translate translationKey="Accuracy tooltip">
+          Accuracy is defined by the amount of matches vs mismatches for labeled samples that have
+          been processed.
         </Translate>
       );
 

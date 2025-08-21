@@ -19,6 +19,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
 Action,عمل/ إجراء
 Activate,Activate
 Activated,Activated
@@ -793,6 +794,7 @@ Source template,Source template
 Source Template,Source Template
 Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
 State,State
+Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 Storage,Storage
