@@ -58,6 +58,11 @@ describe('FormConfigInput', () => {
           },
         },
         {
+          _id: '8',
+          entity: 'vhsj',
+          reference: { selectionRectangles: [{ page: '4', width: 100 }] },
+        },
+        {
           _id: '5',
           entity: 'ce87',
           reference: { selectionRectangles: [{ page: '3', width: 101 }] },
@@ -100,6 +105,7 @@ describe('FormConfigInput', () => {
       [{ _id: '1', length: 1, start: { page: '2' }, end: { page: '2' } }],
       [
         { _id: '6', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
+        { _id: '8', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
         { _id: '7', length: 1, start: { page: '4', width: 100 }, end: { page: '4', width: 100 } },
       ],
       [{ _id: '2', length: 1, start: { page: '3' }, end: { page: '3' } }],
