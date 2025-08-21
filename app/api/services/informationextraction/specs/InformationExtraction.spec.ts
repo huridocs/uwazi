@@ -1599,7 +1599,8 @@ describe('InformationExtraction', () => {
       await IXModelsModel.save(model);
 
       const message: IXResultsMessage = {
-        task: 'create_model',
+        // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
+        task: 'any_task',
         data_url: 'some/url',
         error_message: '',
         params: {

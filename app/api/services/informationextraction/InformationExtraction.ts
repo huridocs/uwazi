@@ -171,6 +171,10 @@ class InformationExtraction {
       findingSuggestions: false,
     });
 
+    if (currentModel?._id) {
+      await ixmodels.unsetFindSuggestionsData(currentModel._id);
+    }
+
     if (currentModel?.findingSuggestions) {
       await IXSuggestionsModel.updateMany(
         {
@@ -610,8 +614,12 @@ class InformationExtraction {
     };
   };
 
-  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
-    const suggestionsStatus = await this.getSuggestionsStatus(message.params!.id, currentModel);
+  updateSuggestionStatus = async (message: InternalIXResultsMessage, passedModel: IXModelType) => {
+    const [currentModel] = await IXModelsModel.get({ _id: passedModel._id });
+    const suggestionsStatus = await this.getSuggestionsStatus(
+      message.params!.id,
+      currentModel || passedModel
+    );
     emitToTenant(
       message.tenant,
       'ix_model_status',
@@ -819,10 +827,12 @@ class InformationExtraction {
       {}
     );
 
-    // TEST!!!
-    await ixmodels.unsetFindSuggestionsData(extractorId);
-
     if (res) {
+      const [model] = await IXModelsModel.get({ extractorId });
+      // TEST!!!
+      if (model?._id) {
+        await ixmodels.unsetFindSuggestionsData(model._id);
+      }
       return { status: 'ready', message: 'Ready' };
     }
 
@@ -846,9 +856,7 @@ class InformationExtraction {
             computeTotalSuggestions: true,
           });
 
-          const [updatedModel] = await IXModelsModel.get({
-            extractorId: message.params!.id,
-          });
+          const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
 
           await this.updateSuggestionStatus(message, updatedModel);
         }
@@ -863,7 +871,8 @@ class InformationExtraction {
           await this.updateSuggestionStatus(message, currentModel);
         }
 
-        if (!currentModel.findingSuggestions) {
+        const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+        if (!updatedModel.findingSuggestions) {
           emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
           return;
         }
