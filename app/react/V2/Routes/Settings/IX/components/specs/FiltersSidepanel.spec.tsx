@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router';
-import { FiltersSidepanel } from '../FiltersSidepanel';
+import { FiltersSidepanel, FiltersSidepanelProps } from '../FiltersSidepanel';
 
 const mockSetSearchParams = jest.fn();
 let mockSearchParams = new URLSearchParams();
@@ -14,7 +14,7 @@ jest.mock('react-router', () => ({
   useSearchParams: () => [mockSearchParams, mockSetSearchParams],
 }));
 
-const mockAggregation = {
+const mockAggregation: FiltersSidepanelProps['aggregation'] = {
   total: 10,
   labeled: 5,
   nonLabeled: 5,
@@ -24,6 +24,7 @@ const mockAggregation = {
   error: 0,
   noContext: 2,
   nonProcessed: 1,
+  accuracy: 23,
 };
 
 const renderComponent = (showSidepanel = true, aggregation = mockAggregation) => {
@@ -60,6 +61,13 @@ describe('FiltersSidepanel', () => {
       'Mismatch2',
       'No context2',
     ]);
+  });
+
+  it('should display statistics', () => {
+    renderComponent();
+    expect(screen.getByText('Stats & Filters')).toBeInTheDocument();
+    expect(screen.getByText('Accuracy')).toBeInTheDocument();
+    expect(screen.getByText('23%')).toBeInTheDocument();
   });
 
   // eslint-disable-next-line max-statements
