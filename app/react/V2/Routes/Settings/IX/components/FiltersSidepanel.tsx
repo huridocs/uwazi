@@ -216,14 +216,16 @@ const FiltersSidepanel = ({
             <div className="text-sm font-semibold text-gray-700 mb-2">
               <Translate>Statistics</Translate>
             </div>
-            <div className="flex items-center space-x-1">
+            <dl className="flex items-center space-x-1" role="list">
               <div className="flex gap-2 items-center">
                 <StatsTooltip content="accuracy" />
-                <Translate className="font-normal">Accuracy</Translate>
+                <dt className="font-normal not-italic text-gray-900">
+                  <Translate>Accuracy</Translate>
+                </dt>
               </div>
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
-              <div className="flex-none font-mono font-bold">{aggregation.accuracy}%</div>
-            </div>
+              <dd className="flex-none font-mono font-bold">{aggregation.accuracy}%</dd>
+            </dl>
           </Card>
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">

@@ -66,8 +66,8 @@ describe('FiltersSidepanel', () => {
   it('should display statistics', () => {
     renderComponent();
     expect(screen.getByText('Stats & Filters')).toBeInTheDocument();
-    expect(screen.getByText('Accuracy')).toBeInTheDocument();
-    expect(screen.getByText('23%')).toBeInTheDocument();
+    const statistics = screen.getAllByRole('list');
+    expect(statistics[0]).toHaveTextContent(/Accuracy23%/i);
   });
 
   // eslint-disable-next-line max-statements
