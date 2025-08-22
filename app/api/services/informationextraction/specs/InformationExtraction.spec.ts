@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line node/no-restricted-import
@@ -179,6 +180,7 @@ describe('InformationExtraction', () => {
     });
     IXExternalService.reset();
     jest.resetAllMocks();
+    // eslint-disable-next-line no-empty-function
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
   });
 
@@ -196,6 +198,7 @@ describe('InformationExtraction', () => {
     language: string,
     extractorName: string,
     propertyType?: PropertyTypeSchema
+    // eslint-disable-next-line max-params
   ) => {
     const extractorId = factory.id(extractorName);
     const [extractor] = await Extractors.get({ _id: extractorId });
@@ -1023,6 +1026,8 @@ describe('InformationExtraction', () => {
     });
 
     it('should filter out files with failed segmentations to prevent zero-length batches', async () => {
+      await SegmentationModel.delete({ fileID: factory.id('F1') });
+
       // Segmentation with failed status for documentA
       await SegmentationModel.save({
         fileID: factory.id('F1'),
@@ -1037,14 +1042,7 @@ describe('InformationExtraction', () => {
         status: 'ready',
         segmentation: {
           paragraphs: [
-            {
-              left: 58,
-              top: 63,
-              width: 457,
-              height: 15,
-              page_number: 1,
-              text: 'something',
-            },
+            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'something' },
           ],
           page_width: 595,
           page_height: 841,
@@ -1155,6 +1153,8 @@ describe('InformationExtraction', () => {
     });
 
     it('should filter out files with processing segmentations to prevent zero-length batches', async () => {
+      await SegmentationModel.delete({ fileID: factory.id('F1') });
+
       // Segmentation with processing status for documentA
       await SegmentationModel.save({
         fileID: factory.id('F1'),
@@ -1169,14 +1169,7 @@ describe('InformationExtraction', () => {
         status: 'ready',
         segmentation: {
           paragraphs: [
-            {
-              left: 58,
-              top: 63,
-              width: 457,
-              height: 15,
-              page_number: 1,
-              text: 'something',
-            },
+            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'something' },
           ],
           page_width: 595,
           page_height: 841,
@@ -1194,6 +1187,8 @@ describe('InformationExtraction', () => {
     });
 
     it('should filter out files with missing segmentation status', async () => {
+      await SegmentationModel.delete({ fileID: factory.id('F1') });
+
       await SegmentationModel.save({
         fileID: factory.id('F1'),
         filename: 'documentA.pdf',
@@ -1318,7 +1313,93 @@ describe('InformationExtraction', () => {
       );
     });
 
+    it('should avoid non-ready segmentations when duplicates exist for the same file', async () => {
+      await SegmentationModel.delete({});
+      await IXSuggestionsModel.delete({});
+      await filesModel.delete({});
+
+      await filesModel.save({
+        _id: factory.id('F1'),
+        filename: 'document1.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity1',
+        extractedMetadata: [],
+      });
+
+      await filesModel.save({
+        _id: factory.id('F2'),
+        filename: 'document2.pdf',
+        type: 'document',
+        language: 'en',
+        entity: 'entity2',
+        extractedMetadata: [],
+      });
+
+      // F1: only non-ready segmentation
+      await SegmentationModel.save({
+        fileID: factory.id('F1'),
+        filename: 'document1.pdf',
+        status: 'processing',
+      });
+
+      // F2: ready segmentation + a later non-ready duplicate
+      await SegmentationModel.save({
+        fileID: factory.id('F2'),
+        filename: 'document2.pdf',
+        status: 'ready',
+        segmentation: {
+          paragraphs: [
+            { left: 58, top: 63, width: 457, height: 15, page_number: 1, text: 'content' },
+          ],
+          page_width: 595,
+          page_height: 841,
+        },
+        xmlname: 'document2.xml',
+      });
+
+      await SegmentationModel.save({
+        fileID: factory.id('F2'),
+        filename: 'document2.pdf',
+        status: 'processing',
+        xmlname: 'document2-later.xml',
+      });
+
+      // Suggestion placeholders for both files
+      await IXSuggestionsModel.save({
+        _id: factory.id('S1'),
+        extractorId: factory.id('prop1extractor'),
+        entityId: 'entity1',
+        fileId: factory.id('F1'),
+        language: 'en',
+        propertyName: 'property1',
+        date: null,
+        state: { error: false } as any,
+      });
+
+      await IXSuggestionsModel.save({
+        _id: factory.id('S2'),
+        extractorId: factory.id('prop1extractor'),
+        entityId: 'entity2',
+        fileId: factory.id('F2'),
+        language: 'en',
+        propertyName: 'property1',
+        date: null,
+        state: { error: false } as any,
+      });
+
+      const { getFilesForSuggestions } = await import('../ixMaterials');
+      const files = await getFilesForSuggestions(factory.id('prop1extractor'), 10);
+
+      // Only F2 should be returned, and it must attach the ready segmentation
+      expect(files.map(f => f._id.toString()).sort()).toEqual([factory.id('F2').toString()].sort());
+      expect(files[0].segmentation?.status).toBe('ready');
+      expect(files[0].segmentation?.xmlname).toBe('document2.xml');
+    });
+
     it('should handle mixed segmentation statuses correctly', async () => {
+      await SegmentationModel.delete({ fileID: factory.id('F3') });
+
       // Segmentations with different statuses
       await SegmentationModel.save({
         fileID: factory.id('F1'),
@@ -1451,6 +1532,8 @@ describe('InformationExtraction', () => {
     });
 
     it('should create suggestions for all files regardless of segmentation status', async () => {
+      await SegmentationModel.delete({ fileID: factory.id('F3') });
+
       // Segmentations with different statuses
       await SegmentationModel.save({
         fileID: factory.id('F1'),

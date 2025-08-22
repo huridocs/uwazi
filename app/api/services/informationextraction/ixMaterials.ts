@@ -101,7 +101,7 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
   const filesNames = files.filter(x => x.filename).map(x => x.filename);
 
   const segmentationForFiles = (await SegmentationModel.get(
-    { filename: { $in: filesNames } },
+    { filename: { $in: filesNames }, status: 'ready' },
     'filename segmentation xmlname status'
   )) as (SegmentationType & { filename: string })[];
 
