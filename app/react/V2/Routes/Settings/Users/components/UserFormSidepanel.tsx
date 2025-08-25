@@ -168,7 +168,11 @@ const UserFormSidepanel = ({
         closeSidepanelFunction={closeSidepanel}
         title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
       >
-        <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
+        <form
+          onSubmit={handleSubmit(formSubmit)}
+          className="flex flex-col h-full"
+          autoComplete="off"
+        >
           <Sidepanel.Body>
             <div className="flex flex-col flex-grow gap-4">
               <Card title={<Translate>General Information</Translate>}>
