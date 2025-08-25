@@ -37,7 +37,15 @@ describe('generatedId property auto filler', () => {
           { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
         ],
       };
-      await templates.save(templateToUpdate, 'en', true);
+
+      await new Promise((resolve, reject) => {
+        templates.save(templateToUpdate, 'en', true, false, e => {
+          if (e) {
+            reject(e);
+          }
+          resolve();
+        });
+      });
       affectedEntities = await entities.get({ template: templateId });
     });
     it('should assign the same value to all entities with the same sharedId', async () => {

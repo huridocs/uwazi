@@ -90,6 +90,12 @@ describe('Settings routes', () => {
       it('should migrate all entity names when newNameGeneration is saved as true', async () => {
         await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
 
+        // wait for async process to finish
+        // new denormalization job should take care of renaming and tested in isolation
+        await new Promise(resolve => {
+          setTimeout(resolve, 50);
+        });
+
         expect(await templates.get()).toEqual([
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'país' })] }),

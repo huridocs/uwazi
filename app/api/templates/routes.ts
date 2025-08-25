@@ -30,14 +30,22 @@ export default (app: Application) => {
       const { reindex: fullReindex, ...template } = req.body;
 
       const response = await handleMappingConflict(async () =>
-        templates.save(template, req.language, !fullReindex, fullReindex, async (error?: Error) => {
-          if (error) {
-            handleError(error, { req });
+        templates.save(
+          template,
+          req.language,
+          !fullReindex,
+          fullReindex,
+          async (error: Error, denormalizationExecuted: boolean) => {
+            if (error) {
+              handleError(error, { req });
+            }
+            if (!denormalizationExecuted) {
+              req.sockets.emitToCurrentTenant('templateProcessed', {
+                templateId: template._id.toString(),
+              });
+            }
           }
-          req.sockets.emitToCurrentTenant('templateProcessed', {
-            templateId: template._id.toString(),
-          });
-        })
+        )
       );
 
       req.sockets.emitToCurrentTenant('templateChange', response);
@@ -48,13 +56,6 @@ export default (app: Application) => {
       );
 
       if (updatedSettings) req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
-
-      if (
-        fullReindex &&
-        !tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
-      ) {
-        await reindexAllTemplates();
-      }
 
       res.json(response);
     } catch (error) {
