@@ -177,7 +177,7 @@ const UserFormSidepanel = ({
                     label={<Translate className="block mb-1 font-semibold">Username</Translate>}
                     id="username"
                     errorMessage={getFieldError('username', errors.username?.type)}
-                    //Chrome ignores autoComplete=false. This breaks the autocomplete token.
+                    //break autocomplete token for Chrome
                     //@ts-expect-error
                     autoComplete="new-username"
                     className="mb-1"
@@ -213,7 +213,7 @@ const UserFormSidepanel = ({
                   <InputField
                     label={<Translate className="block mb-1 font-semibold">Email</Translate>}
                     type="email"
-                    //Chrome ignores autoComplete=false. This breaks the autocomplete token.
+                    //break autocomplete token for Chrome
                     //@ts-expect-error
                     autoComplete="new-email"
                     id="email"
@@ -240,7 +240,7 @@ const UserFormSidepanel = ({
                   }
                   id="password"
                   type="password"
-                  //Chrome ignores autoComplete=false. This breaks the autocomplete token.
+                  //break autocomplete token for Chrome
                   //@ts-expect-error
                   autoComplete="new-password"
                   errorMessage={getFieldError('password', errors.password?.type)}
