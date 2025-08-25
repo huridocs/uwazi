@@ -117,12 +117,14 @@ const UserFormSidepanel = ({
     trigger,
     formState: { errors },
     setValue,
+    reset,
   } = useForm({
     defaultValues,
     values: defaultValues,
   });
 
   const closeSidepanel = () => {
+    reset(defaultValues);
     setSelected(undefined);
     setShowSidepanel(false);
   };
