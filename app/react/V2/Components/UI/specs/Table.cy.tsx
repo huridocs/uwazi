@@ -240,12 +240,23 @@ describe('Table', () => {
       checkRowContent(8, [undefined, 'Sub 1-1', dataWithNested[0].subRows[0].description, '5']);
     });
 
-    it('should allow manually controlling the sorting', () => {
-      Basic.args.controlledSorting = true;
-      mount(<Basic />);
-      cy.get('th').contains('Title').realClick();
-      cy.get('[data-testid="controlled-sorting"]').within(() => {
-        cy.contains('p', 'Sorted by title');
+    describe('Controlled sorting', () => {
+      it('should allow manually controlling the sorting', () => {
+        Basic.args.controlledSorting = true;
+        mount(<Basic />);
+        cy.get('th').contains('Title').realClick();
+        cy.get('[data-testid="controlled-sorting"]').within(() => {
+          cy.contains('p', 'Sorted by title');
+        });
+      });
+
+      it('should respect the default sorting in the state', () => {
+        Basic.args.controlledSorting = true;
+        Basic.args.defaultSorting = [{ id: 'created', desc: false }];
+        mount(<Basic />);
+        cy.get('[data-testid="controlled-sorting"]').within(() => {
+          cy.contains('p', 'Sorted by created');
+        });
       });
     });
   });

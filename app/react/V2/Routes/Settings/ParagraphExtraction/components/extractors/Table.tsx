@@ -19,7 +19,7 @@ const ExtractorsTable = ({ paragraphExtractorData, onSelectionChange }: Extracto
       </Translate>
     }
     enableSelections
-    onChange={({ selectedRows }) => {
+    onSelect={({ selectedRows }) => {
       onSelectionChange(paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
     }}
     noDataMessage={<NoDataCell />}

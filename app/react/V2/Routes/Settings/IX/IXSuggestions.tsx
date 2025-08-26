@@ -48,6 +48,17 @@ const ixmessages = {
   error: 'Error',
 };
 
+const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
+  if (searchParams?.get('sort')) {
+    const { property: sortingProperty, order } = JSON.parse(searchParams.get('sort') || '') as {
+      property: string;
+      order: string;
+    };
+    return [{ id: sortingProperty, desc: order === 'desc' && true }];
+  }
+  return [];
+};
+
 const IXSuggestions = () => {
   const {
     suggestions,
@@ -71,7 +82,6 @@ const IXSuggestions = () => {
   }>({ status: currentStatus });
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const location = useLocation();
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const { revalidate } = useRevalidator();
@@ -182,6 +192,24 @@ const IXSuggestions = () => {
     setSidepanel('none');
   };
 
+  const handleSorting = (sortingState: SortingState) => {
+    keepRowOrder.current = false;
+    if (sortingState.length === 0) {
+      return;
+    }
+    const sortingObject = sortingState[0];
+    const sortingParams = {
+      property: sortingObject.id || '',
+      order: sortingObject.desc ? 'desc' : 'asc',
+    };
+
+    setSearchParams(prev => {
+      const newSearchParams = new URLSearchParams(prev);
+      newSearchParams.set('sort', JSON.stringify(sortingParams));
+      return newSearchParams;
+    });
+  };
+
   useEffect(() => {
     const template = templates.find(t => t._id === extractor.templates[0]);
     const _property =
@@ -220,26 +248,6 @@ const IXSuggestions = () => {
 
   useEffect(() => () => setAcceptedSuggestionsAtom(new Set()), [setAcceptedSuggestionsAtom]);
 
-  useEffect(() => {
-    keepRowOrder.current = false;
-    if (sorting.length === 0) {
-      return;
-    }
-    const sortingObject = sorting[0];
-    const sortingParams = {
-      property: sortingObject.id || '',
-      order: sortingObject.desc ? 'desc' : 'asc',
-    };
-
-    setSearchParams(prev => {
-      const newSearchParams = new URLSearchParams(prev);
-      newSearchParams.set('sort', JSON.stringify(sortingParams));
-      return newSearchParams;
-    });
-    //setSearchParams is not a stable function, should not be in dependencies
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sorting]);
-
   useEventHandler({
     extractorId: extractor._id!,
     updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
@@ -261,12 +269,16 @@ const IXSuggestions = () => {
               acceptSuggestions,
               openSidepanel
             )}
-            sortingState={[sorting, setSorting]}
-            onChange={({ selectedRows }) => {
+            onSelect={({ selectedRows }) => {
               setSelected(() =>
                 currentSuggestions.filter(current => current.rowId in selectedRows)
               );
             }}
+            onSort={({ sortingState }) => {
+              handleSorting(sortingState);
+            }}
+            manualSorting
+            defaultSorting={getDefaultSorting(searchParams)}
             header={
               <SuggestionsTitle property={extractor.property} templates={filteredTemplates()} />
             }

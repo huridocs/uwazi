@@ -28,7 +28,7 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
       data={currentThesauri}
       columns={columnsThesauri({ edit: navigateToEditThesaurus })}
       defaultSorting={[{ id: 'name', desc: false }]}
-      onChange={({ selectedRows }) => {
+      onSelect={({ selectedRows }) => {
         setSelectedThesauri(currentThesauri.filter(thesaurus => thesaurus.rowId in selectedRows));
       }}
       enableSelections

@@ -116,7 +116,7 @@ const MenuConfig = () => {
             dnd={{ enable: true }}
             columns={columns({ edit })}
             data={linkState}
-            onChange={({ rows, selectedRows }) => {
+            onSelect={({ rows, selectedRows }) => {
               setLinkState(rows);
               setSelectedLinks(selectedRows);
             }}

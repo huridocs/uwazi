@@ -140,7 +140,7 @@ const IXDashboard = () => {
               </Translate>
             }
             enableSelections
-            onChange={({ selectedRows }) => {
+            onSelect={({ selectedRows }) => {
               setSelected(() => formmatedExtractors.filter(ex => ex.rowId in selectedRows));
             }}
             defaultSorting={[{ id: 'name', desc: false }]}

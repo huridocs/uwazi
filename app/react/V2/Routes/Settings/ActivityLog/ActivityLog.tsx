@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
@@ -26,12 +26,18 @@ import {
 const funnelColor = (appliedFiltersCount: number): string =>
   appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';
 
+const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
+  if (searchParams?.get('sort')) {
+    return [{ id: searchParams?.get('sort')!, desc: searchParams?.get('order') === 'desc' }];
+  }
+  return [];
+};
+
 // eslint-disable-next-line max-statements
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
-  const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
@@ -43,7 +49,7 @@ const ActivityLog = () => {
 
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
 
-  useEffect(() => {
+  const handleSorting = (sorting: SortingState) => {
     const [currentSorting] = sorting;
     const { id: sortingProp, desc } = currentSorting || {};
     const sortingOrder = desc ? 'desc' : 'asc';
@@ -55,8 +61,7 @@ const ActivityLog = () => {
       return;
     }
     updateSearch({ sort: sortingProp, order: sortingOrder }, searchParams, setSearchParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sorting]);
+  };
 
   const onSubmit = async (data: ActivityLogSearch) => {
     updateSearch(data, searchParams, setSearchParams);
@@ -95,8 +100,9 @@ const ActivityLog = () => {
             <Table
               data={activityLogData}
               columns={columns}
-              defaultSorting={sorting}
-              sortingState={[sorting, setSorting]}
+              manualSorting
+              defaultSorting={getDefaultSorting(searchParams)}
+              onSort={({ sortingState }) => handleSorting(sortingState)}
               header={
                 <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
                   Activity Log

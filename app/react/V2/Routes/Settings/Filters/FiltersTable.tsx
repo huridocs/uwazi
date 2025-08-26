@@ -169,7 +169,7 @@ const FiltersTable = () => {
           <Table
             dnd={{ enable: true }}
             enableSelections
-            onChange={handleChange}
+            onSelect={handleChange}
             columns={createColumns(setShowSidepanel)}
             data={filters}
             header={

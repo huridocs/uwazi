@@ -129,7 +129,7 @@ const RelationshipTypes = () => {
                 Relationship types
               </Translate>
             }
-            onChange={({ selectedRows }) => {
+            onSelect={({ selectedRows }) => {
               setSelectedItems(
                 tableRelationshipTypes.filter(relationship => relationship.rowId in selectedRows)
               );

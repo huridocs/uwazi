@@ -95,7 +95,6 @@ const StoryComponent = ({
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [tableInternalSorting, setTableInternalSorting] = useState<SortingState>([]);
   const currentDataState = useRef(tableData);
   const currentSelections = useRef({});
@@ -157,14 +156,15 @@ const StoryComponent = ({
           data={dataState}
           columns={columns}
           defaultSorting={defaultSorting}
-          onChange={({ rows, selectedRows, sortingState }) => {
+          onSelect={({ rows, selectedRows }) => {
             currentDataState.current = rows;
             currentSelections.current = selectedRows;
-            if (!controlledSorting) {
-              setTableInternalSorting(sortingState);
-            }
           }}
-          sortingState={controlledSorting ? [sorting, setSorting] : undefined}
+          onSort={({ rows, sortingState }) => {
+            currentDataState.current = rows;
+            setTableInternalSorting(sortingState);
+          }}
+          manualSorting={controlledSorting}
           dnd={dnd}
           enableSelections={enableSelections}
           header={
@@ -222,10 +222,17 @@ const StoryComponent = ({
         </div>
       </div>
       {controlledSorting && (
-        <div data-testid="controlled-sorting">
-          <h2>Sorting state controlled externally:</h2>
-          <p>{sorting.length ? `Sorted by ${sorting[0].id}` : 'No sorting'}</p>
-        </div>
+        <>
+          <hr className="my-4" />
+          <div data-testid="controlled-sorting">
+            <h2>Sorting state controlled externally:</h2>
+            <p>
+              {tableInternalSorting.length
+                ? `Sorted by ${tableInternalSorting[0].id}`
+                : 'No sorting'}
+            </p>
+          </div>
+        </>
       )}
     </div>
   );

@@ -42,32 +42,29 @@ type TableRow<T> = {
 type TableProps<T extends TableRow<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];
-  onChange?: (args: {
-    rows: T[];
-    selectedRows: RowSelectionState;
-    sortingState: SortingState;
-  }) => void;
+  onSelect?: (args: { rows: T[]; selectedRows: RowSelectionState }) => void;
+  onSort?: (args: { rows: T[]; sortingState: SortingState }) => void;
   dnd?: { enable?: boolean; disableEditingGroups?: boolean };
   enableSelections?: boolean;
   initialSelection?: T[];
   defaultSorting?: SortingState;
-  sortingState?: [SortingState, React.Dispatch<React.SetStateAction<SortingState>>];
   header?: React.ReactNode;
   actions?: React.ReactNode;
   footer?: React.ReactNode;
   noDataMessage?: string | React.ReactNode;
   className?: string;
   groupColumnPosition?: number;
+  manualSorting?: boolean;
 };
 
 const Table = <T extends TableRow<T>>({
   columns,
   data,
-  onChange,
+  onSelect,
   dnd,
   enableSelections,
   defaultSorting,
-  sortingState,
+  onSort,
   header,
   actions,
   footer,
@@ -75,6 +72,7 @@ const Table = <T extends TableRow<T>>({
   noDataMessage = <DefaultNoDataMessage />,
   groupColumnPosition = 0,
   initialSelection = [],
+  manualSorting,
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
   const initialRowSelection = useMemo(
@@ -82,7 +80,7 @@ const Table = <T extends TableRow<T>>({
     [initialSelection]
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialRowSelection);
-  const [internalSorting, setInternalSorting] = useState<SortingState>(defaultSorting || []);
+  const [sorting, setSorting] = useState<SortingState>(defaultSorting || []);
 
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const { memoizedColumns, groupColumnIndex } = useMemo<{
@@ -128,14 +126,14 @@ const Table = <T extends TableRow<T>>({
     data: dataState,
     columns: memoizedColumns,
     state: {
-      sorting: sortingState ? sortingState[0] : internalSorting,
+      sorting,
       ...(rowSelection && { rowSelection }),
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    manualSorting: Boolean(sortingState),
-    onSortingChange: sortingState ? sortingState[1] : setInternalSorting,
+    manualSorting,
+    onSortingChange: setSorting,
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
@@ -150,16 +148,18 @@ const Table = <T extends TableRow<T>>({
   }, [data]);
 
   useEffect(() => {
-    if (onChange) {
-      if (internalSorting.length) {
-        const sortedState = table.getSortedRowModel().rows.map(row => row.original);
-        onChange({ rows: sortedState, selectedRows: rowSelection, sortingState: internalSorting });
-      } else {
-        onChange({ rows: dataState, selectedRows: rowSelection, sortingState: internalSorting });
-      }
+    if (onSelect) {
+      const rows = table.getSortedRowModel().rows.map(row => row.original);
+      onSelect({ rows, selectedRows: rowSelection });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataState, rowSelection, internalSorting]);
+  }, [rowSelection]);
+
+  useEffect(() => {
+    if (onSort) {
+      const rows = table.getSortedRowModel().rows.map(row => row.original);
+      onSort({ sortingState: sorting, rows });
+    }
+  }, [sorting]);
 
   const collapseAll = () => {
     table.getRowModel().rows.forEach(row => {
@@ -175,6 +175,7 @@ const Table = <T extends TableRow<T>>({
     });
   };
 
+  // eslint-disable-next-line max-statements
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const overRow = dataState.find(row => row.rowId === over?.id);
@@ -185,20 +186,22 @@ const Table = <T extends TableRow<T>>({
     }
 
     if (active && over && active.id !== over.id) {
-      setDataState(() => {
-        let tableRows = dataState;
-        if (internalSorting.length) {
-          table.resetSorting();
-          tableRows = table.getSortedRowModel().rows.map(row => row.original);
-        }
-        return dndSortHandler({
-          currentState: tableRows,
-          dataIds: rowIds,
-          activeId: active.id,
-          overId: over.id,
-          disableEditingGroups: dnd?.disableEditingGroups,
-        });
+      let tableRows = dataState;
+      if (sorting.length) {
+        table.resetSorting();
+        tableRows = table.getSortedRowModel().rows.map(row => row.original);
+      }
+      const newDataState = dndSortHandler({
+        currentState: tableRows,
+        dataIds: rowIds,
+        activeId: active.id,
+        overId: over.id,
+        disableEditingGroups: dnd?.disableEditingGroups,
       });
+      if (onSort) {
+        onSort({ sortingState: sorting, rows: newDataState });
+      }
+      setDataState(newDataState);
     }
   };
 

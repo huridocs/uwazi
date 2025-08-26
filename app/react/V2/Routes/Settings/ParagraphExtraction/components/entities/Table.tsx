@@ -29,7 +29,7 @@ const EntitiesTable = ({
     initialSelection={initialSelection}
     header={<TableTitle items={sourceTemplate ? [sourceTemplate] : []} />}
     actions={<FilterSidepanelButton />}
-    onChange={({ selectedRows }) => {
+    onSelect={({ selectedRows }) => {
       onSelectionChange(pxEntitiesData.filter(ex => ex.rowId in selectedRows));
     }}
     footer={<PXTableFooter total={totalRows} currentDataLength={pxEntitiesData.length} />}

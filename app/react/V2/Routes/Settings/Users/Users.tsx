@@ -91,7 +91,7 @@ const Users = () => {
                   </Translate>
                 }
                 enableSelections
-                onChange={({ selectedRows }) => {
+                onSelect={({ selectedRows }) => {
                   setSelectedUsers(() => users.filter(user => user.rowId in selectedRows));
                 }}
                 defaultSorting={[{ id: 'username', desc: false }]}
@@ -108,7 +108,7 @@ const Users = () => {
                   </Translate>
                 }
                 enableSelections
-                onChange={({ selectedRows }) => {
+                onSelect={({ selectedRows }) => {
                   setSelectedGroups(() => groups.filter(group => group.rowId in selectedRows));
                 }}
                 defaultSorting={[{ id: 'name', desc: false }]}
