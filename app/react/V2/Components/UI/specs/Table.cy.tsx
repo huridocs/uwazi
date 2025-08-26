@@ -296,8 +296,8 @@ describe('Table', () => {
         cy.contains('Entity 5');
       });
       cy.get('#checkbox-header').should('be.checked');
-
       cy.contains('button', 'Add new item').realClick();
+      cy.get('tbody tr').should('have.length', 6);
       cy.get('#checkbox-header').should('not.be.checked');
     });
 
