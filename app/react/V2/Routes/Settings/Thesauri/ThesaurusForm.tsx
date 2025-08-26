@@ -94,7 +94,7 @@ const ThesaurusForm = ({
               {...register('name', { required: true })}
             />
           }
-          onSelect={({ selectedRows, rows }) => {
+          onSelect={({ selectedRows }) => {
             setSelectedThesaurusValue(() => {
               const selection: ThesaurusRow[] = [];
               thesaurusValues.forEach(item => {
@@ -103,9 +103,9 @@ const ThesaurusForm = ({
               });
               return [...selection];
             });
-            if (!isEqual(rows, thesaurusValues)) {
-              setThesaurusValues(rows);
-            }
+          }}
+          onSort={({ rows }) => {
+            setThesaurusValues(rows);
           }}
         />
       </div>

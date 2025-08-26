@@ -306,6 +306,7 @@ describe('Table', () => {
       cy.contains('button', 'Save changes').realClick();
       cy.get('#checkbox-header').should('be.checked');
       cy.contains('button', 'Remove last item').realClick();
+      cy.get('tbody tr').should('have.length', 4);
       cy.get('#checkbox-header').should('not.be.checked');
     });
 
