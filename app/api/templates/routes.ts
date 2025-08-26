@@ -27,11 +27,11 @@ export default (app: Application) => {
           req.language,
           !fullReindex,
           fullReindex,
-          async (error?: Error, denormalizationExecuted?: boolean) => {
+          async (error?: Error, fullyProcessed?: boolean) => {
             if (error) {
               handleError(error, { req });
             }
-            if (!denormalizationExecuted) {
+            if (fullyProcessed) {
               req.sockets.emitToCurrentTenant('templateProcessed', {
                 templateId: template._id.toString(),
               });

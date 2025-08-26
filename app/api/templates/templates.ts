@@ -337,7 +337,10 @@ export default {
         this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
       )
       .then(async denormalizationExecuted => {
-        await onTemplateProcessed(undefined, denormalizationExecuted);
+        await onTemplateProcessed(
+          undefined,
+          !denormalizationExecuted && template.processing?.active
+        );
       })
       .catch(async error => onTemplateProcessed(error));
 
