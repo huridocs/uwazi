@@ -170,8 +170,8 @@ export default {
     reindex = true,
     fullReindex = false,
     onTemplateProcessed: (
-      error: Error,
-      denormalizationExecuted: boolean
+      error?: Error,
+      denormalizationExecuted?: boolean
     ) => Promise<void> = async () => {}
   ) {
     // processing can not be saved from this interface, its an internal tracking property
@@ -266,14 +266,13 @@ export default {
         language,
         // @ts-ignore
         relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
-        50,
-        reindex
+        50
       );
       denormalizationExecuted = true;
     }
 
     if (!denormalizationExecuted) {
-      model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
+      await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
     }
 
     if (reindex) {
@@ -298,8 +297,8 @@ export default {
     _reindex = true,
     fullReindex = false,
     onTemplateProcessed: (
-      error: Error,
-      denormalizationExecuted: boolean
+      error?: Error,
+      denormalizationExecuted?: boolean
     ) => Promise<void> = async () => {}
   ) {
     const templateStructureChanges = await checkIfReindex(template);
@@ -338,7 +337,7 @@ export default {
         this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
       )
       .then(async denormalizationExecuted => {
-        await onTemplateProcessed(null, denormalizationExecuted);
+        await onTemplateProcessed(undefined, denormalizationExecuted);
       })
       .catch(async error => onTemplateProcessed(error));
 

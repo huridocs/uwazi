@@ -7,8 +7,7 @@ export const bulkDenormalizeEntitiesFromTemplateSave = async (
   template: TemplateSchema,
   language: string,
   relPropertiesThatChanged: V1RelationshipProperty[],
-  limit = 200,
-  reindex = true
+  limit = 200
 ) => {
   await denormalizeTemplateEntities(
     TemplateInputMappers.toApp(template),

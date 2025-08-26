@@ -1,17 +1,9 @@
-import { search } from 'api/search';
-import { reindexAll } from 'api/search/entitiesIndex';
 import settings from 'api/settings';
-import { tenants } from 'api/tenants';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
 import needsAuthorization from '../auth/authMiddleware';
 import { createError, handleError, validation } from '../utils';
 import templates from './templates';
-
-const reindexAllTemplates = async () => {
-  const allTemplates = await templates.get();
-  return reindexAll(allTemplates, search);
-};
 
 const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
   try {
@@ -35,7 +27,7 @@ export default (app: Application) => {
           req.language,
           !fullReindex,
           fullReindex,
-          async (error: Error, denormalizationExecuted: boolean) => {
+          async (error?: Error, denormalizationExecuted?: boolean) => {
             if (error) {
               handleError(error, { req });
             }
