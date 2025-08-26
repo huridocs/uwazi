@@ -248,6 +248,10 @@ const IXSuggestions = () => {
 
   useEffect(() => () => setAcceptedSuggestionsAtom(new Set()), [setAcceptedSuggestionsAtom]);
 
+  useEffect(() => {
+    keepRowOrder.current = false;
+  }, [searchParams]);
+
   useEventHandler({
     extractorId: extractor._id!,
     updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
