@@ -31,10 +31,8 @@ describe('Users', () => {
 
   it('accesibility check', () => {
     cy.get('[data-testid=table-header]').within(() => cy.contains('span', 'Users'));
-    cy.checkA11y();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
-    cy.checkA11y();
     cy.contains('button', 'Cancel').click();
   });
 
@@ -96,6 +94,10 @@ describe('Users', () => {
       cy.contains('button', 'Dismiss').click();
       cy.wait('@updateUsers');
       cy.contains('span', 'User_1').should('not.exist');
+    });
+
+    it('should check accessibility on the table', () => {
+      cy.checkA11y();
     });
 
     it('should check the changes and the password change for the modified user', () => {
