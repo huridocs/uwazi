@@ -12,7 +12,6 @@ import { search } from 'api/search';
 import { reindexAll, updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
-import { tenants } from 'api/tenants';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -170,7 +169,10 @@ export default {
     language: string,
     reindex = true,
     fullReindex = false,
-    onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
+    onTemplateProcessed: (
+      error?: Error,
+      denormalizationExecuted?: boolean
+    ) => Promise<void> = async () => {}
   ) {
     // processing can not be saved from this interface, its an internal tracking property
     delete template.processing;
@@ -264,15 +266,19 @@ export default {
         language,
         // @ts-ignore
         relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
-        50,
-        reindex
+        50
       );
       denormalizationExecuted = true;
+    }
+
+    if (!denormalizationExecuted) {
+      await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
     }
 
     if (reindex) {
       await search.indexEntities({ template: template._id });
     }
+
     return denormalizationExecuted;
   },
 
@@ -290,7 +296,10 @@ export default {
     language: string,
     _reindex = true,
     fullReindex = false,
-    onTemplateProcessed: (error?: Error) => Promise<void> = async () => {}
+    onTemplateProcessed: (
+      error?: Error,
+      denormalizationExecuted?: boolean
+    ) => Promise<void> = async () => {}
   ) {
     const templateStructureChanges = await checkIfReindex(template);
     const reindex = _reindex && templateStructureChanges && !template.synced;
@@ -298,11 +307,7 @@ export default {
       await this.getById(ensure(template._id))
     );
 
-    if (
-      templateStructureChanges &&
-      tenants.current().featureFlags?.templatesDenormalizationPerfImprovements &&
-      currentTemplate.processing?.active
-    ) {
+    if (templateStructureChanges && currentTemplate.processing?.active) {
       throw new ValidationError([
         { path: 'processing', message: 'template is being processed you can not update it yet' },
       ]);
@@ -317,44 +322,26 @@ export default {
     }
 
     await checkAndFillGeneratedIdProperties(currentTemplate, template);
-    if (
-      templateStructureChanges &&
-      tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
-    ) {
+    if (templateStructureChanges) {
       // eslint-disable-next-line no-param-reassign
       template.processing = {
         ...template.processing,
         active: true,
       };
     }
-    if (!tenants.current().featureFlags?.templatesDenormalizationPerfImprovements) {
-      // eslint-disable-next-line no-param-reassign
-      template.processing = {};
-      await model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } });
-    }
     const savedTemplate = await model.save(template, undefined);
 
-    if (
-      templateStructureChanges &&
-      !tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
-    ) {
-      await this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex);
-    }
-    if (
-      templateStructureChanges &&
-      tenants.current().featureFlags?.templatesDenormalizationPerfImprovements
-    ) {
+    if (templateStructureChanges) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.reindexAllTemplates(fullReindex)
         .then(async () =>
           this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
         )
         .then(async denormalizationExecuted => {
-          if (!denormalizationExecuted) {
-            await onTemplateProcessed().then(async () =>
-              model.db.findOneAndUpdate({ _id: template._id }, { $unset: { processing: true } })
-            );
-          }
+          await onTemplateProcessed(
+            undefined,
+            !denormalizationExecuted && template.processing?.active
+          );
         })
         .catch(async error => onTemplateProcessed(error));
     }

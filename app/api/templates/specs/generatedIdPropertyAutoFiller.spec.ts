@@ -12,7 +12,21 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
+import { inspect } from 'util';
 import templates from '../templates';
+
+async function updateTemplate(template: TemplateSchema) {
+  return new Promise<void>((resolve, reject) => {
+    templates
+      .save(template, 'en', true, false, async error => {
+        if (error) {
+          reject(inspect(error));
+        }
+        resolve();
+      })
+      .catch(reject);
+  });
+}
 
 describe('generatedId property auto filler', () => {
   beforeAll(async () => {
@@ -37,7 +51,8 @@ describe('generatedId property auto filler', () => {
           { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
         ],
       };
-      await templates.save(templateToUpdate, 'en', true);
+
+      await updateTemplate(templateToUpdate);
       affectedEntities = await entities.get({ template: templateId });
     });
     it('should assign the same value to all entities with the same sharedId', async () => {

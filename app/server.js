@@ -16,6 +16,8 @@ import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
+import { Redis } from 'api/infrastructure/Redis';
+import { maskMongoPassword } from 'api/utils/maskMongoPassword';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -35,7 +37,6 @@ import { routesErrorHandler } from './api/utils/routesErrorHandler';
 import { serverSideRender } from './react/server';
 import { initSentry } from './initSentry';
 import { setupQueueWorker } from './setupQueueWorker';
-import { Redis } from 'api/infrastructure/Redis';
 
 mongoose.Promise = Promise;
 
@@ -110,7 +111,7 @@ app.use(appContextMiddleware);
 app.use(multitenantMiddleware);
 app.use(requestIdMiddleware);
 
-console.info('==> Connecting to', config.DBHOST);
+console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();

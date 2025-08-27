@@ -9,12 +9,6 @@ const testingTenants = {
   mockCurrentTenant(tenant: Partial<Tenant>) {
     mockedTenant = tenant;
     mockedTenant.featureFlags = mockedTenant.featureFlags || config.defaultTenant.featureFlags;
-    if (process.env.FEATURE_FLAG_TEMPLATES_SAVE_PERF === 'true') {
-      mockedTenant.featureFlags = {
-        ...mockedTenant.featureFlags,
-        templatesDenormalizationPerfImprovements: true,
-      };
-    }
     tenants.current = () => <Tenant>mockedTenant;
   },
 
