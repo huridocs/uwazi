@@ -732,7 +732,14 @@ describe('templates', () => {
     it('should do nothing when there is no changed or deleted properties', async () => {
       jest.spyOn(entitiesModel, 'updateMany');
 
-      await templates.save(templateChangingNames, 'en');
+      await new Promise((resolve, reject) => {
+        templates.save(templateChangingNames, 'en', false, false, e => {
+          if (e) {
+            reject(e);
+          }
+          resolve();
+        });
+      });
 
       expect(entitiesModel.updateMany).not.toHaveBeenCalled();
     });
@@ -759,7 +766,14 @@ describe('templates', () => {
         ],
       };
 
-      await templates.save(template, 'en');
+      await new Promise((resolve, reject) => {
+        templates.save(template, 'en', false, false, e => {
+          if (e) {
+            reject(e);
+          }
+          resolve();
+        });
+      });
       const [docs, docDiferentTemplate] = await Promise.all([
         entities.get({ template: templateChangingNames._id }),
         entities.get({ template: templateNotChangingNames._id }),
@@ -785,7 +799,14 @@ describe('templates', () => {
         ],
       };
 
-      await templates.save(template, 'en');
+      await new Promise((resolve, reject) => {
+        templates.save(template, 'en', false, false, e => {
+          if (e) {
+            reject(e);
+          }
+          resolve();
+        });
+      });
       const docs = await entities.get({ template: templateChangingNames });
       expect(docs[0].metadata.property1).not.toBeDefined();
       expect(docs[0].metadata.new_name).toEqual([{ value: 'value2' }]);
@@ -809,7 +830,14 @@ describe('templates', () => {
         ],
       };
 
-      await templates.save(template, 'en');
+      await new Promise((resolve, reject) => {
+        templates.save(template, 'en', false, false, e => {
+          if (e) {
+            reject(e);
+          }
+          resolve();
+        });
+      });
       const docs = await entities.get({ template: templateChangingNames });
       expect(docs[0].metadata.property1).not.toBeDefined();
       expect(docs[0].metadata.property2).toBeDefined();
@@ -869,7 +897,14 @@ describe('templates', () => {
         };
 
         bulkDenormalizeEntitiesFromTemplateSave.mockReset();
-        await templates.save(template);
+        await new Promise((resolve, reject) => {
+          templates.save(template, 'en', false, false, e => {
+            if (e) {
+              reject(e);
+            }
+            resolve();
+          });
+        });
         expect(bulkDenormalizeEntitiesFromTemplateSave).toHaveBeenCalled();
       }
     );
