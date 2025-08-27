@@ -2,12 +2,14 @@ import { ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
+import translations from 'api/i18n';
+import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import translations from 'api/i18n';
+import { inspect } from 'util';
 import templates from '../templates';
 
 jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
@@ -41,6 +43,26 @@ const oldQueryInInput = [
     ],
   },
 ];
+
+const updateTemplate = async (template: TemplateSchema): Promise<TemplateSchema> =>
+  new Promise<void>((resolve, reject) => {
+    templates
+      .save(template, 'en', false, false, async error => {
+        if (error) {
+          reject(inspect(error));
+        }
+
+        resolve();
+      })
+      .catch(reject);
+  }).then(async () =>
+    templates.getById(template._id || '').then(t => {
+      if (!t) {
+        throw new Error(`Template "${template._id}" does not exist`);
+      }
+      return t;
+    })
+  );
 
 const fixtures: DBFixture = {
   relationtypes: [fixtureFactory.relationType('relation')],
@@ -233,7 +255,7 @@ describe('template.save()', () => {
             { name: 'text1', label: 'Text1', type: 'text' as 'text' },
           ],
         };
-        const template = await templates.save(updatedTemplate, 'en');
+        const template = await updateTemplate(updatedTemplate);
         expect(template.properties).toEqual([
           {
             _id: expect.any(ObjectId),
@@ -273,7 +295,7 @@ describe('template.save()', () => {
           ],
         };
         try {
-          await templates.save(newTemplate, 'en');
+          await updateTemplate(newTemplate);
           throw new Error('should have thrown a validation error');
         } catch (e) {
           expect(e).toBeInstanceOf(ValidationError);
@@ -300,7 +322,7 @@ describe('template.save()', () => {
             { name: 'text1', label: 'Text1', type: 'text' as 'text' },
           ],
         };
-        await templates.save(updatedTemplate, 'en');
+        await updateTemplate(updatedTemplate);
         const updaterMock = (<jest.Mock>EntityRelationshipsUpdateService).mock.instances[1].update;
         expect(updaterMock).toHaveBeenCalledWith(['entity1', 'entity2']);
       });
@@ -315,7 +337,7 @@ describe('template.save()', () => {
           ...existingTemplate,
           properties: [],
         };
-        const template = await templates.save(updatedTemplate, 'en');
+        const template = await updateTemplate(updatedTemplate);
         expect(template.properties).toEqual([]);
 
         const relatedEntities = await db.mongodb
@@ -344,7 +366,7 @@ describe('template.save()', () => {
             },
           ],
         };
-        const template = await templates.save(updatedTemplate, 'en');
+        const template = await updateTemplate(updatedTemplate);
         expect(template.properties).toEqual([
           {
             _id: expect.any(ObjectId),
@@ -382,7 +404,8 @@ describe('template.save()', () => {
             },
           ],
         };
-        const template = await templates.save(updatedTemplate, 'en');
+        const template = await updateTemplate(updatedTemplate);
+
         expect(template.properties).toEqual([
           {
             _id: expect.any(ObjectId),
@@ -426,7 +449,7 @@ describe('template.save()', () => {
           ],
         };
         try {
-          await templates.save(updatedTemplate, 'en');
+          await updateTemplate(updatedTemplate);
           throw new Error('should have thrown a validation error');
         } catch (e) {
           expect(e.message).toBe(
