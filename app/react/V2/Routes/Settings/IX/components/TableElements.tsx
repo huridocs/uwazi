@@ -21,7 +21,7 @@ import {
 } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-import { acceptedSuggestions } from './atoms/acceptedSuggestions';
+import { acceptedSuggestions } from './atoms';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();

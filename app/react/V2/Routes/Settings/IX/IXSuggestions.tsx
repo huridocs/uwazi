@@ -70,8 +70,6 @@ const IXSuggestions = () => {
     total,
     activeFilters,
   } = useLoaderData() as IXSuggestionsLoaderResponse;
-  const prevSuggestions = useRef(suggestions);
-  const keepRowOrder = useRef(true);
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
@@ -92,7 +90,6 @@ const IXSuggestions = () => {
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
   const onEntitySave = async () => {
-    keepRowOrder.current = true;
     await revalidate();
   };
 
@@ -100,7 +97,6 @@ const IXSuggestions = () => {
     const preparedSuggestions = formatAccepted(suggestionsToAccept);
 
     try {
-      keepRowOrder.current = true;
       await suggestionsAPI.accept(preparedSuggestions);
       const newAcceptedIds = suggestionsToAccept.map(s => s._id);
       setAcceptedSuggestionsAtom(prev => {
@@ -157,7 +153,6 @@ const IXSuggestions = () => {
 
   const trainModelOrCancelAction = async () => {
     try {
-      keepRowOrder.current = false;
       if (status.status === ixStatus.ready) {
         await suggestionsAPI.findSuggestions(extractor._id!);
         setStatus({ status: ixStatus.sending_labeled_data });
@@ -193,21 +188,27 @@ const IXSuggestions = () => {
   };
 
   const handleSorting = (sortingState: SortingState) => {
-    keepRowOrder.current = false;
     if (sortingState.length === 0) {
-      return;
-    }
-    const sortingObject = sortingState[0];
-    const sortingParams = {
-      property: sortingObject.id || '',
-      order: sortingObject.desc ? 'desc' : 'asc',
-    };
+      if (searchParams.has('sort')) {
+        setSearchParams(prev => {
+          const newSearchParams = new URLSearchParams(prev);
+          newSearchParams.delete('sort');
+          return newSearchParams;
+        });
+      }
+    } else {
+      const sortingObject = sortingState[0];
+      const sortingParams = {
+        property: sortingObject.id || '',
+        order: sortingObject.desc ? 'desc' : 'asc',
+      };
 
-    setSearchParams(prev => {
-      const newSearchParams = new URLSearchParams(prev);
-      newSearchParams.set('sort', JSON.stringify(sortingParams));
-      return newSearchParams;
-    });
+      setSearchParams(prev => {
+        const newSearchParams = new URLSearchParams(prev);
+        newSearchParams.set('sort', JSON.stringify(sortingParams));
+        return newSearchParams;
+      });
+    }
   };
 
   useEffect(() => {
@@ -220,37 +221,18 @@ const IXSuggestions = () => {
   }, [templates, extractor]);
 
   useEffect(() => {
-    let newSuggestions = suggestions;
-
-    if (keepRowOrder.current) {
-      newSuggestions = prevSuggestions.current.map(currentSuggestion => {
-        const updatedSuggestion = suggestions.find(
-          newSuggestion => newSuggestion._id === currentSuggestion._id
-        );
-        return updatedSuggestion || currentSuggestion;
-      });
-    }
-
     if (property?.type === 'multiselect' || property?.type === 'relationship') {
       setCurrentSuggestions(() =>
-        newSuggestions.map(suggestion => generateChildrenRows(suggestion as MultiValueSuggestion))
+        suggestions.map(suggestion => generateChildrenRows(suggestion as MultiValueSuggestion))
       );
     } else {
       setCurrentSuggestions(
-        newSuggestions.map(
-          suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion
-        )
+        suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
       );
     }
-
-    prevSuggestions.current = newSuggestions;
   }, [suggestions, property, extractor]);
 
   useEffect(() => () => setAcceptedSuggestionsAtom(new Set()), [setAcceptedSuggestionsAtom]);
-
-  useEffect(() => {
-    keepRowOrder.current = false;
-  }, [searchParams]);
 
   useEventHandler({
     extractorId: extractor._id!,
