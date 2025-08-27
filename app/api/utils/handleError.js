@@ -110,6 +110,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 404, message: error.message, logLevel: 'debug' };
   }
 
+  if (error instanceof URIError) {
+    result = { code: 404, message: error.message, logLevel: 'debug' };
+  }
+
   if (error.name === 'MongoError') {
     result.code = 500;
     result.logLevel = 'error';

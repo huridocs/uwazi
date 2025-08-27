@@ -243,6 +243,17 @@ original error: {
       expect(error.prettyMessage).toEqual(expectedPrettymessage);
     });
   });
+
+  it('should handle URIError correctly', () => {
+    const uriError = new URIError('URI malformed');
+    const error = handleError(uriError);
+
+    expect(error).toMatchObject({
+      code: 404,
+      message: uriError.message,
+      logLevel: 'debug',
+    });
+  });
 });
 
 describe('handleError without context', () => {
