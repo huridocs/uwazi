@@ -331,18 +331,20 @@ export default {
     }
     const savedTemplate = await model.save(template, undefined);
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.reindexAllTemplates(fullReindex)
-      .then(async () =>
-        this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
-      )
-      .then(async denormalizationExecuted => {
-        await onTemplateProcessed(
-          undefined,
-          !denormalizationExecuted && template.processing?.active
-        );
-      })
-      .catch(async error => onTemplateProcessed(error));
+    if (templateStructureChanges) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.reindexAllTemplates(fullReindex)
+        .then(async () =>
+          this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
+        )
+        .then(async denormalizationExecuted => {
+          await onTemplateProcessed(
+            undefined,
+            !denormalizationExecuted && template.processing?.active
+          );
+        })
+        .catch(async error => onTemplateProcessed(error));
+    }
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({

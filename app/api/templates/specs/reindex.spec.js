@@ -13,14 +13,19 @@ import fixtures, {
 
 const expectReindex = async (template, reindex) => {
   expect(await checkIfReindex(template)).toBe(reindex);
-  await new Promise((resolve, reject) => {
-    templates.save(template, 'en', true, false, e => {
-      if (e) {
-        reject(e);
-      }
-      resolve();
+
+  if (!reindex) {
+    await templates.save(template, 'en', reindex);
+  } else {
+    await new Promise((resolve, reject) => {
+      templates.save(template, 'en', true, false, e => {
+        if (e) {
+          reject(e);
+        }
+        resolve();
+      });
     });
-  });
+  }
   expect(search.indexEntities).toHaveBeenCalledTimes(reindex ? 1 : 0);
 };
 
