@@ -7,6 +7,7 @@ import { EnforcedWithId } from 'api/odm';
 import { Extractors, ModelNotReadyError } from 'api/services/informationextraction/ixextractors';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { Suggestions } from '../suggestions';
 
 type Input = {
   extractorId: ObjectIdSchema;
@@ -18,7 +19,7 @@ type Output = {
   processed: number;
 };
 
-type UpdateModelOptions = {
+type UpdateFindRunQueueOptions = {
   appendSharedIds: boolean;
 };
 
@@ -66,55 +67,32 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
     // Prevent individual find while training/test-run suggestions are running
     if (model.findingSuggestions && !model.findSuggestionsRunTimestamp) {
       throw new Error(
-        "Model is training or running a test run. Individual 'Find suggestions' is disabled. "
+        "Model is training or running a test run. Individual 'Find suggestions' is disabled."
       );
     }
   }
 
-  private static async updateModel(
+  private static async updateFindRunQueue(
     model: EnforcedWithId<IXModelType>,
     newSharedIds: string[],
-    options: UpdateModelOptions
+    options: UpdateFindRunQueueOptions
   ) {
     if (options.appendSharedIds) {
-      await ixmodels.updateMany({ _id: model._id }, [
-        {
-          $set: {
-            findSuggestionsSharedIds: {
-              $setUnion: [{ $ifNull: ['$findSuggestionsSharedIds', []] }, newSharedIds],
-            },
-            findingSuggestions: true,
-            findSuggestionsInitialSharedIdsCount: {
-              $add: [
-                { $ifNull: ['$findSuggestionsInitialSharedIdsCount', 0] },
-                {
-                  $subtract: [
-                    {
-                      $size: {
-                        $setUnion: [{ $ifNull: ['$findSuggestionsSharedIds', []] }, newSharedIds],
-                      },
-                    },
-                    { $size: { $ifNull: ['$findSuggestionsSharedIds', []] } },
-                  ],
-                },
-              ],
-            },
-          },
-        },
-      ]);
+      await ixmodels.appendToFindRunQueue(model._id!, newSharedIds);
     } else {
-      await ixmodels.updateMany(
-        { _id: model._id },
-        {
-          $set: {
-            findSuggestionsRunTimestamp: Date.now(),
-            findSuggestionsSharedIds: newSharedIds,
-            findingSuggestions: true,
-            findSuggestionsInitialSharedIdsCount: newSharedIds.length,
-          },
-        }
-      );
+      await ixmodels.initializeFindRunQueue(model._id!, newSharedIds);
     }
+  }
+
+  private static async getAlreadySeenInThisRun(
+    model: EnforcedWithId<IXModelType>,
+    candidateIds: string[]
+  ) {
+    return Suggestions.getAlreadySeenInFindRun(
+      model.extractorId,
+      candidateIds,
+      model.findSuggestionsRunTimestamp!
+    );
   }
 
   private static async processNewOrAppendSharedIds(
@@ -125,15 +103,20 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
 
     if (model.findSuggestionsRunTimestamp) {
       const currentQueue = new Set(model.findSuggestionsSharedIds || []);
-      const uniqueNew = uniqueRequestedSharedIds.filter(id => !currentQueue.has(id));
+      const seen = await this.getAlreadySeenInThisRun(model, uniqueRequestedSharedIds);
+
+      // Exclude those already in the current queue or already queued/processed in this run
+      const uniqueNew = uniqueRequestedSharedIds.filter(
+        id => !currentQueue.has(id) && !seen.has(id)
+      );
 
       if (uniqueNew.length === 0) {
         return { foundNewIds: false };
       }
 
-      await FindSuggestionsForIds.updateModel(model, uniqueNew, { appendSharedIds: true });
+      await FindSuggestionsForIds.updateFindRunQueue(model, uniqueNew, { appendSharedIds: true });
     } else {
-      await FindSuggestionsForIds.updateModel(model, uniqueRequestedSharedIds, {
+      await FindSuggestionsForIds.updateFindRunQueue(model, uniqueRequestedSharedIds, {
         appendSharedIds: false,
       });
     }
