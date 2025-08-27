@@ -116,9 +116,11 @@ const MenuConfig = () => {
             dnd={{ enable: true }}
             columns={columns({ edit })}
             data={linkState}
-            onChange={({ rows, selectedRows }) => {
-              setLinkState(rows);
+            onSelect={({ selectedRows }) => {
               setSelectedLinks(selectedRows);
+            }}
+            onSort={({ rows }) => {
+              setLinkState(rows);
             }}
             header={
               <Translate className="text-base font-semibold text-left text-gray-900 bg-white">

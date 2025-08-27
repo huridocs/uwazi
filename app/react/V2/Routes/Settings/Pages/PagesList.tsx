@@ -99,7 +99,7 @@ const PagesList = () => {
                 Pages
               </Translate>
             }
-            onChange={({ selectedRows }) => {
+            onSelect={({ selectedRows }) => {
               setSelectedPages(pages.filter(page => page.rowId in selectedRows));
             }}
             defaultSorting={[{ id: 'title', desc: false }]}

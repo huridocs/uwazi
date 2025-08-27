@@ -309,7 +309,7 @@ const TemplatesEditor = () => {
             data={allProperties}
             enableSelections
             dnd={{ enable: true }}
-            onChange={handleTableChange}
+            onSelect={handleTableChange}
             header={
               <TemplateMetadata
                 value={{

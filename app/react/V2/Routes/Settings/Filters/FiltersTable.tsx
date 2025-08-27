@@ -117,7 +117,7 @@ const FiltersTable = () => {
     return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
   };
 
-  const handleChange = ({
+  const handleSelect = ({
     rows,
     selectedRows,
   }: {
@@ -169,7 +169,10 @@ const FiltersTable = () => {
           <Table
             dnd={{ enable: true }}
             enableSelections
-            onChange={handleChange}
+            onSelect={handleSelect}
+            onSort={({ rows }) => {
+              setFilters(rows);
+            }}
             columns={createColumns(setShowSidepanel)}
             data={filters}
             header={

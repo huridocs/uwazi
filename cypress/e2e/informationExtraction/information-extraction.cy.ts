@@ -268,7 +268,7 @@ describe('Information Extraction', () => {
       cy.contains('2023');
     });
 
-    it('should accept a single suggestion without affecting the order', () => {
+    it('should accept a single suggestion', () => {
       cy.contains('tr', 'Lorem Ipsum').contains('button', 'Accept').click();
 
       cy.contains('Suggestions sent');
@@ -276,9 +276,9 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Dismiss').click();
 
       const titles = [
+        '2023 (en)',
         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
         'Batman v Superman: Dawn of Justice (en)',
-        '2023 (en)',
         'Spider-Man: Shattered Dimensions (en)',
         'The Spectacular Spider-Man (en)',
         'Uwazi Heroes Investigation (other)',

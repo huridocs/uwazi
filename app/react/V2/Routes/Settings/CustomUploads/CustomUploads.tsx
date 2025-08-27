@@ -118,7 +118,7 @@ const CustomUploads = () => {
               setShowSidepanel(true);
               setFileToEdit(file);
             })}
-            onChange={({ selectedRows: selected }) => {
+            onSelect={({ selectedRows: selected }) => {
               setSelectedRows(files.filter(file => file.rowId in selected));
             }}
             enableSelections

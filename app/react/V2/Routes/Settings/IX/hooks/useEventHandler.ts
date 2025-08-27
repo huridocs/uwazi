@@ -60,7 +60,8 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       });
     };
 
-    const handleSuggestionError: AcceptSuggestionErrorCallback = message => {
+    const handleSuggestionError: AcceptSuggestionErrorCallback = async message => {
+      await revalidate();
       setNotifications({
         type: 'error',
         text: t('System', 'An error occurred', null, false),

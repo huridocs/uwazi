@@ -3,7 +3,6 @@ import React from 'react';
 import { useNavigate, useRevalidator } from 'react-router';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import { isEqual } from 'lodash';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
@@ -94,7 +93,7 @@ const ThesaurusForm = ({
               {...register('name', { required: true })}
             />
           }
-          onChange={({ selectedRows, rows }) => {
+          onSelect={({ selectedRows }) => {
             setSelectedThesaurusValue(() => {
               const selection: ThesaurusRow[] = [];
               thesaurusValues.forEach(item => {
@@ -103,9 +102,9 @@ const ThesaurusForm = ({
               });
               return [...selection];
             });
-            if (!isEqual(rows, thesaurusValues)) {
-              setThesaurusValues(rows);
-            }
+          }}
+          onSort={({ rows }) => {
+            setThesaurusValues(rows);
           }}
         />
       </div>

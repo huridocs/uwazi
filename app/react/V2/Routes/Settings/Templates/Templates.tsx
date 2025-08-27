@@ -112,7 +112,7 @@ const Templates = () => {
             columns={columns(handleSetDefault, hasSyncedTemplates) as ColumnDef<TemplateRow, any>[]}
             data={templates}
             enableSelections
-            onChange={({ selectedRows }) => setSelected(Object.keys(selectedRows))}
+            onSelect={({ selectedRows }) => setSelected(Object.keys(selectedRows))}
             defaultSorting={[{ id: 'name', desc: false }]}
             className="bg-white"
           />
