@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import SHA256 from 'crypto-js/sha256';
 
 import { createError } from 'api/utils';
@@ -118,6 +119,10 @@ const validateUserPassword = async (user, password, domain) => {
   }
 
   if (!oldPasswordValidated && !passwordValidated) {
+    if (user?.accountLocked) {
+      return undefined;
+    }
+
     await newFailedLogin(user, domain);
     return createError('Invalid username or password', 401);
   }
@@ -258,13 +263,11 @@ export default {
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
-
     const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
     const user = dbuser || dummy;
 
     const passwordError = await validateUserPassword(user, password, domain);
     const userStatusError = validateUserStatus(user);
-    await validate2fa(user, token, domain);
 
     if (passwordError) {
       throw passwordError;
@@ -273,6 +276,8 @@ export default {
     if (userStatusError) {
       throw userStatusError;
     }
+
+    await validate2fa(user, token, domain);
 
     await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
 
