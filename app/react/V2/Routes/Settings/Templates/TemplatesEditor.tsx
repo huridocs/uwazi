@@ -134,7 +134,8 @@ const TemplatesEditor = () => {
         text: <Translate>Template changes are being applied to all related entities.</Translate>,
         details: (
           <>
-            <Translate>Processing</Translate> {loadedTemplate.processing.totalJobs || 5664}{' '}
+            <Translate>Processing</Translate>
+            <span> {loadedTemplate.processing.totalJobs} </span>
             <Translate>entities</Translate>
           </>
         ),
