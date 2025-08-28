@@ -775,6 +775,8 @@ class InformationExtraction {
     const tenant = tenants.current();
     await ixmodels.startTraining(extractorId, { testRun });
 
+    emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
+
     const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 20 });
 
     await dispatcher.dispatch(IXTrainModelJob, { extractorId: extractorId.toString() });
