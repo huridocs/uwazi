@@ -629,7 +629,6 @@ Private entities description,Caution: the selected entities will be **private**.
 Private instance,비공개 인스턴스
 Processed,Processed
 Processing,처리 중
-Processing template...,Processing template...
 Properties,속성
 Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -828,6 +827,7 @@ Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,템플릿
+Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template conflict,Template conflict
 Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Template name
@@ -938,6 +938,7 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
+Updating template properties across,Updating template properties across
 Upload a ZIP or CSV file.,ZIP 혹은 CSV 파일 업로드
 Upload and select file,업로드 및 파일 선택
 Upload from computer,컴퓨터에서 업로드
