@@ -14,6 +14,7 @@ import { CaptchaModel } from './CaptchaModel';
 import { validation } from '../utils';
 
 import './passport_conf.js';
+import { sleep } from 'shared/tsUtils';
 
 export default app => {
   app.use(cookieParser());
@@ -56,7 +57,9 @@ export default app => {
       required: ['body'],
     }),
 
-    (req, res, next) => {
+    async (req, res, next) => {
+      await sleep(Math.floor(Math.random() * 1000));
+
       passport.authenticate('local', (err, user) => {
         if (err) {
           next(err);
