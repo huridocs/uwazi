@@ -4763,6 +4763,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/sanitize-html@^2.16.0":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@types/sanitize-html/-/sanitize-html-2.16.0.tgz#860d72c1ba8a5d044946f37559cc359c0a13b24e"
+  integrity sha512-l6rX1MUXje5ztPT0cAFtUayXF06DqPhRyfVXareEN5gGCFaP/iwsxIyKODr9XDhfxPpN6vXUFNfo5kZMXCxBtw==
+  dependencies:
+    htmlparser2 "^8.0.0"
+
 "@types/scheduler@^0.16":
   version "0.16.8"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.8.tgz#ce5ace04cfeabe7ef87c0091e50752e36707deff"

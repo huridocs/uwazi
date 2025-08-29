@@ -1,6 +1,7 @@
 import React from 'react';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
+import sanitizeHtml from 'sanitize-html';
 
 type HTMLViewerProps = {
   children: string;
@@ -23,7 +24,10 @@ const renderNode = (node: ChildNode, key: number): React.ReactNode => {
 };
 
 const HTMLViewer = ({ children }: HTMLViewerProps) => {
-  const dom = parseDocument(children);
+  const sanitized = sanitizeHtml(children, {
+    allowedAttributes: { p: ['class'], span: ['class'] },
+  });
+  const dom = parseDocument(sanitized);
   return <>{dom.children.map((node, i) => renderNode(node, i))}</>;
 };
 
