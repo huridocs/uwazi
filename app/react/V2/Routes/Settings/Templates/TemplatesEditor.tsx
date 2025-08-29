@@ -123,7 +123,7 @@ const TemplatesEditor = () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
-  });
+  }, [loadedTemplate]);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
