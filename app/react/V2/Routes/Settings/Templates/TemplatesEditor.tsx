@@ -109,6 +109,13 @@ const TemplatesEditor = () => {
     setTemplate({ ...template, processing: data.processing });
   };
 
+  const notifyTemplateProcessing = () => {
+    setNotifications({
+      type: 'warning',
+      text: <Translate>Template changes are being applied to all related entities.</Translate>,
+    });
+  };
+
   useEffect(() => {
     socket.on('templateProcessed', handleTemplateProcessed);
     socket.on('templateProcessing', handleTemplateProcessing);
@@ -129,17 +136,7 @@ const TemplatesEditor = () => {
   useEffect(() => {
     setTemplate(loadedTemplate);
     if (loadedTemplate.processing?.active) {
-      setNotifications({
-        type: 'warning',
-        text: <Translate>Template changes are being applied to all related entities.</Translate>,
-        details: (
-          <>
-            <Translate>Processing</Translate>
-            <span> {loadedTemplate.processing.totalJobs} </span>
-            <Translate>entities</Translate>
-          </>
-        ),
-      });
+      notifyTemplateProcessing();
     }
   }, [loadedTemplate]);
 
@@ -208,10 +205,7 @@ const TemplatesEditor = () => {
     const savedTemplate = await templatesAPI.save(templateToSave);
 
     if (savedTemplate.processing?.active) {
-      setNotifications({
-        type: 'warning',
-        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
-      });
+      notifyTemplateProcessing();
     } else {
       setNotifications({
         type: 'success',
