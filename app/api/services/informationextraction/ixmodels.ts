@@ -23,6 +23,48 @@ const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
   );
 };
 
+const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string[]) => {
+  await model.updateMany(
+    { _id: modelId },
+    {
+      $set: {
+        findSuggestionsRunTimestamp: Date.now(),
+        findSuggestionsSharedIds: sharedIds,
+        findingSuggestions: true,
+        findSuggestionsInitialSharedIdsCount: sharedIds.length,
+      },
+    }
+  );
+};
+
+const appendToFindRunQueue = async (modelId: ObjectIdSchema, newSharedIds: string[]) => {
+  await model.updateMany({ _id: modelId }, [
+    {
+      $set: {
+        findSuggestionsSharedIds: {
+          $setUnion: [{ $ifNull: ['$findSuggestionsSharedIds', []] }, newSharedIds],
+        },
+        findingSuggestions: true,
+        findSuggestionsInitialSharedIdsCount: {
+          $add: [
+            { $ifNull: ['$findSuggestionsInitialSharedIdsCount', 0] },
+            {
+              $subtract: [
+                {
+                  $size: {
+                    $setUnion: [{ $ifNull: ['$findSuggestionsSharedIds', []] }, newSharedIds],
+                  },
+                },
+                { $size: { $ifNull: ['$findSuggestionsSharedIds', []] } },
+              ],
+            },
+          ],
+        },
+      },
+    },
+  ]);
+};
+
 export default {
   get: model.get.bind(model),
   delete: model.delete.bind(model),
@@ -81,8 +123,10 @@ export default {
     // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
     await unsetFindSuggestionsData(current._id);
   },
-  unsetFindSuggestionsData,
   updateMany: model.updateMany.bind(model),
+  unsetFindSuggestionsData,
+  initializeFindRunQueue,
+  appendToFindRunQueue,
 };
 
 export { TEST_RUN_SUGGESTIONS_SIZE };

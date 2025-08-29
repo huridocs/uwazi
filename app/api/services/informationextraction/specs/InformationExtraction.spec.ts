@@ -674,7 +674,7 @@ describe('InformationExtraction', () => {
       const promise1 = informationExtraction.trainModel(factory.id('prop3extractor'));
       await expect(promise1).rejects.toThrow();
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
-        1,
+        2,
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
@@ -687,7 +687,7 @@ describe('InformationExtraction', () => {
       );
       await expect(promise2).rejects.toThrow();
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
-        2,
+        4,
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }
@@ -702,7 +702,7 @@ describe('InformationExtraction', () => {
       );
       await expect(promise3).rejects.toThrow();
       expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
-        3,
+        6,
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoLabeledEntities.defaultMessage }

@@ -629,7 +629,6 @@ Private entities description,Caution: the selected entities will be **private**.
 Private instance,Özel oluşum
 Processed,Processed
 Processing,İşleniyor
-Processing template...,Processing template...
 Properties,Özellikler
 Properties from other templates in the collection using the same label,Koleksiyondaki aynı etiketi kullanan diğer şablonlardaki özellikler
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -828,6 +827,7 @@ Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Şablon
+Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template conflict,Template conflict
 Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Template name
@@ -938,6 +938,7 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
+Updating template properties across,Updating template properties across
 Upload a ZIP or CSV file.,Bir ZIP veya CSV dosyası yükleyin.
 Upload and select file,Dosya yükle ve seç
 Upload from computer,Bilgisayardan yükle

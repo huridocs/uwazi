@@ -325,6 +325,28 @@ const Suggestions = {
     }, Promise.resolve());
   },
 
+  getAlreadySeenInFindRun: async (
+    extractorId: ObjectIdSchema,
+    candidateIds: string[],
+    runTimestamp: number
+  ): Promise<Set<string>> => {
+    const [queuedNow, readyThisRun] = await Promise.all([
+      IXSuggestionsModel.db.distinct('entityId', {
+        extractorId,
+        entityId: { $in: candidateIds },
+        status: 'processing',
+      }),
+      IXSuggestionsModel.db.distinct('entityId', {
+        extractorId,
+        entityId: { $in: candidateIds },
+        'modelData.findSuggestionsRunTimestamp': runTimestamp,
+        status: 'ready',
+      }),
+    ]);
+
+    return new Set<string>([...queuedNow, ...readyThisRun]);
+  },
+
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
   saveMultiple: async (_suggestions: IXSuggestionType[]) =>

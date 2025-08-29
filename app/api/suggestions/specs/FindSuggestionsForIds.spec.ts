@@ -148,15 +148,14 @@ describe('FindSuggestionsForIds', () => {
       ).rejects.toThrow(ModelNotReadyError);
     });
 
-    it('should throw error when find suggestions process is already running', async () => {
+    it('should throw error when training / test-run process is already running', async () => {
       // Set the model to have a running process
       await ixmodels.save({
         _id: modelId,
         extractorId,
         status: ModelStatus.ready,
         creationDate: Date.now(),
-        totalSuggestionsToFind: 100,
-        findSuggestionsRunTimestamp: Date.now(),
+        findingSuggestions: true,
       });
 
       await expect(
@@ -164,7 +163,9 @@ describe('FindSuggestionsForIds', () => {
           extractorId,
           sharedIds: ['entity1', 'entity2'],
         })
-      ).rejects.toThrow('A find suggestions process is already running for this extractor.');
+      ).rejects.toThrow(
+        "Model is training or running a test run. Individual 'Find suggestions' is disabled."
+      );
     });
 
     it('should start find suggestions process, update model state, and return status', async () => {
@@ -258,6 +259,82 @@ describe('FindSuggestionsForIds', () => {
       expect(updatedModel.findSuggestionsSharedIds).toEqual([]);
 
       expect(result).toEqual({ processed: 1, total: 1 });
+    });
+
+    it('should append new IDs to an ongoing per-id run and increase totals without resetting processed', async () => {
+      // First request: 2 IDs
+      const first = await useCase.execute({
+        extractorId,
+        sharedIds: ['entity1', 'entity2'],
+      });
+
+      // Second request: 1 new + 1 duplicate
+      const second = await useCase.execute({
+        extractorId,
+        sharedIds: ['entity2', 'entity3'],
+      });
+
+      // Materials should have been sent for entity1, entity2, entity3 (no duplicates)
+      const sentEntityNames = IXExternalService.materials.map(m => m.entity_name);
+      const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
+
+      expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2', 'entity3']));
+      // No duplicates
+      expect(new Set(sentEntityIds).size).toBe(3);
+
+      // The API status should reflect total count increased by the new unique ID
+      expect(first.total).toBe(2);
+      expect(second.total).toBe(3);
+
+      // Model should keep the correct initial count (delta-increment), queue is drained by the flow
+      const [finalModel] = await ixmodels.get({ extractorId });
+      expect(finalModel.findSuggestionsInitialSharedIdsCount).toBe(3);
+      expect(finalModel.findSuggestionsSharedIds).toEqual([]);
+    });
+
+    it('should not re-send materials when no new IDs are provided during an ongoing per-id run', async () => {
+      // Kick off with a single ID
+      await useCase.execute({
+        extractorId,
+        sharedIds: ['entity1'],
+      });
+      const materialsAfterFirst = IXExternalService.materials.length;
+
+      // Try to append only duplicates
+      const result = await useCase.execute({
+        extractorId,
+        sharedIds: ['entity1'],
+      });
+
+      // No additional materials were sent
+      expect(IXExternalService.materials.length).toBe(materialsAfterFirst);
+
+      // Totals remain the same
+      expect(result.total).toBe(1);
+
+      // Model initial total stays the same (no delta)
+      const [finalModel] = await ixmodels.get({ extractorId });
+      expect(finalModel.findSuggestionsInitialSharedIdsCount).toBe(1);
+    });
+
+    it('should increase initial total exactly by the number of new unique IDs when appending', async () => {
+      // Start with 1
+      await useCase.execute({
+        extractorId,
+        sharedIds: ['entity1'],
+      });
+      const [afterFirst] = await ixmodels.get({ extractorId });
+      expect(afterFirst.findSuggestionsInitialSharedIdsCount).toBe(1);
+
+      // Append 1 new (entity3) and 1 duplicate (entity1)
+      await useCase.execute({
+        extractorId,
+        sharedIds: ['entity1', 'entity3'],
+      });
+
+      const [afterSecond] = await ixmodels.get({ extractorId });
+      // Only delta of 1 should be added
+      expect(afterSecond.findSuggestionsInitialSharedIdsCount).toBe(2);
     });
   });
 });

@@ -628,7 +628,6 @@ Private entities description,Caution: the selected entities will be **private**.
 Private instance,Instance privée
 Processed,Processed
 Processing,Traitement
-Processing template...,Processing template...
 Properties,Propriétés
 Properties from other templates in the collection using the same label,Propriétés d'autres modèles de la collection utilisant la même étiquette
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -827,6 +826,7 @@ Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,Modèle
+Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template conflict,Template conflict
 Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Template name
@@ -937,6 +937,7 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
+Updating template properties across,Updating template properties across
 Upload a ZIP or CSV file.,Téléchargez un fichier ZIP ou CSV.
 Upload and select file,Télécharger et sélectionner le fichier
 Upload from computer,Télécharger à partir de l'ordinateur
