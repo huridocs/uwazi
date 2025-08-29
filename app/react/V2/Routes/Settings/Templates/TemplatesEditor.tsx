@@ -281,7 +281,11 @@ const TemplatesEditor = () => {
   };
 
   const progress = useMemo(
-    () => ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+    () => ({
+      percent:
+        ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+      total: template.processing?.totalJobs,
+    }),
     [template.processing]
   );
 
@@ -290,12 +294,12 @@ const TemplatesEditor = () => {
       <div className="flex justify-between mb-1">
         <div className="font-medium text-gray-500 text-xs">
           <Translate>Updating template properties across</Translate>
-          <span> {template.processing?.totalJobs} </span>
+          <span> {progress.total} </span>
           <Translate>entities</Translate> ...
         </div>
-        <span className="text-sm font-medium text-gray-500">{progress.toFixed(2)}%</span>
+        <span className="text-sm font-medium text-gray-500">{progress.percent.toFixed(2)}%</span>
       </div>
-      <ProgressBar progress={progress} color="gray" />
+      <ProgressBar progress={progress.percent} color="gray" />
     </div>
   );
 
