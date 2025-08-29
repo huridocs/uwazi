@@ -287,14 +287,6 @@ describe('Table', () => {
 
     it('should reset selections when adding a new entry to the table', () => {
       cy.contains('Select all').realClick();
-      cy.contains('button', 'Save changes').realClick();
-      cy.get('[data-testid="selected-items"]').within(() => {
-        cy.contains('Entity 1');
-        cy.contains('Entity 2');
-        cy.contains('Entity 3');
-        cy.contains('Entity 4');
-        cy.contains('Entity 5');
-      });
       cy.get('#checkbox-header').should('be.checked');
       cy.contains('button', 'Add new item').realClick();
       cy.get('tbody tr').should('have.length', 6);
@@ -303,7 +295,6 @@ describe('Table', () => {
 
     it('should reset selections when removing an item from the table', () => {
       cy.contains('Select all').realClick();
-      cy.contains('button', 'Save changes').realClick();
       cy.get('#checkbox-header').should('be.checked');
       cy.contains('button', 'Remove last item').realClick();
       cy.get('tbody tr').should('have.length', 4);

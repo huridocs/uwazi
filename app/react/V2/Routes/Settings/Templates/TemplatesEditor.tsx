@@ -131,7 +131,14 @@ const TemplatesEditor = () => {
     if (loadedTemplate.processing?.active) {
       setNotifications({
         type: 'warning',
-        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
+        text: <Translate>Template changes are being applied to all related entities.</Translate>,
+        details: (
+          <>
+            <Translate>Processing</Translate>
+            <span> {loadedTemplate.processing.totalJobs} </span>
+            <Translate>entities</Translate>
+          </>
+        ),
       });
     }
   }, [loadedTemplate]);
@@ -199,7 +206,6 @@ const TemplatesEditor = () => {
     }
 
     const savedTemplate = await templatesAPI.save(templateToSave);
-    await revalidator.revalidate();
 
     if (savedTemplate.processing?.active) {
       setNotifications({
@@ -213,7 +219,11 @@ const TemplatesEditor = () => {
       });
     }
 
-    await navigate(`/settings/templates/edit/${savedTemplate._id}`, { replace: true });
+    if (templateToSave._id) {
+      await revalidator.revalidate();
+    } else {
+      await navigate(`/settings/templates/edit/${savedTemplate._id}`, { replace: true });
+    }
   };
 
   const handlePropertySave = (propertyConfig: PropertySchema) => {
@@ -259,9 +269,9 @@ const TemplatesEditor = () => {
     } catch (e) {
       if (e.status === 409) {
         setShowReindexModal(true);
-        return;
+      } else {
+        setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
       }
-      setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
     } finally {
       setIsSaving(false);
     }
@@ -284,9 +294,11 @@ const TemplatesEditor = () => {
   const progressBar = (
     <div className="w-full flex flex-col gap-2">
       <div className="flex justify-between mb-1">
-        <Translate className="text-base font-medium text-gray-500 text-xs">
-          Processing template...
-        </Translate>
+        <div className="font-medium text-gray-500 text-xs">
+          <Translate>Updating template properties across</Translate>
+          <span> {template.processing?.totalJobs} </span>
+          <Translate>entities</Translate> ...
+        </div>
         <span className="text-sm font-medium text-gray-500">{progress.toFixed(2)}%</span>
       </div>
       <ProgressBar progress={progress} color="gray" />
@@ -337,7 +349,7 @@ const TemplatesEditor = () => {
             onAddThesaurus={() => setShowThesaurusModal(true)}
             onAddRelationshipType={() => setShowRelationshipTypeModal(true)}
             onAddProperty={() => setShowConfigPropertyPanel(true)}
-            disableSave={!checkPendingChanges() || isSaving}
+            disableSave={!checkPendingChanges() || isSaving || template.processing?.active}
           />
         </SettingsContent.Footer>
       </SettingsContent>
