@@ -1,0 +1,23 @@
+// <!-- For paragraphs with no matching -->
+// <p class="ix_paragraph">...</p>
+
+// <!-- For paragraphs adjacent to the paragraph with match -->
+// <p class="ix_adjacent_paragraph">...</p>
+
+// <!-- For paragraphs with match -->
+// <p class="ix_matching_paragraph">...</p>
+
+// <!-- For words matching -->
+// <span class="ix_match"></span>
+
+.ix_paragraph {
+}
+
+.ix_adjacent_paragraph {
+}
+
+.ix_matching_paragraph {
+}
+
+.ix_match {
+}
