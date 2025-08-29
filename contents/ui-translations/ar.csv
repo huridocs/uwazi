@@ -628,7 +628,6 @@ Private entities description,تنبيه: الكيانات (الإدخالات) �
 Private instance,قاعدة بيانات داخلية
 Processed,Processed
 Processing,معالجة
-Processing template...,Processing template...
 Properties,الخصائص
 Properties from other templates in the collection using the same label,خصائص من قوالب أخرى في المجموعة تستخدم التسمية نفسها
 Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
@@ -827,8 +826,8 @@ Target Template,Target Template
 Target template,Target template
 Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
 Template,قالب
+Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
 Template conflict,Template conflict
-Template is being processed. Please wait for it to finish.,Template is being processed. Please wait for it to finish.
 Template name,Template name
 Template name already exists,Template name already exists
 Template processing completed.,Template processing completed.
@@ -937,6 +936,7 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
+Updating template properties across,Updating template properties across
 Upload a ZIP or CSV file.,حمل ملف مضطغوط بامتداد ZIP أو ملف القيم المفصولة بفواصل
 Upload and select file,حمل الملف واختره
 Upload from computer,حمل من الحاسوب

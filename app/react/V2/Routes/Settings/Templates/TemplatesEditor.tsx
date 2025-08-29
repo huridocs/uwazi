@@ -109,6 +109,13 @@ const TemplatesEditor = () => {
     setTemplate({ ...template, processing: data.processing });
   };
 
+  const notifyTemplateProcessing = () => {
+    setNotifications({
+      type: 'warning',
+      text: <Translate>Template changes are being applied to all related entities.</Translate>,
+    });
+  };
+
   useEffect(() => {
     socket.on('templateProcessed', handleTemplateProcessed);
     socket.on('templateProcessing', handleTemplateProcessing);
@@ -116,7 +123,7 @@ const TemplatesEditor = () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
-  });
+  }, [loadedTemplate]);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -129,10 +136,7 @@ const TemplatesEditor = () => {
   useEffect(() => {
     setTemplate(loadedTemplate);
     if (loadedTemplate.processing?.active) {
-      setNotifications({
-        type: 'warning',
-        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
-      });
+      notifyTemplateProcessing();
     }
   }, [loadedTemplate]);
 
@@ -199,13 +203,9 @@ const TemplatesEditor = () => {
     }
 
     const savedTemplate = await templatesAPI.save(templateToSave);
-    await revalidator.revalidate();
 
     if (savedTemplate.processing?.active) {
-      setNotifications({
-        type: 'warning',
-        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
-      });
+      notifyTemplateProcessing();
     } else {
       setNotifications({
         type: 'success',
@@ -213,7 +213,11 @@ const TemplatesEditor = () => {
       });
     }
 
-    await navigate(`/settings/templates/edit/${savedTemplate._id}`, { replace: true });
+    if (templateToSave._id) {
+      await revalidator.revalidate();
+    } else {
+      await navigate(`/settings/templates/edit/${savedTemplate._id}`, { replace: true });
+    }
   };
 
   const handlePropertySave = (propertyConfig: PropertySchema) => {
@@ -259,9 +263,9 @@ const TemplatesEditor = () => {
     } catch (e) {
       if (e.status === 409) {
         setShowReindexModal(true);
-        return;
+      } else {
+        setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
       }
-      setNotifications({ type: 'error', text: <Translate>Error saving template.</Translate> });
     } finally {
       setIsSaving(false);
     }
@@ -277,19 +281,25 @@ const TemplatesEditor = () => {
   };
 
   const progress = useMemo(
-    () => ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+    () => ({
+      percent:
+        ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+      total: template.processing?.totalJobs,
+    }),
     [template.processing]
   );
 
   const progressBar = (
     <div className="w-full flex flex-col gap-2">
       <div className="flex justify-between mb-1">
-        <Translate className="text-base font-medium text-gray-500 text-xs">
-          Processing template...
-        </Translate>
-        <span className="text-sm font-medium text-gray-500">{progress.toFixed(2)}%</span>
+        <div className="font-medium text-gray-500 text-xs">
+          <Translate>Updating template properties across</Translate>
+          <span> {progress.total} </span>
+          <Translate>entities</Translate> ...
+        </div>
+        <span className="text-sm font-medium text-gray-500">{progress.percent.toFixed(2)}%</span>
       </div>
-      <ProgressBar progress={progress} color="gray" />
+      <ProgressBar progress={progress.percent} color="gray" />
     </div>
   );
 
@@ -337,7 +347,7 @@ const TemplatesEditor = () => {
             onAddThesaurus={() => setShowThesaurusModal(true)}
             onAddRelationshipType={() => setShowRelationshipTypeModal(true)}
             onAddProperty={() => setShowConfigPropertyPanel(true)}
-            disableSave={!checkPendingChanges() || isSaving}
+            disableSave={!checkPendingChanges() || isSaving || template.processing?.active}
           />
         </SettingsContent.Footer>
       </SettingsContent>
