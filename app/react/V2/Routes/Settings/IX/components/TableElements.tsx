@@ -10,6 +10,7 @@ import { Button, Pill } from 'V2/Components/UI';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import { propertyIcons } from 'V2/Components/UI/Icons';
+import { HTMLViewer } from 'V2/Components/HTMLViewer';
 import { ClientPropertySchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import {
@@ -266,7 +267,7 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
       </span>
     );
   }
-  return segment;
+  return <HTMLViewer>{segment}</HTMLViewer>;
 };
 
 const extractorsTableColumns = [
