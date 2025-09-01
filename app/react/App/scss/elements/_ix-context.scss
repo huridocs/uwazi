@@ -1,23 +1,15 @@
-// <!-- For paragraphs with no matching -->
-// <p class="ix_paragraph">...</p>
-
-// <!-- For paragraphs adjacent to the paragraph with match -->
-// <p class="ix_adjacent_paragraph">...</p>
-
-// <!-- For paragraphs with match -->
-// <p class="ix_matching_paragraph">...</p>
-
-// <!-- For words matching -->
-// <span class="ix_match"></span>
-
 .ix_paragraph {
+  color: #6b7280;
 }
 
 .ix_adjacent_paragraph {
+  color: #6b7280;
 }
 
 .ix_matching_paragraph {
+  color: #d03801;
 }
 
 .ix_match {
+  color: #d03801;
 }
