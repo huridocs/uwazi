@@ -3,6 +3,7 @@ import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
 import { SyncedCollection } from './SyncedCollection';
+import { tenants } from 'api/tenants';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
@@ -27,6 +28,12 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
   protected getCollection<Collection extends Document = TSchema>(
     collectionName = this.collectionName
   ) {
+    try {
+      if (this.useSyncedCollection && tenants.current().featureFlags?.deactivateUpdateLogs) {
+        this.useSyncedCollection = false;
+      }
+    } catch (e) {}
+
     return this.useSyncedCollection
       ? new SyncedCollection<Collection>(
           new SessionScopedCollection<Collection>(
