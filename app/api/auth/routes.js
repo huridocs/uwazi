@@ -9,12 +9,12 @@ import { DB } from 'api/odm';
 import { config } from 'api/config';
 import cors from 'cors';
 import request from 'shared/JSONRequest';
+import { randomSleep } from 'shared/tsUtils';
 import { CaptchaModel } from './CaptchaModel';
 
 import { validation } from '../utils';
 
 import './passport_conf.js';
-import { sleep } from 'shared/tsUtils';
 
 export default app => {
   app.use(cookieParser());
@@ -58,7 +58,7 @@ export default app => {
     }),
 
     async (req, res, next) => {
-      await sleep(Math.floor(Math.random() * 500) + 500);
+      await randomSleep(500, 1_000);
 
       passport.authenticate('local', (err, user) => {
         if (err) {
