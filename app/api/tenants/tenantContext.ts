@@ -19,6 +19,7 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
+    deactivateUpdateLogs?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

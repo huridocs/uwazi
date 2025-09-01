@@ -109,6 +109,13 @@ const TemplatesEditor = () => {
     setTemplate({ ...template, processing: data.processing });
   };
 
+  const notifyTemplateProcessing = () => {
+    setNotifications({
+      type: 'warning',
+      text: <Translate>Template changes are being applied to all related entities.</Translate>,
+    });
+  };
+
   useEffect(() => {
     socket.on('templateProcessed', handleTemplateProcessed);
     socket.on('templateProcessing', handleTemplateProcessing);
@@ -116,7 +123,7 @@ const TemplatesEditor = () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
-  });
+  }, [loadedTemplate]);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -129,17 +136,7 @@ const TemplatesEditor = () => {
   useEffect(() => {
     setTemplate(loadedTemplate);
     if (loadedTemplate.processing?.active) {
-      setNotifications({
-        type: 'warning',
-        text: <Translate>Template changes are being applied to all related entities.</Translate>,
-        details: (
-          <>
-            <Translate>Processing</Translate>
-            <span> {loadedTemplate.processing.totalJobs} </span>
-            <Translate>entities</Translate>
-          </>
-        ),
-      });
+      notifyTemplateProcessing();
     }
   }, [loadedTemplate]);
 
@@ -208,10 +205,7 @@ const TemplatesEditor = () => {
     const savedTemplate = await templatesAPI.save(templateToSave);
 
     if (savedTemplate.processing?.active) {
-      setNotifications({
-        type: 'warning',
-        text: <Translate>Template is being processed. Please wait for it to finish.</Translate>,
-      });
+      notifyTemplateProcessing();
     } else {
       setNotifications({
         type: 'success',
@@ -287,7 +281,11 @@ const TemplatesEditor = () => {
   };
 
   const progress = useMemo(
-    () => ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+    () => ({
+      percent:
+        ((template.processing?.completedJobs || 0) / (template.processing?.totalJobs || 1)) * 100,
+      total: template.processing?.totalJobs,
+    }),
     [template.processing]
   );
 
@@ -296,12 +294,12 @@ const TemplatesEditor = () => {
       <div className="flex justify-between mb-1">
         <div className="font-medium text-gray-500 text-xs">
           <Translate>Updating template properties across</Translate>
-          <span> {template.processing?.totalJobs} </span>
+          <span> {progress.total} </span>
           <Translate>entities</Translate> ...
         </div>
-        <span className="text-sm font-medium text-gray-500">{progress.toFixed(2)}%</span>
+        <span className="text-sm font-medium text-gray-500">{progress.percent.toFixed(2)}%</span>
       </div>
-      <ProgressBar progress={progress} color="gray" />
+      <ProgressBar progress={progress.percent} color="gray" />
     </div>
   );
 
