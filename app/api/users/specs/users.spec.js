@@ -369,8 +369,8 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'password');
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toMatch(/account locked/i);
-        expect(e.code).toBe(403);
+        expect(e.message).toBe('Invalid username or password');
+        expect(e.code).toBe(401);
       }
     });
 
@@ -380,8 +380,8 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toBe('Account locked. Check your email to unlock.');
-        expect(e.code).toBe(403);
+        expect(e.message).toBe('Invalid username or password');
+        expect(e.code).toBe(401);
       }
     });
 
@@ -394,8 +394,8 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'wrong_password');
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toBe('Account locked. Check your email to unlock.');
-        expect(e.code).toBe(403);
+        expect(e.message).toBe('Invalid username or password');
+        expect(e.code).toBe(401);
       }
 
       const [dbUser] = await usersModel.get(

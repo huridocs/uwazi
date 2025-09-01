@@ -74,17 +74,6 @@ const sendAccountLockedEmail = async (user, domain) => {
   return mailer.send(mailOptions);
 };
 
-const validateUserStatus = user => {
-  if (!user) {
-    return createError('Invalid username or password', 401);
-  }
-  if (user.accountLocked) {
-    return createError('Account locked. Check your email to unlock.', 403);
-  }
-
-  return undefined;
-};
-
 const updateOldPassword = async (user, password) => {
   await model.save({ _id: user._id, password: await encryptPassword(password) });
 };
@@ -119,11 +108,10 @@ const validateUserPassword = async (user, password, domain) => {
   }
 
   if (!oldPasswordValidated && !passwordValidated) {
-    if (user?.accountLocked) {
-      return undefined;
+    if (!user?.accountLocked) {
+      await newFailedLogin(user, domain);
     }
 
-    await newFailedLogin(user, domain);
     return createError('Invalid username or password', 401);
   }
 
@@ -267,14 +255,13 @@ export default {
     const user = dbuser || dummy;
 
     const passwordError = await validateUserPassword(user, password, domain);
-    const userStatusError = validateUserStatus(user);
 
     if (passwordError) {
       throw passwordError;
     }
 
-    if (userStatusError) {
-      throw userStatusError;
+    if (user?.accountLocked) {
+      throw createError('Invalid username or password', 401);
     }
 
     await validate2fa(user, token, domain);
