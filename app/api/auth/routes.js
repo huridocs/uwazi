@@ -58,7 +58,7 @@ export default app => {
     }),
 
     async (req, res, next) => {
-      await sleep(Math.floor(Math.random() * 1000));
+      await sleep(Math.floor(Math.random() * 500) + 500);
 
       passport.authenticate('local', (err, user) => {
         if (err) {
