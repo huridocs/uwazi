@@ -28,21 +28,82 @@ import { S3Error, S3Storage } from './S3Storage';
 export type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
 let s3Instance: S3Storage;
+const defaultParams: { connectionTimeout: number; httpAgent?: {} } = {
+  connectionTimeout: 5000,
+  httpAgent: {
+    maxSockets: 50,
+    keepAlive: true,
+    keepAliveMsecs: 1000,
+  },
+};
+let previousFeatureFlag = false;
+
 const s3 = () => {
-  if (config.s3.endpoint && !s3Instance) {
-    s3Instance = new S3Storage(
-      new S3Client({
-        requestHandler: new NodeHttpHandler({
-          socketTimeout: 30000,
-        }),
-        apiVersion: 'latest',
-        region: 'placeholder-region',
-        endpoint: config.s3.endpoint,
-        credentials: config.s3.credentials,
-        forcePathStyle: true,
-      })
-    );
+  const currentFeatureFlag = tenants.current().featureFlags?.deactivateS3Pooling || false;
+  let params = defaultParams;
+
+  if (currentFeatureFlag) {
+    params = {
+      connectionTimeout: 50000,
+    };
   }
+
+  if (config.s3.endpoint && (!s3Instance || currentFeatureFlag !== previousFeatureFlag)) {
+    if (s3Instance) {
+      s3Instance.destroy();
+    }
+
+    const client = new S3Client({
+      requestHandler: new NodeHttpHandler({
+        socketTimeout: 30000,
+        ...params,
+      }),
+      apiVersion: 'latest',
+      region: 'placeholder-region',
+      endpoint: config.s3.endpoint,
+      credentials: config.s3.credentials,
+      forcePathStyle: true,
+    });
+
+    // Add custom timing middleware
+    client.middlewareStack.add((next, context) => async args => {
+      const startTime = Date.now();
+      const operation = context.commandName;
+
+      try {
+        const result = await next(args);
+        const duration = Date.now() - startTime;
+
+        // Log successful operations
+        legacyLogger.info('S3 operation completed', {
+          operation,
+          duration,
+          success: true,
+          timestamp: new Date().toISOString(),
+        });
+
+        return result;
+      } catch (error) {
+        console.log(error);
+        const duration = Date.now() - startTime;
+
+        // Log failed operations with detailed error info
+        legacyLogger.error('S3 operation failed', {
+          // operation,
+          // duration,
+          // success: false,
+          // error: error.message,
+          // errorCode: error.$metadata?.httpStatusCode,
+          // timestamp: new Date().toISOString(),
+        });
+
+        throw error;
+      }
+    });
+    s3Instance = new S3Storage(client);
+    previousFeatureFlag = currentFeatureFlag;
+  }
+
   return s3Instance;
 };
 

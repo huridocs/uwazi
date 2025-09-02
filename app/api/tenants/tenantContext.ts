@@ -20,6 +20,7 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     deactivateUpdateLogs?: boolean;
+    deactivateS3Pooling?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
