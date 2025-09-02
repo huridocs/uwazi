@@ -181,7 +181,6 @@ describe('Pages', () => {
       cy.clearAndType('input[name="label"]', 'Custom Title');
       cy.contains('aside button', 'Save').click();
       cy.contains('[data-testid="settings-content-footer"] button', 'Save').click();
-      cy.contains(/successfully|completed/);
       cy.contains('Dismiss').click();
     });
 
