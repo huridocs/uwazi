@@ -49,4 +49,29 @@ describe('ContextCell', () => {
     );
     expect(screen.getByText('with matching').className).toBe('ix_match text-orange-600');
   });
+
+  it('should truncate the html and only show relevant paragraphs', () => {
+    render(
+      <ContextCell
+        text='<p class="ix_adjacent_paragraph">A previous paragraph that is adjecent and should not appear</p><br/><p class="ix_matching_paragraph">Duis volutpat leo eu interdum euismod. Maecenas luctus ut lacus dapibus euismod.<span class="ix_match"> Praesent sed molestie
+        risus, vitae laoreet elit.</span> Cras dapibus, neque a eleifend iaculis, nulla arcu euismod metus,
+        et condimentum nisl eros eu odio.</p><br/><p class="ix_adjacent_paragraph">The next adjacent paragraph</p>'
+      />
+    );
+
+    expect(
+      screen.queryByText('A previous paragraph that is adjecent and should not appear')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('The next adjacent paragraph')).not.toBeInTheDocument();
+
+    expect(screen.getByText('...luctus ut lacus dapibus euismod.').className).toBe(
+      'ix_matching_paragraph text-gray-900'
+    );
+    expect(screen.getByText('Praesent sed molestie risus, vitae laoreet elit.').className).toBe(
+      'ix_match text-orange-600'
+    );
+    expect(screen.getByText(' Cras dapibus, neque a eleifend...').className).toBe(
+      'ix_matching_paragraph text-gray-900'
+    );
+  });
 });
