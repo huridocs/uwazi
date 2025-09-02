@@ -91,7 +91,7 @@ const TemplatesEditor = () => {
 
   const handleTemplateProcessed = useCallback(
     async () => async (data: { templateId: string }) => {
-      if (data.templateId !== template._id) {
+      if (data.templateId !== loadedTemplate?._id) {
         return;
       }
 
@@ -101,7 +101,7 @@ const TemplatesEditor = () => {
         text: <Translate>Template processing completed.</Translate>,
       });
     },
-    [revalidator, setNotifications, template._id]
+    [revalidator, setNotifications, loadedTemplate]
   );
 
   const handleTemplateProcessing = useCallback(
