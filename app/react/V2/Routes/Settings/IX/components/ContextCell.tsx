@@ -7,8 +7,8 @@ import sanitizeHtml from 'sanitize-html';
 const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph',
   ix_adjacent_paragraph: 'ix_adjacent_paragraph',
-  ix_matching_paragraph: 'ix_matching_paragraph',
-  ix_match: 'ix_match',
+  ix_matching_paragraph: 'ix_matching_paragraph text-gray-900',
+  ix_match: 'ix_match text-orange-600',
 };
 
 const createNode = (node: ChildNode, key: number): React.ReactNode => {

@@ -39,9 +39,14 @@ describe('ContextCell', () => {
     expect(screen.getByText('[...]'));
   });
 
-  it('should return formatted html', () => {
+  it('should return the html with the correct classes', () => {
     render(
       <ContextCell text='<p class="ix_matching_paragraph">Some primary text <span class="ix_match">with matching</span> words</p>' />
     );
+
+    expect(screen.getByText('Some primary text', { exact: false }).className).toBe(
+      'ix_matching_paragraph text-gray-900'
+    );
+    expect(screen.getByText('with matching').className).toBe('ix_match text-orange-600');
   });
 });
