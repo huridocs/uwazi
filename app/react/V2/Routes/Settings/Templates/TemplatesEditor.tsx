@@ -91,7 +91,7 @@ const TemplatesEditor = () => {
 
   const handleTemplateProcessed = useCallback(
     async () => async (data: { templateId: string }) => {
-      if (data.templateId !== loadedTemplate?._id) {
+      if (data.templateId !== template?._id) {
         return;
       }
 
@@ -101,7 +101,7 @@ const TemplatesEditor = () => {
         text: <Translate>Template processing completed.</Translate>,
       });
     },
-    [revalidator, setNotifications, loadedTemplate]
+    [template]
   );
 
   const handleTemplateProcessing = useCallback(
@@ -114,7 +114,7 @@ const TemplatesEditor = () => {
           totalJobs: number;
         };
       }) => {
-        if (data.templateId !== template._id) {
+        if (data.templateId !== template?._id) {
           return;
         }
 
@@ -123,19 +123,21 @@ const TemplatesEditor = () => {
     [template]
   );
 
-  const notifyTemplateProcessing = () => {
+  const notifyTemplateProcessing = useCallback(() => {
     setNotifications({
       type: 'warning',
       text: <Translate>Template changes are being applied to all related entities.</Translate>,
-      details: (
-        <>
-          <Translate>Processing</Translate>
-          <span> {entityCount} </span>
-          <Translate>entities</Translate>
-        </>
-      ),
+      ...(entityCount && {
+        details: (
+          <>
+            <Translate>Processing</Translate>
+            <span> {entityCount} </span>
+            <Translate>entities</Translate>
+          </>
+        ),
+      }),
     });
-  };
+  }, [entityCount]);
 
   useEffect(() => {
     socket.on('templateProcessed', handleTemplateProcessed);
@@ -144,7 +146,7 @@ const TemplatesEditor = () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
-  }, [handleTemplateProcessed, handleTemplateProcessing, loadedTemplate]);
+  }, [handleTemplateProcessed, handleTemplateProcessing]);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
