@@ -262,9 +262,6 @@ const TemplatesEditor = () => {
     }
 
     if (template._id) {
-      const entityCounts = await templatesAPI.checkTemplatesEntityCount(undefined, [template._id]);
-      const entityCount = entityCounts[template._id] || 0;
-
       if (entityCount > ENTITY_COUNT_THRESHOLD && !ignoreEntityCount) {
         setShowLargeEntityCountModal(true);
         return;
