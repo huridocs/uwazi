@@ -5,34 +5,34 @@ import { TitleProperty } from '../TitleProperty';
 
 describe('CommonPropertyFactory', () => {
   it('should create an instance of TitleProperty', () => {
-    const titleProperty = CommonPropertyFactory.create({
+    const property = CommonPropertyFactory.create({
       id: 'any',
       label: 'A text',
       type: 'text',
     });
 
-    expect(titleProperty).toBeInstanceOf(TitleProperty);
+    expect(property).toBeInstanceOf(TitleProperty);
   });
 
   it('should create an instance of CreationDateProperty', () => {
-    const titleProperty = CommonPropertyFactory.create({
+    const property = CommonPropertyFactory.create({
       id: 'any',
       label: 'A text',
       type: 'date',
       name: 'creationDate',
     });
 
-    expect(titleProperty).toBeInstanceOf(CreationDateProperty);
+    expect(property).toBeInstanceOf(CreationDateProperty);
   });
 
   it('should create an instance of ModifiedDateProperty', () => {
-    const titleProperty = CommonPropertyFactory.create({
+    const property = CommonPropertyFactory.create({
       id: 'any',
       label: 'A text',
       type: 'date',
       name: 'editDate',
     });
 
-    expect(titleProperty).toBeInstanceOf(ModifiedDateProperty);
+    expect(property).toBeInstanceOf(ModifiedDateProperty);
   });
 });
