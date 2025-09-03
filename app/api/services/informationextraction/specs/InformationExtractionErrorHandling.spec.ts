@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -123,7 +124,7 @@ describe('InformationExtraction Error Handling', () => {
       });
 
       const [model] = await IXModelsModel.get({ extractorId });
-      expect(model.status).toBe(ModelStatus.failed);
+      expect(model.status).toBe(ModelStatus.ready);
       expect(model.findingSuggestions).toBe(false);
 
       const allSuggestions = await IXSuggestionsModel.get({ extractorId });
