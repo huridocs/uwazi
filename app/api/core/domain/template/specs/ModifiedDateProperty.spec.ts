@@ -9,6 +9,7 @@ describe('ModifiedDateProperty', () => {
     const creationDateProperty = new ModifiedDateProperty({
       id: 'any_id',
       label: 'Date Modified',
+      template: 'any',
     });
 
     expect(creationDateProperty).toMatchObject({
@@ -26,6 +27,7 @@ describe('ModifiedDateProperty', () => {
           id: 'any',
           label: 'A label',
           type: 'text',
+          template: 'any',
         })
     ).toThrow(new ModifiedDatePropertyInvalidTypeError('text'));
   });
@@ -37,6 +39,7 @@ describe('ModifiedDateProperty', () => {
           id: 'any',
           label: 'Date Modified',
           name: 'A wrong name',
+          template: 'any',
         })
     ).toThrow(new ModifiedDatePropertyInvalidNameError('A wrong name'));
   });

@@ -6,6 +6,7 @@ describe('MultiDateRangeProperty', () => {
     const property = new MultiDateRangeProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -14,8 +15,14 @@ describe('MultiDateRangeProperty', () => {
   });
 
   it('should throw if providing a type different from multidaterange', () => {
-    expect(() => new MultiDateRangeProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'MultiDateRangeProperty')
-    );
+    expect(
+      () =>
+        new MultiDateRangeProperty({
+          id: 'any',
+          label: 'A label',
+          type: 'text',
+          template: 'any',
+        })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'MultiDateRangeProperty'));
   });
 });

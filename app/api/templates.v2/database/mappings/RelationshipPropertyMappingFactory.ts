@@ -23,7 +23,7 @@ export class RelationshipPropertyMappingFactory {
       const properties = await this.templateDS.getAllProperties().all();
       this.propertiesCache = objectIndex(
         properties,
-        p => p.name,
+        p => p.name.value,
         p => p
       );
     }

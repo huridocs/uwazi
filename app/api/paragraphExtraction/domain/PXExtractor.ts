@@ -140,8 +140,8 @@ export class PXExtractor {
       title: PXExtractor.createTitle(sourceEntity, extractedParagraph),
       template: new ObjectId(this.targetTemplate.id),
       metadata: {
-        [this.paragraphProperty.name]: [{ value: translation.text }],
-        [this.paragraphNumberProperty.name]: [{ value: extractedParagraph.paragraphNumber }],
+        [this.paragraphProperty.name.value]: [{ value: translation.text }],
+        [this.paragraphNumberProperty.name.value]: [{ value: extractedParagraph.paragraphNumber }],
       },
     };
   }

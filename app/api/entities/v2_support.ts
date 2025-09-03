@@ -108,7 +108,7 @@ const ignoreNewRelationshipsMetadata = async (
             const { newValues, deletedValues } = diffMetadataValues(
               currentDoc,
               toSave,
-              property.name
+              property.name.value
             );
 
             const query = property.buildQueryRootedInEntity(currentDoc.sharedId!);
@@ -125,7 +125,7 @@ const ignoreNewRelationshipsMetadata = async (
             );
 
             // eslint-disable-next-line no-param-reassign
-            toSave.metadata[property.name] = currentDoc.metadata[property.name] || [];
+            toSave.metadata[property.name.value] = currentDoc.metadata[property.name.value] || [];
           }
         }
       })

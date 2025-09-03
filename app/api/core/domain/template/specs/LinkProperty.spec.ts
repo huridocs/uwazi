@@ -6,6 +6,7 @@ describe('LinkProperty', () => {
     const property = new LinkProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -14,8 +15,8 @@ describe('LinkProperty', () => {
   });
 
   it('should throw if providing a type different from link', () => {
-    expect(() => new LinkProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'LinkProperty')
-    );
+    expect(
+      () => new LinkProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'LinkProperty'));
   });
 });

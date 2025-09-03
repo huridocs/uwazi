@@ -127,7 +127,7 @@ export class MongoTemplatesDataSource
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
-        p => p.name,
+        p => p.name.value,
         p => p
       );
     }
@@ -211,5 +211,9 @@ export class MongoTemplatesDataSource
       { _id: new ObjectId(templateId) },
       { $unset: { processing: true } }
     );
+  }
+
+  async create(template: Template): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }

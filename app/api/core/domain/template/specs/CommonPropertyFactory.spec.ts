@@ -9,6 +9,7 @@ describe('CommonPropertyFactory', () => {
       id: 'any',
       label: 'A text',
       type: 'text',
+      template: 'any',
     });
 
     expect(property).toBeInstanceOf(TitleProperty);
@@ -20,6 +21,7 @@ describe('CommonPropertyFactory', () => {
       label: 'A text',
       type: 'date',
       name: 'creationDate',
+      template: 'any',
     });
 
     expect(property).toBeInstanceOf(CreationDateProperty);
@@ -31,6 +33,7 @@ describe('CommonPropertyFactory', () => {
       label: 'A text',
       type: 'date',
       name: 'editDate',
+      template: 'any',
     });
 
     expect(property).toBeInstanceOf(ModifiedDateProperty);

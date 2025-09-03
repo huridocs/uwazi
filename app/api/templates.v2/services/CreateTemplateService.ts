@@ -184,14 +184,14 @@ export class CreateTemplateService {
       const newRelationshipNames = oldTemplate
         .selectNewProperties(newTemplate)
         .filter(p => p instanceof RelationshipProperty)
-        .map(p => p.name);
+        .map(p => p.name.value);
       const updatedProperties = oldTemplate
         .selectUpdatedProperties(newTemplate)
         .filter(info => info.oldProperty.type === propertyTypes.newRelationship);
 
       const updatesQuery = updatedProperties
         .filter(info => info.updatedAttributes.includes('query'))
-        .map(info => info.newProperty.name);
+        .map(info => info.newProperty.name.value);
 
       const uniquePropertyNames = Array.from(new Set([...newRelationshipNames, ...updatesQuery]));
 

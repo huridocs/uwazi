@@ -6,6 +6,7 @@ describe('DateRangeProperty', () => {
     const property = new DateRangeProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -14,8 +15,8 @@ describe('DateRangeProperty', () => {
   });
 
   it('should throw if providing a type different from daterange', () => {
-    expect(() => new DateRangeProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'DateRangeProperty')
-    );
+    expect(
+      () => new DateRangeProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'DateRangeProperty'));
   });
 });

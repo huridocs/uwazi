@@ -9,6 +9,7 @@ describe('AbstractImageProperty', () => {
       id: 'any_id',
       label: 'A Title',
       type: 'image',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -19,7 +20,14 @@ describe('AbstractImageProperty', () => {
 
   it('should throw if providing a style type different from ImageStyle', () => {
     expect(
-      () => new Testing({ id: 'any', label: 'A label', type: 'image', style: 'any' as any })
+      () =>
+        new Testing({
+          id: 'any',
+          label: 'A label',
+          type: 'image',
+          style: 'any' as any,
+          template: '',
+        })
     ).toThrow(new InvalidStyleTypeError('any'));
   });
 });

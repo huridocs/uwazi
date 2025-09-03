@@ -6,6 +6,7 @@ describe('MediaProperty', () => {
     const property = new MediaProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -15,8 +16,8 @@ describe('MediaProperty', () => {
   });
 
   it('should throw if providing a type different from media', () => {
-    expect(() => new MediaProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'MediaProperty')
-    );
+    expect(
+      () => new MediaProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'MediaProperty'));
   });
 });

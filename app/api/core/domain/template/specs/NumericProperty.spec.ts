@@ -6,6 +6,7 @@ describe('NumericProperty', () => {
     const property = new NumericProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -14,8 +15,8 @@ describe('NumericProperty', () => {
   });
 
   it('should throw if providing a type different from numeric', () => {
-    expect(() => new NumericProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'NumericProperty')
-    );
+    expect(
+      () => new NumericProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'NumericProperty'));
   });
 });

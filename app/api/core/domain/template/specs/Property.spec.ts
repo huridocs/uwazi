@@ -6,6 +6,7 @@ describe('Property', () => {
       id: 'any_id',
       label: 'A Title',
       type: 'text',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -16,12 +17,18 @@ describe('Property', () => {
   });
 
   it('should generate a PropertyName ONLY when none is provided', () => {
-    const property1 = new Property({ id: 'any_id', type: 'text', label: 'A Text Property' });
+    const property1 = new Property({
+      id: 'any_id',
+      type: 'text',
+      label: 'A Text Property',
+      template: 'any',
+    });
     const property2 = new Property({
       id: 'any_id',
       type: 'text',
       label: 'A Text Property 2',
       name: 'a_text_property',
+      template: 'any',
     });
 
     expect(property1.name.value).toBe('a_text_property');
@@ -34,18 +41,21 @@ describe('Property', () => {
       id: 'any_id',
       type: 'text',
       label: 'A Text',
+      template: 'any',
     });
 
     const text1Property = new Property({
       id: 'any_id',
       type: 'text',
       label: 'A Text',
+      template: 'any',
     });
 
     const text2Property = new Property({
       id: 'any_id',
       type: 'text',
       label: 'A Text 2',
+      template: 'any',
     });
 
     expect(textProperty.equals(text1Property)).toBe(true);

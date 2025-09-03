@@ -14,16 +14,20 @@ class Template {
 
   readonly commonProperties: CommonProperty[] = [];
 
+  color?: string;
+
   constructor(
     id: string,
     name: string,
-    properties: Property[] = [],
-    commonProperties: Property[] = []
+    properties: Property[],
+    commonProperties: CommonProperty[],
+    color?: string
   ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
     this.commonProperties = commonProperties;
+    this.color = color;
   }
 
   selectNewProperties(newTemplate: Template): Property[] {

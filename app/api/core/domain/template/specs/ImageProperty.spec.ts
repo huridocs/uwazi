@@ -6,6 +6,7 @@ describe('ImageProperty', () => {
     const property = new ImageProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -14,8 +15,8 @@ describe('ImageProperty', () => {
   });
 
   it('should throw if providing a type different from image', () => {
-    expect(() => new ImageProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'ImageProperty')
-    );
+    expect(
+      () => new ImageProperty({ id: 'any', label: 'A label', type: 'text', template: 'any' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'ImageProperty'));
   });
 });

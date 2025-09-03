@@ -6,6 +6,7 @@ describe('GeoLocationProperty', () => {
       id: 'any_id',
       label: 'A label',
       type: 'geolocation',
+      template: 'any',
     });
 
     expect(geolocationProperty.name.value).toBe('a_label_geolocation');
@@ -17,6 +18,7 @@ describe('GeoLocationProperty', () => {
       label: 'A label',
       type: 'geolocation',
       name: 'a_label_2_geolocation',
+      template: 'any',
     });
 
     expect(geolocationProperty.name.value).toBe('a_label_2_geolocation');

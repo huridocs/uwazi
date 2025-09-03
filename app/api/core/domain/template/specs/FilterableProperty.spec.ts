@@ -8,6 +8,7 @@ describe('FilterableProperty', () => {
       id: 'any_id',
       label: 'A Title',
       type: 'text',
+      template: 'any',
     });
 
     expect(property).toMatchObject({

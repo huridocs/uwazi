@@ -1,5 +1,9 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { Template } from 'api/templates.v2/model/Template';
 import { z } from 'zod';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
+import { PropertyFactory } from '../domain/template/PropertyFactory';
 
 const types = [
   'date',
@@ -49,21 +53,47 @@ const PropertySchema = z.object({
   targetTemplates: z.union([z.literal(false), z.array(z.string())]).optional(),
 });
 
+const CommonPropertySchema = z.object({
+  label: z.string(),
+  type: z.enum(types),
+  name: z.string(),
+  isCommonProperty: z.literal(true),
+
+  prioritySorting: z.boolean().optional(),
+  generatedId: z.boolean().optional(),
+});
+
 const Schema = z.object({
   name: z.string({ message: 'Template name is required' }),
   color: z.string().optional(), // If not provided, domain will generate next on pallet
   entityViewPage: z.string().optional(),
-  commonProperties: z.array(PropertySchema).nonempty(),
+  commonProperties: z.array(CommonPropertySchema),
   properties: z.array(PropertySchema).default([]),
 });
 
 type Input = z.infer<typeof Schema>;
 
-type Output = {};
+type Output = void;
+
+type Deps = {
+  templatesDS: TemplatesDataSource;
+};
 
 class CreateTemplateUseCase implements UseCase<Input, Output> {
+  constructor(private deps: Deps) {}
+
   async execute(input: Input): Promise<Output> {
-    throw new Error('Method not implemented.');
+    const commonProperties = input.commonProperties.map(p =>
+      CommonPropertyFactory.create({ ...p, id: 'id', template: 'id' })
+    );
+
+    const properties = input.properties.map(p =>
+      PropertyFactory.create({ ...p, id: 'id', template: 'id' })
+    );
+
+    const template = new Template('id', input.name, properties, commonProperties, input.color);
+
+    await this.deps.templatesDS.create(template);
   }
 }
 

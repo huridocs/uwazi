@@ -1,9 +1,9 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Logger } from 'api/log.v2/contracts/Logger';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { TranslationResult } from './types/TranslationResult';
 import { Validator } from './infrastructure/Validator';
-import { Entity } from 'api/entities.v2/model/Entity';
 
 export class SaveEntityTranslations {
   static AITranslatedText = '(AI translated)';
@@ -47,7 +47,7 @@ export class SaveEntityTranslations {
           `[AT]
 - Translation error
 - ${translation.error_message}
-- ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
+- ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name.value]: translation.text })}`
         );
       }
       if (translation?.success && property) {
@@ -55,7 +55,8 @@ export class SaveEntityTranslations {
         await this.entitiesDS.updateEntity(entity.setPropertyValue(property, textTranslated));
 
         this.logger.info(
-          `[AT] - Property saved on DB - ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
+          // eslint-disable-next-line max-len
+          `[AT] - Property saved on DB - ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name.value]: translation.text })}`
         );
       }
     });

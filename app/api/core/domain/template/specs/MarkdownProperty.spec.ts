@@ -5,6 +5,7 @@ describe('MarkdownProperty', () => {
   it('should set defaults values if not provided', () => {
     const property = new MarkdownProperty({
       id: 'any_id',
+      template: 'any',
       label: 'A Title',
     });
 
@@ -14,8 +15,8 @@ describe('MarkdownProperty', () => {
   });
 
   it('should throw if providing a type different from markdown', () => {
-    expect(() => new MarkdownProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'MarkdownProperty')
-    );
+    expect(
+      () => new MarkdownProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'MarkdownProperty'));
   });
 });

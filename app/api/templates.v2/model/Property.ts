@@ -13,11 +13,12 @@ type PropertyUpdateInfo = {
 type Props = {
   id: string;
   type: PropertyTypes;
+  template: string;
   name?: string;
   label: string;
   required?: boolean;
-  noLabel?: boolean;
   showInCard?: boolean;
+  noLabel?: boolean;
 };
 
 class Property {
@@ -41,7 +42,7 @@ class Property {
     this.id = props.id;
     this.type = props.type;
     this.label = props.label;
-    this.template = 'To be removed';
+    this.template = props.template;
     this.name = props.name ? new PropertyName(props.name) : PropertyName.fromLabel(this.label);
     this.required = props.required || false;
     this.noLabel = props.noLabel || false;
@@ -67,7 +68,7 @@ class Property {
       updatedAttributes: [],
     };
 
-    if (this.name !== other.name) updateInfo.updatedAttributes.push('name');
+    if (this.name.value !== other.name.value) updateInfo.updatedAttributes.push('name');
     if (this.label !== other.label) updateInfo.updatedAttributes.push('label');
     if (this.template !== other.template) updateInfo.updatedAttributes.push('template');
 

@@ -63,21 +63,27 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
 const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
 const document2 = new Document('any_id2', 'any_entity2', 0, 'any_file_name2', 'es');
 
-const sourceTemplate = new Template('sourceTemplate', 'Source template');
+const sourceTemplate = new Template('sourceTemplate', 'Source template', [], []);
 
-const paragraphProperty = new Property('any_id', 'markdown', 'Rich name', 'Rich label', 'any_id');
-const paragraphNumberProperty = new Property(
-  'paragraphNumberProperty',
-  'numeric',
-  'paragraph_number',
-  'Paragraph Number',
-  'any_id'
+const paragraphProperty = new Property({
+  id: 'any_id',
+  type: 'markdown',
+  label: 'Rich label',
+  template: 'any_id',
+});
+const paragraphNumberProperty = new Property({
+  id: 'paragraphNumberProperty',
+  type: 'numeric',
+  label: 'Paragraph Number',
+  template: 'any_id',
+});
+
+const targetTemplate = new Template(
+  'targetTemplate',
+  'Target template',
+  [paragraphProperty, paragraphNumberProperty],
+  []
 );
-
-const targetTemplate = new Template('targetTemplate', 'Target template', [
-  paragraphProperty,
-  paragraphNumberProperty,
-]);
 
 const segmentation: Segmentation = {
   id: 'any_id',

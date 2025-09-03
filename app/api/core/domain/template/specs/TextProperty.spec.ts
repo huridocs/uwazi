@@ -6,6 +6,7 @@ describe('TextProperty', () => {
     const property = new TextProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -15,8 +16,14 @@ describe('TextProperty', () => {
   });
 
   it('should throw if providing a type different from text', () => {
-    expect(() => new TextProperty({ id: 'any', label: 'A label', type: 'date' })).toThrow(
-      new PropertyTypeInvalidTypeError('date', 'TextProperty')
-    );
+    expect(
+      () =>
+        new TextProperty({
+          id: 'any',
+          label: 'A label',
+          type: 'date',
+          template: 'any',
+        })
+    ).toThrow(new PropertyTypeInvalidTypeError('date', 'TextProperty'));
   });
 });

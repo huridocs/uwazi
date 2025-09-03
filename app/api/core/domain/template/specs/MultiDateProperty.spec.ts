@@ -6,6 +6,7 @@ describe('MultiDateProperty', () => {
     const property = new MultiDateProperty({
       id: 'any_id',
       label: 'A Title',
+      template: 'any',
     });
 
     expect(property).toMatchObject({
@@ -14,8 +15,8 @@ describe('MultiDateProperty', () => {
   });
 
   it('should throw if providing a type different from multidate', () => {
-    expect(() => new MultiDateProperty({ id: 'any', label: 'A label', type: 'text' })).toThrow(
-      new PropertyTypeInvalidTypeError('text', 'MultiDateProperty')
-    );
+    expect(
+      () => new MultiDateProperty({ id: 'any', label: 'A label', type: 'text', template: '' })
+    ).toThrow(new PropertyTypeInvalidTypeError('text', 'MultiDateProperty'));
   });
 });

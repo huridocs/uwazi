@@ -84,7 +84,7 @@ export class RequestEntityTranslation {
             entityId: entity._id,
             languageFrom,
             languagesTo,
-            [property.name]: propertyValue,
+            [property.name.value]: propertyValue,
           })}`
         );
       }

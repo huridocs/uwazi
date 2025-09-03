@@ -6,6 +6,7 @@ describe('NestedProperty', () => {
       id: 'any_id',
       label: 'A label',
       type: 'nested',
+      template: 'any',
     });
 
     expect(nestedProperty.name.value).toBe('a_label_nested');
@@ -17,6 +18,7 @@ describe('NestedProperty', () => {
       label: 'A label',
       type: 'nested',
       name: 'a_label_2_nested',
+      template: 'any',
     });
 
     expect(nestedProperty.name.value).toBe('a_label_2_nested');
