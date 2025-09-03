@@ -9,7 +9,7 @@ const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph text-gray-500',
   ix_adjacent_paragraph: 'ix_adjacent_paragraph text-gray-700',
   ix_matching_paragraph: 'ix_matching_paragraph text-black',
-  ix_match: 'ix_match bg-orange-400 text-white',
+  ix_match: 'ix_match bg-[#FFE29A] text-black',
 };
 
 const MAX_CONTEXT = 20;
@@ -62,8 +62,8 @@ const truncateNodes = (nodes: React.ReactNode[]) => {
     return nodes;
   }
 
-  const trucantedHTML = truncateMatching(matchingParagraph);
-  return React.cloneElement(matchingParagraph, {}, trucantedHTML);
+  const trucatedHTML = truncateMatching(matchingParagraph);
+  return React.cloneElement(matchingParagraph, {}, trucatedHTML);
 };
 
 const filterNodes = (nodes: React.ReactNode[]) => {

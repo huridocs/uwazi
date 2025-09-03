@@ -28,7 +28,7 @@ exports[`ContextCell should truncate html with multiple matching paragraphs and 
 >
   ... matching paragraph  
   <span
-    class="ix_match bg-orange-400 text-white"
+    class="ix_match bg-[#FFE29A] text-black"
   >
     Praesent sed molestie risus, vitae laoreet elit.
   </span>
@@ -42,7 +42,7 @@ exports[`ContextCell should truncate html with single matching paragraph and onl
 >
   ...cus dapibus euismod. 
   <span
-    class="ix_match bg-orange-400 text-white"
+    class="ix_match bg-[#FFE29A] text-black"
   >
      Praesent sed molestie risus, vitae laoreet elit.
   </span>

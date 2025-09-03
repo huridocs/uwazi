@@ -42,7 +42,7 @@ describe('ContextCell', () => {
       'ix_matching_paragraph text-black'
     );
     expect(screen.getAllByText('with matching')[0].className).toBe(
-      'ix_match bg-orange-400 text-white'
+      'ix_match bg-[#FFE29A] text-black'
     );
   });
 
