@@ -213,7 +213,11 @@ export class MongoTemplatesDataSource
     );
   }
 
-  async create(template: Template): Promise<void> {
+  async create(_template: Template): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async isPropertyUnique(_property: Property): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 }
