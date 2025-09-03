@@ -3,6 +3,7 @@ import { Truncate } from 'V2/Components/UI';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';
+import { Tooltip } from 'flowbite-react';
 
 const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph text-gray-700',
@@ -11,28 +12,82 @@ const ixContextClassnames: { [key: string]: string } = {
   ix_match: 'ix_match text-orange-600',
 };
 
-const truncatedNodes = (nodes: React.ReactNode[]) => {
-  let matchingParagraph;
+const MAX_CONTEXT = 20;
 
-  const matchingWordsSpan = nodes.find(node => {
-    if (React.isValidElement(node)) {
-      if (node.props.className === ixContextClassnames.ix_match) {
-        return node;
-      }
-    }
-    return undefined;
-  });
+const truncateMatching = (matchingParagraph: React.ReactElement) => {
+  const childrenArray = React.Children.toArray(matchingParagraph.props.children);
+  const matchIndex = childrenArray.findIndex(
+    child => React.isValidElement(child) && child.props.className === ixContextClassnames.ix_match
+  );
+
+  if (matchIndex === -1) {
+    return matchingParagraph;
+  }
+
+  const before = childrenArray
+    .slice(0, matchIndex)
+    .map(child => (typeof child === 'string' ? child : ''))
+    .join('');
+  const after = childrenArray
+    .slice(matchIndex + 1)
+    .map(child => (typeof child === 'string' ? child : ''))
+    .join('');
+
+  return [
+    `...${before.slice(-MAX_CONTEXT)} `,
+    childrenArray[matchIndex],
+    ` ${after.slice(0, MAX_CONTEXT)}...`,
+  ];
 };
 
-const filterNodes = (nodes: React.ReactNode[]) =>
-  nodes.filter(node => {
-    if (React.isValidElement(node)) {
-      if (node.props.className === ixContextClassnames.ix_adjacent_paragraph) {
+const truncateNodes = (nodes: React.ReactNode[]) => {
+  const matchingParagraph = nodes.find(
+    node =>
+      React.isValidElement(node) &&
+      node.props.className === ixContextClassnames.ix_matching_paragraph
+  );
+
+  if (!matchingParagraph || !React.isValidElement(matchingParagraph)) {
+    const [firstNode] = nodes;
+    const [text] = React.isValidElement(firstNode) ? (firstNode.props.children as string) : [''];
+
+    if (text) {
+      return React.cloneElement(
+        firstNode as React.ReactElement,
+        {},
+        `${text.slice(0, MAX_CONTEXT)}...`
+      );
+    }
+
+    return nodes;
+  }
+
+  const trucantedHTML = truncateMatching(matchingParagraph);
+  return React.cloneElement(matchingParagraph, {}, trucantedHTML);
+};
+
+const filterNodes = (nodes: React.ReactNode[]) => {
+  const hasMatches = Boolean(
+    nodes.find(
+      node => React.isValidElement(node) && node.props.className === ixContextClassnames.ix_match
+    )
+  );
+
+  if (hasMatches) {
+    return nodes.filter(node => {
+      if (
+        React.isValidElement(node) &&
+        (node.props.className === ixContextClassnames.ix_adjacent_paragraph ||
+          node.props.className === ixContextClassnames.ix_paragraph)
+      ) {
         return false;
       }
-    }
-    return true;
-  });
+      return true;
+    });
+  }
+
+  return nodes;
+};
 
 const createNode = (node: ChildNode, key: number): React.ReactNode => {
   if (node.type === 'text') {
@@ -66,9 +121,9 @@ const ContextCell = ({ text }: { text: string }) => {
     [text]
   );
 
-  const filteredNodes = useMemo(() => {
+  const { fullHTML, truncatedHTML } = useMemo(() => {
     const nodes = document.children.map((node, i) => createNode(node, i));
-    return filterNodes(nodes);
+    return { fullHTML: nodes, truncatedHTML: truncateNodes(filterNodes(nodes)) };
   }, [document]);
 
   const isHTML = useMemo(
@@ -78,14 +133,25 @@ const ContextCell = ({ text }: { text: string }) => {
 
   if (!isHTML) {
     return (
-      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
+      <Truncate maxLength={40} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
         {text}
       </Truncate>
     );
   }
 
   if (isHTML) {
-    return <>{filteredNodes}</>;
+    return (
+      <Tooltip
+        content={fullHTML}
+        arrow
+        animation="duration-100"
+        // eslint-disable-next-line react/style-prop-object
+        style="light"
+        className="shadow-xl"
+      >
+        <div className="pointer-events-auto cursor-pointer">{truncatedHTML}</div>
+      </Tooltip>
+    );
   }
 
   return undefined;
