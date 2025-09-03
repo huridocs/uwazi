@@ -47,22 +47,29 @@ const templatesEditorLoader =
     let loadedTemplate = emptyTemplate;
     const templates = await templatesAPI.get(headers);
 
+    let entityCount = 0;
+
     if (params.templateId) {
       const templateToEdit = templates.find(template => template._id === params.templateId);
       if (templateToEdit) {
+        entityCount =
+          (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
+            templateToEdit._id
+          ] || 0;
         loadedTemplate = templateToEdit as ClientTemplateSchema;
       }
     }
 
-    return { loadedTemplate, pagesOptions };
+    return { loadedTemplate, pagesOptions, entityCount };
   };
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
-  const { loadedTemplate, pagesOptions } = useLoaderData() as {
+  const { loadedTemplate, pagesOptions, entityCount } = useLoaderData() as {
     loadedTemplate: ClientTemplateSchema;
     pagesOptions: { value: string; label: string }[];
+    entityCount: number;
   };
   const [template, setTemplate] = useState<ClientTemplateSchema>(loadedTemplate);
   const [properties, setProperties] = useState<PropertyRow[]>([]);
@@ -82,39 +89,55 @@ const TemplatesEditor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const ENTITY_COUNT_THRESHOLD = 3000;
 
-  const handleTemplateProcessed = async (data: { templateId: string }) => {
-    if (data.templateId !== template._id) {
-      return;
-    }
+  const handleTemplateProcessed = useCallback(
+    async () => async (data: { templateId: string }) => {
+      if (data.templateId !== template?._id) {
+        return;
+      }
 
-    await revalidator.revalidate();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Template processing completed.</Translate>,
-    });
-  };
+      await revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Template processing completed.</Translate>,
+      });
+    },
+    [template]
+  );
 
-  const handleTemplateProcessing = async (data: {
-    templateId: string;
-    processing: {
-      active: boolean;
-      completedJobs: number;
-      totalJobs: number;
-    };
-  }) => {
-    if (data.templateId !== template._id) {
-      return;
-    }
+  const handleTemplateProcessing = useCallback(
+    async () =>
+      async (data: {
+        templateId: string;
+        processing: {
+          active: boolean;
+          completedJobs: number;
+          totalJobs: number;
+        };
+      }) => {
+        if (data.templateId !== template?._id) {
+          return;
+        }
 
-    setTemplate({ ...template, processing: data.processing });
-  };
+        setTemplate({ ...template, processing: data.processing });
+      },
+    [template]
+  );
 
-  const notifyTemplateProcessing = () => {
+  const notifyTemplateProcessing = useCallback(() => {
     setNotifications({
       type: 'warning',
       text: <Translate>Template changes are being applied to all related entities.</Translate>,
+      ...(entityCount && {
+        details: (
+          <>
+            <Translate>Processing</Translate>
+            <span> {entityCount} </span>
+            <Translate>entities</Translate>
+          </>
+        ),
+      }),
     });
-  };
+  }, [entityCount]);
 
   useEffect(() => {
     socket.on('templateProcessed', handleTemplateProcessed);
@@ -123,7 +146,7 @@ const TemplatesEditor = () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
-  }, [loadedTemplate]);
+  }, [handleTemplateProcessed, handleTemplateProcessing]);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));
@@ -177,14 +200,7 @@ const TemplatesEditor = () => {
     [commonProperties, properties]
   );
 
-  const handleTableChange = ({
-    selectedRows,
-    rows,
-  }: {
-    selectedRows: Record<string, boolean>;
-    rows: PropertyRow[];
-  }) => {
-    setSelected(rows.filter(row => selectedRows[row.rowId]).map(row => row.rowId));
+  const handleTableChange = (rows: PropertyRow[]) => {
     const newCommonProperties = rows.filter(row => row.isCommonProperty);
     const newProperties = rows.filter(row => !row.isCommonProperty);
     if (!isEqual(newCommonProperties, commonProperties)) {
@@ -248,9 +264,6 @@ const TemplatesEditor = () => {
     }
 
     if (template._id) {
-      const entityCounts = await templatesAPI.checkTemplatesEntityCount(undefined, [template._id]);
-      const entityCount = entityCounts[template._id] || 0;
-
       if (entityCount > ENTITY_COUNT_THRESHOLD && !ignoreEntityCount) {
         setShowLargeEntityCountModal(true);
         return;
@@ -294,7 +307,7 @@ const TemplatesEditor = () => {
       <div className="flex justify-between mb-1">
         <div className="font-medium text-gray-500 text-xs">
           <Translate>Updating template properties across</Translate>
-          <span> {progress.total} </span>
+          <span> {entityCount} </span>
           <Translate>entities</Translate> ...
         </div>
         <span className="text-sm font-medium text-gray-500">{progress.percent.toFixed(2)}%</span>
@@ -319,7 +332,11 @@ const TemplatesEditor = () => {
             data={allProperties}
             enableSelections
             dnd={{ enable: true }}
-            onSelect={handleTableChange}
+            onSelect={({ rows, selectedRows }) => {
+              setSelected(rows.filter(row => selectedRows[row.rowId]).map(row => row.rowId));
+              handleTableChange(rows);
+            }}
+            onSort={({ rows }) => handleTableChange(rows)}
             header={
               <TemplateMetadata
                 value={{
@@ -347,7 +364,7 @@ const TemplatesEditor = () => {
             onAddThesaurus={() => setShowThesaurusModal(true)}
             onAddRelationshipType={() => setShowRelationshipTypeModal(true)}
             onAddProperty={() => setShowConfigPropertyPanel(true)}
-            disableSave={!checkPendingChanges() || isSaving || template.processing?.active}
+            disableSave={!checkPendingChanges() || isSaving}
           />
         </SettingsContent.Footer>
       </SettingsContent>
