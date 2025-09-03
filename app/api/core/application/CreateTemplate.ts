@@ -2,8 +2,13 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { z } from 'zod';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyFactory } from '../domain/template/PropertyFactory';
+import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
+import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
+import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService';
+import { SelectPropertyCreatorService } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 
 const types = [
   'date',
@@ -80,15 +85,27 @@ type Deps = {
 };
 
 class CreateTemplateUseCase implements UseCase<Input, Output> {
-  constructor(private deps: Deps) {}
+  propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
+
+  constructor(private deps: Deps) {
+    this.propertyCreatorServiceStrategy = new PropertyCreatorServiceStrategy({
+      default: new PropertyCreatorService({ templatesDS: this.deps.templatesDS }),
+      relationship: new RelationshipPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
+      select: new SelectPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
+    });
+  }
 
   async execute(input: Input): Promise<Output> {
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create({ ...p, id: 'id', template: 'id' })
     );
 
-    const properties = input.properties.map(p =>
-      PropertyFactory.create({ ...p, id: 'id', template: 'id' })
+    const properties = await Promise.all(
+      input.properties.map(async p =>
+        this.propertyCreatorServiceStrategy
+          .getStrategy(p.type)
+          .createProperty({ ...p, id: 'id', template: 'id' })
+      )
     );
 
     const template = new Template('id', input.name, properties, commonProperties, input.color);

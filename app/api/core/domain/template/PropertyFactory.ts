@@ -72,3 +72,4 @@ class PropertyFactory {
 }
 
 export { PropertyFactory };
+export type { CreateInput as PropertyFactoryCreateInput };
