@@ -57,12 +57,12 @@ DB.connect(config.DBHOST, config.DBAUTH)
       toc_service: new DistributedLoop('toc_service', async () => tocService.processAllTenants(), {
         port: config.redis.port,
         host: config.redis.host,
-        delayTimeBetweenTasks: 30000,
+        delayTimeBetweenTasks: 60000,
       }),
       sync_job: new DistributedLoop('sync_job', async () => syncWorker.runAllTenants(), {
         port: config.redis.port,
         host: config.redis.host,
-        delayTimeBetweenTasks: 1000,
+        delayTimeBetweenTasks: 10000,
       }),
 
       pdf_segmentation: new PDFSegmentation(),
@@ -72,7 +72,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
     services.segmentation_distributed_loop = new DistributedLoop(
       'segmentation_repeat',
       services.pdf_segmentation.segmentPdfs,
-      { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 5000 }
+      { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 60000 }
     );
 
     services.twitter_distributed_loop = new DistributedLoop(
