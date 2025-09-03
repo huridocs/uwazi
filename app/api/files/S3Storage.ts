@@ -19,10 +19,7 @@ class S3Error extends Error {
   }
 
   get httpStatusCode() {
-    if (this.originalError instanceof S3ServiceException) {
-      return this.originalError.$metadata.httpStatusCode;
-    }
-    return 500;
+    return this.originalError?.$metadata?.httpStatusCode || 503;
   }
 }
 

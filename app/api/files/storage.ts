@@ -14,6 +14,7 @@ import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { FileNotFound } from './FileNotFound';
 import {
   activityLogPath,
@@ -24,8 +25,6 @@ import {
   uploadsPath,
 } from './filesystem';
 import { S3Error, S3Storage } from './S3Storage';
-
-export type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
 let s3Instance: S3Storage;
 const defaultParams: { connectionTimeout: number; httpAgent?: {} } = {
@@ -38,6 +37,63 @@ const defaultParams: { connectionTimeout: number; httpAgent?: {} } = {
 };
 let previousFeatureFlag = false;
 
+const buildS3Client = (params: {}) => {
+  const client = new S3Client({
+    requestHandler: new NodeHttpHandler({
+      socketTimeout: 30000,
+      ...params,
+    }),
+    apiVersion: 'latest',
+    region: 'placeholder-region',
+    endpoint: config.s3.endpoint,
+    credentials: config.s3.credentials,
+    forcePathStyle: true,
+  });
+
+  // eslint-disable-next-line max-statements
+  client.middlewareStack.add((next, context) => async args => {
+    const startTime = Date.now();
+
+    const input = args.input as { Body?: Buffer; Key?: string };
+
+    try {
+      const result = await next(args);
+      const duration = Date.now() - startTime;
+
+      if (process.env.NODE_ENV !== 'test') {
+        if (!tenants.current().featureFlags?.deactivateS3Logging) {
+          DefaultLogger().info('S3 operation completed', {
+            operation: context.commandName,
+            duration,
+            key: input.Key,
+            fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
+            success: true,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+
+      return result;
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'test') {
+        if (!tenants.current().featureFlags?.deactivateS3Logging) {
+          DefaultLogger().info('S3 operation failed', {
+            operation: context.commandName,
+            duration: Date.now() - startTime,
+            key: input.Key,
+            fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
+            success: false,
+            error: error.message,
+            errorCode: error.$metadata?.httpStatusCode,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+      throw error;
+    }
+  });
+  return client;
+};
 const s3 = () => {
   const currentFeatureFlag = tenants.current().featureFlags?.deactivateS3Pooling || false;
   let params = defaultParams;
@@ -52,62 +108,16 @@ const s3 = () => {
     if (s3Instance) {
       s3Instance.destroy();
     }
-
-    const client = new S3Client({
-      requestHandler: new NodeHttpHandler({
-        socketTimeout: 30000,
-        ...params,
-      }),
-      apiVersion: 'latest',
-      region: 'placeholder-region',
-      endpoint: config.s3.endpoint,
-      credentials: config.s3.credentials,
-      forcePathStyle: true,
-    });
-
-    // Add custom timing middleware
-    client.middlewareStack.add((next, context) => async args => {
-      const startTime = Date.now();
-      const operation = context.commandName;
-
-      try {
-        const result = await next(args);
-        const duration = Date.now() - startTime;
-
-        // Log successful operations
-        legacyLogger.info('S3 operation completed', {
-          operation,
-          duration,
-          success: true,
-          timestamp: new Date().toISOString(),
-        });
-
-        return result;
-      } catch (error) {
-        console.log(error);
-        const duration = Date.now() - startTime;
-
-        // Log failed operations with detailed error info
-        legacyLogger.error('S3 operation failed', {
-          // operation,
-          // duration,
-          // success: false,
-          // error: error.message,
-          // errorCode: error.$metadata?.httpStatusCode,
-          // timestamp: new Date().toISOString(),
-        });
-
-        throw error;
-      }
-    });
-    s3Instance = new S3Storage(client);
+    s3Instance = new S3Storage(buildS3Client(params));
     previousFeatureFlag = currentFeatureFlag;
   }
 
   return s3Instance;
 };
 
-export const paths: { [k in FileTypes]: (filename: string) => string } = {
+type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
+
+const paths: { [k in FileTypes]: (filename: string) => string } = {
   custom: customUploadsPath,
   document: uploadsPath,
   segmentation: filename => uploadsPath(`segmentation/${filename}`),
@@ -124,7 +134,7 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
     stream.on('error', (err: unknown) => reject(err));
   });
 
-export const s3KeyWithPath = (filename: string, type: FileTypes) => {
+const s3KeyWithPath = (filename: string, type: FileTypes) => {
   const sliceValue = type === 'segmentation' ? -3 : -2;
   return path.join(
     tenants.current().name,
@@ -270,3 +280,6 @@ export const storage = {
     }
   },
 };
+
+export { paths, s3KeyWithPath };
+export type { FileTypes };
