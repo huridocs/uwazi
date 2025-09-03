@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import { Property } from 'api/templates.v2/model/Property';
 import { DomainError } from '../DomainError';
 
 class PropertyTypeInvalidTypeError extends DomainError {
@@ -73,6 +74,15 @@ class InvalidStyleTypeError extends DomainError {
   }
 }
 
+class TemplateWithDuplicatedPropertyError extends DomainError {
+  constructor(property: Property) {
+    super(
+      `Template contains duplicate property: [name=${property.name}, type=${property.type}]`,
+      'template.template.template_with_duplicated_property_error'
+    );
+  }
+}
+
 export {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
@@ -82,4 +92,5 @@ export {
   PropertyTypeInvalidTypeError,
   InvalidStyleTypeError,
   CommonPropertyInvalidError,
+  TemplateWithDuplicatedPropertyError,
 };

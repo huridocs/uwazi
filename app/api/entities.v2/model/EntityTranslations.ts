@@ -34,12 +34,12 @@ export class EntityTranslations {
   }
 
   getValue(property: TemplateProperty, language: LanguageISO6391): EntityMetadata[] {
-    return this.getTranslation(language).metadata[property.name.value] || [];
+    return this.getTranslation(language).metadata[property.name] || [];
   }
 
   setValue(property: TemplateProperty, value: BaseMetadataValue[], language?: LanguageISO6391) {
     if (property instanceof V1RelationshipProperty) {
-      this.setValueInAllLanguages(property.name.value, value);
+      this.setValueInAllLanguages(property.name, value);
     } else if (property.type === 'text') {
       this.setSingleLanguageValue(property, value, language);
     } else {
@@ -55,7 +55,7 @@ export class EntityTranslations {
     if (!language) {
       throw new Error('language needs to be defined in order to set a specific language value');
     }
-    this.getTranslation(language).metadata[property.name.value] = value;
+    this.getTranslation(language).metadata[property.name] = value;
   }
 
   setValueInAllLanguages(propertyName: string, value: BaseMetadataValue[]) {
@@ -70,7 +70,7 @@ export class EntityTranslations {
   ) {
     this.getLanguages().forEach(language => {
       const currentValues = this.getValue(property, language);
-      this.getTranslation(language).metadata[property.name.value] = currentValues.map(value => {
+      this.getTranslation(language).metadata[property.name] = currentValues.map(value => {
         const relatedEntity = relatedEntities[value.value as string];
         if (!relatedEntity) {
           return value;

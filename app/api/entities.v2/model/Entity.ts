@@ -73,10 +73,10 @@ export class Entity {
 
   setPropertyValue(property: Property, value: string) {
     if (property.type === 'text' || property.type === 'markdown') {
-      const isTitleProperty = property instanceof CommonProperty && property.name.value === 'title';
+      const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
       if (!(property instanceof CommonProperty)) {
-        this.metadata[property.name.value] = this.metadata[property.name.value] || [{ value: '' }];
-        this.metadata[property.name.value][0].value = value;
+        this.metadata[property.name] = this.metadata[property.name] || [{ value: '' }];
+        this.metadata[property.name][0].value = value;
       }
       if (isTitleProperty) {
         this.title = value || this.title;
@@ -89,9 +89,9 @@ export class Entity {
 
   getPropertyValue(property: Property): string {
     if (property.type === 'text' || property.type === 'markdown') {
-      const isTitleProperty = property instanceof CommonProperty && property.name.value === 'title';
+      const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
       if (isTitleProperty) return this.title;
-      return (this.metadata[property.name.value]?.[0]?.value as string) || '';
+      return (this.metadata[property.name]?.[0]?.value as string) || '';
     }
 
     throw new Error('types other than string/markdown are not implemented yet');

@@ -35,7 +35,7 @@ class PXGetEntityParagraphs
     const extractor = await extractorsDS.getById(input.extractorId);
 
     if (extractor) {
-      const paragraphNumberProperty = extractor.paragraphNumberProperty.name.value;
+      const paragraphNumberProperty = extractor.paragraphNumberProperty.name;
 
       const results = (await extractorsQueryService
         .getExtractedParagraphs({

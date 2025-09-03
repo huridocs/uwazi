@@ -25,8 +25,8 @@ class ModifiedDateProperty extends CommonProperty {
       throw new ModifiedDatePropertyInvalidTypeError(this.type);
     }
 
-    if (this.name.value !== 'editDate') {
-      throw new ModifiedDatePropertyInvalidNameError(this.name.value);
+    if (this.name !== 'editDate') {
+      throw new ModifiedDatePropertyInvalidNameError(this.name);
     }
   }
 }

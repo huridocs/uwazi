@@ -17,7 +17,7 @@ describe('CreationDateProperty', () => {
       type: 'date',
     });
 
-    expect(creationDateProperty.name.value).toBe('creationDate');
+    expect(creationDateProperty.name).toBe('creationDate');
   });
 
   it('should throw if providing a type different from date', () => {

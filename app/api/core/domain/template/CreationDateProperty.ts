@@ -25,8 +25,8 @@ class CreationDateProperty extends CommonProperty {
       throw new CreationDatePropertyInvalidTypeError(this.type);
     }
 
-    if (this.name.value !== 'creationDate') {
-      throw new CreationDatePropertyInvalidNameError(this.name.value);
+    if (this.name !== 'creationDate') {
+      throw new CreationDatePropertyInvalidNameError(this.name);
     }
   }
 }

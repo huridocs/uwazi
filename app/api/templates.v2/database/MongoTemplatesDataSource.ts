@@ -127,7 +127,7 @@ export class MongoTemplatesDataSource
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
-        p => p.name.value,
+        p => p.name,
         p => p
       );
     }

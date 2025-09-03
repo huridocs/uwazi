@@ -47,7 +47,7 @@ export class SaveEntityTranslations {
           `[AT]
 - Translation error
 - ${translation.error_message}
-- ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name.value]: translation.text })}`
+- ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
         );
       }
       if (translation?.success && property) {
@@ -56,7 +56,7 @@ export class SaveEntityTranslations {
 
         this.logger.info(
           // eslint-disable-next-line max-len
-          `[AT] - Property saved on DB - ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name.value]: translation.text })}`
+          `[AT] - Property saved on DB - ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
         );
       }
     });

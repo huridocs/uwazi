@@ -9,13 +9,10 @@ type Props = {
 
 class GeolocationProperty extends Property {
   constructor(props: Props) {
-    super({ ...props, type: props.type || 'geolocation' });
+    const name =
+      props.name || PropertyName.fromLabel(`${props.label}_${propertyTypes.geolocation}`).value;
 
-    const name = props.name
-      ? new PropertyName(props.name)
-      : PropertyName.fromLabel(`${props.label}_${propertyTypes.geolocation}`);
-
-    this.name = name;
+    super({ ...props, type: props.type || 'geolocation', name });
 
     this.validate();
   }

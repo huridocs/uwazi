@@ -26,7 +26,7 @@ class Property {
 
   readonly type: PropertyTypes;
 
-  name: PropertyName;
+  _name: PropertyName;
 
   readonly label: string;
 
@@ -43,10 +43,18 @@ class Property {
     this.type = props.type;
     this.label = props.label;
     this.template = props.template;
-    this.name = props.name ? new PropertyName(props.name) : PropertyName.fromLabel(this.label);
+    this._name = props.name ? new PropertyName(props.name) : PropertyName.fromLabel(this.label);
     this.required = props.required || false;
     this.noLabel = props.noLabel || false;
     this.showInCard = props.showInCard || false;
+  }
+
+  get discriminator() {
+    return `${this.name}:${this.type}`;
+  }
+
+  get name() {
+    return this._name.value;
   }
 
   isSame(other: Property) {
@@ -54,7 +62,7 @@ class Property {
   }
 
   equals(other: Property) {
-    return this.name.value === other.name.value && this.type === other.type;
+    return this.discriminator === other.discriminator;
   }
 
   updatedAttributes(other: Property): PropertyUpdateInfo {
@@ -68,7 +76,7 @@ class Property {
       updatedAttributes: [],
     };
 
-    if (this.name.value !== other.name.value) updateInfo.updatedAttributes.push('name');
+    if (this.name !== other.name) updateInfo.updatedAttributes.push('name');
     if (this.label !== other.label) updateInfo.updatedAttributes.push('label');
     if (this.template !== other.template) updateInfo.updatedAttributes.push('template');
 

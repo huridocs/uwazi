@@ -58,7 +58,7 @@ export class DenormalizationService {
           if (property.template === re.template) {
             entities.push({
               sharedId: re.sharedId,
-              property: property.name.value,
+              property: property.name,
             });
           }
         });
@@ -68,7 +68,7 @@ export class DenormalizationService {
             await this.relationshipsDS.getByQuery(query, language).forEach(async entity => {
               entities.push({
                 sharedId: entity.sharedId,
-                property: property.name.value,
+                property: property.name,
               });
             });
           })
@@ -151,11 +151,11 @@ export class DenormalizationService {
 
   private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
     const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
-    const relationshipPropertyNames = relationshipProperties.map(property => property.name.value);
+    const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
     await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {
       const newValuesForProperties = relationshipProperties.map(property => ({
-        propertyName: property.name.value,
+        propertyName: property.name,
         ...(property.denormalizedProperty
           ? { value: entity.metadata[property.denormalizedProperty] }
           : {}),

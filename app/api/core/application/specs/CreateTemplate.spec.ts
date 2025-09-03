@@ -33,8 +33,8 @@ describe('CreateTemplateUseCase', () => {
         {
           id: 'id',
           label: 'Title',
-          name: { value: 'title' },
-          template: 'To be removed',
+          _name: { value: 'title' },
+          template: 'id',
           type: 'text',
           generatedId: false,
           isCommonProperty: true,
@@ -46,8 +46,8 @@ describe('CreateTemplateUseCase', () => {
         {
           id: 'id',
           label: 'Creation Date',
-          name: { value: 'creationDate' },
-          template: 'To be removed',
+          _name: { value: 'creationDate' },
+          template: 'id',
           type: 'date',
           isCommonProperty: true,
           prioritySorting: false,
@@ -58,8 +58,8 @@ describe('CreateTemplateUseCase', () => {
         {
           id: 'id',
           label: 'Edit Date',
-          name: { value: 'editDate' },
-          template: 'To be removed',
+          _name: { value: 'editDate' },
+          template: 'id',
           type: 'date',
           isCommonProperty: true,
           prioritySorting: false,
@@ -72,8 +72,8 @@ describe('CreateTemplateUseCase', () => {
         {
           id: 'id',
           label: 'Text',
-          name: { value: 'text' },
-          template: 'To be removed',
+          _name: { value: 'text' },
+          template: 'id',
           type: 'text',
           defaultfilter: false,
           filter: false,

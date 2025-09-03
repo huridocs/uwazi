@@ -16,7 +16,7 @@ describe('TitleProperty', () => {
       isCommonProperty: true,
     });
 
-    expect(property.name.value).toBe('title');
+    expect(property.name).toBe('title');
   });
 
   it('should throw if providing a type different from text', () => {

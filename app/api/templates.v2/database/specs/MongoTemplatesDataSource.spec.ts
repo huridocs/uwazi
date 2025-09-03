@@ -80,19 +80,19 @@ describe('getAllProperties()', () => {
     expect(result[3]).toBeInstanceOf(Property);
     expect(result).toMatchObject([
       {
-        name: { value: 'relationshipProp1' },
+        name: 'relationshipProp1',
         template: factory.id('template1').toHexString(),
       },
       {
-        name: { value: 'relationshipProp2' },
+        name: 'relationshipProp2',
         template: factory.id('template2').toHexString(),
       },
       {
-        name: { value: 'relationshipProp3' },
+        name: 'relationshipProp3',
         template: factory.id('template3').toHexString(),
       },
       {
-        name: { value: 'textprop' },
+        name: 'textprop',
         template: factory.id('template4').toHexString(),
       },
     ]);
@@ -110,17 +110,17 @@ describe('when requesting the relationship properties configured in the system',
     });
     expect(result).toMatchObject([
       {
-        name: { value: 'relationshipProp1' },
+        name: 'relationshipProp1',
         query: createRelationshipQuery(1),
         template: factory.id('template1').toHexString(),
       },
       {
-        name: { value: 'relationshipProp2' },
+        name: 'relationshipProp2',
         query: createRelationshipQuery(2),
         template: factory.id('template2').toHexString(),
       },
       {
-        name: { value: 'relationshipProp3' },
+        name: 'relationshipProp3',
         query: createRelationshipQuery(3),
         template: factory.id('template3').toHexString(),
       },
@@ -154,7 +154,7 @@ describe('when requesting a property by name', () => {
     ({ name, type, expectedClass }) => {
       const prop = props[type];
       expect(prop).toBeInstanceOf(expectedClass);
-      expect(prop.name.value).toEqual(name);
+      expect(prop.name).toEqual(name);
       expect(prop.type).toEqual(type);
     }
   );

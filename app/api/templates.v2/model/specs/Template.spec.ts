@@ -1,3 +1,6 @@
+import { TextProperty } from 'api/core/domain/template/TextProperty';
+import { TemplateWithDuplicatedPropertyError } from 'api/core/domain/template/errors';
+import { TitleProperty } from 'api/core/domain/template/TitleProperty';
 import { Template } from '../Template';
 import { Property } from '../Property';
 import { V1RelationshipProperty } from '../V1RelationshipProperty';
@@ -579,4 +582,45 @@ describe('selectDeletedProperties()', () => {
 
     expect(deletedProps).toHaveLength(0);
   });
+});
+
+it('should throw if there are duplicated Properties', () => {
+  expect(
+    () =>
+      new Template(
+        'id',
+        'name',
+        [
+          new TextProperty({ id: 'id', label: 'text', template: 'template' }),
+          new TextProperty({ id: 'id', label: 'text', template: 'template' }),
+        ],
+        [],
+        'template'
+      )
+  ).toThrow(TemplateWithDuplicatedPropertyError);
+
+  expect(
+    () =>
+      new Template(
+        'id',
+        'name',
+        [new TextProperty({ id: 'id', label: 'text', name: 'title', template: 'template' })],
+        [new TitleProperty({ id: 'id', label: 'title', template: 'template' })],
+        'template'
+      )
+  ).toThrow(TemplateWithDuplicatedPropertyError);
+
+  expect(
+    () =>
+      new Template(
+        'id',
+        'name',
+        [],
+        [
+          new TitleProperty({ id: 'id', label: 'text', template: 'template' }),
+          new TitleProperty({ id: 'id', label: 'text', template: 'template' }),
+        ],
+        'template'
+      )
+  ).toThrow(TemplateWithDuplicatedPropertyError);
 });

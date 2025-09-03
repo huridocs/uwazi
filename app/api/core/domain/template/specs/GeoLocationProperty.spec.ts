@@ -9,7 +9,7 @@ describe('GeoLocationProperty', () => {
       template: 'any',
     });
 
-    expect(geolocationProperty.name.value).toBe('a_label_geolocation');
+    expect(geolocationProperty.name).toBe('a_label_geolocation');
   });
 
   it('should not generate a PropertyName if one is provided', () => {
@@ -21,6 +21,6 @@ describe('GeoLocationProperty', () => {
       template: 'any',
     });
 
-    expect(geolocationProperty.name.value).toBe('a_label_2_geolocation');
+    expect(geolocationProperty.name).toBe('a_label_2_geolocation');
   });
 });

@@ -30,7 +30,7 @@ export class EntityRelationshipsUpdateService {
       );
 
       return {
-        inheritedValue: entity.metadata[denormalizedProperty.name.value] ?? [],
+        inheritedValue: entity.metadata[denormalizedProperty.name] ?? [],
         inheritedType: denormalizedProperty.type,
       };
     }
@@ -71,7 +71,7 @@ export class EntityRelationshipsUpdateService {
         template.properties.map(async property => {
           if (
             property instanceof RelationshipProperty &&
-            entity.obsoleteMetadata.includes(property.name.value)
+            entity.obsoleteMetadata.includes(property.name)
           ) {
             const results = await this.relationshipsDataSource
               .getByQuery(
@@ -80,7 +80,7 @@ export class EntityRelationshipsUpdateService {
               )
               .all();
 
-            metadataToUpdate[property.name.value] = await this.transformToDenormalizedData(
+            metadataToUpdate[property.name] = await this.transformToDenormalizedData(
               property,
               results
             );

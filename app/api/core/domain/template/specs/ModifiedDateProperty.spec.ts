@@ -17,7 +17,7 @@ describe('ModifiedDateProperty', () => {
       type: 'date',
     });
 
-    expect(creationDateProperty.name.value).toBe('editDate');
+    expect(creationDateProperty.name).toBe('editDate');
   });
 
   it('should throw if providing a type different from date', () => {

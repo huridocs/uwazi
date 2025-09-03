@@ -31,9 +31,9 @@ describe('Property', () => {
       template: 'any',
     });
 
-    expect(property1.name.value).toBe('a_text_property');
+    expect(property1.name).toBe('a_text_property');
 
-    expect(property2.name.value).toBe('a_text_property');
+    expect(property2.name).toBe('a_text_property');
   });
 
   it('equals should return true if both Type and PropertyName are equal', () => {

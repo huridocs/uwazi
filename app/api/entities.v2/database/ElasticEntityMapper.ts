@@ -14,7 +14,7 @@ export class ElasticEntityMapper {
     const metadata: { [propertyName: string]: any } = {};
 
     Object.entries(entity.metadata || {}).forEach(([propertyName, values]) => {
-      const property = properties.find(p => p.name.value === propertyName);
+      const property = properties.find(p => p.name === propertyName);
       if (property instanceof RelationshipProperty && property.inherits) {
         metadata[propertyName] = (entity.metadata?.[propertyName] || [])
           .map(({ inheritedValue, ...originalValue }) =>

@@ -25,8 +25,8 @@ class TitleProperty extends CommonProperty {
       throw new PropertyTypeInvalidTypeError(this.type, 'TitleProperty');
     }
 
-    if (this.name.value !== 'title') {
-      throw new TitlePropertyInvalidNameError(this.name.value);
+    if (this.name !== 'title') {
+      throw new TitlePropertyInvalidNameError(this.name);
     }
   }
 }

@@ -9,7 +9,7 @@ describe('NestedProperty', () => {
       template: 'any',
     });
 
-    expect(nestedProperty.name.value).toBe('a_label_nested');
+    expect(nestedProperty.name).toBe('a_label_nested');
   });
 
   it('should not generate a PropertyName if one is provided', () => {
@@ -21,6 +21,6 @@ describe('NestedProperty', () => {
       template: 'any',
     });
 
-    expect(nestedProperty.name.value).toBe('a_label_2_nested');
+    expect(nestedProperty.name).toBe('a_label_2_nested');
   });
 });
