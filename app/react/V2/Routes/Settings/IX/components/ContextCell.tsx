@@ -6,10 +6,10 @@ import sanitizeHtml from 'sanitize-html';
 import { Tooltip } from 'flowbite-react';
 
 const ixContextClassnames: { [key: string]: string } = {
-  ix_paragraph: 'ix_paragraph text-gray-700',
+  ix_paragraph: 'ix_paragraph text-gray-500',
   ix_adjacent_paragraph: 'ix_adjacent_paragraph text-gray-700',
-  ix_matching_paragraph: 'ix_matching_paragraph text-gray-900',
-  ix_match: 'ix_match text-orange-600',
+  ix_matching_paragraph: 'ix_matching_paragraph text-black',
+  ix_match: 'ix_match bg-orange-400 text-white',
 };
 
 const MAX_CONTEXT = 20;
@@ -133,7 +133,7 @@ const ContextCell = ({ text }: { text: string }) => {
 
   if (!isHTML) {
     return (
-      <Truncate maxLength={40} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
+      <Truncate maxLength={25} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
         {text}
       </Truncate>
     );

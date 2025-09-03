@@ -39,9 +39,11 @@ describe('ContextCell', () => {
     );
 
     expect(screen.getAllByText('Some primary text', { exact: false })[0].className).toBe(
-      'ix_matching_paragraph text-gray-900'
+      'ix_matching_paragraph text-black'
     );
-    expect(screen.getAllByText('with matching')[0].className).toBe('ix_match text-orange-600');
+    expect(screen.getAllByText('with matching')[0].className).toBe(
+      'ix_match bg-orange-400 text-white'
+    );
   });
 
   it.each([
@@ -57,7 +59,7 @@ describe('ContextCell', () => {
   it('should show the first available paragraph if not matching elements are present', () => {
     render(<ContextCell text={noMatching} />);
     expect(screen.getByText('Duis volutpat leo eu...').className).toBe(
-      'ix_paragraph text-gray-700'
+      'ix_paragraph text-gray-500'
     );
   });
 });

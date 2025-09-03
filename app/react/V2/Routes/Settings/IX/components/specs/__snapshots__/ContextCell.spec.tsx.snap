@@ -24,11 +24,11 @@ exports[`ContextCell should not render script tags when nested on valid tags 1`]
 
 exports[`ContextCell should truncate html with multiple matching paragraphs and only show relevant paragraphs 1`] = `
 <p
-  class="ix_matching_paragraph text-gray-900"
+  class="ix_matching_paragraph text-black"
 >
   ... matching paragraph  
   <span
-    class="ix_match text-orange-600"
+    class="ix_match bg-orange-400 text-white"
   >
     Praesent sed molestie risus, vitae laoreet elit.
   </span>
@@ -38,11 +38,11 @@ exports[`ContextCell should truncate html with multiple matching paragraphs and 
 
 exports[`ContextCell should truncate html with single matching paragraph and only show relevant paragraphs 1`] = `
 <p
-  class="ix_matching_paragraph text-gray-900"
+  class="ix_matching_paragraph text-black"
 >
   ...cus dapibus euismod. 
   <span
-    class="ix_match text-orange-600"
+    class="ix_match bg-orange-400 text-white"
   >
      Praesent sed molestie risus, vitae laoreet elit.
   </span>
