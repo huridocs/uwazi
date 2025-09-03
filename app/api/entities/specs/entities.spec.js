@@ -7,8 +7,8 @@ import fs from 'fs/promises';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
-import { storage, uploadsPath } from 'api/files';
 import relationships from 'api/relationships';
+import { storage, uploadsPath } from 'api/files';
 import { search } from 'api/search';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';

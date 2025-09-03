@@ -3,8 +3,8 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import { storage } from 'api/files';
 import relationships from 'api/relationships';
+import { storage } from 'api/files';
 import { search } from 'api/search';
 import { ocrManager } from 'api/services/ocr/OcrManager';
 import settings from 'api/settings/settings';

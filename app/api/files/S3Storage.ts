@@ -19,7 +19,7 @@ class S3Error extends Error {
   }
 
   get httpStatusCode() {
-    return this.originalError.$metadata.httpStatusCode;
+    return this.originalError?.$metadata?.httpStatusCode || 503;
   }
 }
 
@@ -36,6 +36,10 @@ export class S3Storage {
 
   constructor(s3Client: S3Client) {
     this.client = s3Client;
+  }
+
+  destroy() {
+    this.client.destroy();
   }
 
   static bucketName() {
