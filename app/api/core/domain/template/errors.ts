@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { DomainError } from '../DomainError';
 
-class TitlePropertyInvalidTypeError extends DomainError {
-  constructor(type: string) {
+class PropertyTypeInvalidTypeError extends DomainError {
+  constructor(type: string, propertyName: string) {
     super(
-      `The following type is not valid for TitleProperty. Type = ${type}`,
+      `The following type is not valid for ${propertyName}. Type = ${type}`,
       'template.property.title_property_have_invalid_type_error'
     );
   }
@@ -64,12 +64,22 @@ class CommonPropertyInvalidError extends DomainError {
   }
 }
 
+class InvalidStyleTypeError extends DomainError {
+  constructor(type: string) {
+    super(
+      `The following style type is not valid for Image Property. Type = ${type}`,
+      'template.property.invalid_style_type_error'
+    );
+  }
+}
+
 export {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
   ModifiedDatePropertyInvalidTypeError,
   ModifiedDatePropertyInvalidNameError,
-  TitlePropertyInvalidTypeError,
   TitlePropertyInvalidNameError,
+  PropertyTypeInvalidTypeError,
+  InvalidStyleTypeError,
   CommonPropertyInvalidError,
 };

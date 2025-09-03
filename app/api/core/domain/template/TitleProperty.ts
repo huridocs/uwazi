@@ -1,6 +1,6 @@
 import { CommonProperty, CommonPropertyProps } from 'api/templates.v2/model/CommonProperty';
 import { PropertyTypes } from 'api/templates.v2/model/Property';
-import { TitlePropertyInvalidNameError, TitlePropertyInvalidTypeError } from './errors';
+import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from './errors';
 
 type Props = { prioritySorting?: boolean; generatedId?: boolean; type?: PropertyTypes } & Omit<
   CommonPropertyProps,
@@ -22,7 +22,7 @@ class TitleProperty extends CommonProperty {
 
   protected validate() {
     if (this.type !== 'text') {
-      throw new TitlePropertyInvalidTypeError(this.type);
+      throw new PropertyTypeInvalidTypeError(this.type, 'TitleProperty');
     }
 
     if (this.name.value !== 'title') {

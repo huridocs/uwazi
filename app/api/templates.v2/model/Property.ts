@@ -15,6 +15,9 @@ type Props = {
   type: PropertyTypes;
   name?: string;
   label: string;
+  required?: boolean;
+  noLabel?: boolean;
+  showInCard?: boolean;
 };
 
 class Property {
@@ -28,12 +31,21 @@ class Property {
 
   readonly template: string;
 
+  required: boolean;
+
+  noLabel: boolean;
+
+  showInCard: boolean;
+
   constructor(props: Props) {
     this.id = props.id;
     this.type = props.type;
     this.label = props.label;
     this.template = 'To be removed';
     this.name = props.name ? new PropertyName(props.name) : PropertyName.fromLabel(this.label);
+    this.required = props.required || false;
+    this.noLabel = props.noLabel || false;
+    this.showInCard = props.showInCard || false;
   }
 
   isSame(other: Property) {

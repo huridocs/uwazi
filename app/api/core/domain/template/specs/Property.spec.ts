@@ -1,6 +1,20 @@
 import { Property } from 'api/templates.v2/model/Property';
 
 describe('Property', () => {
+  it('should set defaults values if not provided', () => {
+    const property = new Property({
+      id: 'any_id',
+      label: 'A Title',
+      type: 'text',
+    });
+
+    expect(property).toMatchObject({
+      noLabel: false,
+      required: false,
+      showInCard: false,
+    });
+  });
+
   it('should generate a PropertyName ONLY when none is provided', () => {
     const property1 = new Property({ id: 'any_id', type: 'text', label: 'A Text Property' });
     const property2 = new Property({
