@@ -36,6 +36,7 @@ import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
+import { TrainModal } from './components/TrainModal';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -73,6 +74,7 @@ const IXSuggestions = () => {
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
+  const [modal, setModal] = useState<'train' | 'process' | 'none'>('none');
   const [status, setStatus] = useState<{
     status: ixStatus;
     message?: string;
@@ -352,7 +354,10 @@ const IXSuggestions = () => {
             </div>
           ) : (
             <div className="flex items-center justify-center space-x-4">
-              <Button
+              <Button size="small" type="button" styling="solid" onClick={() => setModal('train')}>
+                <Translate>Train</Translate>
+              </Button>
+              {/* <Button
                 size="small"
                 type="button"
                 disabled={status.status === ixStatus.cancel}
@@ -369,7 +374,7 @@ const IXSuggestions = () => {
                 <Button size="small" type="button" styling="light" onClick={testRun}>
                   <Translate>Test run</Translate>
                 </Button>
-              )}
+              )} */}
               {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
@@ -407,6 +412,17 @@ const IXSuggestions = () => {
         suggestion={sidepanelSuggestion}
         onEntitySave={onEntitySave}
       />
+
+      {modal === 'train' && (
+        <TrainModal
+          close={() => {
+            setModal('none');
+          }}
+          onTrain={trainModelOrCancelAction}
+          onTestRun={testRun}
+          isTraining={status.status !== ixStatus.ready}
+        />
+      )}
     </div>
   );
 };
