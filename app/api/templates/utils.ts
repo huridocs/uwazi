@@ -51,7 +51,7 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
   ).reduce((indexed, prop) => ({ ...indexed, [prop._id.toString()]: prop }), {});
 };
 
-const denormalizeInheritedProperties = async (template: TemplateSchema) => {
+const setInheritedPropertiesType = async (template: TemplateSchema) => {
   if (template.synced) return template.properties;
 
   const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
@@ -277,7 +277,6 @@ export type { PropertyOrThesaurusSchema };
 export {
   newThesauriId,
   safeName,
-  denormalizeInheritedProperties,
   flattenProperties,
   generateIds,
   getUpdatedIds,
@@ -286,4 +285,5 @@ export {
   getDeletedProperties,
   getRenamedTitle,
   updateExtractedMetadataProperties,
+  setInheritedPropertiesType,
 };

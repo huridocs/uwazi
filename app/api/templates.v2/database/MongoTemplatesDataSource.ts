@@ -212,4 +212,12 @@ export class MongoTemplatesDataSource
       { $unset: { processing: true } }
     );
   }
+
+  async create(_template: Template): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async isPropertyUnique(_property: Property): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
 }

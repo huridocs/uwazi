@@ -1,4 +1,5 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { TemplateWithDuplicatedPropertyError } from 'api/core/domain/template/errors';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -14,16 +15,37 @@ class Template {
 
   readonly commonProperties: CommonProperty[] = [];
 
+  color?: string;
+
   constructor(
     id: string,
     name: string,
-    properties: Property[] = [],
-    commonProperties: Property[] = []
+    properties: Property[],
+    commonProperties: CommonProperty[],
+    color?: string
   ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
     this.commonProperties = commonProperties;
+    this.color = color;
+
+    this.validate();
+  }
+
+  get allProperties() {
+    return [...this.commonProperties, ...this.properties];
+  }
+
+  private validate() {
+    const seen = new Set<string>();
+
+    this.allProperties.forEach(property => {
+      if (seen.has(property.discriminator)) {
+        throw new TemplateWithDuplicatedPropertyError(property);
+      }
+      seen.add(property.discriminator);
+    });
   }
 
   selectNewProperties(newTemplate: Template): Property[] {

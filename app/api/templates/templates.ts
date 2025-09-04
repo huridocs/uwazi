@@ -26,7 +26,7 @@ import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
-  denormalizeInheritedProperties,
+  setInheritedPropertiesType,
   generateNames,
   getDeletedProperties,
   getRenamedTitle,
@@ -178,7 +178,7 @@ export default {
     delete template.processing;
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
-    template.properties = await denormalizeInheritedProperties(template);
+    template.properties = await setInheritedPropertiesType(template);
 
     await validateTemplate(template);
 

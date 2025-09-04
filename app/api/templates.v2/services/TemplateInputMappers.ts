@@ -53,7 +53,13 @@ const propertyToApp = (property: PropertySchema, templateId: string): Property =
       property.inherit?.property
     );
   }
-  return new Property(propertyId, property.type, property.name, property.label, templateId);
+  return new Property({
+    id: propertyId,
+    type: property.type,
+    name: property.name,
+    label: property.label,
+    template: templateId,
+  });
 };
 
 const TemplateInputMappers = {
@@ -64,7 +70,8 @@ const TemplateInputMappers = {
     return new Template(
       id,
       template.name,
-      template.properties?.map(p => propertyToApp(p, id)) || []
+      template.properties?.map(p => propertyToApp(p, id)) || [],
+      []
     );
   },
 };
