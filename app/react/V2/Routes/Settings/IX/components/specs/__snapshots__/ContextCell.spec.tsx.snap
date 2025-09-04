@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ContextCell should not render script tags 1`] = `
+<div
+  class="pointer-events-auto cursor-pointer"
+>
+   
+  <p
+    class=""
+  >
+    Text 1
+  </p>
+   
+</div>
+`;
+
+exports[`ContextCell should not render script tags when nested on valid tags 1`] = `
+<p
+  class=""
+>
+  Text 1 
+</p>
+`;
+
+exports[`ContextCell should truncate html with multiple matching paragraphs and only show relevant paragraphs 1`] = `
+<p
+  class="ix_matching_paragraph text-black"
+>
+  ... matching paragraph  
+  <span
+    class="ix_match bg-[#FFE29A] text-black"
+  >
+    Praesent sed molestie risus, vitae laoreet elit.
+  </span>
+  ...
+</p>
+`;
+
+exports[`ContextCell should truncate html with single matching paragraph and only show relevant paragraphs 1`] = `
+<p
+  class="ix_matching_paragraph text-black"
+>
+  ...cus dapibus euismod. 
+  <span
+    class="ix_match bg-[#FFE29A] text-black"
+  >
+     Praesent sed molestie risus, vitae laoreet elit.
+  </span>
+    Cras dapibus, neque...
+</p>
+`;
+
+exports[`ContextCell should work when a matching paragraph has multiple match words 1`] = `
+<p
+  class="ix_matching_paragraph text-black"
+>
+  ...arterly report shows 
+  <span
+    class="ix_match bg-[#FFE29A] text-black"
+  >
+    Revenue: $1.2M
+  </span>
+   ,...
+</p>
+`;

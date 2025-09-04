@@ -19,7 +19,7 @@ import {
   template1,
   entity1,
   thesauri,
-} from './fixtures';
+} from './SidepanelsFixtures';
 import { PDFSidepanel } from '../PDFSidepanel';
 import { PropertySidepanel } from '../PropertySidepanel';
 import * as sidepanelFunctions from '../../helpers/sidepanelFunctions';
