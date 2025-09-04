@@ -9,7 +9,11 @@ const TextCell = ({
   const text = cell.getValue();
 
   return (
-    <Truncate maxLength={200} ellipsisPosition="center" tooltipClassname="text-xs text-gray-900">
+    <Truncate
+      maxLength={200}
+      ellipsisPosition="center"
+      tooltipClassname="text-xs text-gray-900 inline-block md:min-w-[500px] max-w-5xl"
+    >
       {text}
     </Truncate>
   );
