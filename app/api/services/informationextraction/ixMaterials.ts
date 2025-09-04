@@ -243,7 +243,7 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
   // Validate that the property exists in the template (throws if not found)
   await getPropertyType(extractor.templates, extractor.property);
 
-  const BATCH_SIZE = limit || BATCH_SIZE_FOR_PROPERTY;
+  const BATCH_SIZE = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PROPERTY;
 
   let entityQuery: UwaziFilterQuery<any> | null = {};
 
@@ -400,7 +400,7 @@ async function getFileIdsWithReadySegmentations(
   limit: number
 ): Promise<ObjectIdSchema[]> {
   const [currentModel] = await ixmodels.get({ extractorId });
-  const targetLimit = limit || BATCH_SIZE_FOR_PDF;
+  const targetLimit = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 
   // Use balanced sampling for all suggestion finding (both test runs and regular runs)
   // Get extra suggestions since some might have failed segmentations
@@ -569,7 +569,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
     return [];
   }
 
-  const BATCH_SIZE = limit || BATCH_SIZE_FOR_PDF;
+  const BATCH_SIZE = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 
   let filesQuery: UwaziFilterQuery<FileType> | null = {};
 

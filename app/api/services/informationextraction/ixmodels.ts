@@ -8,6 +8,7 @@ const TEST_RUN_SUGGESTIONS_SIZE = 1000;
 
 type StartTrainingOptions = {
   testRun?: boolean;
+  suggestionsToFind?: number;
 };
 
 const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
@@ -77,7 +78,7 @@ export default {
   },
   startTraining: async (
     extractorId: ObjectIdSchema,
-    { testRun = false }: StartTrainingOptions = {}
+    { suggestionsToFind }: StartTrainingOptions = {}
   ) => {
     const [current] = await model.get({ extractorId });
 
@@ -86,8 +87,8 @@ export default {
       extractorId,
       findingSuggestions: true,
       status: ModelStatus.processing,
-      testRun,
-      testRunSuggestionsToFind: TEST_RUN_SUGGESTIONS_SIZE,
+      testRun: true,
+      testRunSuggestionsToFind: suggestionsToFind ?? TEST_RUN_SUGGESTIONS_SIZE,
     });
 
     // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations

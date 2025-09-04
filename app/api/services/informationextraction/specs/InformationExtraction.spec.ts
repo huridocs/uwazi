@@ -747,9 +747,9 @@ describe('InformationExtraction', () => {
     });
   });
 
-  describe('testModel', () => {
-    it('should send xmls (as in trainModel)', async () => {
-      await informationExtraction.testModel(factory.id('prop1extractor'));
+  describe('train with limited finding suggestions', () => {
+    it('should send xmls', async () => {
+      await informationExtraction.trainModel(factory.id('prop1extractor'), 1);
 
       const xmlA = await readDocument('A');
 
@@ -766,8 +766,8 @@ describe('InformationExtraction', () => {
       );
     });
 
-    it('should mark the model as testRun', async () => {
-      await informationExtraction.testModel(factory.id('prop1extractor'));
+    it('should mark the model as testRun (legacy, should be removed in future)', async () => {
+      await informationExtraction.trainModel(factory.id('prop1extractor'));
 
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
       expect(model.testRun).toBe(true);
@@ -804,6 +804,23 @@ describe('InformationExtraction', () => {
       );
 
       jest.clearAllMocks();
+    });
+
+    it('should not start suggestions when suggestionsToFind is 0', async () => {
+      const extractorId = factory.id('prop1extractor');
+
+      const [existing] = await IXModelsModel.get({ extractorId });
+      await IXModelsModel.save({
+        ...existing,
+        findingSuggestions: true,
+        totalSuggestionsToFind: 0,
+      });
+
+      const startTaskSpy = jest.spyOn(informationExtraction as any, 'startSuggestionsTask');
+
+      await informationExtraction.getSuggestions(extractorId);
+
+      expect(startTaskSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -1616,7 +1633,7 @@ describe('InformationExtraction', () => {
       expect(model.findingSuggestions).toBe(false);
     });
 
-    describe('testRun', () => {
+    describe('Limited runs', () => {
       beforeEach(async () => {
         await testingDB.mongodb
           ?.collection('ixmodels')
@@ -1652,7 +1669,7 @@ describe('InformationExtraction', () => {
           extractorId: factory.id('sourceTextExtractor1'),
           status: 'processing',
         });
-        expect(suggestionsInProcessing.length).toBe(3);
+        expect(suggestionsInProcessing.length).toBe(1);
         expect(suggestionsInProcessing.map(s => s.entityId)).toContain('entity_without_label_data');
         expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
           1,

@@ -797,6 +797,12 @@ class InformationExtraction {
     }
 
     const [model] = await IXModelsModel.get({ extractorId });
+
+    if (model?.totalSuggestionsToFind === 0) {
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Test completed');
+      return;
+    }
+
     if (model.testRun) {
       const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
       if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
@@ -807,9 +813,9 @@ class InformationExtraction {
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
-  trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
+  trainModel = async (extractorId: ObjectIdSchema, suggestionsToFind?: number) => {
     const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId, { testRun });
+    await ixmodels.startTraining(extractorId, { suggestionsToFind });
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
 
@@ -819,8 +825,6 @@ class InformationExtraction {
 
     return { status: 'processing_model', message: 'Training model' };
   };
-
-  testModel = async (extractorId: ObjectIdSchema) => this.trainModel(extractorId, true);
 
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });
