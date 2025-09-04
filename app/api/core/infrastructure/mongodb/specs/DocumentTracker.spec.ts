@@ -237,8 +237,6 @@ describe('DocumentTracker', () => {
     });
   });
 
-  // --- NEW TEST CASES ---
-
   it('should handle deeply nested array changes with a simple array inside an object array', async () => {
     const tracker = new DocumentTracker<MongoDocument>();
     const id1 = new ObjectId();
