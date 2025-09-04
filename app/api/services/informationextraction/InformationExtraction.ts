@@ -167,13 +167,48 @@ class InformationExtraction {
   ) {
     const errorMessage = message.error_message || 'Task failed';
 
-    await IXServices.saveModelProcess(message.params!.id, ModelStatus.failed, {
-      findingSuggestions: false,
-    });
+    if (message.task === 'create_model') {
+      await IXServices.saveModelProcess(message.params!.id, ModelStatus.failed, {
+        findingSuggestions: false,
+      });
 
-    if (currentModel?._id) {
-      await ixmodels.unsetFindSuggestionsData(currentModel._id);
+      if (currentModel?._id) {
+        await ixmodels.unsetFindSuggestionsData(currentModel._id);
+      }
+
+      if (currentModel?.findingSuggestions) {
+        await IXSuggestionsModel.updateMany(
+          {
+            extractorId: message.params!.id,
+            status: 'processing',
+          },
+          {
+            $set: {
+              status: 'failed',
+              error: errorMessage,
+              'state.processing': false,
+              'state.error': true,
+              'state.match': null,
+              'state.withSuggestion': false,
+              'state.hasContext': false,
+            },
+          }
+        );
+      }
+
+      emitToTenant(
+        message.tenant,
+        'ix_model_status',
+        message.params!.id.toString(),
+        'error',
+        errorMessage
+      );
+      return;
     }
+
+    // message.task === 'suggestions'
+    // Stop the current run, keep model healthy
+    await this.stopModel(message.params!.id);
 
     if (currentModel?.findingSuggestions) {
       await IXSuggestionsModel.updateMany(
@@ -195,12 +230,13 @@ class InformationExtraction {
       );
     }
 
+    // Inform UI the run ended without flipping model to error
     emitToTenant(
       message.tenant,
       'ix_model_status',
       message.params!.id.toString(),
-      'error',
-      errorMessage
+      'ready',
+      'Suggestions run failed'
     );
   }
 
