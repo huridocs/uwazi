@@ -26,17 +26,17 @@ const truncateMatching = (matchingParagraph: React.ReactElement) => {
 
   const before = childrenArray
     .slice(0, matchIndex)
-    .map(child => (typeof child === 'string' ? child : ''))
-    .join('');
+    .reverse()
+    .find(child => typeof child === 'string' && child.trim()) as string | undefined;
+
   const after = childrenArray
     .slice(matchIndex + 1)
-    .map(child => (typeof child === 'string' ? child : ''))
-    .join('');
+    .find(child => typeof child === 'string' && child.trim()) as string | undefined;
 
   return [
-    `...${before.slice(-MAX_CONTEXT)} `,
+    before ? `...${before.slice(-MAX_CONTEXT)} ` : '...',
     childrenArray[matchIndex],
-    ` ${after.slice(0, MAX_CONTEXT)}...`,
+    after ? ` ${after.slice(0, MAX_CONTEXT)}...` : '...',
   ];
 };
 

@@ -4,7 +4,13 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ContextCell } from '../ContextCell';
-import { basicMatching, multipleMatching, noMatching, plainText } from './HTMLFixtures';
+import {
+  basicMatching,
+  multipleMatching,
+  multipleMatchInMatching,
+  noMatching,
+  plainText,
+} from './HTMLFixtures';
 
 describe('ContextCell', () => {
   it('should not render script tags', () => {
@@ -54,6 +60,11 @@ describe('ContextCell', () => {
     expect(
       screen.getAllByText('Praesent sed molestie risus, vitae laoreet elit.')[0].parentElement
     ).toMatchSnapshot();
+  });
+
+  it('should work when a matching paragraph has multiple match words', () => {
+    render(<ContextCell text={multipleMatchInMatching} />);
+    expect(screen.getAllByText('Revenue: $1.2M')[0].parentElement).toMatchSnapshot();
   });
 
   it('should show the first available paragraph if not matching elements are present', () => {
