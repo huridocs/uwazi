@@ -107,6 +107,8 @@ class DocumentTracker<T extends MongoDocument = MongoDocument> {
     if (Object.keys($unset).length) result.$unset = $unset;
     if (arrayFilters.length) result.arrayFilters = arrayFilters;
 
+    this.clear(document);
+
     return buildPipelineFromDiff(result);
   }
 
@@ -121,6 +123,11 @@ class DocumentTracker<T extends MongoDocument = MongoDocument> {
       throw new Error(`The following document was not being tracked. id = ${idHex}`);
     }
     this.snapshots.set(idHex, this.clonePreserveObjectId(document));
+  }
+
+  public clear(document: T): void {
+    const idHex = this.idToHex(document._id);
+    this.snapshots.delete(idHex);
   }
 
   // --- PRIVATE HELPERS ---
