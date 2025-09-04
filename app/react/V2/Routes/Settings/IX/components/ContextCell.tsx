@@ -133,7 +133,7 @@ const ContextCell = ({ text }: { text: string }) => {
 
   if (!isHTML) {
     return (
-      <Truncate maxLength={25} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
+      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
         {text}
       </Truncate>
     );
