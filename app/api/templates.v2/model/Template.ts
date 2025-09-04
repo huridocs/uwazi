@@ -17,18 +17,22 @@ class Template {
 
   color?: string;
 
+  isDefault: boolean;
+
   constructor(
     id: string,
     name: string,
     properties: Property[],
     commonProperties: CommonProperty[],
-    color?: string
+    color?: string,
+    isDefault?: boolean
   ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
     this.commonProperties = commonProperties;
     this.color = color;
+    this.isDefault = isDefault ?? false;
 
     this.validate();
   }

@@ -3,6 +3,7 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -213,8 +214,10 @@ export class MongoTemplatesDataSource
     );
   }
 
-  async create(_template: Template): Promise<void> {
-    throw new Error('Method not implemented.');
+  async create(template: Template): Promise<void> {
+    const schema = TemplateMapper.toSchema(template);
+
+    await this.getCollection().insertOne(schema);
   }
 
   async isPropertyUnique(_property: Property): Promise<boolean> {
