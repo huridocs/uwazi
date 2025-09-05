@@ -1,11 +1,10 @@
-import { CommonPropertyProps } from 'api/templates.v2/model/CommonProperty';
-import { Property } from 'api/templates.v2/model/Property';
+import { Property, PropertyProps } from 'api/templates.v2/model/Property';
 
 type Props = {
   filter?: boolean;
   defaultfilter?: boolean;
   prioritySorting?: boolean;
-} & CommonPropertyProps;
+} & PropertyProps;
 
 abstract class FilterableProperty extends Property {
   filter: boolean;
