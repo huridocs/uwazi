@@ -13,6 +13,8 @@ import { GeolocationProperty, GeolocationPropertyProps } from './GeoLocationProp
 import { DateRangeProperty, DateRangePropertyProps } from './DateRangeProperty';
 import { DateProperty, DatePropertyProps } from './DateProperty';
 import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdProperty';
+import { SelectProperty, SelectPropertyProps } from './SelectProperty';
+import { MultiSelectProperty, MultiSelectPropertyProps } from './MultiSelectProperty';
 
 type CreateInput =
   | TextPropertyProps
@@ -26,7 +28,9 @@ type CreateInput =
   | GeolocationPropertyProps
   | DateRangePropertyProps
   | DatePropertyProps
-  | GenerateIdPropertyProps;
+  | GenerateIdPropertyProps
+  | SelectPropertyProps
+  | MultiSelectPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput): Property {
@@ -69,6 +73,12 @@ class PropertyFactory {
 
       case 'generatedid':
         return new GenerateIdProperty(input);
+
+      case 'select':
+        return new SelectProperty(input as SelectPropertyProps);
+
+      case 'multiselect':
+        return new MultiSelectProperty(input as MultiSelectPropertyProps);
 
       default:
         throw new Error(`The following type was not handled. Type = ${input.type}`);

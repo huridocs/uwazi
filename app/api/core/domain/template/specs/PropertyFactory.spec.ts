@@ -1,5 +1,6 @@
 import { DateProperty } from '../DateProperty';
 import { DateRangeProperty } from '../DateRangeProperty';
+import { GenerateIdProperty } from '../GenerateIdProperty';
 import { GeolocationProperty } from '../GeoLocationProperty';
 import { ImageProperty } from '../ImageProperty';
 import { LinkProperty } from '../LinkProperty';
@@ -7,9 +8,11 @@ import { MarkdownProperty } from '../MarkdownProperty';
 import { MediaProperty } from '../MediaProperty';
 import { MultiDateProperty } from '../MultiDateProperty';
 import { MultiDateRangeProperty } from '../MultiDateRangeProperty';
+import { MultiSelectProperty } from '../MultiSelectProperty';
 import { NumericProperty } from '../NumericProperty';
 import { PreviewProperty } from '../PreviewProperty';
 import { PropertyFactory } from '../PropertyFactory';
+import { SelectProperty } from '../SelectProperty';
 import { TextProperty } from '../TextProperty';
 
 describe('PropertyFactory', () => {
@@ -143,5 +146,40 @@ describe('PropertyFactory', () => {
         type: 'date',
       })
     ).toBeInstanceOf(DateProperty);
+  });
+
+  it('should create an instance of GenerateIdProperty', () => {
+    expect(
+      PropertyFactory.create({
+        template: 'any',
+        id: 'any_id',
+        label: 'A numeric property',
+        type: 'generatedid',
+      })
+    ).toBeInstanceOf(GenerateIdProperty);
+  });
+
+  it('should create an instance of SelectProperty', () => {
+    expect(
+      PropertyFactory.create({
+        template: 'any',
+        id: 'any_id',
+        label: 'A numeric property',
+        type: 'select',
+        content: 'any',
+      })
+    ).toBeInstanceOf(SelectProperty);
+  });
+
+  it('should create an instance of MultiSelectProperty', () => {
+    expect(
+      PropertyFactory.create({
+        template: 'any',
+        id: 'any_id',
+        label: 'A numeric property',
+        type: 'multiselect',
+        content: 'any',
+      })
+    ).toBeInstanceOf(MultiSelectProperty);
   });
 });

@@ -3,14 +3,14 @@ import { Property } from 'api/templates.v2/model/Property';
 import { PropertyFactoryCreateInput } from '../PropertyFactory';
 import { PropertyNotUniqueOnTheSystemError } from '../errors';
 
-type Deps = {
+type Deps<ExtendedDeps> = {
   templatesDS: TemplatesDataSource;
-};
+} & ExtendedDeps;
 
 type Input = PropertyFactoryCreateInput;
 
-abstract class AbstractPropertyCreatorService {
-  constructor(private deps: Deps) {}
+abstract class AbstractPropertyCreatorService<ExtendedDeps = {}> {
+  constructor(protected deps: Deps<ExtendedDeps>) {}
 
   async create(input: Input): Promise<Property> {
     const property = await this.createProperty(input);
@@ -32,4 +32,4 @@ abstract class AbstractPropertyCreatorService {
 }
 
 export { AbstractPropertyCreatorService };
-export type { Input as CreateInput };
+export type { Input as CreateInput, Deps as AbstractPropertyCreatorServiceDeps };

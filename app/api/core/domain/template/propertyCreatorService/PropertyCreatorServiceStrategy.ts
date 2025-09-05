@@ -15,6 +15,7 @@ class PropertyCreatorServiceStrategy {
 
   getStrategy(type: PropertyTypes): AbstractPropertyCreatorService {
     switch (type) {
+      case 'multiselect':
       case 'select':
         return this.props.select;
 
