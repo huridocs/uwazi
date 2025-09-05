@@ -12,6 +12,7 @@ import { ImageProperty } from './ImageProperty';
 import { GeolocationProperty, GeolocationPropertyProps } from './GeoLocationProperty';
 import { DateRangeProperty, DateRangePropertyProps } from './DateRangeProperty';
 import { DateProperty, DatePropertyProps } from './DateProperty';
+import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdProperty';
 
 type CreateInput =
   | TextPropertyProps
@@ -24,7 +25,8 @@ type CreateInput =
   | LinkPropertyProps
   | GeolocationPropertyProps
   | DateRangePropertyProps
-  | DatePropertyProps;
+  | DatePropertyProps
+  | GenerateIdPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput): Property {
@@ -64,6 +66,9 @@ class PropertyFactory {
 
       case 'date':
         return new DateProperty(input);
+
+      case 'generatedid':
+        return new GenerateIdProperty(input);
 
       default:
         throw new Error(`The following type was not handled. Type = ${input.type}`);
