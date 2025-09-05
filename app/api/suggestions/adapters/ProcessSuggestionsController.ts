@@ -78,7 +78,7 @@ class ProcessSuggestionsController extends AbstractController<Request> {
     const useCase = new ProcessSuggestions({ informationExtraction });
 
     const response = await useCase.execute({
-      extractorId: (await import('mongodb')).ObjectId.createFromHexString(dto.extractorId),
+      extractorId: dto.extractorId,
       mode: dto.mode,
       find: dto.find,
       autoAccept: dto.autoAccept,
