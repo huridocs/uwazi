@@ -177,9 +177,6 @@ describe('Pages', () => {
       cy.contains('Display entity view from page').click();
       cy.contains('Select page');
       cy.get('#select-page').select('My entity view page');
-      cy.contains('button', 'Title').click();
-      cy.clearAndType('input[name="label"]', 'Custom Title');
-      cy.contains('aside button', 'Save').click();
       cy.contains('[data-testid="settings-content-footer"] button', 'Save').click();
       cy.contains('Dismiss').click();
     });
