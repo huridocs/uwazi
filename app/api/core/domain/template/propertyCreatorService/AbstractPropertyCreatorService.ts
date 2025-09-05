@@ -1,6 +1,7 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Property } from 'api/templates.v2/model/Property';
 import { PropertyFactoryCreateInput } from '../PropertyFactory';
+import { PropertyNotUniqueOnTheSystemError } from '../errors';
 
 type Deps = {
   templatesDS: TemplatesDataSource;
@@ -19,13 +20,13 @@ abstract class AbstractPropertyCreatorService {
     return property;
   }
 
-  abstract createProperty(input: Input): Promise<Property>;
+  protected abstract createProperty(input: Input): Promise<Property>;
 
   private async validate(property: Property) {
     const isUnique = await this.deps.templatesDS.isPropertyUnique(property);
 
     if (!isUnique) {
-      throw new Error(`The following Property is duplicated. label = ${property.label}`);
+      throw new PropertyNotUniqueOnTheSystemError(property);
     }
   }
 }

@@ -220,7 +220,16 @@ export class MongoTemplatesDataSource
     await this.getCollection().insertOne(schema);
   }
 
-  async isPropertyUnique(_property: Property): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async isPropertyUnique(property: Property): Promise<boolean> {
+    const count = await this.getCollection().countDocuments({
+      properties: {
+        $elemMatch: {
+          name: property.name,
+          type: property.type,
+        },
+      },
+    });
+
+    return count === 0;
   }
 }
