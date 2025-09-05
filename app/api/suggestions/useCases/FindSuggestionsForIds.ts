@@ -66,9 +66,7 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
 
     // Prevent individual find while training/test-run suggestions are running
     if (model.findingSuggestions && !model.findSuggestionsRunTimestamp) {
-      throw new Error(
-        "Model is training or running a test run. Individual 'Find suggestions' is disabled."
-      );
+      throw new Error("Model is training. Individual 'Find suggestions' is disabled.");
     }
   }
 

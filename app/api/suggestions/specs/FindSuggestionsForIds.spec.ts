@@ -163,9 +163,7 @@ describe('FindSuggestionsForIds', () => {
           extractorId,
           sharedIds: ['entity1', 'entity2'],
         })
-      ).rejects.toThrow(
-        "Model is training or running a test run. Individual 'Find suggestions' is disabled."
-      );
+      ).rejects.toThrow("Model is training. Individual 'Find suggestions' is disabled.");
     });
 
     it('should start find suggestions process, update model state, and return status', async () => {

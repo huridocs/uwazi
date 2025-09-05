@@ -1770,6 +1770,7 @@ const fixtures: DBFixture = {
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 50,
     },
     {
       extractorId: factory.id('extractorWithoutSegmentations'),
@@ -1800,6 +1801,7 @@ const fixtures: DBFixture = {
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 50,
     },
     {
       extractorId: factory.id('extractor_target_numeric_source_text'),
@@ -1830,12 +1832,14 @@ const fixtures: DBFixture = {
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 50,
     },
     {
       extractorId: factory.id('prop1extractor'),
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 50,
     },
     {
       extractorId: factory.id('prop2extractor'),
@@ -1873,6 +1877,7 @@ const fixtures: DBFixture = {
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 50,
     },
     {
       extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
@@ -1885,6 +1890,7 @@ const fixtures: DBFixture = {
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
+      totalSuggestionsToFind: 50,
     },
     {
       extractorId: factory.id('extractorWithEmptyRelationship'),

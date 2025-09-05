@@ -23,8 +23,7 @@ export const IXModelSchema = {
     findSuggestionsRunTimestamp: { type: 'number', optional: true },
     findSuggestionsSharedIds: { type: 'array', items: { type: 'string' }, optional: true },
     findSuggestionsInitialSharedIdsCount: { type: 'number', optional: true },
-    testRun: { type: 'boolean' },
-    testRunSuggestionsToFind: { type: 'number' },
+    maxSuggestionsToFind: { type: 'number' },
     totalSuggestionsToFind: { type: 'number' },
   },
 };

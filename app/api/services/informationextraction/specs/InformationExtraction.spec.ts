@@ -38,7 +38,6 @@ import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { IXWebSocketEvents } from '../WebSocketEvents';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials';
-import { TEST_RUN_SUGGESTIONS_SIZE } from '../ixmodels';
 
 let informationExtractionForJob: InformationExtraction;
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -764,14 +763,6 @@ describe('InformationExtraction', () => {
       expect(IXExternalService.filesNames.sort()).toEqual(
         ['documentA.xml', 'documentC.xml'].sort()
       );
-    });
-
-    it('should mark the model as testRun (legacy, should be removed in future)', async () => {
-      await informationExtraction.trainModel(factory.id('prop1extractor'));
-
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
-      expect(model.testRun).toBe(true);
-      expect(model.testRunSuggestionsToFind).toBe(TEST_RUN_SUGGESTIONS_SIZE);
     });
   });
 
@@ -1677,7 +1668,7 @@ describe('InformationExtraction', () => {
           'ix_model_status',
           factory.id('sourceTextExtractor1'),
           'ready',
-          'Test completed'
+          'Completed'
         );
       });
 

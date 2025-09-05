@@ -679,7 +679,7 @@ class InformationExtraction {
 
     const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
     const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
-    const batchSize = model.testRun ? Math.min(remaining, MAX_BATCH_SIZE) : undefined;
+    const batchSize = Math.max(0, Math.min(remaining, MAX_BATCH_SIZE));
     return batchSize;
   };
 
@@ -792,22 +792,22 @@ class InformationExtraction {
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
     const [extractor] = await Extractors.get({ _id: extractorId });
-    if (!extractor) {
-      return;
-    }
+    if (!extractor) return;
 
     const [model] = await IXModelsModel.get({ extractorId });
 
     if (model?.totalSuggestionsToFind === 0) {
-      await this.stopModelAndEmitReadyMessage(extractorId, 'Test completed');
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return;
     }
 
-    if (model.testRun) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
-      if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
-        await this.stopModelAndEmitReadyMessage(extractorId, 'Test completed');
-      }
+    const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+    if (
+      model.totalSuggestionsToFind != null &&
+      suggestionsStatus.processed >= model.totalSuggestionsToFind
+    ) {
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
+      return;
     }
 
     await this.sendMaterialsAndTaskSuggestions(extractor, model);

@@ -4,10 +4,9 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel as model } from './IXModelsModel';
 
-const TEST_RUN_SUGGESTIONS_SIZE = 1000;
+const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 
 type StartTrainingOptions = {
-  testRun?: boolean;
   suggestionsToFind?: number;
 };
 
@@ -87,8 +86,7 @@ export default {
       extractorId,
       findingSuggestions: true,
       status: ModelStatus.processing,
-      testRun: true,
-      testRunSuggestionsToFind: suggestionsToFind ?? TEST_RUN_SUGGESTIONS_SIZE,
+      maxSuggestionsToFind: suggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE,
     });
 
     // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
@@ -130,4 +128,4 @@ export default {
   appendToFindRunQueue,
 };
 
-export { TEST_RUN_SUGGESTIONS_SIZE };
+export { DEFAULT_MAX_SUGGESTIONS_SIZE };

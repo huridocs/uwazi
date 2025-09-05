@@ -9,7 +9,7 @@ import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXModelType } from 'shared/types/IXModelType';
 import { TemplateSchema } from 'shared/types/templateType';
-import ixmodels, { TEST_RUN_SUGGESTIONS_SIZE } from './ixmodels';
+import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {
   extractor: IXExtractorType;
@@ -60,15 +60,8 @@ export class IXServices {
     model: EnforcedWithId<IXModelType>
   ) {
     const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
-    let totalSuggestions = allPossibleSuggestions;
-
-    if (model.testRun) {
-      totalSuggestions = Math.min(
-        model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
-        allPossibleSuggestions
-      );
-    }
-
+    const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
+    const totalSuggestions = Math.min(maxCap, allPossibleSuggestions);
     return totalSuggestions;
   }
 
