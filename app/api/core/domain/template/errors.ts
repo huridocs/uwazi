@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Property } from 'api/templates.v2/model/Property';
+import { Template } from 'api/templates.v2/model/Template';
 import { DomainError } from '../DomainError';
 
 class PropertyTypeInvalidTypeError extends DomainError {
@@ -83,6 +84,51 @@ class TemplateWithDuplicatedPropertyError extends DomainError {
   }
 }
 
+class PropertyNotUniqueOnTheSystemError extends DomainError {
+  constructor(property: Property) {
+    super(
+      `The following Property is not unique on the system. Label = ${property.label} and Name = ${property.name}`,
+      'template.property.property_not_unique_on_the_system_error'
+    );
+  }
+}
+
+class TemplateWithDuplicatedNameOnTheSystemError extends DomainError {
+  constructor(template: Template) {
+    super(
+      `The following Template has a used Name on the system. Name = ${template.name}`,
+      'template.property.property_not_unique_on_the_system_error'
+    );
+  }
+}
+
+class TemplateWithMissingCommonProperty extends DomainError {
+  constructor(type: string) {
+    super(
+      `Template has the missing Property. Type = ${type}`,
+      'template.template.template_with_missing_common_property_error'
+    );
+  }
+}
+
+class FieldIsRequiredError extends DomainError {
+  constructor(fieldName: string) {
+    super(
+      `The following field is required. Field = ${fieldName}`,
+      'template.field_is_required_error'
+    );
+  }
+}
+
+class SelectPropertyWithInvalidThesaurusError extends DomainError {
+  constructor(thesaurusId: string) {
+    super(
+      `The following Thesaurus does not exist. Thesaurus Id = ${thesaurusId}`,
+      'template.property.select_property_with_invalid_thesaurus_error'
+    );
+  }
+}
+
 export {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
@@ -93,4 +139,9 @@ export {
   InvalidStyleTypeError,
   CommonPropertyInvalidError,
   TemplateWithDuplicatedPropertyError,
+  TemplateWithMissingCommonProperty,
+  PropertyNotUniqueOnTheSystemError,
+  TemplateWithDuplicatedNameOnTheSystemError,
+  FieldIsRequiredError,
+  SelectPropertyWithInvalidThesaurusError,
 };
