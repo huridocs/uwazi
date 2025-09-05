@@ -1,8 +1,11 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
 import { AbstractImageProperty } from 'api/core/domain/template/AbstractImageProperty';
 import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
 import { FilterableProperty } from 'api/core/domain/template/FilterableProperty';
 import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
+import { MultiSelectProperty } from 'api/core/domain/template/MultiSelectProperty';
+import { SelectProperty } from 'api/core/domain/template/SelectProperty';
 import { TextProperty } from 'api/core/domain/template/TextProperty';
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
 import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
@@ -57,11 +60,27 @@ class PropertyMapper {
     };
 
     if (domain instanceof TextProperty) {
-      return { ...base, generatedId: domain.generatedId };
+      return {
+        ...base,
+        generatedId: domain.generatedId,
+        filter: domain.filter,
+        defaultfilter: domain.defaultfilter,
+        prioritySorting: domain.prioritySorting,
+      };
     }
 
     if (domain instanceof AbstractImageProperty) {
       return { ...base, style: domain.style, fullWidth: domain.fullWidth };
+    }
+
+    if (domain instanceof SelectProperty || domain instanceof MultiSelectProperty) {
+      return {
+        ...base,
+        filter: domain.filter,
+        defaultfilter: domain.defaultfilter,
+        prioritySorting: domain.prioritySorting,
+        content: domain.content,
+      };
     }
 
     if (domain instanceof FilterableProperty) {

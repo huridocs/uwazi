@@ -26,7 +26,7 @@ class Property {
 
   readonly type: PropertyTypes;
 
-  _name: PropertyName;
+  private _name: PropertyName;
 
   readonly label: string;
 

@@ -142,6 +142,9 @@ describe('TemplateMapper', () => {
           required: false,
           showInCard: false,
           generatedId: false,
+          filter: false,
+          defaultfilter: false,
+          prioritySorting: false,
         },
         {
           _id: IDS.IMAGE,

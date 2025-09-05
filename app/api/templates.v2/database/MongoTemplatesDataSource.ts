@@ -221,14 +221,28 @@ export class MongoTemplatesDataSource
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
-    const count = await this.getCollection().countDocuments({
-      properties: {
-        $elemMatch: {
-          name: property.name,
-          type: property.type,
+    const count = await this.getCollection().countDocuments(
+      {
+        properties: {
+          $elemMatch: {
+            name: property.name,
+            type: property.type,
+          },
         },
       },
-    });
+      { limit: 1 }
+    );
+
+    return count === 0;
+  }
+
+  async isTemplateUnique(template: Template): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        name: template.name,
+      },
+      { limit: 1 }
+    );
 
     return count === 0;
   }

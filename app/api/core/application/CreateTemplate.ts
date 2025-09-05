@@ -2,11 +2,16 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { z } from 'zod';
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
 import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
 import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService';
-import { SelectPropertyCreatorService } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
+import {
+  SelectPropertyCreatorService,
+  ThesaurusDataSource,
+} from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
 
 const types = [
   'date',
@@ -80,6 +85,8 @@ type Output = void;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
+  idGenerator: IdGenerator;
+  thesaurusDS: ThesaurusDataSource;
 };
 
 class CreateTemplateUseCase implements UseCase<Input, Output> {
@@ -89,24 +96,38 @@ class CreateTemplateUseCase implements UseCase<Input, Output> {
     this.propertyCreatorServiceStrategy = new PropertyCreatorServiceStrategy({
       default: new PropertyCreatorService({ templatesDS: this.deps.templatesDS }),
       relationship: new RelationshipPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
-      select: new SelectPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
+      select: new SelectPropertyCreatorService({
+        templatesDS: this.deps.templatesDS,
+        thesaurusDS: this.deps.thesaurusDS,
+      }),
     });
   }
 
   async execute(input: Input): Promise<Output> {
     const commonProperties = input.commonProperties.map(p =>
-      CommonPropertyFactory.create({ ...p, id: 'id', template: 'id' })
+      CommonPropertyFactory.create({ ...p, id: this.deps.idGenerator.generate(), template: 'id' })
     );
 
     const properties = await Promise.all(
       input.properties.map(async p =>
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
-          .createProperty({ ...p, id: 'id', template: 'id' })
+          .create({ ...p, id: this.deps.idGenerator.generate(), template: 'id' })
       )
     );
 
-    const template = new Template('id', input.name, properties, commonProperties, input.color);
+    const template = new Template(
+      this.deps.idGenerator.generate(),
+      input.name,
+      properties,
+      commonProperties,
+      input.color
+    );
+
+    const isTemplateUnique = await this.deps.templatesDS.isTemplateUnique(template);
+    if (!isTemplateUnique) {
+      throw new TemplateWithDuplicatedNameOnTheSystemError(template);
+    }
 
     await this.deps.templatesDS.create(template);
   }
