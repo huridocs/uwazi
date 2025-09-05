@@ -153,12 +153,25 @@ const IXSuggestions = () => {
     }
   };
 
-  const trainModelOrCancelAction = async () => {
-    try {
-      if (status.status === ixStatus.ready) {
+  const trainModel = async () => {
+    if (status.status === ixStatus.ready) {
+      try {
         await suggestionsAPI.findSuggestions(extractor._id!);
         setStatus({ status: ixStatus.sending_labeled_data });
-      } else {
+      } catch (error) {}
+    }
+  };
+
+  const testRun = async () => {
+    try {
+      setStatus({ status: ixStatus.sending_labeled_data });
+      await suggestionsAPI.testRun(extractor._id!);
+    } catch (error) {}
+  };
+
+  const cancelModelTrain = async () => {
+    if (status.status !== ixStatus.ready) {
+      try {
         await suggestionsAPI.cancel(extractor._id!);
         if (status.status === ixStatus.error) {
           setStatus({ status: ixStatus.ready });
@@ -167,15 +180,8 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      }
-    } catch (error) {}
-  };
-
-  const testRun = async () => {
-    try {
-      setStatus({ status: ixStatus.sending_labeled_data });
-      await suggestionsAPI.testRun(extractor._id!);
-    } catch (error) {}
+      } catch (error) {}
+    }
   };
 
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
@@ -354,27 +360,20 @@ const IXSuggestions = () => {
             </div>
           ) : (
             <div className="flex items-center justify-center space-x-4">
-              <Button size="small" type="button" styling="solid" onClick={() => setModal('train')}>
-                <Translate>Train</Translate>
-              </Button>
-              {/* <Button
-                size="small"
-                type="button"
-                disabled={status.status === ixStatus.cancel}
-                styling={status.status === ixStatus.ready ? 'solid' : 'outline'}
-                onClick={trainModelOrCancelAction}
-              >
-                {status.status === ixStatus.ready ? (
-                  <Translate>Find suggestions</Translate>
-                ) : (
-                  <Translate>Cancel</Translate>
-                )}
-              </Button>
-              {status.status === ixStatus.ready && (
-                <Button size="small" type="button" styling="light" onClick={testRun}>
-                  <Translate>Test run</Translate>
+              {status.status === ixStatus.ready ? (
+                <Button
+                  size="small"
+                  type="button"
+                  styling="solid"
+                  onClick={() => setModal('train')}
+                >
+                  <Translate>Train</Translate>
                 </Button>
-              )} */}
+              ) : (
+                <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+                  <Translate>Cancel</Translate>
+                </Button>
+              )}
               {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
@@ -418,9 +417,8 @@ const IXSuggestions = () => {
           close={() => {
             setModal('none');
           }}
-          onTrain={trainModelOrCancelAction}
+          onTrain={trainModel}
           onTestRun={testRun}
-          isTraining={status.status !== ixStatus.ready}
         />
       )}
     </div>
