@@ -89,40 +89,6 @@ const TemplatesEditor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const ENTITY_COUNT_THRESHOLD = 3000;
 
-  const handleTemplateProcessed = useCallback(
-    async () => async (data: { templateId: string }) => {
-      if (data.templateId !== template?._id) {
-        return;
-      }
-
-      await revalidator.revalidate();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Template processing completed.</Translate>,
-      });
-    },
-    [template]
-  );
-
-  const handleTemplateProcessing = useCallback(
-    async () =>
-      async (data: {
-        templateId: string;
-        processing: {
-          active: boolean;
-          completedJobs: number;
-          totalJobs: number;
-        };
-      }) => {
-        if (data.templateId !== template?._id) {
-          return;
-        }
-
-        setTemplate({ ...template, processing: data.processing });
-      },
-    [template]
-  );
-
   const notifyTemplateProcessing = useCallback(() => {
     setNotifications({
       type: 'warning',
@@ -140,13 +106,43 @@ const TemplatesEditor = () => {
   }, [entityCount]);
 
   useEffect(() => {
+    const handleTemplateProcessed = async (data: { templateId: string }) => {
+      if (data.templateId !== template?._id) {
+        return;
+      }
+
+      await revalidator.revalidate();
+
+      setNotifications({
+        type: 'success',
+        text: <Translate>Template processing completed.</Translate>,
+      });
+    };
+
+    const handleTemplateProcessing = async (data: {
+      templateId: string;
+      processing: {
+        active: boolean;
+        completedJobs: number;
+        totalJobs: number;
+      };
+    }) => {
+      if (data.templateId !== template?._id) {
+        return;
+      }
+
+      setTemplate({ ...template, processing: data.processing });
+    };
+
     socket.on('templateProcessed', handleTemplateProcessed);
     socket.on('templateProcessing', handleTemplateProcessing);
     return () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
-  }, [handleTemplateProcessed, handleTemplateProcessing]);
+    // Only subscribe on mount and unsubscribe on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setProperties(processProperties(loadedTemplate.properties || []));

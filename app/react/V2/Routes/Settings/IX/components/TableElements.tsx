@@ -22,6 +22,7 @@ import {
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { acceptedSuggestions } from './atoms';
+import { ContextCell } from './ContextCell';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
@@ -266,7 +267,7 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
       </span>
     );
   }
-  return segment;
+  return <ContextCell text={segment} />;
 };
 
 const extractorsTableColumns = [
