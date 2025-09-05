@@ -193,16 +193,17 @@ async function getEntitiesForTraining(
 }
 
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
-  if (!model.findSuggestionsSharedIds?.length) {
+  const runIds = model.processRun?.findSuggestionsSharedIds as string[] | undefined;
+  if (!runIds?.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
 
-  const sharedIdsToProcess = model.findSuggestionsSharedIds!.slice(0, BATCH_SIZE);
+  const sharedIdsToProcess = runIds.slice(0, BATCH_SIZE);
 
   await ixmodels.updateMany(
     { _id: model._id },
-    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds!.slice(BATCH_SIZE) } }
+    { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(BATCH_SIZE) } }
   );
 
   const entityQuery = { sharedId: { $in: sharedIdsToProcess } };
@@ -215,8 +216,8 @@ async function getEntitiesForSuggestionsQuery(
   model: EnforcedWithId<IXModelType>,
   BATCH_SIZE: number
 ) {
-  // Use balanced sampling for all suggestion finding (both test runs and regular runs)
-  const suggestions = await Suggestions.getBalancedSample(extractorId, model, BATCH_SIZE);
+  // Use process-aware sampling when filters are set; otherwise balanced sampling
+  const suggestions = await Suggestions.getSampleForProcess(extractorId, model, BATCH_SIZE);
 
   if (!suggestions.length) {
     return null;
@@ -247,7 +248,7 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
 
   let entityQuery: UwaziFilterQuery<any> | null = {};
 
-  if (model.findSuggestionsRunTimestamp) {
+  if (model.processRun?.findSuggestionsSharedIds?.length) {
     entityQuery = await getEntitiesForIdsQuery(model, BATCH_SIZE);
   } else {
     entityQuery = await getEntitiesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
@@ -402,9 +403,9 @@ async function getFileIdsWithReadySegmentations(
   const [currentModel] = await ixmodels.get({ extractorId });
   const targetLimit = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 
-  // Use balanced sampling for all suggestion finding (both test runs and regular runs)
+  // Use process-aware sampling when filters are set; otherwise balanced sampling
   // Get extra suggestions since some might have failed segmentations
-  const suggestions = await Suggestions.getBalancedSample(
+  const suggestions = await Suggestions.getSampleForProcess(
     extractorId,
     currentModel,
     targetLimit * 3
@@ -513,16 +514,17 @@ async function getNextSharedIdsBatch(
   model: EnforcedWithId<IXModelType>,
   batchSize: number
 ): Promise<string[] | null> {
-  if (!model.findSuggestionsSharedIds?.length) {
+  const runIds = model.processRun?.findSuggestionsSharedIds || [];
+  if (!runIds.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
 
-  const sharedIdsToProcess = model.findSuggestionsSharedIds.slice(0, batchSize);
+  const sharedIdsToProcess = runIds.slice(0, batchSize);
 
   await ixmodels.updateMany(
     { _id: model._id },
-    { $set: { findSuggestionsSharedIds: model.findSuggestionsSharedIds.slice(batchSize) } }
+    { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(batchSize) } }
   );
 
   return sharedIdsToProcess;
@@ -573,7 +575,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
 
   let filesQuery: UwaziFilterQuery<FileType> | null = {};
 
-  if (model.findSuggestionsRunTimestamp) {
+  if (model.processRun?.findSuggestionsSharedIds?.length) {
     filesQuery = await getFilesForIdsQuery(model, BATCH_SIZE);
   } else {
     filesQuery = await getFilesForSuggestionsQuery(extractorId, BATCH_SIZE);

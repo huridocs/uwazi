@@ -9,9 +9,35 @@ export interface IXModelType {
   creationDate: number;
   status?: 'processing' | 'failed' | 'ready';
   findingSuggestions?: boolean;
-  findSuggestionsRunTimestamp?: number;
-  findSuggestionsSharedIds?: string[];
-  findSuggestionsInitialSharedIdsCount?: number;
+  processRun?: {
+    suggestionsRunTimestamp?: number;
+    mode?: string;
+    find?: {
+      enabled?: boolean;
+      size?: number;
+      filters?: {
+        nonProcessed?: boolean;
+        obsolete?: boolean;
+        error?: boolean;
+        [k: string]: unknown | undefined;
+      };
+      selectedSharedIds?: string[];
+      [k: string]: unknown | undefined;
+    };
+    autoAccept?: {
+      enabled?: boolean;
+      source?: string;
+      overwriteMode?: string;
+      [k: string]: unknown | undefined;
+    };
+    autoAcceptProgress?: {
+      total?: number;
+      processed?: number;
+      [k: string]: unknown | undefined;
+    };
+    findSuggestionsSharedIds?: string[];
+    findSuggestionsInitialSharedIdsCount?: number;
+  };
   maxSuggestionsToFind?: number;
   totalSuggestionsToFind?: number;
 }

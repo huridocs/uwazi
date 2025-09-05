@@ -509,12 +509,12 @@ class InformationExtraction {
   ) {
     const [model] = await ixmodels.get({ extractorId: extractor._id });
 
-    if (model.findSuggestionsRunTimestamp) {
+    if (model.processRun?.suggestionsRunTimestamp) {
       return {
         ...currentSuggestion,
         modelData: {
           ...(currentSuggestion.modelData || {}),
-          findSuggestionsRunTimestamp: model.findSuggestionsRunTimestamp,
+          suggestionsRunTimestamp: model.processRun.suggestionsRunTimestamp,
         },
       };
     }
@@ -630,19 +630,22 @@ class InformationExtraction {
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
     // If a find suggestions run is active, compute per-run entity progress using IDs
-    if (model.findingSuggestions && model.findSuggestionsRunTimestamp) {
-      const remainingIds = Array.isArray(model.findSuggestionsSharedIds)
-        ? model.findSuggestionsSharedIds.length
+    if (model.findingSuggestions && model.processRun?.suggestionsRunTimestamp) {
+      const remainingIds = Array.isArray(model.processRun?.findSuggestionsSharedIds)
+        ? model.processRun!.findSuggestionsSharedIds!.length
         : 0;
-      const total = model.findSuggestionsInitialSharedIdsCount ?? remainingIds;
+      const total = model.processRun?.findSuggestionsInitialSharedIdsCount ?? remainingIds;
+      // processed includes pre-processed ones: total is original selected, remaining are pending
       const processed = Math.max(0, total - remainingIds);
       return { total, processed };
     }
 
-    // Default behavior for training/test runs: count suggestions since creationDate
+    // Default behavior for training/test runs OR process runs with filters:
+    // processed = 'ready' suggestions since the last run start, falling back to creationDate
+    const since = model.processRun?.suggestionsRunTimestamp || model.creationDate;
     const processedSuggestions = await IXSuggestionsModel.count({
       extractorId,
-      $and: [{ date: { $ne: null } }, { date: { $gt: model.creationDate } }],
+      $and: [{ date: { $ne: null } }, { date: { $gt: since } }],
     });
     return {
       total: model.totalSuggestionsToFind,
@@ -881,6 +884,27 @@ class InformationExtraction {
     return { status: 'error', message: 'No model found' };
   };
 
+  // Centralized transition to auto-accept phase
+  startAutoAcceptIfEnabled = async (
+    extractorId: ObjectIdSchema,
+    tenantName: string
+  ): Promise<boolean> => {
+    const [model] = await IXModelsModel.get({ extractorId });
+    if (!model) return false;
+    const processRun: any = (model as any)?.processRun;
+    const auto = processRun?.autoAccept;
+    if (!auto?.enabled) return false;
+
+    emitToTenant(tenantName, 'ix_model_status', extractorId.toString(), 'processing_auto_accept');
+
+    const dispatcher = await DefaultDispatcher(tenantName, {
+      lockWindow: 1000 * 60 * 10,
+    });
+    const { AcceptSuggestionsJob } = await import('api/suggestions/jobs/AcceptSuggestionsJob');
+    await dispatcher.dispatch(AcceptSuggestionsJob, { extractorId: extractorId.toString() });
+    return true;
+  };
+
   processResults = async (_message: IXResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       const message: InternalIXResultsMessage = {
@@ -911,6 +935,19 @@ class InformationExtraction {
         if (message.task === 'suggestions') {
           await this.saveSuggestionsManager(message);
           await this.updateSuggestionStatus(message, currentModel);
+
+          // If a process run requested auto-accept and the find phase just completed,
+          // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
+          const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+          const processRun: any = (freshModel as any)?.processRun;
+          const auto = processRun?.autoAccept;
+          if (auto?.enabled && freshModel?.totalSuggestionsToFind != null) {
+            const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
+            if (status.processed >= (freshModel.totalSuggestionsToFind || 0)) {
+              await this.startAutoAcceptIfEnabled(message.params!.id, message.tenant);
+              return;
+            }
+          }
         }
 
         const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });

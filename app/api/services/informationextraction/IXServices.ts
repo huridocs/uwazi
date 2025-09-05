@@ -65,6 +65,41 @@ export class IXServices {
     return totalSuggestions;
   }
 
+  static async computeTotalSuggestionsForProcess(
+    extractorId: ObjectIdSchema,
+    model: EnforcedWithId<IXModelType>,
+    filters?: { nonProcessed?: boolean; obsolete?: boolean; error?: boolean }
+  ) {
+    const statuses = {
+      nonProcessed: filters?.nonProcessed ?? false,
+      obsolete: filters?.obsolete ?? false,
+      error: filters?.error ?? false,
+    };
+
+    const usingAnyFilter = statuses.nonProcessed || statuses.obsolete || statuses.error;
+
+    // Default to all three statuses if no explicit filter selection
+    const matchAny = usingAnyFilter
+      ? [
+          statuses.nonProcessed ? { date: null } : null,
+          statuses.obsolete ? { date: { $ne: null }, 'state.obsolete': true } : null,
+          statuses.error ? { date: { $ne: null }, 'state.error': true } : null,
+        ].filter(Boolean)
+      : [
+          { date: null },
+          { date: { $ne: null }, 'state.obsolete': true },
+          { date: { $ne: null }, 'state.error': true },
+        ];
+
+    const count = await IXSuggestionsModel.db.countDocuments({
+      extractorId,
+      $or: matchAny as any[],
+    });
+
+    const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
+    return Math.min(maxCap, count);
+  }
+
   static async saveModelProcess(
     extractorId: ObjectIdSchema,
     status: ModelStatus = ModelStatus.processing,

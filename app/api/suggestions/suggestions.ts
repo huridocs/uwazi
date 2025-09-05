@@ -102,9 +102,10 @@ const Suggestions = {
     model: EnforcedWithId<IXModelType>,
     maxTotal: number
   ): Promise<IXSuggestionType[]> => {
+    const since = model.processRun?.suggestionsRunTimestamp || model.creationDate;
     const baseQuery = {
       extractorId,
-      $or: [{ date: null }, { date: { $lt: model.creationDate } }],
+      $or: [{ date: null }, { date: { $lt: since } }],
       'state.error': { $ne: true },
     };
 
@@ -155,6 +156,73 @@ const Suggestions = {
       {
         $replaceRoot: { newRoot: '$suggestions' },
       },
+    ];
+
+    return (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
+  },
+
+  // Balanced sampling honoring process-run filters stored in the model. If filters are not provided,
+  // default to sampling from the three non-ready statuses: nonProcessed, obsolete, error.
+  getSampleForProcess: async (
+    extractorId: ObjectIdSchema,
+    model: EnforcedWithId<IXModelType>,
+    maxTotal: number
+  ): Promise<IXSuggestionType[]> => {
+    const processRun: any = (model as any)?.processRun || {};
+    const filters = processRun?.find?.filters || {};
+
+    const selectedFilters = ['nonProcessed', 'obsolete', 'error'].filter(f => filters?.[f]);
+    const useFilters = selectedFilters.length > 0;
+
+    const matchConditions: any[] = [];
+
+    if (filters.nonProcessed || !useFilters) {
+      matchConditions.push({ date: null });
+    }
+    if (filters.obsolete || !useFilters) {
+      matchConditions.push({ date: { $ne: null }, 'state.obsolete': true });
+    }
+    if (filters.error || !useFilters) {
+      matchConditions.push({ date: { $ne: null }, 'state.error': true });
+    }
+
+    const baseMatch = { extractorId, $or: matchConditions } as any;
+
+    // Count labeled/unlabeled within filtered subset
+    const [unlabeledCount, labeledCount] = await Promise.all([
+      IXSuggestionsModel.db.countDocuments({ ...baseMatch, 'state.labeled': { $ne: true } }),
+      IXSuggestionsModel.db.countDocuments({ ...baseMatch, 'state.labeled': true }),
+    ]);
+
+    const idealHalf = Math.floor(maxTotal / 2);
+    let unlabeledSampleSize = Math.min(idealHalf, unlabeledCount);
+    let labeledSampleSize = Math.min(idealHalf, labeledCount);
+    const totalUsed = unlabeledSampleSize + labeledSampleSize;
+    const remainingSlots = maxTotal - totalUsed;
+    if (remainingSlots > 0) {
+      if (unlabeledCount > unlabeledSampleSize) {
+        unlabeledSampleSize = Math.min(unlabeledCount, unlabeledSampleSize + remainingSlots);
+      } else if (labeledCount > labeledSampleSize) {
+        labeledSampleSize = Math.min(labeledCount, labeledSampleSize + remainingSlots);
+      }
+    }
+
+    const pipeline: any[] = [
+      {
+        $facet: {
+          unlabeled: [
+            { $match: { ...baseMatch, 'state.labeled': { $ne: true } } },
+            { $sample: { size: unlabeledSampleSize } },
+          ],
+          labeled: [
+            { $match: { ...baseMatch, 'state.labeled': true } },
+            { $sample: { size: labeledSampleSize } },
+          ],
+        },
+      },
+      { $project: { suggestions: { $concatArrays: ['$unlabeled', '$labeled'] } } },
+      { $unwind: '$suggestions' },
+      { $replaceRoot: { newRoot: '$suggestions' } },
     ];
 
     return (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
@@ -339,7 +407,7 @@ const Suggestions = {
       IXSuggestionsModel.db.distinct('entityId', {
         extractorId,
         entityId: { $in: candidateIds },
-        'modelData.findSuggestionsRunTimestamp': runTimestamp,
+        'modelData.suggestionsRunTimestamp': runTimestamp,
         status: 'ready',
       }),
     ]);
