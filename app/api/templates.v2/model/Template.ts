@@ -1,5 +1,7 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { TemplateWithDuplicatedPropertyError } from 'api/core/domain/template/errors';
+import { Validator } from 'api/core/domain/validator/Validator';
+import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
+import { TemplateWithMissingCommonPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithMissingCommonPropertyValidator';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -42,14 +44,12 @@ class Template {
   }
 
   private validate() {
-    const seen = new Set<string>();
+    const validator = new Validator([
+      new TemplateWithDuplicatedPropertyValidator(),
+      new TemplateWithMissingCommonPropertyValidator(),
+    ]);
 
-    this.allProperties.forEach(property => {
-      if (seen.has(property.discriminator)) {
-        throw new TemplateWithDuplicatedPropertyError(property);
-      }
-      seen.add(property.discriminator);
-    });
+    validator.validate(this);
   }
 
   selectNewProperties(newTemplate: Template): Property[] {

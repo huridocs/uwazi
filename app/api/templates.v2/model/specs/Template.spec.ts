@@ -1,6 +1,11 @@
 import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { TemplateWithDuplicatedPropertyError } from 'api/core/domain/template/errors';
+import {
+  TemplateWithDuplicatedPropertyError,
+  TemplateWithMissingCommonProperty,
+} from 'api/core/domain/template/errors';
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
+import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
+import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
 import { Template } from '../Template';
 import { Property } from '../Property';
 import { V1RelationshipProperty } from '../V1RelationshipProperty';
@@ -594,7 +599,11 @@ it('should throw if there are duplicated Properties', () => {
           new TextProperty({ id: 'id', label: 'text', template: 'template' }),
           new TextProperty({ id: 'id', label: 'text', template: 'template' }),
         ],
-        [],
+        [
+          new TitleProperty({ id: '', template: '', label: 'A text label' }),
+          new CreationDateProperty({ id: '', template: '', label: 'A Creation date label' }),
+          new ModifiedDateProperty({ id: '', template: '', label: 'A Modified date label' }),
+        ],
         'template'
       )
   ).toThrow(TemplateWithDuplicatedPropertyError);
@@ -605,7 +614,11 @@ it('should throw if there are duplicated Properties', () => {
         'id',
         'name',
         [new TextProperty({ id: 'id', label: 'text', name: 'title', template: 'template' })],
-        [new TitleProperty({ id: 'id', label: 'title', template: 'template' })],
+        [
+          new TitleProperty({ id: '', template: '', label: 'A text label' }),
+          new CreationDateProperty({ id: '', template: '', label: 'A Creation date label' }),
+          new ModifiedDateProperty({ id: '', template: '', label: 'A Modified date label' }),
+        ],
         'template'
       )
   ).toThrow(TemplateWithDuplicatedPropertyError);
@@ -623,4 +636,50 @@ it('should throw if there are duplicated Properties', () => {
         'template'
       )
   ).toThrow(TemplateWithDuplicatedPropertyError);
+});
+
+it('should throw if there are no CommonProperties', () => {
+  expect(() => new Template('id', 'name', [], [], 'template')).toThrow(
+    TemplateWithMissingCommonProperty
+  );
+
+  expect(
+    () =>
+      new Template(
+        'id',
+        'name',
+        [],
+        [new TitleProperty({ id: '', template: '', label: 'A text label' })],
+        'template'
+      )
+  ).toThrow(TemplateWithMissingCommonProperty);
+
+  expect(
+    () =>
+      new Template(
+        'id',
+        'name',
+        [],
+        [
+          new TitleProperty({ id: '', template: '', label: 'A text label' }),
+          new CreationDateProperty({ id: '', template: '', label: 'A Creation date label' }),
+        ],
+        'template'
+      )
+  ).toThrow(TemplateWithMissingCommonProperty);
+
+  expect(
+    () =>
+      new Template(
+        'id',
+        'name',
+        [],
+        [
+          new TitleProperty({ id: '', template: '', label: 'A text label' }),
+          new CreationDateProperty({ id: '', template: '', label: 'A Creation date label' }),
+          new ModifiedDateProperty({ id: '', template: '', label: 'A Modified date label' }),
+        ],
+        'template'
+      )
+  ).not.toThrow();
 });
