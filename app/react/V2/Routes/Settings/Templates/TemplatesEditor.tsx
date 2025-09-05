@@ -140,6 +140,8 @@ const TemplatesEditor = () => {
       socket.off('templateProcessed', handleTemplateProcessed);
       socket.off('templateProcessing', handleTemplateProcessing);
     };
+    // Only subscribe on mount and unsubscribe on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
