@@ -2,10 +2,12 @@ import { ObjectId } from 'mongodb';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { Suggestions } from 'api/suggestions/suggestions';
+import { DataType, UwaziFilterQuery } from 'api/odm';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 
 type Input = { extractorId: string; batchSize: number; tenantName?: string };
 
-type Output = { processed: number };
+type Output = { processed: number; progress?: { total: number; processed: number } };
 
 export class AcceptSuggestionsUseCase {
   // eslint-disable-next-line class-methods-use-this
@@ -17,7 +19,7 @@ export class AcceptSuggestionsUseCase {
     const overwriteAll = autoAccept?.overwriteMode === 'overwrite_all';
     const source = autoAccept?.source === 'all' ? 'all' : 'previous';
 
-    const match: any = {
+    const match: UwaziFilterQuery<DataType<IXSuggestionType>> = {
       extractorId: ObjectId.createFromHexString(extractorId),
       status: 'ready',
       date: { $ne: null },
@@ -31,8 +33,9 @@ export class AcceptSuggestionsUseCase {
     }
 
     // initialize progress if missing
-    if (!model.processRun.autoAcceptProgress?.total) {
-      const total = await IXSuggestionsModel.db.countDocuments(match);
+    let total = model.processRun.autoAcceptProgress?.total;
+    if (typeof total !== 'number') {
+      total = await IXSuggestionsModel.db.countDocuments(match);
       await ixmodels.setAutoAcceptProgress(extractorId, { total, processed: 0 });
     }
 
@@ -46,11 +49,17 @@ export class AcceptSuggestionsUseCase {
 
     if (toAccept.length === 0) {
       await ixmodels.unsetProcessRun(extractorId.toString());
-      return { processed: 0 };
+      // best-effort final snapshot using model's stored progress
+      const currentProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
+      return { processed: 0, progress: { total, processed: Math.min(total, currentProcessed) } };
     }
 
     await Suggestions.accept(toAccept as any);
     await ixmodels.incAutoAcceptProcessed(extractorId, toAccept.length);
-    return { processed: toAccept.length };
+
+    const previousProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
+    const newProcessed = Math.min(total, previousProcessed + toAccept.length);
+
+    return { processed: toAccept.length, progress: { total, processed: newProcessed } };
   }
 }

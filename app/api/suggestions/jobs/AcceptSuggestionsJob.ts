@@ -32,12 +32,24 @@ export class AcceptSuggestionsJob implements Dispatchable {
   }
 
   async handleDispatch(_: HeartbeatCallback, { extractorId }: CustomParams): Promise<void> {
-    const { processed } = await this.props.useCase.execute({
+    const { processed, progress } = await this.props.useCase.execute({
       extractorId,
       batchSize: this.props.batchSize,
     });
 
-    emitToTenant(this.props.tenantName, 'ix_model_status', extractorId, 'processing_auto_accept');
+    if (progress) {
+      const remaining = Math.max(0, (progress.total || 0) - (progress.processed || 0));
+      emitToTenant(
+        this.props.tenantName,
+        'ix_model_status',
+        extractorId,
+        'processing_auto_accept',
+        '',
+        { total: progress.total, processed: progress.processed, remaining }
+      );
+    } else {
+      emitToTenant(this.props.tenantName, 'ix_model_status', extractorId, 'processing_auto_accept');
+    }
 
     if (processed > 0) {
       await this.props.dispatcher.dispatch(AcceptSuggestionsJob, { extractorId });
