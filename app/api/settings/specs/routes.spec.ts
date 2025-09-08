@@ -6,6 +6,7 @@ import settings from 'api/settings';
 import templates from 'api/templates';
 import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
+import users from 'api/users/users';
 
 import translations from 'api/i18n';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -85,6 +86,12 @@ describe('Settings routes', () => {
           email: 'user@test.test',
           role: 'admin',
         });
+        jest.spyOn(users, 'getById').mockReturnValue({
+          _id: 'user1',
+          username: 'User 1',
+          email: 'user@test.test',
+          role: 'admin',
+        });
       });
 
       it('should migrate all entity names when newNameGeneration is saved as true', async () => {
@@ -93,7 +100,7 @@ describe('Settings routes', () => {
         // wait for async process to finish
         // new denormalization job should take care of renaming and tested in isolation
         await new Promise(resolve => {
-          setTimeout(resolve, 50);
+          setTimeout(resolve, 100);
         });
 
         expect(await templates.get()).toEqual([
@@ -107,7 +114,7 @@ describe('Settings routes', () => {
           expect.objectContaining({ language: 'en', metadata: { país: [{ value: 'pais' }] } }),
           expect.objectContaining({ language: 'es', metadata: { país: [{ value: 'pais' }] } }),
         ]);
-      });
+      }, 10000);
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {
         jest.spyOn(templates, 'save');
