@@ -36,7 +36,7 @@ import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
-import { TrainModal } from './components/TrainModal';
+import { TrainModelModal } from './components/TrainModelModal';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -413,7 +413,7 @@ const IXSuggestions = () => {
       />
 
       {modal === 'train' && (
-        <TrainModal
+        <TrainModelModal
           close={() => {
             setModal('none');
           }}
