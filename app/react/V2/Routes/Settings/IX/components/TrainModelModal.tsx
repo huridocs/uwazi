@@ -2,26 +2,32 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
-import { RadioSelect } from 'V2/Components/Forms';
+import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
 
-type TrainModalProps = {
+type TrainModelModalProps = {
   close: () => void;
   onTrain: () => Promise<void>;
   onTestRun: () => Promise<void>;
 };
 
-type FormData = { action: 'none' | 'train' | 'test-run' };
+type FormData = {
+  action: 'none' | 'train' | 'test-run';
+  find: { shouldFind: boolean; amount: number };
+};
 
-const TrainModal = ({ close, onTrain, onTestRun }: TrainModalProps) => {
+const TrainModelModal = ({ close, onTrain, onTestRun }: TrainModelModalProps) => {
   const {
     handleSubmit,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     mode: 'onSubmit',
+    defaultValues: { action: 'test-run', find: { shouldFind: false, amount: 1000 } },
   });
 
-  const submit = async ({ action }: FormData) => {
+  const submit = async ({ action, find }: FormData) => {
+    console.log('find: ', find);
     switch (action) {
       case 'train':
         await onTrain();
@@ -36,6 +42,8 @@ const TrainModal = ({ close, onTrain, onTestRun }: TrainModalProps) => {
     close();
   };
 
+  const disableAmountField = !watch('find.shouldFind');
+
   return (
     <Modal size="xl">
       <Modal.Header>
@@ -43,6 +51,13 @@ const TrainModal = ({ close, onTrain, onTestRun }: TrainModalProps) => {
         <Modal.CloseButton onClick={() => close()} />
       </Modal.Header>
       <Modal.Body>
+        <div className="text-primary-700 border-primary-300 bg-primary-100 p-4">
+          <Translate translationKey="Train model description">
+            Training machine learning models may take from minutes up to a couple of hours depending
+            on the amount of labeled data and the difficulty of the task.
+          </Translate>
+        </div>
+        <hr className="my-4" />
         <form id="train-form" onSubmit={handleSubmit(submit)}>
           <Controller
             name="action"
@@ -71,12 +86,48 @@ const TrainModal = ({ close, onTrain, onTestRun }: TrainModalProps) => {
                     id: 'test-run',
                     label: <Translate>Test Run</Translate>,
                     value: 'test-run',
+                    defaultChecked: true,
                   },
                 ]}
                 onChange={field.onChange}
               />
             )}
           />
+          <hr className="my-4" />
+          <div className="flex gap-2">
+            <Controller
+              name="find.shouldFind"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  name={field.name}
+                  onChange={field.onChange}
+                  label={<Translate>Find suggestions after training</Translate>}
+                />
+              )}
+            />
+            <Controller
+              name="find.amount"
+              control={control}
+              disabled={disableAmountField}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <span className="text-gray-900">
+                    <Translate>Amount</Translate> :
+                  </span>
+                  <InputField
+                    className="inset-2"
+                    type="number"
+                    name={field.name}
+                    id={field.name}
+                    onChange={field.onChange}
+                    value={field.value}
+                    disabled={disableAmountField}
+                  />
+                </div>
+              )}
+            />
+          </div>
         </form>
         {errors.action?.type === 'required' && <Translate>This field is requiered</Translate>}
       </Modal.Body>
@@ -92,4 +143,4 @@ const TrainModal = ({ close, onTrain, onTestRun }: TrainModalProps) => {
   );
 };
 
-export { TrainModal };
+export { TrainModelModal };
