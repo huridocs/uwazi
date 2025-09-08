@@ -6,6 +6,8 @@ import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreato
 import { PropertyNotUniqueOnTheSystemError } from '../errors';
 import { TextProperty } from '../TextProperty';
 
+const prevCreated = new ObjectId();
+
 describe('PropertyCreatorService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({
@@ -78,6 +80,13 @@ describe('PropertyCreatorService', () => {
               defaultfilter: false,
               prioritySorting: false,
             },
+
+            {
+              _id: prevCreated,
+              type: 'text',
+              label: 'Previous created',
+              name: 'prev_created',
+            },
           ],
         },
       ],
@@ -113,6 +122,22 @@ describe('PropertyCreatorService', () => {
         id: new ObjectId().toHexString(),
         label: 'Text Label',
         type: 'text',
+        template: '',
+      })
+    ).resolves.toBeInstanceOf(TextProperty);
+  });
+
+  it('should NOT consider the already created Property as duplicated', async () => {
+    const sut = new PropertyCreatorService({
+      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+    });
+
+    await expect(
+      sut.create({
+        id: prevCreated.toHexString(),
+        type: 'text',
+        label: 'Previous created',
+        name: 'prev_created',
         template: '',
       })
     ).resolves.toBeInstanceOf(TextProperty);

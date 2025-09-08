@@ -227,6 +227,7 @@ export class MongoTemplatesDataSource
           $elemMatch: {
             name: property.name,
             type: property.type,
+            _id: { $ne: ObjectId.createFromHexString(property.id) },
           },
         },
       },
