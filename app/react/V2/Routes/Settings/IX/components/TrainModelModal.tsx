@@ -2,43 +2,31 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
-import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
+import { Checkbox, InputField } from 'V2/Components/Forms';
 
 type TrainModelModalProps = {
   close: () => void;
-  onTrain: () => Promise<void>;
-  onTestRun: () => Promise<void>;
+  onTrain: (findAmount: number) => Promise<void>;
 };
 
 type FormData = {
-  action: 'none' | 'train' | 'test-run';
   find: { shouldFind: boolean; amount: number };
 };
 
-const TrainModelModal = ({ close, onTrain, onTestRun }: TrainModelModalProps) => {
+const TrainModelModal = ({ close, onTrain }: TrainModelModalProps) => {
   const {
     handleSubmit,
     control,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<FormData>({
     mode: 'onSubmit',
-    defaultValues: { action: 'test-run', find: { shouldFind: false, amount: 1000 } },
+    defaultValues: { find: { shouldFind: false, amount: 1000 } },
   });
 
-  const submit = async ({ action, find }: FormData) => {
-    console.log('find: ', find);
-    switch (action) {
-      case 'train':
-        await onTrain();
-        break;
-      case 'test-run':
-        await onTestRun();
-        break;
-      default:
-        break;
-    }
-
+  const submit = async ({ find }: FormData) => {
+    const findAmount: number = find.shouldFind && find.amount > 0 ? find.amount : 0;
+    await onTrain(findAmount);
     close();
   };
 
@@ -59,42 +47,7 @@ const TrainModelModal = ({ close, onTrain, onTestRun }: TrainModelModalProps) =>
         </div>
         <hr className="my-4" />
         <form id="train-form" onSubmit={handleSubmit(submit)}>
-          <Controller
-            name="action"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <RadioSelect
-                className="py-4"
-                name="action"
-                legend={
-                  <Translate
-                    className={
-                      errors.action?.type === 'required' ? 'text-error-900' : 'text-gray-900'
-                    }
-                  >
-                    Action
-                  </Translate>
-                }
-                options={[
-                  {
-                    id: 'train',
-                    label: <Translate>Train</Translate>,
-                    value: 'train',
-                  },
-                  {
-                    id: 'test-run',
-                    label: <Translate>Test Run</Translate>,
-                    value: 'test-run',
-                    defaultChecked: true,
-                  },
-                ]}
-                onChange={field.onChange}
-              />
-            )}
-          />
-          <hr className="my-4" />
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Controller
               name="find.shouldFind"
               control={control}
@@ -112,9 +65,9 @@ const TrainModelModal = ({ close, onTrain, onTestRun }: TrainModelModalProps) =>
               disabled={disableAmountField}
               render={({ field }) => (
                 <div className="flex gap-2 items-center">
-                  <span className="text-gray-900">
+                  <label htmlFor={field.name} className="text-gray-900">
                     <Translate>Amount</Translate> :
-                  </span>
+                  </label>
                   <InputField
                     className="inset-2"
                     type="number"
@@ -129,7 +82,6 @@ const TrainModelModal = ({ close, onTrain, onTestRun }: TrainModelModalProps) =>
             />
           </div>
         </form>
-        {errors.action?.type === 'required' && <Translate>This field is requiered</Translate>}
       </Modal.Body>
       <Modal.Footer className="flex justify-between gap-2">
         <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">

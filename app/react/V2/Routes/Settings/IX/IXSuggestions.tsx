@@ -153,20 +153,18 @@ const IXSuggestions = () => {
     }
   };
 
-  const trainModel = async () => {
+  const trainModel = async (findAmount: number) => {
     if (status.status === ixStatus.ready) {
-      try {
-        await suggestionsAPI.findSuggestions(extractor._id!);
-        setStatus({ status: ixStatus.sending_labeled_data });
-      } catch (error) {}
+      if (extractor._id) {
+        try {
+          await suggestionsAPI.findSuggestions({
+            extractorId: extractor._id,
+            suggestionsToFind: findAmount,
+          });
+          setStatus({ status: ixStatus.sending_labeled_data });
+        } catch (error) {}
+      }
     }
-  };
-
-  const testRun = async () => {
-    try {
-      setStatus({ status: ixStatus.sending_labeled_data });
-      await suggestionsAPI.testRun(extractor._id!);
-    } catch (error) {}
   };
 
   const cancelModelTrain = async () => {
@@ -315,66 +313,22 @@ const IXSuggestions = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected.length > 0}>
-          {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center justify-center space-x-4">
+            {status.status === ixStatus.ready ? (
               <Button
                 size="small"
                 type="button"
-                styling="outline"
-                disabled={
-                  status.status === ixStatus.sending_labeled_data ||
-                  status.status === ixStatus.processing_model
-                }
-                onClick={async () => {
-                  await findSuggestions(selected);
-                }}
+                styling="solid"
+                onClick={() => setModal('train')}
+                disabled={selected.length > 0}
               >
-                <Translate>Find suggestions</Translate>
+                <Translate>Train</Translate>
               </Button>
-              <Button
-                size="small"
-                type="button"
-                styling="outline"
-                disabled={selected.some(
-                  s => s.state.obsolete || s.state.error || s.state.processing
-                )}
-                onClick={async () => {
-                  await acceptSuggestions(selected);
-                }}
-              >
-                <Translate>Accept suggestions</Translate>
-              </Button>
-              <div className="text-sm font-semibold text-center text-gray-900">
-                <span className="font-light text-gray-500">
-                  <Translate>Selected</Translate>
-                </span>
-                &nbsp;
-                {selected.length}
-                &nbsp;
-                <span className="font-light text-gray-500">
-                  <Translate>of</Translate>
-                </span>
-                &nbsp;
-                {SUGGESTIONS_PER_PAGE}
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center space-x-4">
-              {status.status === ixStatus.ready ? (
-                <Button
-                  size="small"
-                  type="button"
-                  styling="solid"
-                  onClick={() => setModal('train')}
-                >
-                  <Translate>Train</Translate>
-                </Button>
-              ) : (
+            ) : (
+              <>
                 <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
                   <Translate>Cancel</Translate>
                 </Button>
-              )}
-              {status.status !== ixStatus.ready ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
                   {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
@@ -384,9 +338,9 @@ const IXSuggestions = () => {
                     </span>
                   ) : null}
                 </div>
-              ) : null}
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </SettingsContent.Footer>
       </SettingsContent>
 
@@ -418,7 +372,6 @@ const IXSuggestions = () => {
             setModal('none');
           }}
           onTrain={trainModel}
-          onTestRun={testRun}
         />
       )}
     </div>
@@ -478,3 +431,77 @@ const IXSuggestionsLoader =
   };
 
 export { IXSuggestions, IXSuggestionsLoader };
+
+// {selected.length ? (
+//           <div className="flex items-center justify-center space-x-4">
+//             <Button
+//               size="small"
+//               type="button"
+//               styling="outline"
+//               disabled={
+//                 status.status === ixStatus.sending_labeled_data ||
+//                 status.status === ixStatus.processing_model
+//               }
+//               onClick={async () => {
+//                 await findSuggestions(selected);
+//               }}
+//             >
+//               <Translate>Find suggestions</Translate>
+//             </Button>
+//             <Button
+//               size="small"
+//               type="button"
+//               styling="outline"
+//               disabled={selected.some(
+//                 s => s.state.obsolete || s.state.error || s.state.processing
+//               )}
+//               onClick={async () => {
+//                 await acceptSuggestions(selected);
+//               }}
+//             >
+//               <Translate>Accept suggestions</Translate>
+//             </Button>
+//             <div className="text-sm font-semibold text-center text-gray-900">
+//               <span className="font-light text-gray-500">
+//                 <Translate>Selected</Translate>
+//               </span>
+//               &nbsp;
+//               {selected.length}
+//               &nbsp;
+//               <span className="font-light text-gray-500">
+//                 <Translate>of</Translate>
+//               </span>
+//               &nbsp;
+//               {SUGGESTIONS_PER_PAGE}
+//             </div>
+//           </div>
+//         ) : (
+//           <div className="flex items-center justify-center space-x-4">
+//             {status.status === ixStatus.ready ? (
+//               <Button
+//                 size="small"
+//                 type="button"
+//                 styling="solid"
+//                 onClick={() => setModal('train')}
+//                 disabled={selected.length > 0}
+//               >
+//                 <Translate>Train</Translate>
+//               </Button>
+//             ) : (
+//               <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+//                 <Translate>Cancel</Translate>
+//               </Button>
+//             )}
+//             {status.status !== ixStatus.ready ? (
+//               <div className="text-sm font-semibold text-center text-gray-900">
+//                 <Translate>{ixmessages[status.status]}</Translate>
+//                 {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
+//                 {status.data ? (
+//                   <span className="ml-2">
+//                     {status.data.processed} / {status.data.total}
+//                   </span>
+//                 ) : null}
+//               </div>
+//             ) : null}
+//           </div>
+//         )}

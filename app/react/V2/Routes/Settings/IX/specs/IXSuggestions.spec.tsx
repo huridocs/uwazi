@@ -2,11 +2,13 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import * as suggestionsAPI from 'V2/api/ix/suggestions';
 import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
 import { IXSuggestions } from '../IXSuggestions';
 import { loaderData, thesauri, entity1, entity2 } from './fixtures';
+import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
 
 jest.mock('V2/api/entities', () => ({
   ...jest.requireActual('V2/api/entities'),
@@ -64,8 +66,8 @@ const closeSidepanel = async (text: string = 'Cancel') => {
 };
 
 describe('IX suggestions', () => {
-  const Component = () => (
-    <TestRouterContext loaderData={loaderData}>
+  const Component = ({ data = loaderData }: { data?: IXSuggestionsLoaderResponse }) => (
+    <TestRouterContext loaderData={data}>
       <TestAtomStoreProvider initialValues={[[thesauriAtom, thesauri]]}>
         <IXSuggestions />
       </TestAtomStoreProvider>
@@ -100,5 +102,75 @@ describe('IX suggestions', () => {
 
     await openSuggestion(1, 'Entity 2');
     await testCheckboxes();
+  });
+
+  describe('Train model modal', () => {
+    describe('form', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        jest.spyOn(suggestionsAPI, 'findSuggestions');
+        jest.spyOn(suggestionsAPI, 'cancel');
+        render(<Component />);
+        const openModalButton = await screen.findByText('Train');
+        fireEvent.click(openModalButton);
+        const modal = screen.getByRole('dialog');
+        expect(await within(modal).findByText('Train model')).toBeInTheDocument();
+      });
+
+      it('should submit with the expected parameters', async () => {
+        const findAfterTrain = screen.getByText('Find suggestions after training');
+        const amountInput = screen.getByLabelText('Amount :');
+        const submit = await within(screen.getByRole('dialog')).findByText('Train');
+        expect(amountInput).toBeDisabled();
+        fireEvent.click(findAfterTrain);
+        expect(amountInput).not.toBeDisabled();
+        expect(amountInput).toHaveValue(1000);
+        fireEvent.change(amountInput, { target: { value: 1500 } });
+        await act(async () => {
+          await fireEvent.click(submit);
+        });
+        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
+          extractorId: 'extractor1',
+          suggestionsToFind: '1500',
+        });
+      });
+
+      it('should submit with zero amount of find after train', async () => {
+        const amountInput = screen.getByLabelText('Amount :');
+        const submit = await within(screen.getByRole('dialog')).findByText('Train');
+        expect(amountInput).toBeDisabled();
+        await act(async () => {
+          await fireEvent.click(submit);
+        });
+        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
+          extractorId: 'extractor1',
+          suggestionsToFind: 0,
+        });
+      });
+    });
+
+    it('should show the cancel button when training', async () => {
+      render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
+      const cancelTrainingButton = await screen.findByText('Cancel');
+      const openModalButton = screen.queryByText('Train');
+      expect(screen.findByText('Training model...'));
+      expect(openModalButton).not.toBeInTheDocument();
+
+      await act(async () => {
+        await fireEvent.click(cancelTrainingButton);
+      });
+      expect(suggestionsAPI.cancel).toHaveBeenCalled();
+    });
+
+    it('should be disabled if there are selected items', async () => {
+      render(<Component />);
+      const openModalButton = (await screen.findByText('Train')).parentElement;
+      expect(openModalButton).not.toBeDisabled();
+      const suggestionRow = (await screen.findByRole('cell', { name: 'Entity 1 (en)' })).closest(
+        'tr'
+      );
+      fireEvent.click(within(suggestionRow!).getByLabelText('Select'));
+      expect(openModalButton).toBeDisabled();
+    });
   });
 });
