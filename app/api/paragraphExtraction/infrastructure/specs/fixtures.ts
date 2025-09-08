@@ -6,6 +6,7 @@ import { Template } from 'api/templates.v2/model/Template';
 import { Document } from 'api/files.v2/model/Document';
 import { ObjectId } from 'mongodb';
 
+import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
@@ -63,7 +64,10 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
 const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
 const document2 = new Document('any_id2', 'any_entity2', 0, 'any_file_name2', 'es');
 
-const sourceTemplate = new Template('sourceTemplate', 'Source template', [], []);
+const sourceTemplate = TemplateBuilder.aTemplate({
+  id: 'sourceTemplate',
+  name: 'Source template',
+}).build();
 
 const paragraphProperty = new Property({
   id: 'any_id',
@@ -78,12 +82,12 @@ const paragraphNumberProperty = new Property({
   template: 'any_id',
 });
 
-const targetTemplate = new Template(
-  'targetTemplate',
-  'Target template',
-  [paragraphProperty, paragraphNumberProperty],
-  []
-);
+const targetTemplate = TemplateBuilder.aTemplate({
+  id: 'targetTemplate',
+  name: 'Target template',
+})
+  .withProperties([paragraphProperty, paragraphNumberProperty])
+  .build();
 
 const segmentation: Segmentation = {
   id: 'any_id',
