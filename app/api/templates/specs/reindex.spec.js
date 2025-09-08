@@ -111,14 +111,6 @@ describe('reindex', () => {
     describe('Property', () => {
       it.each([
         {
-          change: 'a property has been deleted',
-          getProperties: props => props.slice(1),
-        },
-        {
-          change: 'a property name has been changed',
-          getProperties: props => [{ ...props[0], label: 'New property name' }, ...props.slice(1)],
-        },
-        {
           change: 'new property has been added',
           getProperties: props => props.concat([{ type: propertyTypes.text, label: 'text' }]),
         },
@@ -140,12 +132,12 @@ describe('reindex', () => {
         expect(await checkIfReindex(inheritingTemplate)).toBe(true);
       });
     });
-    describe('commonProperty', () => {
-      it('should reindex if commonProperty name has changed', async () => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        template.commonProperties[0].label = 'Label Changed';
-        await expectReindex(template, true);
-      });
-    });
+    // describe('commonProperty', () => {
+    //   it('should reindex if commonProperty name has changed', async () => {
+    //     const [template] = await templates.get({ _id: templateWithContents });
+    //     template.commonProperties[0].label = 'Label Changed';
+    //     await expectReindex(template, true);
+    //   });
+    // });
   });
 });

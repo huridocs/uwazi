@@ -1,3 +1,4 @@
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -29,6 +30,8 @@ type Input = {
   entitiesIds: string[];
   language: string;
   modifiedRelationshipsProps: string[];
+  deletedProperties: string[];
+  renamedProperties: { [oldName: string]: string };
   templateId: string;
   onAllEntitiesDenormalized: () => void;
   onProgress: (progress: { active: boolean; totalJobs: number; completedJobs: number }) => void;
@@ -40,6 +43,7 @@ type Dependencies = {
   entitiesDS: MultiLanguageEntityDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
+  transactionManager: TransactionManager;
 };
 
 export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Output> {
@@ -49,46 +53,57 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     entitiesIds,
     language,
     modifiedRelationshipsProps,
+    deletedProperties,
+    renamedProperties,
     templateId,
     onAllEntitiesDenormalized,
     onProgress,
   }: Input) {
-    const relationshipProps = await this.dependencies.templatesDS
-      .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
-      .all();
+    await this.dependencies.transactionManager.run(async () => {
+      await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
+      await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
 
-    const entities = await (
-      await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
-    ).all();
+      if (modifiedRelationshipsProps.length) {
+        const relationshipProps = await this.dependencies.templatesDS
+          .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
+          .all();
 
-    const relations = new RelationsV1Collection(
-      await this.dependencies.relationshipsV1DS.getByEntitySharedIds(entities.map(e => e.sharedId))
-    );
+        const entities = await (
+          await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
+        ).all();
 
-    const modifiedEntities = cloneDeep(entities).map(e =>
-      e.createMetadataValuesFromRelationships(relationshipProps, relations)
-    );
+        const relations = new RelationsV1Collection(
+          await this.dependencies.relationshipsV1DS.getByEntitySharedIds(
+            entities.map(e => e.sharedId)
+          )
+        );
 
-    const relatedEntities = await (
-      await this.dependencies.entitiesDS.getEntitiesByRelatedProperties(
-        modifiedEntities,
-        relationshipProps
-      )
-    ).indexed(e => e.sharedId);
+        const modifiedEntities = cloneDeep(entities).map(e =>
+          e.createMetadataValuesFromRelationships(relationshipProps, relations)
+        );
 
-    modifiedEntities.forEach(entity => entity.denormalizeRelationshipProps(relatedEntities));
+        const relatedEntities = await (
+          await this.dependencies.entitiesDS.getEntitiesByRelatedProperties(
+            modifiedEntities,
+            relationshipProps
+          )
+        ).indexed(e => e.sharedId);
 
-    await ArrayUtils.sequentialFor(entities, async (entity, i) =>
-      applicationEventsBus.emit(
-        new EntityUpdatedEvent({
-          before: entity.getEntitiesAsLegacySchemaArray(),
-          after: modifiedEntities[i].getEntitiesAsLegacySchemaArray(),
-          targetLanguageKey: language,
-        })
-      )
-    );
+        modifiedEntities.forEach(entity => entity.denormalizeRelationshipProps(relatedEntities));
 
-    await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, relationshipProps);
+        await ArrayUtils.sequentialFor(entities, async (entity, i) =>
+          applicationEventsBus.emit(
+            new EntityUpdatedEvent({
+              before: entity.getEntitiesAsLegacySchemaArray(),
+              after: modifiedEntities[i].getEntitiesAsLegacySchemaArray(),
+              targetLanguageKey: language,
+            })
+          )
+        );
+
+        await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, relationshipProps);
+      }
+    });
     const jobs = await this.dependencies.templatesDS.incrementProcessingTracking(templateId);
     if (jobs.total === jobs.completed) {
       await this.dependencies.templatesDS.completeProcessing(templateId);
@@ -104,6 +119,8 @@ type DenormalizeV1RelationshipsJobParams = UserAwareDispatchableParams & {
   templateId: string;
   language: string;
   modifiedRelationshipsProps: string[];
+  deletedProperties: string[];
+  renamedProperties: { [oldName: string]: string };
 };
 
 type JobDependencies = {
@@ -121,6 +138,8 @@ export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<Denorma
       entitiesIds: this.params.entitiesIds,
       language: this.params.language,
       modifiedRelationshipsProps: this.params.modifiedRelationshipsProps,
+      deletedProperties: this.params.deletedProperties,
+      renamedProperties: this.params.renamedProperties,
       templateId: this.params.templateId,
       onAllEntitiesDenormalized: () =>
         emitToTenant(this.tenantName, 'templateProcessed', { templateId: this.params.templateId }),
@@ -139,6 +158,8 @@ export const denormalizeTemplateEntities = async (
   template: Template,
   language: string,
   modifiedRelationshipsProps: V1RelationshipProperty[],
+  deletedProperties: string[],
+  renamedProperties: { [oldName: string]: string },
   limit = 200
 ) => {
   const transactionManager = DefaultTransactionManager();
@@ -154,6 +175,7 @@ export const denormalizeTemplateEntities = async (
     entitiesDS,
     relationshipsV1DS,
     templatesDS,
+    transactionManager,
   });
 
   let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
@@ -183,6 +205,8 @@ export const denormalizeTemplateEntities = async (
       templateId: template.id,
       language,
       modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
+      deletedProperties,
+      renamedProperties,
       tenantName: tenants.current().name,
       userId,
     });

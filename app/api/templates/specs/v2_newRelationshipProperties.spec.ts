@@ -5,6 +5,7 @@ import entities from 'api/entities';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import translations from 'api/i18n';
 import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
+import * as setupSockets from 'api/socketio/setupSockets';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
@@ -155,6 +156,7 @@ const newQueryInDb = [
 
 describe('template.save()', () => {
   beforeEach(async () => {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(async () => Promise.resolve());
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     // jest.spyOn(translations, 'save').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'v2_new_relationship_properties.index');

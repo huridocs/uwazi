@@ -9,6 +9,7 @@ import {
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { unique } from 'api/utils/filters';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import * as setupSockets from 'api/socketio/setupSockets';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -30,6 +31,7 @@ async function updateTemplate(template: TemplateSchema) {
 
 describe('generatedId property auto filler', () => {
   beforeAll(async () => {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(async () => Promise.resolve());
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'generated_id_auto_filler_index');
   });

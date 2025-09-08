@@ -104,6 +104,7 @@ export class MongoTransactionManager implements TransactionManager {
       return returnValue;
     } finally {
       await this.session.endSession();
+      this.session = undefined;
     }
   }
 

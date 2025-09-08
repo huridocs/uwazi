@@ -87,6 +87,18 @@ describe('When every operation goes well', () => {
 
     expect(col2).toEqual([]);
   });
+
+  it('should return an undefined session', async () => {
+    const transactionManager = createTransactionManager();
+    const source1 = new Transactional1(transactionManager);
+    const source2 = new Transactional2(transactionManager);
+    await transactionManager.run(async () => {
+      await source1.do();
+      await source2.do();
+    });
+
+    expect(transactionManager.getSession()).toBeUndefined();
+  });
 });
 
 describe('When one operation fails', () => {
