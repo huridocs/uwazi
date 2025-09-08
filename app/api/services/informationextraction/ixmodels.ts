@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { ModelStatus } from 'shared/types/IXModelSchema';
@@ -86,7 +87,8 @@ const appendToFindRunQueue = async (modelId: ObjectIdSchema, newSharedIds: strin
 export default {
   get: model.get.bind(model),
   delete: model.delete.bind(model),
-  save: async (ixmodel: IXModelType) => {
+  save: model.save.bind(model),
+  saveAndObsoleteSuggestions: async (ixmodel: IXModelType) => {
     const saved = await model.save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
       await Suggestions.setObsolete({ extractorId: saved.extractorId });
@@ -106,8 +108,8 @@ export default {
       status: ModelStatus.processing,
       maxSuggestionsToFind: suggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE,
     });
+    await model.updateMany({ extractorId }, { $unset: { processRun: '' } });
 
-    // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
     await unsetFindSuggestionsData(updatedModel._id);
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
@@ -140,23 +142,23 @@ export default {
       status: ModelStatus.ready,
     });
 
-    // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
     await unsetFindSuggestionsData(current._id);
   },
   updateMany: model.updateMany.bind(model),
   unsetFindSuggestionsData,
   initializeFindRunQueue,
   appendToFindRunQueue,
-  // Store process-run options nested under processRun to avoid polluting root
-  setProcessRun: async (extractorId: ObjectIdSchema, processRun: any) => {
+  setProcessRun: async (extractorId: string, processRun: any) => {
+    const extractorObjectId = ObjectId.createFromHexString(extractorId);
     const toSet: any = { processRun };
     if (!processRun?.suggestionsRunTimestamp) {
       toSet['processRun.suggestionsRunTimestamp'] = Date.now();
     }
-    await model.updateMany({ extractorId }, { $set: toSet });
+    await model.updateMany({ extractorId: extractorObjectId }, { $set: toSet });
   },
-  unsetProcessRun: async (extractorId: ObjectIdSchema) => {
-    await model.updateMany({ extractorId }, { $unset: { processRun: '' } });
+  unsetProcessRun: async (extractorId: string) => {
+    const extractorObjectId = ObjectId.createFromHexString(extractorId);
+    await model.updateMany({ extractorId: extractorObjectId }, { $unset: { processRun: '' } });
   },
   setAutoAcceptProgress: async (
     extractorId: ObjectIdSchema,
@@ -173,9 +175,10 @@ export default {
       await model.updateMany({ extractorId }, { $set: update });
     }
   },
-  incAutoAcceptProcessed: async (extractorId: ObjectIdSchema, incBy: number) => {
+  incAutoAcceptProcessed: async (extractorId: string, incBy: number) => {
+    const extractorObjectId = ObjectId.createFromHexString(extractorId);
     await model.updateMany(
-      { extractorId },
+      { extractorId: extractorObjectId },
       { $inc: { 'processRun.autoAcceptProgress.processed': incBy } }
     );
   },

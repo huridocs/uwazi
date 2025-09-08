@@ -120,7 +120,7 @@ export class IXServices {
       newModel.totalSuggestionsToFind = totalSuggestions;
     }
 
-    await ixmodels.save(newModel);
+    await ixmodels.saveAndObsoleteSuggestions(newModel);
   }
 
   static extractCurrentValue({ entity, targetProperty }: ExtractCurrentValueInput) {

@@ -42,6 +42,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
+import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
@@ -884,24 +885,18 @@ class InformationExtraction {
     return { status: 'error', message: 'No model found' };
   };
 
-  // Centralized transition to auto-accept phase
-  startAutoAcceptIfEnabled = async (
-    extractorId: ObjectIdSchema,
-    tenantName: string
-  ): Promise<boolean> => {
+  startAutoAcceptIfEnabled = async (extractorId: string): Promise<boolean> => {
+    const tenant = tenants.current();
     const [model] = await IXModelsModel.get({ extractorId });
     if (!model) return false;
-    const processRun: any = (model as any)?.processRun;
-    const auto = processRun?.autoAccept;
-    if (!auto?.enabled) return false;
+    const autoAccept = model?.processRun?.autoAccept;
+    if (!autoAccept?.enabled) return false;
 
-    emitToTenant(tenantName, 'ix_model_status', extractorId.toString(), 'processing_auto_accept');
+    emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
 
-    const dispatcher = await DefaultDispatcher(tenantName, {
-      lockWindow: 1000 * 60 * 10,
-    });
-    const { AcceptSuggestionsJob } = await import('api/suggestions/jobs/AcceptSuggestionsJob');
-    await dispatcher.dispatch(AcceptSuggestionsJob, { extractorId: extractorId.toString() });
+    const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });
+    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName: tenant.name });
+    await dispatcher.dispatch(job.constructor as any, { extractorId });
     return true;
   };
 
@@ -939,12 +934,11 @@ class InformationExtraction {
           // If a process run requested auto-accept and the find phase just completed,
           // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
           const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-          const processRun: any = (freshModel as any)?.processRun;
-          const auto = processRun?.autoAccept;
-          if (auto?.enabled && freshModel?.totalSuggestionsToFind != null) {
+          const autoAccept = freshModel?.processRun?.autoAccept;
+          if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
             const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
-            if (status.processed >= (freshModel.totalSuggestionsToFind || 0)) {
-              await this.startAutoAcceptIfEnabled(message.params!.id, message.tenant);
+            if (status.processed >= freshModel.totalSuggestionsToFind) {
+              await this.startAutoAcceptIfEnabled(message.params!.id.toString());
               return;
             }
           }

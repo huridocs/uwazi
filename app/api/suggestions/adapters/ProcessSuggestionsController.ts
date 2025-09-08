@@ -82,7 +82,6 @@ class ProcessSuggestionsController extends AbstractController<Request> {
       mode: dto.mode,
       find: dto.find,
       autoAccept: dto.autoAccept,
-      tenantName: this.tenantName,
     });
 
     this.jsonResponse(response);

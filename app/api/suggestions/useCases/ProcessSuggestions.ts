@@ -34,7 +34,6 @@ type Input = {
   mode: ProcessMode;
   find?: ProcessFindOptions;
   autoAccept?: AutoAcceptOptions;
-  tenantName?: string;
 };
 
 type Output = { status: 'processing_suggestions' | 'ready'; message: string; data?: any };
@@ -64,7 +63,7 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
   }
 
   // eslint-disable-next-line max-statements
-  async execute({ extractorId, mode, find, autoAccept, tenantName }: Input): Promise<Output> {
+  async execute({ extractorId, mode, find, autoAccept }: Input): Promise<Output> {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);
 
     const [extractor, model] = await ProcessSuggestions.getExtractorAndModel(extractorId);
@@ -80,7 +79,7 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
     };
 
     // Persist process run metadata on the model for recursive pick-up
-    await ixmodels.setProcessRun(extractorObjectId, {
+    await ixmodels.setProcessRun(extractorId, {
       mode,
       find: {
         enabled: findEnabled,
@@ -136,18 +135,16 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
     }
 
     // If find disabled, set totals to 0 and transition centrally
-    const [currentForZero] = await ixmodels.get({
+    const [currentModel] = await ixmodels.get({
       extractorId: extractorObjectId,
     });
+
     await ixmodels.save({
-      ...currentForZero,
-      extractorId: extractorObjectId,
+      ...currentModel,
       totalSuggestionsToFind: 0,
     });
 
-    if (tenantName) {
-      await this.deps.informationExtraction.startAutoAcceptIfEnabled(extractorObjectId, tenantName);
-    }
+    await this.deps.informationExtraction.startAutoAcceptIfEnabled(extractorId);
 
     return { status: 'ready', message: 'Find disabled' };
   }
