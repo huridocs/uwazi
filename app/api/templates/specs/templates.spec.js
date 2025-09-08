@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import Ajv from 'ajv';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
@@ -10,14 +11,14 @@ import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
 
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
-import templates from '../templates';
 
-import * as setupSockets from 'api/socketio/setupSockets';
 import { inspect } from 'util';
+import templates from '../templates';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';
 import fixtures, {
+  factory,
   propertyToBeInherited,
   relatedTo,
   relatedToAnother,
@@ -60,9 +61,10 @@ describe('templates', () => {
 
   const resetTemplateToBeEdited = async () => {
     const [testTemplate] = await templates.get({ _id: templateToBeEditedId });
+    const { commonProperties } = factory.template('', []);
     testTemplate.name = 'template to be edited';
     testTemplate.properties = [];
-    testTemplate.commonProperties = [{ name: 'title', label: 'Title', type: 'text' }];
+    testTemplate.commonProperties = commonProperties;
     await updateTemplate(testTemplate, 'es');
     return templates.getById(testTemplate._id);
   };
@@ -113,19 +115,21 @@ describe('templates', () => {
     });
 
     it('should update the elastic mapping with the updated template', async () => {
-      const template = {
-        _id: templateToBeEditedId,
-        name: 'template to be edited',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
+      const template = factory.template(
+        '',
+        [
           {
             name: 'new_mapped_prop',
             label: 'new mapped prop',
             type: 'text',
           },
         ],
-        default: true,
-      };
+        {
+          _id: templateToBeEditedId,
+          name: 'template to be edited',
+          default: true,
+        }
+      );
 
       const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
@@ -146,19 +150,21 @@ describe('templates', () => {
 
     it('should emit an TemplateUpdatedEvent', async () => {
       const emitSpy = spyOnEmit();
-      const template = {
-        _id: templateToBeEditedId,
-        name: 'template to be edited',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
+      const template = factory.template(
+        '',
+        [
           {
             name: 'other_prop',
             label: 'other prop',
             type: 'text',
           },
         ],
-        default: true,
-      };
+        {
+          _id: templateToBeEditedId,
+          name: 'template to be edited',
+          default: true,
+        }
+      );
 
       const previousTemplate = await db.mongodb
         .collection('templates')
@@ -351,11 +357,12 @@ describe('templates', () => {
 
       it('should edit an existing one', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-        const toSave = {
-          _id: templateToBeEditedId,
+
+        const toSave = factory.template('', [], {
           name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        };
+          _id: templateToBeEditedId,
+        });
+
         await updateTemplate(toSave);
         const [edited] = await templates.get(templateToBeEditedId);
         expect(edited.name).toBe('changed name');
@@ -401,11 +408,10 @@ describe('templates', () => {
       it('should return the saved template', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
 
-        const edited = {
+        const edited = factory.template('', [], {
           _id: templateToBeEditedId,
           name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        };
+        });
         const template1 = await templates.save(edited);
         await templatesModel.db.updateOne({ _id: template1._id }, { $unset: { processing: '' } });
 
@@ -427,12 +433,15 @@ describe('templates', () => {
 
       describe('when there is a new property with generatedId type', () => {
         it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
-          const templateToUpdate = {
-            _id: templateToBeEditedId,
-            name: 'template to be edited',
-            commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-            properties: [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
-          };
+          const templateToUpdate = factory.template(
+            '',
+            [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
+            {
+              _id: templateToBeEditedId,
+              name: 'template to be edited',
+            }
+          );
+
           await updateTemplate(templateToUpdate);
 
           expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalledWith(
@@ -776,11 +785,9 @@ describe('templates', () => {
       'should denormalize when relationship related data has changed ($propChanges)',
       async ({ propChanges }) => {
         await testingEnvironment.setUp(fixtures, elasticIndex);
-        const template = {
-          _id: thesaurusTemplateId,
-          name: 'thesauri template',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-          properties: [
+        const template = factory.template(
+          '',
+          [
             {
               _id: thesaurusTemplateRelationshipPropId,
               type: propertyTypes.relationship,
@@ -791,7 +798,11 @@ describe('templates', () => {
               ...propChanges,
             },
           ],
-        };
+          {
+            _id: thesaurusTemplateId,
+            name: 'thesauri template',
+          }
+        );
 
         denormalizeTemplateEntities.mockReset();
         await new Promise((resolve, reject) => {

@@ -5,10 +5,13 @@ import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createT
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
+import { ObjectId } from 'mongodb';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
 import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
+import { TemplateMappers } from '../database/TemplateMappers';
+import { CommonProperty } from '../model/CommonProperty';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>
@@ -71,7 +74,9 @@ const TemplateInputMappers = {
       id,
       template.name,
       template.properties?.map(p => propertyToApp(p, id)) || [],
-      []
+      (template.commonProperties?.map(p =>
+        TemplateMappers.propertyToApp(p, ObjectId.createFromHexString(id))
+      ) || []) as CommonProperty[]
     );
   },
 };

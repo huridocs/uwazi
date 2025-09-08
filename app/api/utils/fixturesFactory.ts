@@ -96,7 +96,9 @@ function getFixturesFactory() {
 
     template: (
       name: string,
-      properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = []
+      // eslint-disable-next-line default-param-last
+      properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = [],
+      template?: Partial<TemplateSchema>
     ) => ({
       _id: idMapper(name),
       name,
@@ -105,6 +107,7 @@ function getFixturesFactory() {
         active: false,
       },
       commonProperties: commonProperties(`commonProperties${name}`, idMapper),
+      ...template,
     }),
 
     entityPermission: (
