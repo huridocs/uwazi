@@ -2,6 +2,7 @@ import entities from 'api/entities';
 import translations from 'api/i18n';
 import { elastic } from 'api/search';
 import {
+  factory,
   fixtures,
   templateId,
   textPropertyId,
@@ -43,16 +44,18 @@ describe('generatedId property auto filler', () => {
   describe('fill generated id fields for entities of a specified template', () => {
     let affectedEntities: EntitySchema[];
     beforeAll(async () => {
-      const templateToUpdate: TemplateSchema = {
-        _id: templateId,
-        name: 'template',
-        commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
-        properties: [
+      const templateToUpdate = factory.template(
+        '',
+        [
           { _id: textPropertyId, name: 'text', type: 'text', label: 'Text' },
           { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
           { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
         ],
-      };
+        {
+          _id: templateId,
+          name: 'template',
+        }
+      );
 
       await updateTemplate(templateToUpdate);
       affectedEntities = await entities.get({ template: templateId });

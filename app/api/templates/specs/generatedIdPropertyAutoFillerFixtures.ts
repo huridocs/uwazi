@@ -1,7 +1,9 @@
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 
 const templateId = db.id();
 const textPropertyId = db.id();
+const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   settings: [
@@ -14,12 +16,10 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    {
+    factory.template('', [{ _id: textPropertyId, name: 'text', type: 'text', label: 'Text' }], {
       _id: templateId,
       name: 'template',
-      commonProperties: [{ _id: db.id(), name: 'title', label: 'title', type: 'text' }],
-      properties: [{ _id: textPropertyId, name: 'text', type: 'text', label: 'Text' }],
-    },
+    }),
   ],
   entities: [
     {
@@ -70,4 +70,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, templateId, textPropertyId };
+export { fixtures, templateId, textPropertyId, factory };
