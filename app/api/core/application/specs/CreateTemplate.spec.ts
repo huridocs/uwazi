@@ -6,7 +6,7 @@ import {
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/DataSource';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {

@@ -2,7 +2,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/DataSource';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SelectPropertyWithInvalidThesaurusError } from '../errors';
 
