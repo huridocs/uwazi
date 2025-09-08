@@ -6,62 +6,56 @@ import {
 import { TitleProperty } from 'api/core/domain/template/TitleProperty';
 import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
 import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
+import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
 import { Template } from '../Template';
 import { Property } from '../Property';
 import { V1RelationshipProperty } from '../V1RelationshipProperty';
 
 describe('selectUpdatedProperties()', () => {
   it('should return information about properties that have changed', () => {
-    const oldTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const oldTemplate = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title 1',
           template: 'template1',
         }),
         new Property({
           id: 'prop2',
           type: 'text',
-          name: 'description',
           label: 'Description',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const newTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const newTemplate = TemplateBuilder.from(oldTemplate)
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'New Title',
+          label: 'Title Edited 1',
           template: 'template1',
         }),
         new Property({
           id: 'prop2',
           type: 'text',
-          name: 'description_updated',
           label: 'Description Updated',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates = oldTemplate.selectUpdatedProperties(newTemplate);
 
     expect(updates).toHaveLength(2);
     expect(updates[0]).toEqual({
       id: 'prop1',
-      updatedAttributes: ['label'],
+      updatedAttributes: ['name', 'label'],
       oldProperty: oldTemplate.properties[0],
       newProperty: newTemplate.properties[0],
     });
@@ -74,10 +68,11 @@ describe('selectUpdatedProperties()', () => {
   });
 
   it('should detect changes in V1RelationshipProperty specific attributes', () => {
-    const templateWithRel1 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithRel1 = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new V1RelationshipProperty(
           'rel1',
           'connection',
@@ -87,14 +82,11 @@ describe('selectUpdatedProperties()', () => {
           'content1',
           'inherited1'
         ),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const templateWithRel2 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithRel2 = TemplateBuilder.from(templateWithRel1)
+      .withProperties([
         new V1RelationshipProperty(
           'rel1',
           'connection',
@@ -104,9 +96,8 @@ describe('selectUpdatedProperties()', () => {
           'content2',
           'inherited2'
         ),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates = templateWithRel1.selectUpdatedProperties(templateWithRel2);
 
@@ -120,49 +111,42 @@ describe('selectUpdatedProperties()', () => {
   });
 
   it('should only return properties present in both templates', () => {
-    const oldTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const oldTemplate = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title 1',
           template: 'template1',
         }),
         new Property({
           id: 'prop2',
           type: 'text',
-          name: 'description',
           label: 'Description',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const newTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const newTemplate = TemplateBuilder.from(oldTemplate)
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
           label: 'New Title',
           template: 'template1',
         }),
         new Property({
           id: 'prop3',
           type: 'text',
-          name: 'new_prop',
           label: 'New Property',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates = oldTemplate.selectUpdatedProperties(newTemplate);
 
@@ -171,15 +155,15 @@ describe('selectUpdatedProperties()', () => {
   });
 
   it('should return empty array if no properties changed', () => {
-    const oldTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const oldTemplate = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title 1',
           template: 'template1',
         }),
         new Property({
@@ -189,31 +173,10 @@ describe('selectUpdatedProperties()', () => {
           label: 'Description',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const newTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
-        new Property({
-          id: 'prop1',
-          type: 'text',
-          name: 'title',
-          label: 'Title',
-          template: 'template1',
-        }),
-        new Property({
-          id: 'prop2',
-          type: 'text',
-          name: 'description',
-          label: 'Description',
-          template: 'template1',
-        }),
-      ],
-      []
-    );
+    const newTemplate = TemplateBuilder.from(oldTemplate).build();
 
     const updates = oldTemplate.selectUpdatedProperties(newTemplate);
 
@@ -223,10 +186,11 @@ describe('selectUpdatedProperties()', () => {
 
 describe('selectRelationshipPropsWithRelationshipChanges()', () => {
   it('should return only V1 relationship properties that have V1-specific attributes changed', () => {
-    const templateWithRel1 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithRel1 = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new V1RelationshipProperty(
           'rel1',
           'connection',
@@ -248,18 +212,14 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title 1',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const templateWithRel2 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithRel2 = TemplateBuilder.from(templateWithRel1)
+      .withProperties([
         new V1RelationshipProperty(
           'rel1',
           'connection',
@@ -281,13 +241,11 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
           label: 'New Title',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates =
       templateWithRel1.selectRelationshipPropsWithRelationshipChanges(templateWithRel2);
@@ -302,10 +260,11 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
   });
 
   it('should return empty array when no V1-specific attributes changed', () => {
-    const templateWithRel1 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithRel1 = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new V1RelationshipProperty(
           'rel1',
           'connection',
@@ -315,14 +274,11 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
           'content1',
           'inherited1'
         ),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const templateWithRel2 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithRel2 = TemplateBuilder.from(templateWithRel1)
+      .withProperties([
         new V1RelationshipProperty(
           'rel1',
           'connection',
@@ -332,9 +288,8 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
           'content1',
           'inherited1'
         ),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates =
       templateWithRel1.selectRelationshipPropsWithRelationshipChanges(templateWithRel2);
@@ -345,15 +300,15 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
 
 describe('selectPropertiesWhereNameHasChanged()', () => {
   it('should return only properties where the name attribute has changed', () => {
-    const templateWithProps1 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithProps1 = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title 1',
           template: 'template1',
         }),
         new Property({
@@ -370,18 +325,15 @@ describe('selectPropertiesWhereNameHasChanged()', () => {
           label: 'Summary',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const templateWithProps2 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithProps2 = TemplateBuilder.from(templateWithProps1)
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
+          name: 'title_1',
           label: 'New Title',
           template: 'template1',
         }), // only label changed
@@ -399,9 +351,8 @@ describe('selectPropertiesWhereNameHasChanged()', () => {
           label: 'New Summary',
           template: 'template1',
         }), // both name and label changed
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates = templateWithProps1.selectPropertiesWhereNameHasChanged(templateWithProps2);
 
@@ -421,15 +372,15 @@ describe('selectPropertiesWhereNameHasChanged()', () => {
   });
 
   it('should return empty array when no name attributes changed', () => {
-    const templateWithProps1 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithProps1 = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title1',
           template: 'template1',
         }),
         new Property({
@@ -439,18 +390,15 @@ describe('selectPropertiesWhereNameHasChanged()', () => {
           label: 'Description',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const templateWithProps2 = new Template(
-      'template1',
-      'Template 1',
-      [
+    const templateWithProps2 = TemplateBuilder.from(templateWithProps1)
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
+          name: 'title1',
           label: 'New Title',
           template: 'template1',
         }), // only label changed
@@ -461,9 +409,8 @@ describe('selectPropertiesWhereNameHasChanged()', () => {
           label: 'New Description',
           template: 'template1',
         }), // only label changed
-      ],
-      []
-    );
+      ])
+      .build();
 
     const updates = templateWithProps1.selectPropertiesWhereNameHasChanged(templateWithProps2);
 
@@ -473,15 +420,15 @@ describe('selectPropertiesWhereNameHasChanged()', () => {
 
 describe('selectDeletedProperties()', () => {
   it('should return properties that exist in old template but not in new template', () => {
-    const oldTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const oldTemplate = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title1',
           template: 'template1',
         }),
         new Property({
@@ -498,19 +445,15 @@ describe('selectDeletedProperties()', () => {
           label: 'Summary',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const newTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const newTemplate = TemplateBuilder.from(oldTemplate)
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title1',
           template: 'template1',
         }),
         // prop2 deleted
@@ -521,9 +464,8 @@ describe('selectDeletedProperties()', () => {
           label: 'New Summary',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const deletedProps = oldTemplate.selectDeletedProperties(newTemplate);
 
@@ -532,56 +474,48 @@ describe('selectDeletedProperties()', () => {
   });
 
   it('should return empty array when no properties were deleted', () => {
-    const oldTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const oldTemplate = TemplateBuilder.aTemplate({
+      id: 'template1',
+      name: 'Template 1',
+    })
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
-          label: 'Title',
+          label: 'Title1',
           template: 'template1',
         }),
         new Property({
           id: 'prop2',
           type: 'text',
-          name: 'description',
           label: 'Description',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
-    const newTemplate = new Template(
-      'template1',
-      'Template 1',
-      [
+    const newTemplate = TemplateBuilder.from(oldTemplate)
+      .withProperties([
         new Property({
           id: 'prop1',
           type: 'text',
-          name: 'title',
           label: 'New Title',
           template: 'template1',
         }),
         new Property({
           id: 'prop2',
           type: 'text',
-          name: 'description',
           label: 'Description',
           template: 'template1',
         }),
         new Property({
           id: 'prop3',
           type: 'text',
-          name: 'new_field',
           label: 'New Field',
           template: 'template1',
         }),
-      ],
-      []
-    );
+      ])
+      .build();
 
     const deletedProps = oldTemplate.selectDeletedProperties(newTemplate);
 
