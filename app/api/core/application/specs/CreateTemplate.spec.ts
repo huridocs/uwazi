@@ -6,7 +6,7 @@ import {
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
-import { MongoThesaurusDataSource } from 'api/core/infrastructure/mongodb/thesaurus/DataSource';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/DataSource';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
@@ -17,7 +17,7 @@ const createSut = () => {
   const sut = new CreateTemplateUseCase({
     templatesDS,
     idGenerator,
-    thesaurusDS: new MongoThesaurusDataSource(),
+    thesauriDS: new MongoThesauriDataSource(),
   });
 
   return { sut };

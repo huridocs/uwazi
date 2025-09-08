@@ -4,12 +4,12 @@ import { SelectProperty, SelectPropertyProps } from '../SelectProperty';
 import { SelectPropertyWithInvalidThesaurusError } from '../errors';
 import { MultiSelectProperty, MultiSelectPropertyProps } from '../MultiSelectProperty';
 
-interface ThesaurusDataSource {
+interface ThesauriDataSource {
   exists(id: string): Promise<boolean>;
 }
 
 type Deps = {
-  thesaurusDS: ThesaurusDataSource;
+  thesauriDS: ThesauriDataSource;
 };
 
 type Props = SelectPropertyProps | MultiSelectPropertyProps;
@@ -19,7 +19,7 @@ class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> 
   protected async createProperty(props: Props): Promise<Property> {
     const select = this.createSelectOrMultiSelectProperty(props);
 
-    const thesaurusExists = await this.deps.thesaurusDS.exists(select.content);
+    const thesaurusExists = await this.deps.thesauriDS.exists(select.content);
 
     if (!thesaurusExists) {
       throw new SelectPropertyWithInvalidThesaurusError(select.content);
@@ -41,4 +41,4 @@ class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> 
 }
 
 export { SelectPropertyCreatorService };
-export type { ThesaurusDataSource };
+export type { ThesauriDataSource };

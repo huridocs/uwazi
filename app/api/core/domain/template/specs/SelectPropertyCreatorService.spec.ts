@@ -2,7 +2,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoThesaurusDataSource } from 'api/core/infrastructure/mongodb/thesaurus/DataSource';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/DataSource';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SelectPropertyWithInvalidThesaurusError } from '../errors';
 
@@ -18,7 +18,7 @@ describe('SelectPropertyCreatorService', () => {
   it('should throw if Thesaurus does not exist', async () => {
     const sut = new SelectPropertyCreatorService({
       templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
-      thesaurusDS: new MongoThesaurusDataSource(),
+      thesauriDS: new MongoThesauriDataSource(),
     });
 
     await expect(
@@ -26,6 +26,16 @@ describe('SelectPropertyCreatorService', () => {
         id: new ObjectId().toHexString(),
         label: 'Text',
         type: 'select',
+        template: '',
+        content: new ObjectId().toHexString(),
+      })
+    ).rejects.toThrow(SelectPropertyWithInvalidThesaurusError);
+
+    await expect(
+      sut.create({
+        id: new ObjectId().toHexString(),
+        label: 'Text',
+        type: 'multiselect',
         template: '',
         content: new ObjectId().toHexString(),
       })

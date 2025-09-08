@@ -9,7 +9,7 @@ import { PropertyCreatorService } from '../domain/template/propertyCreatorServic
 import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService';
 import {
   SelectPropertyCreatorService,
-  ThesaurusDataSource,
+  ThesauriDataSource,
 } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
 
@@ -86,7 +86,7 @@ type Output = void;
 type Deps = {
   templatesDS: TemplatesDataSource;
   idGenerator: IdGenerator;
-  thesaurusDS: ThesaurusDataSource;
+  thesauriDS: ThesauriDataSource;
 };
 
 class CreateTemplateUseCase implements UseCase<Input, Output> {
@@ -98,7 +98,7 @@ class CreateTemplateUseCase implements UseCase<Input, Output> {
       relationship: new RelationshipPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
       select: new SelectPropertyCreatorService({
         templatesDS: this.deps.templatesDS,
-        thesaurusDS: this.deps.thesaurusDS,
+        thesauriDS: this.deps.thesauriDS,
       }),
     });
   }
