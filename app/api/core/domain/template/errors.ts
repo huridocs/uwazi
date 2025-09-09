@@ -2,6 +2,7 @@
 import { Property } from 'api/templates.v2/model/Property';
 import { Template } from 'api/templates.v2/model/Template';
 import { DomainError } from '../DomainError';
+import { AJVObject, ValidationError } from '../error/ValidationError';
 
 class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
@@ -75,12 +76,19 @@ class InvalidStyleTypeError extends DomainError {
   }
 }
 
-class TemplateWithDuplicatedPropertyError extends DomainError {
+class TemplateWithDuplicatedPropertyError extends ValidationError {
   constructor(property: Property) {
     super(
       `Template contains duplicate property: [name=${property.name}, type=${property.type}]`,
       'template.template.template_with_duplicated_property_error'
     );
+  }
+
+  asAJV(): AJVObject {
+    return {
+      message: this.message,
+      keyword: 'uniquePropertyFields',
+    };
   }
 }
 
