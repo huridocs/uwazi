@@ -22,6 +22,7 @@ type Tenant = {
     deactivateUpdateLogs?: boolean;
     deactivateS3Pooling?: boolean;
     deactivateS3Logging?: boolean;
+    v2CreateTemplateUseCase?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

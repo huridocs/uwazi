@@ -37,6 +37,7 @@ const mongoSchema = new mongoose.Schema({
     deactivateUpdateLogs: Boolean,
     deactivateS3Pooling: Boolean,
     deactivateS3Logging: Boolean,
+    v2CreateTemplateUseCase: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
