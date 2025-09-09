@@ -1,7 +1,6 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { Validator } from 'api/core/domain/validator/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
-import { TemplateWithMissingCommonPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithMissingCommonPropertyValidator';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -36,7 +35,7 @@ class Template {
     this.color = color;
     this.isDefault = isDefault ?? false;
 
-    // this.validate();
+    this.validate();
   }
 
   get allProperties() {
@@ -46,7 +45,7 @@ class Template {
   private validate() {
     const validator = new Validator([
       new TemplateWithDuplicatedPropertyValidator(),
-      new TemplateWithMissingCommonPropertyValidator(),
+      // new TemplateWithMissingCommonPropertyValidator(),
     ]);
 
     validator.validate(this);
