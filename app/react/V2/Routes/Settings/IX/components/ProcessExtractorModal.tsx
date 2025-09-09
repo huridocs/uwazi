@@ -7,16 +7,12 @@ import { ProcessParameters } from 'V2/api/ix/suggestions';
 import { IXFilters } from '../types';
 
 type FormData = {
-  find: {
-    shouldFind: boolean;
-    types: Pick<IXFilters, 'nonProcessed' | 'obsolete' | 'error'>;
-    amount: number;
-  };
-  accept: {
-    shouldAccept: boolean;
-    for: 'all' | 'previous';
-    overwrite: 'blank_only' | 'overwrite_all';
-  };
+  shouldFind: boolean;
+  filters: Pick<IXFilters, 'nonProcessed' | 'obsolete' | 'error'>;
+  amount: number;
+  shouldAccept: boolean;
+  acceptFor: 'all' | 'previous';
+  overwrite: 'blank_only' | 'overwrite_all';
 };
 
 type ProcessExtractorModalProps = {
@@ -34,27 +30,27 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
   } = useForm<FormData>({
     mode: 'onSubmit',
     defaultValues: {
-      find: {
-        shouldFind: true,
-        types: { nonProcessed: true, obsolete: true, error: true },
-        amount: 1000,
-      },
-      accept: { shouldAccept: true, for: 'previous', overwrite: 'blank_only' },
+      shouldFind: true,
+      filters: { nonProcessed: true, obsolete: true, error: true },
+      amount: 1000,
+      shouldAccept: true,
+      acceptFor: 'previous',
+      overwrite: 'blank_only',
     },
   });
 
-  const submit = async ({ find, accept }: FormData) => {
+  const submit = async (values: FormData) => {
     const data: Omit<ProcessParameters, 'extractorId'> = {
       mode: 'process_extractor',
       find: {
-        enabled: find.shouldFind,
-        size: find.amount > 0 ? find.amount : 0,
-        filters: { ...find.types },
+        enabled: values.shouldFind,
+        size: values.shouldFind && values.amount > 0 ? values.amount : 0,
+        filters: { ...values.filters },
       },
       autoAccept: {
-        enabled: accept.shouldAccept,
-        source: accept.for,
-        overwriteMode: accept.overwrite,
+        enabled: values.shouldAccept,
+        source: values.acceptFor,
+        overwriteMode: values.overwrite,
       },
     };
 
@@ -62,14 +58,22 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
     close();
   };
 
-  const shouldFind = watch('find.shouldFind');
-  const shouldAccept = watch('accept.shouldAccept');
+  const shouldFind = watch('shouldFind');
+  const shouldAccept = watch('shouldAccept');
+  const filters = watch('filters');
 
   useEffect(() => {
     if (!shouldFind) {
-      setValue('accept.for', 'all');
+      setValue('acceptFor', 'all');
     }
   }, [setValue, shouldFind]);
+
+  useEffect(() => {
+    const hasFilters = filters.error || filters.nonProcessed || filters.obsolete;
+    if (!hasFilters) {
+      setValue('shouldFind', false);
+    }
+  }, [setValue, filters.error, filters.obsolete, filters.nonProcessed]);
 
   return (
     <Modal size="xl">
@@ -81,7 +85,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
         <form id="train-form" onSubmit={handleSubmit(submit)}>
           <div className="flex flex-col gap-2">
             <Controller
-              name="find.shouldFind"
+              name="shouldFind"
               control={control}
               render={({ field }) => (
                 <Checkbox
@@ -94,7 +98,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
             />
             <div className="px-2 flex flex-col gap-1">
               <Controller
-                name="find.types.nonProcessed"
+                name="filters.nonProcessed"
                 control={control}
                 render={({ field }) => (
                   <div>
@@ -109,7 +113,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
                 )}
               />
               <Controller
-                name="find.types.obsolete"
+                name="filters.obsolete"
                 control={control}
                 render={({ field }) => (
                   <div>
@@ -124,7 +128,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
                 )}
               />
               <Controller
-                name="find.types.error"
+                name="filters.error"
                 control={control}
                 render={({ field }) => (
                   <div>
@@ -140,7 +144,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
               />
             </div>
             <Controller
-              name="find.amount"
+              name="amount"
               control={control}
               render={({ field }) => (
                 <div className="flex gap-2 items-center">
@@ -163,7 +167,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
           <hr className="my-4" />
           <div className="flex flex-col gap-2">
             <Controller
-              name="accept.shouldAccept"
+              name="shouldAccept"
               control={control}
               render={({ field }) => (
                 <Checkbox
@@ -176,7 +180,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
             />
             <div className="pt-2 px-2">
               <Controller
-                name="accept.for"
+                name="acceptFor"
                 control={control}
                 defaultValue="previous"
                 render={({ field }) => (
@@ -202,7 +206,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
               />
               <hr className="my-4" />
               <Controller
-                name="accept.overwrite"
+                name="overwrite"
                 control={control}
                 defaultValue="blank_only"
                 render={({ field }) => (

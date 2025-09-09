@@ -175,6 +175,13 @@ describe('IX suggestions', () => {
   });
 
   describe('Process extractor modal', () => {
+    it('should be disabled if the model is bussy', async () => {
+      render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
+      const openModalButton = (await screen.findByText('Process extractor')).parentElement;
+      expect(screen.findByText('Training model...'));
+      expect(openModalButton).toBeDisabled();
+    });
+
     describe('form', () => {
       beforeEach(async () => {
         jest.resetAllMocks();
@@ -249,6 +256,32 @@ describe('IX suggestions', () => {
             enabled: true,
             filters: { error: true, nonProcessed: true, obsolete: true },
             size: 1000,
+          },
+          mode: 'process_extractor',
+        });
+      });
+
+      // eslint-disable-next-line max-statements
+      it('should not find if all the filters are empty', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        const nonProcessedSelect = screen.getByLabelText('Non Processed');
+        const obsoleteSelect = screen.getByLabelText('Obsolete');
+        const errorSelect = screen.getByLabelText('Error');
+        fireEvent.click(nonProcessedSelect);
+        fireEvent.click(obsoleteSelect);
+        fireEvent.click(errorSelect);
+        expect(screen.getByLabelText('Find suggestions for')).not.toBeChecked();
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'all' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: false,
+            filters: { error: false, nonProcessed: false, obsolete: false },
+            size: 0,
           },
           mode: 'process_extractor',
         });

@@ -324,27 +324,25 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected.length > 0}>
           <div className="flex items-center justify-center space-x-4">
+            <Button
+              size="small"
+              type="button"
+              styling="solid"
+              onClick={() => setModal('process')}
+              disabled={status.status !== ixStatus.ready}
+            >
+              <Translate>Process extractor</Translate>
+            </Button>
             {status.status === ixStatus.ready ? (
-              <>
-                <Button
-                  size="small"
-                  type="button"
-                  styling="solid"
-                  onClick={() => setModal('train')}
-                  disabled={selected.length > 0}
-                >
-                  <Translate>Train model</Translate>
-                </Button>
-                <Button
-                  size="small"
-                  type="button"
-                  styling="solid"
-                  onClick={() => setModal('process')}
-                  disabled={selected.length > 0}
-                >
-                  <Translate>Process extractor</Translate>
-                </Button>
-              </>
+              <Button
+                size="small"
+                type="button"
+                styling="solid"
+                onClick={() => setModal('train')}
+                disabled={selected.length > 0}
+              >
+                <Translate>Train model</Translate>
+              </Button>
             ) : (
               <>
                 <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
