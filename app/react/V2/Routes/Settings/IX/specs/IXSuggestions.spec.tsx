@@ -111,7 +111,7 @@ describe('IX suggestions', () => {
         jest.spyOn(suggestionsAPI, 'findSuggestions');
         jest.spyOn(suggestionsAPI, 'cancel');
         render(<Component />);
-        const openModalButton = await screen.findByText('Train');
+        const openModalButton = await screen.findByText('Train model');
         fireEvent.click(openModalButton);
         const modal = screen.getByRole('dialog');
         expect(await within(modal).findByText('Train model')).toBeInTheDocument();
@@ -152,7 +152,7 @@ describe('IX suggestions', () => {
     it('should show the cancel button when training', async () => {
       render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
       const cancelTrainingButton = await screen.findByText('Cancel');
-      const openModalButton = screen.queryByText('Train');
+      const openModalButton = screen.queryByText('Train model');
       expect(screen.findByText('Training model...'));
       expect(openModalButton).not.toBeInTheDocument();
 
@@ -164,13 +164,95 @@ describe('IX suggestions', () => {
 
     it('should be disabled if there are selected items', async () => {
       render(<Component />);
-      const openModalButton = (await screen.findByText('Train')).parentElement;
+      const openModalButton = (await screen.findByText('Train model')).parentElement;
       expect(openModalButton).not.toBeDisabled();
       const suggestionRow = (await screen.findByRole('cell', { name: 'Entity 1 (en)' })).closest(
         'tr'
       );
       fireEvent.click(within(suggestionRow!).getByLabelText('Select'));
       expect(openModalButton).toBeDisabled();
+    });
+  });
+
+  describe('Process extractor modal', () => {
+    describe('form', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        jest.spyOn(suggestionsAPI, 'process');
+        render(<Component />);
+        const openModalButton = await screen.findByText('Process extractor');
+        fireEvent.click(openModalButton);
+        const modal = screen.getByRole('dialog');
+        expect(await within(modal).findByText('Process extractor')).toBeInTheDocument();
+      });
+
+      // eslint-disable-next-line max-statements
+      it('should disable the related fields when not finding suggestions', () => {
+        const amountInput = screen.getByLabelText('Amount :');
+        const nonProcessedSelect = screen.getByLabelText('Non Processed');
+        const obsoleteSelect = screen.getByLabelText('Obsolete');
+        const errorSelect = screen.getByLabelText('Error');
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        expect(amountInput).not.toBeDisabled();
+        expect(nonProcessedSelect).not.toBeDisabled();
+        expect(obsoleteSelect).not.toBeDisabled();
+        expect(errorSelect).not.toBeDisabled();
+        expect(acceptFromPreviousSelect).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Find suggestions for'));
+        expect(amountInput).toBeDisabled();
+        expect(nonProcessedSelect).toBeDisabled();
+        expect(obsoleteSelect).toBeDisabled();
+        expect(errorSelect).toBeDisabled();
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should disable auto-accept options when not auto accepting', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        expect(acceptFromPreviousSelect).not.toBeDisabled();
+        expect(acceptAllSuggestions).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(acceptFromPreviousSelect).toBeDisabled();
+        expect(acceptAllSuggestions).toBeDisabled();
+      });
+
+      it('should autoselect auto-accept for all when not finding suggestions', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        expect(acceptFromPreviousSelect).toBeChecked();
+        expect(acceptAllSuggestions).not.toBeChecked();
+        fireEvent.click(screen.getByLabelText('Find suggestions for'));
+        expect(acceptAllSuggestions).toBeChecked();
+        expect(acceptFromPreviousSelect).not.toBeChecked();
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should not allow processing if its not finding and not accepting', () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        expect(processButton).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Find suggestions for'));
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(processButton).toBeDisabled();
+      });
+
+      it('should call the endpoint with the expected default parameters', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'previous' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: true,
+            filters: { error: true, nonProcessed: true, obsolete: true },
+            size: 1000,
+          },
+          mode: 'process_extractor',
+        });
+      });
     });
   });
 });

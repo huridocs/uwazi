@@ -10,6 +10,7 @@ interface RadioProps {
   onChange?: ReactEventHandler<HTMLInputElement>;
   options: (Option & {
     defaultChecked?: boolean;
+    checked?: boolean;
   })[];
   className?: string;
   orientation?: 'vertical' | 'horizontal';
@@ -42,6 +43,7 @@ const RadioSelect = ({
           disabled={option.disabled || false}
           onChange={onChange}
           defaultChecked={option.defaultChecked}
+          checked={option.checked}
         />
         <Label
           htmlFor={`${name}_${option.value}`}

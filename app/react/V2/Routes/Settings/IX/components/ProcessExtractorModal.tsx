@@ -3,12 +3,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { Modal, Button } from 'V2/Components/UI';
 import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
+import { ProcessParameters } from 'V2/api/ix/suggestions';
 import { IXFilters } from '../types';
-
-type ProcessExtractorModalProps = {
-  close: () => void;
-  onTrain: () => Promise<void>;
-};
 
 type FormData = {
   find: {
@@ -16,7 +12,16 @@ type FormData = {
     types: Pick<IXFilters, 'nonProcessed' | 'obsolete' | 'error'>;
     amount: number;
   };
-  accept: { shouldAccept: boolean; for: 'all' | 'previus'; overwrite: 'blank' | 'all' };
+  accept: {
+    shouldAccept: boolean;
+    for: 'all' | 'previous';
+    overwrite: 'blank_only' | 'overwrite_all';
+  };
+};
+
+type ProcessExtractorModalProps = {
+  close: () => void;
+  onTrain: (data: Omit<ProcessParameters, 'extractorId'>) => Promise<void>;
 };
 
 const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) => {
@@ -34,13 +39,26 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
         types: { nonProcessed: true, obsolete: true, error: true },
         amount: 1000,
       },
-      accept: { shouldAccept: true, for: 'previus', overwrite: 'blank' },
+      accept: { shouldAccept: true, for: 'previous', overwrite: 'blank_only' },
     },
   });
 
   const submit = async ({ find, accept }: FormData) => {
-    console.log(find, accept);
-    await onTrain();
+    const data: Omit<ProcessParameters, 'extractorId'> = {
+      mode: 'process_extractor',
+      find: {
+        enabled: find.shouldFind,
+        size: find.amount > 0 ? find.amount : 0,
+        filters: { ...find.types },
+      },
+      autoAccept: {
+        enabled: accept.shouldAccept,
+        source: accept.for,
+        overwriteMode: accept.overwrite,
+      },
+    };
+
+    await onTrain(data);
     close();
   };
 
@@ -160,6 +178,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
               <Controller
                 name="accept.for"
                 control={control}
+                defaultValue="previous"
                 render={({ field }) => (
                   <RadioSelect
                     name={field.name}
@@ -169,12 +188,13 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
                         label: <Translate>From previous step</Translate>,
                         value: 'previous',
                         disabled: !shouldFind || !shouldAccept,
-                        defaultChecked: true,
+                        checked: field.value === 'previous',
                       },
                       {
                         label: <Translate>From all suggestions</Translate>,
                         value: 'all',
                         disabled: !shouldAccept,
+                        checked: field.value === 'all',
                       },
                     ]}
                   />
@@ -184,6 +204,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
               <Controller
                 name="accept.overwrite"
                 control={control}
+                defaultValue="blank_only"
                 render={({ field }) => (
                   <RadioSelect
                     name={field.name}
@@ -191,13 +212,13 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
                     options={[
                       {
                         label: <Translate>For entities with blank values</Translate>,
-                        value: 'blank',
-                        defaultChecked: true,
+                        value: 'blank_only',
                         disabled: !shouldAccept,
+                        defaultChecked: true,
                       },
                       {
                         label: <Translate>For all entities</Translate>,
-                        value: 'all',
+                        value: 'overwrite_all',
                         disabled: !shouldAccept,
                       },
                     ]}
@@ -212,8 +233,13 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
         <Button disabled={isSubmitting} onClick={() => close()} styling="outline" className="grow">
           <Translate>Cancel</Translate>
         </Button>
-        <Button disabled={isSubmitting} type="submit" form="train-form" className="grow">
-          <Translate>Train</Translate>
+        <Button
+          disabled={isSubmitting || (!shouldFind && !shouldAccept)}
+          type="submit"
+          form="train-form"
+          className="grow"
+        >
+          <Translate>Process</Translate>
         </Button>
       </Modal.Footer>
     </Modal>
