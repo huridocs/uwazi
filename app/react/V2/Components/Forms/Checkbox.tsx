@@ -24,10 +24,11 @@ const Checkbox = React.forwardRef(
           disabled={disabled || false}
           onChange={onChange}
           ref={ref}
+          color={disabled ? 'gray' : 'indigo'}
         />
         <Label
           htmlFor={name}
-          className={`w-full text-sm font-medium text-gray-900 cursor-pointer ${disabled ? '!text-gray-300' : ''}`}
+          className={`w-full text-sm font-medium text-gray-900 cursor-pointer ${disabled ? '!text-gray-500' : ''}`}
         >
           {isString(label) ? <Translate>{label}</Translate> : label}
         </Label>

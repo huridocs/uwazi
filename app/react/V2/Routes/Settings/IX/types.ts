@@ -56,6 +56,17 @@ type IXSuggestionsLoaderResponse = {
   total: number;
 };
 
+type IXFilters = {
+  labeled: boolean;
+  nonLabeled: boolean;
+  match: boolean;
+  mismatch: boolean;
+  obsolete: boolean;
+  error: boolean;
+  noContext: boolean;
+  nonProcessed: boolean;
+};
+
 export enum ixStatus {
   ready = 'ready',
   sending_labeled_data = 'sending_labeled_data',
@@ -66,6 +77,7 @@ export enum ixStatus {
 }
 
 export type {
+  IXFilters,
   EntitySuggestion,
   TableExtractor,
   Highlights,
