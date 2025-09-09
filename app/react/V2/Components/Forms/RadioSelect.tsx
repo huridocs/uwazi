@@ -45,7 +45,7 @@ const RadioSelect = ({
         />
         <Label
           htmlFor={`${name}_${option.value}`}
-          className={`cursor-pointer ${option.disabled ? '!text-gray-300' : ''}`}
+          className={`cursor-pointer ${option.disabled ? '!text-gray-500' : ''}`}
         >
           {isString(option.label) ? <Translate>{option.label}</Translate> : option.label}
         </Label>
