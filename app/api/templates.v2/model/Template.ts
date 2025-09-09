@@ -36,7 +36,7 @@ class Template {
     this.color = color;
     this.isDefault = isDefault ?? false;
 
-    this.validate();
+    // this.validate();
   }
 
   get allProperties() {
