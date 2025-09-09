@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -19,6 +20,17 @@ import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { tenants } from 'api/tenants';
+import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
+import {
+  DefaultIdGenerator,
+  DefaultTransactionManager,
+} from 'api/common.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
+import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
@@ -34,7 +46,6 @@ import {
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -174,6 +185,18 @@ export default {
       denormalizationExecuted?: boolean
     ) => Promise<void> = async () => {}
   ) {
+    const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
+    if (v2CreateTemplateUseCase) {
+      const output = await new CreateTemplateUseCase({
+        idGenerator: DefaultIdGenerator,
+        templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+        thesauriDS: new MongoThesauriDataSource(),
+        translationService: new LegacyTranslationService(),
+      }).execute(template);
+
+      return TemplateMapper.toSchema(output);
+    }
+
     // processing can not be saved from this interface, its an internal tracking property
     delete template.processing;
     template.properties = template.properties || [];
@@ -319,9 +342,9 @@ export default {
     if (templateStructureChanges) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.reindexAllTemplates(fullReindex)
-        .then(async () => {
-          return this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex);
-        })
+        .then(async () =>
+          this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
+        )
         .then(async denormalizationExecuted => {
           await onTemplateProcessed(
             undefined,
