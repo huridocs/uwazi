@@ -183,6 +183,15 @@ const IXSuggestions = () => {
     }
   };
 
+  const processExtractor = async (data: Omit<suggestionsAPI.ProcessParameters, 'extractorId'>) => {
+    if (extractor._id) {
+      try {
+        const params = { ...data, extractorId: extractor._id };
+        await suggestionsAPI.process(params);
+      } catch (error) {}
+    }
+  };
+
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
     const type = selectedSuggestion.extractorSource.pdf ? 'pdf' : 'property';
@@ -324,7 +333,7 @@ const IXSuggestions = () => {
                   onClick={() => setModal('train')}
                   disabled={selected.length > 0}
                 >
-                  <Translate>Train</Translate>
+                  <Translate>Train model</Translate>
                 </Button>
                 <Button
                   size="small"
@@ -392,7 +401,7 @@ const IXSuggestions = () => {
           close={() => {
             setModal('none');
           }}
-          onTrain={() => {}}
+          onTrain={processExtractor}
         />
       )}
     </div>

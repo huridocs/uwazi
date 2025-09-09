@@ -3,7 +3,27 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IXSuggestionsQuery } from 'shared/types/suggestionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { SuggestionValue } from 'app/V2/Routes/Settings/IX/types';
+import { SuggestionValue } from 'V2/Routes/Settings/IX/types';
+
+type ProcessParameters = {
+  extractorId: string;
+  mode: 'process_extractor' | 'process_selected';
+  find?: {
+    enabled?: boolean;
+    size?: number;
+    filters?: {
+      error?: boolean;
+      obsolete?: boolean;
+      nonProcessed?: boolean;
+    };
+    selectedSharedIds?: string[];
+  };
+  autoAccept?: {
+    enabled?: boolean;
+    source?: 'previous' | 'all';
+    overwriteMode?: 'blank_only' | 'overwrite_all';
+  };
+};
 
 const get = async (
   parameters: {
@@ -70,4 +90,20 @@ const cancel = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   return response;
 };
 
-export { get, accept, aggregation, findSuggestions, status, cancel, findSelectedSuggestions };
+const process = async (parameters: ProcessParameters, headers?: IncomingHttpHeaders) => {
+  const params = new RequestParams(parameters, headers);
+  const { json: response } = await api.post('/api/suggestions/process', params);
+  return response;
+};
+
+export type { ProcessParameters };
+export {
+  get,
+  accept,
+  aggregation,
+  findSuggestions,
+  status,
+  cancel,
+  findSelectedSuggestions,
+  process,
+};
