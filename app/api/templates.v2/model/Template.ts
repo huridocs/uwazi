@@ -78,11 +78,15 @@ class Template {
     return updateInfo;
   }
 
-  selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): PropertyUpdateInfo[] {
+  selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): V1RelationshipProperty[] {
     const v1Props = ['relationType', 'content', 'inheritedPropertyId'];
-    return this.selectUpdatedProperties(newTemplate).filter(update =>
-      update.updatedAttributes.some(attr => v1Props.includes(attr))
-    );
+    return this.selectUpdatedProperties(newTemplate)
+      .filter(update => update.updatedAttributes.some(attr => v1Props.includes(attr)))
+      .map(update => newTemplate.getPropertyById(update.id))
+      .filter(
+        (newProperty): newProperty is V1RelationshipProperty =>
+          newProperty instanceof V1RelationshipProperty
+      );
   }
 
   selectPropertiesWhereNameHasChanged(newTemplate: Template): PropertyUpdateInfo[] {

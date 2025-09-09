@@ -2,8 +2,6 @@ import { ClientSession, ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
-import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
-import entitiesModel from 'api/entities/entitiesModel';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
 import translations from 'api/i18n/translations';
@@ -36,6 +34,7 @@ import {
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -239,7 +238,7 @@ export default {
     let denormalizationExecuted = false;
     const newRelationshipProps = currentTemplateV2
       .selectNewProperties(newTemplate)
-      .filter(p => p.type === 'relationship');
+      .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
     if (
       (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
       newRelationshipProps.length ||
@@ -249,7 +248,7 @@ export default {
       await denormalizeTemplateEntities(
         TemplateInputMappers.toApp(template),
         language,
-        relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
+        relationshipPropsWithChangedRelData.concat(newRelationshipProps),
         deletedProperties,
         renamedProperties,
         50

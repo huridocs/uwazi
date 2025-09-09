@@ -99,16 +99,17 @@ function getFixturesFactory() {
       // eslint-disable-next-line default-param-last
       properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = [],
       template?: Partial<TemplateSchema>
-    ) => ({
-      _id: idMapper(name),
-      name,
-      properties,
-      processing: {
-        active: false,
-      },
-      commonProperties: commonProperties(`commonProperties${name}`, idMapper),
-      ...template,
-    }),
+    ) =>
+      ({
+        _id: idMapper(name),
+        name,
+        properties,
+        processing: {
+          active: false,
+        },
+        commonProperties: commonProperties(`commonProperties${name}`, idMapper),
+        ...template,
+      }) as TemplateSchema & { _id: ObjectId },
 
     entityPermission: (
       user: string,

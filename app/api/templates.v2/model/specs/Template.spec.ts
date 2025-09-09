@@ -251,12 +251,7 @@ describe('selectRelationshipPropsWithRelationshipChanges()', () => {
       templateWithRel1.selectRelationshipPropsWithRelationshipChanges(templateWithRel2);
 
     expect(updates).toHaveLength(1);
-    expect(updates[0]).toEqual({
-      id: 'rel2',
-      updatedAttributes: ['relationType', 'content', 'inheritedPropertyId'],
-      oldProperty: templateWithRel1.properties[1],
-      newProperty: templateWithRel2.properties[1],
-    });
+    expect(updates[0]).toEqual(templateWithRel2.properties[1]);
   });
 
   it('should return empty array when no V1-specific attributes changed', () => {
