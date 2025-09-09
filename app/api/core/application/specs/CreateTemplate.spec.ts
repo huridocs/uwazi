@@ -7,17 +7,23 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
   const transactionManager = DefaultTransactionManager();
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const idGenerator = DefaultIdGenerator;
+  const settingsDS = DefaultSettingsDataSource(transactionManager);
+  const translationService = new LegacyTranslationService();
 
   const sut = new CreateTemplateUseCase({
     templatesDS,
     idGenerator,
     thesauriDS: new MongoThesauriDataSource(),
+    settingsDS,
+    translationService,
   });
 
   return { sut };

@@ -31,6 +31,7 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
@@ -187,11 +188,13 @@ export default {
   ) {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
     if (v2CreateTemplateUseCase) {
+      const transactionManager = DefaultTransactionManager();
       const output = await new CreateTemplateUseCase({
         idGenerator: DefaultIdGenerator,
-        templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+        templatesDS: DefaultTemplatesDataSource(transactionManager),
         thesauriDS: new MongoThesauriDataSource(),
         translationService: new LegacyTranslationService(),
+        settingsDS: DefaultSettingsDataSource(transactionManager),
       }).execute(template);
 
       return TemplateMapper.toSchema(output);

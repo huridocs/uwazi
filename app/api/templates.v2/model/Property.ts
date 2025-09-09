@@ -21,6 +21,10 @@ type Props = {
   noLabel?: boolean;
 };
 
+type Context = {
+  newNameGeneration?: boolean;
+};
+
 class Property {
   readonly id: string;
 
@@ -38,12 +42,14 @@ class Property {
 
   showInCard: boolean;
 
-  constructor(props: Props) {
+  constructor(props: Props, context?: Context) {
     this.id = props.id;
     this.type = props.type;
     this.label = props.label;
     this.template = props.template;
-    this._name = props.name ? new PropertyName(props.name) : PropertyName.fromLabel(this.label);
+    this._name = props.name
+      ? new PropertyName(props.name)
+      : PropertyName.fromLabel(this.label, context);
     this.required = props.required || false;
     this.noLabel = props.noLabel || false;
     this.showInCard = props.showInCard || false;
@@ -85,4 +91,4 @@ class Property {
 }
 
 export { Property };
-export type { PropertyTypes, PropertyUpdateInfo, Props as PropertyProps };
+export type { PropertyTypes, PropertyUpdateInfo, Props as PropertyProps, Context };

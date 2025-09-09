@@ -3,6 +3,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { Template } from 'api/templates.v2/model/Template';
 import { z } from 'zod';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
 import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
@@ -89,6 +90,7 @@ type Deps = {
   idGenerator: IdGenerator;
   thesauriDS: ThesauriDataSource;
   translationService: TranslationService;
+  settingsDS: SettingsDataSource;
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
@@ -108,15 +110,23 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
   }
 
   protected async executeAsync(input: Input): Promise<Output> {
+    const { newNameGeneration } = await this.deps.settingsDS.get();
+
     const commonProperties = input.commonProperties.map(p =>
-      CommonPropertyFactory.create({ ...p, id: this.deps.idGenerator.generate(), template: 'id' })
+      CommonPropertyFactory.create(
+        { ...p, id: this.deps.idGenerator.generate(), template: 'id' },
+        { newNameGeneration }
+      )
     );
 
     const properties = await Promise.all(
       input?.properties?.map(async p =>
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
-          .create({ ...p, id: this.deps.idGenerator.generate(), template: 'id' })
+          .create(
+            { ...p, id: this.deps.idGenerator.generate(), template: 'id' },
+            { newNameGeneration }
+          )
       ) || []
     );
 

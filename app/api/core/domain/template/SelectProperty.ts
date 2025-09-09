@@ -1,3 +1,4 @@
+import { Context } from 'api/templates.v2/model/Property';
 import { FieldIsRequiredError, PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 
@@ -9,8 +10,8 @@ type Props = {
 class SelectProperty extends FilterableProperty {
   content: string; // Keeping name wrong for backwards compatibility. This is Thesaurus id
 
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'select' });
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'select' }, context);
     this.content = props.content;
 
     this.validate();

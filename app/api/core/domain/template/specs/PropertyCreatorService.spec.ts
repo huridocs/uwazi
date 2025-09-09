@@ -103,12 +103,15 @@ describe('PropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create({
-        id: new ObjectId().toHexString(),
-        label: 'Text',
-        type: 'text',
-        template: '',
-      })
+      sut.create(
+        {
+          id: new ObjectId().toHexString(),
+          label: 'Text',
+          type: 'text',
+          template: '',
+        },
+        {}
+      )
     ).rejects.toThrow(PropertyNotUniqueOnTheSystemError);
   });
 
@@ -118,12 +121,15 @@ describe('PropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create({
-        id: new ObjectId().toHexString(),
-        label: 'Text Label',
-        type: 'text',
-        template: '',
-      })
+      sut.create(
+        {
+          id: new ObjectId().toHexString(),
+          label: 'Text Label',
+          type: 'text',
+          template: '',
+        },
+        {}
+      )
     ).resolves.toBeInstanceOf(TextProperty);
   });
 
@@ -133,13 +139,16 @@ describe('PropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create({
-        id: prevCreated.toHexString(),
-        type: 'text',
-        label: 'Previous created',
-        name: 'prev_created',
-        template: '',
-      })
+      sut.create(
+        {
+          id: prevCreated.toHexString(),
+          type: 'text',
+          label: 'Previous created',
+          name: 'prev_created',
+          template: '',
+        },
+        {}
+      )
     ).resolves.toBeInstanceOf(TextProperty);
   });
 });
