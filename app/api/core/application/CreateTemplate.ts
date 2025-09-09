@@ -1,4 +1,4 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
 import { z } from 'zod';
@@ -12,6 +12,7 @@ import {
   ThesauriDataSource,
 } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
+import { TranslationService } from '../domain/template/TranslationService';
 
 const types = [
   'date',
@@ -81,18 +82,21 @@ const Schema = z.object({
 
 type Input = z.infer<typeof Schema>;
 
-type Output = void;
+type Output = Template;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
   idGenerator: IdGenerator;
   thesauriDS: ThesauriDataSource;
+  translationService: TranslationService;
 };
 
-class CreateTemplateUseCase implements UseCase<Input, Output> {
-  propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
+class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
+  private propertyCreatorServiceStrategy: PropertyCreatorServiceStrategy;
 
   constructor(private deps: Deps) {
+    super();
+
     this.propertyCreatorServiceStrategy = new PropertyCreatorServiceStrategy({
       default: new PropertyCreatorService({ templatesDS: this.deps.templatesDS }),
       relationship: new RelationshipPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
@@ -103,17 +107,17 @@ class CreateTemplateUseCase implements UseCase<Input, Output> {
     });
   }
 
-  async execute(input: Input): Promise<Output> {
+  protected async executeAsync(input: Input): Promise<Output> {
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create({ ...p, id: this.deps.idGenerator.generate(), template: 'id' })
     );
 
     const properties = await Promise.all(
-      input.properties.map(async p =>
+      input?.properties?.map(async p =>
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
           .create({ ...p, id: this.deps.idGenerator.generate(), template: 'id' })
-      )
+      ) || []
     );
 
     const template = new Template(
@@ -130,8 +134,11 @@ class CreateTemplateUseCase implements UseCase<Input, Output> {
     }
 
     await this.deps.templatesDS.create(template);
+    await this.deps.translationService.translate(template);
+
+    return template;
   }
 }
 
-export { CreateTemplateUseCase, Schema };
+export { CreateTemplateUseCase, Schema as CreateTemplateUseCaseSchema };
 export type { Input as CreateTemplateInput, Output as CreateTemplateOutput };
