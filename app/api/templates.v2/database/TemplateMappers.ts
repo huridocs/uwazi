@@ -22,7 +22,13 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
   const templateId = MongoIdHandler.mapToApp(_templateId);
   const propertyId = property._id?.toString() || MongoIdHandler.generate();
   if ('isCommonProperty' in property && property.isCommonProperty) {
-    return new CommonProperty(propertyId, property.type, property.name, property.label, templateId);
+    return new CommonProperty({
+      id: propertyId,
+      type: property.type,
+      name: property.name,
+      label: property.label,
+      template: templateId,
+    });
   }
   switch (property.type) {
     case propertyTypes.newRelationship:
@@ -46,7 +52,13 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
         property.inherit?.property
       );
     default:
-      return new Property(propertyId, property.type, property.name, property.label, templateId);
+      return new Property({
+        id: propertyId,
+        type: property.type,
+        name: property.name,
+        label: property.label,
+        template: templateId,
+      });
   }
 }
 
@@ -57,7 +69,7 @@ const TemplateMappers = {
       MongoIdHandler.mapToApp(tdbo._id),
       tdbo.name,
       tdbo.properties.map(p => propertyToApp(p, tdbo._id)),
-      tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id))
+      tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id) as any) // TODO: remove as any
     ),
 };
 

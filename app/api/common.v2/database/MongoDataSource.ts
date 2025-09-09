@@ -1,15 +1,18 @@
 import { Db, Document } from 'mongodb';
+import { tenants } from 'api/tenants';
+import { DocumentTracker } from 'api/core/infrastructure/mongodb/documentTracker/DocumentTracker';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
 import { SyncedCollection } from './SyncedCollection';
-import { tenants } from 'api/tenants';
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
 }
 
 export abstract class MongoDataSource<TSchema extends Document = Document> {
+  protected documentTracker: DocumentTracker;
+
   private db: Db;
 
   protected abstract collectionName: string;
@@ -23,6 +26,7 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
     this.transactionManager = transactionManager;
     this.useSyncedCollection =
       options.useSyncedCollection !== undefined ? options.useSyncedCollection : true;
+    this.documentTracker = new DocumentTracker();
   }
 
   protected getCollection<Collection extends Document = TSchema>(

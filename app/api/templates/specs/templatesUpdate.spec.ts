@@ -173,6 +173,27 @@ describe('templates save', () => {
       });
     });
 
+    describe('when deleting a property and template contains relationship properties', () => {
+      it('should delete the property on all entities and reindex', async () => {
+        const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateA')]);
+        await updateTemplate(template);
+
+        expect(
+          (await getEntitiesByTemplate('templateB'))[0].metadata?.text_property_b
+        ).toBeUndefined();
+        expect(
+          (await getEntitiesByTemplate('templateB'))[1].metadata?.text_property_b
+        ).toBeUndefined();
+
+        expect(
+          (await getEntitiesByTemplate('templateB', 'elastic'))[0].metadata?.text_property_b
+        ).toBeUndefined();
+        expect(
+          (await getEntitiesByTemplate('templateB', 'elastic'))[1].metadata?.text_property_b
+        ).toBeUndefined();
+      });
+    });
+
     describe('when changing a relationship property "inherit"', () => {
       it('should correctly inherit and denormalize properties from related templates', async () => {
         const template = f.template('templateB', [

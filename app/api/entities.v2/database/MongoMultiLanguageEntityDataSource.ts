@@ -20,6 +20,8 @@ export class MongoMultiLanguageEntityDataSource
 
   private templateDS: TemplatesDataSource;
 
+  private modifiedSharedIds = new Set<string>();
+
   constructor(
     db: Db,
     transactionManager: MongoTransactionManager,
@@ -28,6 +30,37 @@ export class MongoMultiLanguageEntityDataSource
   ) {
     super(db, transactionManager, options);
     this.templateDS = templatesDS;
+    transactionManager.onCommitted(async () => {
+      await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
+    });
+  }
+
+  async deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void> {
+    await this.getCollection().updateMany(
+      { sharedId: { $in: sharedIds } },
+      {
+        $unset: Object.fromEntries(propertyNames.map(name => [`metadata.${name}`, ''])),
+      }
+    );
+    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
+  }
+
+  async renameMetadataProperties(
+    propertyNames: { [oldName: string]: string },
+    sharedIds: string[]
+  ): Promise<void> {
+    await this.getCollection().updateMany(
+      { sharedId: { $in: sharedIds } },
+      {
+        $rename: Object.fromEntries(
+          Object.entries(propertyNames).map(([oldName, newName]) => [
+            `metadata.${oldName}`,
+            `metadata.${newName}`,
+          ])
+        ),
+      }
+    );
+    sharedIds.forEach(id => this.modifiedSharedIds.add(id));
   }
 
   async bulkUpdate(entitiesToSave: MultiLanguageEntity[], properties: TemplateProperty[] = []) {
@@ -53,8 +86,7 @@ export class MongoMultiLanguageEntityDataSource
         .flat(),
       { ordered: false }
     );
-
-    await search.indexEntities({ sharedId: { $in: entitiesToSave.map(e => e.sharedId) } });
+    entitiesToSave.map(e => e.sharedId).forEach(id => this.modifiedSharedIds.add(id));
   }
 
   async countByTemplateId(templateId: string) {

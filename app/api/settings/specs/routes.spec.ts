@@ -1,14 +1,16 @@
-import { NextFunction, Request, Response } from 'express';
 import entities from 'api/entities';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
 import settings from 'api/settings';
 import templates from 'api/templates';
+import users from 'api/users/users';
 import { setUpApp } from 'api/utils/testingRoutes';
+import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
 import translations from 'api/i18n';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import waitForExpect from 'wait-for-expect';
 import settingsRoutes from '../routes';
 import { settingsModel } from '../settingsModel';
 import fixtures from './fixtures';
@@ -85,28 +87,31 @@ describe('Settings routes', () => {
           email: 'user@test.test',
           role: 'admin',
         });
+        jest.spyOn(users, 'getById').mockReturnValue({
+          //@ts-ignore
+          _id: 'user1',
+          username: 'User 1',
+          email: 'user@test.test',
+          role: 'admin',
+        });
       });
 
       it('should migrate all entity names when newNameGeneration is saved as true', async () => {
         await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
-
-        // wait for async process to finish
-        // new denormalization job should take care of renaming and tested in isolation
-        await new Promise(resolve => {
-          setTimeout(resolve, 50);
-        });
 
         expect(await templates.get()).toEqual([
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
           expect.objectContaining({ properties: [expect.objectContaining({ name: 'país' })] }),
         ]);
 
-        expect(await entities.get()).toEqual([
-          expect.objectContaining({ language: 'en', metadata: { براي: [{ value: 'value' }] } }),
-          expect.objectContaining({ language: 'es', metadata: { براي: [{ value: 'value' }] } }),
-          expect.objectContaining({ language: 'en', metadata: { país: [{ value: 'pais' }] } }),
-          expect.objectContaining({ language: 'es', metadata: { país: [{ value: 'pais' }] } }),
-        ]);
+        await waitForExpect(async () => {
+          expect(await entities.get()).toEqual([
+            expect.objectContaining({ language: 'en', metadata: { براي: [{ value: 'value' }] } }),
+            expect.objectContaining({ language: 'es', metadata: { براي: [{ value: 'value' }] } }),
+            expect.objectContaining({ language: 'en', metadata: { país: [{ value: 'pais' }] } }),
+            expect.objectContaining({ language: 'es', metadata: { país: [{ value: 'pais' }] } }),
+          ]);
+        });
       });
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {

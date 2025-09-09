@@ -2,6 +2,7 @@ import entities from 'api/entities';
 import translations from 'api/i18n';
 import { elastic } from 'api/search';
 import {
+  factory,
   fixtures,
   templateId,
   textPropertyId,
@@ -9,6 +10,7 @@ import {
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { unique } from 'api/utils/filters';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import * as setupSockets from 'api/socketio/setupSockets';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -30,6 +32,7 @@ async function updateTemplate(template: TemplateSchema) {
 
 describe('generatedId property auto filler', () => {
   beforeAll(async () => {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(async () => Promise.resolve());
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'generated_id_auto_filler_index');
   });
@@ -41,16 +44,18 @@ describe('generatedId property auto filler', () => {
   describe('fill generated id fields for entities of a specified template', () => {
     let affectedEntities: EntitySchema[];
     beforeAll(async () => {
-      const templateToUpdate: TemplateSchema = {
-        _id: templateId,
-        name: 'template',
-        commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
-        properties: [
+      const templateToUpdate = factory.template(
+        '',
+        [
           { _id: textPropertyId, name: 'text', type: 'text', label: 'Text' },
           { name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' },
           { name: 'auto_id_1', type: propertyTypes.generatedid, label: 'Auto Id 1' },
         ],
-      };
+        {
+          _id: templateId,
+          name: 'template',
+        }
+      );
 
       await updateTemplate(templateToUpdate);
       affectedEntities = await entities.get({ template: templateId });

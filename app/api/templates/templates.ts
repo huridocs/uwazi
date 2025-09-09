@@ -2,8 +2,6 @@ import { ClientSession, ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
-import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
-import entitiesModel from 'api/entities/entitiesModel';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
 import translations from 'api/i18n/translations';
@@ -26,7 +24,7 @@ import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
-  denormalizeInheritedProperties,
+  setInheritedPropertiesType,
   generateNames,
   getDeletedProperties,
   getRenamedTitle,
@@ -35,6 +33,8 @@ import {
 } from './utils';
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
+import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -178,7 +178,7 @@ export default {
     delete template.processing;
     template.properties = template.properties || [];
     template.properties = await generateNames(template.properties);
-    template.properties = await denormalizeInheritedProperties(template);
+    template.properties = await setInheritedPropertiesType(template);
 
     await validateTemplate(template);
 
@@ -224,48 +224,33 @@ export default {
     const newTemplate = TemplateInputMappers.toApp(template);
     const currentTemplateV2 = TemplateInputMappers.toApp(currentTemplate);
 
-    const actions = {
-      $rename: Object.fromEntries(
-        currentTemplateV2
-          .selectPropertiesWhereNameHasChanged(newTemplate)
-          .map(({ oldProperty, newProperty }) => [
-            `metadata.${oldProperty.name}`,
-            `metadata.${newProperty.name}`,
-          ])
-      ),
-      $unset: Object.fromEntries(
-        currentTemplateV2
-          .selectDeletedProperties(newTemplate)
-          .map(property => [`metadata.${property.name}`, ''])
-      ),
-    };
-
-    if (Object.keys(actions.$rename).length || Object.keys(actions.$unset).length) {
-      await entitiesModel.updateMany(
-        { template: template._id },
-        {
-          ...(Object.keys(actions.$unset).length ? { $unset: actions.$unset } : {}),
-          ...(Object.keys(actions.$rename).length ? { $rename: actions.$rename } : {}),
-        }
-      );
-    }
-
     const relationshipPropsWithChangedRelData =
       currentTemplateV2.selectRelationshipPropsWithRelationshipChanges(newTemplate);
+    const deletedProperties = currentTemplateV2
+      .selectDeletedProperties(newTemplate)
+      .map(property => property.name);
+    const renamedProperties = Object.fromEntries(
+      currentTemplateV2
+        .selectPropertiesWhereNameHasChanged(newTemplate)
+        .map(({ oldProperty, newProperty }) => [oldProperty.name, newProperty.name])
+    );
 
     let denormalizationExecuted = false;
     const newRelationshipProps = currentTemplateV2
       .selectNewProperties(newTemplate)
-      .filter(p => p.type === 'relationship');
+      .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
     if (
       (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
-      newRelationshipProps.length
+      newRelationshipProps.length ||
+      renamedProperties ||
+      deletedProperties
     ) {
-      await bulkDenormalizeEntitiesFromTemplateSave(
-        template,
+      await denormalizeTemplateEntities(
+        TemplateInputMappers.toApp(template),
         language,
-        // @ts-ignore
-        relationshipPropsWithChangedRelData.map(r => r.newProperty).concat(newRelationshipProps),
+        relationshipPropsWithChangedRelData.concat(newRelationshipProps),
+        deletedProperties,
+        renamedProperties,
         50
       );
       denormalizationExecuted = true;
@@ -334,9 +319,9 @@ export default {
     if (templateStructureChanges) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.reindexAllTemplates(fullReindex)
-        .then(async () =>
-          this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
-        )
+        .then(async () => {
+          return this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex);
+        })
         .then(async denormalizationExecuted => {
           await onTemplateProcessed(
             undefined,
