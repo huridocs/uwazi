@@ -12,6 +12,7 @@ import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Property } from 'api/templates.v2/model/Property';
 import { Template } from 'api/templates.v2/model/Template';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { ObjectId } from 'mongodb';
 import { PropertySchema } from 'shared/types/commonTypes';
 
@@ -49,7 +50,7 @@ class CommonPropertyMapper {
 
 class PropertyMapper {
   static toSchema(domain: Property): PropertySchema {
-    const base: PropertySchema = {
+    const schema: Partial<PropertySchema> = {
       _id: ObjectId.createFromHexString(domain.id),
       type: domain.type,
       label: domain.label,
@@ -59,44 +60,32 @@ class PropertyMapper {
       showInCard: domain.showInCard,
     };
 
+    if (domain instanceof FilterableProperty) {
+      schema.filter = domain.filter;
+      schema.defaultfilter = domain.defaultfilter;
+      schema.prioritySorting = domain.prioritySorting;
+    }
+
     if (domain instanceof TextProperty) {
-      return {
-        ...base,
-        generatedId: domain.generatedId,
-        filter: domain.filter,
-        defaultfilter: domain.defaultfilter,
-        prioritySorting: domain.prioritySorting,
-      };
+      schema.generatedId = domain.generatedId;
     }
 
     if (domain instanceof AbstractImageProperty) {
-      return { ...base, style: domain.style, fullWidth: domain.fullWidth };
+      schema.style = domain.style;
+      schema.fullWidth = domain.fullWidth;
     }
 
     if (domain instanceof SelectProperty || domain instanceof MultiSelectProperty) {
-      return {
-        ...base,
-        filter: domain.filter,
-        defaultfilter: domain.defaultfilter,
-        prioritySorting: domain.prioritySorting,
-        content: domain.content,
-      };
+      schema.content = domain.content;
     }
 
-    if (domain instanceof FilterableProperty) {
-      return {
-        ...base,
-        filter: domain.filter,
-        defaultfilter: domain.defaultfilter,
-        prioritySorting: domain.prioritySorting,
-      };
+    if (domain instanceof V1RelationshipProperty) {
+      schema.content = domain.content;
+      schema.relationType = domain.relationType;
+      schema.inherit = domain.inherit;
     }
 
-    if (domain instanceof Property) {
-      return base;
-    }
-
-    throw new Error(`Unhandled CommonProperty type: ${base}`);
+    return schema as PropertySchema;
   }
 }
 

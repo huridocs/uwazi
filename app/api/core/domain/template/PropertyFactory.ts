@@ -1,4 +1,8 @@
 import { Context, Property } from 'api/templates.v2/model/Property';
+import {
+  V1RelationshipProperty,
+  V1RelationshipPropertyProps,
+} from 'api/templates.v2/model/V1RelationshipProperty';
 import { TextProperty, TextPropertyProps } from './TextProperty';
 import { NumericProperty, NumericPropertyProps } from './NumericProperty';
 import { PreviewProperty, PreviewPropertyProps } from './PreviewProperty';
@@ -30,7 +34,8 @@ type CreateInput =
   | DatePropertyProps
   | GenerateIdPropertyProps
   | SelectPropertyProps
-  | MultiSelectPropertyProps;
+  | MultiSelectPropertyProps
+  | V1RelationshipPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput, context: Context): Property {
@@ -79,6 +84,9 @@ class PropertyFactory {
 
       case 'multiselect':
         return new MultiSelectProperty(input as MultiSelectPropertyProps, context);
+
+      case 'relationship':
+        return V1RelationshipProperty.create(input as V1RelationshipPropertyProps, context);
 
       default:
         throw new Error(`The following type was not handled. Type = ${input.type}`);

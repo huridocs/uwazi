@@ -4,6 +4,7 @@ import { Template } from 'api/templates.v2/model/Template';
 import { z } from 'zod';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
 import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
@@ -46,6 +47,7 @@ const PropertySchema = z.object({
   inherit: z
     .object({
       property: z.string(),
+      type: z.enum(types),
     })
     .optional(), // Only for relationship type properties
 
@@ -91,6 +93,7 @@ type Deps = {
   thesauriDS: ThesauriDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
+  relationshipTypesDS: RelationshipTypesDataSource;
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
@@ -101,7 +104,10 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
 
     this.propertyCreatorServiceStrategy = new PropertyCreatorServiceStrategy({
       default: new PropertyCreatorService({ templatesDS: this.deps.templatesDS }),
-      relationship: new RelationshipPropertyCreatorService({ templatesDS: this.deps.templatesDS }),
+      relationship: new RelationshipPropertyCreatorService({
+        templatesDS: this.deps.templatesDS,
+        relationshipTypesDS: this.deps.relationshipTypesDS,
+      }),
       select: new SelectPropertyCreatorService({
         templatesDS: this.deps.templatesDS,
         thesauriDS: this.deps.thesauriDS,

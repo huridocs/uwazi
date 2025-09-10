@@ -32,6 +32,7 @@ import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesaur
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
@@ -195,6 +196,7 @@ export default {
         thesauriDS: new MongoThesauriDataSource(),
         translationService: new LegacyTranslationService(),
         settingsDS: DefaultSettingsDataSource(transactionManager),
+        relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
       }).execute(template);
 
       return TemplateMapper.toSchema(output);

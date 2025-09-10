@@ -137,6 +137,42 @@ class SelectPropertyWithInvalidThesaurusError extends DomainError {
   }
 }
 
+class RelationshipTypeDoesNotExistError extends DomainError {
+  constructor(relationType: string) {
+    super(
+      `The Relationship Type with Id "${relationType}" was not found.`,
+      'template.property.relationship_type_does_not_exist_error'
+    );
+  }
+}
+
+class TemplateDoesNotExistError extends DomainError {
+  constructor(templateId: string) {
+    super(
+      `The Template with Id "${templateId}" was not found.`,
+      'template.template.template_does_not_exist_error'
+    );
+  }
+}
+
+class RelationshipTargetPropertyNotFoundError extends DomainError {
+  constructor(propertyId: string, templateId: string) {
+    super(
+      `The provided Target Property with id "${propertyId}" was not found on Template with id "${templateId}"`,
+      'template.property.relationship_target_property_not_found_error'
+    );
+  }
+}
+
+class RelationshipTargetTypeMismatchError extends DomainError {
+  constructor(providedType: string, existingType: string) {
+    super(
+      `The provided Target Property type "${providedType}" does not match with the Target Template type "${existingType}"`,
+      'template.property.relationship_target_type_mismatch_error'
+    );
+  }
+}
+
 export {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
@@ -152,4 +188,8 @@ export {
   TemplateWithDuplicatedNameOnTheSystemError,
   FieldIsRequiredError,
   SelectPropertyWithInvalidThesaurusError,
+  RelationshipTypeDoesNotExistError,
+  TemplateDoesNotExistError,
+  RelationshipTargetPropertyNotFoundError,
+  RelationshipTargetTypeMismatchError,
 };
