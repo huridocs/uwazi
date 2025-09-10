@@ -1,3 +1,4 @@
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -28,6 +29,8 @@ const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
 const thesaurusTemplateRelationshipPropId = db.id();
+
+const factory = getFixturesFactory();
 
 const languages: LanguagesListSchema = [
   { key: 'en', label: 'English', default: true },
@@ -77,13 +80,10 @@ const fixtures: DBFixture = {
   templates: [
     templateChangingNames,
     templateNotChangingNames,
-    {
+    factory.template('template to be edited', [], {
       _id: templateToBeEditedId,
-      name: 'template to be edited',
-      properties: [],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       default: true,
-    },
+    }),
     {
       _id: db.id(templateToBeDeleted),
       name: 'to be deleted',
@@ -96,10 +96,9 @@ const fixtures: DBFixture = {
       properties: [],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
-    {
-      _id: thesaurusTemplateId,
-      name: 'thesauri template',
-      properties: [
+    factory.template(
+      '',
+      [
         {
           _id: db.id(),
           type: propertyTypes.select,
@@ -116,8 +115,11 @@ const fixtures: DBFixture = {
           name: 'relationshipToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    },
+      {
+        _id: thesaurusTemplateId,
+        name: 'thesauri template',
+      }
+    ),
     {
       _id: thesaurusTemplate2Id,
       name: 'thesauri template 2',
@@ -160,7 +162,11 @@ const fixtures: DBFixture = {
     {
       _id: templateWithContents,
       name: 'content template',
-      commonProperties: [{ _id: db.id(), name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        { _id: db.id(), name: 'title', label: 'Title', type: 'text' },
+        { _id: db.id(), name: 'creationDate', label: 'Creation Date', type: 'date' },
+        { _id: db.id(), name: 'editDate', label: 'Edit date', type: 'date' },
+      ],
       properties: [
         {
           _id: select3id,
@@ -377,4 +383,5 @@ export {
   select4id,
   pageSharedId,
   thesaurusTemplateRelationshipPropId,
+  factory,
 };

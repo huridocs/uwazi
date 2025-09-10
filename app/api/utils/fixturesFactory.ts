@@ -96,16 +96,20 @@ function getFixturesFactory() {
 
     template: (
       name: string,
-      properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = []
-    ) => ({
-      _id: idMapper(name),
-      name,
-      properties,
-      processing: {
-        active: false,
-      },
-      commonProperties: commonProperties(`commonProperties${name}`, idMapper),
-    }),
+      // eslint-disable-next-line default-param-last
+      properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = [],
+      template?: Partial<TemplateSchema>
+    ) =>
+      ({
+        _id: idMapper(name),
+        name,
+        properties,
+        processing: {
+          active: false,
+        },
+        commonProperties: commonProperties(`commonProperties${name}`, idMapper),
+        ...template,
+      }) as TemplateSchema & { _id: ObjectId },
 
     entityPermission: (
       user: string,

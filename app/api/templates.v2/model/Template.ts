@@ -1,4 +1,7 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { Validator } from 'api/core/domain/validator/Validator';
+import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
+import { TemplateWithMissingCommonPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithMissingCommonPropertyValidator';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -14,16 +17,39 @@ class Template {
 
   readonly commonProperties: CommonProperty[] = [];
 
+  color?: string;
+
+  isDefault: boolean;
+
   constructor(
     id: string,
     name: string,
-    properties: Property[] = [],
-    commonProperties: Property[] = []
+    properties: Property[],
+    commonProperties: CommonProperty[],
+    color?: string,
+    isDefault?: boolean
   ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
     this.commonProperties = commonProperties;
+    this.color = color;
+    this.isDefault = isDefault ?? false;
+
+    // this.validate();
+  }
+
+  get allProperties() {
+    return [...this.commonProperties, ...this.properties];
+  }
+
+  private validate() {
+    const validator = new Validator([
+      new TemplateWithDuplicatedPropertyValidator(),
+      new TemplateWithMissingCommonPropertyValidator(),
+    ]);
+
+    validator.validate(this);
   }
 
   selectNewProperties(newTemplate: Template): Property[] {
@@ -52,11 +78,15 @@ class Template {
     return updateInfo;
   }
 
-  selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): PropertyUpdateInfo[] {
+  selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): V1RelationshipProperty[] {
     const v1Props = ['relationType', 'content', 'inheritedPropertyId'];
-    return this.selectUpdatedProperties(newTemplate).filter(update =>
-      update.updatedAttributes.some(attr => v1Props.includes(attr))
-    );
+    return this.selectUpdatedProperties(newTemplate)
+      .filter(update => update.updatedAttributes.some(attr => v1Props.includes(attr)))
+      .map(update => newTemplate.getPropertyById(update.id))
+      .filter(
+        (newProperty): newProperty is V1RelationshipProperty =>
+          newProperty instanceof V1RelationshipProperty
+      );
   }
 
   selectPropertiesWhereNameHasChanged(newTemplate: Template): PropertyUpdateInfo[] {

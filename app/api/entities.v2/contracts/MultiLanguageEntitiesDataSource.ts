@@ -8,6 +8,13 @@ export interface MultiLanguageEntityDataSource {
     properties: V1RelationshipProperty[]
   ): Promise<void>;
 
+  deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
+
+  renameMetadataProperties(
+    propertyNames: { [oldName: string]: string },
+    sharedIds: string[]
+  ): Promise<void>;
+
   getEntitiesByTemplateId(templateId: string): Promise<ResultSet<MultiLanguageEntity>>;
   getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<MultiLanguageEntity>>;
   getSharedIdsByTemplateId(templateId: string): Promise<ResultSet<string>>;

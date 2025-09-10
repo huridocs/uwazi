@@ -138,6 +138,7 @@ export function registerJobs(
         ),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
         templatesDS: DefaultTemplatesDataSource(transactionManager),
+        transactionManager,
       }),
     });
   });

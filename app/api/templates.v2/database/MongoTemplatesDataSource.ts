@@ -3,6 +3,7 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -211,5 +212,39 @@ export class MongoTemplatesDataSource
       { _id: new ObjectId(templateId) },
       { $unset: { processing: true } }
     );
+  }
+
+  async create(template: Template): Promise<void> {
+    const schema = TemplateMapper.toSchema(template);
+
+    await this.getCollection().insertOne(schema);
+  }
+
+  async isPropertyUnique(property: Property): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        properties: {
+          $elemMatch: {
+            name: property.name,
+            type: property.type,
+            _id: { $ne: ObjectId.createFromHexString(property.id) },
+          },
+        },
+      },
+      { limit: 1 }
+    );
+
+    return count === 0;
+  }
+
+  async isTemplateUnique(template: Template): Promise<boolean> {
+    const count = await this.getCollection().countDocuments(
+      {
+        name: template.name,
+      },
+      { limit: 1 }
+    );
+
+    return count === 0;
   }
 }

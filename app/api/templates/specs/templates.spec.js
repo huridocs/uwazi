@@ -1,30 +1,30 @@
+/* eslint-disable max-statements */
 import Ajv from 'ajv';
-import { ObjectId } from 'mongodb';
 import documents from 'api/documents/documents.js';
-import { bulkDenormalizeEntitiesFromTemplateSave } from 'api/entities/bulkUpdateMetadataFromTemplateSave';
 import entities from 'api/entities/entities.js';
-import entitiesModel from 'api/entities/entitiesModel';
 import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
 import db from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
 
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
-import templates from '../templates';
 
+import { inspect } from 'util';
+import templates from '../templates';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
+import { denormalizeTemplateEntities } from '../templateUpdateDenormalizeUseCase';
 import fixtures, {
+  factory,
   propertyToBeInherited,
   relatedTo,
   relatedToAnother,
   select3id,
   select4id,
   swapTemplate,
-  templateChangingNames,
-  templateNotChangingNames,
   templateToBeDeleted,
   templateToBeEditedId,
   templateToBeInherited,
@@ -36,20 +36,37 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
+import templatesModel from '../templatesModel';
 
-jest.mock('api/entities/bulkUpdateMetadataFromTemplateSave', () => ({
-  bulkDenormalizeEntitiesFromTemplateSave: jest.fn().mockImplementation(async () => true),
+jest.mock('../templateUpdateDenormalizeUseCase', () => ({
+  denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
 }));
+
+async function updateTemplate(template, language = 'en') {
+  return new Promise((resolve, reject) => {
+    templates
+      .save(template, language, true, false, async error => {
+        if (error) {
+          reject(inspect(error));
+        }
+        await templatesModel.db.updateOne({ _id: template._id }, { $unset: { processing: '' } });
+        resolve();
+      })
+      .catch(reject);
+  });
+}
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
 
   const resetTemplateToBeEdited = async () => {
     const [testTemplate] = await templates.get({ _id: templateToBeEditedId });
+    const { commonProperties } = factory.template('', []);
     testTemplate.name = 'template to be edited';
     testTemplate.properties = [];
-    testTemplate.commonProperties = [{ name: 'title', label: 'Title', type: 'text' }];
-    return templates.save(testTemplate, 'es', true, false);
+    testTemplate.commonProperties = commonProperties;
+    await updateTemplate(testTemplate, 'es');
+    return templates.getById(testTemplate._id);
   };
 
   beforeAll(async () => {
@@ -98,23 +115,26 @@ describe('templates', () => {
     });
 
     it('should update the elastic mapping with the updated template', async () => {
-      const template = {
-        _id: templateToBeEditedId,
-        name: 'template to be edited',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
+      const template = factory.template(
+        '',
+        [
           {
             name: 'new_mapped_prop',
             label: 'new mapped prop',
             type: 'text',
           },
         ],
-        default: true,
-      };
+        {
+          _id: templateToBeEditedId,
+          name: 'template to be edited',
+          default: true,
+        }
+      );
 
       const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
-      await templates.save(template);
+      await updateTemplate(template);
+
       await elasticClient.indices.refresh({ index: elasticIndex });
 
       const newMapping = await elasticClient.indices.getMapping({ index: elasticIndex });
@@ -130,26 +150,28 @@ describe('templates', () => {
 
     it('should emit an TemplateUpdatedEvent', async () => {
       const emitSpy = spyOnEmit();
-      const template = {
-        _id: templateToBeEditedId,
-        name: 'template to be edited',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [
+      const template = factory.template(
+        '',
+        [
           {
             name: 'other_prop',
             label: 'other prop',
             type: 'text',
           },
         ],
-        default: true,
-      };
+        {
+          _id: templateToBeEditedId,
+          name: 'template to be edited',
+          default: true,
+        }
+      );
 
       const previousTemplate = await db.mongodb
         .collection('templates')
         .find({ _id: templateToBeEditedId })
         .toArray();
 
-      await templates.save(template);
+      await updateTemplate(template);
 
       const currentTemplate = await db.mongodb
         .collection('templates')
@@ -268,7 +290,7 @@ describe('templates', () => {
 
       jest.spyOn(translations, 'updateContext').mockImplementationOnce(() => {});
       testTemplate.commonProperties[0].label = 'First New Title';
-      await templates.save(testTemplate);
+      await updateTemplate(testTemplate);
       let expectedContext = {
         'template to be edited': 'template to be edited',
         'First New Title': 'First New Title',
@@ -281,7 +303,7 @@ describe('templates', () => {
       );
 
       testTemplate.commonProperties[0].label = 'Second New Title';
-      await templates.save(testTemplate);
+      await updateTemplate(testTemplate);
       expectedContext = {
         'template to be edited': 'template to be edited',
         'Second New Title': 'Second New Title',
@@ -335,12 +357,13 @@ describe('templates', () => {
 
       it('should edit an existing one', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-        const toSave = {
-          _id: templateToBeEditedId,
+
+        const toSave = factory.template('', [], {
           name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        };
-        await templates.save(toSave);
+          _id: templateToBeEditedId,
+        });
+
+        await updateTemplate(toSave);
         const [edited] = await templates.get(templateToBeEditedId);
         expect(edited.name).toBe('changed name');
       });
@@ -385,12 +408,12 @@ describe('templates', () => {
       it('should return the saved template', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
 
-        const edited = {
+        const edited = factory.template('', [], {
           _id: templateToBeEditedId,
           name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        };
+        });
         const template1 = await templates.save(edited);
+        await templatesModel.db.updateOne({ _id: template1._id }, { $unset: { processing: '' } });
 
         expect(template1.name).toBe('changed name');
       });
@@ -410,13 +433,16 @@ describe('templates', () => {
 
       describe('when there is a new property with generatedId type', () => {
         it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
-          const templateToUpdate = {
-            _id: templateToBeEditedId,
-            name: 'template to be edited',
-            commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-            properties: [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
-          };
-          await templates.save(templateToUpdate, 'en');
+          const templateToUpdate = factory.template(
+            '',
+            [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
+            {
+              _id: templateToBeEditedId,
+              name: 'template to be edited',
+            }
+          );
+
+          await updateTemplate(templateToUpdate);
 
           expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalledWith(
             templateToBeEditedId,
@@ -728,127 +754,7 @@ describe('templates', () => {
     });
   });
 
-  describe('when template properties change name', () => {
-    it('should do nothing when there is no changed or deleted properties', async () => {
-      jest.spyOn(entitiesModel, 'updateMany');
-
-      await new Promise((resolve, reject) => {
-        templates.save(templateChangingNames, 'en', false, false, e => {
-          if (e) {
-            reject(e);
-          }
-          resolve();
-        });
-      });
-
-      expect(entitiesModel.updateMany).not.toHaveBeenCalled();
-    });
-
-    it('should update property names on entities based on the changes to the template', async () => {
-      const template = {
-        ...templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNames.properties[0]._id,
-            type: 'text',
-            label: 'new name1',
-          },
-          {
-            _id: templateChangingNames.properties[1]._id,
-            type: 'text',
-            label: 'new name2',
-          },
-          {
-            _id: templateChangingNames.properties[2]._id,
-            type: 'text',
-            label: 'property3',
-          },
-        ],
-      };
-
-      await new Promise((resolve, reject) => {
-        templates.save(template, 'en', false, false, e => {
-          if (e) {
-            reject(e);
-          }
-          resolve();
-        });
-      });
-      const [docs, docDiferentTemplate] = await Promise.all([
-        entities.get({ template: templateChangingNames._id }),
-        entities.get({ template: templateNotChangingNames._id }),
-      ]);
-      expect(docs[0].metadata.new_name1).toEqual([{ value: 'value1' }]);
-      expect(docs[0].metadata.new_name2).toEqual([{ value: 'value2' }]);
-      expect(docs[0].metadata.property3).toEqual([{ value: 'value3' }]);
-      expect(docs[1].metadata.new_name1).toEqual([{ value: 'value1' }]);
-      expect(docs[1].metadata.new_name2).toEqual([{ value: 'value2' }]);
-      expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
-      expect(docDiferentTemplate[0].metadata.property1).toEqual([{ value: 'value1' }]);
-    });
-
-    it('should delete and rename properties passed', async () => {
-      const template = {
-        ...templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNames.properties[1]._id,
-            type: 'text',
-            label: 'new name',
-          },
-        ],
-      };
-
-      await new Promise((resolve, reject) => {
-        templates.save(template, 'en', false, false, e => {
-          if (e) {
-            reject(e);
-          }
-          resolve();
-        });
-      });
-      const docs = await entities.get({ template: templateChangingNames });
-      expect(docs[0].metadata.property1).not.toBeDefined();
-      expect(docs[0].metadata.new_name).toEqual([{ value: 'value2' }]);
-      expect(docs[0].metadata.property2).not.toBeDefined();
-      expect(docs[0].metadata.property3).not.toBeDefined();
-      expect(docs[1].metadata.property1).not.toBeDefined();
-      expect(docs[1].metadata.new_name).toEqual([{ value: 'value2' }]);
-      expect(docs[1].metadata.property2).not.toBeDefined();
-      expect(docs[1].metadata.property3).not.toBeDefined();
-    });
-
-    it('should delete missing properties', async () => {
-      const template = {
-        ...templateChangingNames,
-        properties: [
-          {
-            _id: templateChangingNames.properties[1]._id,
-            type: 'text',
-            label: 'property2',
-          },
-        ],
-      };
-
-      await new Promise((resolve, reject) => {
-        templates.save(template, 'en', false, false, e => {
-          if (e) {
-            reject(e);
-          }
-          resolve();
-        });
-      });
-      const docs = await entities.get({ template: templateChangingNames });
-      expect(docs[0].metadata.property1).not.toBeDefined();
-      expect(docs[0].metadata.property2).toBeDefined();
-      expect(docs[0].metadata.property3).not.toBeDefined();
-      expect(docs[1].metadata.property1).not.toBeDefined();
-      expect(docs[1].metadata.property2).toBeDefined();
-      expect(docs[1].metadata.property3).not.toBeDefined();
-    });
-  });
-
-  describe('bulkDenormalizeEntitiesFromTemplateSave', () => {
+  describe('denormalizeTemplateEntities', () => {
     it('should not denormalize when relationship related data has not changed', async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
       const template = {
@@ -865,9 +771,9 @@ describe('templates', () => {
         default: true,
       };
 
-      bulkDenormalizeEntitiesFromTemplateSave.mockReset();
+      denormalizeTemplateEntities.mockReset();
       await templates.save(template);
-      expect(bulkDenormalizeEntitiesFromTemplateSave).not.toHaveBeenCalled();
+      expect(denormalizeTemplateEntities).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -879,11 +785,9 @@ describe('templates', () => {
       'should denormalize when relationship related data has changed ($propChanges)',
       async ({ propChanges }) => {
         await testingEnvironment.setUp(fixtures, elasticIndex);
-        const template = {
-          _id: thesaurusTemplateId,
-          name: 'thesauri template',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-          properties: [
+        const template = factory.template(
+          '',
+          [
             {
               _id: thesaurusTemplateRelationshipPropId,
               type: propertyTypes.relationship,
@@ -894,9 +798,13 @@ describe('templates', () => {
               ...propChanges,
             },
           ],
-        };
+          {
+            _id: thesaurusTemplateId,
+            name: 'thesauri template',
+          }
+        );
 
-        bulkDenormalizeEntitiesFromTemplateSave.mockReset();
+        denormalizeTemplateEntities.mockReset();
         await new Promise((resolve, reject) => {
           templates.save(template, 'en', false, false, e => {
             if (e) {
@@ -905,7 +813,7 @@ describe('templates', () => {
             resolve();
           });
         });
-        expect(bulkDenormalizeEntitiesFromTemplateSave).toHaveBeenCalled();
+        expect(denormalizeTemplateEntities).toHaveBeenCalled();
       }
     );
   });
