@@ -1,5 +1,5 @@
 import { Template } from 'api/templates.v2/model/Template';
-import { ValidationStep } from '../../validator/Validator';
+import { ValidationStep } from '../../Validator';
 import { TemplateWithMissingCommonProperty } from '../errors';
 
 class TemplateWithMissingCommonPropertyValidator implements ValidationStep<Template> {

@@ -115,8 +115,10 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
     });
   }
 
+  // eslint-disable-next-line max-statements
   protected async executeAsync(input: Input): Promise<Output> {
     const { newNameGeneration } = await this.deps.settingsDS.get();
+    const templateId = this.deps.idGenerator.generate();
 
     const commonProperties = input.commonProperties.map(p =>
       CommonPropertyFactory.create(
@@ -130,14 +132,14 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
           .create(
-            { ...p, id: this.deps.idGenerator.generate(), template: 'id' },
+            { ...p, id: this.deps.idGenerator.generate(), template: templateId },
             { newNameGeneration }
           )
       ) || []
     );
 
     const template = new Template(
-      this.deps.idGenerator.generate(),
+      templateId,
       input.name,
       properties,
       commonProperties,

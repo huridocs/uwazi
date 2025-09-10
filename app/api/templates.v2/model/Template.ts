@@ -1,5 +1,5 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { Validator } from 'api/core/domain/validator/Validator';
+import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
