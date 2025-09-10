@@ -47,7 +47,7 @@ export default function () {
   const baseQuery = {
     explain: false,
     _source: {
-      include: [
+      includes: [
         'title',
         'icon',
         'processed',
@@ -217,12 +217,12 @@ export default function () {
     },
 
     select(fields) {
-      baseQuery._source.include = fields;
+      baseQuery._source.includes = fields;
       return this;
     },
 
     include(fields = []) {
-      baseQuery._source.include = baseQuery._source.include.concat(fields);
+      baseQuery._source.includes = baseQuery._source.includes.concat(fields);
       return this;
     },
 
