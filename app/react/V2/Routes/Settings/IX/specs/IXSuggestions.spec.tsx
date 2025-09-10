@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from 'V2/api/ix/suggestions';
 import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
@@ -293,6 +294,104 @@ describe('IX suggestions', () => {
             enabled: false,
             filters: { error: false, nonProcessed: false, obsolete: false },
             size: 0,
+          },
+          mode: 'process_extractor',
+        });
+      });
+    });
+  });
+
+  describe('Process selected modal', () => {
+    const selectRows = async () => {
+      const user = userEvent.setup();
+      const suggestionRow1 = (await screen.findByRole('cell', { name: 'Entity 1 (en)' })).closest(
+        'tr'
+      );
+      const suggestionRow2 = (await screen.findByRole('cell', { name: 'Entity 2 (en)' })).closest(
+        'tr'
+      );
+
+      await user.click(within(suggestionRow1!).getByRole('checkbox'));
+      await user.click(within(suggestionRow2!).getByRole('checkbox'));
+
+      expect(within(suggestionRow2!).getByRole('checkbox')).toBeChecked();
+      expect(within(suggestionRow1!).getByRole('checkbox')).toBeChecked();
+    };
+
+    describe('form', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        jest.spyOn(suggestionsAPI, 'process');
+        render(<Component />);
+        await selectRows();
+        fireEvent.click(await screen.findByText('Process selected'));
+        expect(
+          await within(screen.getByRole('dialog')).findByText('Process selected')
+        ).toBeInTheDocument();
+      });
+
+      it('should show the users the mandatory find suggestions action', () => {
+        const modal = screen.getByRole('dialog');
+        const mandatoryField = within(modal).getByLabelText('Find suggestions for selected');
+        expect(mandatoryField).toBeDisabled();
+        expect(mandatoryField).toBeChecked();
+      });
+
+      it('should disable auto-accept options when not auto accepting', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        expect(acceptFromPreviousSelect).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should disable auto accept options when not auto accepting', () => {
+        const forBlank = screen.getByLabelText('For entities with blank values');
+        const overwrite = screen.getByLabelText('For all entities');
+        expect(forBlank).toBeChecked();
+        expect(forBlank).toBeEnabled();
+        expect(overwrite).toBeEnabled();
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(forBlank).not.toBeEnabled();
+        expect(overwrite).not.toBeEnabled();
+      });
+
+      it('should call the endpoint with the expected default parameters', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'previous' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: true,
+            filters: { error: true, nonProcessed: true, obsolete: true },
+            size: 2,
+            selectedSharedIds: ['suggestion1', 'suggestion2'],
+          },
+          mode: 'process_extractor',
+        });
+      });
+
+      it('should allow choosing how to accept', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+
+        fireEvent.click(screen.getByLabelText('For all entities'));
+
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'overwrite_all', source: 'previous' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: true,
+            filters: { error: true, nonProcessed: true, obsolete: true },
+            size: 2,
+            selectedSharedIds: ['suggestion1', 'suggestion2'],
           },
           mode: 'process_extractor',
         });

@@ -323,7 +323,11 @@ const IXSuggestions = () => {
               onClick={() => setModal('process')}
               disabled={status.status !== ixStatus.ready}
             >
-              <Translate>Process extractor</Translate>
+              {selected.length > 0 ? (
+                <Translate>Process selected</Translate>
+              ) : (
+                <Translate>Process extractor</Translate>
+              )}
             </Button>
             {status.status === ixStatus.ready ? (
               <Button
@@ -392,6 +396,7 @@ const IXSuggestions = () => {
             setModal('none');
           }}
           onTrain={processExtractor}
+          selected={selected.map(s => s._id)}
         />
       )}
     </div>
