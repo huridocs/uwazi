@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { Property } from 'api/templates.v2/model/Property';
 import { Template } from 'api/templates.v2/model/Template';
-import { DomainError } from '../DomainError';
+import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
 
 class PropertyTypeInvalidTypeError extends DomainError {
