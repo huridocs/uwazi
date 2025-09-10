@@ -658,6 +658,27 @@ describe('templates save', () => {
       await expect(async () => templates.save(template, 'en')).rejects.toBeInstanceOf(Error);
     });
 
+    it('Template with 0 entities should not be in processing state', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [
+          ...fixtures.templates,
+          f.template('templateD', [f.property('text_property_b')]),
+        ],
+        entities: [],
+      });
+
+      const propertyWithNameChanged = f.property('text_property_b', 'text', {
+        label: 'name_changed',
+      });
+
+      const template = f.template('templateD', [propertyWithNameChanged]);
+
+      await updateTemplate(template);
+      const savedTemplate = await templates.getById(f.id('templateD'));
+      expect(savedTemplate?.processing).toEqual({ active: false });
+    });
+
     it('should again allow updating a template when the processing has finished', async () => {
       await setUpFixtures(fixtures);
 
