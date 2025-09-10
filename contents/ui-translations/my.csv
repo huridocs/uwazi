@@ -10,8 +10,6 @@ A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,အီးမေးလ် လိုအပ်သည်
 Accept,လက်ခံမည်
-Accept suggestion,Accept suggestion
-Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,အကောင့်
 Account locked,Account locked
@@ -77,6 +75,7 @@ All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
+Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
@@ -97,6 +96,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,တွဲချိတ်မှုများ
 Authentication code,စစ်မှန်ကြောင်း အတည်ပြုကုဒ်
+Auto-accept suggestions,Auto-accept suggestions
 auto-created,အော်တို ဖန်တီးထားသော
 Automatic Table of Contents,အလိုအလျောက် မာတိကာ
 Automatically generated,အလိုအလျောက် ထုတ်လုပ်ထားသည်
@@ -343,14 +343,21 @@ Filters OR operator,စစ်ထုတ်မှုများ သို့မ�
 Filters saved,Filters saved
 Find,ရှာရန်
 Find suggestions,Find suggestions
+Find suggestions after training,Find suggestions after training
+Find suggestions for,Find suggestions for
+Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
 Fine tune,ပိုမို ချောမွေ့စေရန်ညှိပါ
 Fit,ကိုက်ညီသော
 Flag,အလံ
 for,for
+For all entities,For all entities
+For entities with blank values,For entities with blank values
 Forgot Password?,စကားဝှက် မေ့နေပါသလား။
 Forms and email configuration,ပုံစံများနှင့် အီးမေးလ် ဖွဲ့စည်းတည်ဆောက်ပုံ
 From,From
+From all suggestions,From all suggestions
+From previous step,From previous step
 Full width,Full width
 General,ယေဘုယျ
 General Information,General Information
@@ -627,6 +634,9 @@ Priority sorting,ဦးစားပေးမှု ခွဲခြားခြ�
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,လျှို့ဝှက် အကြောင်းကိစ္စ
+Process,Process
+Process extractor,Process extractor
+Process selected,Process selected
 Processed,Processed
 Processing,စီမံဆောင်ရွက်နေသည်
 Properties,ထူးခြားချက်များ
@@ -839,7 +849,6 @@ Template(s),Template(s)
 Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,ပုံစံပြားများ
 Templates:,Templates:
-Test run,Test run
 Text,စာသား
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,ထည့်သွင်းသည့် လုပ်ငန်းစဉ်တွင် ချွတ်ယွင်းချက် ဖြစ်ပေါ်ခဲ့သည်-
@@ -901,6 +910,8 @@ Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
 total users,total users
+Train,Train
+Train model description,"Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task."
 Training,Training
 Training model...,Training model...
 Translate,ဘာသာပြန်ရန်
