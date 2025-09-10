@@ -28,7 +28,7 @@ import { S3Error, S3Storage } from './S3Storage';
 
 let s3Instance: S3Storage;
 const defaultParams: { connectionTimeout: number; httpAgent?: {} } = {
-  connectionTimeout: 5000,
+  connectionTimeout: 15000,
   httpAgent: {
     maxSockets: 50,
     keepAlive: true,

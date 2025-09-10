@@ -58,3 +58,8 @@ export async function sleep(ms: number) {
     setTimeout(resolve, ms);
   });
 }
+
+export const randomSleep = async (fromMs: number, toMs: number) => {
+  const ms = Math.floor(Math.random() * (toMs - fromMs + 1)) + fromMs;
+  return sleep(ms);
+};

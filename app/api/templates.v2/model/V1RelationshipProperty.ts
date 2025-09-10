@@ -16,7 +16,7 @@ class V1RelationshipProperty extends Property {
     content?: string,
     inheritedPropertyId?: string
   ) {
-    super(id, 'relationship', name, label, template);
+    super({ id, type: 'relationship', name, label, template });
     this.content = content;
     this.relationType = relationType;
     this.inheritedPropertyId = inheritedPropertyId;

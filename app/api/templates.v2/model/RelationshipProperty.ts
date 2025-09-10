@@ -16,7 +16,13 @@ class RelationshipProperty extends Property {
     template: string,
     denormalizedProperty?: string
   ) {
-    super(id, 'newRelationship', name, label, template);
+    super({
+      id,
+      type: 'newRelationship',
+      name,
+      label,
+      template,
+    });
     this.query = query;
     this.denormalizedProperty = denormalizedProperty;
   }
