@@ -53,18 +53,41 @@ const ProcessForm = ({ submit }: { submit: (values: FormData) => Promise<void> }
   return (
     <form id="train-form" onSubmit={handleSubmit(submit)}>
       <div className="flex flex-col gap-2">
-        <Controller
-          name="shouldFind"
-          control={control}
-          render={({ field }) => (
-            <Checkbox
-              name={field.name}
-              onChange={field.onChange}
-              label={<Translate>Find suggestions for</Translate>}
-              checked={field.value}
-            />
-          )}
-        />
+        <div className="flex gap-4 flex-wrap items-center">
+          <Controller
+            name="shouldFind"
+            control={control}
+            render={({ field }) => (
+              <Checkbox
+                name={field.name}
+                onChange={field.onChange}
+                label={<Translate>Find suggestions for</Translate>}
+                checked={field.value}
+              />
+            )}
+          />
+          <Controller
+            name="amount"
+            control={control}
+            rules={{ min: 1 }}
+            render={({ field }) => (
+              <div className="flex gap-2 items-center">
+                <label htmlFor={field.name} className="text-gray-900">
+                  <Translate>Amount</Translate> :
+                </label>
+                <InputField
+                  type="number"
+                  name={field.name}
+                  id={field.name}
+                  onChange={field.onChange}
+                  value={field.value}
+                  disabled={!shouldFind}
+                  hasErrors={errors.amount?.type === 'min'}
+                />
+              </div>
+            )}
+          />
+        </div>
         <div className="px-2 flex flex-col gap-1">
           <Controller
             name="filters.nonProcessed"
@@ -74,7 +97,7 @@ const ProcessForm = ({ submit }: { submit: (values: FormData) => Promise<void> }
                 <Checkbox
                   name={field.name}
                   onChange={field.onChange}
-                  label={<Translate>Non Processed</Translate>}
+                  label={<Translate>Non processed</Translate>}
                   checked={field.value}
                   disabled={!shouldFind}
                 />
@@ -112,28 +135,6 @@ const ProcessForm = ({ submit }: { submit: (values: FormData) => Promise<void> }
             )}
           />
         </div>
-        <Controller
-          name="amount"
-          control={control}
-          rules={{ min: 1 }}
-          render={({ field }) => (
-            <div className="flex gap-2 items-center">
-              <label htmlFor={field.name} className="text-gray-900">
-                <Translate>Amount</Translate> :
-              </label>
-              <InputField
-                className="inset-2"
-                type="number"
-                name={field.name}
-                id={field.name}
-                onChange={field.onChange}
-                value={field.value}
-                disabled={!shouldFind}
-                hasErrors={errors.amount?.type === 'min'}
-              />
-            </div>
-          )}
-        />
       </div>
       <hr className="my-4" />
       <div className="flex flex-col gap-2">
