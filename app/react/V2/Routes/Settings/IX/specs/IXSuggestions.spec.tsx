@@ -234,6 +234,17 @@ describe('IX suggestions', () => {
         expect(acceptFromPreviousSelect).toBeDisabled();
       });
 
+      it('should autoselect auto-accept for all when setting amount to 0', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        expect(acceptFromPreviousSelect).toBeChecked();
+        expect(acceptAllSuggestions).not.toBeChecked();
+        fireEvent.change(screen.getByLabelText('Amount :'), { target: { value: 0 } });
+        expect(acceptAllSuggestions).toBeChecked();
+        expect(acceptFromPreviousSelect).not.toBeChecked();
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
       it('should not allow processing if its not finding and not accepting', () => {
         const modal = screen.getByRole('dialog');
         const processButton = within(modal).getByText('Process').parentElement;

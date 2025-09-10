@@ -18,15 +18,16 @@ type FormData = {
 type ProcessExtractorModalProps = {
   close: () => void;
   onTrain: (data: Omit<ProcessParameters, 'extractorId'>) => Promise<void>;
+  selected?: string[];
 };
 
-const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) => {
+const ProcessExtractorModal = ({ close, onTrain, selected }: ProcessExtractorModalProps) => {
   const {
     handleSubmit,
     control,
     watch,
     setValue,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<FormData>({
     mode: 'onSubmit',
     defaultValues: {
@@ -61,12 +62,13 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
   const shouldFind = watch('shouldFind');
   const shouldAccept = watch('shouldAccept');
   const filters = watch('filters');
+  const amount = watch('amount');
 
   useEffect(() => {
-    if (!shouldFind) {
+    if (!shouldFind || amount < 1) {
       setValue('acceptFor', 'all');
     }
-  }, [setValue, shouldFind]);
+  }, [setValue, shouldFind, amount]);
 
   useEffect(() => {
     const hasFilters = filters.error || filters.nonProcessed || filters.obsolete;
@@ -146,6 +148,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
             <Controller
               name="amount"
               control={control}
+              rules={{ min: 1 }}
               render={({ field }) => (
                 <div className="flex gap-2 items-center">
                   <label htmlFor={field.name} className="text-gray-900">
@@ -159,6 +162,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
                     onChange={field.onChange}
                     value={field.value}
                     disabled={!shouldFind}
+                    hasErrors={errors.amount?.type === 'min'}
                   />
                 </div>
               )}
@@ -191,7 +195,7 @@ const ProcessExtractorModal = ({ close, onTrain }: ProcessExtractorModalProps) =
                       {
                         label: <Translate>From previous step</Translate>,
                         value: 'previous',
-                        disabled: !shouldFind || !shouldAccept,
+                        disabled: !shouldFind || !shouldAccept || amount < 1,
                         checked: field.value === 'previous',
                       },
                       {

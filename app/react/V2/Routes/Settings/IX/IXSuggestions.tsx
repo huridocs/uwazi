@@ -75,7 +75,7 @@ const IXSuggestions = () => {
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
-  const [modal, setModal] = useState<'train' | 'process' | 'none'>('none');
+  const [modal, setModal] = useState<'train' | 'process' | 'none' | 'processSelected'>('none');
   const [status, setStatus] = useState<{
     status: ixStatus;
     message?: string;
@@ -122,38 +122,6 @@ const IXSuggestions = () => {
     }
   };
 
-  const findSuggestions = async (suggestionsToFind: TableSuggestion[]) => {
-    try {
-      await suggestionsAPI.findSelectedSuggestions(extractor._id!, [
-        ...new Set(suggestionsToFind.map(s => s.sharedId)),
-      ]);
-      await revalidate();
-      if (status.status === ixStatus.ready) {
-        setStatus({
-          status: ixStatus.processing_suggestions,
-          message: ixmessages[ixStatus.processing_suggestions],
-          data: { processed: 0, total: suggestionsToFind.length },
-        });
-      }
-      if (status.status === ixStatus.processing_suggestions) {
-        setStatus({
-          status: ixStatus.processing_suggestions,
-          message: ixmessages[ixStatus.processing_suggestions],
-          data: {
-            processed: status.data?.processed || 0,
-            total: (status.data?.total || 0) + suggestionsToFind.length,
-          },
-        });
-      }
-    } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
-    }
-  };
-
   const trainModel = async (findAmount: number) => {
     if (status.status === ixStatus.ready) {
       if (extractor._id) {
@@ -188,7 +156,31 @@ const IXSuggestions = () => {
       try {
         const params = { ...data, extractorId: extractor._id };
         await suggestionsAPI.process(params);
-      } catch (error) {}
+        await revalidate();
+        if (status.status === ixStatus.ready) {
+          setStatus({
+            status: ixStatus.processing_suggestions,
+            message: ixmessages[ixStatus.processing_suggestions],
+            data: { processed: 0, total: data.find?.selectedSharedIds?.length || 0 },
+          });
+        }
+        if (status.status === ixStatus.processing_suggestions) {
+          setStatus({
+            status: ixStatus.processing_suggestions,
+            message: ixmessages[ixStatus.processing_suggestions],
+            data: {
+              processed: status.data?.processed || 0,
+              total: (status.data?.total || 0) + (data.find?.selectedSharedIds?.length || 0),
+            },
+          });
+        }
+      } catch (error) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+        });
+      }
     }
   };
 
