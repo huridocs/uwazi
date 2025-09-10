@@ -4,6 +4,7 @@ import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError
 import { OperationalError } from 'api/common.v2/errors/OperationalError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { config } from 'api/config';
+import { DomainError } from 'api/core/domain/error/DomainError';
 import { FileNotFound } from 'api/files/FileNotFound';
 import { S3Error } from 'api/files/S3Storage';
 import { legacyLogger } from 'api/log';
@@ -100,6 +101,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof ValidationError) {
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
+  }
+
+  if (error instanceof DomainError) {
+    result = { code: 400, message: error.message, logLevel: 'debug' };
   }
 
   if (error instanceof UnauthorizedError) {
