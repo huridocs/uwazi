@@ -910,7 +910,7 @@ total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
 total users,total users
 Train,Train
-Train model description,"Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task."
+Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
 Training model...,Training model...
 Translate,ဘာသာပြန်ရန်
