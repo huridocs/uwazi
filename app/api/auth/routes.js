@@ -9,6 +9,7 @@ import { DB } from 'api/odm';
 import { config } from 'api/config';
 import cors from 'cors';
 import request from 'shared/JSONRequest';
+import { randomSleep } from 'shared/tsUtils';
 import { CaptchaModel } from './CaptchaModel';
 
 import { validation } from '../utils';
@@ -56,7 +57,9 @@ export default app => {
       required: ['body'],
     }),
 
-    (req, res, next) => {
+    async (req, res, next) => {
+      await randomSleep(500, 1_000);
+
       passport.authenticate('local', (err, user) => {
         if (err) {
           next(err);

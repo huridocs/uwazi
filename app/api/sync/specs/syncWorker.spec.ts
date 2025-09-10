@@ -36,6 +36,7 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { Db, ObjectId } from 'mongodb';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import * as utils from 'shared/tsUtils';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
@@ -109,6 +110,7 @@ describe('syncWorker', () => {
     const app = express();
     await db.connect({ defaultTenant: false });
     jest.spyOn(mailer, 'send').mockResolvedValue(undefined);
+    jest.spyOn(utils, 'randomSleep').mockResolvedValue(undefined);
 
     tenants.add({
       name: 'host1',

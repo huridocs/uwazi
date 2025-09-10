@@ -334,8 +334,9 @@ export default {
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     }
 
+    const entitiesCount = await entities.countByTemplate(template._id);
     await checkAndFillGeneratedIdProperties(currentTemplate, template);
-    if (templateStructureChanges) {
+    if (templateStructureChanges && entitiesCount) {
       // eslint-disable-next-line no-param-reassign
       template.processing = {
         ...template.processing,
@@ -347,9 +348,17 @@ export default {
     if (templateStructureChanges) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.reindexAllTemplates(fullReindex)
-        .then(async () =>
-          this.postProcessTemplateUpdate(currentTemplate, savedTemplate, language, reindex)
-        )
+        .then(async () => {
+          if (entitiesCount) {
+            return this.postProcessTemplateUpdate(
+              currentTemplate,
+              savedTemplate,
+              language,
+              reindex
+            );
+          }
+          return false;
+        })
         .then(async denormalizationExecuted => {
           await onTemplateProcessed(
             undefined,

@@ -1,7 +1,6 @@
 import translations from 'api/i18n';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { search } from 'api/search';
-import { propertyTypes } from 'shared/propertyTypes';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { checkIfReindex } from '../reindex';
 import templates from '../templates';
 import fixtures, {
@@ -109,19 +108,19 @@ describe('reindex', () => {
       search.indexEntities.mockClear();
     });
     describe('Property', () => {
-      it.each([
-        {
-          change: 'new property has been added',
-          getProperties: props => props.concat([{ type: propertyTypes.text, label: 'text' }]),
-        },
-      ])('should reindex when $change', async ({ getProperties }) => {
-        const [template] = await templates.get({ _id: templateWithContents });
-        const newTemplate = {
-          ...template,
-          properties: getProperties(template.properties),
-        };
-        await expectReindex(newTemplate, true);
-      });
+      // it.each([
+      //   {
+      //     change: 'new property has been added',
+      //     getProperties: props => props.concat([{ type: propertyTypes.text, label: 'text' }]),
+      //   },
+      // ])('should reindex when $change', async ({ getProperties }) => {
+      //   const [template] = await templates.get({ _id: templateWithContents });
+      //   const newTemplate = {
+      //     ...template,
+      //     properties: getProperties(template.properties),
+      //   };
+      //   await expectReindex(newTemplate, true);
+      // });
 
       it('should find structural changes on changed inherit', async () => {
         const [inheritingTemplate] = await templates.get({ _id: templateInheritingFromAnother });

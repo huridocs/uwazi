@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import SHA256 from 'crypto-js/sha256';
 
 import { createError } from 'api/utils';
@@ -73,17 +74,6 @@ const sendAccountLockedEmail = async (user, domain) => {
   return mailer.send(mailOptions);
 };
 
-const validateUserStatus = user => {
-  if (!user) {
-    return createError('Invalid username or password', 401);
-  }
-  if (user.accountLocked) {
-    return createError('Account locked. Check your email to unlock.', 403);
-  }
-
-  return undefined;
-};
-
 const updateOldPassword = async (user, password) => {
   await model.save({ _id: user._id, password: await encryptPassword(password) });
 };
@@ -118,7 +108,10 @@ const validateUserPassword = async (user, password, domain) => {
   }
 
   if (!oldPasswordValidated && !passwordValidated) {
-    await newFailedLogin(user, domain);
+    if (!user?.accountLocked) {
+      await newFailedLogin(user, domain);
+    }
+
     return createError('Invalid username or password', 401);
   }
 
@@ -258,21 +251,20 @@ export default {
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
-
     const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
     const user = dbuser || dummy;
 
     const passwordError = await validateUserPassword(user, password, domain);
-    const userStatusError = validateUserStatus(user);
-    await validate2fa(user, token, domain);
 
     if (passwordError) {
       throw passwordError;
     }
 
-    if (userStatusError) {
-      throw userStatusError;
+    if (user?.accountLocked) {
+      throw createError('Invalid username or password', 401);
     }
+
+    await validate2fa(user, token, domain);
 
     await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
 
