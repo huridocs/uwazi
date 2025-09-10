@@ -164,13 +164,14 @@ describe('IX suggestions', () => {
     });
 
     it('should be disabled if there are selected items', async () => {
+      const user = userEvent.setup();
       render(<Component />);
       const openModalButton = (await screen.findByText('Train model')).parentElement;
       expect(openModalButton).not.toBeDisabled();
       const suggestionRow = (await screen.findByRole('cell', { name: 'Entity 1 (en)' })).closest(
         'tr'
       );
-      fireEvent.click(within(suggestionRow!).getByLabelText('Select'));
+      await user.click(within(suggestionRow!).getByLabelText('Select'));
       expect(openModalButton).toBeDisabled();
     });
   });
@@ -197,7 +198,7 @@ describe('IX suggestions', () => {
       // eslint-disable-next-line max-statements
       it('should disable the related fields when not finding suggestions', () => {
         const amountInput = screen.getByLabelText('Amount :');
-        const nonProcessedSelect = screen.getByLabelText('Non Processed');
+        const nonProcessedSelect = screen.getByLabelText('Non processed');
         const obsoleteSelect = screen.getByLabelText('Obsolete');
         const errorSelect = screen.getByLabelText('Error');
         const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
@@ -277,7 +278,7 @@ describe('IX suggestions', () => {
       it('should not find if all the filters are empty', async () => {
         const modal = screen.getByRole('dialog');
         const processButton = within(modal).getByText('Process').parentElement;
-        const nonProcessedSelect = screen.getByLabelText('Non Processed');
+        const nonProcessedSelect = screen.getByLabelText('Non processed');
         const obsoleteSelect = screen.getByLabelText('Obsolete');
         const errorSelect = screen.getByLabelText('Error');
         fireEvent.click(nonProcessedSelect);
