@@ -15,7 +15,7 @@ import { GeolocationProperty } from 'api/core/domain/template/GeoLocationPropert
 import { DateProperty } from 'api/core/domain/template/DateProperty';
 import { DateRangeProperty } from 'api/core/domain/template/DateRangeProperty';
 import { ObjectId } from 'mongodb';
-import { TemplateMapper } from '../template/mapper';
+import { TemplateMapper } from '../template/Mapper';
 
 const IDS = {
   TEMPLATE: new ObjectId(),

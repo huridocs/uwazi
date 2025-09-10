@@ -29,7 +29,7 @@ import {
 } from 'api/common.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';

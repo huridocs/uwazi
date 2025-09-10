@@ -3,7 +3,7 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
