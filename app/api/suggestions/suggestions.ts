@@ -187,6 +187,12 @@ const Suggestions = {
     }
 
     const baseMatch = { extractorId, $or: matchConditions } as any;
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getSampleForProcess::baseMatch', {
+      extractorId: extractorId.toString?.() || String(extractorId),
+      matchConditions,
+      maxTotal,
+    });
 
     // Count labeled/unlabeled within filtered subset
     const [unlabeledCount, labeledCount] = await Promise.all([
@@ -207,6 +213,14 @@ const Suggestions = {
       }
     }
 
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getSampleForProcess::countsAndAllocation', {
+      unlabeledCount,
+      labeledCount,
+      unlabeledSampleSize,
+      labeledSampleSize,
+    });
+
     const pipeline: any[] = [
       {
         $facet: {
@@ -225,7 +239,10 @@ const Suggestions = {
       { $replaceRoot: { newRoot: '$suggestions' } },
     ];
 
-    return (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
+    const result = (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getSampleForProcess::resultSize', { size: result.length });
+    return result;
   },
 
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {

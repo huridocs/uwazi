@@ -150,11 +150,14 @@ export default {
   appendToFindRunQueue,
   setProcessRun: async (extractorId: string, processRun: any) => {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);
-    const toSet: any = { processRun };
-    if (!processRun?.suggestionsRunTimestamp) {
-      toSet['processRun.suggestionsRunTimestamp'] = Date.now();
-    }
-    await model.updateMany({ extractorId: extractorObjectId }, { $set: toSet });
+    const processRunToSet = {
+      ...processRun,
+      suggestionsRunTimestamp: processRun?.suggestionsRunTimestamp || Date.now(),
+    };
+    await model.updateMany(
+      { extractorId: extractorObjectId },
+      { $set: { processRun: processRunToSet } }
+    );
   },
   unsetProcessRun: async (extractorId: string) => {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);

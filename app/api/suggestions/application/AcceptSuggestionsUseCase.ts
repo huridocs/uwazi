@@ -12,12 +12,44 @@ type Output = { processed: number; progress?: { total: number; processed: number
 export class AcceptSuggestionsUseCase {
   // eslint-disable-next-line class-methods-use-this
   async execute({ extractorId, batchSize }: Input): Promise<Output> {
-    const [model] = await ixmodels.get({ extractorId });
-    if (!model?.processRun) return { processed: 0 };
+    const [model] = await ixmodels.get({ extractorId: ObjectId.createFromHexString(extractorId) });
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] useCase.execute::model lookup', {
+      extractorId,
+      modelFound: !!model,
+      hasProcessRun: !!model?.processRun,
+    });
+    if (!model?.processRun) {
+      // Attempt an ObjectId-based lookup just to log whether it exists under that type
+      try {
+        const [objIdModel] = await ixmodels.get({
+          extractorId: ObjectId.createFromHexString(extractorId) as any,
+        });
+        // eslint-disable-next-line no-console
+        console.log('[IX][accept] useCase.execute::secondary lookup with ObjectId', {
+          found: !!objIdModel,
+          hasProcessRun: !!objIdModel?.processRun,
+        });
+      } catch (e) {
+        console.log('[IX][accept] useCase.execute::secondary lookup error', (e as Error)?.message);
+      }
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] useCase.execute::early return - missing processRun');
+      return { processed: 0 };
+    }
 
     const { autoAccept, suggestionsRunTimestamp } = model.processRun;
     const overwriteAll = autoAccept?.overwriteMode === 'overwrite_all';
     const source = autoAccept?.source === 'all' ? 'all' : 'previous';
+
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] useCase.execute::input', {
+      extractorId,
+      batchSize,
+      overwriteAll,
+      source,
+      suggestionsRunTimestamp,
+    });
 
     const match: UwaziFilterQuery<DataType<IXSuggestionType>> = {
       extractorId: ObjectId.createFromHexString(extractorId),
@@ -37,13 +69,26 @@ export class AcceptSuggestionsUseCase {
     if (typeof total !== 'number') {
       total = await IXSuggestionsModel.db.countDocuments(match);
       await ixmodels.setAutoAcceptProgress(extractorId, { total, processed: 0 });
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] useCase.execute::initialized total', { total });
     }
 
-    const suggestions = await IXSuggestionsModel.get(match, '_id entityId');
+    // Debug: show the match being used for auto-accept
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] useCase.execute::match', match);
+    const suggestions = await IXSuggestionsModel.get(
+      match,
+      '_id entityId entityLanguageId state modelData'
+    );
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] useCase.execute::fetched suggestions', {
+      count: suggestions.length,
+      first: suggestions[0]?._id?.toString?.(),
+    });
     const toAccept = suggestions.slice(0, batchSize).map(s => ({
       _id: s._id,
       sharedId: s.entityId,
-      entityId: s.entityId,
+      entityId: s.entityLanguageId,
       overwriteAll,
     }));
 
@@ -51,6 +96,12 @@ export class AcceptSuggestionsUseCase {
       await ixmodels.unsetProcessRun(extractorId.toString());
       // best-effort final snapshot using model's stored progress
       const currentProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] useCase.execute::done', {
+        processed: 0,
+        total,
+        currentProcessed,
+      });
       return { processed: 0, progress: { total, processed: Math.min(total, currentProcessed) } };
     }
 
@@ -59,6 +110,13 @@ export class AcceptSuggestionsUseCase {
 
     const previousProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
     const newProcessed = Math.min(total, previousProcessed + toAccept.length);
+
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] useCase.execute::batch processed', {
+      batch: toAccept.length,
+      total,
+      processed: newProcessed,
+    });
 
     return { processed: toAccept.length, progress: { total, processed: newProcessed } };
   }

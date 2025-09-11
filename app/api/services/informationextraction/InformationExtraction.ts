@@ -630,28 +630,47 @@ class InformationExtraction {
   };
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
-    // If a find suggestions run is active, compute per-run entity progress using IDs
-    if (model.findingSuggestions && model.processRun?.suggestionsRunTimestamp) {
+    // If a selected-IDs run is active (queue present), compute per-run entity progress using IDs
+    const hasSelectedQueue = Array.isArray(model.processRun?.findSuggestionsSharedIds);
+    if (model.findingSuggestions && hasSelectedQueue) {
       const remainingIds = Array.isArray(model.processRun?.findSuggestionsSharedIds)
         ? model.processRun!.findSuggestionsSharedIds!.length
         : 0;
       const total = model.processRun?.findSuggestionsInitialSharedIdsCount ?? remainingIds;
       // processed includes pre-processed ones: total is original selected, remaining are pending
       const processed = Math.max(0, total - remainingIds);
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] getSuggestionsStatus::selectedQueue', { total, processed });
       return { total, processed };
     }
 
-    // Default behavior for training/test runs OR process runs with filters:
-    // processed = 'ready' suggestions since the last run start, falling back to creationDate
-    const since = model.processRun?.suggestionsRunTimestamp || model.creationDate;
-    const processedSuggestions = await IXSuggestionsModel.count({
-      extractorId,
-      $and: [{ date: { $ne: null } }, { date: { $gt: since } }],
-    });
-    return {
+    // Default behavior for training/test runs OR process_extractor runs with filters:
+    // Prefer counting suggestions tagged with this run's timestamp, to handle cases
+    // where 'date' may not be updated (e.g., re-suggesting obsolete items).
+    let processedSuggestions = 0;
+    if (model.processRun?.suggestionsRunTimestamp) {
+      processedSuggestions = await IXSuggestionsModel.db.countDocuments({
+        extractorId,
+        status: 'ready',
+        date: { $ne: null },
+        'state.obsolete': { $ne: true },
+        'state.error': { $ne: true },
+        'modelData.suggestionsRunTimestamp': model.processRun.suggestionsRunTimestamp,
+      });
+    } else {
+      const since = model.creationDate;
+      processedSuggestions = await IXSuggestionsModel.count({
+        extractorId,
+        $and: [{ date: { $ne: null } }, { date: { $gt: since } }],
+      });
+    }
+    const status = {
       total: model.totalSuggestionsToFind,
       processed: processedSuggestions,
     };
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getSuggestionsStatus::default', status);
+    return status;
   };
 
   updateSuggestionStatus = async (message: InternalIXResultsMessage, passedModel: IXModelType) => {
@@ -660,6 +679,11 @@ class InformationExtraction {
       message.params!.id,
       currentModel || passedModel
     );
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] emit processing_suggestions', {
+      extractorId: message.params!.id.toString(),
+      suggestionsStatus,
+    });
     emitToTenant(
       message.tenant,
       'ix_model_status',
@@ -684,6 +708,15 @@ class InformationExtraction {
     const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
     const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
     const batchSize = Math.max(0, Math.min(remaining, MAX_BATCH_SIZE));
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] determineBatchSize', {
+      source,
+      MAX_BATCH_SIZE,
+      processed: suggestionsStatus.processed,
+      total: model.totalSuggestionsToFind,
+      remaining,
+      batchSize,
+    });
     return batchSize;
   };
 
@@ -708,12 +741,18 @@ class InformationExtraction {
     const filesForSuggestions = await getFilesForSuggestions(extractorId, batchSize);
 
     if (!filesForSuggestions.length) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] getAndSendMaterialsForPDF::noFiles, stopping');
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return [];
     }
 
     try {
       await this.sendMaterialsForPDF(filesForSuggestions, extractor, targetProperty);
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] getAndSendMaterialsForPDF::dispatched', {
+        count: filesForSuggestions.length,
+      });
     } catch (error) {
       if (error.message === 'No files with segmentations to be used for training') {
         await this.stopModelAndEmitReadyMessage(
@@ -743,6 +782,8 @@ class InformationExtraction {
     const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
     if (!entitiesForSuggestions.length) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] getAndSendMaterialsForProperty::noEntities, stopping');
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return [];
     }
@@ -754,6 +795,10 @@ class InformationExtraction {
       targetProperty,
       'prediction_data'
     );
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getAndSendMaterialsForProperty::dispatched', {
+      count: entitiesForSuggestions.length,
+    });
 
     return entitiesForSuggestions;
   };
@@ -801,19 +846,30 @@ class InformationExtraction {
     const [model] = await IXModelsModel.get({ extractorId });
 
     if (model?.totalSuggestionsToFind === 0) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] getSuggestions::total=0 -> stopping');
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return;
     }
 
     const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getSuggestions::status', {
+      processed: suggestionsStatus.processed,
+      total: model.totalSuggestionsToFind,
+    });
     if (
       model.totalSuggestionsToFind != null &&
       suggestionsStatus.processed >= model.totalSuggestionsToFind
     ) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] getSuggestions::completed -> stopping');
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return;
     }
 
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] getSuggestions::dispatch sendMaterialsAndTaskSuggestions');
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
@@ -838,14 +894,26 @@ class InformationExtraction {
     }
 
     if (currentModel.status === ModelStatus.processing && currentModel.findingSuggestions) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][status] processing_model', {
+        status: currentModel.status,
+        findingSuggestions: currentModel.findingSuggestions,
+      });
       return { status: 'processing_model', message: 'Training model' };
     }
 
     if (currentModel.status === ModelStatus.processing && !currentModel.findingSuggestions) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][status] cancel', {
+        status: currentModel.status,
+        findingSuggestions: currentModel.findingSuggestions,
+      });
       return { status: 'cancel', message: 'Canceling...' };
     }
 
     if (currentModel.status === ModelStatus.failed) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][status] failed');
       return { status: 'failed', message: 'Failed' };
     }
 
@@ -853,9 +921,13 @@ class InformationExtraction {
       const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
+        // eslint-disable-next-line no-console
+        console.log('[IX][status] ready - processed equals total');
         return { status: 'ready', message: 'Ready' };
       }
 
+      // eslint-disable-next-line no-console
+      console.log('[IX][status] processing_suggestions', suggestionStatus);
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',
@@ -863,6 +935,8 @@ class InformationExtraction {
       };
     }
 
+    // eslint-disable-next-line no-console
+    console.log('[IX][status] default ready');
     return { status: 'ready', message: 'Ready' };
   };
 
@@ -887,15 +961,29 @@ class InformationExtraction {
 
   startAutoAcceptIfEnabled = async (extractorId: string): Promise<boolean> => {
     const tenant = tenants.current();
-    const [model] = await IXModelsModel.get({ extractorId });
-    if (!model) return false;
+    const [model] = await IXModelsModel.get({ extractorId: new ObjectId(extractorId) });
+    if (!model) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] startAutoAcceptIfEnabled::model not found', { extractorId });
+      return false;
+    }
     const autoAccept = model?.processRun?.autoAccept;
     if (!autoAccept?.enabled) return false;
+
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] startAutoAcceptIfEnabled', {
+      extractorId,
+      suggestionsRunTimestamp: model.processRun?.suggestionsRunTimestamp,
+      overwriteMode: model.processRun?.autoAccept?.overwriteMode,
+      source: model.processRun?.autoAccept?.source,
+    });
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
 
     const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });
     const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName: tenant.name });
+    // eslint-disable-next-line no-console
+    console.log('[IX][accept] dispatch AcceptSuggestionsJob');
     await dispatcher.dispatch(job.constructor as any, { extractorId });
     return true;
   };
@@ -935,9 +1023,27 @@ class InformationExtraction {
           // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
           const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
           const autoAccept = freshModel?.processRun?.autoAccept;
+          // eslint-disable-next-line no-console
+          console.log('[IX][accept] processResults::check', {
+            extractorId: message.params!.id.toString(),
+            autoAcceptEnabled: !!autoAccept?.enabled,
+            totalSuggestionsToFind: freshModel?.totalSuggestionsToFind,
+          });
           if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
             const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
+            // eslint-disable-next-line no-console
+            console.log('[IX][accept] processResults::status', {
+              processed: status.processed,
+              total: freshModel.totalSuggestionsToFind,
+            });
             if (status.processed >= freshModel.totalSuggestionsToFind) {
+              // eslint-disable-next-line no-console
+              console.log('[IX][accept] processResults::model state before auto-accept trigger', {
+                status: freshModel.status,
+                findingSuggestions: freshModel.findingSuggestions,
+              });
+              // eslint-disable-next-line no-console
+              console.log('[IX][accept] processResults::trigger startAutoAcceptIfEnabled');
               await this.startAutoAcceptIfEnabled(message.params!.id.toString());
               return;
             }

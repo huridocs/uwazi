@@ -24,7 +24,7 @@ const FindFiltersSchema = z
 const FindSchema = z
   .object({
     enabled: z.boolean().optional(),
-    size: z.number().min(0).default(1000).optional(),
+    size: z.coerce.number().int().min(0).default(1000).optional(),
     filters: FindFiltersSchema.optional(),
     selectedSharedIds: z.array(z.string()).optional(),
   })
@@ -71,7 +71,13 @@ class ProcessSuggestionsController extends AbstractController<Request> {
   }
 
   async handle(): Promise<void> {
+    // Debug: raw request body before validation/coercion
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] Incoming request body', { body: this.request.body });
+
     const dto = RequestSchema.parse(this.request.body);
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] Parsed DTO', { dto });
     this.ensureUser();
 
     const informationExtraction = new InformationExtraction();

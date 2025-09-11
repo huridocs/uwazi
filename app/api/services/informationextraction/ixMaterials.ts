@@ -223,10 +223,23 @@ async function getEntitiesForSuggestionsQuery(
     return null;
   }
 
-  const entityQuery = {
-    sharedId: { $in: [...new Set(suggestions.map(s => s.entityId))] },
-    language: { $in: [...new Set(suggestions.map(s => s.language))] },
-  };
+  // Build an OR of exact (sharedId, language) pairs to avoid cross-product expansion
+  const uniquePairs = Array.from(
+    new Set(suggestions.map(s => `${s.entityId}::${s.language || ''}`))
+  )
+    .map(key => {
+      const [sharedId, language] = key.split('::');
+      return { sharedId, language } as { sharedId: string; language: string };
+    })
+    .filter(p => p.sharedId && p.language);
+
+  // eslint-disable-next-line no-console
+  console.log('[IX][process] getEntitiesForSuggestionsQuery::pairs', {
+    pairs: uniquePairs.length,
+    batchSize: BATCH_SIZE,
+  });
+
+  const entityQuery = { $or: uniquePairs } as UwaziFilterQuery<any>;
 
   return entityQuery;
 }

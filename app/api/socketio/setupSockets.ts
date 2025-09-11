@@ -27,6 +27,7 @@ declare global {
 }
 
 let io: SocketIoServer | Emitter;
+let workerSocketsListenersAttached = false;
 
 let pubClient: RedisClient;
 let subClient: RedisClient;
@@ -64,6 +65,16 @@ const setupApiSockets = (server: Server, app: Application) => {
     pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
     subClient = pubClient.duplicate();
 
+    // Avoid MaxListenersExceededWarning in dev or tests where setup might be called multiple times
+    // 0 means unlimited listeners; safe here because we control listener registration below
+    // and we only add a constant small number of listeners.
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    pubClient.setMaxListeners && pubClient.setMaxListeners(0);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    subClient.setMaxListeners && subClient.setMaxListeners(0);
+
     io.adapter(createAdapter(pubClient, subClient));
     io.of('/').adapter.on('error', e => {
       handleError(e, { useContext: false });
@@ -87,14 +98,20 @@ const setupApiSockets = (server: Server, app: Application) => {
 };
 
 const setupWorkerSockets = (redisClient: RedisClient) => {
-  if (io) {
+  if (io || workerSocketsListenersAttached) {
     return;
   }
-  redisClient.on('error', error => {
+  workerSocketsListenersAttached = true;
+  // Avoid MaxListenersExceededWarning if called multiple times before 'ready'
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  redisClient.setMaxListeners && redisClient.setMaxListeners(0);
+
+  redisClient.once('error', error => {
     throw error;
   });
 
-  redisClient.on('ready', () => {
+  redisClient.once('ready', () => {
     io = new Emitter(redisClient);
   });
 };

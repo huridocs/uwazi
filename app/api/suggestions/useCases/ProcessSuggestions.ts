@@ -69,6 +69,16 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
     const [extractor, model] = await ProcessSuggestions.getExtractorAndModel(extractorId);
     ProcessSuggestions.validate(extractor, model);
 
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] Begin execute', {
+      extractorId,
+      mode,
+      find,
+      autoAccept,
+      modelId: model?._id?.toString?.(),
+      modelStatus: model?.status,
+    });
+
     const isProcessSelected = mode === 'process_selected';
     const findEnabled = isProcessSelected ? true : find?.enabled === true;
     const findSize = Math.max(0, find?.size ?? DEFAULT_MAX_SUGGESTIONS_SIZE);
@@ -77,6 +87,14 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
       source: mode === 'process_selected' ? 'previous' : (autoAccept?.source ?? 'previous'),
       overwriteMode: autoAccept?.overwriteMode ?? 'blank_only',
     };
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] Effective options', {
+      findEnabled,
+      findSize,
+      filters: find?.filters,
+      selectedSharedIds: find?.selectedSharedIds?.length,
+      autoAccept: autoAcceptOptions,
+    });
 
     // Persist process run metadata on the model for recursive pick-up
     await ixmodels.setProcessRun(extractorId, {
@@ -91,15 +109,24 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
       autoAccept: autoAcceptOptions,
     });
 
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] processRun persisted');
+
     // Initialize run queue for process_selected
     if (mode === 'process_selected' && Array.isArray(find?.selectedSharedIds)) {
       const uniqueIds = Array.from(new Set(find.selectedSharedIds));
       await ixmodels.initializeFindRunQueue(model!._id!, uniqueIds);
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] Initialized selected queue', {
+        initialCount: uniqueIds.length,
+      });
     }
 
     if (findEnabled) {
       // Mark model as finding suggestions and set creationDate reference
       await ixmodels.startFindingSuggestions(extractorObjectId);
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] Marked findingSuggestions');
 
       // Set maxSuggestionsToFind from user request and compute filter-aware total
       const [current] = await ixmodels.get({ extractorId: extractorObjectId });
@@ -109,12 +136,19 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
         maxSuggestionsToFind: findSize,
       });
 
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] Saved model with maxSuggestionsToFind', {
+        maxSuggestionsToFind: findSize,
+      });
+
       const total = await IXServices.computeTotalSuggestionsForProcess(
         extractorObjectId,
         updated as any,
         mode === 'process_extractor' ? find?.filters : undefined
       );
-      await ixmodels.save({
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] Computed totalSuggestionsToFind', { total });
+      const updatedWithTotal = await ixmodels.save({
         ...updated,
         extractorId: extractorObjectId,
         totalSuggestionsToFind: total,
@@ -123,14 +157,16 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
       // Start the suggestions loop
       await this.deps.informationExtraction.sendMaterialsAndTaskSuggestions(
         extractor!,
-        updated,
+        updatedWithTotal,
         mode === 'process_extractor'
       );
+      // eslint-disable-next-line no-console
+      console.log('[IX][process] Dispatched sendMaterialsAndTaskSuggestions');
 
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',
-        data: { total: findSize },
+        data: { total },
       };
     }
 
