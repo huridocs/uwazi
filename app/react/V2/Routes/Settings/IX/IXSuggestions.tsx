@@ -155,13 +155,17 @@ const IXSuggestions = () => {
     if (extractor._id) {
       try {
         const params = { ...data, extractorId: extractor._id };
-        await suggestionsAPI.process(params);
+        const processResponse = await suggestionsAPI.process(params);
         await revalidate();
+        const initialTotal =
+          data.mode === 'process_extractor'
+            ? Number(processResponse?.data?.total) || 0
+            : data.find?.selectedSharedIds?.length || 0;
         if (status.status === ixStatus.ready) {
           setStatus({
             status: ixStatus.processing_suggestions,
             message: ixmessages[ixStatus.processing_suggestions],
-            data: { processed: 0, total: data.find?.selectedSharedIds?.length || 0 },
+            data: { processed: 0, total: initialTotal },
           });
         }
         if (status.status === ixStatus.processing_suggestions) {
@@ -170,7 +174,7 @@ const IXSuggestions = () => {
             message: ixmessages[ixStatus.processing_suggestions],
             data: {
               processed: status.data?.processed || 0,
-              total: (status.data?.total || 0) + (data.find?.selectedSharedIds?.length || 0),
+              total: (status.data?.total || 0) + initialTotal,
             },
           });
         }
