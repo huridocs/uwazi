@@ -29,6 +29,7 @@ const createSut = () => {
     settingsDS,
     translationService,
     relationshipTypesDS,
+    transactionManager,
   });
 
   return { sut };
@@ -78,7 +79,7 @@ const fixtures: DBFixture = {
 
 describe('CreateTemplateUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(fixtures, 'templates_spec_index');
   });
 
   afterAll(async () => {

@@ -197,6 +197,7 @@ export default {
         translationService: new LegacyTranslationService(),
         settingsDS: DefaultSettingsDataSource(transactionManager),
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
+        transactionManager,
       }).execute(template);
 
       return TemplateMapper.toSchema(output);
