@@ -173,6 +173,27 @@ describe('templates save', () => {
       });
     });
 
+    describe('when deleting a property and template contains relationship properties', () => {
+      it('should delete the property on all entities and reindex', async () => {
+        const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateA')]);
+        await updateTemplate(template);
+
+        expect(
+          (await getEntitiesByTemplate('templateB'))[0].metadata?.text_property_b
+        ).toBeUndefined();
+        expect(
+          (await getEntitiesByTemplate('templateB'))[1].metadata?.text_property_b
+        ).toBeUndefined();
+
+        expect(
+          (await getEntitiesByTemplate('templateB', 'elastic'))[0].metadata?.text_property_b
+        ).toBeUndefined();
+        expect(
+          (await getEntitiesByTemplate('templateB', 'elastic'))[1].metadata?.text_property_b
+        ).toBeUndefined();
+      });
+    });
+
     describe('when changing a relationship property "inherit"', () => {
       it('should correctly inherit and denormalize properties from related templates', async () => {
         const template = f.template('templateB', [
@@ -635,6 +656,27 @@ describe('templates save', () => {
       ]);
 
       await expect(async () => templates.save(template, 'en')).rejects.toBeInstanceOf(Error);
+    });
+
+    it('Template with 0 entities should not be in processing state', async () => {
+      await setUpFixtures({
+        ...fixtures,
+        templates: [
+          ...fixtures.templates,
+          f.template('templateD', [f.property('text_property_b')]),
+        ],
+        entities: [],
+      });
+
+      const propertyWithNameChanged = f.property('text_property_b', 'text', {
+        label: 'name_changed',
+      });
+
+      const template = f.template('templateD', [propertyWithNameChanged]);
+
+      await updateTemplate(template);
+      const savedTemplate = await templates.getById(f.id('templateD'));
+      expect(savedTemplate?.processing).toEqual({ active: false });
     });
 
     it('should again allow updating a template when the processing has finished', async () => {

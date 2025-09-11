@@ -72,12 +72,6 @@ const findSuggestions = async (
   return response.json;
 };
 
-const findSelectedSuggestions = async (extractorId: string, sharedIds: string[]) => {
-  const params = new RequestParams({ extractorId, sharedIds });
-  const response = await api.post('suggestions/find', params);
-  return response.json;
-};
-
 const status = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   const params = new RequestParams({ extractorId }, headers);
   const { json: response } = await api.post('suggestions/status', params);
@@ -92,18 +86,9 @@ const cancel = async (extractorId: string, headers?: IncomingHttpHeaders) => {
 
 const process = async (parameters: ProcessParameters, headers?: IncomingHttpHeaders) => {
   const params = new RequestParams(parameters, headers);
-  const { json: response } = await api.post('/api/suggestions/process', params);
+  const { json: response } = await api.post('suggestions/process', params);
   return response;
 };
 
 export type { ProcessParameters };
-export {
-  get,
-  accept,
-  aggregation,
-  findSuggestions,
-  status,
-  cancel,
-  findSelectedSuggestions,
-  process,
-};
+export { get, accept, aggregation, findSuggestions, status, cancel, process };

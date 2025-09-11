@@ -369,8 +369,8 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'password');
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toMatch(/account locked/i);
-        expect(e.code).toBe(403);
+        expect(e.message).toBe('Invalid username or password');
+        expect(e.code).toBe(401);
       }
     });
 
@@ -383,6 +383,53 @@ describe('Users', () => {
         expect(e.message).toBe('Invalid username or password');
         expect(e.code).toBe(401);
       }
+    });
+
+    it('should not increment failed attempts if account is already blocked', async () => {
+      testUser.accountLocked = true;
+      testUser.accountUnlockCode = 'any_code';
+      testUser.failedLogins = 6;
+
+      try {
+        await createUserAndTestLogin('someuser1', 'wrong_password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toBe('Invalid username or password');
+        expect(e.code).toBe(401);
+      }
+
+      const [dbUser] = await usersModel.get(
+        { username: 'someuser1' },
+        '+password +accountLocked +failedLogins +accountUnlockCode'
+      );
+
+      expect(dbUser.accountUnlockCode).toBe('any_code');
+      expect(dbUser.failedLogins).toBe(6);
+      expect(mailer.send).not.toHaveBeenCalled();
+    });
+
+    it('should not try to validate 2fa if credentials are wrong', async () => {
+      testUser.failedLogins = 1;
+      testUser.using2fa = true;
+      const verifyTokenSpy = jest
+        .spyOn(usersUtils, 'verifyToken')
+        .mockRejectedValue(new Error('Invalid username or password'));
+
+      try {
+        await createUserAndTestLogin('someuser1', 'wrong_password', '2fa_token');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toBe('Invalid username or password');
+      }
+
+      const [dbUser] = await usersModel.get(
+        { username: 'someuser1' },
+        '+password +accountLocked +failedLogins +accountUnlockCode'
+      );
+
+      expect(dbUser.failedLogins).toBe(2);
+      expect(mailer.send).not.toHaveBeenCalled();
+      expect(verifyTokenSpy).not.toHaveBeenCalled();
     });
 
     describe('2fa', () => {

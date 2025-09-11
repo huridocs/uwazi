@@ -37,7 +37,7 @@ describe('RadioSelect', () => {
 
   it('should disable the options specified', () => {
     cy.get('input[type="radio"]:disabled').siblings().contains('United Kingdom');
-    cy.get('input[type="radio"]:disabled').siblings().should('have.class', '!text-gray-300');
+    cy.get('input[type="radio"]:disabled').siblings().should('have.class', '!text-gray-500');
   });
 
   it('should execute on change when the selected option changes', () => {

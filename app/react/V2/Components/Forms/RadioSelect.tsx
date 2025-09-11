@@ -44,6 +44,7 @@ const RadioSelect = ({
           onChange={onChange}
           defaultChecked={option.defaultChecked}
           checked={option.checked}
+          className={option.disabled ? '!bg-gray-300 !border-gray-300' : ''}
         />
         <Label
           htmlFor={`${name}_${option.value}`}

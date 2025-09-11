@@ -1,11 +1,11 @@
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { Document } from 'api/files.v2/model/Document';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
+import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
 import { Property } from 'api/templates.v2/model/Property';
-import { Template } from 'api/templates.v2/model/Template';
-import { Document } from 'api/files.v2/model/Document';
 import { ObjectId } from 'mongodb';
 
+import { TemplateBuilder } from 'api/core/domain/template/specs/TemplateBuilder';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
@@ -63,21 +63,30 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
 const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
 const document2 = new Document('any_id2', 'any_entity2', 0, 'any_file_name2', 'es');
 
-const sourceTemplate = new Template('sourceTemplate', 'Source template');
+const sourceTemplate = TemplateBuilder.aTemplate({
+  id: 'sourceTemplate',
+  name: 'Source template',
+}).build();
 
-const paragraphProperty = new Property('any_id', 'markdown', 'Rich name', 'Rich label', 'any_id');
-const paragraphNumberProperty = new Property(
-  'paragraphNumberProperty',
-  'numeric',
-  'paragraph_number',
-  'Paragraph Number',
-  'any_id'
-);
+const paragraphProperty = new Property({
+  id: 'any_id',
+  type: 'markdown',
+  label: 'Rich label',
+  template: 'any_id',
+});
+const paragraphNumberProperty = new Property({
+  id: 'paragraphNumberProperty',
+  type: 'numeric',
+  label: 'Paragraph Number',
+  template: 'any_id',
+});
 
-const targetTemplate = new Template('targetTemplate', 'Target template', [
-  paragraphProperty,
-  paragraphNumberProperty,
-]);
+const targetTemplate = TemplateBuilder.aTemplate({
+  id: 'targetTemplate',
+  name: 'Target template',
+})
+  .withProperties([paragraphProperty, paragraphNumberProperty])
+  .build();
 
 const segmentation: Segmentation = {
   id: 'any_id',
@@ -124,12 +133,12 @@ const extractor = new PXExtractor({
 });
 
 export {
-  mockGetParagraphsResult,
-  extractor,
-  segmentation,
   document,
+  document2,
+  extractor,
+  mockGetParagraphsResult,
+  segmentation,
+  segmentation2,
   sourceTemplate,
   targetTemplate,
-  document2,
-  segmentation2,
 };
