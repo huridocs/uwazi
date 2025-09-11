@@ -5,14 +5,10 @@ import { z } from 'zod';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
-import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService';
-import {
-  SelectPropertyCreatorService,
-  ThesauriDataSource,
-} from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
+import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
 import { TranslationService } from '../domain/template/TranslationService';
 
@@ -89,11 +85,12 @@ type Output = Template;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
-  idGenerator: IdGenerator;
   thesauriDS: ThesauriDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
+  idGenerator: IdGenerator;
+  transactionManager: TransactionManager;
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
@@ -102,17 +99,7 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
   constructor(private deps: Deps) {
     super();
 
-    this.propertyCreatorServiceStrategy = new PropertyCreatorServiceStrategy({
-      default: new PropertyCreatorService({ templatesDS: this.deps.templatesDS }),
-      relationship: new RelationshipPropertyCreatorService({
-        templatesDS: this.deps.templatesDS,
-        relationshipTypesDS: this.deps.relationshipTypesDS,
-      }),
-      select: new SelectPropertyCreatorService({
-        templatesDS: this.deps.templatesDS,
-        thesauriDS: this.deps.thesauriDS,
-      }),
-    });
+    this.propertyCreatorServiceStrategy = PropertyCreatorServiceStrategy.create(this.deps);
   }
 
   // eslint-disable-next-line max-statements
@@ -151,8 +138,10 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output> {
       throw new TemplateWithDuplicatedNameOnTheSystemError(template);
     }
 
-    await this.deps.templatesDS.create(template);
-    await this.deps.translationService.translate(template);
+    await this.deps.transactionManager.run(async () => {
+      await this.deps.templatesDS.create(template);
+      await this.deps.translationService.translate(template);
+    });
 
     return template;
   }

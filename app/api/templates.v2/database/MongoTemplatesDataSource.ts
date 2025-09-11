@@ -4,6 +4,7 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { updateMapping } from 'api/search/entitiesIndex';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -218,6 +219,7 @@ export class MongoTemplatesDataSource
     const schema = TemplateMapper.toSchema(template);
 
     await this.getCollection().insertOne(schema);
+    this.transactionManager.onCommitted(async () => updateMapping([schema]));
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
