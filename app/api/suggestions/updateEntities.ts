@@ -1,3 +1,6 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-params */
+/* eslint-disable max-lines */
 import entities from 'api/entities';
 import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
 import thesauri from 'api/thesauri';
@@ -44,7 +47,7 @@ const fetchEntityInfo = async (
 ): Promise<{ entityInfo: EntityInfo }> => {
   const suggestionSharedIds = suggestions
     .map(s => {
-      const suggestedValue = s.suggestedValue;
+      const { suggestedValue } = s;
       if (
         Array.isArray(suggestedValue) &&
         suggestedValue.length > 0 &&
@@ -99,23 +102,23 @@ const fetchResources = async (
 
 const getAcceptedSuggestion = (
   entity: EntitySchema,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-): AcceptedSuggestion => acceptedSuggestionsBySharedId[entity.sharedId || ''];
+  acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>
+): AcceptedSuggestion => acceptedSuggestionsByEntityId[entity._id?.toString() || ''];
 
 const getSuggestion = (
   entity: EntitySchema,
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-) => suggestionsById[getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId)._id.toString()];
+  acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>
+) => suggestionsById[getAcceptedSuggestion(entity, acceptedSuggestionsByEntityId)._id.toString()];
 
 const getRawValue = (
   entity: EntitySchema,
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+  acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>
 ) => {
-  const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
+  const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsByEntityId);
   if (!suggestion) return undefined;
-  const suggestedValue = suggestion.suggestedValue;
+  const { suggestedValue } = suggestion;
   if (
     Array.isArray(suggestedValue) &&
     suggestedValue.length > 0 &&
@@ -236,10 +239,10 @@ const getRawValueAsArray = (
   _property: PropertySchema,
   entity: EntitySchema,
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+  acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>
 ) => [
   {
-    value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
+    value: getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId),
   },
 ];
 
@@ -252,11 +255,11 @@ const valueGetters = {
     _property: PropertySchema,
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
     const { thesaurus } = resources;
-    const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
+    const value = getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId) as string;
     checkValuesInThesaurus([value], thesaurus.name, thesaurus.indexedlabels);
 
     return [{ value }];
@@ -265,16 +268,16 @@ const valueGetters = {
     _property: PropertySchema,
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
     const { thesaurus } = resources;
-    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
-    const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
+    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsByEntityId);
+    const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsByEntityId);
     const suggestionValues = getRawValue(
       entity,
       suggestionsById,
-      acceptedSuggestionsBySharedId
+      acceptedSuggestionsByEntityId
     ) as string[];
     checkValuesInThesaurus(suggestionValues, thesaurus.name, thesaurus.indexedlabels);
 
@@ -291,17 +294,17 @@ const valueGetters = {
     property: PropertySchema,
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
     const { entityInfo } = resources;
 
-    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
-    const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
+    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsByEntityId);
+    const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsByEntityId);
     const suggestionValues = getRawValue(
       entity,
       suggestionsById,
-      acceptedSuggestionsBySharedId
+      acceptedSuggestionsByEntityId
     ) as string[];
     checkSharedIds(suggestionValues, entityInfo);
     checkTemplates(property, suggestionValues, entityInfo);
@@ -321,7 +324,7 @@ const getValue = (
   property: PropertySchema,
   entity: EntitySchema,
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+  acceptedSuggestionsByEntityId: Record<IndexTypes, AcceptedSuggestion>,
   resources: any
 ) => {
   const type = checkTypeIsAllowed(property.type);
@@ -329,12 +332,54 @@ const getValue = (
     throw new SuggestionAcceptanceError('Title should not be handled here.');
   }
   const getter = valueGetters[type];
-  return getter(property, entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
+  return getter(property, entity, suggestionsById, acceptedSuggestionsByEntityId, resources);
 };
 
+const MAX_SAVE_RETRIES = 3;
+
+const sleep = async (ms: number) =>
+  new Promise<void>(resolve => {
+    setTimeout(resolve, ms);
+  });
+
 const saveEntities = async (entitiesToUpdate: EntitySchema[]) => {
+  // eslint-disable-next-line max-statements
   await syncedPromiseLoop(entitiesToUpdate, async (entity: EntitySchema) => {
-    await entities.save(entity, { user: {}, language: entity.language });
+    let attempt = 0;
+    // retry bounded times on save errors (e.g., optimistic lock / concurrent updates)
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await entities.save(entity, { user: {}, language: entity.language });
+        break;
+      } catch (e) {
+        attempt += 1;
+        if (attempt >= MAX_SAVE_RETRIES) {
+          // eslint-disable-next-line no-console
+          console.log('[IX][accept] saveEntities::skipped entity after retries', {
+            entityId: (entity as any)?._id?.toString?.(),
+            sharedId: entity.sharedId,
+            language: (entity as any)?.language,
+            attempts: attempt,
+            error: (e as Error)?.message,
+          });
+          // give up on this entity and continue with the rest of the batch
+          break;
+        }
+        // eslint-disable-next-line no-console
+        console.log('[IX][accept] saveEntities::retry on error', {
+          entityId: (entity as any)?._id?.toString?.(),
+          sharedId: entity.sharedId,
+          language: (entity as any)?.language,
+          attempt,
+          error: (e as Error)?.message,
+        });
+        // small backoff before retrying
+        // eslint-disable-next-line no-await-in-loop
+        await sleep(100 * attempt);
+      }
+    }
   });
 };
 
@@ -350,11 +395,29 @@ const updateEntitiesWithSuggestion = async (
   const query = allLanguages
     ? { sharedId: { $in: sharedIds } }
     : { sharedId: { $in: sharedIds }, _id: { $in: entityIds } };
+  // eslint-disable-next-line no-console
+  console.log('[IX][accept] updateEntities::input', {
+    allLanguages,
+    propertyName,
+    acceptedCount: acceptedSuggestions.length,
+    suggestionCount: suggestions.length,
+    sharedIds: sharedIds.length,
+    entityIds: entityIds.length,
+  });
   const storedEntities = await entities.get(query, '+permissions');
+  // eslint-disable-next-line no-console
+  console.log('[IX][accept] updateEntities::fetched entities', {
+    count: storedEntities.length,
+    sample: (storedEntities as any[]).slice(0, 3).map(e => ({
+      id: e?._id?.toString?.(),
+      sharedId: e?.sharedId,
+      language: e?.language,
+    })),
+  });
 
-  const acceptedSuggestionsBySharedId = objectIndex(
+  const acceptedSuggestionsByEntityId = objectIndex(
     acceptedSuggestions,
-    as => as.sharedId,
+    as => as.entityId,
     as => as
   );
   const suggestionsById = objectIndex(
@@ -362,29 +425,74 @@ const updateEntitiesWithSuggestion = async (
     s => s._id?.toString() || '',
     s => s
   );
+  // eslint-disable-next-line no-console
+  console.log('[IX][accept] updateEntities::maps', {
+    acceptedByEntityKeys: Object.keys(acceptedSuggestionsByEntityId).length,
+    suggestionsByIdKeys: Object.keys(suggestionsById).length,
+  });
 
   const resources = await fetchResources(property, acceptedSuggestions, suggestions);
 
+  // Revert to processing every language entity: values can differ per language.
+  // We rely on sequential saves inside entities.updateEntity to avoid lock conflicts.
+  const entitiesSource: EntitySchema[] = storedEntities as EntitySchema[];
+
   const entitiesToUpdate =
     propertyName !== 'title'
-      ? storedEntities.map((entity: EntitySchema) => ({
+      ? (entitiesSource.map((entity: EntitySchema) => ({
           ...entity,
           metadata: {
             ...entity.metadata,
-            [propertyName]: getValue(
-              property,
-              entity,
-              suggestionsById,
-              acceptedSuggestionsBySharedId,
-              resources
-            ),
+            [propertyName]: (() => {
+              const suggestionUsed = getSuggestion(
+                entity,
+                suggestionsById,
+                acceptedSuggestionsByEntityId
+              );
+              const rawValue = getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId);
+              // eslint-disable-next-line no-console
+              console.log('[IX][accept] updateEntities::entity value (metadata)', {
+                entityId: (entity as any)?._id?.toString?.(),
+                sharedId: entity.sharedId,
+                language: (entity as any)?.language,
+                suggestionId: suggestionUsed?._id?.toString?.(),
+                suggestionValue: suggestionUsed?.suggestedValue,
+                rawValue,
+                propertyName,
+              });
+              return getValue(
+                property,
+                entity,
+                suggestionsById,
+                acceptedSuggestionsByEntityId,
+                resources
+              );
+            })(),
           },
           permissions: entity.permissions || [],
-        }))
-      : storedEntities.map((entity: EntitySchema) => ({
+        })) as EntitySchema[])
+      : (entitiesSource.map((entity: EntitySchema) => ({
           ...entity,
-          title: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
-        }));
+          title: (() => {
+            const suggestionUsed = getSuggestion(
+              entity,
+              suggestionsById,
+              acceptedSuggestionsByEntityId
+            );
+            const rawValue = getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId);
+            // eslint-disable-next-line no-console
+            console.log('[IX][accept] updateEntities::entity value (title)', {
+              entityId: (entity as any)?._id?.toString?.(),
+              sharedId: entity.sharedId,
+              language: (entity as any)?.language,
+              suggestionId: suggestionUsed?._id?.toString?.(),
+              suggestionValue: suggestionUsed?.suggestedValue,
+              rawValue,
+              propertyName,
+            });
+            return rawValue as any;
+          })(),
+        })) as EntitySchema[]);
 
   await saveEntities(entitiesToUpdate);
 };

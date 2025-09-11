@@ -32,10 +32,21 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       _message,
       data
     ) => {
+      // eslint-disable-next-line no-console
+      console.log('[IX][client] socket:ix_model_status', {
+        eventExtractorId,
+        expectedExtractorId: extractorId,
+        modelStatus,
+        data,
+      });
       if (eventExtractorId === extractorId) {
-        if (data?.processed === data?.total) {
+        if (modelStatus === ixStatus.ready || data?.processed === data?.total) {
+          // eslint-disable-next-line no-console
+          console.log('[IX][client] status -> ready');
           updateStatus(ixStatus.ready);
         } else {
+          // eslint-disable-next-line no-console
+          console.log('[IX][client] status -> update', { modelStatus, data });
           updateStatus(modelStatus, data);
         }
         await revalidate();

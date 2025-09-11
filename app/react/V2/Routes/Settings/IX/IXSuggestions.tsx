@@ -131,7 +131,9 @@ const IXSuggestions = () => {
             suggestionsToFind: findAmount,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
-        } catch (error) {}
+        } catch (error) {
+          // intentionally ignored; UI error notification is handled elsewhere
+        }
       }
     }
   };
@@ -147,7 +149,9 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      } catch (error) {}
+      } catch (error) {
+        // intentionally ignored; UI error notification is handled elsewhere
+      }
     }
   };
 
@@ -155,13 +159,37 @@ const IXSuggestions = () => {
     if (extractor._id) {
       try {
         const params = { ...data, extractorId: extractor._id };
+        const requestedCount =
+          data.mode === 'process_selected' ? data.find?.selectedSharedIds?.length || 0 : undefined;
         const processResponse = await suggestionsAPI.process(params);
+        // eslint-disable-next-line no-console
+        console.log('[IX][client] process response', processResponse);
         await revalidate();
+        if (processResponse?.status === ixStatus.ready) {
+          // eslint-disable-next-line no-console
+          console.log('[IX][client] backend returned ready');
+          if (requestedCount && requestedCount > 0) {
+            // Briefly show the requested count as a progress hint, then clear
+            setStatus({
+              status: ixStatus.processing_suggestions,
+              message: ixmessages[ixStatus.processing_suggestions],
+              data: { processed: 0, total: requestedCount },
+            });
+            setTimeout(() => setStatus({ status: ixStatus.ready }), 750);
+          } else {
+            setStatus({ status: ixStatus.ready });
+          }
+          return;
+        }
         const initialTotal =
           data.mode === 'process_extractor'
             ? Number(processResponse?.data?.total) || 0
             : data.find?.selectedSharedIds?.length || 0;
         if (status.status === ixStatus.ready) {
+          // eslint-disable-next-line no-console
+          console.log('[IX][client] set processing_suggestions (ready->processing)', {
+            initialTotal,
+          });
           setStatus({
             status: ixStatus.processing_suggestions,
             message: ixmessages[ixStatus.processing_suggestions],
@@ -169,6 +197,11 @@ const IXSuggestions = () => {
           });
         }
         if (status.status === ixStatus.processing_suggestions) {
+          // eslint-disable-next-line no-console
+          console.log('[IX][client] bump processing total', {
+            prev: status.data?.total || 0,
+            add: initialTotal,
+          });
           setStatus({
             status: ixStatus.processing_suggestions,
             message: ixmessages[ixStatus.processing_suggestions],

@@ -722,7 +722,14 @@ class InformationExtraction {
 
   stopModelAndEmitReadyMessage = async (extractorId: ObjectIdSchema, message: string) => {
     await this.stopModel(extractorId);
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] stopModelAndEmitReadyMessage::emit ready', {
+      extractorId: (extractorId as any)?.toString?.() || String(extractorId),
+      message,
+    });
     emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', message);
+    // eslint-disable-next-line no-console
+    console.log('[IX][process] stopModelAndEmitReadyMessage::done');
   };
 
   getAndSendMaterialsForPDF = async ({

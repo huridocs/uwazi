@@ -154,12 +154,27 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
         totalSuggestionsToFind: total,
       });
 
-      // If there is nothing to find (e.g., selected sharedIds were already suggested),
-      // and auto-accept is enabled, trigger auto-accept immediately.
-      if (total === 0 && autoAcceptOptions.enabled) {
+      // If there is nothing to find (e.g., selected sharedIds were already suggested)
+      // - If auto-accept is enabled, trigger it immediately
+      // - If auto-accept is disabled, stop the run and emit ready
+      if (total === 0) {
         // eslint-disable-next-line no-console
-        console.log('[IX][process] No suggestions to find; triggering auto-accept if enabled');
-        await this.deps.informationExtraction.startAutoAcceptIfEnabled(extractorId);
+        console.log('[IX][process] total=0 early exit path', {
+          autoAcceptEnabled: !!autoAcceptOptions.enabled,
+        });
+        if (autoAcceptOptions.enabled) {
+          // eslint-disable-next-line no-console
+          console.log('[IX][process] No suggestions to find; triggering auto-accept if enabled');
+          await this.deps.informationExtraction.startAutoAcceptIfEnabled(extractorId);
+        } else {
+          // eslint-disable-next-line no-console
+          console.log('[IX][process] No suggestions to find; stopping (no auto-accept)');
+          // Ensure we immediately clear findingSuggestions and notify clients
+          await this.deps.informationExtraction.stopModelAndEmitReadyMessage(
+            extractorObjectId,
+            'Completed'
+          );
+        }
         return { status: 'ready', message: 'No suggestions to find' };
       }
 
