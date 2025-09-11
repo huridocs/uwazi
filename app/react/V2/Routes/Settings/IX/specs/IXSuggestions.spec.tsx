@@ -371,7 +371,7 @@ describe('IX suggestions', () => {
             size: 2,
             selectedSharedIds: ['suggestion1', 'suggestion2'],
           },
-          mode: 'process_extractor',
+          mode: 'process_selected',
         });
       });
 
@@ -394,7 +394,7 @@ describe('IX suggestions', () => {
             size: 2,
             selectedSharedIds: ['suggestion1', 'suggestion2'],
           },
-          mode: 'process_extractor',
+          mode: 'process_selected',
         });
       });
     });

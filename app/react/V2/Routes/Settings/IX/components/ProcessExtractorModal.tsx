@@ -318,7 +318,7 @@ const ProcessExtractorModal = ({ close, onTrain, selected }: ProcessExtractorMod
     }
 
     const data: Omit<ProcessParameters, 'extractorId'> = {
-      mode: 'process_extractor',
+      mode: selected?.length ? 'process_selected' : 'process_extractor',
       find: {
         enabled: values.shouldFind,
         filters: { ...values.filters },
