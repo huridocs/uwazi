@@ -20,6 +20,8 @@ import { TrainModelForText } from 'api/services/informationextraction/TrainModel
 import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
 import settings from 'api/settings';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
+import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import {
@@ -123,6 +125,11 @@ export function registerJobs(
       trainModelForPDF: new TrainModelForPDF({ tenantName, serviceUrl, iXTaskService }),
       trainModelForText: new TrainModelForText({ iXTaskService, tenantName, serviceUrl }),
     });
+  });
+
+  register(AcceptSuggestionsJob, async (tenantName: string) => {
+    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName });
+    return job;
   });
 
   register(DenormalizeV1RelationshipsJob, async () => {
