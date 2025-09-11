@@ -411,7 +411,7 @@ const IXSuggestions = () => {
             setModal('none');
           }}
           onTrain={processExtractor}
-          selected={selected.map(s => s._id)}
+          selected={selected.map(s => s.sharedId)}
         />
       )}
     </div>

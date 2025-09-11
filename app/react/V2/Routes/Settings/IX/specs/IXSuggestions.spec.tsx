@@ -369,7 +369,7 @@ describe('IX suggestions', () => {
             enabled: true,
             filters: { error: true, nonProcessed: true, obsolete: true },
             size: 2,
-            selectedSharedIds: ['suggestion1', 'suggestion2'],
+            selectedSharedIds: ['shared1', 'shared2'],
           },
           mode: 'process_selected',
         });
@@ -392,7 +392,7 @@ describe('IX suggestions', () => {
             enabled: true,
             filters: { error: true, nonProcessed: true, obsolete: true },
             size: 2,
-            selectedSharedIds: ['suggestion1', 'suggestion2'],
+            selectedSharedIds: ['shared1', 'shared2'],
           },
           mode: 'process_selected',
         });
