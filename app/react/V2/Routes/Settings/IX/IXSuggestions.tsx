@@ -316,6 +316,21 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected.length > 0}>
           <div className="flex items-center justify-center space-x-4">
+            {status.status === ixStatus.ready ? (
+              <Button
+                size="small"
+                type="button"
+                styling="solid"
+                onClick={() => setModal('train')}
+                disabled={selected.length > 0}
+              >
+                <Translate>Train model</Translate>
+              </Button>
+            ) : (
+              <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+                <Translate>Cancel</Translate>
+              </Button>
+            )}
             <Button
               size="small"
               type="button"
@@ -329,33 +344,18 @@ const IXSuggestions = () => {
                 <Translate>Process extractor</Translate>
               )}
             </Button>
-            {status.status === ixStatus.ready ? (
-              <Button
-                size="small"
-                type="button"
-                styling="solid"
-                onClick={() => setModal('train')}
-                disabled={selected.length > 0}
-              >
-                <Translate>Train model</Translate>
-              </Button>
-            ) : (
-              <>
-                <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
-                  <Translate>Cancel</Translate>
-                </Button>
-                <div className="text-sm font-semibold text-center text-gray-900">
-                  <Translate>{ixmessages[status.status]}</Translate>
-                  {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
-                  {status.data ? (
-                    <span className="ml-2">
-                      {status.data.processed} / {status.data.total}
-                    </span>
-                  ) : null}
-                </div>
-              </>
+            {status.status !== ixStatus.ready && (
+              <div className="text-sm font-semibold text-center text-gray-900">
+                <Translate>{ixmessages[status.status]}</Translate>
+                {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
+                {status.data && (
+                  <span className="ml-2">
+                    {status.data.processed} / {status.data.total}
+                  </span>
+                )}
+              </div>
             )}
-            {selected.length ? (
+            {selected.length > 0 && (
               <div className="text-sm font-semibold text-center text-gray-900">
                 <span className="font-light text-gray-500">
                   <Translate>Selected</Translate>
@@ -369,8 +369,6 @@ const IXSuggestions = () => {
                 &nbsp;
                 {SUGGESTIONS_PER_PAGE}
               </div>
-            ) : (
-              ''
             )}
           </div>
         </SettingsContent.Footer>

@@ -86,7 +86,7 @@ const cancel = async (extractorId: string, headers?: IncomingHttpHeaders) => {
 
 const process = async (parameters: ProcessParameters, headers?: IncomingHttpHeaders) => {
   const params = new RequestParams(parameters, headers);
-  const { json: response } = await api.post('/api/suggestions/process', params);
+  const { json: response } = await api.post('suggestions/process', params);
   return response;
 };
 
