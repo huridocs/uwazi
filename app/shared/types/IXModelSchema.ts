@@ -66,6 +66,12 @@ export const IXModelSchema = {
         // per-run queue storage (selected mode)
         findSuggestionsSharedIds: { type: 'array', items: { type: 'string' }, optional: true },
         findSuggestionsInitialSharedIdsCount: { type: 'number', optional: true },
+        // cohort for auto-accept in selected mode
+        selectedSharedIdsForAutoAccept: {
+          type: 'array',
+          items: { type: 'string' },
+          optional: true,
+        },
       },
     },
     maxSuggestionsToFind: { type: 'number' },

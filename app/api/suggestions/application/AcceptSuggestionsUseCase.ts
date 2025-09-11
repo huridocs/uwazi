@@ -38,7 +38,8 @@ export class AcceptSuggestionsUseCase {
       return { processed: 0 };
     }
 
-    const { autoAccept, suggestionsRunTimestamp } = model.processRun;
+    const { autoAccept, suggestionsRunTimestamp, selectedSharedIdsForAutoAccept } =
+      model.processRun;
     const overwriteAll = autoAccept?.overwriteMode === 'overwrite_all';
     const source = autoAccept?.source === 'all' ? 'all' : 'previous';
 
@@ -51,7 +52,7 @@ export class AcceptSuggestionsUseCase {
       suggestionsRunTimestamp,
     });
 
-    const match: UwaziFilterQuery<DataType<IXSuggestionType>> = {
+    const baseMatch: UwaziFilterQuery<DataType<IXSuggestionType>> = {
       extractorId: ObjectId.createFromHexString(extractorId),
       status: 'ready',
       date: { $ne: null },
@@ -59,9 +60,21 @@ export class AcceptSuggestionsUseCase {
       'state.obsolete': { $ne: true },
       'state.error': { $ne: true },
     };
-    if (!overwriteAll) match['state.withValue'] = { $ne: true };
-    if (source !== 'all' && suggestionsRunTimestamp) {
-      match['modelData.suggestionsRunTimestamp'] = suggestionsRunTimestamp;
+    if (!overwriteAll) (baseMatch as any)['state.withValue'] = { $ne: true };
+
+    // Scope to this run: by run timestamp OR by selected cohort (for process_selected)
+    let match: UwaziFilterQuery<DataType<IXSuggestionType>> = baseMatch;
+    if (source !== 'all') {
+      const orClauses: any[] = [];
+      if (suggestionsRunTimestamp) {
+        orClauses.push({ 'modelData.suggestionsRunTimestamp': suggestionsRunTimestamp });
+      }
+      if (Array.isArray(selectedSharedIdsForAutoAccept) && selectedSharedIdsForAutoAccept.length) {
+        orClauses.push({ entityId: { $in: selectedSharedIdsForAutoAccept } });
+      }
+      if (orClauses.length) {
+        match = { ...(baseMatch as any), $or: orClauses } as any;
+      }
     }
 
     // initialize progress if missing
@@ -75,7 +88,8 @@ export class AcceptSuggestionsUseCase {
 
     // Debug: show the match being used for auto-accept
     // eslint-disable-next-line no-console
-    console.log('[IX][accept] useCase.execute::match', match);
+    console.log('[IX][accept] useCase.execute::match', JSON.stringify(match));
+    const preCount = await IXSuggestionsModel.db.countDocuments(match);
     const suggestions = await IXSuggestionsModel.get(
       match,
       '_id entityId entityLanguageId state modelData'
@@ -106,7 +120,31 @@ export class AcceptSuggestionsUseCase {
     }
 
     await Suggestions.accept(toAccept as any);
+    // Recompute states so accepted ones stop matching subsequent iterations
+    try {
+      const acceptedIds = toAccept.map(a => a._id);
+      const acceptedQuery = { _id: { $in: acceptedIds } };
+      const { updateStates } = await import('api/suggestions/updateState');
+      await updateStates(acceptedQuery);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] state recompute failed', (e as Error).message);
+    }
     await ixmodels.incAutoAcceptProcessed(extractorId, toAccept.length);
+
+    // If nothing was effectively reduced from the match, avoid redispatch to prevent loops
+    const postCount = await IXSuggestionsModel.db.countDocuments(match);
+    if (postCount >= preCount) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] useCase.execute::no progress detected, stopping redispatch', {
+        preCount,
+        postCount,
+      });
+      return {
+        processed: 0,
+        progress: { total, processed: model.processRun.autoAcceptProgress?.processed ?? 0 },
+      };
+    }
 
     const previousProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
     const newProcessed = Math.min(total, previousProcessed + toAccept.length);

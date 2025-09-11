@@ -154,6 +154,15 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
         totalSuggestionsToFind: total,
       });
 
+      // If there is nothing to find (e.g., selected sharedIds were already suggested),
+      // and auto-accept is enabled, trigger auto-accept immediately.
+      if (total === 0 && autoAcceptOptions.enabled) {
+        // eslint-disable-next-line no-console
+        console.log('[IX][process] No suggestions to find; triggering auto-accept if enabled');
+        await this.deps.informationExtraction.startAutoAcceptIfEnabled(extractorId);
+        return { status: 'ready', message: 'No suggestions to find' };
+      }
+
       // Start the suggestions loop
       await this.deps.informationExtraction.sendMaterialsAndTaskSuggestions(
         extractor!,

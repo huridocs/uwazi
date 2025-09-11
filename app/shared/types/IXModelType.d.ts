@@ -37,6 +37,7 @@ export interface IXModelType {
     };
     findSuggestionsSharedIds?: string[];
     findSuggestionsInitialSharedIdsCount?: number;
+    selectedSharedIdsForAutoAccept?: string[];
   };
   maxSuggestionsToFind?: number;
   totalSuggestionsToFind?: number;

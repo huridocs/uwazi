@@ -40,14 +40,19 @@ const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string
   const alreadySet = new Set(alreadySuggested);
   const pendingIds = sharedIds.filter(id => !alreadySet.has(id));
 
+  // Establish a run timestamp for this selection
+  const runTimestamp = Date.now();
+
   await model.updateMany(
     { _id: modelId },
     {
       $set: {
-        'processRun.suggestionsRunTimestamp': Date.now(),
+        'processRun.suggestionsRunTimestamp': runTimestamp,
         'processRun.findSuggestionsSharedIds': pendingIds,
         findingSuggestions: true,
         'processRun.findSuggestionsInitialSharedIdsCount': sharedIds.length,
+        // Persist the entire cohort to support auto-accept of pre-existing ready suggestions
+        'processRun.selectedSharedIdsForAutoAccept': sharedIds,
       },
     }
   );
