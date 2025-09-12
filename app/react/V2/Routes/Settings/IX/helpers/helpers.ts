@@ -12,7 +12,9 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
 
   const currentValues = [
-    ...(Array.isArray(suggestion.currentValue) ? suggestion.currentValue : []),
+    ...(Array.isArray(suggestion.currentValue)
+      ? suggestion.currentValue
+      : [suggestion.currentValue]),
   ];
 
   const suggestedValues = [
@@ -25,7 +27,10 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   suggestedValues.forEach(suggestedValue => {
     const suggestedValueId = get(suggestedValue, 'id') || suggestedValue;
     const valuePresent = currentValues.find(
-      v => v === suggestedValue || v === get(suggestedValue, 'id')
+      v =>
+        v === suggestedValue ||
+        v === get(suggestedValue, 'id') ||
+        get(v, 'id') === get(suggestedValue, 'id')
     );
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);

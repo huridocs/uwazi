@@ -34,7 +34,7 @@ const lookup = async (
   headers?: IncomingHttpHeaders
 ): Promise<Response> => {
   try {
-    const search: SearchQuery = {
+    const searchQuery: SearchQuery = {
       fields: ['title', 'sharedId', 'template'],
       filter: {
         ...(entityTitle && { searchString: `title:${entityTitle}~2` }),
@@ -43,7 +43,7 @@ const lookup = async (
       page: { limit },
     };
 
-    const requestParams = new RequestParams(qs.stringify(search), headers);
+    const requestParams = new RequestParams(qs.stringify(searchQuery), headers);
 
     if (headers && headers['Content-Language']) {
       api.locale(headers['Content-Language']);
@@ -56,4 +56,27 @@ const lookup = async (
   }
 };
 
-export { lookup };
+const search = async (
+  { filters, fields, limit = 10 }: { filters: any; fields: any; limit?: number },
+  headers?: IncomingHttpHeaders
+) => {
+  try {
+    const searchQuery: SearchQuery = {
+      fields,
+      filter: filters,
+      page: { limit },
+    };
+    const requestParams = new RequestParams(qs.stringify(searchQuery), headers);
+
+    if (headers && headers['Content-Language']) {
+      api.locale(headers['Content-Language']);
+    }
+
+    const response: { json: SearchResponse } = await api.get('v2/search', requestParams);
+    return { rows: response.json.data, count: response.json.data.length };
+  } catch (e) {
+    return e;
+  }
+};
+
+export { lookup, search };
