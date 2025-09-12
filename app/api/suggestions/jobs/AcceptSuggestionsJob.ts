@@ -42,11 +42,6 @@ export class AcceptSuggestionsJob implements Dispatchable {
           extractorId,
           batchSize: this.props.batchSize,
         });
-        // eslint-disable-next-line no-console
-        console.log('[IX][accept][job] iteration result', {
-          processed,
-          progress,
-        });
 
         if (progress) {
           const remaining = Math.max(0, (progress.total || 0) - (progress.processed || 0));
@@ -68,20 +63,14 @@ export class AcceptSuggestionsJob implements Dispatchable {
         }
 
         if (processed > 0) {
-          // eslint-disable-next-line no-console
-          console.log('[IX][accept][job] redispatching self for next batch');
           await this.props.dispatcher.dispatch(AcceptSuggestionsJob, { extractorId });
           return;
         }
 
         // Auto-accept finished: cleanup model run and emit 'ready'
-        // eslint-disable-next-line no-console
-        console.log('[IX][accept][job] completed; cleaning model and emitting ready');
         await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
         emitToTenant(this.props.tenantName, 'ix_model_status', extractorId, 'ready', 'Completed');
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log('[IX][accept][job] error', (e as Error)?.message);
         // On error, best-effort cleanup to avoid leaving model in processing state
         await ixmodels.unsetProcessRun(extractorId);
         await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));

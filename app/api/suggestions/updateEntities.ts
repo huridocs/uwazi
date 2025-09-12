@@ -2,6 +2,8 @@
 /* eslint-disable max-params */
 /* eslint-disable max-lines */
 import entities from 'api/entities';
+import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
 import thesauri from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
@@ -335,36 +337,12 @@ const getValue = (
 };
 
 const updateEntitiesWithSuggestion = async (
-  allLanguages: boolean,
+  _allLanguages: boolean, // remove, no longer used
   acceptedSuggestions: AcceptedSuggestion[],
   suggestions: IXSuggestionType[],
   property: PropertySchema
 ) => {
-  const sharedIds = acceptedSuggestions.map(s => s.sharedId);
-  const entityIds = acceptedSuggestions.map(s => s.entityId);
   const { propertyName } = suggestions[0];
-  const query = allLanguages
-    ? { sharedId: { $in: sharedIds } }
-    : { sharedId: { $in: sharedIds }, _id: { $in: entityIds } };
-  // eslint-disable-next-line no-console
-  console.log('[IX][accept] updateEntities::input', {
-    allLanguages,
-    propertyName,
-    acceptedCount: acceptedSuggestions.length,
-    suggestionCount: suggestions.length,
-    sharedIds: sharedIds.length,
-    entityIds: entityIds.length,
-  });
-  const storedEntities = await entities.get(query, '+permissions');
-  // eslint-disable-next-line no-console
-  console.log('[IX][accept] updateEntities::fetched entities', {
-    count: storedEntities.length,
-    sample: (storedEntities as any[]).slice(0, 3).map(e => ({
-      id: e?._id?.toString?.(),
-      sharedId: e?.sharedId,
-      language: e?.language,
-    })),
-  });
 
   const acceptedSuggestionsByEntityId = objectIndex(
     acceptedSuggestions,
@@ -376,34 +354,25 @@ const updateEntitiesWithSuggestion = async (
     s => s._id?.toString() || '',
     s => s
   );
-  // eslint-disable-next-line no-console
-  console.log('[IX][accept] updateEntities::maps', {
-    acceptedByEntityKeys: Object.keys(acceptedSuggestionsByEntityId).length,
-    suggestionsByIdKeys: Object.keys(suggestionsById).length,
-  });
 
   const resources = await fetchResources(property, acceptedSuggestions, suggestions);
 
-  // Process per accepted suggestion: fetch fresh entity, compute value, save
-  // eslint-disable-next-line no-restricted-syntax
-  for (const as of acceptedSuggestions) {
+  // Process per accepted suggestion: fetch fresh entity, compute value, save sequentially
+  await ArrayUtils.sequentialFor(acceptedSuggestions, async as => {
     try {
-      // eslint-disable-next-line no-await-in-loop
       const [current] = (await entities.get(
         { _id: new ObjectId(as.entityId) },
         '+permissions'
-      )) as unknown as EntitySchema[];
+      )) as EntitySchema[];
       if (!current) {
-        // eslint-disable-next-line no-console
-        console.log('[IX][accept] updateEntities::skip missing entity', {
+        DefaultLogger().info('IX accept: entity not found for update', {
           entityId: as.entityId,
           sharedId: as.sharedId,
         });
-        // eslint-disable-next-line no-continue
-        continue;
+        return;
       }
 
-      const updated: any =
+      const updated =
         propertyName !== 'title'
           ? {
               ...current,
@@ -421,23 +390,18 @@ const updateEntitiesWithSuggestion = async (
             }
           : {
               ...current,
-              title: getRawValue(current, suggestionsById, acceptedSuggestionsByEntityId) as any,
+              title: getRawValue(current, suggestionsById, acceptedSuggestionsByEntityId),
             };
 
-      // eslint-disable-next-line no-console
-      console.log('[IX][accept] updateEntities::saving', {
-        entityId: (current as any)?._id?.toString?.(),
-        sharedId: current.sharedId,
-        language: (current as any)?.language,
-        propertyName,
-      });
-      // eslint-disable-next-line no-await-in-loop
-      await entities.save(updated, { user: {}, language: (current as any)?.language });
+      await entities.save(updated, { user: {}, language: current.language });
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log('[IX][accept] updateEntities::save error', (e as Error)?.message);
+      DefaultLogger().error('IX accept: failed to save entity during updateEntities', {
+        entityId: as.entityId,
+        sharedId: as.sharedId,
+        error: (e as Error)?.message,
+      });
     }
-  }
+  });
 };
 
 export { updateEntitiesWithSuggestion, SuggestionAcceptanceError };

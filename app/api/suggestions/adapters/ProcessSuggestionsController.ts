@@ -71,13 +71,7 @@ class ProcessSuggestionsController extends AbstractController<Request> {
   }
 
   async handle(): Promise<void> {
-    // Debug: raw request body before validation/coercion
-    // eslint-disable-next-line no-console
-    console.log('[IX][process] Incoming request body', { body: this.request.body });
-
     const dto = RequestSchema.parse(this.request.body);
-    // eslint-disable-next-line no-console
-    console.log('[IX][process] Parsed DTO', { dto });
     this.ensureUser();
 
     const informationExtraction = new InformationExtraction();
