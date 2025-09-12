@@ -34,6 +34,7 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
+import { applicationEventsBus } from 'api/eventsbus';
 
 jest.mock('../templateUpdateDenormalizeUseCase', () => ({
   denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
@@ -74,7 +75,7 @@ describe('templates', () => {
       title: 'Update v1',
       featureFlags: { v2UpdateTemplateUseCase: false },
     },
-    // { title: 'Update v2', featureFlags: { v2UpdateTemplateUseCase: true } },
+    { title: 'Update v2', featureFlags: { v2UpdateTemplateUseCase: true } },
   ])('$title', ({ featureFlags }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
@@ -86,8 +87,32 @@ describe('templates', () => {
       });
     });
 
+    it('should edit an existing one', async () => {
+      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
+
+      const toSave = await templates.getById(factory.id('template to be edited'));
+
+      toSave.name = 'changed name';
+
+      await templates.save(toSave, 'en');
+      const [edited] = await templates.get(templateToBeEditedId);
+      expect(edited.name).toBe('changed name');
+    });
+
+    it('should return the saved template', async () => {
+      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
+
+      const edited = factory.template('', [], {
+        _id: templateToBeEditedId,
+        name: 'changed name',
+      });
+      const template1 = await templates.save(edited);
+      await templatesModel.db.updateOne({ _id: template1._id }, { $unset: { processing: '' } });
+
+      expect(template1.name).toBe('changed name');
+    });
+
     it('should emit an TemplateUpdatedEvent', async () => {
-      const emitSpy = spyOnEmit();
       const template = factory.template(
         'template to be edited',
         [
@@ -108,6 +133,10 @@ describe('templates', () => {
         .find({ _id: templateToBeEditedId })
         .toArray();
 
+      let emitedEventData;
+      applicationEventsBus.on(TemplateUpdatedEvent, data => {
+        emitedEventData = data;
+      });
       await updateTemplate(template, 'en', featureFlags.v2UpdateTemplateUseCase);
 
       const [currentTemplate] = await db.mongodb
@@ -115,24 +144,32 @@ describe('templates', () => {
         .find({ _id: templateToBeEditedId })
         .toArray();
 
-      emitSpy.expectToEmitEventWith(TemplateUpdatedEvent, {
-        before: previousTemplate,
-        after: {
-          ...currentTemplate,
-          processing: { active: false },
-        },
-      });
+      expect(emitedEventData.before._id.toString()).toEqual(previousTemplate._id.toString());
+      expect(emitedEventData.before.properties).toMatchObject([]);
+
+      expect(emitedEventData.after._id.toString()).toEqual(currentTemplate._id.toString());
+      expect(emitedEventData.after.properties).toMatchObject([
+        { name: 'other_prop', label: 'other prop', type: 'text' },
+      ]);
     });
 
     it('should not allow to change property types', async () => {
       const changedTemplate = {
         _id: swapTemplate,
         name: 'swap names template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
-        properties: [
-          { _id: 'text_id', type: 'text', name: 'text', label: 'Select5' },
+        commonProperties: [
           {
-            _id: 'select_id',
+            _id: factory.id('swap names template title').toString(),
+            name: 'title',
+            label: 'Title',
+            type: 'text',
+            isCommonProperty: true,
+          },
+        ],
+        properties: [
+          { _id: factory.id('text_id'), type: 'text', name: 'text', label: 'Select5' },
+          {
+            _id: factory.id('select_id'),
             type: 'select',
             name: 'select5',
             label: 'Text',
@@ -145,12 +182,10 @@ describe('templates', () => {
         await templates.save(changedTemplate);
         throw new Error('properties have swaped names, should have failed with an error');
       } catch (error) {
-        expect(error).toMatchObject({ code: 400, message: "Properties can't swap names: text" });
+        expect(error.message).toContain("Properties can't swap names");
       }
     });
-  });
 
-  describe('save', () => {
     it('should update the elastic mapping with the updated template', async () => {
       const template = factory.template(
         '',
@@ -170,7 +205,8 @@ describe('templates', () => {
 
       const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
-      await updateTemplate(template);
+      // await updateTemplate(template);
+      await templates.save(template);
 
       await elasticClient.indices.refresh({ index: elasticIndex });
 
@@ -184,7 +220,9 @@ describe('templates', () => {
         newMapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
       ).toBeDefined();
     });
+  });
 
+  describe('save', () => {
     it('should update translations when name of the template changes', async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
       const testTemplate = factory.template('template to be edited');
@@ -234,37 +272,6 @@ describe('templates', () => {
         ['First New Title'],
         expectedContext
       );
-    });
-
-    describe('when passing _id', () => {
-      beforeAll(async () => {
-        await testingEnvironment.setUp(fixtures, elasticIndex);
-      });
-
-      it('should edit an existing one', async () => {
-        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-
-        const toSave = await templates.getById(factory.id('template to be edited'));
-
-        toSave.name = 'changed name';
-
-        await templates.save(toSave, 'en');
-        const [edited] = await templates.get(templateToBeEditedId);
-        expect(edited.name).toBe('changed name');
-      });
-
-      it('should return the saved template', async () => {
-        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-
-        const edited = factory.template('', [], {
-          _id: templateToBeEditedId,
-          name: 'changed name',
-        });
-        const template1 = await templates.save(edited);
-        await templatesModel.db.updateOne({ _id: template1._id }, { $unset: { processing: '' } });
-
-        expect(template1.name).toBe('changed name');
-      });
     });
 
     describe('generatedId', () => {

@@ -53,6 +53,14 @@ import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
 } from 'api/core/application/TemplateDTOs';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { DenormalizeV1RelationshipsJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -185,15 +193,45 @@ export default {
     }
     const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
     if (v2UpdateTemplateUseCase && template._id) {
-      const input = UpdateTemplateDTOSchema.parse(template);
+      const input = UpdateTemplateDTOSchema.parse({
+        ...template,
+        _id: template._id.toString(),
+        properties: (template.properties || []).map(p => ({ ...p, _id: p._id?.toString() })),
+      });
       const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const entitiesDS = new MongoMultiLanguageEntityDataSource(
+        getConnection(),
+        transactionManager,
+        templatesDS
+      );
+      const relationshipsV1DS = new MongoRelationshipsV1DataSource(
+        getConnection(),
+        transactionManager
+      );
+      const useCase = new TemplateUpdateDenormalizeEntitiesBatch({
+        entitiesDS,
+        relationshipsV1DS,
+        templatesDS,
+        transactionManager,
+      });
+      let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
+        DenormalizeV1RelationshipsJob: async () =>
+          new DenormalizeV1RelationshipsJob({ useCase, templatesDS }),
+      });
+
+      if (process.env.NODE_ENV !== 'test') {
+        dispatcher = await DefaultDispatcher(tenants.current().name);
+      }
       const output = await new UpdateTemplateUseCase({
         idGenerator: DefaultIdGenerator,
-        templatesDS: DefaultTemplatesDataSource(transactionManager),
+        templatesDS,
         thesauriDS: new MongoThesauriDataSource(),
         translationService: new LegacyTranslationService(),
         settingsDS: DefaultSettingsDataSource(transactionManager),
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
+        jobsDispatcher: dispatcher,
+        entitiesDS,
       }).execute(input);
 
       return TemplateMapper.toSchema(output);
@@ -233,7 +271,7 @@ export default {
         p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
       if (swapingNameWithExistingProperty) {
-        throw createError(`Properties can't swap names: ${prop.name}`, 400);
+        throw new ValidationError([{ path: prop.name, message: "Properties can't swap names" }]);
       }
     });
   },

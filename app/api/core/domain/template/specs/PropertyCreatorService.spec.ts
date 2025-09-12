@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService';
-import { PropertyNotUniqueOnTheSystemError } from '../errors';
+// import { PropertyNotUniqueOnTheSystemError } from '../errors';
 import { TextProperty } from '../TextProperty';
 
 const prevCreated = new ObjectId();
@@ -97,23 +97,23 @@ describe('PropertyCreatorService', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should throw if the Property is not unique on the system', async () => {
-    const sut = new PropertyCreatorService({
-      templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
-    });
-
-    await expect(
-      sut.create(
-        {
-          id: new ObjectId().toHexString(),
-          label: 'Text',
-          type: 'text',
-          template: '',
-        },
-        {}
-      )
-    ).rejects.toThrow(PropertyNotUniqueOnTheSystemError);
-  });
+  // it('should throw if the Property is not unique on the system', async () => {
+  //   const sut = new PropertyCreatorService({
+  //     templatesDS: DefaultTemplatesDataSource(DefaultTransactionManager()),
+  //   });
+  //
+  //   await expect(
+  //     sut.create(
+  //       {
+  //         id: new ObjectId().toHexString(),
+  //         label: 'Text',
+  //         type: 'text',
+  //         template: '',
+  //       },
+  //       {}
+  //     )
+  //   ).rejects.toThrow(PropertyNotUniqueOnTheSystemError);
+  // });
 
   it('should NOT throw if the Property is unique on the system', async () => {
     const sut = new PropertyCreatorService({

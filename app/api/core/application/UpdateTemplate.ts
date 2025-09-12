@@ -1,6 +1,8 @@
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
+import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
 import { applicationEventsBus } from 'api/eventsbus';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
@@ -24,9 +26,11 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   idGenerator: IdGenerator;
   thesauriDS: ThesauriDataSource;
+  entitiesDS: MultiLanguageEntityDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
+  jobsDispatcher: JobsDispatcher;
 };
 
 class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
@@ -49,8 +53,8 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
   }
 
   protected async executeAsync(input: UpdateTemplateDTO): Promise<Output> {
-    const previousTemplate = await this.deps.templatesDS.getById(input._id);
-    if (!previousTemplate) {
+    const currentTemplate = await this.deps.templatesDS.getById(input._id);
+    if (!currentTemplate) {
       throw new Error(`Trying to update an unexistant Template: ${input._id}`);
     }
     const { newNameGeneration } = await this.deps.settingsDS.get();
@@ -67,13 +71,13 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
         this.propertyCreatorServiceStrategy
           .getStrategy(p.type)
           .create(
-            { ...p, id: this.deps.idGenerator.generate(), template: 'id' },
+            { ...p, id: p._id || this.deps.idGenerator.generate(), template: 'id' },
             { newNameGeneration }
           )
       ) || []
     );
 
-    const newTemplate = new Template(
+    const updatedTemplate = new Template(
       input._id,
       input.name,
       properties,
@@ -82,15 +86,64 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
       input.default
     );
 
-    await this.deps.templatesDS.update(newTemplate);
+    const swappedNameProp = currentTemplate.selectSwappedNameProperties(updatedTemplate);
+    if (swappedNameProp) {
+      throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
+    }
+
+    await this.deps.templatesDS.update(updatedTemplate);
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
-        before: TemplateMapper.toSchema(previousTemplate),
-        after: TemplateMapper.toSchema(newTemplate),
+        before: TemplateMapper.toSchema(currentTemplate),
+        after: TemplateMapper.toSchema(updatedTemplate),
       })
     );
-    return newTemplate;
+
+    // const relationshipPropsWithChangedRelData =
+    //   currentTemplate.selectRelationshipPropsWithRelationshipChanges(updatedTemplate);
+    // const deletedProperties = currentTemplate
+    //   .selectDeletedProperties(updatedTemplate)
+    //   .map(property => property.name);
+    // const renamedProperties = Object.fromEntries(
+    //   currentTemplate
+    //     .selectPropertiesWhereNameHasChanged(updatedTemplate)
+    //     .map(({ oldProperty, newProperty }) => [oldProperty.name, newProperty.name])
+    // );
+    //
+    // const newRelationshipProps = currentTemplate
+    //   .selectNewProperties(updatedTemplate)
+    //   .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
+    // if (
+    //   !relationshipPropsWithChangedRelData.length ||
+    //   newRelationshipProps.length ||
+    //   renamedProperties ||
+    //   deletedProperties
+    // ) {
+    //   const limit = 50;
+    //   const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(updatedTemplate.id);
+    //   const totalJobs = Math.ceil(
+    //     (await this.deps.entitiesDS.countByTemplateId(updatedTemplate.id)) / limit
+    //   );
+    //   await this.deps.templatesDS.setProcessingTotalJobs(updatedTemplate.id, totalJobs);
+    //
+    //   // eslint-disable-next-line no-await-in-loop
+    //   while (await resultSet.hasNext()) {
+    //     // eslint-disable-next-line no-await-in-loop
+    //     await this.deps.jobsDispatcher.dispatch(DenormalizeV1RelationshipsJob, {
+    //       // eslint-disable-next-line no-await-in-loop
+    //       entitiesIds: await resultSet.nextBatch(limit),
+    //       templateId: updatedTemplate.id,
+    //       language,
+    //       modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
+    //       deletedProperties,
+    //       renamedProperties,
+    //       tenantName: tenants.current().name,
+    //       userId,
+    //     });
+    //   }
+    // }
+    return updatedTemplate;
   }
 }
 

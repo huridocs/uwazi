@@ -6,6 +6,8 @@ export interface ResultSet<T> {
   all(): Promise<T[]>;
   page(number: number, size: number): Promise<T[]>;
   first(): Promise<T | null>;
+  hasNext(): Promise<boolean>;
+  nextBatch(size: number): Promise<T[]>;
   forEach(callback: (item: T) => BreakLoopSignal): Promise<void>;
   forEachBatch(batchSize: number, callback: (items: T[]) => BreakLoopSignal): Promise<void>;
   find(predicate: (item: T) => Promise<boolean> | boolean): Promise<T | null>;

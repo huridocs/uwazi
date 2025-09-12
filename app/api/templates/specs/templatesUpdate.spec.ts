@@ -1,3 +1,4 @@
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -7,6 +8,7 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingTenants } from 'api/utils/testingTenants';
 import { EntitySchema } from 'shared/types/entityType';
 import { inspect } from 'util';
 import templates from '../templates';
@@ -51,7 +53,10 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-async function updateTemplate(template: TemplateSchema) {
+async function updateTemplate(template: TemplateSchema, updateV2 = false) {
+  if (updateV2) {
+    return templates.save(template, 'en', true, false);
+  }
   return new Promise<void>((resolve, reject) => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => resolve());
     templates
@@ -65,14 +70,31 @@ async function updateTemplate(template: TemplateSchema) {
   });
 }
 
-async function setUpFixtures(_fixtures: DBFixture) {
-  await testingEnvironment.setUp(_fixtures, 'templates_denorm_flow');
-  await Promise.all(
-    (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
-  );
-}
+const elasticIndex = 'templates_denorm_flow';
 
-describe('templates update', () => {
+describe.each([
+  {
+    title: 'Template Update v1',
+    featureFlag: false,
+  },
+  // { title: 'Template Update v2', featureFlag: true },
+])('$title', ({ featureFlag }) => {
+  async function setUpFixtures(_fixtures: DBFixture) {
+    await testingEnvironment.setUp(_fixtures, elasticIndex);
+    await Promise.all(
+      (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+    );
+
+    testingTenants.mockCurrentTenant({
+      name: testingDB.dbName,
+      dbName: testingDB.dbName,
+      indexName: elasticIndex,
+      featureFlags: {
+        v2UpdateTemplateUseCase: featureFlag,
+      },
+    });
+  }
+
   const fixtures: DBFixture = {
     settings: [
       {
@@ -161,7 +183,7 @@ describe('templates update', () => {
           propertyWithNameChanged,
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expectedEn = [
           { sharedId: 'entityB1', metadata: { name_changed: [] } },
@@ -176,7 +198,7 @@ describe('templates update', () => {
     describe('when deleting a property and template contains relationship properties', () => {
       it('should delete the property on all entities and reindex', async () => {
         const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateA')]);
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         expect(
           (await getEntitiesByTemplate('templateB'))[0].metadata?.text_property_b
@@ -202,7 +224,7 @@ describe('templates update', () => {
           }),
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expectedEn = [
           {
@@ -242,7 +264,7 @@ describe('templates update', () => {
           }),
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expected = [
           { sharedId: 'entityB1', metadata: { rel_prop: [] } },
@@ -280,7 +302,7 @@ describe('templates update', () => {
           }),
         ]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const expected = [
           {
@@ -299,7 +321,7 @@ describe('templates update', () => {
       it('should delete values belonging to the previous content', async () => {
         const template = f.template('templateB', [f.relationshipProp('rel_prop', 'templateC')]);
 
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         expect(await getEntitiesByTemplate('templateB')).toMatchObject([
           { sharedId: 'entityB1', metadata: { rel_prop: [] } },
@@ -568,7 +590,7 @@ describe('templates update', () => {
         applicationEventsBus.on(EntityUpdatedEvent, async triggeredEventData => {
           eventData.push(triggeredEventData);
         });
-        await updateTemplate(template);
+        await updateTemplate(template, featureFlag);
 
         const sortedEvents = eventData.sort((a, b) =>
           (a.before[0]?.sharedId || '').localeCompare(b.before[0]?.sharedId || '')
@@ -647,6 +669,21 @@ describe('templates update', () => {
         f.template('templateC', [f.property('text_property_2')]),
       ],
     });
+
+    const propertyWithNameChanged = f.property('text_property_b', 'text', {
+      label: 'name_changed',
+    });
+
+    const template = f.template('templateB', [
+      f.relationshipProp('rel_prop', 'templateA'),
+      propertyWithNameChanged,
+    ]);
+
+    await expect(async () => templates.save(template, 'en')).rejects.toEqual(
+      new ValidationError([
+        { path: 'processing', message: 'template is being processed you can not update it yet' },
+      ])
+    );
   });
 
   it('Template with 0 entities should not be in processing state', async () => {
@@ -662,10 +699,11 @@ describe('templates update', () => {
 
     const template = f.template('templateD', [propertyWithNameChanged]);
 
-    await updateTemplate(template);
+    await updateTemplate(template, featureFlag);
     const savedTemplate = await templates.getById(f.id('templateD'));
     expect(savedTemplate?.processing).toEqual({ active: false });
   });
+
   it('should again allow updating a template when the processing has finished', async () => {
     await setUpFixtures(fixtures);
 
@@ -682,7 +720,7 @@ describe('templates update', () => {
       propertyWithNameChanged,
     ]);
 
-    await updateTemplate(template);
+    await updateTemplate(template, featureFlag);
 
     await expect(updateTemplate(modifiedTemplate)).resolves.not.toThrow();
   });

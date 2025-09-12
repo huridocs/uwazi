@@ -1,12 +1,13 @@
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
 import {
-  UserAwareDispatchableParams,
   UserAwareDispatchable,
+  UserAwareDispatchableParams,
 } from 'api/queue.v2/application/contracts/UserAwareDispatchable';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/templates/templateUpdateDenormalizeUseCase';
 
-type JobParams = UserAwareDispatchableParams & {
+type DenormalizeV1RelationshipsJobParams = UserAwareDispatchableParams & {
   entitiesIds: string[];
   templateId: string;
   language: string;
@@ -20,7 +21,7 @@ type JobDependencies = {
   templatesDS: TemplatesDataSource;
 };
 
-export class TemplatesPostProcessEntitiesJob extends UserAwareDispatchable<JobParams> {
+export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<DenormalizeV1RelationshipsJobParams> {
   public constructor(private dependencies: JobDependencies) {
     super();
   }
@@ -43,3 +44,5 @@ export class TemplatesPostProcessEntitiesJob extends UserAwareDispatchable<JobPa
     });
   }
 }
+
+export { PXCreateParagraphsJob };

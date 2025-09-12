@@ -218,6 +218,7 @@ export class MongoTemplatesDataSource
   async update(template: Template): Promise<void> {
     const schema = TemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
+    await updateMapping([schema]);
   }
 
   async create(template: Template): Promise<void> {

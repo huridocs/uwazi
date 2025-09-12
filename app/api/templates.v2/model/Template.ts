@@ -89,6 +89,18 @@ class Template {
     return updateInfo;
   }
 
+  selectSwappedNameProperties(newTemplate: Template) {
+    let swapingNameWithExistingProperty: TemplateProperty | undefined;
+    this.properties.forEach(prop => {
+      if (!swapingNameWithExistingProperty) {
+        swapingNameWithExistingProperty = (newTemplate.properties || []).find(p => {
+          return p.name === prop.name && p.id?.toString() !== prop.id?.toString();
+        });
+      }
+    });
+    return swapingNameWithExistingProperty;
+  }
+
   selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): V1RelationshipProperty[] {
     const v1Props = ['relationType', 'content', 'inheritedPropertyId'];
     return this.selectUpdatedProperties(newTemplate)
