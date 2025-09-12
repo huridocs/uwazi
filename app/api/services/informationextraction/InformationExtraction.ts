@@ -985,6 +985,19 @@ class InformationExtraction {
       source: model.processRun?.autoAccept?.source,
     });
 
+    // Treat auto-accept as part of the active process run: keep findingSuggestions=true
+    // so the status endpoint does not report 'ready' between phases and to avoid
+    // concurrent process triggers while acceptance is running.
+    try {
+      await ixmodels.startFindingSuggestions(new ObjectId(extractorId));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(
+        '[IX][accept] startAutoAcceptIfEnabled::startFindingSuggestions failed',
+        (e as Error)?.message
+      );
+    }
+
     emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
 
     const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });

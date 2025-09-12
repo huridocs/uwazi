@@ -31,7 +31,7 @@ export class AcceptSuggestionsUseCase {
           hasProcessRun: !!objIdModel?.processRun,
         });
       } catch (e) {
-        console.log('[IX][accept] useCase.execute::secondary lookup error', (e as Error)?.message);
+        // ignore
       }
       // eslint-disable-next-line no-console
       console.log('[IX][accept] useCase.execute::early return - missing processRun');
@@ -89,17 +89,20 @@ export class AcceptSuggestionsUseCase {
     // Debug: show the match being used for auto-accept
     // eslint-disable-next-line no-console
     console.log('[IX][accept] useCase.execute::match', JSON.stringify(match));
-    const preCount = await IXSuggestionsModel.db.countDocuments(match);
+    const alreadyProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
     const suggestions = await IXSuggestionsModel.get(
       match,
-      '_id entityId entityLanguageId state modelData'
+      '_id entityId entityLanguageId state modelData',
+      { skip: alreadyProcessed, limit: batchSize, sort: { _id: 1 } } as any
     );
     // eslint-disable-next-line no-console
     console.log('[IX][accept] useCase.execute::fetched suggestions', {
       count: suggestions.length,
+      skip: alreadyProcessed,
+      limit: batchSize,
       first: suggestions[0]?._id?.toString?.(),
     });
-    const toAccept = suggestions.slice(0, batchSize).map(s => ({
+    const toAccept = suggestions.map(s => ({
       _id: s._id,
       sharedId: s.entityId,
       entityId: s.entityLanguageId,
@@ -131,20 +134,6 @@ export class AcceptSuggestionsUseCase {
       console.log('[IX][accept] state recompute failed', (e as Error).message);
     }
     await ixmodels.incAutoAcceptProcessed(extractorId, toAccept.length);
-
-    // If nothing was effectively reduced from the match, avoid redispatch to prevent loops
-    const postCount = await IXSuggestionsModel.db.countDocuments(match);
-    if (postCount >= preCount) {
-      // eslint-disable-next-line no-console
-      console.log('[IX][accept] useCase.execute::no progress detected, stopping redispatch', {
-        preCount,
-        postCount,
-      });
-      return {
-        processed: 0,
-        progress: { total, processed: model.processRun.autoAcceptProgress?.processed ?? 0 },
-      };
-    }
 
     const previousProcessed = model.processRun.autoAcceptProgress?.processed ?? 0;
     const newProcessed = Math.min(total, previousProcessed + toAccept.length);

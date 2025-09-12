@@ -8,7 +8,6 @@ import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { ObjectId } from 'mongodb';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex';
-import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import { setIntersection } from 'shared/data_utils/setUtils';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -335,54 +334,6 @@ const getValue = (
   return getter(property, entity, suggestionsById, acceptedSuggestionsByEntityId, resources);
 };
 
-const MAX_SAVE_RETRIES = 3;
-
-const sleep = async (ms: number) =>
-  new Promise<void>(resolve => {
-    setTimeout(resolve, ms);
-  });
-
-const saveEntities = async (entitiesToUpdate: EntitySchema[]) => {
-  // eslint-disable-next-line max-statements
-  await syncedPromiseLoop(entitiesToUpdate, async (entity: EntitySchema) => {
-    let attempt = 0;
-    // retry bounded times on save errors (e.g., optimistic lock / concurrent updates)
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await entities.save(entity, { user: {}, language: entity.language });
-        break;
-      } catch (e) {
-        attempt += 1;
-        if (attempt >= MAX_SAVE_RETRIES) {
-          // eslint-disable-next-line no-console
-          console.log('[IX][accept] saveEntities::skipped entity after retries', {
-            entityId: (entity as any)?._id?.toString?.(),
-            sharedId: entity.sharedId,
-            language: (entity as any)?.language,
-            attempts: attempt,
-            error: (e as Error)?.message,
-          });
-          // give up on this entity and continue with the rest of the batch
-          break;
-        }
-        // eslint-disable-next-line no-console
-        console.log('[IX][accept] saveEntities::retry on error', {
-          entityId: (entity as any)?._id?.toString?.(),
-          sharedId: entity.sharedId,
-          language: (entity as any)?.language,
-          attempt,
-          error: (e as Error)?.message,
-        });
-        // small backoff before retrying
-        // eslint-disable-next-line no-await-in-loop
-        await sleep(100 * attempt);
-      }
-    }
-  });
-};
-
 const updateEntitiesWithSuggestion = async (
   allLanguages: boolean,
   acceptedSuggestions: AcceptedSuggestion[],
@@ -433,68 +384,60 @@ const updateEntitiesWithSuggestion = async (
 
   const resources = await fetchResources(property, acceptedSuggestions, suggestions);
 
-  // Revert to processing every language entity: values can differ per language.
-  // We rely on sequential saves inside entities.updateEntity to avoid lock conflicts.
-  const entitiesSource: EntitySchema[] = storedEntities as EntitySchema[];
+  // Process per accepted suggestion: fetch fresh entity, compute value, save
+  // eslint-disable-next-line no-restricted-syntax
+  for (const as of acceptedSuggestions) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const [current] = (await entities.get(
+        { _id: new ObjectId(as.entityId) },
+        '+permissions'
+      )) as unknown as EntitySchema[];
+      if (!current) {
+        // eslint-disable-next-line no-console
+        console.log('[IX][accept] updateEntities::skip missing entity', {
+          entityId: as.entityId,
+          sharedId: as.sharedId,
+        });
+        // eslint-disable-next-line no-continue
+        continue;
+      }
 
-  const entitiesToUpdate =
-    propertyName !== 'title'
-      ? (entitiesSource.map((entity: EntitySchema) => ({
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            [propertyName]: (() => {
-              const suggestionUsed = getSuggestion(
-                entity,
-                suggestionsById,
-                acceptedSuggestionsByEntityId
-              );
-              const rawValue = getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId);
-              // eslint-disable-next-line no-console
-              console.log('[IX][accept] updateEntities::entity value (metadata)', {
-                entityId: (entity as any)?._id?.toString?.(),
-                sharedId: entity.sharedId,
-                language: (entity as any)?.language,
-                suggestionId: suggestionUsed?._id?.toString?.(),
-                suggestionValue: suggestionUsed?.suggestedValue,
-                rawValue,
-                propertyName,
-              });
-              return getValue(
-                property,
-                entity,
-                suggestionsById,
-                acceptedSuggestionsByEntityId,
-                resources
-              );
-            })(),
-          },
-          permissions: entity.permissions || [],
-        })) as EntitySchema[])
-      : (entitiesSource.map((entity: EntitySchema) => ({
-          ...entity,
-          title: (() => {
-            const suggestionUsed = getSuggestion(
-              entity,
-              suggestionsById,
-              acceptedSuggestionsByEntityId
-            );
-            const rawValue = getRawValue(entity, suggestionsById, acceptedSuggestionsByEntityId);
-            // eslint-disable-next-line no-console
-            console.log('[IX][accept] updateEntities::entity value (title)', {
-              entityId: (entity as any)?._id?.toString?.(),
-              sharedId: entity.sharedId,
-              language: (entity as any)?.language,
-              suggestionId: suggestionUsed?._id?.toString?.(),
-              suggestionValue: suggestionUsed?.suggestedValue,
-              rawValue,
-              propertyName,
-            });
-            return rawValue as any;
-          })(),
-        })) as EntitySchema[]);
+      const updated: any =
+        propertyName !== 'title'
+          ? {
+              ...current,
+              metadata: {
+                ...current.metadata,
+                [propertyName]: getValue(
+                  property,
+                  current,
+                  suggestionsById,
+                  acceptedSuggestionsByEntityId,
+                  resources
+                ),
+              },
+              permissions: current.permissions || [],
+            }
+          : {
+              ...current,
+              title: getRawValue(current, suggestionsById, acceptedSuggestionsByEntityId) as any,
+            };
 
-  await saveEntities(entitiesToUpdate);
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] updateEntities::saving', {
+        entityId: (current as any)?._id?.toString?.(),
+        sharedId: current.sharedId,
+        language: (current as any)?.language,
+        propertyName,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await entities.save(updated, { user: {}, language: (current as any)?.language });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('[IX][accept] updateEntities::save error', (e as Error)?.message);
+    }
+  }
 };
 
 export { updateEntitiesWithSuggestion, SuggestionAcceptanceError };
