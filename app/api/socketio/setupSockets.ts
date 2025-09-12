@@ -42,6 +42,7 @@ const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   io.to(tenantName).emit(event, ...data);
 };
 
+// eslint-disable-next-line max-statements
 const setupApiSockets = (server: Server, app: Application) => {
   io = new SocketIoServer(server);
 
@@ -103,15 +104,16 @@ const setupWorkerSockets = (redisClient: RedisClient) => {
   }
   workerSocketsListenersAttached = true;
 
-  // Avoid MaxListenersExceededWarning if called multiple times before 'ready'
   if (relaxMaxListeners && typeof (redisClient as any).setMaxListeners === 'function') {
     (redisClient as any).setMaxListeners(0);
   }
 
-  redisClient.once('error', error => {
+  // Keep listening for errors across the client lifetime
+  redisClient.on('error', error => {
     throw error;
   });
 
+  // Initialize the emitter only once
   redisClient.once('ready', () => {
     io = new Emitter(redisClient);
   });
