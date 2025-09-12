@@ -868,6 +868,22 @@ class InformationExtraction {
       const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
+        // If auto-accept is enabled for this process run, transition status to
+        // processing_auto_accept instead of ready to avoid UI flicker and clearly
+        // indicate the next phase. Provide progress snapshot if available.
+        const isAutoAcceptEnabled = !!currentModel.processRun?.autoAccept?.enabled;
+        if (isAutoAcceptEnabled) {
+          const autoAcceptProcessed = currentModel.processRun?.autoAcceptProgress?.processed || 0;
+          const autoAcceptTotal = currentModel.processRun?.autoAcceptProgress?.total || 0;
+          return {
+            status: 'processing_auto_accept',
+            message: 'Accepting suggestions',
+            data:
+              autoAcceptTotal > 0
+                ? { processed: autoAcceptProcessed, total: autoAcceptTotal }
+                : undefined,
+          };
+        }
         return { status: 'ready', message: 'Ready' };
       }
 

@@ -166,6 +166,12 @@ const IXSuggestions = () => {
 
         await revalidate();
         if (processResponse?.status === ixStatus.ready) {
+          // If auto-accept is enabled in the request (regardless of find path), keep a sticky
+          // auto-accept banner to avoid flicker until the first progress event arrives.
+          if (data.autoAccept?.enabled) {
+            setStatus({ status: ixStatus.processing_auto_accept });
+            return;
+          }
           if (requestedCount && requestedCount > 0) {
             // Briefly show the requested count as a progress hint, then clear
             setStatus({
