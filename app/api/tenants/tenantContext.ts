@@ -23,6 +23,7 @@ type Tenant = {
     deactivateS3Pooling?: boolean;
     deactivateS3Logging?: boolean;
     v2CreateTemplateUseCase?: boolean;
+    v2UpdateTemplateUseCase?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

@@ -44,7 +44,7 @@ class CommonPropertyMapper {
       };
     }
 
-    throw new Error(`Unhandled CommonProperty type: ${base}`);
+    throw new Error(`Unhandled CommonProperty type: ${JSON.stringify(base, null, ' ')}`);
   }
 }
 
@@ -101,6 +101,8 @@ class TemplateMapper {
         ...PropertySchema[],
       ],
       properties: domain.properties.map(PropertyMapper.toSchema),
+      processing: domain.processing,
+      entityViewPage: domain.entityViewPage,
     };
   }
 }

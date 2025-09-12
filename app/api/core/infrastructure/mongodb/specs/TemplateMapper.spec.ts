@@ -96,6 +96,10 @@ describe('TemplateMapper', () => {
       color: 'red',
       name: 'My Template',
       default: true,
+      entityViewPage: '',
+      processing: {
+        active: false,
+      },
       commonProperties: [
         {
           _id: IDS.TITLE,

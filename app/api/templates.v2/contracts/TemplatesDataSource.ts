@@ -20,6 +20,7 @@ export interface TemplatesDataSource {
   completeProcessing(templateId: string): Promise<void>;
   setProcessingTotalJobs(templateId: string, totalJobs: number): Promise<void>;
   create(template: Template): Promise<void>;
+  update(template: Template): Promise<void>;
   isPropertyUnique(property: Property): Promise<boolean>;
   isTemplateUnique(template: Template): Promise<boolean>;
 }

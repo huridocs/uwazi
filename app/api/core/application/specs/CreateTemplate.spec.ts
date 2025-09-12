@@ -149,6 +149,8 @@ describe('CreateTemplateUseCase', () => {
       color: '#142134',
       name: 'Template Name',
       default: false,
+      entityViewPage: '',
+      processing: { active: false },
       commonProperties: [
         {
           _id: expect.any(ObjectId),

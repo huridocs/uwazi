@@ -48,6 +48,11 @@ import {
 import * as v2 from './v2_support';
 import { TemplateValidationService } from './validation/TemplateValidationService';
 import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
+import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
+import {
+  CreateTemplateDTOSchema,
+  UpdateTemplateDTOSchema,
+} from 'api/core/application/TemplateDTOs';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -112,31 +117,6 @@ const updateTranslation = async (
   );
 };
 
-const removeExcludedPropertiesValues = async (
-  currentTemplate: TemplateSchema,
-  template: TemplateSchema
-) => {
-  const currentTemplateContentProperties = (currentTemplate.properties || []).filter(
-    p => p.content
-  );
-  const templateContentProperties = (template.properties || []).filter(p => p.content);
-  const toRemoveValues = currentTemplateContentProperties
-    .map(prop => {
-      const sameProperty = templateContentProperties.find(
-        p => p._id?.toString() === prop._id?.toString()
-      );
-      if (sameProperty && sameProperty.content !== prop.content) {
-        return sameProperty.name;
-      }
-      return null;
-    })
-    .filter(v => v);
-
-  if (toRemoveValues.length > 0) {
-    await entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
-  }
-};
-
 const checkAndFillGeneratedIdProperties = async (
   currentTemplate: TemplateSchema,
   template: TemplateSchema
@@ -188,7 +168,8 @@ export default {
     ) => Promise<void> = async () => {}
   ) {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
-    if (v2CreateTemplateUseCase) {
+    if (v2CreateTemplateUseCase && !template._id) {
+      const input = CreateTemplateDTOSchema.parse(template);
       const transactionManager = DefaultTransactionManager();
       const output = await new CreateTemplateUseCase({
         idGenerator: DefaultIdGenerator,
@@ -198,7 +179,22 @@ export default {
         settingsDS: DefaultSettingsDataSource(transactionManager),
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
         transactionManager,
-      }).execute(template);
+      }).execute(input);
+
+      return TemplateMapper.toSchema(output);
+    }
+    const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
+    if (v2UpdateTemplateUseCase && template._id) {
+      const input = UpdateTemplateDTOSchema.parse(template);
+      const transactionManager = DefaultTransactionManager();
+      const output = await new UpdateTemplateUseCase({
+        idGenerator: DefaultIdGenerator,
+        templatesDS: DefaultTemplatesDataSource(transactionManager),
+        thesauriDS: new MongoThesauriDataSource(),
+        translationService: new LegacyTranslationService(),
+        settingsDS: DefaultSettingsDataSource(transactionManager),
+        relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
+      }).execute(input);
 
       return TemplateMapper.toSchema(output);
     }
@@ -331,7 +327,6 @@ export default {
       await updateTranslation(currentTemplate, template);
     }
     if (templateStructureChanges) {
-      await removeExcludedPropertiesValues(currentTemplate, template);
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     }
 
@@ -368,11 +363,10 @@ export default {
         })
         .catch(async error => onTemplateProcessed(error));
     }
-
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
         before: currentTemplate,
-        after: savedTemplate,
+        after: { ...savedTemplate },
       })
     );
 

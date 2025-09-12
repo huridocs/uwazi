@@ -16,6 +16,12 @@ class Template {
 
   readonly commonProperties: CommonProperty[] = [];
 
+  private _processing = {
+    active: false,
+  };
+
+  readonly entityViewPage: string;
+
   color?: string;
 
   isDefault: boolean;
@@ -26,20 +32,26 @@ class Template {
     properties: Property[],
     commonProperties: CommonProperty[],
     color?: string,
-    isDefault?: boolean
+    isDefault?: boolean,
+    entityViewPage?: string
   ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
     this.commonProperties = commonProperties;
-    this.color = color;
+    this.color = color ?? '';
     this.isDefault = isDefault ?? false;
+    this.entityViewPage = entityViewPage ?? '';
 
     this.validate();
   }
 
   get allProperties() {
     return [...this.commonProperties, ...this.properties];
+  }
+
+  get processing() {
+    return this._processing;
   }
 
   private validate() {
