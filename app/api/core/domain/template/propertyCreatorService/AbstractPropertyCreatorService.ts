@@ -1,7 +1,6 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Context, Property } from 'api/templates.v2/model/Property';
 import { PropertyFactoryCreateInput } from '../PropertyFactory';
-// import { PropertyNotUniqueOnTheSystemError } from '../errors';
 
 type Deps<ExtendedDeps> = {
   templatesDS: TemplatesDataSource;
@@ -22,11 +21,10 @@ abstract class AbstractPropertyCreatorService<ExtendedDeps = {}> {
 
   protected abstract createProperty(input: Input, context: Context): Promise<Property>;
 
-  private async validate(_property: Property) {
-    // const isUnique = await this.deps.templatesDS.isPropertyUnique(property);
-    // if (!isUnique) {
-    //   throw new PropertyNotUniqueOnTheSystemError(property);
-    // }
+  private async validate(property: Property) {
+    const templates = await this.deps.templatesDS.getTemplatesByPropertyName(property);
+
+    templates.forEach(t => t.ensurePropertyIsConsistent(property));
   }
 }
 

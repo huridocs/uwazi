@@ -1,3 +1,4 @@
+import { PropertyTypeMismatchError } from 'api/core/domain/template/errors';
 import { PropertyName } from 'api/core/domain/template/PropertyName';
 import { PropertySchema } from 'shared/types/commonTypes';
 
@@ -69,6 +70,12 @@ class Property {
 
   equals(other: Property) {
     return this.discriminator === other.discriminator;
+  }
+
+  ensurePropertyIsConsistent(property: Property) {
+    if (this.name === property.name && this.type !== property.type) {
+      throw new PropertyTypeMismatchError(this, property);
+    }
   }
 
   updatedAttributes(other: Property): PropertyUpdateInfo {

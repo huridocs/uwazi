@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
@@ -253,5 +254,19 @@ export class MongoTemplatesDataSource
     );
 
     return count === 0;
+  }
+
+  async getTemplatesByPropertyName(property: Property): Promise<Template[]> {
+    const schemas = await this.getCollection()
+      .find({
+        properties: {
+          $elemMatch: {
+            name: property.name,
+          },
+        },
+      })
+      .toArray();
+
+    return schemas.map(TemplateMapper.toDomain);
   }
 }

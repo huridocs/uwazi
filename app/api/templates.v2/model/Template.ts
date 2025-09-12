@@ -63,6 +63,10 @@ class Template {
     validator.validate(this);
   }
 
+  ensurePropertyIsConsistent(property: Property) {
+    this.properties.forEach(p => p.ensurePropertyIsConsistent(property as any));
+  }
+
   selectNewProperties(newTemplate: Template): Property[] {
     const oldIdSet = new Set(this.properties.map(p => p.id));
     return newTemplate.properties.filter(p => !oldIdSet.has(p.id));
@@ -93,9 +97,9 @@ class Template {
     let swapingNameWithExistingProperty: TemplateProperty | undefined;
     this.properties.forEach(prop => {
       if (!swapingNameWithExistingProperty) {
-        swapingNameWithExistingProperty = (newTemplate.properties || []).find(p => {
-          return p.name === prop.name && p.id?.toString() !== prop.id?.toString();
-        });
+        swapingNameWithExistingProperty = (newTemplate.properties || []).find(
+          p => p.name === prop.name && p.id?.toString() !== prop.id?.toString()
+        );
       }
     });
     return swapingNameWithExistingProperty;

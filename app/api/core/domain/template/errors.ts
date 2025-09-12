@@ -1,8 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { Property } from 'api/templates.v2/model/Property';
 import { Template } from 'api/templates.v2/model/Template';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
+import { AbstractSelectProperty } from './AbstractSelectProperty';
 
 class PropertyTypeInvalidTypeError extends DomainError {
   constructor(type: string, propertyName: string) {
@@ -92,12 +94,52 @@ class TemplateWithDuplicatedPropertyError extends ValidationError {
   }
 }
 
-class PropertyNotUniqueOnTheSystemError extends DomainError {
-  constructor(property: Property) {
+class PropertyTypeMismatchError extends DomainError {
+  constructor(existing: Property, attempted: Property) {
     super(
-      `The following Property is not unique on the system. Label = ${property.label} and Name = ${property.name}`,
-      'template.property.property_not_unique_on_the_system_error'
+      `Property with the name "${existing.name}" must have type "${existing.type}", but type "${attempted.type}" was provided.`,
+      'template.property.property_type_mismatch_error'
     );
+  }
+}
+
+class PropertyThesaurusMismatchError extends DomainError {
+  constructor(existing: AbstractSelectProperty, attempted: AbstractSelectProperty) {
+    super(
+      // eslint-disable-next-line max-len
+      `Property with the name "${existing.name}" has a thesaurus mismatch. It must be linked to ${existing.content} thesaurus, but a link to ${attempted.content} thesaurus was provided.`,
+      'template.property.thesaurus_mismatch_error'
+    );
+  }
+}
+
+class PropertyRelationTypeMismatchError extends DomainError {
+  constructor(existing: V1RelationshipProperty, attempted: V1RelationshipProperty) {
+    // eslint-disable-next-line max-len
+    const message = `Property with the name "${existing.name}" must define a relationship type to "${existing.relationType}", but a relationship to "${attempted.relationType}" was provided.`;
+
+    const code = 'template.property.relation_type_mismatch_error';
+
+    super(message, code);
+  }
+}
+
+class PropertyInheritedTypeMismatchError extends DomainError {
+  constructor(existing: V1RelationshipProperty, attempted: V1RelationshipProperty) {
+    const formatInheritance = (property: V1RelationshipProperty) =>
+      property.inherit?.type
+        ? `inherit the property "${property.inherit.type}"`
+        : 'not inherit any property';
+
+    const message = `Property with the name "${
+      existing.name
+    }" has an inheritance mismatch. It must ${formatInheritance(
+      existing
+    )}, but a configuration to ${formatInheritance(attempted)} was provided.`;
+
+    const code = 'template.property.inherited_type_mismatch_error';
+
+    super(message, code);
   }
 }
 
@@ -184,7 +226,7 @@ export {
   CommonPropertyInvalidError,
   TemplateWithDuplicatedPropertyError,
   TemplateWithMissingCommonProperty,
-  PropertyNotUniqueOnTheSystemError,
+  PropertyTypeMismatchError,
   TemplateWithDuplicatedNameOnTheSystemError,
   FieldIsRequiredError,
   SelectPropertyWithInvalidThesaurusError,
@@ -192,4 +234,7 @@ export {
   TemplateDoesNotExistError,
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,
+  PropertyThesaurusMismatchError,
+  PropertyRelationTypeMismatchError,
+  PropertyInheritedTypeMismatchError,
 };

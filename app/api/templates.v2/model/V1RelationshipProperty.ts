@@ -2,6 +2,10 @@ import {
   FilterableProperty,
   FilterablePropertyProps,
 } from 'api/core/domain/template/FilterableProperty';
+import {
+  PropertyInheritedTypeMismatchError,
+  PropertyRelationTypeMismatchError,
+} from 'api/core/domain/template/errors';
 import { Context, Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 
 type Inherit = {
@@ -81,6 +85,17 @@ class V1RelationshipProperty extends FilterableProperty {
     }
 
     return updateInfo;
+  }
+
+  ensurePropertyIsConsistent(property: V1RelationshipProperty): void {
+    super.ensurePropertyIsConsistent(property);
+    if (this.relationType !== property.relationType) {
+      throw new PropertyRelationTypeMismatchError(this, property);
+    }
+
+    if (this.inherit && this.inherit.type !== property.inherit?.type) {
+      throw new PropertyInheritedTypeMismatchError(this, property);
+    }
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {
