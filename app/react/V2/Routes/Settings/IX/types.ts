@@ -72,6 +72,7 @@ export enum ixStatus {
   sending_labeled_data = 'sending_labeled_data',
   processing_model = 'processing_model',
   processing_suggestions = 'processing_suggestions',
+  processing_auto_accept = 'processing_auto_accept',
   cancel = 'cancel',
   error = 'error',
 }

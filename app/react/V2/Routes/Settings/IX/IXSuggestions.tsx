@@ -46,6 +46,7 @@ const ixmessages = {
   sending_labeled_data: 'Sending labeled data...',
   processing_model: 'Training model...',
   processing_suggestions: 'Finding suggestions...',
+  processing_auto_accept: 'Accepting suggestions...',
   cancel: 'Canceling...',
   error: 'Error',
 };
