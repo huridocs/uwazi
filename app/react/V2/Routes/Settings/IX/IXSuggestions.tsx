@@ -163,12 +163,9 @@ const IXSuggestions = () => {
         const requestedCount =
           data.mode === 'process_selected' ? data.find?.selectedSharedIds?.length || 0 : undefined;
         const processResponse = await suggestionsAPI.process(params);
-        // eslint-disable-next-line no-console
-        console.log('[IX][client] process response', processResponse);
+
         await revalidate();
         if (processResponse?.status === ixStatus.ready) {
-          // eslint-disable-next-line no-console
-          console.log('[IX][client] backend returned ready');
           if (requestedCount && requestedCount > 0) {
             // Briefly show the requested count as a progress hint, then clear
             setStatus({
@@ -187,10 +184,6 @@ const IXSuggestions = () => {
             ? Number(processResponse?.data?.total) || 0
             : data.find?.selectedSharedIds?.length || 0;
         if (status.status === ixStatus.ready) {
-          // eslint-disable-next-line no-console
-          console.log('[IX][client] set processing_suggestions (ready->processing)', {
-            initialTotal,
-          });
           setStatus({
             status: ixStatus.processing_suggestions,
             message: ixmessages[ixStatus.processing_suggestions],
@@ -198,11 +191,6 @@ const IXSuggestions = () => {
           });
         }
         if (status.status === ixStatus.processing_suggestions) {
-          // eslint-disable-next-line no-console
-          console.log('[IX][client] bump processing total', {
-            prev: status.data?.total || 0,
-            add: initialTotal,
-          });
           setStatus({
             status: ixStatus.processing_suggestions,
             message: ixmessages[ixStatus.processing_suggestions],

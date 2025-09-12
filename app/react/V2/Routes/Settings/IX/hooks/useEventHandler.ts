@@ -32,13 +32,6 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       _message,
       data
     ) => {
-      // eslint-disable-next-line no-console
-      console.log('[IX][client] socket:ix_model_status', {
-        eventExtractorId,
-        expectedExtractorId: extractorId,
-        modelStatus,
-        data,
-      });
       if (eventExtractorId !== extractorId) return;
 
       const isNumeric = (n: any) => typeof n === 'number' && Number.isFinite(n);
@@ -48,24 +41,16 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
         ((data as any).processed as number) >= ((data as any).total as number);
 
       if (modelStatus === ixStatus.ready) {
-        // eslint-disable-next-line no-console
-        console.log('[IX][client] status -> ready');
         updateStatus(ixStatus.ready);
       } else if (modelStatus === ixStatus.processing_auto_accept && isCompleted) {
-        // eslint-disable-next-line no-console
-        console.log('[IX][client] status -> ready (auto-accept complete)');
         updateStatus(ixStatus.ready);
       } else if (modelStatus === ixStatus.processing_suggestions && isCompleted) {
         // Transition into auto-accept without flicker
-        // eslint-disable-next-line no-console
-        console.log('[IX][client] status -> processing_auto_accept (transition)');
         updateStatus(ixStatus.processing_auto_accept, {
           processed: 0,
           total: (data as any)?.total || 0,
         });
       } else {
-        // eslint-disable-next-line no-console
-        console.log('[IX][client] status -> update', { modelStatus, data });
         updateStatus(modelStatus, data);
       }
 
