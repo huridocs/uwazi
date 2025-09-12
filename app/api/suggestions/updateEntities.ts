@@ -395,6 +395,9 @@ const updateEntitiesWithSuggestion = async (
 
       await entities.save(updated, { user: {}, language: current.language });
     } catch (e) {
+      if (e instanceof SuggestionAcceptanceError) {
+        throw e; // bubble validation errors (e.g., invalid select IDs)
+      }
       DefaultLogger().error('IX accept: failed to save entity during updateEntities', {
         entityId: as.entityId,
         sharedId: as.sharedId,
