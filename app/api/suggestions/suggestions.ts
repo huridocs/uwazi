@@ -424,7 +424,6 @@ const Suggestions = {
   createMultiple: async (_suggestions: IXSuggestionType[]) =>
     IXSuggestionsModel.db.createMany(_suggestions),
 
-  // eslint-disable-next-line max-statements
   accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
     const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));
     const suggestions = await IXSuggestionsModel.get({ _id: { $in: acceptedIds } });
