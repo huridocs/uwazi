@@ -233,12 +233,6 @@ async function getEntitiesForSuggestionsQuery(
     })
     .filter(p => p.sharedId && p.language);
 
-  // eslint-disable-next-line no-console
-  console.log('[IX][process] getEntitiesForSuggestionsQuery::pairs', {
-    pairs: uniquePairs.length,
-    batchSize: BATCH_SIZE,
-  });
-
   const entityQuery = { $or: uniquePairs } as UwaziFilterQuery<any>;
 
   return entityQuery;

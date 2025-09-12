@@ -70,12 +70,6 @@ export class IXServices {
     model: EnforcedWithId<IXModelType>,
     filters?: { nonProcessed?: boolean; obsolete?: boolean; error?: boolean }
   ) {
-    // eslint-disable-next-line no-console
-    console.log('[IX][process] computeTotalSuggestionsForProcess::input', {
-      extractorId: extractorId.toString?.() || String(extractorId),
-      maxSuggestionsToFind: model.maxSuggestionsToFind,
-      filters,
-    });
     const statuses = {
       nonProcessed: filters?.nonProcessed ?? false,
       obsolete: filters?.obsolete ?? false,
@@ -104,12 +98,6 @@ export class IXServices {
 
     const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
     const total = Math.min(maxCap, count);
-    // eslint-disable-next-line no-console
-    console.log('[IX][process] computeTotalSuggestionsForProcess::output', {
-      count,
-      maxCap,
-      total,
-    });
     return total;
   }
 
