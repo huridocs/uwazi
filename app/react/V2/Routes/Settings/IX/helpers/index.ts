@@ -9,7 +9,6 @@ export {
   coerceValue,
   getFormValue,
   loadSidepanelData,
-  loadValuesAndSuggestions,
   handleEntitySave,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,

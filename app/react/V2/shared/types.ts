@@ -2,10 +2,12 @@ import { Tenant } from 'api/tenants/tenantContext';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { SettingsLinkSchema } from 'shared/types/settingsType';
 import { Property, Template } from 'app/apiResponseTypes';
+import { ClientPropertySchema } from 'app/istore';
 
 interface ClientIXExtractorType extends Omit<IXExtractorType, '_id'> {
   _id?: string;
   templates: string[];
+  inheritedProperty?: ClientPropertySchema | undefined;
 }
 
 type DraggableValue<T> = T & {

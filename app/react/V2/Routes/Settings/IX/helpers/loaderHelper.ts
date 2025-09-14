@@ -5,28 +5,49 @@ import { search } from 'V2/api/search';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { SuggestionValue, EntitySuggestion } from '../types';
 
+const searchRelatedEntities = async (
+  searchString: string,
+  targetProperty: ClientPropertySchema | undefined,
+  limit = 10,
+  headers: IncomingHttpHeaders | undefined = undefined
+) => {
+  return (
+    await search(
+      {
+        filters: {
+          searchString,
+        },
+        fields: [
+          'title',
+          'sharedId',
+          ...(targetProperty ? [`metadata.${targetProperty.name}`] : []),
+        ],
+        limit,
+      },
+      headers
+    )
+  ).rows;
+};
+
 const getPropertyValuesMap = async (
   sharedIds: Set<string>,
+  property: PropertySchema,
   targetProperty: ClientPropertySchema | undefined,
-  headers: IncomingHttpHeaders | undefined,
-  property: PropertySchema
+  headers: IncomingHttpHeaders | undefined
 ) => {
-  const searchResult = await search(
-    {
-      filters: {
-        searchString: Array.from(sharedIds)
-          .map(id => `sharedId:(${id})`)
-          .join(' OR '),
-      },
-      fields: ['title', 'sharedId', ...(targetProperty ? [`metadata.${targetProperty.name}`] : [])],
-      limit: sharedIds.size,
-    },
+  const searchString = `sharedId:(${Array.from(sharedIds)
+    .map(id => `${id}`)
+    .join(' OR ')})`;
+
+  const searchResult = await searchRelatedEntities(
+    searchString,
+    targetProperty,
+    sharedIds.size,
     headers
   );
-
   const entityPropertyValuesMap = new Map<string, string>();
-  (searchResult || { rows: [] }).rows.forEach((entity: ClientEntitySchema) => {
-    if (entity.sharedId && sharedIds.has(entity.sharedId)) {
+  searchResult.forEach((entity: ClientEntitySchema) => {
+    if (entity.sharedId) {
       if (property.type === 'relationship' && targetProperty?.name) {
         entityPropertyValuesMap.set(
           entity.sharedId,
@@ -173,4 +194,4 @@ const updateSuggestionValues = (
   return suggestions;
 };
 
-export { getPropertyValuesMap, getRelationshipInfo, updateSuggestionValues };
+export { searchRelatedEntities, getPropertyValuesMap, getRelationshipInfo, updateSuggestionValues };

@@ -11,6 +11,7 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
+import { isEmpty } from 'lodash';
 import { FunnelIcon } from '@heroicons/react/24/solid';
 import * as extractorsAPI from 'V2/api/ix/extractors';
 import * as suggestionsAPI from 'V2/api/ix/suggestions';
@@ -41,7 +42,6 @@ import {
   getRelationshipInfo,
   updateSuggestionValues,
 } from './helpers/loaderHelper';
-import { isEmpty } from 'lodash';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -404,6 +404,7 @@ const IXSuggestions = () => {
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
         onEntitySave={onEntitySave}
+        extractor={extractor}
       />
 
       <PDFSidepanel
@@ -412,6 +413,7 @@ const IXSuggestions = () => {
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
         onEntitySave={onEntitySave}
+        extractor={extractor}
       />
     </div>
   );
@@ -470,12 +472,12 @@ const IXSuggestionsLoader =
         property,
         templates
       );
-
+      extractors[0].inheritedProperty = targetProperty;
       const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
-        ? await getPropertyValuesMap(allCurrentValueIds, targetProperty, headers, property)
+        ? await getPropertyValuesMap(allCurrentValueIds, property, targetProperty, headers)
         : new Map();
       const entitySuggestedValuesMap = !isEmpty(allSuggestedValueIds)
-        ? await getPropertyValuesMap(allSuggestedValueIds, targetProperty, headers, property)
+        ? await getPropertyValuesMap(allSuggestedValueIds, property, targetProperty, headers)
         : new Map();
 
       suggestions = updateSuggestionValues(

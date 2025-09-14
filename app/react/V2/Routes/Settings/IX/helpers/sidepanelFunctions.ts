@@ -58,28 +58,6 @@ const loadSidepanelData = async ({
   return { ...(file[0] && { file: file[0] }), entity: entity[0] };
 };
 
-const loadValuesAndSuggestions = async (
-  value: string[],
-  suggestions: string[],
-  language: string
-) => {
-  const entities = await Promise.all(
-    value.map(async sharedId => {
-      const [entity] = await entitiesAPI.getBySharedId({ sharedId, language });
-      return entity;
-    })
-  );
-
-  const suggestionsEntities = await Promise.all(
-    suggestions.map(async sharedId => {
-      const [entity] = await entitiesAPI.getBySharedId({ sharedId, language });
-      return entity;
-    })
-  );
-
-  return [...entities, ...suggestionsEntities].filter(entity => entity);
-};
-
 const handleEntitySave = async (
   entity?: ClientEntitySchema,
   property?: ClientPropertySchema,
@@ -145,7 +123,6 @@ export {
   coerceValue,
   getFormValue,
   loadSidepanelData,
-  loadValuesAndSuggestions,
   handleEntitySave,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,

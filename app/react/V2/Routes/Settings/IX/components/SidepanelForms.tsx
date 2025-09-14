@@ -3,11 +3,9 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { captureException } from '@sentry/react';
+import { get, uniqBy } from 'lodash';
 import { Translate } from 'app/I18N';
-import { ClientPropertySchema } from 'app/istore';
-import { isClient } from 'app/utils';
-import { lookup } from 'V2/api/search';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import {
   defaultSearch,
   InputField,
@@ -17,11 +15,12 @@ import {
 } from 'V2/Components/Forms';
 import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
-import { loadValuesAndSuggestions } from '../helpers';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
+import { searchRelatedEntities } from '../helpers/loaderHelper';
 
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
@@ -62,6 +61,7 @@ type SidepanelFormsProps = {
   property?: ClientPropertySchema;
   suggestion?: TableSuggestion;
   clearSelectionButton?: ReactNode;
+  extractor?: ClientIXExtractorType;
 };
 
 const Selects = ({
@@ -145,11 +145,13 @@ const Selects = ({
 const Relationships = ({
   property,
   suggestion,
+  extractor,
 }: {
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
+  extractor: SidepanelFormsProps['extractor'];
 }) => {
-  const intitialOptionsRef = useRef<MultiselectListOption[]>([]);
+  const initialOptionsRef = useRef<MultiselectListOption[]>([]);
   const { control } = useFormContext();
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
@@ -158,78 +160,105 @@ const Relationships = ({
 
   useEffect(() => {
     if (suggestion && property?.type === 'relationship') {
-      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
+      const currentValues = Array.isArray(suggestion.currentValue)
+        ? suggestion.currentValue
+        : [suggestion.currentValue];
 
-      Promise.all([
-        lookup({ entityTitle: '', template: property?.content }),
-        ...(suggestion
-          ? [
-              loadValuesAndSuggestions(
-                suggestion.currentValue as string[],
-                suggestions,
-                suggestion.language
-              ),
-            ]
-          : []),
-      ])
-        .then(([emptySearchResult, suggestedEntities]) => {
-          const intialOptions = [...suggestedEntities, ...emptySearchResult.rows].reduce(
-            (acc, option) => {
-              if (!acc.find(_option => _option.value === option.sharedId)) {
-                acc.push({
-                  label: (
-                    <MultiselectItemLabel
-                      isSuggested={suggestions.includes(option.sharedId!)}
-                      label={option.title!}
-                      property={property}
-                    />
-                  ),
-                  value: option.sharedId!,
-                  searchLabel: option.title!,
-                  suggested: suggestions?.includes(option.sharedId!),
-                });
-              }
+      const suggestedValues = Array.isArray(suggestion.suggestedValue)
+        ? suggestion.suggestedValue
+        : [suggestion.suggestedValue];
 
-              return acc;
-            },
-            [] as MultiselectListOption[]
-          );
+      let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
 
-          intitialOptionsRef.current = intialOptions;
-          setOptions(intialOptions);
+      if (searchTextRef.current) {
+        searchQuery = `${searchQuery} ${
+          extractor?.inheritedProperty
+            ? ` AND ${extractor?.inheritedProperty?.name}:(${searchTextRef.current})`
+            : ` AND title:(${searchTextRef.current})`
+        } `;
+      }
+
+      const allOptions: { sharedId: string; label: string; suggested: boolean }[] = uniqBy(
+        currentValues
+          .concat(suggestedValues)
+          .filter(value => value !== undefined)
+          .map((value: SuggestionValue) => ({
+            sharedId: get(value, 'id') || (value as string),
+            label: get(value, 'label') || (value as string),
+            suggested: true,
+          })),
+        'sharedId'
+      );
+
+      searchRelatedEntities(searchQuery, extractor?.inheritedProperty)
+        .then((searchResult: ClientEntitySchema[]) => {
+          searchResult.forEach(entity => {
+            if (!allOptions.find(option => entity.sharedId === option?.sharedId)) {
+              allOptions.push({
+                sharedId: entity.sharedId as string,
+                label: !extractor?.inheritedProperty
+                  ? (entity.title as string)
+                  : (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string),
+                suggested: false,
+              });
+            }
+          });
+
+          const initialOptions: MultiselectListOption[] = allOptions.map(option => ({
+            label: (
+              <MultiselectItemLabel
+                isSuggested={option.suggested}
+                label={option.label}
+                property={property}
+              />
+            ),
+            value: option.sharedId,
+            searchLabel: option.label!,
+            suggested: option.suggested,
+          }));
+
+          initialOptionsRef.current = initialOptions;
+          setOptions(initialOptions);
         })
-        .catch(e => {
-          if (isClient) {
-            const error = new Error('Lookup search error', { cause: e });
-            captureException(error);
-          }
+        .catch(() => {
+          initialOptionsRef.current = [];
+          setOptions([]);
         });
     }
-  }, [property, suggestion]);
+  }, [property, suggestion, extractor]);
 
   const lookupSearch = async (searchTerm: string) => {
     if (!searchTerm) {
-      setOptions(intitialOptionsRef.current);
+      setOptions(initialOptionsRef.current);
     } else {
-      const response = await lookup({
-        entityTitle: searchTerm || '',
-        template: property?.content,
-      });
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && extractor?.inheritedProperty?.name
+          ? `${extractor?.inheritedProperty?.name}:(${searchTerm}*)`
+          : `title:(${searchTerm}*)`
+      } `;
 
-      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
+      const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
+
+      const suggestedValues = Array.isArray(suggestion?.suggestedValue)
+        ? suggestion.suggestedValue
+        : [suggestion?.suggestedValue];
+
+      const suggestedSharedIds = suggestedValues.map(value => get(value, 'value') || value);
 
       setOptions(() =>
-        response.rows.map(option => ({
+        response.map((entity: ClientEntitySchema) => ({
           label: (
             <MultiselectItemLabel
-              isSuggested={suggestions.includes(option.sharedId)}
-              label={option.title}
+              isSuggested={suggestedSharedIds.includes(entity.sharedId!)}
+              label={entity.title!}
               property={property!}
             />
           ),
-          value: option.sharedId,
-          searchLabel: option.title,
-          suggested: suggestions?.includes(option.sharedId),
+          value: entity.sharedId!,
+          searchLabel: !extractor?.inheritedProperty
+            ? (entity.title as string)
+            : (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label as string),
+          suggested: suggestedSharedIds.includes(entity.sharedId!),
         }))
       );
     }
@@ -404,13 +433,14 @@ const SidepanelForms = ({
   suggestion,
   handleClickToFill,
   clearSelectionButton,
+  extractor,
 }: SidepanelFormsProps) => {
   switch (property?.type) {
     case 'select':
     case 'multiselect':
       return <Selects suggestion={suggestion} property={property} />;
     case 'relationship':
-      return <Relationships suggestion={suggestion} property={property} />;
+      return <Relationships suggestion={suggestion} property={property} extractor={extractor} />;
     case 'text':
     case 'date':
     case 'numeric':
