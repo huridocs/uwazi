@@ -20,8 +20,6 @@ type Tenant = {
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
     deactivateUpdateLogs?: boolean;
-    deactivateS3Pooling?: boolean;
-    deactivateS3Logging?: boolean;
     v2CreateTemplateUseCase?: boolean;
     v2UpdateTemplateUseCase?: boolean;
   };
