@@ -171,6 +171,10 @@ const IXSuggestions = () => {
             data: { processed: 0, total: initialTotal },
           });
         }
+
+        if (response.status === ixStatus.ready) {
+          setStatus({ status: ixStatus.ready });
+        }
       } catch (error) {
         setNotifications({
           type: 'error',

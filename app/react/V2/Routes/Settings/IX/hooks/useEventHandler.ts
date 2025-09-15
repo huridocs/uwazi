@@ -35,16 +35,13 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       if (eventExtractorId !== extractorId) return;
 
       const isCompleted = message === 'Completed';
-      const isProcessingCount =
-        ixStatus.processing_suggestions && Number(data?.total) - Number(data?.processed) > 0;
+
       const autoAcceptCount =
         ixStatus.processing_auto_accept && Number(data?.total) - Number(data?.processed) > 0;
 
       if (modelStatus === ixStatus.processing_model) {
         updateStatus(ixStatus.processing_model);
-      } else if (ixStatus.processing_suggestions) {
-        updateStatus(ixStatus.processing_suggestions);
-      } else if (isProcessingCount) {
+      } else if (modelStatus === ixStatus.processing_suggestions) {
         updateStatus(ixStatus.processing_suggestions, {
           processed: Number(data?.processed),
           total: Number(data?.total),
@@ -56,16 +53,14 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
           processed: Number(data?.processed),
           total: Number(data?.total),
         });
-        await revalidate();
       } else if (isCompleted) {
         updateStatus(ixStatus.ready);
-        setAcceptedSuggestionsAtom(new Set());
-        await revalidate();
       } else {
         updateStatus(ixStatus.ready);
-        setAcceptedSuggestionsAtom(new Set());
-        await revalidate();
       }
+
+      setAcceptedSuggestionsAtom(new Set());
+      await revalidate();
     };
 
     const handleModelError: IXErrorTrainingModelCallback = ({ message }) => {
