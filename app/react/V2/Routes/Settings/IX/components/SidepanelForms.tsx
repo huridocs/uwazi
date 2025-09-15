@@ -49,6 +49,19 @@ const getSuggestionValues = (suggestedValue?: SuggestionValue[] | SuggestionValu
   });
 };
 
+const getEntityLabel = (entity: ClientEntitySchema, extractor?: ClientIXExtractorType): string => {
+  if (!extractor?.inheritedProperty) {
+    return entity.title as string;
+  }
+
+  const inheritedValue = entity.metadata?.[extractor.inheritedProperty.name]?.[0];
+  const inheritedLabel = inheritedValue?.label || inheritedValue?.value;
+
+  return inheritedLabel
+    ? `${inheritedLabel} (${entity.title as string})`
+    : (entity.title as string);
+};
+
 const calculateSearchText = (toggle: boolean, previousText?: string, nextText?: string) => {
   if (toggle) {
     return nextText || '';
@@ -181,11 +194,10 @@ const Relationships = ({
       );
       let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
       if (searchTextRef.current) {
-        searchQuery = `${searchQuery} ${
-          extractor?.inheritedProperty
+        searchQuery = `${searchQuery} ${extractor?.inheritedProperty
             ? ` AND metadata.${extractor?.inheritedProperty?.name}:(${searchTextRef.current})`
             : ` AND title:(${searchTextRef.current})`
-        } `;
+          } `;
       }
       if (!isEmpty(allOptions)) {
         searchQuery = `sharedId:(${allOptions.map(option => option.sharedId).join(' OR ')}) OR (${searchQuery})`;
@@ -198,15 +210,11 @@ const Relationships = ({
             if (!existingOption) {
               allOptions.push({
                 sharedId: entity.sharedId as string,
-                label: !extractor?.inheritedProperty
-                  ? (entity.title as string)
-                  : `${entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label || (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string)} (${entity.title as string})`,
+                label: getEntityLabel(entity, extractor),
                 suggested: false,
               });
             } else {
-              existingOption.label = !extractor?.inheritedProperty
-                ? (entity.title as string)
-                : `${entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label || (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string)} (${entity.title as string})`;
+              existingOption.label = getEntityLabel(entity, extractor);
             }
           });
 
@@ -242,11 +250,10 @@ const Relationships = ({
       )
         ? '.label'
         : '';
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
-        extractor?.inheritedProperty && extractor?.inheritedProperty?.name
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && extractor?.inheritedProperty?.name
           ? `metadata.${extractor?.inheritedProperty?.name}${searchField}:(${searchTerm}*)`
           : `title:(${searchTerm}*)`
-      } `;
+        } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
@@ -258,9 +265,7 @@ const Relationships = ({
 
       setOptions(() =>
         response.map((entity: ClientEntitySchema) => {
-          const label = !extractor?.inheritedProperty
-            ? (entity.title as string)
-            : `${entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label || (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string)} (${entity.title as string})`;
+          const label = getEntityLabel(entity, extractor);
           return {
             label: (
               <MultiselectItemLabel

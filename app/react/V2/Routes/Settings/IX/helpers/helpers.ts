@@ -51,6 +51,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   });
 
   currentValues.forEach(currentValue => {
+    const currentValueId = get(currentValue, 'id') || currentValue;
     suggestion.subRows?.push({
       ...suggestionWithoutChildren,
       suggestedValue: '',
@@ -58,7 +59,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       disableRowSelection: true,
       isChild: true,
       entityTitle: '',
-      rowId: `${suggestion.rowId}-${currentValue}`,
+      rowId: `${suggestion.rowId}-${currentValueId}`,
     });
   });
 
