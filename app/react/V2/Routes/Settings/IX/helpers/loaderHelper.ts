@@ -3,6 +3,7 @@ import { get, has, isEmpty } from 'lodash';
 import { ClientPropertySchema, ClientEntitySchema } from 'app/istore';
 import { search } from 'V2/api/search';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { ClientTemplateSchema } from 'app/V2/shared/types';
 import { SuggestionValue, EntitySuggestion } from '../types';
 
 const searchRelatedEntities = async (
@@ -62,35 +63,9 @@ const getPropertyValuesMap = async (
 };
 
 const getRelationshipInfo = (
-  suggestions: {
-    rowId: string;
-    disableRowSelection: boolean;
-    extractorSource: any;
-    entityId: string;
-    extractorId: string;
-    entityTemplateId: string;
-    sharedId: string;
-    fileId: string;
-    entityTitle: string;
-    propertyName: string;
-    labeledValue?:
-      | import('/home/mercy/Projects/uwazi/app/shared/types/commonTypes').PropertyValueSchema
-      | undefined;
-    selectionRectangles?:
-      | { top: number; left: number; width: number; height: number; page?: string }[]
-      | undefined;
-    segment: string;
-    language: string;
-    state: import('/home/mercy/Projects/uwazi/app/shared/types/suggestionType').IXSuggestionStateType;
-    page?: number | undefined;
-    status?: 'processing' | 'failed' | 'ready' | undefined;
-    date: number;
-    _id: string;
-    suggestedValue: SuggestionValue | SuggestionValue[];
-    currentValue?: SuggestionValue | SuggestionValue[];
-  }[],
+  suggestions: EntitySuggestion[],
   property: PropertySchema,
-  templates: import('/home/mercy/Projects/uwazi/app/react/apiResponseTypes').Template[]
+  templates: ClientTemplateSchema[]
 ) => {
   const allCurrentValueIds = new Set<string>();
   const allSuggestedValueIds = new Set<string>();
@@ -118,40 +93,16 @@ const getRelationshipInfo = (
   if (property.inherit) {
     const targetTemplate = templates.find(t => t._id === property.content);
     if (targetTemplate) {
-      targetProperty = targetTemplate.properties?.find(p => p._id === property.inherit?.property);
+      targetProperty = targetTemplate.properties?.find(
+        (p: ClientPropertySchema) => p._id === property.inherit?.property
+      );
     }
   }
   return { allCurrentValueIds, targetProperty, allSuggestedValueIds };
 };
 
 const updateSuggestionValues = (
-  suggestions: {
-    rowId: string;
-    disableRowSelection: boolean;
-    extractorSource: any;
-    date: number;
-    entityId: string;
-    extractorId: string;
-    entityTemplateId: string;
-    sharedId: string;
-    fileId: string;
-    entityTitle: string;
-    propertyName: string;
-    labeledValue?:
-      | import('/home/mercy/Projects/uwazi/app/shared/types/commonTypes').PropertyValueSchema
-      | undefined;
-    selectionRectangles?:
-      | { top: number; left: number; width: number; height: number; page?: string }[]
-      | undefined;
-    segment: string;
-    language: string;
-    state: import('/home/mercy/Projects/uwazi/app/shared/types/suggestionType').IXSuggestionStateType;
-    page?: number | undefined;
-    status?: 'processing' | 'failed' | 'ready' | undefined;
-    _id: string;
-    suggestedValue: SuggestionValue | SuggestionValue[];
-    currentValue?: SuggestionValue | SuggestionValue[];
-  }[],
+  suggestions: EntitySuggestion[],
   entityCurrentValuesMap: Map<string, string>,
   entitySuggestedValuesMap: Map<string, string>
 ) => {
