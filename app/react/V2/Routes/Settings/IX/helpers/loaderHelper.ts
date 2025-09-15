@@ -49,10 +49,10 @@ const getPropertyValuesMap = async (
   searchResult.forEach((entity: ClientEntitySchema) => {
     if (entity.sharedId) {
       if (property.type === 'relationship' && targetProperty?.name) {
-        entityPropertyValuesMap.set(
-          entity.sharedId,
-          (entity.metadata?.[targetProperty.name]?.[0]?.value as string) || ''
-        );
+        const label =
+          entity.metadata?.[targetProperty.name]?.[0]?.label ||
+          (entity.metadata?.[targetProperty.name]?.[0]?.value as string);
+        entityPropertyValuesMap.set(entity.sharedId, label || '');
       } else {
         entityPropertyValuesMap.set(entity.sharedId, entity.title || '');
       }

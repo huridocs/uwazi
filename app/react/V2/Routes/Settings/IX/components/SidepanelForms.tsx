@@ -3,7 +3,7 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { get, uniqBy } from 'lodash';
+import { get, isEmpty, uniqBy } from 'lodash';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import {
@@ -168,16 +168,6 @@ const Relationships = ({
         ? suggestion.suggestedValue
         : [suggestion.suggestedValue];
 
-      let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
-
-      if (searchTextRef.current) {
-        searchQuery = `${searchQuery} ${
-          extractor?.inheritedProperty
-            ? ` AND ${extractor?.inheritedProperty?.name}:(${searchTextRef.current})`
-            : ` AND title:(${searchTextRef.current})`
-        } `;
-      }
-
       const allOptions: { sharedId: string; label: string; suggested: boolean }[] = uniqBy(
         currentValues
           .concat(suggestedValues)
@@ -189,18 +179,34 @@ const Relationships = ({
           })),
         'sharedId'
       );
+      let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
+      if (searchTextRef.current) {
+        searchQuery = `${searchQuery} ${
+          extractor?.inheritedProperty
+            ? ` AND metadata.${extractor?.inheritedProperty?.name}:(${searchTextRef.current})`
+            : ` AND title:(${searchTextRef.current})`
+        } `;
+      }
+      if (!isEmpty(allOptions)) {
+        searchQuery = `sharedId:(${allOptions.map(option => option.sharedId).join(' OR ')}) OR (${searchQuery})`;
+      }
 
       searchRelatedEntities(searchQuery, extractor?.inheritedProperty)
         .then((searchResult: ClientEntitySchema[]) => {
           searchResult.forEach(entity => {
-            if (!allOptions.find(option => entity.sharedId === option?.sharedId)) {
+            const existingOption = allOptions.find(option => entity.sharedId === option?.sharedId);
+            if (!existingOption) {
               allOptions.push({
                 sharedId: entity.sharedId as string,
                 label: !extractor?.inheritedProperty
                   ? (entity.title as string)
-                  : (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string),
+                  : `${entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label || (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string)} (${entity.title as string})`,
                 suggested: false,
               });
+            } else {
+              existingOption.label = !extractor?.inheritedProperty
+                ? (entity.title as string)
+                : `${entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label || (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string)} (${entity.title as string})`;
             }
           });
 
@@ -231,9 +237,14 @@ const Relationships = ({
     if (!searchTerm) {
       setOptions(initialOptionsRef.current);
     } else {
+      const searchField = ['select', 'multiselect'].includes(
+        extractor?.inheritedProperty?.type || ''
+      )
+        ? '.label'
+        : '';
       const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
         extractor?.inheritedProperty && extractor?.inheritedProperty?.name
-          ? `${extractor?.inheritedProperty?.name}:(${searchTerm}*)`
+          ? `metadata.${extractor?.inheritedProperty?.name}${searchField}:(${searchTerm}*)`
           : `title:(${searchTerm}*)`
       } `;
 
@@ -246,20 +257,23 @@ const Relationships = ({
       const suggestedSharedIds = suggestedValues.map(value => get(value, 'value') || value);
 
       setOptions(() =>
-        response.map((entity: ClientEntitySchema) => ({
-          label: (
-            <MultiselectItemLabel
-              isSuggested={suggestedSharedIds.includes(entity.sharedId!)}
-              label={entity.title!}
-              property={property!}
-            />
-          ),
-          value: entity.sharedId!,
-          searchLabel: !extractor?.inheritedProperty
+        response.map((entity: ClientEntitySchema) => {
+          const label = !extractor?.inheritedProperty
             ? (entity.title as string)
-            : (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label as string),
-          suggested: suggestedSharedIds.includes(entity.sharedId!),
-        }))
+            : `${entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.label || (entity.metadata?.[extractor?.inheritedProperty.name]?.[0]?.value as string)} (${entity.title as string})`;
+          return {
+            label: (
+              <MultiselectItemLabel
+                isSuggested={suggestedSharedIds.includes(entity.sharedId!)}
+                label={label}
+                property={property!}
+              />
+            ),
+            value: entity.sharedId!,
+            searchLabel: label,
+            suggested: suggestedSharedIds.includes(entity.sharedId!),
+          };
+        })
       );
     }
   };

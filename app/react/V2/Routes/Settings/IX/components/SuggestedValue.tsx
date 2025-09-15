@@ -29,7 +29,7 @@ const SuggestedValue = ({
   }
   if (
     value === suggestion.suggestedValue ||
-    get(value, 'id') === get(suggestion.suggestedValue, 'id')
+    (get(value, 'id') !== undefined && get(value, 'id') === get(suggestion.suggestedValue, 'id'))
   ) {
     colorClass = 'text-green-600';
   } else {

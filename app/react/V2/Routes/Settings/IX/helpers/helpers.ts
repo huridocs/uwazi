@@ -32,7 +32,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       v =>
         v === suggestedValue ||
         v === get(suggestedValue, 'id') ||
-        (get(v, 'id') === get(suggestedValue, 'id') && get(v, 'id') !== undefined)
+        (get(v, 'id') !== undefined && get(v, 'id') === get(suggestedValue, 'id'))
     );
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);

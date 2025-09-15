@@ -100,7 +100,8 @@ const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
       s =>
         s.currentValue === s.suggestedValue ||
         s.currentValue === get(s.suggestedValue, 'id') ||
-        get(s.currentValue, 'id') === get(s.suggestedValue, 'id')
+        (get(s.currentValue, 'id') !== undefined &&
+          get(s.currentValue, 'id') === get(s.suggestedValue, 'id'))
     ).length || 0;
   const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
 
