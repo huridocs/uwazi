@@ -11,6 +11,7 @@ import { ThesauriDataSource } from '../domain/template/propertyCreatorService/Se
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
 import { TranslationService } from '../domain/template/TranslationService';
 import { CreateTemplateDTO } from './TemplateDTOs';
+import { PageService } from '../domain/template/PageService';
 
 type Output = Template;
 
@@ -22,6 +23,7 @@ type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;
   idGenerator: IdGenerator;
   transactionManager: TransactionManager;
+  pageService: PageService;
 };
 
 class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output> {
@@ -61,13 +63,17 @@ class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output> {
       input.name,
       properties,
       commonProperties,
-      input.color
+      input.color,
+      false,
+      input.entityViewPage
     );
 
     const isTemplateUnique = await this.deps.templatesDS.isTemplateUnique(template);
     if (!isTemplateUnique) {
       throw new TemplateWithDuplicatedNameOnTheSystemError(template);
     }
+
+    await this.deps.pageService.ensurePageIsValid(template);
 
     await this.deps.transactionManager.run(async () => {
       await this.deps.templatesDS.create(template);

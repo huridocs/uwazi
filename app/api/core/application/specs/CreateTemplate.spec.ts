@@ -12,6 +12,7 @@ import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/templa
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
+import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {
@@ -21,6 +22,7 @@ const createSut = () => {
   const settingsDS = DefaultSettingsDataSource(transactionManager);
   const translationService = new LegacyTranslationService();
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+  const pageService = new LegacyPageService();
 
   const sut = new CreateTemplateUseCase({
     templatesDS,
@@ -30,6 +32,7 @@ const createSut = () => {
     translationService,
     relationshipTypesDS,
     transactionManager,
+    pageService,
   });
 
   return { sut };
@@ -75,12 +78,16 @@ const fixtures: DBFixture = {
   ],
 
   templates: [factory.template('targetedTemplate', [factory.property('date1', 'date')])],
+
+  pages: [{ sharedId: 'existing_not_enabled', title: 'Page', entityView: false }],
 };
 
 describe('CreateTemplateUseCase', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_spec_index.v2');
   });
+
+  afterEach(async () => testingEnvironment.setFixtures(fixtures));
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
@@ -128,7 +135,6 @@ describe('CreateTemplateUseCase', () => {
           },
         },
 
-        // { label: 'Relationship', type: 'relationship' },
         // { label: 'New Relationship', type: 'newRelationship' }, // missing
         // { label: 'Nested', type: 'nested' }, // missing
       ],
@@ -478,5 +484,53 @@ describe('CreateTemplateUseCase', () => {
     const templates = await testingEnvironment.db.getAllFrom('templates');
 
     expect(templates).toHaveLength(1);
+  });
+
+  it('should throw if entity page view does not exist', async () => {
+    const { sut } = createSut();
+    await expect(
+      sut.execute({
+        name: 'Template Name',
+        properties: [],
+        commonProperties: [
+          { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
+          { label: 'Creation Date', type: 'date', name: 'creationDate', isCommonProperty: true },
+          { label: 'Edit Date', type: 'date', name: 'editDate', isCommonProperty: true },
+        ],
+        color: '#142134',
+        entityViewPage: 'not_exists',
+      })
+    ).rejects.toMatchObject({
+      errors: [
+        expect.objectContaining({
+          message: 'The selected page does not exist',
+          keyword: 'entityViewPageExists',
+        }),
+      ],
+    });
+  });
+
+  it('should throw if entity page view is not enabled', async () => {
+    const { sut } = createSut();
+    await expect(
+      sut.execute({
+        name: 'Template Name',
+        properties: [],
+        commonProperties: [
+          { label: 'Title', type: 'text', name: 'title', isCommonProperty: true },
+          { label: 'Creation Date', type: 'date', name: 'creationDate', isCommonProperty: true },
+          { label: 'Edit Date', type: 'date', name: 'editDate', isCommonProperty: true },
+        ],
+        color: '#142134',
+        entityViewPage: 'existing_not_enabled',
+      })
+    ).rejects.toMatchObject({
+      errors: [
+        expect.objectContaining({
+          message: 'The selected page is not enabled for entity view',
+          keyword: 'entityViewPageIsEnabled',
+        }),
+      ],
+    });
   });
 });

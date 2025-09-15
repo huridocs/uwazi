@@ -33,21 +33,6 @@ import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper'
 import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
-import { checkIfReindex } from './reindex';
-import model from './templatesModel';
-import {
-  setInheritedPropertiesType,
-  generateNames,
-  getDeletedProperties,
-  getRenamedTitle,
-  getUpdatedNames,
-  updateExtractedMetadataProperties,
-} from './utils';
-import * as v2 from './v2_support';
-import { TemplateValidationService } from './validation/TemplateValidationService';
-import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
 import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
 import {
   CreateTemplateDTOSchema,
@@ -61,6 +46,22 @@ import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
+import { TemplateValidationService } from './validation/TemplateValidationService';
+import * as v2 from './v2_support';
+import {
+  setInheritedPropertiesType,
+  generateNames,
+  getDeletedProperties,
+  getRenamedTitle,
+  getUpdatedNames,
+  updateExtractedMetadataProperties,
+} from './utils';
+import model from './templatesModel';
+import { checkIfReindex } from './reindex';
+import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -187,6 +188,7 @@ export default {
         settingsDS: DefaultSettingsDataSource(transactionManager),
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
         transactionManager,
+        pageService: new LegacyPageService(),
       }).execute(input);
 
       return TemplateMapper.toSchema(output);
