@@ -696,7 +696,7 @@ describe('Sidepanel forms', () => {
       await waitFor(() => {
         expectSearchCall(
           ['title', 'sharedId', 'metadata.inherited_property'],
-          '(template:template2) AND language:(en) AND metadata.inherited_property:(Selected text from PDF*)'
+          '(template:template2) AND language:(en) AND (metadata.inherited_property.value:("Selected text from PDF") OR metadata.inherited_property.value:(Selected text from PDF*))'
         );
       });
     });

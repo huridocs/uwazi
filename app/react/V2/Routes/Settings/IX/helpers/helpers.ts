@@ -249,4 +249,14 @@ const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
     };
   });
 
-export { generateChildrenRows, getAvailableSources, getMetadataFromProperty, formatAccepted };
+const escapeLucene = (value: string): string => {
+  return value.replace(/([+!(){}[\]^"~*?:\\/-]|&&|\|\|)/g, '\\$1');
+};
+
+export {
+  generateChildrenRows,
+  getAvailableSources,
+  getMetadataFromProperty,
+  formatAccepted,
+  escapeLucene,
+};

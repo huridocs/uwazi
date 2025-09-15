@@ -20,8 +20,7 @@ import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
-import { searchRelatedEntities } from '../helpers/loaderHelper';
-
+import { escapeLucene, searchRelatedEntities } from '../helpers';
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
@@ -194,11 +193,22 @@ const Relationships = ({
       );
       let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
       if (searchTextRef.current) {
-        searchQuery = `${searchQuery} ${
-          extractor?.inheritedProperty
-            ? ` AND metadata.${extractor?.inheritedProperty?.name}:(${searchTextRef.current})`
-            : ` AND title:(${searchTextRef.current})`
-        } `;
+        const escapedText = escapeLucene(searchTextRef.current.trim());
+        const fieldName = extractor?.inheritedProperty?.name;
+
+        let searchField = ['select', 'multiselect'].includes(
+          extractor?.inheritedProperty?.type || ''
+        )
+          ? '.label'
+          : '.value';
+
+        if (extractor?.inheritedProperty) {
+          const exactMatchText = `metadata.${fieldName}${searchField}:("${escapedText}")`;
+          const wildcardMatchText = `metadata.${fieldName}${searchField}:(${escapedText}*)`;
+          searchQuery = `${searchQuery} AND  (${exactMatchText} OR ${wildcardMatchText})`;
+        } else {
+          searchQuery = `${searchQuery} AND title:(${escapedText}*)`;
+        }
       }
       if (!isEmpty(allOptions)) {
         searchQuery = `sharedId:(${allOptions.map(option => option.sharedId).join(' OR ')}) OR (${searchQuery})`;
@@ -246,15 +256,17 @@ const Relationships = ({
     if (!searchTerm) {
       setOptions(initialOptionsRef.current);
     } else {
-      const searchField = ['select', 'multiselect'].includes(
-        extractor?.inheritedProperty?.type || ''
-      )
+      const escapedText = escapeLucene(searchTerm.trim());
+      const fieldName = extractor?.inheritedProperty?.name;
+
+      let searchField = ['select', 'multiselect'].includes(extractor?.inheritedProperty?.type || '')
         ? '.label'
-        : '';
+        : '.value';
+
       const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
-        extractor?.inheritedProperty && extractor?.inheritedProperty?.name
-          ? `metadata.${extractor?.inheritedProperty?.name}${searchField}:(${searchTerm}*)`
-          : `title:(${searchTerm}*)`
+        extractor?.inheritedProperty && fieldName
+          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+          : `title:(${escapedText}*)`
       } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
