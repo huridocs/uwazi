@@ -6,6 +6,12 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientTemplateSchema } from 'app/V2/shared/types';
 import { SuggestionValue, EntitySuggestion } from '../types';
 
+type TransformedSuggestion = EntitySuggestion & {
+  rowId: string;
+  disableRowSelection: boolean;
+  extractorSource: any;
+};
+
 const searchRelatedEntities = async (
   searchString: string,
   targetProperty: ClientPropertySchema | undefined,
@@ -63,7 +69,7 @@ const getPropertyValuesMap = async (
 };
 
 const getRelationshipInfo = (
-  suggestions: EntitySuggestion[],
+  suggestions: TransformedSuggestion[],
   property: PropertySchema,
   templates: ClientTemplateSchema[]
 ) => {
@@ -102,7 +108,7 @@ const getRelationshipInfo = (
 };
 
 const updateSuggestionValues = (
-  suggestions: EntitySuggestion[],
+  suggestions: TransformedSuggestion[],
   entityCurrentValuesMap: Map<string, string>,
   entitySuggestedValuesMap: Map<string, string>
 ) => {

@@ -57,7 +57,11 @@ const lookup = async (
 };
 
 const search = async (
-  { filters, fields, limit = 10 }: { filters: SearchQuery['filter']; fields: SearchQuery['fields']; limit?: number },
+  {
+    filters,
+    fields,
+    limit = 10,
+  }: { filters: SearchQuery['filter']; fields: SearchQuery['fields']; limit?: number },
   headers?: IncomingHttpHeaders
 ) => {
   try {

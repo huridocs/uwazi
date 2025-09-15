@@ -38,6 +38,50 @@ describe('loaderHelper', () => {
     type: type as any,
   });
 
+  const createMockSuggestion = (overrides: any = {}) => ({
+    _id: 'suggestion1',
+    currentValue: [],
+    suggestedValue: [],
+    rowId: 'row1',
+    disableRowSelection: false,
+    extractorSource: {},
+    entityId: 'entity1',
+    extractorId: 'extractor1',
+    entityTemplateId: 'template1',
+    sharedId: 'shared1',
+    fileId: 'file1',
+    entityTitle: 'Entity Title',
+    propertyName: 'testProperty',
+    labeledValue: undefined,
+    selectionRectangles: undefined,
+    segment: 'segment',
+    language: 'en',
+    state: {
+      labeled: false,
+      withValue: true,
+      withSuggestion: true,
+      hasContext: true,
+      obsolete: false,
+      processing: false,
+      error: false,
+    },
+    page: undefined,
+    status: undefined,
+    date: 1234567890,
+    ...overrides,
+  });
+
+  const createMockRelationshipProperty = (): PropertySchema => ({
+    _id: 'prop1',
+    name: 'relationship_property',
+    label: 'Relationship Property',
+    type: 'relationship' as const,
+    content: 'template1',
+    inherit: {
+      property: 'prop1',
+    },
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -156,53 +200,16 @@ describe('loaderHelper', () => {
 
     it('should extract current and suggested value IDs from suggestions', () => {
       const suggestions = [
-        {
-          _id: 'suggestion1',
+        createMockSuggestion({
           currentValue: ['current1', 'current2'],
           suggestedValue: [
             { id: 'suggested1', label: 'Suggested 1' },
             { id: 'suggested2', label: 'Suggested 2' },
           ],
-          rowId: 'row1',
-          disableRowSelection: false,
-          extractorSource: {},
-          entityId: 'entity1',
-          extractorId: 'extractor1',
-          entityTemplateId: 'template1',
-          sharedId: 'shared1',
-          fileId: 'file1',
-          entityTitle: 'Entity Title',
-          propertyName: 'testProperty',
-          labeledValue: undefined,
-          selectionRectangles: undefined,
-          segment: 'segment',
-          language: 'en',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          page: undefined,
-          status: undefined,
-          date: 1234567890,
-        },
+        }),
       ];
 
-      const property: PropertySchema = {
-        _id: 'prop1',
-        name: 'relationship_property',
-        label: 'Relationship Property',
-        type: 'relationship' as const,
-        content: 'template1',
-        inherit: {
-          property: 'prop1',
-        },
-      };
-
+      const property = createMockRelationshipProperty();
       const result = getRelationshipInfo(suggestions, property, mockTemplates);
 
       expect(result.allCurrentValueIds).toEqual(new Set(['current1', 'current2']));
@@ -212,47 +219,13 @@ describe('loaderHelper', () => {
 
     it('should handle string values in current and suggested values', () => {
       const suggestions = [
-        {
-          _id: 'suggestion1',
+        createMockSuggestion({
           currentValue: 'current1',
           suggestedValue: 'suggested1',
-          rowId: 'row1',
-          disableRowSelection: false,
-          extractorSource: {},
-          entityId: 'entity1',
-          extractorId: 'extractor1',
-          entityTemplateId: 'template1',
-          sharedId: 'shared1',
-          fileId: 'file1',
-          entityTitle: 'Entity Title',
-          propertyName: 'testProperty',
-          labeledValue: undefined,
-          selectionRectangles: undefined,
-          segment: 'segment',
-          language: 'en',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          page: undefined,
-          status: undefined,
-          date: 1234567890,
-        },
+        }),
       ];
 
-      const property: PropertySchema = {
-        _id: 'prop1',
-        name: 'relationship_property',
-        label: 'Relationship Property',
-        type: 'relationship' as const,
-        content: 'template1',
-      };
-
+      const property = createMockRelationshipProperty();
       const result = getRelationshipInfo(suggestions, property, mockTemplates);
 
       expect(result.allCurrentValueIds).toEqual(new Set(['current1']));
@@ -263,37 +236,10 @@ describe('loaderHelper', () => {
   describe('updateSuggestionValues', () => {
     it('should update suggestion values with entity labels', () => {
       const suggestions = [
-        {
-          _id: 'suggestion1',
+        createMockSuggestion({
           currentValue: ['current1', 'current2'],
           suggestedValue: ['suggested1'],
-          rowId: 'row1',
-          disableRowSelection: false,
-          extractorSource: {},
-          entityId: 'entity1',
-          extractorId: 'extractor1',
-          entityTemplateId: 'template1',
-          sharedId: 'shared1',
-          fileId: 'file1',
-          entityTitle: 'Entity Title',
-          propertyName: 'testProperty',
-          labeledValue: undefined,
-          selectionRectangles: undefined,
-          segment: 'segment',
-          language: 'en',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          page: undefined,
-          status: undefined,
-          date: 1234567890,
-        },
+        }),
       ];
 
       const entityCurrentValuesMap = new Map([
@@ -318,41 +264,13 @@ describe('loaderHelper', () => {
 
     it('should handle mixed value types', () => {
       const suggestions = [
-        {
-          _id: 'suggestion1',
+        createMockSuggestion({
           currentValue: ['current1', { id: 'current2', label: 'Already Labeled' }],
           suggestedValue: ['suggested1'],
-          rowId: 'row1',
-          disableRowSelection: false,
-          extractorSource: {},
-          entityId: 'entity1',
-          extractorId: 'extractor1',
-          entityTemplateId: 'template1',
-          sharedId: 'shared1',
-          fileId: 'file1',
-          entityTitle: 'Entity Title',
-          propertyName: 'testProperty',
-          labeledValue: undefined,
-          selectionRectangles: undefined,
-          segment: 'segment',
-          language: 'en',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          page: undefined,
-          status: undefined,
-          date: 1234567890,
-        },
+        }),
       ];
 
       const entityCurrentValuesMap = new Map([['current1', 'Current Label 1']]);
-
       const entitySuggestedValuesMap = new Map([['suggested1', 'Suggested Label 1']]);
 
       const result = updateSuggestionValues(
@@ -365,41 +283,15 @@ describe('loaderHelper', () => {
         { id: 'current1', label: 'Current Label 1' },
         { id: 'current2', label: 'Already Labeled' },
       ]);
+      expect(result[0].suggestedValue).toEqual([{ id: 'suggested1', label: 'Suggested Label 1' }]);
     });
 
     it('should handle empty values', () => {
       const suggestions = [
-        {
-          _id: 'suggestion1',
+        createMockSuggestion({
           currentValue: [],
           suggestedValue: [],
-          rowId: 'row1',
-          disableRowSelection: false,
-          extractorSource: {},
-          entityId: 'entity1',
-          extractorId: 'extractor1',
-          entityTemplateId: 'template1',
-          sharedId: 'shared1',
-          fileId: 'file1',
-          entityTitle: 'Entity Title',
-          propertyName: 'testProperty',
-          labeledValue: undefined,
-          selectionRectangles: undefined,
-          segment: 'segment',
-          language: 'en',
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: true,
-            hasContext: true,
-            obsolete: false,
-            processing: false,
-            error: false,
-          },
-          page: undefined,
-          status: undefined,
-          date: 1234567890,
-        },
+        }),
       ];
 
       const entityCurrentValuesMap = new Map();
