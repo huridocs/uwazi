@@ -258,11 +258,15 @@ describe('Information Extraction', () => {
       cy.checkA11y();
     });
 
-    it('should find suggestions successfully', () => {
+    it('should train the model and find suggestions', () => {
       cy.intercept('POST', 'api/suggestions/train').as('trainSuggestions');
       cy.get('table tr').should('have.length.above', 1);
       cy.checkA11y();
-      cy.contains('button', 'Find suggestions').click();
+      cy.contains('button', 'Train model').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Find suggestions after training').click();
+        cy.contains('button', 'Train').click();
+      });
       cy.wait('@trainSuggestions');
       cy.contains('tr', 'obsolete').contains('button', 'Accept').should('be.disabled');
       cy.contains('2023');
@@ -380,7 +384,71 @@ describe('Information Extraction', () => {
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2018-12-01');
         cy.contains('New York City teenager Miles Morales');
+        cy.contains('button', 'Cancel').click();
       });
+    });
+  });
+
+  describe('auto accept', () => {
+    it('should navigate to another extractor', () => {
+      cy.contains('a', 'Metadata Extraction').click();
+      cy.contains('tr', 'Fechas from relevant templates').contains('a', 'Review').click();
+    });
+
+    it('should train a find suggestions', () => {
+      cy.intercept('POST', 'api/suggestions/train').as('trainSuggestions');
+
+      cy.contains('button', 'Train model').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Find suggestions after training').click();
+        cy.contains('button', 'Train').click();
+      });
+      cy.wait('@trainSuggestions');
+      cy.contains('tr', 'obsolete');
+      cy.contains('February 3, 2020');
+    });
+
+    it('should select and auto accept for selection', () => {
+      cy.contains('tr', '2023 (en)').contains('label', 'Select').click();
+      cy.contains('tr', 'A title (en)').contains('label', 'Select').click();
+      cy.contains('button', 'Process selected').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('For all entities').click();
+        cy.contains('button', 'Process').click();
+      });
+      cy.contains('tr', '2023 (en)').contains(
+        'span[class="text-left text-green-600"]',
+        'February 3, 2020'
+      );
+      cy.contains('tr', 'A title (en)').contains(
+        'span[class="text-left text-green-600"]',
+        'February 3, 2020'
+      );
+    });
+
+    it('should auto accept for all', () => {
+      cy.contains('button', 'Process extractor').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('From all suggestions').click();
+        cy.contains('For all entities').click();
+        cy.contains('button', 'Process').click();
+      });
+      cy.contains(
+        'tr',
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)'
+      ).contains('span[class="text-left text-green-600"]', 'February 3, 2020');
+      cy.contains('tr', 'Spider-Man: Shattered Dimensions (en)').contains(
+        'span[class="text-left text-green-600"]',
+        'February 3, 2020'
+      );
+      cy.contains('tr', 'Batman v Superman: Dawn of Justice (en)').contains(
+        'span[class="text-left text-green-600"]',
+        'February 3, 2020'
+      );
+      cy.contains('tr', 'The Amazing Spider-Man (en)').contains(
+        'span[class="text-left text-green-600"]',
+        'February 3, 2020'
+      );
     });
   });
 });
