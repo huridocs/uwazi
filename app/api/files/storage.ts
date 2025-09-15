@@ -1,5 +1,5 @@
 import { NoSuchKey, S3Client } from '@aws-sdk/client-s3';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { NodeHttpHandler, NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { inspect } from 'util';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
@@ -30,10 +30,8 @@ let s3Instance: S3Storage;
 
 const buildS3Client = (params: {}) => {
   const client = new S3Client({
-    requestHandler: new NodeHttpHandler({
-      socketTimeout: 30000,
-      ...params,
-    }),
+    maxAttempts: 5,
+    requestHandler: new NodeHttpHandler(params),
     apiVersion: 'latest',
     region: 'placeholder-region',
     endpoint: config.s3.endpoint,
@@ -82,12 +80,15 @@ const buildS3Client = (params: {}) => {
   return client;
 };
 const s3 = () => {
-  const params: { connectionTimeout: number; httpAgent?: {} } = {
-    connectionTimeout: 15000,
+  const params: NodeHttpHandlerOptions = {
+    socketTimeout: 30000,
+    connectionTimeout: 3000,
     httpAgent: {
-      maxSockets: 50,
+      maxSockets: 500,
+      timeout: 60000,
+      maxFreeSockets: 100,
       keepAlive: true,
-      keepAliveMsecs: 1000,
+      keepAliveMsecs: 30000,
     },
   };
 
