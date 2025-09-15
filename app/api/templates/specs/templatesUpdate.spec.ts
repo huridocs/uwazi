@@ -55,6 +55,7 @@ afterAll(async () => {
 
 async function updateTemplate(template: TemplateSchema, updateV2 = false) {
   if (updateV2) {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
     return templates.save(template, 'en', true, false);
   }
   return new Promise<void>((resolve, reject) => {
@@ -77,7 +78,7 @@ describe.each([
     title: 'Template Update v1',
     featureFlag: false,
   },
-  // { title: 'Template Update v2', featureFlag: true },
+  { title: 'Template Update v2', featureFlag: true },
 ])('$title', ({ featureFlag }) => {
   async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
@@ -104,7 +105,7 @@ describe.each([
         ],
       },
     ],
-    relationtypes: [f.relationType('rel1'), f.relationType('rel2')],
+    relationtypes: [f.relationType('rel1'), f.relationType('rel2'), f.relationType('rel')],
     templates: [
       f.template('templateA', [f.property('text_property')]),
       f.template('templateB', [

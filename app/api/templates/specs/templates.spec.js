@@ -11,6 +11,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
 
+import { applicationEventsBus } from 'api/eventsbus';
 import { testingTenants } from 'api/utils/testingTenants';
 import { inspect } from 'util';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
@@ -34,7 +35,6 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
-import { applicationEventsBus } from 'api/eventsbus';
 
 jest.mock('../templateUpdateDenormalizeUseCase', () => ({
   denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
@@ -153,7 +153,7 @@ describe('templates', () => {
       ]);
     });
 
-    it('should not allow to change property types', async () => {
+    it('should not allow to swap property names', async () => {
       const changedTemplate = {
         _id: swapTemplate,
         name: 'swap names template',
@@ -597,7 +597,7 @@ describe('templates', () => {
     it('should return number of templates using a thesauri', async () => {
       const result = await templates.countByThesauri(thesauriId1.toString());
 
-      expect(result).toBe(3);
+      expect(result).toBe(4);
     });
 
     it('should return zero when none is using it', async () => {

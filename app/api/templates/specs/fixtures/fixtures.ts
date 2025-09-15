@@ -194,7 +194,15 @@ const fixtures: DBFixture = {
     {
       _id: swapTemplate,
       name: 'swap names template',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+      commonProperties: [
+        {
+          _id: factory.id('swap names template title').toString(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+      ],
       properties: [
         { _id: factory.id('text_id'), type: propertyTypes.text, name: 'text', label: 'Text' },
         {
@@ -202,6 +210,7 @@ const fixtures: DBFixture = {
           type: propertyTypes.select,
           name: 'select5',
           label: 'Select5',
+          content: thesauriId1.toString(),
         },
       ],
     },

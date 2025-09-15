@@ -55,7 +55,7 @@ import {
 } from 'api/core/application/TemplateDTOs';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { DenormalizeV1RelationshipsJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
@@ -216,8 +216,8 @@ export default {
         transactionManager,
       });
       let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
-        DenormalizeV1RelationshipsJob: async () =>
-          new DenormalizeV1RelationshipsJob({ useCase, templatesDS }),
+        TemplatePostProcessEntitiesJob: async () =>
+          new TemplatePostProcessEntitiesJob({ useCase, templatesDS }),
       });
 
       if (process.env.NODE_ENV !== 'test') {
@@ -232,7 +232,7 @@ export default {
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
         jobsDispatcher: dispatcher,
         entitiesDS,
-      }).execute(input);
+      }).execute(input, language);
 
       return TemplateMapper.toSchema(output);
     }

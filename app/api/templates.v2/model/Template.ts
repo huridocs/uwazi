@@ -16,7 +16,11 @@ class Template {
 
   readonly commonProperties: CommonProperty[] = [];
 
-  private _processing = {
+  private _processing: {
+    active?: boolean;
+    totalJobs?: number;
+    completedJobs?: number;
+  } = {
     active: false,
   };
 
@@ -48,6 +52,12 @@ class Template {
 
   get allProperties() {
     return [...this.commonProperties, ...this.properties];
+  }
+
+  set processing(
+    processing: { active?: boolean; totalJobs?: number; completedJobs?: number } | undefined
+  ) {
+    this._processing = processing || { active: false };
   }
 
   get processing() {

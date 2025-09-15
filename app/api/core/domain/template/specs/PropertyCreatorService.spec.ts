@@ -9,11 +9,12 @@ import { PropertyTypeMismatchError } from '../errors';
 const prevCreated = new ObjectId();
 
 describe('PropertyCreatorService', () => {
+  const templateId = new ObjectId();
   beforeAll(async () => {
     await testingEnvironment.setUp({
       templates: [
         {
-          _id: new ObjectId(),
+          _id: templateId,
           color: '#142134',
           name: 'Template Name',
           default: false,
@@ -108,7 +109,7 @@ describe('PropertyCreatorService', () => {
           id: new ObjectId().toHexString(),
           label: 'Text',
           type: 'markdown',
-          template: '',
+          template: new ObjectId().toString(),
         },
         {}
       )
@@ -126,7 +127,7 @@ describe('PropertyCreatorService', () => {
           id: new ObjectId().toHexString(),
           label: 'Text Label',
           type: 'text',
-          template: '',
+          template: templateId.toString(),
         },
         {}
       )
@@ -145,7 +146,7 @@ describe('PropertyCreatorService', () => {
           type: 'text',
           label: 'Previous created',
           name: 'prev_created',
-          template: '',
+          template: templateId.toString(),
         },
         {}
       )

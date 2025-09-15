@@ -7,7 +7,7 @@ import {
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 
-type DenormalizeV1RelationshipsJobParams = UserAwareDispatchableParams & {
+type Params = UserAwareDispatchableParams & {
   entitiesIds: string[];
   templateId: string;
   language: string;
@@ -21,7 +21,7 @@ type JobDependencies = {
   templatesDS: TemplatesDataSource;
 };
 
-export class DenormalizeV1RelationshipsJob extends UserAwareDispatchable<DenormalizeV1RelationshipsJobParams> {
+export class TemplatePostProcessEntitiesJob extends UserAwareDispatchable<Params> {
   public constructor(private dependencies: JobDependencies) {
     super();
   }

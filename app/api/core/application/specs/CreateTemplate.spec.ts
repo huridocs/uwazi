@@ -79,7 +79,7 @@ const fixtures: DBFixture = {
 
 describe('CreateTemplateUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'templates_spec_index');
+    await testingEnvironment.setUp(fixtures, 'templates_spec_index.v2');
   });
 
   afterAll(async () => {

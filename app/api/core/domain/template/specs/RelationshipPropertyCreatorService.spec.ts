@@ -185,7 +185,7 @@ describe('RelationshipPropertyCreatorService', () => {
           id: new ObjectId().toHexString(),
           label: 'Target Any',
           type: 'relationship',
-          template: '',
+          template: templateId.toString(),
           relationType: relationTypeId.toHexString(),
           content: templateId.toHexString(),
           inherit: {

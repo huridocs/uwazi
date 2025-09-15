@@ -1,7 +1,7 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { DenormalizeV1RelationshipsJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -38,8 +38,8 @@ export const denormalizeTemplateEntities = async (
   });
 
   let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
-    DenormalizeV1RelationshipsJob: async () =>
-      new DenormalizeV1RelationshipsJob({ useCase, templatesDS }),
+    TemplatePostProcessEntitiesJob: async () =>
+      new TemplatePostProcessEntitiesJob({ useCase, templatesDS }),
   });
 
   if (process.env.NODE_ENV !== 'test') {
@@ -58,7 +58,7 @@ export const denormalizeTemplateEntities = async (
   // eslint-disable-next-line no-await-in-loop
   while (await resultSet.hasNext()) {
     // eslint-disable-next-line no-await-in-loop
-    await dispatcher.dispatch(DenormalizeV1RelationshipsJob, {
+    await dispatcher.dispatch(TemplatePostProcessEntitiesJob, {
       // eslint-disable-next-line no-await-in-loop
       entitiesIds: await resultSet.nextBatch(limit),
       templateId: template.id,
