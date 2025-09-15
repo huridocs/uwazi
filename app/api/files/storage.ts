@@ -27,15 +27,6 @@ import {
 import { S3Error, S3Storage } from './S3Storage';
 
 let s3Instance: S3Storage;
-const defaultParams: { connectionTimeout: number; httpAgent?: {} } = {
-  connectionTimeout: 15000,
-  httpAgent: {
-    maxSockets: 50,
-    keepAlive: true,
-    keepAliveMsecs: 1000,
-  },
-};
-let previousFeatureFlag = false;
 
 const buildS3Client = (params: {}) => {
   const client = new S3Client({
@@ -61,33 +52,29 @@ const buildS3Client = (params: {}) => {
       const duration = Date.now() - startTime;
 
       if (process.env.NODE_ENV !== 'test') {
-        if (!tenants.current().featureFlags?.deactivateS3Logging) {
-          DefaultLogger().info('S3 operation completed', {
-            operation: context.commandName,
-            duration,
-            key: input.Key,
-            fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
-            success: true,
-            timestamp: new Date().toISOString(),
-          });
-        }
+        DefaultLogger().info('S3 operation completed', {
+          operation: context.commandName,
+          duration,
+          key: input.Key,
+          fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
+          success: true,
+          timestamp: new Date().toISOString(),
+        });
       }
 
       return result;
     } catch (error) {
       if (process.env.NODE_ENV !== 'test') {
-        if (!tenants.current().featureFlags?.deactivateS3Logging) {
-          DefaultLogger().info('S3 operation failed', {
-            operation: context.commandName,
-            duration: Date.now() - startTime,
-            key: input.Key,
-            fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
-            success: false,
-            error: error.message,
-            errorCode: error.$metadata?.httpStatusCode,
-            timestamp: new Date().toISOString(),
-          });
-        }
+        DefaultLogger().info('S3 operation failed', {
+          operation: context.commandName,
+          duration: Date.now() - startTime,
+          key: input.Key,
+          fileSizeKB: Buffer.isBuffer(input.Body) ? input.Body.length / 1024 : NaN,
+          success: false,
+          error: error.message,
+          errorCode: error.$metadata?.httpStatusCode,
+          timestamp: new Date().toISOString(),
+        });
       }
       throw error;
     }
@@ -95,21 +82,17 @@ const buildS3Client = (params: {}) => {
   return client;
 };
 const s3 = () => {
-  const currentFeatureFlag = tenants.current().featureFlags?.deactivateS3Pooling || false;
-  let params = defaultParams;
+  const params: { connectionTimeout: number; httpAgent?: {} } = {
+    connectionTimeout: 15000,
+    httpAgent: {
+      maxSockets: 50,
+      keepAlive: true,
+      keepAliveMsecs: 1000,
+    },
+  };
 
-  if (currentFeatureFlag) {
-    params = {
-      connectionTimeout: 50000,
-    };
-  }
-
-  if (config.s3.endpoint && (!s3Instance || currentFeatureFlag !== previousFeatureFlag)) {
-    if (s3Instance) {
-      s3Instance.destroy();
-    }
+  if (config.s3.endpoint && !s3Instance) {
     s3Instance = new S3Storage(buildS3Client(params));
-    previousFeatureFlag = currentFeatureFlag;
   }
 
   return s3Instance;
