@@ -148,7 +148,7 @@ describe('loaderHelper', () => {
             _id: 'prop1',
             name: 'target_property',
             label: 'Target Property',
-            type: 'text',
+            type: 'text' as const,
           },
         ],
       },
@@ -195,7 +195,8 @@ describe('loaderHelper', () => {
       const property: PropertySchema = {
         _id: 'prop1',
         name: 'relationship_property',
-        type: 'relationship',
+        label: 'Relationship Property',
+        type: 'relationship' as const,
         content: 'template1',
         inherit: {
           property: 'prop1',
@@ -247,7 +248,8 @@ describe('loaderHelper', () => {
       const property: PropertySchema = {
         _id: 'prop1',
         name: 'relationship_property',
-        type: 'relationship',
+        label: 'Relationship Property',
+        type: 'relationship' as const,
         content: 'template1',
       };
 

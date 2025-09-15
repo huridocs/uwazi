@@ -194,10 +194,11 @@ const Relationships = ({
       );
       let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
       if (searchTextRef.current) {
-        searchQuery = `${searchQuery} ${extractor?.inheritedProperty
+        searchQuery = `${searchQuery} ${
+          extractor?.inheritedProperty
             ? ` AND metadata.${extractor?.inheritedProperty?.name}:(${searchTextRef.current})`
             : ` AND title:(${searchTextRef.current})`
-          } `;
+        } `;
       }
       if (!isEmpty(allOptions)) {
         searchQuery = `sharedId:(${allOptions.map(option => option.sharedId).join(' OR ')}) OR (${searchQuery})`;
@@ -250,10 +251,11 @@ const Relationships = ({
       )
         ? '.label'
         : '';
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && extractor?.inheritedProperty?.name
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && extractor?.inheritedProperty?.name
           ? `metadata.${extractor?.inheritedProperty?.name}${searchField}:(${searchTerm}*)`
           : `title:(${searchTerm}*)`
-        } `;
+      } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 

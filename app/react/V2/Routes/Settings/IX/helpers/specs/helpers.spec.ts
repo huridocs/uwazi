@@ -717,7 +717,7 @@ describe('helpers', () => {
         propertyName: 'testProperty',
         suggestedValue: ['suggested1'],
         // @ts-ignore Object without id property
-        currentValue: [{ label: 'Object without id' }], 
+        currentValue: [{ label: 'Object without id' }],
         segment: 'main segment',
         language: 'en',
         state: {
@@ -739,7 +739,6 @@ describe('helpers', () => {
 
       expect(result.subRows).toHaveLength(2);
 
-      // Should not generate "[object Object]" rowId
       expect(result.subRows![0]).toMatchObject({
         suggestedValue: 'suggested1',
         currentValue: '',
@@ -750,7 +749,7 @@ describe('helpers', () => {
       expect(result.subRows![1]).toMatchObject({
         suggestedValue: '',
         currentValue: { label: 'Object without id' },
-        rowId: 'suggestion1-[object Object]', // This is expected for objects without id
+        rowId: 'suggestion1-Object without id',
         isChild: true,
       });
     });

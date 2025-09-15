@@ -25,9 +25,27 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
 
   suggestion.subRows = [];
 
+  const generateRowId = (value: any): string => {
+    if (typeof value === 'string' || typeof value === 'number') return String(value);
+    if (typeof value === 'object' && value !== null) {
+      const id =
+        get(value, 'id') ||
+        get(value, 'label') ||
+        get(value, 'value') ||
+        get(value, 'title') ||
+        get(value, 'name');
+      return id
+        ? String(id)
+        : `obj_${JSON.stringify(value)
+            .slice(0, 20)
+            .replace(/[^a-zA-Z0-9]/g, '_')}`;
+    }
+    return String(value);
+  };
+
   const { subRows, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
-    const suggestedValueId = get(suggestedValue, 'id') || suggestedValue;
+    const suggestedValueId = generateRowId(suggestedValue);
     const valuePresent = currentValues.find(
       v =>
         v === suggestedValue ||
@@ -51,7 +69,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   });
 
   currentValues.forEach(currentValue => {
-    const currentValueId = get(currentValue, 'id') || currentValue;
+    const currentValueId = generateRowId(currentValue);
     suggestion.subRows?.push({
       ...suggestionWithoutChildren,
       suggestedValue: '',
