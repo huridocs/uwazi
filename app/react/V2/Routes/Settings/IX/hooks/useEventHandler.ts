@@ -29,33 +29,43 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
     const handleModelStatus: IXModelStatusCallback = async (
       eventExtractorId,
       modelStatus,
-      _message,
+      message,
       data
     ) => {
       if (eventExtractorId !== extractorId) return;
 
-      const isNumeric = (n: any) => typeof n === 'number' && Number.isFinite(n);
-      const isCompleted =
-        isNumeric((data as any)?.processed) &&
-        isNumeric((data as any)?.total) &&
-        ((data as any).processed as number) >= ((data as any).total as number);
+      const isCompleted = message === 'Completed';
+      const isProcessingCount =
+        ixStatus.processing_suggestions && Number(data?.total) - Number(data?.processed) > 0;
+      const autoAcceptCount =
+        ixStatus.processing_auto_accept && Number(data?.total) - Number(data?.processed) > 0;
 
-      if (modelStatus === ixStatus.ready) {
-        updateStatus(ixStatus.ready);
-      } else if (modelStatus === ixStatus.processing_auto_accept && isCompleted) {
-        updateStatus(ixStatus.ready);
-      } else if (modelStatus === ixStatus.processing_suggestions && isCompleted) {
-        // Transition into auto-accept without flicker
-        updateStatus(ixStatus.processing_auto_accept, {
-          processed: 0,
-          total: (data as any)?.total || 0,
+      if (modelStatus === ixStatus.processing_model) {
+        updateStatus(ixStatus.processing_model);
+      } else if (ixStatus.processing_suggestions) {
+        updateStatus(ixStatus.processing_suggestions);
+      } else if (isProcessingCount) {
+        updateStatus(ixStatus.processing_suggestions, {
+          processed: Number(data?.processed),
+          total: Number(data?.total),
         });
+      } else if (modelStatus === ixStatus.processing_auto_accept) {
+        updateStatus(ixStatus.processing_auto_accept);
+      } else if (autoAcceptCount) {
+        updateStatus(ixStatus.processing_auto_accept, {
+          processed: Number(data?.processed),
+          total: Number(data?.total),
+        });
+        await revalidate();
+      } else if (isCompleted) {
+        updateStatus(ixStatus.ready);
+        setAcceptedSuggestionsAtom(new Set());
+        await revalidate();
       } else {
-        updateStatus(modelStatus, data);
+        updateStatus(ixStatus.ready);
+        setAcceptedSuggestionsAtom(new Set());
+        await revalidate();
       }
-
-      await revalidate();
-      setAcceptedSuggestionsAtom(new Set());
     };
 
     const handleModelError: IXErrorTrainingModelCallback = ({ message }) => {

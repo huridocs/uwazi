@@ -132,9 +132,7 @@ const IXSuggestions = () => {
             suggestionsToFind: findAmount,
           });
           setStatus({ status: ixStatus.sending_labeled_data });
-        } catch (error) {
-          // intentionally ignored; UI error notification is handled elsewhere
-        }
+        } catch (error) {}
       }
     }
   };
@@ -150,9 +148,7 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      } catch (error) {
-        // intentionally ignored; UI error notification is handled elsewhere
-      }
+      } catch (error) {}
     }
   };
 
@@ -160,50 +156,19 @@ const IXSuggestions = () => {
     if (extractor._id) {
       try {
         const params = { ...data, extractorId: extractor._id };
-        const requestedCount =
-          data.mode === 'process_selected' ? data.find?.selectedSharedIds?.length || 0 : undefined;
-        const processResponse = await suggestionsAPI.process(params);
 
-        await revalidate();
-        if (processResponse?.status === ixStatus.ready) {
-          // If auto-accept is enabled in the request (regardless of find path), keep a sticky
-          // auto-accept banner to avoid flicker until the first progress event arrives.
-          if (data.autoAccept?.enabled) {
-            setStatus({ status: ixStatus.processing_auto_accept });
-            return;
-          }
-          if (requestedCount && requestedCount > 0) {
-            // Briefly show the requested count as a progress hint, then clear
-            setStatus({
-              status: ixStatus.processing_suggestions,
-              message: ixmessages[ixStatus.processing_suggestions],
-              data: { processed: 0, total: requestedCount },
-            });
-            setTimeout(() => setStatus({ status: ixStatus.ready }), 750);
-          } else {
-            setStatus({ status: ixStatus.ready });
-          }
-          return;
-        }
+        const response = await suggestionsAPI.process(params);
+
         const initialTotal =
           data.mode === 'process_extractor'
-            ? Number(processResponse?.data?.total) || 0
-            : data.find?.selectedSharedIds?.length || 0;
-        if (status.status === ixStatus.ready) {
+            ? Number(response?.data?.total)
+            : Number(data.find?.selectedSharedIds?.length);
+
+        if (response.status === ixStatus.processing_suggestions) {
           setStatus({
             status: ixStatus.processing_suggestions,
             message: ixmessages[ixStatus.processing_suggestions],
             data: { processed: 0, total: initialTotal },
-          });
-        }
-        if (status.status === ixStatus.processing_suggestions) {
-          setStatus({
-            status: ixStatus.processing_suggestions,
-            message: ixmessages[ixStatus.processing_suggestions],
-            data: {
-              processed: status.data?.processed || 0,
-              total: (status.data?.total || 0) + initialTotal,
-            },
           });
         }
       } catch (error) {
