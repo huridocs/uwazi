@@ -12,20 +12,45 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
 
   const currentValues = [
-    ...(Array.isArray(suggestion.currentValue) ? suggestion.currentValue : []),
+    ...(Array.isArray(suggestion.currentValue)
+      ? suggestion.currentValue
+      : [suggestion.currentValue]),
   ];
 
   const suggestedValues = [
-    ...(Array.isArray(suggestion.suggestedValue) ? suggestion.suggestedValue : []),
+    ...(Array.isArray(suggestion.suggestedValue)
+      ? suggestion.suggestedValue
+      : [suggestion.suggestedValue]),
   ];
 
   suggestion.subRows = [];
 
+  const generateRowId = (value: any): string => {
+    if (typeof value === 'string' || typeof value === 'number') return String(value);
+    if (typeof value === 'object' && value !== null) {
+      const id =
+        get(value, 'id') ||
+        get(value, 'label') ||
+        get(value, 'value') ||
+        get(value, 'title') ||
+        get(value, 'name');
+      return id
+        ? String(id)
+        : `obj_${JSON.stringify(value)
+            .slice(0, 20)
+            .replace(/[^a-zA-Z0-9]/g, '_')}`;
+    }
+    return String(value);
+  };
+
   const { subRows, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
-    const suggestedValueId = get(suggestedValue, 'id') || suggestedValue;
+    const suggestedValueId = generateRowId(suggestedValue);
     const valuePresent = currentValues.find(
-      v => v === suggestedValue || v === get(suggestedValue, 'id')
+      v =>
+        v === suggestedValue ||
+        v === get(suggestedValue, 'id') ||
+        (get(v, 'id') !== undefined && get(v, 'id') === get(suggestedValue, 'id'))
     );
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);
@@ -44,6 +69,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   });
 
   currentValues.forEach(currentValue => {
+    const currentValueId = generateRowId(currentValue);
     suggestion.subRows?.push({
       ...suggestionWithoutChildren,
       suggestedValue: '',
@@ -51,7 +77,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       disableRowSelection: true,
       isChild: true,
       entityTitle: '',
-      rowId: `${suggestion.rowId}-${currentValue}`,
+      rowId: `${suggestion.rowId}-${currentValueId}`,
     });
   });
 
@@ -223,4 +249,14 @@ const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
     };
   });
 
-export { generateChildrenRows, getAvailableSources, getMetadataFromProperty, formatAccepted };
+const escapeLucene = (value: string): string => {
+  return value.replace(/([+!(){}[\]^"~*?:\\/-]|&&|\|\|)/g, '\\$1');
+};
+
+export {
+  generateChildrenRows,
+  getAvailableSources,
+  getMetadataFromProperty,
+  formatAccepted,
+  escapeLucene,
+};

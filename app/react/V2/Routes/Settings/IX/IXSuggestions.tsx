@@ -11,6 +11,8 @@ import {
 } from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
+import { isEmpty } from 'lodash';
+import { FunnelIcon } from '@heroicons/react/24/solid';
 import * as extractorsAPI from 'V2/api/ix/extractors';
 import * as suggestionsAPI from 'V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
@@ -19,7 +21,6 @@ import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema } from 'app/istore';
-import { FunnelIcon } from '@heroicons/react/24/solid';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
@@ -36,6 +37,11 @@ import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
+import {
+  getPropertyValuesMap,
+  getRelationshipInfo,
+  updateSuggestionValues,
+} from './helpers/loaderHelper';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -398,6 +404,7 @@ const IXSuggestions = () => {
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
         onEntitySave={onEntitySave}
+        extractor={extractor}
       />
 
       <PDFSidepanel
@@ -406,6 +413,7 @@ const IXSuggestions = () => {
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
         onEntitySave={onEntitySave}
+        extractor={extractor}
       />
     </div>
   );
@@ -444,12 +452,40 @@ const IXSuggestionsLoader =
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
-    const suggestions = suggestionsList.suggestions.map(suggestion => ({
+
+    const template = templates.find(t => extractors[0].templates.includes(t._id));
+    const property =
+      extractors[0].property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractors[0].property)
+        : template?.properties?.find(prop => prop.name === extractors[0].property);
+
+    let suggestions = suggestionsList.suggestions.map(suggestion => ({
       ...suggestion,
       rowId: suggestion._id,
       disableRowSelection: suggestion.state.processing,
       extractorSource: extractors[0].source,
     }));
+
+    if (property?.type === 'relationship') {
+      const { allCurrentValueIds, targetProperty, allSuggestedValueIds } = getRelationshipInfo(
+        suggestions,
+        property,
+        templates
+      );
+      extractors[0].inheritedProperty = targetProperty;
+      const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
+        ? await getPropertyValuesMap(allCurrentValueIds, property, targetProperty, headers)
+        : new Map();
+      const entitySuggestedValuesMap = !isEmpty(allSuggestedValueIds)
+        ? await getPropertyValuesMap(allSuggestedValueIds, property, targetProperty, headers)
+        : new Map();
+
+      suggestions = updateSuggestionValues(
+        suggestions,
+        entityCurrentValuesMap,
+        entitySuggestedValuesMap
+      );
+    }
 
     return {
       suggestions,

@@ -10,6 +10,7 @@ import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '
 import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { TableSuggestion } from '../types';
 import {
   coerceValue,
@@ -31,6 +32,7 @@ interface PropertySidepanelProps {
   suggestion?: TableSuggestion;
   onEntitySave: () => any;
   property?: ClientPropertySchema;
+  extractor?: ClientIXExtractorType;
 }
 
 // eslint-disable-next-line max-statements
@@ -40,6 +42,7 @@ const PropertySidepanel = ({
   suggestion,
   onEntitySave,
   property,
+  extractor,
 }: PropertySidepanelProps) => {
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
   const [entity, setEntity] = useState<ClientEntitySchema>();
@@ -173,6 +176,7 @@ const PropertySidepanel = ({
             >
               <SidepanelForms
                 property={property}
+                extractor={extractor}
                 suggestion={suggestion}
                 handleClickToFill={handleClickToFill}
                 clearSelectionButton={
