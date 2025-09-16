@@ -486,7 +486,7 @@ describe('CreateTemplateUseCase', () => {
     expect(templates).toHaveLength(1);
   });
 
-  it('should throw if entity page view does not exist', async () => {
+  it('should throw if entity view page does not exist', async () => {
     const { sut } = createSut();
     await expect(
       sut.execute({
@@ -510,7 +510,7 @@ describe('CreateTemplateUseCase', () => {
     });
   });
 
-  it('should throw if entity page view is not enabled', async () => {
+  it('should throw if entity view page is not enabled', async () => {
     const { sut } = createSut();
     await expect(
       sut.execute({
