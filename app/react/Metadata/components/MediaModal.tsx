@@ -116,9 +116,35 @@ const MediaModalComponent = ({
   const handleFileInPublicForm = (event: React.FormEvent<HTMLInputElement>) => {
     const { files } = event.target as HTMLInputElement;
     if (files && files.length > 0) {
-      const data = { data: URL.createObjectURL(files[0]), originalFile: files[0] };
+      // 🔧 FIX: For public forms, store the file directly instead of creating blob URL
+      // This prevents the blob URL issue while keeping the file available for processing
+      const file = files[0];
+
+      console.log('🔧 [MEDIAMODAL FIX] Processing public form file upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        entityExists: !!entity
+      });
+
+      // 🔧 FIX: Create blob URL for display but store File object for processing
+      const blobUrl = URL.createObjectURL(file);
+      const data = {
+        data: blobUrl, // Blob URL for display in the form
+        originalFile: file // File object for processing in wrapper.js
+      };
+
+      console.log('🔧 [MEDIAMODAL FIX] Created blob URL for display, File object for processing:', {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        blobUrl: blobUrl,
+        hasOriginalFile: !!file
+      });
+
       onChange(data);
       onClose();
+
     }
   };
 
@@ -184,9 +210,8 @@ const MediaModalComponent = ({
             </div>
           </div>
           <div
-            className={`tab-content attachments-modal__tabs-content ${
-              !filteredAttachments.length ? 'centered' : ''
-            }`}
+            className={`tab-content attachments-modal__tabs-content ${!filteredAttachments.length ? 'centered' : ''
+              }`}
           >
             <MediaModalFileList
               filteredAttachments={filteredAttachments}
