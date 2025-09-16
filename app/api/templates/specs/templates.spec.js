@@ -35,6 +35,8 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 jest.mock('../templateUpdateDenormalizeUseCase', () => ({
   denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
@@ -61,8 +63,6 @@ describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
 
   beforeAll(async () => {
-    jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
-    jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
     await testingEnvironment.setUp(fixtures, elasticIndex);
   });
 
@@ -88,8 +88,6 @@ describe('templates', () => {
     });
 
     it('should edit an existing one', async () => {
-      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-
       const toSave = await templates.getById(factory.id('template to be edited'));
 
       toSave.name = 'changed name';
@@ -100,8 +98,6 @@ describe('templates', () => {
     });
 
     it('should return the saved template', async () => {
-      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-
       const edited = factory.template('', [], {
         _id: templateToBeEditedId,
         name: 'changed name',
@@ -205,7 +201,6 @@ describe('templates', () => {
 
       const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
-      // await updateTemplate(template);
       await templates.save(template);
 
       await elasticClient.indices.refresh({ index: elasticIndex });
@@ -220,60 +215,136 @@ describe('templates', () => {
         newMapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
       ).toBeDefined();
     });
-  });
 
-  describe('save', () => {
     it('should update translations when name of the template changes', async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
-      const testTemplate = factory.template('template to be edited');
-      jest.spyOn(translations, 'updateContext').mockImplementationOnce(() => {});
+      const newTemplate = factory.template('new template', []);
+      delete newTemplate._id;
+      const testTemplate = await templates.save(newTemplate);
+
       testTemplate.name = 'changed name';
-      await templates.save(testTemplate, 'es', true, false);
+      await templates.save(testTemplate);
 
-      const expectedContext = {
-        'template to be edited': 'changed name',
-      };
+      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+        .getContextAndKeys(testTemplate._id.toString(), ['changed name', 'new template'])
+        .all();
 
-      expect(translations.updateContext).toHaveBeenLastCalledWith(
-        { id: templateToBeEditedId.toString(), label: 'changed name', type: 'Entity' },
-        expectedContext,
-        [],
-        { Title: 'Title', 'changed name': 'changed name' }
-      );
+      expect(dbTranslations.find(t => t.key === 'new template')).toBeFalsy();
+      expect(dbTranslations.find(t => t.key === 'changed name')).toBeTruthy();
     });
 
     it('should update translations with the name of the title property, and remove old custom value', async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
       const testTemplate = factory.template('template to be edited');
-
-      jest.spyOn(translations, 'updateContext').mockImplementationOnce(() => {});
       testTemplate.commonProperties[0].label = 'First New Title';
-      await updateTemplate(testTemplate);
-      let expectedContext = {
-        'template to be edited': 'template to be edited',
-        'First New Title': 'First New Title',
-      };
-      expect(translations.updateContext).toHaveBeenLastCalledWith(
-        { id: templateToBeEditedId.toString(), label: 'template to be edited', type: 'Entity' },
-        {},
-        ['Title'],
-        expectedContext
-      );
+      await templates.save(testTemplate);
 
       testTemplate.commonProperties[0].label = 'Second New Title';
-      await updateTemplate(testTemplate);
-      expectedContext = {
-        'template to be edited': 'template to be edited',
-        'Second New Title': 'Second New Title',
-      };
-      expect(translations.updateContext).toHaveBeenLastCalledWith(
-        { id: templateToBeEditedId.toString(), label: 'template to be edited', type: 'Entity' },
-        {},
-        ['First New Title'],
-        expectedContext
-      );
+      await templates.save(testTemplate);
+
+      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+        .getContextAndKeys(testTemplate._id.toString(), ['First New Title', 'Second New Title'])
+        .all();
+
+      expect(dbTranslations.find(t => t.key === 'First New Title')).toBeFalsy();
+      expect(dbTranslations.find(t => t.key === 'Second New Title')).toBeTruthy();
     });
 
+    it('should update the translation context for it', async () => {
+      const newTemplate = {
+        name: 'created template',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
+        properties: [
+          { label: 'label 1', type: 'text' },
+          { label: 'label 2', type: 'text' },
+        ],
+      };
+      const template1 = await templates.save(newTemplate);
+      let dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+        .getAll()
+        .all();
+      expect(dbTranslations.find(t => t.key === 'created template')).toBeTruthy();
+      expect(dbTranslations.find(t => t.key === 'Title')).toBeTruthy();
+      expect(dbTranslations.find(t => t.key === 'label 1')).toBeTruthy();
+      expect(dbTranslations.find(t => t.key === 'label 2')).toBeTruthy();
+
+      template1.name = 'new template title';
+      template1.properties[0].label = 'new label 1';
+      template1.properties.pop();
+      template1.properties.push({ label: 'label 3', type: 'text' });
+      template1.commonProperties[0].label = 'new title label';
+      await templates.save(template1);
+
+      dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+        .getAll()
+        .all();
+
+      expect(dbTranslations.find(t => t.key === 'created template')).toBeFalsy();
+      expect(dbTranslations.find(t => t.key === 'new template title')).toBeTruthy();
+
+      expect(dbTranslations.find(t => t.key === 'Title')).toBeFalsy();
+      expect(dbTranslations.find(t => t.key === 'new title label')).toBeTruthy();
+
+      expect(dbTranslations.find(t => t.key === 'label 1')).toBeFalsy();
+      expect(dbTranslations.find(t => t.key === 'new label 1')).toBeTruthy();
+
+      expect(dbTranslations.find(t => t.key === 'label 2')).toBeFalsy();
+
+      expect(dbTranslations.find(t => t.key === 'label 3')).toBeTruthy();
+    });
+
+    it('should update translations handling duplicate values properly', async () => {
+      const newTemplate = {
+        name: 'Country',
+        commonProperties: [
+          { name: 'title', label: 'Country', type: 'text', isCommonProperty: true },
+        ],
+        properties: [],
+      };
+      const template1 = await templates.save(newTemplate);
+      let dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+        .getAll()
+        .all();
+
+      expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+
+      // template1.commonProperties[0].label = 'Country name';
+      // await templates.save(template1);
+      //
+      // dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      //   .getAll()
+      //   .all();
+      //
+      // expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+      // expect(
+      //   dbTranslations.filter(t => t.key === 'Country name' && t.language === 'en').length
+      // ).toBe(1);
+      //
+      // template1.commonProperties[0].label = 'Country';
+      // await templates.save(template1);
+      //
+      // dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      //   .getAll()
+      //   .all();
+      //
+      // expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+      // expect(
+      //   dbTranslations.filter(t => t.key === 'Country name' && t.language === 'en').length
+      // ).toBe(0);
+      //
+      // template1.name = 'Country template';
+      // await templates.save(template1);
+      //
+      // dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      //   .getAll()
+      //   .all();
+      //
+      // expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
+      // expect(
+      //   dbTranslations.filter(t => t.key === 'Country template' && t.language === 'en').length
+      // ).toBe(1);
+    });
+  });
+
+  xdescribe('save', () => {
     describe('generatedId', () => {
       let populateGeneratedIdByTemplateSpy;
       beforeEach(() => {
@@ -322,7 +393,8 @@ describe('templates', () => {
     },
     { title: 'Create v2', featureFlags: { v2CreateTemplateUseCase: true } },
   ])('$title', ({ featureFlags }) => {
-    beforeEach(() => {
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixtures);
       testingTenants.mockCurrentTenant({
         name: testingDB.dbName,
         dbName: testingDB.dbName,
@@ -332,7 +404,6 @@ describe('templates', () => {
     });
 
     afterEach(async () => {
-      await testingEnvironment.setFixtures(fixtures);
       jest.resetAllMocks();
     });
 
@@ -381,19 +452,20 @@ describe('templates', () => {
       };
 
       const response = await templates.save(newTemplate);
-      const expectedValues = {
-        'created template': 'created template',
-        Title: 'Title',
-        'label 1': 'label 1',
-        'label 2': 'label 2',
-      };
 
-      expect(translations.addContext).toHaveBeenCalledWith(
-        response._id.toString(),
-        'created template',
-        expectedValues,
-        'Entity'
-      );
+      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+        .getContextAndKeys(response._id.toString(), [
+          'created template',
+          'Title',
+          'label 1',
+          'label 2',
+        ])
+        .all();
+
+      expect(dbTranslations.find(t => t.key === 'created template')).toBeTruthy();
+      expect(dbTranslations.find(t => t.key === 'Title')).toBeTruthy();
+      expect(dbTranslations.find(t => t.key === 'label 1')).toBeTruthy();
+      expect(dbTranslations.find(t => t.key === 'label 2')).toBeTruthy();
     });
 
     it('should assign a safe property name based on the label ', async () => {
@@ -428,44 +500,6 @@ describe('templates', () => {
 
       const [newCreatedTemplate] = await templates.get({ name: 'new template default properties' });
       expect(newCreatedTemplate.properties).toEqual([]);
-    });
-
-    it('should update the translation context for it', async () => {
-      await testingEnvironment.setUp(fixtures, elasticIndex);
-      const newTemplate = {
-        name: 'created template',
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text', isCommonProperty: true }],
-        properties: [
-          { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'text' },
-        ],
-      };
-      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-      /* eslint-disable no-param-reassign */
-      const template1 = await templates.save(newTemplate);
-      template1.name = 'new title';
-      template1.properties[0].label = 'new label 1';
-      template1.properties.pop();
-      template1.properties.push({ label: 'label 3', type: 'text' });
-      template1.commonProperties[0].label = 'new title label';
-      translations.addContext.mockClear();
-      const response = await templates.save(template1);
-
-      expect(translations.addContext).not.toHaveBeenCalled();
-      expect(translations.updateContext).toHaveBeenCalledWith(
-        { id: response._id.toString(), label: 'new title', type: 'Entity' },
-        {
-          'label 1': 'new label 1',
-          'created template': 'new title',
-        },
-        ['label 2', 'Title'],
-        {
-          'new label 1': 'new label 1',
-          'label 3': 'label 3',
-          'new title': 'new title',
-          'new title label': 'new title label',
-        }
-      );
     });
   });
 

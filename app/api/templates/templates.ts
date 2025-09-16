@@ -30,7 +30,7 @@ import {
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
-import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
+import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
@@ -78,13 +78,14 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
-  translations.addContext(
+const addTemplateTranslation = async (template: WithId<TemplateSchema>) => {
+  return translations.addContext(
     template._id.toString(),
     template.name,
     createTranslationContext(template),
     ContextType.entity
   );
+};
 
 const updateTranslation = async (
   currentTemplate: WithId<TemplateSchema>,
@@ -199,6 +200,10 @@ export default {
         ...template,
         _id: template._id.toString(),
         properties: (template.properties || []).map(p => ({ ...p, _id: p._id?.toString() })),
+        commonProperties: (template.commonProperties || []).map(p => ({
+          ...p,
+          _id: p._id?.toString(),
+        })),
       });
       const transactionManager = DefaultTransactionManager();
       const templatesDS = DefaultTemplatesDataSource(transactionManager);

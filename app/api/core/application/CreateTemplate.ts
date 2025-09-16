@@ -77,7 +77,7 @@ class CreateTemplateUseCase extends AbstractUseCase<CreateTemplateDTO, Output> {
 
     await this.deps.transactionManager.run(async () => {
       await this.deps.templatesDS.create(template);
-      await this.deps.translationService.translate(template);
+      await this.deps.translationService.createTemplateTranslation(template);
     });
 
     return template;

@@ -86,11 +86,13 @@ class Template {
 
   selectUpdatedProperties(newTemplate: Template): PropertyUpdateInfo[] {
     const oldPropertiesById = objectIndex(
-      this.properties,
+      this.properties.concat(this.commonProperties),
       p => p.id,
       p => p
     );
-    const newProperties = newTemplate.properties.filter(p => p.id in oldPropertiesById);
+    const newProperties = newTemplate.properties
+      .concat(newTemplate.commonProperties)
+      .filter(p => p.id in oldPropertiesById);
     const newPropertiesById = objectIndex(
       newProperties,
       p => p.id,
