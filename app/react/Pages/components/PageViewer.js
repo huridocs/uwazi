@@ -56,7 +56,31 @@ class PageViewer extends Component {
   }
 
   render() {
-    const { page, itemLists, datasets, error, setBrowserTitle } = this.props;
+    const { page, itemLists, datasets, error: _error, setBrowserTitle } = this.props;
+    const errorDetails = _error.toJS?.();
+
+    let rawError = null;
+    if (errorDetails) {
+      if (errorDetails.json) {
+        rawError = errorDetails.json;
+      } else if (errorDetails.error || errorDetails.status || errorDetails.message) {
+        rawError = errorDetails;
+      }
+    } else {
+      rawError = _error;
+    }
+
+    let processedError = null;
+    if (rawError && (rawError.error || rawError.message || rawError.status || rawError.code)) {
+      const notFoundStatus = rawError.error === 'Page not found';
+      processedError = {
+        ...rawError,
+        status:
+          rawError.status || rawError.code || errorDetails?.status || (notFoundStatus ? 404 : 500),
+        name: rawError.error || rawError.name,
+        message: !notFoundStatus ? rawError.prettyMessage : '',
+      };
+    }
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptRendered = page.getIn(['scriptRendered']);
@@ -73,7 +97,7 @@ class PageViewer extends Component {
         }
       >
         <div className="row">
-          {!error.status && !error.message && (
+          {!processedError && (
             <>
               {setBrowserTitle && (
                 <Helmet>
@@ -101,9 +125,9 @@ class PageViewer extends Component {
               </Script>
             </>
           )}
-          {(error.status || error.message) && (
+          {processedError && (
             <div className="main-wrapper">
-              <ErrorFallback error={error} />
+              <ErrorFallback error={processedError} />
               <Footer />
             </div>
           )}
@@ -125,7 +149,7 @@ PageViewer.propTypes = {
   page: PropTypes.instanceOf(Immutable.Map),
   itemLists: PropTypes.instanceOf(Immutable.List),
   datasets: PropTypes.instanceOf(Immutable.Map),
-  error: PropTypes.instanceOf(Immutable.Map),
+  error: PropTypes.instanceOf(Immutable.Map) || PropTypes.object,
   setBrowserTitle: PropTypes.bool,
 };
 
