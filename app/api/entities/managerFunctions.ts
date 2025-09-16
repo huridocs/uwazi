@@ -150,7 +150,6 @@ const bindAttachmentToMetadataProperty = (
     values[0].value = attachments[_values[0].attachment]
       ? `/api/files/${attachments[_values[0].attachment].filename}`
       : '';
-
     if (_values[0].timeLinks !== undefined && _values[0].timeLinks.length > 0) {
       const timeLinks = _values[0].timeLinks.replace(/([()])/g, '');
       values[0].value = `(${values[0].value}, ${timeLinks})`;
