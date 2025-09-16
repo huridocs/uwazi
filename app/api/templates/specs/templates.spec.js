@@ -14,6 +14,8 @@ import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import { applicationEventsBus } from 'api/eventsbus';
 import { testingTenants } from 'api/utils/testingTenants';
 import { inspect } from 'util';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import templates from '../templates';
@@ -35,8 +37,6 @@ import fixtures, {
   thesaurusTemplateId,
   thesaurusTemplateRelationshipPropId,
 } from './fixtures/fixtures';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 jest.mock('../templateUpdateDenormalizeUseCase', () => ({
   denormalizeTemplateEntities: jest.fn().mockImplementation(async () => true),
@@ -299,8 +299,9 @@ describe('templates', () => {
         ],
         properties: [],
       };
+      // eslint-disable-next-line no-unused-vars
       const template1 = await templates.save(newTemplate);
-      let dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
+      const dbTranslations = await DefaultTranslationsDataSource(DefaultTransactionManager())
         .getAll()
         .all();
 
