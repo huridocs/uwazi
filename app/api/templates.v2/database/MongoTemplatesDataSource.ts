@@ -29,9 +29,11 @@ export class MongoTemplatesDataSource
   constructor(db: Db, transactionManager: MongoTransactionManager, options?: MongoDSOptions) {
     super(db, transactionManager, options);
 
-    this.transactionManager.onCommitted(async () =>
-      updateMapping([...this.templatesMutated.values()])
-    );
+    this.transactionManager.onCommitted(async () => {
+      const templates = [...this.templatesMutated.values()];
+      this.templatesMutated.clear();
+      await updateMapping(templates);
+    });
   }
 
   getAll() {
