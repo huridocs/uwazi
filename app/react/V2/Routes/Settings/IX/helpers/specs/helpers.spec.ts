@@ -533,6 +533,226 @@ describe('helpers', () => {
         isChild: true,
       });
     });
+
+    it('should handle single non-array suggested value', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: 'single_value',
+        currentValue: ['current1', 'current2'],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'single_value',
+        currentValue: '',
+        rowId: 'suggestion1-single_value',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'current1',
+        rowId: 'suggestion1-current1',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'current2',
+        rowId: 'suggestion1-current2',
+        isChild: true,
+      });
+    });
+
+    it('should handle single non-array current value', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: ['suggested1', 'suggested2'],
+        currentValue: 'single_current',
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'suggested1',
+        currentValue: '',
+        rowId: 'suggestion1-suggested1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: 'suggested2',
+        currentValue: '',
+        rowId: 'suggestion1-suggested2',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: 'single_current',
+        rowId: 'suggestion1-single_current',
+        isChild: true,
+      });
+    });
+
+    it('should handle object values with id property', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: [
+          { id: 'obj1', label: 'Object 1' },
+          { id: 'obj2', label: 'Object 2' },
+        ],
+        currentValue: [
+          { id: 'obj1', label: 'Object 1' },
+          { id: 'obj3', label: 'Object 3' },
+        ],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(3);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: { id: 'obj1', label: 'Object 1' },
+        currentValue: { id: 'obj1', label: 'Object 1' },
+        rowId: 'suggestion1-obj1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: { id: 'obj2', label: 'Object 2' },
+        currentValue: '',
+        rowId: 'suggestion1-obj2',
+        isChild: true,
+      });
+
+      expect(result.subRows![2]).toMatchObject({
+        suggestedValue: '',
+        currentValue: { id: 'obj3', label: 'Object 3' },
+        rowId: 'suggestion1-obj3',
+        isChild: true,
+      });
+    });
+
+    it('should generate proper rowIds for object values without id property', () => {
+      const suggestion: MultiValueSuggestion = {
+        _id: 'suggestion1',
+        entityId: 'entity1',
+        extractorId: 'extractor1',
+        entityTemplateId: 'template1',
+        sharedId: 'shared1',
+        fileId: 'file1',
+        entityTitle: 'Test Entity',
+        propertyName: 'testProperty',
+        suggestedValue: ['suggested1'],
+        // @ts-ignore Object without id property
+        currentValue: [{ label: 'Object without id' }],
+        segment: 'main segment',
+        language: 'en',
+        state: {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: false,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        },
+        date: 1234567890,
+        rowId: 'suggestion1',
+        extractorSource: { pdf: true },
+      };
+
+      const result = generateChildrenRows(suggestion);
+
+      expect(result.subRows).toHaveLength(2);
+
+      expect(result.subRows![0]).toMatchObject({
+        suggestedValue: 'suggested1',
+        currentValue: '',
+        rowId: 'suggestion1-suggested1',
+        isChild: true,
+      });
+
+      expect(result.subRows![1]).toMatchObject({
+        suggestedValue: '',
+        currentValue: { label: 'Object without id' },
+        rowId: 'suggestion1-Object without id',
+        isChild: true,
+      });
+    });
   });
 
   describe('formatAccepted', () => {
