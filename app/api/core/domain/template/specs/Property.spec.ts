@@ -1,4 +1,5 @@
 import { Property } from 'api/templates.v2/model/Property';
+import { PropertyTypeMismatchError } from '../errors';
 
 describe('Property', () => {
   it('should set defaults values if not provided', () => {
@@ -61,5 +62,18 @@ describe('Property', () => {
     expect(textProperty.equals(text1Property)).toBe(true);
 
     expect(textProperty.equals(text2Property)).toBe(false);
+  });
+
+  it('should throw a type mismatch error when property types are inconsistent', () => {
+    const dateProperty = new Property({ id: '', label: 'label', template: '', type: 'date' });
+    const textProperty = new Property({ id: '', label: 'label', template: '', type: 'text' });
+
+    expect(() => dateProperty.ensurePropertyIsConsistent(textProperty)).toThrow(
+      new PropertyTypeMismatchError(dateProperty, textProperty)
+    );
+
+    expect(() => dateProperty.ensurePropertyIsConsistent(dateProperty)).not.toThrow(
+      new PropertyTypeMismatchError(dateProperty, textProperty)
+    );
   });
 });

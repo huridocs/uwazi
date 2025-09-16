@@ -1,5 +1,5 @@
 import { Template } from 'api/templates.v2/model/Template';
-import { ValidationStep } from '../../validator/Validator';
+import { ValidationStep } from '../../Validator';
 import { TemplateWithDuplicatedPropertyError } from '../errors';
 
 class TemplateWithDuplicatedPropertyValidator implements ValidationStep<Template> {

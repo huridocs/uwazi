@@ -56,16 +56,29 @@ type IXSuggestionsLoaderResponse = {
   total: number;
 };
 
+type IXFilters = {
+  labeled: boolean;
+  nonLabeled: boolean;
+  match: boolean;
+  mismatch: boolean;
+  obsolete: boolean;
+  error: boolean;
+  noContext: boolean;
+  nonProcessed: boolean;
+};
+
 export enum ixStatus {
   ready = 'ready',
   sending_labeled_data = 'sending_labeled_data',
   processing_model = 'processing_model',
   processing_suggestions = 'processing_suggestions',
+  processing_auto_accept = 'processing_auto_accept',
   cancel = 'cancel',
   error = 'error',
 }
 
 export type {
+  IXFilters,
   EntitySuggestion,
   TableExtractor,
   Highlights,

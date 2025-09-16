@@ -503,10 +503,25 @@ describe('Information Extraction: Extracting from text source', () => {
 
     it('should stop the model when there are no materials left to send', async () => {
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+
+      // Make second call have no eligible materials
+      const [m] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
+      const runTs = m?.processRun?.suggestionsRunTimestamp || Date.now();
+      await IXSuggestionsModel.updateMany(
+        { extractorId: factory.id('sourceTextExtractor1') },
+        {
+          $set: {
+            date: 1,
+            'state.obsolete': false,
+            'state.error': false,
+            'modelData.suggestionsRunTimestamp': runTs,
+          },
+        }
+      );
+
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
 
       const [model] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
-
       expect(model.findingSuggestions).toBe(false);
     });
   });

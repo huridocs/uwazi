@@ -10,8 +10,6 @@ A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,E-posta gerekli
 Accept,Kabul Et
-Accept suggestion,Accept suggestion
-Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Hesap
 Account locked,Account locked
@@ -76,6 +74,7 @@ All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
+Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
@@ -96,6 +95,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Ekler
 Authentication code,Kimlik doğrulama kodu
+Auto-accept suggestions,Auto-accept suggestions
 auto-created,otomatik oluşturulmuş
 Automatic Table of Contents,Otomatik İçindekiler
 Automatically generated,Otomatik olarak oluşturuldu
@@ -342,14 +342,21 @@ Filters OR operator,YA DA
 Filters saved,Filters saved
 Find,Bul
 Find suggestions,Find suggestions
+Find suggestions after training,Find suggestions after training
+Find suggestions for,Find suggestions for
+Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
 Fine tune,İnce ayar
 Fit,Yerleştirmek
 Flag,İşaretle
 for,for
+For all entities,For all entities
+For entities with blank values,For entities with blank values
 Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
 From,From
+From all suggestions,From all suggestions
+From previous step,From previous step
 Full width,Full width
 General,Genel
 General Information,General Information
@@ -627,6 +634,9 @@ Priority sorting,Öncelik sıralaması
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,Özel oluşum
+Process,Process
+Process extractor,Process extractor
+Process selected,Process selected
 Processed,Processed
 Processing,İşleniyor
 Properties,Özellikler
@@ -839,7 +849,6 @@ Template(s),Template(s)
 Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Şablonlar
 Templates:,Templates:
-Test run,Test run
 Text,Metin
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,İçe aktarma işlemi bir hata verdi:
@@ -901,6 +910,9 @@ Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
 total users,total users
+Train,Train
+Train model,Train model
+Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
 Training model...,Training model...
 Translate,Çevir

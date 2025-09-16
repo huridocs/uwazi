@@ -37,6 +37,9 @@ import { useEventHandler } from './hooks/useEventHandler';
 import { acceptedSuggestions } from './components/atoms';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { PropertySidepanel } from './components/PropertySidepanel';
+
+import { TrainModelModal } from './components/TrainModelModal';
+import { ProcessExtractorModal } from './components/ProcessExtractorModal';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
@@ -50,6 +53,7 @@ const ixmessages = {
   sending_labeled_data: 'Sending labeled data...',
   processing_model: 'Training model...',
   processing_suggestions: 'Finding suggestions...',
+  processing_auto_accept: 'Accepting suggestions...',
   cancel: 'Canceling...',
   error: 'Error',
 };
@@ -79,6 +83,7 @@ const IXSuggestions = () => {
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'property' | 'none'>('none');
+  const [modal, setModal] = useState<'train' | 'process' | 'none' | 'processSelected'>('none');
   const [status, setStatus] = useState<{
     status: ixStatus;
     message?: string;
@@ -125,44 +130,23 @@ const IXSuggestions = () => {
     }
   };
 
-  const findSuggestions = async (suggestionsToFind: TableSuggestion[]) => {
-    try {
-      await suggestionsAPI.findSelectedSuggestions(extractor._id!, [
-        ...new Set(suggestionsToFind.map(s => s.sharedId)),
-      ]);
-      await revalidate();
-      if (status.status === ixStatus.ready) {
-        setStatus({
-          status: ixStatus.processing_suggestions,
-          message: ixmessages[ixStatus.processing_suggestions],
-          data: { processed: 0, total: suggestionsToFind.length },
-        });
+  const trainModel = async (findAmount: number) => {
+    if (status.status === ixStatus.ready) {
+      if (extractor._id) {
+        try {
+          await suggestionsAPI.findSuggestions({
+            extractorId: extractor._id,
+            suggestionsToFind: findAmount,
+          });
+          setStatus({ status: ixStatus.sending_labeled_data });
+        } catch (error) {}
       }
-      if (status.status === ixStatus.processing_suggestions) {
-        setStatus({
-          status: ixStatus.processing_suggestions,
-          message: ixmessages[ixStatus.processing_suggestions],
-          data: {
-            processed: status.data?.processed || 0,
-            total: (status.data?.total || 0) + suggestionsToFind.length,
-          },
-        });
-      }
-    } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
     }
   };
 
-  const trainModelOrCancelAction = async () => {
-    try {
-      if (status.status === ixStatus.ready) {
-        await suggestionsAPI.findSuggestions(extractor._id!);
-        setStatus({ status: ixStatus.sending_labeled_data });
-      } else {
+  const cancelModelTrain = async () => {
+    if (status.status !== ixStatus.ready) {
+      try {
         await suggestionsAPI.cancel(extractor._id!);
         if (status.status === ixStatus.error) {
           setStatus({ status: ixStatus.ready });
@@ -171,15 +155,52 @@ const IXSuggestions = () => {
         }
         await revalidate();
         setAcceptedSuggestionsAtom(new Set());
-      }
-    } catch (error) {}
+      } catch (error) {}
+    }
   };
 
-  const testRun = async () => {
-    try {
-      setStatus({ status: ixStatus.sending_labeled_data });
-      await suggestionsAPI.testRun(extractor._id!);
-    } catch (error) {}
+  const processExtractor = async (data: Omit<suggestionsAPI.ProcessParameters, 'extractorId'>) => {
+    if (extractor._id) {
+      try {
+        const params = { ...data, extractorId: extractor._id };
+
+        const response = await suggestionsAPI.process(params);
+
+        const autoAccepting = data.autoAccept?.enabled;
+
+        const initialTotal =
+          data.mode === 'process_extractor'
+            ? Number(response?.data?.total)
+            : Number(data.find?.selectedSharedIds?.length);
+
+        if (response.status === ixStatus.processing_suggestions) {
+          setStatus({
+            status: ixStatus.processing_suggestions,
+            message: ixmessages[ixStatus.processing_suggestions],
+            data: { processed: 0, total: initialTotal },
+          });
+          return;
+        }
+
+        if (autoAccepting) {
+          setStatus({
+            status: ixStatus.processing_auto_accept,
+            message: ixmessages[ixStatus.processing_auto_accept],
+          });
+          return;
+        }
+
+        if (response.status === ixStatus.ready) {
+          setStatus({ status: ixStatus.ready });
+        }
+      } catch (error) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+        });
+      }
+    }
   };
 
   const openSidepanel = (selectedSuggestion: TableSuggestion) => {
@@ -313,35 +334,47 @@ const IXSuggestions = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2" highlighted={selected.length > 0}>
-          {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center justify-center space-x-4">
+            {status.status === ixStatus.ready ? (
               <Button
                 size="small"
                 type="button"
-                styling="outline"
-                disabled={
-                  status.status === ixStatus.sending_labeled_data ||
-                  status.status === ixStatus.processing_model
-                }
-                onClick={async () => {
-                  await findSuggestions(selected);
-                }}
+                styling="solid"
+                onClick={() => setModal('train')}
+                disabled={selected.length > 0}
               >
-                <Translate>Find suggestions</Translate>
+                <Translate>Train model</Translate>
               </Button>
-              <Button
-                size="small"
-                type="button"
-                styling="outline"
-                disabled={selected.some(
-                  s => s.state.obsolete || s.state.error || s.state.processing
+            ) : (
+              <Button size="small" type="button" styling="outline" onClick={cancelModelTrain}>
+                <Translate>Cancel</Translate>
+              </Button>
+            )}
+            <Button
+              size="small"
+              type="button"
+              styling="solid"
+              onClick={() => setModal('process')}
+              disabled={status.status !== ixStatus.ready}
+            >
+              {selected.length > 0 ? (
+                <Translate>Process selected</Translate>
+              ) : (
+                <Translate>Process extractor</Translate>
+              )}
+            </Button>
+            {status.status !== ixStatus.ready && (
+              <div className="text-sm font-semibold text-center text-gray-900">
+                <Translate>{ixmessages[status.status]}</Translate>
+                {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
+                {status.data && (
+                  <span className="ml-2">
+                    {status.data.processed} / {status.data.total}
+                  </span>
                 )}
-                onClick={async () => {
-                  await acceptSuggestions(selected);
-                }}
-              >
-                <Translate>Accept suggestions</Translate>
-              </Button>
+              </div>
+            )}
+            {selected.length > 0 && (
               <div className="text-sm font-semibold text-center text-gray-900">
                 <span className="font-light text-gray-500">
                   <Translate>Selected</Translate>
@@ -355,40 +388,8 @@ const IXSuggestions = () => {
                 &nbsp;
                 {SUGGESTIONS_PER_PAGE}
               </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center space-x-4">
-              <Button
-                size="small"
-                type="button"
-                disabled={status.status === ixStatus.cancel}
-                styling={status.status === ixStatus.ready ? 'solid' : 'outline'}
-                onClick={trainModelOrCancelAction}
-              >
-                {status.status === ixStatus.ready ? (
-                  <Translate>Find suggestions</Translate>
-                ) : (
-                  <Translate>Cancel</Translate>
-                )}
-              </Button>
-              {status.status === ixStatus.ready && (
-                <Button size="small" type="button" styling="light" onClick={testRun}>
-                  <Translate>Test run</Translate>
-                </Button>
-              )}
-              {status.status !== ixStatus.ready ? (
-                <div className="text-sm font-semibold text-center text-gray-900">
-                  <Translate>{ixmessages[status.status]}</Translate>
-                  {status.message && status.status === ixStatus.error ? ` : ${status.message}` : ''}
-                  {status.data ? (
-                    <span className="ml-2">
-                      {status.data.processed} / {status.data.total}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          )}
+            )}
+          </div>
         </SettingsContent.Footer>
       </SettingsContent>
 
@@ -415,6 +416,25 @@ const IXSuggestions = () => {
         onEntitySave={onEntitySave}
         extractor={extractor}
       />
+
+      {modal === 'train' && (
+        <TrainModelModal
+          close={() => {
+            setModal('none');
+          }}
+          onTrain={trainModel}
+        />
+      )}
+
+      {modal === 'process' && (
+        <ProcessExtractorModal
+          close={() => {
+            setModal('none');
+          }}
+          onTrain={processExtractor}
+          selected={selected.map(s => s.sharedId)}
+        />
+      )}
     </div>
   );
 };

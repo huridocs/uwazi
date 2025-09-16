@@ -17,7 +17,7 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
   protected abstract collectionName: string;
 
-  private transactionManager: MongoTransactionManager;
+  transactionManager: MongoTransactionManager;
 
   private useSyncedCollection: boolean;
 

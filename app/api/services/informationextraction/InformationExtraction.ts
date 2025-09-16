@@ -42,6 +42,7 @@ import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
+import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
@@ -509,12 +510,12 @@ class InformationExtraction {
   ) {
     const [model] = await ixmodels.get({ extractorId: extractor._id });
 
-    if (model.findSuggestionsRunTimestamp) {
+    if (model.processRun?.suggestionsRunTimestamp) {
       return {
         ...currentSuggestion,
         modelData: {
           ...(currentSuggestion.modelData || {}),
-          findSuggestionsRunTimestamp: model.findSuggestionsRunTimestamp,
+          suggestionsRunTimestamp: model.processRun.suggestionsRunTimestamp,
         },
       };
     }
@@ -629,25 +630,43 @@ class InformationExtraction {
   };
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, model: IXModelType) => {
-    // If a find suggestions run is active, compute per-run entity progress using IDs
-    if (model.findingSuggestions && model.findSuggestionsRunTimestamp) {
-      const remainingIds = Array.isArray(model.findSuggestionsSharedIds)
-        ? model.findSuggestionsSharedIds.length
+    // If a selected-IDs run is active (queue present), compute per-run entity progress using IDs
+    const hasSelectedQueue = Array.isArray(model.processRun?.findSuggestionsSharedIds);
+    if (model.findingSuggestions && hasSelectedQueue) {
+      const remainingIds = Array.isArray(model.processRun?.findSuggestionsSharedIds)
+        ? model.processRun!.findSuggestionsSharedIds!.length
         : 0;
-      const total = model.findSuggestionsInitialSharedIdsCount ?? remainingIds;
+      const total = model.processRun?.findSuggestionsInitialSharedIdsCount ?? remainingIds;
+      // processed includes pre-processed ones: total is original selected, remaining are pending
       const processed = Math.max(0, total - remainingIds);
       return { total, processed };
     }
 
-    // Default behavior for training/test runs: count suggestions since creationDate
-    const processedSuggestions = await IXSuggestionsModel.count({
-      extractorId,
-      $and: [{ date: { $ne: null } }, { date: { $gt: model.creationDate } }],
-    });
-    return {
+    // Default behavior for training/test runs OR process_extractor runs with filters:
+    // Prefer counting suggestions tagged with this run's timestamp, to handle cases
+    // where 'date' may not be updated (e.g., re-suggesting obsolete items).
+    let processedSuggestions = 0;
+    if (model.processRun?.suggestionsRunTimestamp) {
+      processedSuggestions = await IXSuggestionsModel.db.countDocuments({
+        extractorId,
+        status: 'ready',
+        date: { $ne: null },
+        'state.obsolete': { $ne: true },
+        'state.error': { $ne: true },
+        'modelData.suggestionsRunTimestamp': model.processRun.suggestionsRunTimestamp,
+      });
+    } else {
+      const since = model.creationDate;
+      processedSuggestions = await IXSuggestionsModel.count({
+        extractorId,
+        $and: [{ date: { $ne: null } }, { date: { $gt: since } }],
+      });
+    }
+    const status = {
       total: model.totalSuggestionsToFind,
       processed: processedSuggestions,
     };
+    return status;
   };
 
   updateSuggestionStatus = async (message: InternalIXResultsMessage, passedModel: IXModelType) => {
@@ -679,7 +698,7 @@ class InformationExtraction {
 
     const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
     const remaining = (model.totalSuggestionsToFind || 0) - suggestionsStatus.processed;
-    const batchSize = model.testRun ? Math.min(remaining, MAX_BATCH_SIZE) : undefined;
+    const batchSize = Math.max(0, Math.min(remaining, MAX_BATCH_SIZE));
     return batchSize;
   };
 
@@ -792,24 +811,30 @@ class InformationExtraction {
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
     const [extractor] = await Extractors.get({ _id: extractorId });
-    if (!extractor) {
+    if (!extractor) return;
+
+    const [model] = await IXModelsModel.get({ extractorId });
+
+    if (model?.totalSuggestionsToFind === 0) {
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
       return;
     }
 
-    const [model] = await IXModelsModel.get({ extractorId });
-    if (model.testRun) {
-      const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
-      if (suggestionsStatus.processed >= (model.totalSuggestionsToFind || 0)) {
-        await this.stopModelAndEmitReadyMessage(extractorId, 'Test completed');
-      }
+    const suggestionsStatus = await this.getSuggestionsStatus(extractorId, model);
+    if (
+      model.totalSuggestionsToFind != null &&
+      suggestionsStatus.processed >= model.totalSuggestionsToFind
+    ) {
+      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
+      return;
     }
 
     await this.sendMaterialsAndTaskSuggestions(extractor, model);
   };
 
-  trainModel = async (extractorId: ObjectIdSchema, testRun: boolean = false) => {
+  trainModel = async (extractorId: ObjectIdSchema, suggestionsToFind?: number) => {
     const tenant = tenants.current();
-    await ixmodels.startTraining(extractorId, { testRun });
+    await ixmodels.startTraining(extractorId, { suggestionsToFind });
 
     emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
 
@@ -819,8 +844,6 @@ class InformationExtraction {
 
     return { status: 'processing_model', message: 'Training model' };
   };
-
-  testModel = async (extractorId: ObjectIdSchema) => this.trainModel(extractorId, true);
 
   status = async (extractorId: ObjectIdSchema) => {
     const [currentModel] = await ixmodels.get({ extractorId });
@@ -845,6 +868,22 @@ class InformationExtraction {
       const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
+        // If auto-accept is enabled for this process run, transition status to
+        // processing_auto_accept instead of ready to avoid UI flicker and clearly
+        // indicate the next phase. Provide progress snapshot if available.
+        const isAutoAcceptEnabled = !!currentModel.processRun?.autoAccept?.enabled;
+        if (isAutoAcceptEnabled) {
+          const autoAcceptProcessed = currentModel.processRun?.autoAcceptProgress?.processed || 0;
+          const autoAcceptTotal = currentModel.processRun?.autoAcceptProgress?.total || 0;
+          return {
+            status: 'processing_auto_accept',
+            message: 'Accepting suggestions',
+            data:
+              autoAcceptTotal > 0
+                ? { processed: autoAcceptProcessed, total: autoAcceptTotal }
+                : undefined,
+          };
+        }
         return { status: 'ready', message: 'Ready' };
       }
 
@@ -877,6 +916,32 @@ class InformationExtraction {
     return { status: 'error', message: 'No model found' };
   };
 
+  startAutoAcceptIfEnabled = async (extractorId: string): Promise<boolean> => {
+    const tenant = tenants.current();
+    const [model] = await IXModelsModel.get({ extractorId: new ObjectId(extractorId) });
+    if (!model) {
+      return false;
+    }
+    const autoAccept = model?.processRun?.autoAccept;
+    if (!autoAccept?.enabled) return false;
+
+    // Treat auto-accept as part of the active process run: keep findingSuggestions=true
+    // so the status endpoint does not report 'ready' between phases and to avoid
+    // concurrent process triggers while acceptance is running.
+    try {
+      await ixmodels.startFindingSuggestions(new ObjectId(extractorId));
+    } catch (e) {
+      /* empty */
+    }
+
+    emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
+
+    const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });
+    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName: tenant.name });
+    await dispatcher.dispatch(job.constructor as any, { extractorId });
+    return true;
+  };
+
   processResults = async (_message: IXResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       const message: InternalIXResultsMessage = {
@@ -907,6 +972,18 @@ class InformationExtraction {
         if (message.task === 'suggestions') {
           await this.saveSuggestionsManager(message);
           await this.updateSuggestionStatus(message, currentModel);
+
+          // If a process run requested auto-accept and the find phase just completed,
+          // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
+          const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+          const autoAccept = freshModel?.processRun?.autoAccept;
+          if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
+            const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
+            if (status.processed >= freshModel.totalSuggestionsToFind) {
+              await this.startAutoAcceptIfEnabled(message.params!.id.toString());
+              return;
+            }
+          }
         }
 
         const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });

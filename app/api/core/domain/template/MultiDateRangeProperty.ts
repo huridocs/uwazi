@@ -1,4 +1,4 @@
-import { PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
 
@@ -7,8 +7,8 @@ type Props = {
 } & Omit<FilterablePropertyProps, 'type'>;
 
 class MultiDateRangeProperty extends FilterableProperty {
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'multidaterange' });
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'multidaterange' }, context);
 
     this.validate();
   }

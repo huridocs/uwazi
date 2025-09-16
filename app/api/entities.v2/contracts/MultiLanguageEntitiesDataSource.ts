@@ -15,6 +15,7 @@ export interface MultiLanguageEntityDataSource {
     sharedIds: string[]
   ): Promise<void>;
 
+  countByTemplateId(templateId: string): Promise<number>;
   getEntitiesByTemplateId(templateId: string): Promise<ResultSet<MultiLanguageEntity>>;
   getEntitiesBySharedIds(sharedIds: string[]): Promise<ResultSet<MultiLanguageEntity>>;
   getSharedIdsByTemplateId(templateId: string): Promise<ResultSet<string>>;

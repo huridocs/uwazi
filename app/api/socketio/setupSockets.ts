@@ -27,9 +27,12 @@ declare global {
 }
 
 let io: SocketIoServer | Emitter;
+let workerSocketsListenersAttached = false;
 
 let pubClient: RedisClient;
 let subClient: RedisClient;
+
+const relaxMaxListeners = config.ENVIRONMENT !== 'production';
 
 const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   if (!io) {
@@ -39,6 +42,7 @@ const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   io.to(tenantName).emit(event, ...data);
 };
 
+// eslint-disable-next-line max-statements
 const setupApiSockets = (server: Server, app: Application) => {
   io = new SocketIoServer(server);
 
@@ -64,6 +68,14 @@ const setupApiSockets = (server: Server, app: Application) => {
     pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
     subClient = pubClient.duplicate();
 
+    // Avoid MaxListenersExceededWarning in dev/tests if setup happens multiple times
+    if (relaxMaxListeners && typeof (pubClient as any).setMaxListeners === 'function') {
+      (pubClient as any).setMaxListeners(0);
+    }
+    if (relaxMaxListeners && typeof (subClient as any).setMaxListeners === 'function') {
+      (subClient as any).setMaxListeners(0);
+    }
+
     io.adapter(createAdapter(pubClient, subClient));
     io.of('/').adapter.on('error', e => {
       handleError(e, { useContext: false });
@@ -87,14 +99,22 @@ const setupApiSockets = (server: Server, app: Application) => {
 };
 
 const setupWorkerSockets = (redisClient: RedisClient) => {
-  if (io) {
+  if (io || workerSocketsListenersAttached) {
     return;
   }
+  workerSocketsListenersAttached = true;
+
+  if (relaxMaxListeners && typeof (redisClient as any).setMaxListeners === 'function') {
+    (redisClient as any).setMaxListeners(0);
+  }
+
+  // Keep listening for errors across the client lifetime
   redisClient.on('error', error => {
     throw error;
   });
 
-  redisClient.on('ready', () => {
+  // Initialize the emitter only once
+  redisClient.once('ready', () => {
     io = new Emitter(redisClient);
   });
 };

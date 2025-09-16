@@ -19,6 +19,14 @@ mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.error': 1 });
 
 mongoSchema.index({ extractorId: 1, date: 1, state: -1 });
 
+// Speed up per-run lookups (previous run filters and seen-in-run checks)
+mongoSchema.index({
+  extractorId: 1,
+  'modelData.suggestionsRunTimestamp': 1,
+  status: 1,
+  entityId: 1,
+});
+
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 
 export { IXSuggestionsModel };

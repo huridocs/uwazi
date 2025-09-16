@@ -3,7 +3,27 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IXSuggestionsQuery } from 'shared/types/suggestionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { SuggestionValue } from 'app/V2/Routes/Settings/IX/types';
+import { SuggestionValue } from 'V2/Routes/Settings/IX/types';
+
+type ProcessParameters = {
+  extractorId: string;
+  mode: 'process_extractor' | 'process_selected';
+  find?: {
+    enabled?: boolean;
+    size?: number;
+    filters?: {
+      error?: boolean;
+      obsolete?: boolean;
+      nonProcessed?: boolean;
+    };
+    selectedSharedIds?: string[];
+  };
+  autoAccept?: {
+    enabled?: boolean;
+    source?: 'previous' | 'all';
+    overwriteMode?: 'blank_only' | 'overwrite_all';
+  };
+};
 
 const get = async (
   parameters: {
@@ -43,15 +63,12 @@ const accept = async (
   return response.json;
 };
 
-const findSuggestions = async (extractorId: string, headers?: IncomingHttpHeaders) => {
-  const params = new RequestParams({ extractorId }, headers);
+const findSuggestions = async (
+  { extractorId, suggestionsToFind = 0 }: { extractorId: string; suggestionsToFind: number },
+  headers?: IncomingHttpHeaders
+) => {
+  const params = new RequestParams({ extractorId, suggestionsToFind }, headers);
   const response = await api.post('suggestions/train', params);
-  return response.json;
-};
-
-const findSelectedSuggestions = async (extractorId: string, sharedIds: string[]) => {
-  const params = new RequestParams({ extractorId, sharedIds });
-  const response = await api.post('suggestions/find', params);
   return response.json;
 };
 
@@ -67,23 +84,14 @@ const cancel = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   return response;
 };
 
-const testRun = async (extractorId: string, headers?: IncomingHttpHeaders): Promise<number> => {
-  try {
-    const params = new RequestParams({ extractorId }, headers);
-    const { status: response } = await api.post('suggestions/test_model', params);
-    return response;
-  } catch (e) {
-    return e;
-  }
+const process = async (
+  parameters: ProcessParameters,
+  headers?: IncomingHttpHeaders
+): Promise<{ status: string; message: string; data?: { total?: number } }> => {
+  const params = new RequestParams(parameters, headers);
+  const { json: response } = await api.post('suggestions/process', params);
+  return response;
 };
 
-export {
-  get,
-  accept,
-  aggregation,
-  findSuggestions,
-  status,
-  cancel,
-  testRun,
-  findSelectedSuggestions,
-};
+export type { ProcessParameters };
+export { get, accept, aggregation, findSuggestions, status, cancel, process };

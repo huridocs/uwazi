@@ -1,5 +1,5 @@
 import { CommonProperty, CommonPropertyProps } from 'api/templates.v2/model/CommonProperty';
-import { PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
 import {
   CreationDatePropertyInvalidNameError,
   CreationDatePropertyInvalidTypeError,
@@ -13,8 +13,8 @@ type Props = { prioritySorting?: boolean; type?: PropertyTypes } & Omit<
 class CreationDateProperty extends CommonProperty {
   prioritySorting: boolean;
 
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'date', name: props.name || 'creationDate' });
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'date', name: props.name || 'creationDate' }, context);
     this.prioritySorting = props.prioritySorting || false;
 
     this.validate();

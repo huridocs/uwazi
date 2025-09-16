@@ -1,4 +1,4 @@
-import { PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 import { AbstractImageProperty, AbstractImagePropertyProps } from './AbstractImageProperty';
 
@@ -7,8 +7,8 @@ type Props = {
 } & Omit<AbstractImagePropertyProps, 'type'>;
 
 class MediaProperty extends AbstractImageProperty {
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'media' });
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'media' }, context);
 
     this.validate();
   }

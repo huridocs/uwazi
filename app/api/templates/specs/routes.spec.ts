@@ -200,7 +200,7 @@ describe('templates routes', () => {
           ],
           reindex: false,
         },
-        400
+        422
       );
 
       expect(body.error).toContain('swap');

@@ -10,10 +10,28 @@ const prepareFiles = async (mediaProperties, values) => {
   if (values.metadata) {
     await Promise.all(
       mediaProperties.map(async p => {
-        if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
+        if (!values.metadata[p.name]) {
           return Promise.resolve();
         }
-        const { data, originalFile } = values.metadata[p.name];
+        
+        // 🔧 FIX: Handle different data structures
+        const metadataValue = values.metadata[p.name];
+        
+        // Skip if it's a simple URL string (from URL input)
+        if (typeof metadataValue === 'string' && /^https?:\/\//.test(metadataValue)) {
+          console.log('🔧 [FIX] Skipping URL string (preserving original URL):', {
+            propertyName: p.name,
+            url: metadataValue
+          });
+          return Promise.resolve();
+        }
+        
+        // Skip if it's not an object with data/originalFile
+        if (typeof metadataValue !== 'object' || !metadataValue.data) {
+          return Promise.resolve();
+        }
+        
+        const { data, originalFile } = metadataValue;
         if (originalFile) {
           // 🔧 FIX: Prioritize originalFile over blob URL data
           if (originalFile instanceof File) {
@@ -233,15 +251,25 @@ const prepareMetadataAndFiles = async (values, attachedFiles, template, mediaPro
   wrappedEntity.attachments.push(...files);
   wrappedEntity.attachments.push(...attachedFiles);
   
-  // 🔧 FIX: Fallback - remove any remaining blob URLs from metadata
+  // 🔧 FIX: Fallback - remove any remaining blob URLs from metadata (but preserve URLs)
   Object.keys(wrappedEntity.metadata).forEach(key => {
     const value = wrappedEntity.metadata[key];
-    if (value && value[0] && value[0].value && value[0].value.startsWith('blob:')) {
-      console.log('🔧 [FALLBACK FIX] Removing remaining blob URL from metadata:', {
-        property: key,
-        blobUrl: value[0].value
-      });
-      value[0].value = ''; // Set to empty string instead of blob URL
+    if (value && value[0] && value[0].value) {
+      const fieldValue = value[0].value;
+      
+      // Only remove blob URLs, preserve HTTP/HTTPS URLs
+      if (fieldValue.startsWith('blob:') && !fieldValue.startsWith('https://') && !fieldValue.startsWith('http://')) {
+        console.log('🔧 [FALLBACK FIX] Removing remaining blob URL from metadata:', {
+          property: key,
+          blobUrl: fieldValue
+        });
+        value[0].value = ''; // Set to empty string instead of blob URL
+      } else if (fieldValue.startsWith('https://') || fieldValue.startsWith('http://')) {
+        console.log('🔧 [FALLBACK FIX] Preserving URL in metadata:', {
+          property: key,
+          url: fieldValue
+        });
+      }
     }
   });
   
