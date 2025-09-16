@@ -1,5 +1,6 @@
 /* eslint-disable no-redeclare */
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { CommonPropertyFactory } from 'api/core/domain/template/CommonPropertyFactory';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { Property } from '../model/Property';
@@ -9,7 +10,6 @@ import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 import { RelationshipPropertyDBO, TemplateDBO } from './schemas/TemplateDBO';
-import { CommonProperty } from '../model/CommonProperty';
 
 type PropertyDBO = TemplateDBO['properties'][number];
 
@@ -22,13 +22,23 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
   const templateId = MongoIdHandler.mapToApp(_templateId);
   const propertyId = property._id?.toString() || MongoIdHandler.generate();
   if ('isCommonProperty' in property && property.isCommonProperty) {
-    return new CommonProperty({
-      id: propertyId,
-      type: property.type,
-      name: property.name,
-      label: property.label,
-      template: templateId,
-    });
+    return CommonPropertyFactory.create(
+      {
+        id: propertyId,
+        type: property.type,
+        name: property.name,
+        label: property.label,
+        template: templateId,
+      },
+      { newNameGeneration: true }
+    );
+    // return new CommonProperty({
+    //   id: propertyId,
+    //   type: property.type,
+    //   name: property.name,
+    //   label: property.label,
+    //   template: templateId,
+    // });
   }
   switch (property.type) {
     case propertyTypes.newRelationship:
@@ -64,13 +74,18 @@ function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): 
 
 const TemplateMappers = {
   propertyToApp,
-  toApp: (tdbo: TemplateDBO): Template =>
-    new Template(
+  toApp: (tdbo: TemplateDBO): Template => {
+    const template = new Template(
       MongoIdHandler.mapToApp(tdbo._id),
       tdbo.name,
       tdbo.properties.map(p => propertyToApp(p, tdbo._id)),
-      tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id) as any) // TODO: remove as any
-    ),
+      tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id) as any), // TODO: remove as any
+      tdbo.color || '',
+      tdbo.default
+    );
+    template.processing = tdbo.processing;
+    return template;
+  },
 };
 
 export { TemplateMappers };

@@ -1,28 +1,21 @@
-import { FieldIsRequiredError, PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { Context } from 'api/templates.v2/model/Property';
+import { PropertyTypeInvalidTypeError } from './errors';
+import { AbstractSelectProperty, AbstractSelectPropertyProps } from './AbstractSelectProperty';
 
 type Props = {
-  content: string;
   type?: 'select';
-} & Omit<FilterablePropertyProps, 'type'>;
+} & Omit<AbstractSelectPropertyProps, 'type'>;
 
-class SelectProperty extends FilterableProperty {
-  content: string; // Keeping name wrong for backwards compatibility. This is Thesaurus id
+class SelectProperty extends AbstractSelectProperty {
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'select' }, context);
 
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'select' });
-    this.content = props.content;
-
-    this.validate();
+    this.validateSelectProperty();
   }
 
-  protected validate() {
+  private validateSelectProperty() {
     if (this.type !== 'select') {
       throw new PropertyTypeInvalidTypeError(this.type, 'SelectProperty');
-    }
-
-    if (!this?.content?.length) {
-      throw new FieldIsRequiredError('content');
     }
   }
 }

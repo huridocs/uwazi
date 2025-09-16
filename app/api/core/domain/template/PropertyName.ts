@@ -1,3 +1,5 @@
+import { Context } from 'api/templates.v2/model/Property';
+
 class PropertyName {
   value: string;
 
@@ -5,14 +7,24 @@ class PropertyName {
     this.value = value;
   }
 
-  static fromLabel(label: string) {
-    const formatted = label
+  static fromLabel(label: string, context?: Context) {
+    return new PropertyName(
+      context?.newNameGeneration ? this.newNameGeneration(label) : this.oldNameGeneration(label)
+    );
+  }
+
+  private static newNameGeneration = (label: string) =>
+    label
+      .trim()
+      .replace(/[#|\\|/|*|?|"|<|>|=|||\s|:|.|[|\]|%]/gi, '_')
+      .replace(/^[_|\-|+|$]/, '')
+      .toLowerCase();
+
+  private static oldNameGeneration = (label: string) =>
+    label
       .trim()
       .replace(/[^a-z0-9]/gi, '_')
       .toLowerCase();
-
-    return new PropertyName(formatted);
-  }
 }
 
 export { PropertyName };

@@ -1,4 +1,9 @@
-import { FieldIsRequiredError, PropertyTypeInvalidTypeError } from '../errors';
+import {
+  FieldIsRequiredError,
+  PropertyThesaurusMismatchError,
+  PropertyTypeInvalidTypeError,
+  PropertyTypeMismatchError,
+} from '../errors';
 import { SelectProperty } from '../SelectProperty';
 
 describe('SelectProperty', () => {
@@ -37,5 +42,48 @@ describe('SelectProperty', () => {
       () =>
         new SelectProperty({ id: 'any', label: 'A label', template: '', content: undefined as any })
     ).toThrow(new FieldIsRequiredError('content'));
+  });
+
+  it('should throw a type mismatch error when property types are inconsistent', () => {
+    const wrongSelect = new SelectProperty({
+      id: '',
+      label: 'label',
+      template: '',
+      content: 'content',
+    });
+    (wrongSelect as any).type = 'date';
+
+    const select = new SelectProperty({
+      id: '',
+      label: 'label',
+      template: '',
+      content: 'content',
+    });
+
+    expect(() => select.ensurePropertyIsConsistent(wrongSelect)).toThrow(
+      new PropertyTypeMismatchError(select, wrongSelect)
+    );
+  });
+
+  it('should throw a thesaurus mismatch error when property thesaurus are inconsistent', () => {
+    const wrongSelect = new SelectProperty({
+      id: '',
+      label: 'label',
+      template: '',
+      content: 'wrong',
+    });
+
+    const select = new SelectProperty({
+      id: '',
+      label: 'label',
+      template: '',
+      content: 'content',
+    });
+
+    expect(() => select.ensurePropertyIsConsistent(wrongSelect)).toThrow(
+      new PropertyThesaurusMismatchError(select, wrongSelect)
+    );
+
+    expect(() => select.ensurePropertyIsConsistent(select)).not.toThrow();
   });
 });

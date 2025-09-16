@@ -1,7 +1,7 @@
 import { AbstractEvent } from 'api/eventsbus';
 import { TemplateSchema } from 'shared/types/templateType';
 
-interface TemplateUpdatedData {
+export interface TemplateUpdatedData {
   before: TemplateSchema;
   after: TemplateSchema;
 }

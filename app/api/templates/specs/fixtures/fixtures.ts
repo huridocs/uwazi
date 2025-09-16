@@ -4,8 +4,10 @@ import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
 import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes';
 
+const factory = getFixturesFactory();
+
 const templateChangingNamesId = db.id();
-const templateToBeEditedId = db.id();
+const templateToBeEditedId = factory.id('template to be edited');
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const thesaurusTemplateId = db.id();
 const thesaurusTemplate2Id = db.id();
@@ -29,8 +31,6 @@ const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
 const thesaurusTemplateRelationshipPropId = db.id();
-
-const factory = getFixturesFactory();
 
 const languages: LanguagesListSchema = [
   { key: 'en', label: 'English', default: true },
@@ -81,8 +81,9 @@ const fixtures: DBFixture = {
     templateChangingNames,
     templateNotChangingNames,
     factory.template('template to be edited', [], {
-      _id: templateToBeEditedId,
       default: true,
+      color: '',
+      entityViewPage: '',
     }),
     {
       _id: db.id(templateToBeDeleted),
@@ -193,10 +194,24 @@ const fixtures: DBFixture = {
     {
       _id: swapTemplate,
       name: 'swap names template',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      commonProperties: [
+        {
+          _id: factory.id('swap names template title').toString(),
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+      ],
       properties: [
-        { _id: 'text_id', type: propertyTypes.text, name: 'text', label: 'Text' },
-        { _id: 'select_id', type: propertyTypes.select, name: 'select5', label: 'Select5' },
+        { _id: factory.id('text_id'), type: propertyTypes.text, name: 'text', label: 'Text' },
+        {
+          _id: factory.id('select_id'),
+          type: propertyTypes.select,
+          name: 'select5',
+          label: 'Select5',
+          content: thesauriId1.toString(),
+        },
       ],
     },
     {

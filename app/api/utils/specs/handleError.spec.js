@@ -8,11 +8,14 @@ import { IXValidationError } from 'api/services/informationextraction/IXValidati
 import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
+import { DomainError } from 'api/core/domain/error/DomainError';
 import { handleError, prettifyError } from '../handleError';
 
 const contextRequestId = '1234';
 
 const { ConnectionError } = elasticErrors;
+
+class TestDomainError extends DomainError {}
 
 describe('handleError', () => {
   beforeEach(() => {
@@ -252,6 +255,17 @@ original error: {
       code: 404,
       message: uriError.message,
       logLevel: 'debug',
+    });
+  });
+
+  it('should handle DomainError correctly', () => {
+    const result = handleError(new TestDomainError('Test error', 'code'));
+
+    expect(result).toMatchObject({
+      code: 400,
+      message: 'Test error',
+      logLevel: 'debug',
+      prettyMessage: '\nTest error',
     });
   });
 });
