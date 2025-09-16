@@ -145,51 +145,16 @@ const bindAttachmentToMetadataProperty = (
   _values: MetadataObjectSchema[],
   attachments: FileType[]
 ) => {
-  // 📍 CALL STACK TRACKING: bindAttachmentToMetadataProperty entry
-  console.log('🔄 [CALL STACK] bindAttachmentToMetadataProperty() ENTRY');
-  console.log('📍 [CALL STACK] Stack trace:', new Error().stack);
-  console.log('📊 [CALL STACK] Input data:', {
-    values: _values,
-    attachmentsCount: attachments.length,
-    attachments: attachments.map((att, idx) => ({ 
-      index: idx, 
-      filename: att.filename, 
-      originalname: att.originalname,
-      type: att.type 
-    }))
-  });
-
   const values = _values;
   if (_values[0].attachment !== undefined) {
     const attachmentIndex = _values[0].attachment;
-    const originalValue = _values[0].value;
-    
-    console.log('🔍 [CALL STACK] Processing attachment:', {
-      attachmentIndex,
-      originalValue,
-      attachmentsAvailable: attachments.length,
-      attachmentExists: attachments[attachmentIndex] ? true : false,
-      attachmentDetails: attachments[attachmentIndex] ? {
-        filename: attachments[attachmentIndex].filename,
-        originalname: attachments[attachmentIndex].originalname
-      } : null
-    });
 
     // Check if attachment exists
     if (attachments[attachmentIndex]) {
       const newValue = `/api/files/${attachments[attachmentIndex].filename}`;
       values[0].value = newValue;
-      console.log('✅ [CALL STACK] Attachment bound successfully:', {
-        index: attachmentIndex,
-        filename: attachments[attachmentIndex].filename,
-        newValue
-      });
     } else {
       values[0].value = '';
-      console.log('❌ [CALL STACK] Attachment not found, setting empty value:', {
-        index: attachmentIndex,
-        availableAttachments: attachments.length
-      });
     }
 
     // Handle time links
@@ -197,18 +162,8 @@ const bindAttachmentToMetadataProperty = (
       const timeLinks = _values[0].timeLinks.replace(/([()])/g, '');
       const finalValue = `(${values[0].value}, ${timeLinks})`;
       values[0].value = finalValue;
-      console.log('⏰ [CALL STACK] Time links added:', {
-        originalTimeLinks: _values[0].timeLinks,
-        cleanedTimeLinks: timeLinks,
-        finalValue
-      });
     }
-  } else {
-    console.log('ℹ️ [CALL STACK] No attachment to bind');
   }
-
-  console.log('🏁 [CALL STACK] bindAttachmentToMetadataProperty() EXIT');
-  console.log('📊 [CALL STACK] Final values:', values);
   return values;
 };
 
@@ -216,50 +171,13 @@ const handleAttachmentInMetadataProperties = (
   entity: EntityWithFilesSchema,
   attachments: FileType[]
 ) => {
-  // 📍 CALL STACK TRACKING: handleAttachmentInMetadataProperties entry
-  console.log('🔄 [CALL STACK] handleAttachmentInMetadataProperties() ENTRY');
-  console.log('📍 [CALL STACK] Stack trace:', new Error().stack);
-  console.log('📊 [CALL STACK] Input data:', {
-    entityTitle: entity.title,
-    entitySharedId: entity.sharedId,
-    attachmentsCount: attachments.length,
-    metadataKeys: Object.keys(entity.metadata || {}),
-    metadata: entity.metadata,
-    attachments: attachments.map((att, idx) => ({ 
-      index: idx, 
-      filename: att.filename, 
-      originalname: att.originalname,
-      type: att.type 
-    }))
-  });
-
   Object.entries(entity.metadata || {}).forEach(([propertyName, _values]) => {
     if (_values && _values.length) {
-      console.log(`🔍 [CALL STACK] Processing property: ${propertyName}`, {
-        originalValue: _values[0]?.value,
-        hasAttachment: _values[0]?.attachment !== undefined,
-        attachmentIndex: _values[0]?.attachment,
-        timeLinks: _values[0]?.timeLinks
-      });
-      
-      console.log(`🔄 [CALL STACK] About to call bindAttachmentToMetadataProperty() for ${propertyName}`);
       const values = bindAttachmentToMetadataProperty(_values, attachments);
-      console.log(`✅ [CALL STACK] bindAttachmentToMetadataProperty() completed for ${propertyName}`);
-      console.log(`📊 [CALL STACK] Result for ${propertyName}:`, {
-        finalValue: values[0]?.value,
-        hadAttachment: _values[0]?.attachment !== undefined,
-        hadTimeLinks: _values[0]?.timeLinks !== undefined
-      });
-      
       delete values[0].attachment;
       delete values[0].timeLinks;
-      
-      console.log(`🧹 [CALL STACK] Cleaned up attachment/timeLinks for ${propertyName}`);
     }
   });
-
-  console.log('🏁 [CALL STACK] handleAttachmentInMetadataProperties() EXIT');
-  console.log('📊 [CALL STACK] Final entity metadata:', entity.metadata);
   return entity;
 };
 
