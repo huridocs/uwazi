@@ -4,8 +4,10 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { get, isEmpty, uniqBy } from 'lodash';
+import { captureException } from '@sentry/react';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import { isClient } from 'app/utils';
 import {
   defaultSearch,
   InputField,
@@ -245,9 +247,13 @@ const Relationships = ({
           initialOptionsRef.current = initialOptions;
           setOptions(initialOptions);
         })
-        .catch(() => {
+        .catch((e) => {
           initialOptionsRef.current = [];
           setOptions([]);
+          if (isClient) {
+            const error = new Error('Lookup search error', { cause: e });
+            captureException(error);
+          }
         });
     }
   }, [property, suggestion, extractor]);
@@ -263,11 +269,10 @@ const Relationships = ({
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
-        extractor?.inheritedProperty && fieldName
-          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-          : `title:(${escapedText}*)`
-      } `;
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
+        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+        : `title:(${escapedText}*)`
+        } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
