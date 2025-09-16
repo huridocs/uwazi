@@ -3,11 +3,11 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
+import { get, isEmpty, uniqBy } from 'lodash';
 import { captureException } from '@sentry/react';
 import { Translate } from 'app/I18N';
-import { ClientPropertySchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
 import { isClient } from 'app/utils';
-import { lookup } from 'V2/api/search';
 import {
   defaultSearch,
   InputField,
@@ -17,12 +17,12 @@ import {
 } from 'V2/Components/Forms';
 import { Button } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
-import { loadValuesAndSuggestions } from '../helpers';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { selectionErrorAtom, textSelectionAtom } from './atoms';
 import { SuggestionValue, TableSuggestion } from '../types';
 import { MultiselectItemLabel } from './MultiselectItemLabel';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
-
+import { escapeLucene, searchRelatedEntities } from '../helpers';
 const updateOptionsWithSelection = (
   options: MultiselectListOption[],
   selectedValues?: string[]
@@ -50,6 +50,19 @@ const getSuggestionValues = (suggestedValue?: SuggestionValue[] | SuggestionValu
   });
 };
 
+const getEntityLabel = (entity: ClientEntitySchema, extractor?: ClientIXExtractorType): string => {
+  if (!extractor?.inheritedProperty) {
+    return entity.title as string;
+  }
+
+  const inheritedValue = entity.metadata?.[extractor.inheritedProperty.name]?.[0];
+  const inheritedLabel = inheritedValue?.label || inheritedValue?.value;
+
+  return inheritedLabel
+    ? `${inheritedLabel} (${entity.title as string})`
+    : (entity.title as string);
+};
+
 const calculateSearchText = (toggle: boolean, previousText?: string, nextText?: string) => {
   if (toggle) {
     return nextText || '';
@@ -62,6 +75,7 @@ type SidepanelFormsProps = {
   property?: ClientPropertySchema;
   suggestion?: TableSuggestion;
   clearSelectionButton?: ReactNode;
+  extractor?: ClientIXExtractorType;
 };
 
 const Selects = ({
@@ -145,11 +159,13 @@ const Selects = ({
 const Relationships = ({
   property,
   suggestion,
+  extractor,
 }: {
   property: ClientPropertySchema;
   suggestion: SidepanelFormsProps['suggestion'];
+  extractor: SidepanelFormsProps['extractor'];
 }) => {
-  const intitialOptionsRef = useRef<MultiselectListOption[]>([]);
+  const initialOptionsRef = useRef<MultiselectListOption[]>([]);
   const { control } = useFormContext();
   const selectedtext = useAtomValue(textSelectionAtom);
   const selectAndSearch = useAtomValue(selectAndSearchAtom);
@@ -158,79 +174,131 @@ const Relationships = ({
 
   useEffect(() => {
     if (suggestion && property?.type === 'relationship') {
-      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
+      const currentValues = Array.isArray(suggestion.currentValue)
+        ? suggestion.currentValue
+        : [suggestion.currentValue];
 
-      Promise.all([
-        lookup({ entityTitle: '', template: property?.content }),
-        ...(suggestion
-          ? [
-              loadValuesAndSuggestions(
-                suggestion.currentValue as string[],
-                suggestions,
-                suggestion.language
-              ),
-            ]
-          : []),
-      ])
-        .then(([emptySearchResult, suggestedEntities]) => {
-          const intialOptions = [...suggestedEntities, ...emptySearchResult.rows].reduce(
-            (acc, option) => {
-              if (!acc.find(_option => _option.value === option.sharedId)) {
-                acc.push({
-                  label: (
-                    <MultiselectItemLabel
-                      isSuggested={suggestions.includes(option.sharedId!)}
-                      label={option.title!}
-                      property={property}
-                    />
-                  ),
-                  value: option.sharedId!,
-                  searchLabel: option.title!,
-                  suggested: suggestions?.includes(option.sharedId!),
-                });
-              }
+      const suggestedValues = Array.isArray(suggestion.suggestedValue)
+        ? suggestion.suggestedValue
+        : [suggestion.suggestedValue];
 
-              return acc;
-            },
-            [] as MultiselectListOption[]
-          );
+      const allOptions: { sharedId: string; label: string; suggested: boolean }[] = uniqBy(
+        currentValues
+          .concat(suggestedValues)
+          .filter(value => value !== undefined)
+          .map((value: SuggestionValue) => ({
+            sharedId: get(value, 'id') || (value as string),
+            label: get(value, 'label') || (value as string),
+            suggested: true,
+          })),
+        'sharedId'
+      );
+      let searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language})`;
+      if (searchTextRef.current) {
+        const escapedText = escapeLucene(searchTextRef.current.trim());
+        const fieldName = extractor?.inheritedProperty?.name;
 
-          intitialOptionsRef.current = intialOptions;
-          setOptions(intialOptions);
+        let searchField = ['select', 'multiselect'].includes(
+          extractor?.inheritedProperty?.type || ''
+        )
+          ? '.label'
+          : '.value';
+
+        if (extractor?.inheritedProperty) {
+          const exactMatchText = `metadata.${fieldName}${searchField}:("${escapedText}")`;
+          const wildcardMatchText = `metadata.${fieldName}${searchField}:(${escapedText}*)`;
+          searchQuery = `${searchQuery} AND  (${exactMatchText} OR ${wildcardMatchText})`;
+        } else {
+          searchQuery = `${searchQuery} AND title:(${escapedText}*)`;
+        }
+      }
+      if (!isEmpty(allOptions)) {
+        searchQuery = `sharedId:(${allOptions.map(option => option.sharedId).join(' OR ')}) OR (${searchQuery})`;
+      }
+
+      searchRelatedEntities(searchQuery, extractor?.inheritedProperty)
+        .then((searchResult: ClientEntitySchema[]) => {
+          searchResult.forEach(entity => {
+            const existingOption = allOptions.find(option => entity.sharedId === option?.sharedId);
+            if (!existingOption) {
+              allOptions.push({
+                sharedId: entity.sharedId as string,
+                label: getEntityLabel(entity, extractor),
+                suggested: false,
+              });
+            } else {
+              existingOption.label = getEntityLabel(entity, extractor);
+            }
+          });
+
+          const initialOptions: MultiselectListOption[] = allOptions.map(option => ({
+            label: (
+              <MultiselectItemLabel
+                isSuggested={option.suggested}
+                label={option.label}
+                property={property}
+              />
+            ),
+            value: option.sharedId,
+            searchLabel: option.label!,
+            suggested: option.suggested,
+          }));
+
+          initialOptionsRef.current = initialOptions;
+          setOptions(initialOptions);
         })
         .catch(e => {
+          initialOptionsRef.current = [];
+          setOptions([]);
           if (isClient) {
             const error = new Error('Lookup search error', { cause: e });
             captureException(error);
           }
         });
     }
-  }, [property, suggestion]);
+  }, [property, suggestion, extractor]);
 
   const lookupSearch = async (searchTerm: string) => {
     if (!searchTerm) {
-      setOptions(intitialOptionsRef.current);
+      setOptions(initialOptionsRef.current);
     } else {
-      const response = await lookup({
-        entityTitle: searchTerm || '',
-        template: property?.content,
-      });
+      const escapedText = escapeLucene(searchTerm.trim());
+      const fieldName = extractor?.inheritedProperty?.name;
 
-      const suggestions = getSuggestionValues(suggestion?.suggestedValue);
+      let searchField = ['select', 'multiselect'].includes(extractor?.inheritedProperty?.type || '')
+        ? '.label'
+        : '.value';
+
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && fieldName
+          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+          : `title:(${escapedText}*)`
+      } `;
+
+      const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
+
+      const suggestedValues = Array.isArray(suggestion?.suggestedValue)
+        ? suggestion.suggestedValue
+        : [suggestion?.suggestedValue];
+
+      const suggestedSharedIds = suggestedValues.map(value => get(value, 'value') || value);
 
       setOptions(() =>
-        response.rows.map(option => ({
-          label: (
-            <MultiselectItemLabel
-              isSuggested={suggestions.includes(option.sharedId)}
-              label={option.title}
-              property={property!}
-            />
-          ),
-          value: option.sharedId,
-          searchLabel: option.title,
-          suggested: suggestions?.includes(option.sharedId),
-        }))
+        response.map((entity: ClientEntitySchema) => {
+          const label = getEntityLabel(entity, extractor);
+          return {
+            label: (
+              <MultiselectItemLabel
+                isSuggested={suggestedSharedIds.includes(entity.sharedId!)}
+                label={label}
+                property={property!}
+              />
+            ),
+            value: entity.sharedId!,
+            searchLabel: label,
+            suggested: suggestedSharedIds.includes(entity.sharedId!),
+          };
+        })
       );
     }
   };
@@ -404,13 +472,14 @@ const SidepanelForms = ({
   suggestion,
   handleClickToFill,
   clearSelectionButton,
+  extractor,
 }: SidepanelFormsProps) => {
   switch (property?.type) {
     case 'select':
     case 'multiselect':
       return <Selects suggestion={suggestion} property={property} />;
     case 'relationship':
-      return <Relationships suggestion={suggestion} property={property} />;
+      return <Relationships suggestion={suggestion} property={property} extractor={extractor} />;
     case 'text':
     case 'date':
     case 'numeric':

@@ -28,7 +28,8 @@ const renderPDFSidepanel = (
   suggestion: any,
   property: ClientPropertySchema,
   onEntitySave = jest.fn(),
-  setShowSidepanel = jest.fn()
+  setShowSidepanel = jest.fn(),
+  extractor = loaderData.extractor
 ) =>
   render(
     <TestRouterContext loaderData={loaderData}>
@@ -39,6 +40,7 @@ const renderPDFSidepanel = (
           onEntitySave={onEntitySave}
           suggestion={suggestion}
           property={property}
+          extractor={extractor}
         />
       </AtomProvider>
     </TestRouterContext>
@@ -48,7 +50,8 @@ const renderPropertySidepanel = (
   suggestion: any,
   property: ClientPropertySchema,
   onEntitySave = jest.fn(),
-  setShowSidepanel = jest.fn()
+  setShowSidepanel = jest.fn(),
+  extractor = loaderData.extractor
 ) =>
   render(
     <TestRouterContext loaderData={loaderData}>
@@ -59,6 +62,7 @@ const renderPropertySidepanel = (
           onEntitySave={onEntitySave}
           suggestion={suggestion}
           property={property}
+          extractor={extractor}
         />
       </AtomProvider>
     </TestRouterContext>
@@ -121,22 +125,27 @@ jest.mock('V2/api/entities', () => ({
 }));
 
 jest.mock('V2/api/search', () => ({
-  lookup: jest.fn().mockResolvedValue({
-    rows: [
-      {
-        _id: 'entity2',
-        title: 'entity2',
-        sharedId: 'entity2',
-        template: 'template2',
-      },
-      {
-        _id: 'suggested_entity',
-        title: 'suggested_entity',
-        sharedId: 'suggested_entity',
-        template: 'template2',
-      },
-    ],
-    count: 2,
+  search: jest.fn().mockImplementation(async query => {
+    if (query.filters.searchString.includes('template:template2')) {
+      return Promise.resolve({
+        rows: [
+          {
+            _id: 'entity2',
+            title: 'entity2',
+            sharedId: 'entity2',
+            template: 'template2',
+          },
+          {
+            _id: 'suggested_entity',
+            title: 'suggested_entity',
+            sharedId: 'suggested_entity',
+            template: 'template2',
+          },
+        ],
+        count: 2,
+      });
+    }
+    return Promise.resolve({ rows: [], count: 0 });
   }),
 }));
 
@@ -482,25 +491,40 @@ describe('Sidepanel forms', () => {
     });
 
     it('should do the initial search, select text, then search and populate the field when the toggle is on', async () => {
-      const { lookup } = jest.requireMock('V2/api/search');
+      const { search } = jest.requireMock('V2/api/search');
 
       const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
       renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
 
-      expect(lookup).toHaveBeenCalledWith({
-        entityTitle: '',
-        template: 'template2',
+      await waitFor(() => {
+        expect(search).toHaveBeenCalledWith(
+          {
+            filters: {
+              searchString: expect.stringContaining('(template:template2) AND language:(en)'),
+            },
+            fields: ['title', 'sharedId'],
+            limit: 10,
+          },
+          undefined
+        );
       });
 
       fireEvent.click(screen.getByTestId('selectable-text'));
       fireEvent.click(screen.getByText('Select & Search'));
 
       await waitFor(() => {
-        expect(lookup).toHaveBeenCalledWith({
-          entityTitle: 'Selected text from PDF',
-          template: 'template2',
-        });
+        expect(search).toHaveBeenCalledWith(
+          {
+            filters: {
+              searchString:
+                '(template:template2) AND language:(en) AND title:(Selected text from PDF*) ',
+            },
+            fields: ['title', 'sharedId'],
+            limit: 10,
+          },
+          undefined
+        );
       });
 
       const searchInput = screen.getByPlaceholderText('Search');
@@ -508,21 +532,29 @@ describe('Sidepanel forms', () => {
     });
 
     it('should do the initial search, and not populate the field or do more searches when the toggle is off', async () => {
-      const { lookup } = jest.requireMock('V2/api/search');
+      const { search } = jest.requireMock('V2/api/search');
 
       const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
       renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
       expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
 
-      expect(lookup).toHaveBeenCalledWith({
-        entityTitle: '',
-        template: 'template2',
+      await waitFor(() => {
+        expect(search).toHaveBeenCalledWith(
+          {
+            filters: {
+              searchString: expect.stringContaining('(template:template2) AND language:(en)'),
+            },
+            fields: ['title', 'sharedId'],
+            limit: 10,
+          },
+          undefined
+        );
       });
 
       fireEvent.click(screen.getByTestId('selectable-text'));
 
       await waitFor(() => {
-        expect(lookup).toHaveBeenCalledTimes(1);
+        expect(search).toHaveBeenCalledTimes(1);
       });
 
       const searchInput = screen.getByPlaceholderText('Search');
@@ -585,6 +617,148 @@ describe('Sidepanel forms', () => {
       });
 
       expect(entities).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Extractor property functionality', () => {
+    const createExtractorWithInheritedProperty = () => ({
+      ...loaderData.extractor,
+      inheritedProperty: {
+        _id: 'inheritedProp',
+        name: 'inherited_property',
+        label: 'Inherited Property',
+        type: 'text' as const,
+      },
+    });
+
+    const expectSearchCall = (fields: string[], searchStringPattern: string) => {
+      const { search } = jest.requireMock('V2/api/search');
+      return expect(search).toHaveBeenCalledWith(
+        {
+          filters: { searchString: expect.stringContaining(searchStringPattern) },
+          fields,
+          limit: 10,
+        },
+        undefined
+      );
+    };
+
+    it('should use inherited property for search when extractor has inheritedProperty', async () => {
+      const extractorWithInheritedProperty = createExtractorWithInheritedProperty();
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+
+      renderPDFSidepanel(
+        suggestionWithProperty,
+        relationshipProperty,
+        jest.fn(),
+        jest.fn(),
+        extractorWithInheritedProperty
+      );
+
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      await waitFor(() => {
+        expectSearchCall(
+          ['title', 'sharedId', 'metadata.inherited_property'],
+          '(template:template2) AND language:(en)'
+        );
+      });
+    });
+
+    it('should use title for search when extractor has no inheritedProperty', async () => {
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+      renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
+
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      await waitFor(() => {
+        expectSearchCall(['title', 'sharedId'], '(template:template2) AND language:(en)');
+      });
+    });
+
+    it('should use inherited property in search query when select and search is enabled', async () => {
+      const extractorWithInheritedProperty = createExtractorWithInheritedProperty();
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+
+      renderPDFSidepanel(
+        suggestionWithProperty,
+        relationshipProperty,
+        jest.fn(),
+        jest.fn(),
+        extractorWithInheritedProperty
+      );
+
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('selectable-text'));
+      fireEvent.click(screen.getByText('Select & Search'));
+
+      await waitFor(() => {
+        expectSearchCall(
+          ['title', 'sharedId', 'metadata.inherited_property'],
+          '(template:template2) AND language:(en) AND (metadata.inherited_property.value:("Selected text from PDF") OR metadata.inherited_property.value:(Selected text from PDF*))'
+        );
+      });
+    });
+
+    it('should use title in search query when select and search is enabled and no inherited property', async () => {
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+      renderPDFSidepanel(suggestionWithProperty, relationshipProperty);
+
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('selectable-text'));
+      fireEvent.click(screen.getByText('Select & Search'));
+
+      await waitFor(() => {
+        expectSearchCall(
+          ['title', 'sharedId'],
+          '(template:template2) AND language:(en) AND title:(Selected text from PDF*)'
+        );
+      });
+    });
+
+    it('should display inherited property value in search results when available', async () => {
+      const { search } = jest.requireMock('V2/api/search');
+      const extractorWithInheritedProperty = createExtractorWithInheritedProperty();
+
+      search.mockImplementation(async (query: any) => {
+        if (query.filters.searchString.includes('template:template2')) {
+          return Promise.resolve({
+            rows: [
+              {
+                _id: 'entity2',
+                title: 'entity2',
+                sharedId: 'entity2',
+                template: 'template2',
+                metadata: {
+                  inherited_property: [{ value: 'Inherited Value' }],
+                },
+              },
+            ],
+            count: 1,
+          });
+        }
+        return Promise.resolve({ rows: [], count: 0 });
+      });
+
+      const suggestionWithProperty = createSuggestionWithProperty('relationship_property');
+      renderPDFSidepanel(
+        suggestionWithProperty,
+        relationshipProperty,
+        jest.fn(),
+        jest.fn(),
+        extractorWithInheritedProperty
+      );
+
+      expect(await screen.findByText('Test Entity Title')).toBeInTheDocument();
+
+      await waitFor(() => {
+        expectSearchCall(
+          ['title', 'sharedId', 'metadata.inherited_property'],
+          '(template:template2) AND language:(en)'
+        );
+      });
     });
   });
 });
