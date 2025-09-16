@@ -58,7 +58,7 @@ class PageViewer extends Component {
   render() {
     const { page, itemLists, datasets, error: _error, setBrowserTitle } = this.props;
     const errorDetails = _error.toJS?.();
-    
+
     let rawError = null;
     if (errorDetails) {
       if (errorDetails.json) {

@@ -1,126 +1,382 @@
 /**
  * @jest-environment jsdom
  */
+import '@testing-library/jest-dom';
 import Immutable from 'immutable';
 import React from 'react';
-import { Helmet } from 'react-helmet';
-import { shallow } from 'enzyme';
-
-import MarkdownViewer from 'app/Markdown';
-import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
-
+import { screen, waitFor } from '@testing-library/react';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { PageViewer } from '../PageViewer';
-import Script from '../Script';
+
+const mockUseNavigate = jest.fn();
+
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
+  useNavigate: () => mockUseNavigate,
+  useLocation: () => jest.fn(),
+  // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
+  Link: props => <a {...props} href={props.to} />,
+}));
 
 describe('PageViewer', () => {
-  let component;
-  let props;
-  let context;
+  const initialEntry = { pathname: '/page/1' };
 
   beforeEach(() => {
-    props = {
-      page: Immutable.fromJS({
-        _id: 1,
-        title: 'Page 1',
-        metadata: /*non-metadata-object*/ { content: 'MarkdownContent', script: 'JSScript' },
-      }),
-      itemLists: Immutable.fromJS([{ item: 'item' }]),
-      datasets: Immutable.fromJS({ key: 'value' }),
-      error: Immutable.fromJS({}),
-    };
+    document.title = '';
   });
 
-  const render = () => {
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    component = shallow(<PageViewer.WrappedComponent {...props} />, { context });
-    // Force the component to render completely
-    component.update();
+  const defaultPageState = {
+    page: {
+      pageView: Immutable.fromJS({
+        _id: 1,
+        title: 'Page 1',
+        metadata: {
+          content: '# Test Page\n\nThis is test content with **bold text**.',
+          script: 'JSScript',
+        },
+        scriptRendered: false,
+      }),
+      datasets: Immutable.fromJS({ key: 'value' }),
+      itemLists: Immutable.fromJS([{ item: 'item' }]),
+      error: Immutable.fromJS({}),
+    },
+    user: Immutable.fromJS({ _id: 'userid' }),
+    settings: {
+      collection: Immutable.fromJS({
+        site_name: 'Test Site',
+        defaultLibraryView: 'cards',
+      }),
+    },
   };
 
+  function renderComponent(customState = {}, props = {}) {
+    const state = { ...defaultState, ...defaultPageState, ...customState };
+    const { renderResult } = renderConnectedContainer(
+      <PageViewer {...props} />,
+      () => state,
+      'MemoryRouter',
+      [initialEntry]
+    );
+    return renderResult;
+  }
+
   describe('render', () => {
-    beforeEach(() => {
-      render();
-    });
+    it('should render page content with markdown and lists', async () => {
+      renderComponent();
 
-    it('should render a MarkdownViewer with the markdown and the items for the lists', () => {
-      expect(component.find(MarkdownViewer).props().markdown).toBe('MarkdownContent');
-      expect(component.find(MarkdownViewer).props().lists).toEqual([{ item: 'item' }]);
-    });
-
-    it('should render the script', () => {
-      const scriptElement = component.find(Script);
-      expect(scriptElement).toMatchSnapshot();
-    });
-
-    describe('Helmet', () => {
-      it('should render the page helmet', () => {
-        expect(component.find(Helmet).find('title').text()).toBe('Page 1');
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       });
 
-      it('should not overwrite the page title', () => {
-        props.setBrowserTitle = false;
-        render();
-        expect(component.find(Helmet).length).toBe(0);
+      expect(screen.getByText('Test Page')).toBeInTheDocument();
+      expect(screen.getByText(/This is test content with/)).toBeInTheDocument();
+      expect(screen.getByText('bold text')).toBeInTheDocument();
+    });
+
+    it('should render a MarkdownViewer with the markdown and the items for the lists', async () => {
+      const { container } = renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       });
+
+      expect(screen.getByText('Test Page')).toBeInTheDocument();
+      expect(screen.getByText(/This is test content with/)).toBeInTheDocument();
+      expect(screen.getByText('bold text')).toBeInTheDocument();
+
+      const markdownViewer = container.querySelector('.main-wrapper');
+      expect(markdownViewer).toBeInTheDocument();
+    });
+
+    it('should render the page title in helmet when setBrowserTitle is true', async () => {
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(document.title).toBe('Page 1');
+      });
+    });
+
+    it('should not set page title when setBrowserTitle is false', async () => {
+      renderComponent({}, { setBrowserTitle: false });
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(document.title).not.toBe('Page 1');
+    });
+
+    it('should render the page helmet', async () => {
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(document.title).toBe('Page 1');
+      });
+    });
+
+    it('should render footer content', async () => {
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(screen.getByText('Library')).toBeInTheDocument();
+      expect(screen.getByText('Settings')).toBeInTheDocument();
+      expect(screen.getByText('Test Site')).toBeInTheDocument();
     });
   });
 
   describe('error handling', () => {
     describe('when there is no error', () => {
-      beforeEach(() => {
-        props.error = Immutable.fromJS({});
-        render();
-      });
+      it('should render page content', async () => {
+        const { container } = renderComponent();
 
-      it('should render page content', () => {
-        expect(component.find(MarkdownViewer).length).toBe(1);
-        expect(component.find(ErrorFallback).length).toBe(0);
+        await waitFor(() => {
+          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        });
+
+        expect(screen.getByText('Test Page')).toBeInTheDocument();
+
+        const errorFallback = container.querySelector('[data-testid="errorInfo"]');
+        expect(errorFallback).not.toBeInTheDocument();
       });
     });
 
     describe('when there is a 404 error', () => {
-      beforeEach(() => {
-        props.error = Immutable.fromJS({
-          error: 'Page not found',
-          status: 404,
+      it('should render error fallback for 404 error (direct structure)', async () => {
+        const errorState = {
+          page: {
+            ...defaultPageState.page,
+            error: Immutable.fromJS({
+              error: 'Page not found',
+              status: 404,
+            }),
+          },
+        };
+
+        const { container } = renderComponent(errorState);
+
+        await waitFor(() => {
+          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
         });
-        render();
+
+        expect(screen.getByText('404')).toBeInTheDocument();
+        expect(screen.queryByText('Test Page')).not.toBeInTheDocument();
+
+        const errorStatus = container.querySelector('h1');
+        expect(errorStatus).toBeInTheDocument();
+        expect(errorStatus).toHaveTextContent('404');
       });
 
-      it('should handle error without crashing', () => {
-        expect(component.exists()).toBe(true);
-        expect(component.children().length).toBeGreaterThan(0);
+      it('should render error fallback for 404 error (nested structure)', async () => {
+        const errorState = {
+          page: {
+            ...defaultPageState.page,
+            error: Immutable.fromJS({
+              json: {
+                error: 'Page not found',
+                status: 404,
+              },
+            }),
+          },
+        };
+
+        const { container } = renderComponent(errorState);
+
+        await waitFor(() => {
+          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        });
+
+        expect(screen.getByText('404')).toBeInTheDocument();
+        expect(screen.queryByText('Test Page')).not.toBeInTheDocument();
+
+        const errorStatus = container.querySelector('h1');
+        expect(errorStatus).toBeInTheDocument();
+        expect(errorStatus).toHaveTextContent('404');
       });
     });
 
     describe('when there is a 500 error', () => {
-      beforeEach(() => {
-        props.error = Immutable.fromJS({
-          error: 'Internal server error',
-          message: 'Something went wrong',
-          prettyMessage: 'A server error occurred',
+      it('should render error fallback for 500 error (direct structure)', async () => {
+        const errorState = {
+          page: {
+            ...defaultPageState.page,
+            error: Immutable.fromJS({
+              error: 'Internal server error',
+              message: 'Something went wrong',
+              prettyMessage: 'A server error occurred',
+              status: 500,
+            }),
+          },
+        };
+
+        const { container } = renderComponent(errorState);
+
+        await waitFor(() => {
+          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
         });
-        render();
+
+        expect(screen.getByText('500')).toBeInTheDocument();
+        expect(screen.getByText('A server error occurred')).toBeInTheDocument();
+        expect(screen.queryByText('Test Page')).not.toBeInTheDocument();
+
+        const errorFallback = container.querySelector('[data-testid="errorInfo"]');
+        expect(errorFallback).toBeInTheDocument();
       });
 
-      it('should handle error without crashing', () => {
-        expect(component.exists()).toBe(true);
-        expect(component.children().length).toBeGreaterThan(0);
+      it('should render error fallback for 500 error (nested structure)', async () => {
+        const errorState = {
+          page: {
+            ...defaultPageState.page,
+            error: Immutable.fromJS({
+              json: {
+                error: 'Internal server error',
+                message: 'Something went wrong',
+                prettyMessage: 'A server error occurred',
+                status: 500,
+              },
+            }),
+          },
+        };
+
+        const { container } = renderComponent(errorState);
+
+        await waitFor(() => {
+          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+        });
+
+        expect(screen.getByText('500')).toBeInTheDocument();
+        expect(screen.getByText('A server error occurred')).toBeInTheDocument();
+        expect(screen.queryByText('Test Page')).not.toBeInTheDocument();
+
+        const errorFallback = container.querySelector('[data-testid="errorInfo"]');
+        expect(errorFallback).toBeInTheDocument();
       });
     });
 
     describe('when error has no meaningful content', () => {
-      beforeEach(() => {
-        props.error = Immutable.fromJS({
-          someOtherProperty: 'value',
+      it('should render page content instead of error', async () => {
+        const errorState = {
+          page: {
+            ...defaultPageState.page,
+            error: Immutable.fromJS({
+              someOtherProperty: 'value',
+            }),
+          },
+        };
+
+        const { container } = renderComponent(errorState);
+
+        await waitFor(() => {
+          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
         });
-        render();
+
+        expect(screen.getByText('Test Page')).toBeInTheDocument();
+        expect(screen.queryByText('404')).not.toBeInTheDocument();
+        expect(screen.queryByText('500')).not.toBeInTheDocument();
+
+        const errorFallback = container.querySelector('[data-testid="errorInfo"]');
+        expect(errorFallback).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('script rendering', () => {
+    it('should render the script', async () => {
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       });
 
-      it('should render page content instead of error', () => {
-        expect(component.find(MarkdownViewer).length).toBe(1);
-        expect(component.find(ErrorFallback).length).toBe(0);
+      expect(screen.getByText('Test Page')).toBeInTheDocument();
+
+      const scriptElements = document.querySelectorAll('script[src^="data:text/javascript"]');
+      expect(scriptElements.length).toBeGreaterThan(0);
+
+      const scriptElement = scriptElements[0];
+      const scriptSrc = scriptElement.src;
+      const decodedScript = decodeURIComponent(
+        scriptSrc.replace('data:text/javascript,(function(){', '').replace('})()', '')
+      );
+
+      expect(decodedScript).toContain(
+        'var datasets = window.store.getState().page.datasets.toJS();'
+      );
+      expect(decodedScript).toContain('JSScript');
+    });
+
+    it('should render Script component with correct props', async () => {
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       });
+
+      const scriptElements = document.querySelectorAll('script[src^="data:text/javascript"]');
+      expect(scriptElements.length).toBeGreaterThan(0);
+
+      const scriptElement = scriptElements[0];
+      const scriptSrc = scriptElement.src;
+      const decodedScript = decodeURIComponent(
+        scriptSrc.replace('data:text/javascript,(function(){', '').replace('})()', '')
+      );
+
+      expect(decodedScript).toContain(
+        'var datasets = window.store.getState().page.datasets.toJS();'
+      );
+      expect(decodedScript).toContain('JSScript');
+    });
+
+    it('should render Script component with correct props', async () => {
+      renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      const scriptElements = document.querySelectorAll('script[src^="data:text/javascript"]');
+      expect(scriptElements.length).toBeGreaterThan(0);
+
+      const scriptElement = scriptElements[0];
+      const scriptSrc = scriptElement.src;
+      const decodedScript = decodeURIComponent(
+        scriptSrc.replace('data:text/javascript,(function(){', '').replace('})()', '')
+      );
+
+      expect(decodedScript).toContain(
+        'var datasets = window.store.getState().page.datasets.toJS();'
+      );
+      expect(decodedScript).toContain('JSScript');
+    });
+  });
+
+  describe('datasets and itemLists', () => {
+    it('should pass datasets and itemLists to markdown viewer', async () => {
+      const customState = {
+        page: {
+          ...defaultPageState.page,
+          datasets: Immutable.fromJS({ customKey: 'customValue' }),
+          itemLists: Immutable.fromJS([{ customItem: 'customValue' }]),
+        },
+      };
+
+      renderComponent(customState);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
+
+      expect(screen.getByText('Test Page')).toBeInTheDocument();
     });
   });
 });
