@@ -92,13 +92,11 @@ describe('POST /api/suggestions/train', () => {
 
     expect(response.body).toMatchObject({ status: 'processing' });
   });
-});
 
-describe('POST /api/suggestions/test_model', () => {
-  it('should return the status of the IX process', async () => {
+  it('should accept suggestionsToFind', async () => {
     const response = await request(app)
-      .post('/api/suggestions/test_model')
-      .send({ extractorId: factory.id('super_powers_extractor').toString() })
+      .post('/api/suggestions/train')
+      .send({ extractorId: factory.id('super_powers_extractor').toString(), suggestionsToFind: 1 })
       .expect(202);
 
     expect(response.body).toMatchObject({ status: 'processing' });

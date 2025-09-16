@@ -8,6 +8,7 @@ import { Translate } from 'app/I18N';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'V2/Components/Forms';
 import { StatsTooltip } from './Tooltip';
+import { IXFilters } from '../types';
 
 type Aggregations = {
   total: number;
@@ -20,17 +21,6 @@ type Aggregations = {
   mismatch: number;
   noContext: number;
   accuracy: number;
-};
-
-type IXFilters = {
-  labeled: boolean;
-  nonLabeled: boolean;
-  match: boolean;
-  mismatch: boolean;
-  obsolete: boolean;
-  error: boolean;
-  noContext: boolean;
-  nonProcessed: boolean;
 };
 
 interface FiltersSidepanelProps {
