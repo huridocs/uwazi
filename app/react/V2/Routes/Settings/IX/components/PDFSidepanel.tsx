@@ -12,6 +12,7 @@ import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Co
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom } from 'V2/atoms';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
+import { ClientIXExtractorType } from 'V2/shared/types';
 import { TableSuggestion } from '../types';
 import {
   coerceValue,
@@ -30,6 +31,7 @@ interface PDFSidepanelProps {
   suggestion?: TableSuggestion;
   onEntitySave: () => any;
   property?: ClientPropertySchema;
+  extractor?: ClientIXExtractorType;
 }
 
 enum HighlightColors {
@@ -43,6 +45,7 @@ const PDFSidepanel = ({
   suggestion,
   onEntitySave,
   property,
+  extractor,
 }: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as { templates: ClientTemplateSchema[] };
   const [pdfFile, setPdfFile] = useState<FileType | undefined>();
@@ -232,6 +235,7 @@ const PDFSidepanel = ({
                 property={property}
                 suggestion={suggestion}
                 handleClickToFill={handleClickToFill}
+                extractor={extractor}
                 clearSelectionButton={
                   <div className="sm:text-right" data-testid="ix-clear-button-container">
                     <Button
