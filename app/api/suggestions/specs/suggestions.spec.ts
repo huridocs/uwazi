@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 /* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db from 'api/utils/testing_db';
@@ -68,13 +69,19 @@ const prepareAndAcceptSuggestion = async (
   language: string,
   propertyName: string,
   extractorName: string,
-  acceptanceParameters: {
-    addedValues?: string[];
-    removedValues?: string[];
-  } = {}
+  acceptanceParameters: { addedValues?: string[]; removedValues?: string[] } = {}
 ) => {
+  // Resolve correct entityLanguageId from DB to match fixtures
+  const langEntity = await db.mongodb
+    ?.collection('entities')
+    .findOne({ sharedId: suggestionBase.entityId, language });
+  if (!langEntity?._id) {
+    throw new Error(`Test fixture missing entity for ${suggestionBase.entityId}/${language}`);
+  }
+
   const suggestion = {
     ...suggestionBase,
+    entityLanguageId: langEntity._id, // override the placeholder
     suggestedValue,
     language,
   };

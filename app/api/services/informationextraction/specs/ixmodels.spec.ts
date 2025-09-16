@@ -17,8 +17,8 @@ describe('save()', () => {
   };
 
   const model = fixtureFactory.ixModel('model', 'extractor');
-  model.findSuggestionsRunTimestamp = 1;
-  model.findSuggestionsSharedIds = ['entity1', 'entity2'];
+  model.processRun = { suggestionsRunTimestamp: 1 };
+  model.processRun.findSuggestionsSharedIds = ['entity1', 'entity2'];
 
   const fixturesWithModel = {
     ...fixtures,
@@ -36,7 +36,7 @@ describe('save()', () => {
   it('should set suggestions obsolete on saving a ready model', async () => {
     const setSpy = jest.spyOn(Suggestions, 'setObsolete');
 
-    await ixmodels.save({
+    await ixmodels.saveAndObsoleteSuggestions({
       extractorId: fixtureFactory.id('extractor'),
       creationDate: 5,
       status: ModelStatus.processing,
@@ -44,7 +44,7 @@ describe('save()', () => {
 
     expect(setSpy).not.toHaveBeenCalled();
 
-    await ixmodels.save({
+    await ixmodels.saveAndObsoleteSuggestions({
       extractorId: fixtureFactory.id('extractor'),
       creationDate: 5,
       status: ModelStatus.ready,
@@ -66,8 +66,8 @@ describe('save()', () => {
 
         const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
 
-        expect(updatedModel.findSuggestionsRunTimestamp).toBeUndefined();
-        expect(updatedModel.findSuggestionsSharedIds).toBeUndefined();
+        expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
+        expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
       });
     });
 
@@ -78,8 +78,8 @@ describe('save()', () => {
 
         const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
 
-        expect(updatedModel.findSuggestionsRunTimestamp).toBeUndefined();
-        expect(updatedModel.findSuggestionsSharedIds).toBeUndefined();
+        expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
+        expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
       });
     });
 
@@ -89,8 +89,8 @@ describe('save()', () => {
 
         const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
 
-        expect(updatedModel.findSuggestionsRunTimestamp).toBeUndefined();
-        expect(updatedModel.findSuggestionsSharedIds).toBeUndefined();
+        expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
+        expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
       });
     });
   });

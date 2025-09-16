@@ -10,8 +10,6 @@ A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,L'email est obligatoire
 Accept,Accepter
-Accept suggestion,Accept suggestion
-Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Compte
 Account locked,Account locked
@@ -76,6 +74,7 @@ All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Allow captcha bypass
 Already exists,Already exists
+Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
@@ -96,6 +95,7 @@ Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
 Attachments,Pièces Jointes
 Authentication code,Code d'authentification
+Auto-accept suggestions,Auto-accept suggestions
 auto-created,créé automatiquement
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
@@ -341,14 +341,21 @@ Filters OR operator,OU
 Filters saved,Filters saved
 Find,Trouver
 Find suggestions,Trouver des suggestions
+Find suggestions after training,Find suggestions after training
+Find suggestions for,Find suggestions for
+Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Finding suggestions
 Fine tune,Ajuster
 Fit,Adapter
 Flag,Drapeau
 for,for
+For all entities,For all entities
+For entities with blank values,For entities with blank values
 Forgot Password?,Mot de passe oublié?
 Forms and email configuration,Configuration des formulaires et des e-mails
 From,From
+From all suggestions,From all suggestions
+From previous step,From previous step
 Full width,Full width
 General,Général
 General Information,General Information
@@ -626,6 +633,9 @@ Priority sorting,Tri prioritaire
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
 Private instance,Instance privée
+Process,Process
+Process extractor,Process extractor
+Process selected,Process selected
 Processed,Processed
 Processing,Traitement
 Properties,Propriétés
@@ -838,7 +848,6 @@ Template(s),Template(s)
 Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Modèles
 Templates:,Templates:
-Test run,Test run
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,Le processus d'importation a généré une erreur :
@@ -900,6 +909,9 @@ Total files,Total files
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
 total users,total users
+Train,Train
+Train model,Train model
+Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Training
 Training model...,Training model...
 Translate,Traduire

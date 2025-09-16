@@ -2,11 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as suggestionsAPI from 'V2/api/ix/suggestions';
 import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
 import { thesauriAtom } from 'V2/atoms';
 import { IXSuggestions } from '../IXSuggestions';
 import { loaderData, thesauri, entity1, entity2 } from './fixtures';
+import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
 
 jest.mock('V2/api/entities', () => ({
   ...jest.requireActual('V2/api/entities'),
@@ -64,8 +67,8 @@ const closeSidepanel = async (text: string = 'Cancel') => {
 };
 
 describe('IX suggestions', () => {
-  const Component = () => (
-    <TestRouterContext loaderData={loaderData}>
+  const Component = ({ data = loaderData }: { data?: IXSuggestionsLoaderResponse }) => (
+    <TestRouterContext loaderData={data}>
       <TestAtomStoreProvider initialValues={[[thesauriAtom, thesauri]]}>
         <IXSuggestions />
       </TestAtomStoreProvider>
@@ -100,5 +103,300 @@ describe('IX suggestions', () => {
 
     await openSuggestion(1, 'Entity 2');
     await testCheckboxes();
+  });
+
+  describe('Train model modal', () => {
+    describe('form', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        jest.spyOn(suggestionsAPI, 'findSuggestions');
+        jest.spyOn(suggestionsAPI, 'cancel');
+        render(<Component />);
+        const openModalButton = await screen.findByText('Train model');
+        fireEvent.click(openModalButton);
+        const modal = screen.getByRole('dialog');
+        expect(await within(modal).findByText('Train model')).toBeInTheDocument();
+      });
+
+      it('should submit with the expected parameters', async () => {
+        const findAfterTrain = screen.getByText('Find suggestions after training');
+        const amountInput = screen.getByLabelText('Amount :');
+        const submit = await within(screen.getByRole('dialog')).findByText('Train');
+        expect(amountInput).toBeDisabled();
+        fireEvent.click(findAfterTrain);
+        expect(amountInput).not.toBeDisabled();
+        expect(amountInput).toHaveValue(1000);
+        fireEvent.change(amountInput, { target: { value: 1500 } });
+        await act(async () => {
+          await fireEvent.click(submit);
+        });
+        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
+          extractorId: 'extractor1',
+          suggestionsToFind: '1500',
+        });
+      });
+
+      it('should submit with zero amount of find after train', async () => {
+        const amountInput = screen.getByLabelText('Amount :');
+        const submit = await within(screen.getByRole('dialog')).findByText('Train');
+        expect(amountInput).toBeDisabled();
+        await act(async () => {
+          await fireEvent.click(submit);
+        });
+        expect(suggestionsAPI.findSuggestions).toHaveBeenCalledWith({
+          extractorId: 'extractor1',
+          suggestionsToFind: 0,
+        });
+      });
+    });
+
+    it('should show the cancel button when training', async () => {
+      render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
+      const cancelTrainingButton = await screen.findByText('Cancel');
+      const openModalButton = screen.queryByText('Train model');
+      expect(screen.findByText('Training model...'));
+      expect(openModalButton).not.toBeInTheDocument();
+
+      await act(async () => {
+        await fireEvent.click(cancelTrainingButton);
+      });
+      expect(suggestionsAPI.cancel).toHaveBeenCalled();
+    });
+
+    it('should be disabled if there are selected items', async () => {
+      const user = userEvent.setup();
+      render(<Component />);
+      const openModalButton = (await screen.findByText('Train model')).parentElement;
+      expect(openModalButton).not.toBeDisabled();
+      const suggestionRow = (await screen.findByRole('cell', { name: 'Entity 1 (en)' })).closest(
+        'tr'
+      );
+      await user.click(within(suggestionRow!).getByLabelText('Select'));
+      expect(openModalButton).toBeDisabled();
+    });
+  });
+
+  describe('Process extractor modal', () => {
+    it('should be disabled if the model is bussy', async () => {
+      render(<Component data={{ ...loaderData, currentStatus: ixStatus.processing_model }} />);
+      const openModalButton = (await screen.findByText('Process extractor')).parentElement;
+      expect(screen.findByText('Training model...'));
+      expect(openModalButton).toBeDisabled();
+    });
+
+    describe('form', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        jest.spyOn(suggestionsAPI, 'process');
+        render(<Component />);
+        const openModalButton = await screen.findByText('Process extractor');
+        fireEvent.click(openModalButton);
+        const modal = screen.getByRole('dialog');
+        expect(await within(modal).findByText('Process extractor')).toBeInTheDocument();
+      });
+
+      // eslint-disable-next-line max-statements
+      it('should disable the related fields when not finding suggestions', () => {
+        const amountInput = screen.getByLabelText('Amount :');
+        const nonProcessedSelect = screen.getByLabelText('Non processed');
+        const obsoleteSelect = screen.getByLabelText('Obsolete');
+        const errorSelect = screen.getByLabelText('Error');
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        expect(amountInput).not.toBeDisabled();
+        expect(nonProcessedSelect).not.toBeDisabled();
+        expect(obsoleteSelect).not.toBeDisabled();
+        expect(errorSelect).not.toBeDisabled();
+        expect(acceptFromPreviousSelect).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Find suggestions for'));
+        expect(amountInput).toBeDisabled();
+        expect(nonProcessedSelect).toBeDisabled();
+        expect(obsoleteSelect).toBeDisabled();
+        expect(errorSelect).toBeDisabled();
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should disable auto-accept options when not auto accepting', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        expect(acceptFromPreviousSelect).not.toBeDisabled();
+        expect(acceptAllSuggestions).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(acceptFromPreviousSelect).toBeDisabled();
+        expect(acceptAllSuggestions).toBeDisabled();
+      });
+
+      it('should autoselect auto-accept for all when not finding suggestions', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        expect(acceptFromPreviousSelect).toBeChecked();
+        expect(acceptAllSuggestions).not.toBeChecked();
+        fireEvent.click(screen.getByLabelText('Find suggestions for'));
+        expect(acceptAllSuggestions).toBeChecked();
+        expect(acceptFromPreviousSelect).not.toBeChecked();
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should autoselect auto-accept for all when setting amount to 0', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        const acceptAllSuggestions = screen.getByLabelText('From all suggestions');
+        expect(acceptFromPreviousSelect).toBeChecked();
+        expect(acceptAllSuggestions).not.toBeChecked();
+        fireEvent.change(screen.getByLabelText('Amount :'), { target: { value: 0 } });
+        expect(acceptAllSuggestions).toBeChecked();
+        expect(acceptFromPreviousSelect).not.toBeChecked();
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should not allow processing if its not finding and not accepting', () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        expect(processButton).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Find suggestions for'));
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(processButton).toBeDisabled();
+      });
+
+      it('should call the endpoint with the expected default parameters', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'previous' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: true,
+            filters: { error: true, nonProcessed: true, obsolete: true },
+            size: 1000,
+          },
+          mode: 'process_extractor',
+        });
+      });
+
+      // eslint-disable-next-line max-statements
+      it('should not find if all the filters are empty', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        const nonProcessedSelect = screen.getByLabelText('Non processed');
+        const obsoleteSelect = screen.getByLabelText('Obsolete');
+        const errorSelect = screen.getByLabelText('Error');
+        fireEvent.click(nonProcessedSelect);
+        fireEvent.click(obsoleteSelect);
+        fireEvent.click(errorSelect);
+        expect(screen.getByLabelText('Find suggestions for')).not.toBeChecked();
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'all' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: false,
+            filters: { error: false, nonProcessed: false, obsolete: false },
+            size: 0,
+          },
+          mode: 'process_extractor',
+        });
+      });
+    });
+  });
+
+  describe('Process selected modal', () => {
+    const selectRows = async () => {
+      const user = userEvent.setup();
+      const suggestionRow1 = (await screen.findByRole('cell', { name: 'Entity 1 (en)' })).closest(
+        'tr'
+      );
+      const suggestionRow2 = (await screen.findByRole('cell', { name: 'Entity 2 (en)' })).closest(
+        'tr'
+      );
+
+      await user.click(within(suggestionRow1!).getByRole('checkbox'));
+      await user.click(within(suggestionRow2!).getByRole('checkbox'));
+
+      expect(within(suggestionRow2!).getByRole('checkbox')).toBeChecked();
+      expect(within(suggestionRow1!).getByRole('checkbox')).toBeChecked();
+    };
+
+    describe('form', () => {
+      beforeEach(async () => {
+        jest.resetAllMocks();
+        jest.spyOn(suggestionsAPI, 'process');
+        render(<Component />);
+        await selectRows();
+        fireEvent.click(await screen.findByText('Process selected'));
+        expect(
+          await within(screen.getByRole('dialog')).findByText('Process selected')
+        ).toBeInTheDocument();
+      });
+
+      it('should show the users the mandatory find suggestions action', () => {
+        const modal = screen.getByRole('dialog');
+        const mandatoryField = within(modal).getByLabelText('Find suggestions for selected');
+        expect(mandatoryField).toBeDisabled();
+        expect(mandatoryField).toBeChecked();
+      });
+
+      it('should disable auto-accept options when not auto accepting', () => {
+        const acceptFromPreviousSelect = screen.getByLabelText('From previous step');
+        expect(acceptFromPreviousSelect).not.toBeDisabled();
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(acceptFromPreviousSelect).toBeDisabled();
+      });
+
+      it('should disable auto accept options when not auto accepting', () => {
+        const forBlank = screen.getByLabelText('For entities with blank values');
+        const overwrite = screen.getByLabelText('For all entities');
+        expect(forBlank).toBeChecked();
+        expect(forBlank).toBeEnabled();
+        expect(overwrite).toBeEnabled();
+        fireEvent.click(screen.getByLabelText('Auto-accept suggestions'));
+        expect(forBlank).not.toBeEnabled();
+        expect(overwrite).not.toBeEnabled();
+      });
+
+      it('should call the endpoint with the expected default parameters', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'blank_only', source: 'previous' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: true,
+            filters: { error: true, nonProcessed: true, obsolete: true },
+            size: 2,
+            selectedSharedIds: ['shared1', 'shared2'],
+          },
+          mode: 'process_selected',
+        });
+      });
+
+      it('should allow choosing how to accept', async () => {
+        const modal = screen.getByRole('dialog');
+        const processButton = within(modal).getByText('Process').parentElement;
+
+        fireEvent.click(screen.getByLabelText('For all entities'));
+
+        await act(async () => {
+          fireEvent.click(processButton!);
+        });
+
+        expect(suggestionsAPI.process).toHaveBeenCalledWith({
+          autoAccept: { enabled: true, overwriteMode: 'overwrite_all', source: 'previous' },
+          extractorId: 'extractor1',
+          find: {
+            enabled: true,
+            filters: { error: true, nonProcessed: true, obsolete: true },
+            size: 2,
+            selectedSharedIds: ['shared1', 'shared2'],
+          },
+          mode: 'process_selected',
+        });
+      });
+    });
   });
 });

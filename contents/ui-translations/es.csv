@@ -10,8 +10,6 @@ A source template must,A source template must
 A target template needs to have the following properties,A target template needs to have the following properties
 A valid email is required,La dirección de correo electrónico es obligatorio
 Accept,Aceptar
-Accept suggestion,Accept suggestion
-Accept suggestions,Accept suggestions
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Account,Cuenta
 Account locked,Account locked
@@ -76,6 +74,7 @@ All of the paragraphs will be deleted,All of the paragraphs will be deleted
 All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
 Allow captcha bypass,Permitir la omisión de captcha
 Already exists,Already exists
+Amount,Amount
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
@@ -96,6 +95,7 @@ Attachment renamed,Archivo adjunto renombrado
 Attachment uploaded,Archivo adjunto subido
 Attachments,Archivos adjuntos
 Authentication code,Código de autenticación
+Auto-accept suggestions,Auto-accept suggestions
 auto-created,autogenerado
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
@@ -340,14 +340,21 @@ Filters OR operator,OR
 Filters saved,Filters saved
 Find,Encontrar
 Find suggestions,Encontrar sugerencias
+Find suggestions after training,Find suggestions after training
+Find suggestions for,Find suggestions for
+Find suggestions for selected,Find suggestions for selected
 Finding suggestions,Encontrando sugerencias
 Fine tune,Afinar búsqueda
 Fit,Encajar
 Flag,Bandera
 for,for
+For all entities,For all entities
+For entities with blank values,For entities with blank values
 Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
+From all suggestions,From all suggestions
+From previous step,From previous step
 Full width,Ancho completo
 General,General
 General Information,General Information
@@ -625,6 +632,9 @@ Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
 Private entities description,AVISO: Las entidades seleccionadas serán **privadas**. Solo usuarios con permiso podrán visualizarlos.
 Private instance,Instancia privada
+Process,Process
+Process extractor,Process extractor
+Process selected,Process selected
 Processed,Processed
 Processing,Procesando
 Properties,Propiedades
@@ -836,7 +846,6 @@ Template(s),Template(s)
 Template(s) deleted successfully.,Template(s) deleted successfully.
 Templates,Plantillas
 Templates:,Templates:
-Test run,Test run
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
@@ -898,6 +907,9 @@ Total files,Total de archivos
 total files,total files
 "Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
 total users,total users
+Train,Train
+Train model,Train model
+Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
 Training,Entrenando
 Training model...,Entrenando el modelo…
 Translate,Traducir
