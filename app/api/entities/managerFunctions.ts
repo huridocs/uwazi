@@ -147,17 +147,10 @@ const bindAttachmentToMetadataProperty = (
 ) => {
   const values = _values;
   if (_values[0].attachment !== undefined) {
-    const attachmentIndex = _values[0].attachment;
+    values[0].value = attachments[_values[0].attachment]
+      ? `/api/files/${attachments[_values[0].attachment].filename}`
+      : '';
 
-    // Check if attachment exists
-    if (attachments[attachmentIndex]) {
-      const newValue = `/api/files/${attachments[attachmentIndex].filename}`;
-      values[0].value = newValue;
-    } else {
-      values[0].value = '';
-    }
-
-    // Handle time links
     if (_values[0].timeLinks !== undefined && _values[0].timeLinks.length > 0) {
       const timeLinks = _values[0].timeLinks.replace(/([()])/g, '');
       values[0].value = `(${values[0].value}, ${timeLinks})`;

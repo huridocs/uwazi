@@ -21,18 +21,22 @@ const saveEntity = async (
   );
 
   const entity = handleAttachmentInMetadataProperties(_entity, attachments);
+
   const updatedEntity = await entities.save(
     entity,
     { user, language },
     { includeDocuments: false }
   );
+
   const { proccessedAttachments, proccessedDocuments } = await processFiles(
     entity,
     updatedEntity,
     attachments,
     documents
   );
+
   const fileSaveErrors = await saveFiles(proccessedAttachments, proccessedDocuments, updatedEntity);
+
   const [entityWithAttachments]: EntityWithFilesSchema[] =
     await entities.getUnrestrictedWithDocuments(
       {
@@ -41,6 +45,7 @@ const saveEntity = async (
       },
       '+permissions'
     );
+
   return { entity: entityWithAttachments, errors: fileSaveErrors };
 };
 
