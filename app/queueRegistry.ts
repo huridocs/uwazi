@@ -2,6 +2,8 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { MongoPXEntitiesStatusDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
 import { PXCreateEntityStatusesFactory } from 'api/paragraphExtraction/infrastructure/PXCreateEntityStatusesFactory';
@@ -22,10 +24,6 @@ import settings from 'api/settings';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { CreateBlankStateSuggestionsJob } from 'api/suggestions/jobs/CreateBlankStateSuggestionsJob';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import {
-  TemplateUpdateDenormalizeEntitiesBatch,
-  DenormalizeV1RelationshipsJob,
-} from 'api/templates/templateUpdateDenormalizeUseCase';
 import { CreateParagraphExtractionEntityStatusesJob } from './api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
 import { DefaultDispatcher } from './api/queue.v2/configuration/factories';
 
@@ -125,10 +123,10 @@ export function registerJobs(
     });
   });
 
-  register(DenormalizeV1RelationshipsJob, async () => {
+  register(TemplatePostProcessEntitiesJob, async () => {
     const transactionManager = DefaultTransactionManager();
 
-    return new DenormalizeV1RelationshipsJob({
+    return new TemplatePostProcessEntitiesJob({
       templatesDS: DefaultTemplatesDataSource(transactionManager),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: new MongoMultiLanguageEntityDataSource(

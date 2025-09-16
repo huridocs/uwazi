@@ -22,23 +22,29 @@ describe('SelectPropertyCreatorService', () => {
     });
 
     await expect(
-      sut.create({
-        id: new ObjectId().toHexString(),
-        label: 'Text',
-        type: 'select',
-        template: '',
-        content: new ObjectId().toHexString(),
-      })
+      sut.create(
+        {
+          id: new ObjectId().toHexString(),
+          label: 'Text',
+          type: 'select',
+          template: '',
+          content: new ObjectId().toHexString(),
+        },
+        {}
+      )
     ).rejects.toThrow(SelectPropertyWithInvalidThesaurusError);
 
     await expect(
-      sut.create({
-        id: new ObjectId().toHexString(),
-        label: 'Text',
-        type: 'multiselect',
-        template: '',
-        content: new ObjectId().toHexString(),
-      })
+      sut.create(
+        {
+          id: new ObjectId().toHexString(),
+          label: 'Text',
+          type: 'multiselect',
+          template: '',
+          content: new ObjectId().toHexString(),
+        },
+        {}
+      )
     ).rejects.toThrow(SelectPropertyWithInvalidThesaurusError);
   });
 });

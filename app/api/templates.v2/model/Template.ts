@@ -1,7 +1,6 @@
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { Validator } from 'api/core/domain/validator/Validator';
+import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
-import { TemplateWithMissingCommonPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithMissingCommonPropertyValidator';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
 import { CommonProperty } from './CommonProperty';
@@ -17,6 +16,16 @@ class Template {
 
   readonly commonProperties: CommonProperty[] = [];
 
+  private _processing: {
+    active?: boolean;
+    totalJobs?: number;
+    completedJobs?: number;
+  } = {
+    active: false,
+  };
+
+  readonly entityViewPage: string;
+
   color?: string;
 
   isDefault: boolean;
@@ -27,29 +36,47 @@ class Template {
     properties: Property[],
     commonProperties: CommonProperty[],
     color?: string,
-    isDefault?: boolean
+    isDefault?: boolean,
+    entityViewPage?: string
   ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
     this.commonProperties = commonProperties;
-    this.color = color;
+    this.color = color ?? '';
     this.isDefault = isDefault ?? false;
+    this.entityViewPage = entityViewPage ?? '';
 
-    // this.validate();
+    this.validate();
   }
 
   get allProperties() {
     return [...this.commonProperties, ...this.properties];
   }
 
+  set processing(
+    processing: { active?: boolean; totalJobs?: number; completedJobs?: number } | undefined
+  ) {
+    this._processing = processing || { active: false };
+  }
+
+  get processing() {
+    return this._processing;
+  }
+
   private validate() {
     const validator = new Validator([
       new TemplateWithDuplicatedPropertyValidator(),
-      new TemplateWithMissingCommonPropertyValidator(),
+      // new TemplateWithMissingCommonPropertyValidator(),
     ]);
 
     validator.validate(this);
+  }
+
+  ensurePropertyIsConsistent(property: Property) {
+    this.properties.forEach(
+      p => p.name === property.name && p.ensurePropertyIsConsistent(property as any)
+    );
   }
 
   selectNewProperties(newTemplate: Template): Property[] {
@@ -59,11 +86,13 @@ class Template {
 
   selectUpdatedProperties(newTemplate: Template): PropertyUpdateInfo[] {
     const oldPropertiesById = objectIndex(
-      this.properties,
+      this.properties.concat(this.commonProperties),
       p => p.id,
       p => p
     );
-    const newProperties = newTemplate.properties.filter(p => p.id in oldPropertiesById);
+    const newProperties = newTemplate.properties
+      .concat(newTemplate.commonProperties)
+      .filter(p => p.id in oldPropertiesById);
     const newPropertiesById = objectIndex(
       newProperties,
       p => p.id,
@@ -76,6 +105,18 @@ class Template {
       })
       .filter(info => info.updatedAttributes.length > 0);
     return updateInfo;
+  }
+
+  selectSwappedNameProperties(newTemplate: Template) {
+    let swapingNameWithExistingProperty: TemplateProperty | undefined;
+    this.properties.forEach(prop => {
+      if (!swapingNameWithExistingProperty) {
+        swapingNameWithExistingProperty = (newTemplate.properties || []).find(
+          p => p.name === prop.name && p.id?.toString() !== prop.id?.toString()
+        );
+      }
+    });
+    return swapingNameWithExistingProperty;
   }
 
   selectRelationshipPropsWithRelationshipChanges(newTemplate: Template): V1RelationshipProperty[] {

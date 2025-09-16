@@ -1,4 +1,4 @@
-import { Property, PropertyProps } from 'api/templates.v2/model/Property';
+import { Context, Property, PropertyProps } from 'api/templates.v2/model/Property';
 import { InvalidStyleTypeError } from './errors';
 
 enum ImageStyle {
@@ -16,8 +16,8 @@ abstract class AbstractImageProperty extends Property {
 
   fullWidth?: boolean;
 
-  constructor(props: Props) {
-    super(props);
+  constructor(props: Props, context?: Context) {
+    super(props, context);
     this.style = props.style || ImageStyle.Cover;
     this.fullWidth = props.fullWidth || false;
 

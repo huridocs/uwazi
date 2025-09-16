@@ -18,168 +18,213 @@ import { TextProperty } from '../TextProperty';
 describe('PropertyFactory', () => {
   it('should create an instance of TextProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A text property',
-        type: 'text',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A text property',
+          type: 'text',
+        },
+        {}
+      )
     ).toBeInstanceOf(TextProperty);
   });
 
   it('should create an instance of NumericProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'numeric',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'numeric',
+        },
+        {}
+      )
     ).toBeInstanceOf(NumericProperty);
   });
 
   it('should create an instance of PreviewProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'preview',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'preview',
+        },
+        {}
+      )
     ).toBeInstanceOf(PreviewProperty);
   });
 
   it('should create an instance of MultiDateProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'multidate',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'multidate',
+        },
+        {}
+      )
     ).toBeInstanceOf(MultiDateProperty);
   });
 
   it('should create an instance of MultiDateRangeProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'multidaterange',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'multidaterange',
+        },
+        {}
+      )
     ).toBeInstanceOf(MultiDateRangeProperty);
   });
 
   it('should create an instance of MediaProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'media',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'media',
+        },
+        {}
+      )
     ).toBeInstanceOf(MediaProperty);
   });
 
   it('should create an instance of MarkdownProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'markdown',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'markdown',
+        },
+        {}
+      )
     ).toBeInstanceOf(MarkdownProperty);
   });
 
   it('should create an instance of LinkProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'link',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'link',
+        },
+        {}
+      )
     ).toBeInstanceOf(LinkProperty);
   });
 
   it('should create an instance of ImageProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'image',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'image',
+        },
+        {}
+      )
     ).toBeInstanceOf(ImageProperty);
   });
 
   it('should create an instance of GeolocationProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'geolocation',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'geolocation',
+        },
+        {}
+      )
     ).toBeInstanceOf(GeolocationProperty);
   });
 
   it('should create an instance of DateRangeProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'daterange',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'daterange',
+        },
+        {}
+      )
     ).toBeInstanceOf(DateRangeProperty);
   });
 
   it('should create an instance of DateProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'date',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'date',
+        },
+        {}
+      )
     ).toBeInstanceOf(DateProperty);
   });
 
   it('should create an instance of GenerateIdProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'generatedid',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'generatedid',
+        },
+        {}
+      )
     ).toBeInstanceOf(GenerateIdProperty);
   });
 
   it('should create an instance of SelectProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'select',
-        content: 'any',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'select',
+          content: 'any',
+        },
+        {}
+      )
     ).toBeInstanceOf(SelectProperty);
   });
 
   it('should create an instance of MultiSelectProperty', () => {
     expect(
-      PropertyFactory.create({
-        template: 'any',
-        id: 'any_id',
-        label: 'A numeric property',
-        type: 'multiselect',
-        content: 'any',
-      })
+      PropertyFactory.create(
+        {
+          template: 'any',
+          id: 'any_id',
+          label: 'A numeric property',
+          type: 'multiselect',
+          content: 'any',
+        },
+        {}
+      )
     ).toBeInstanceOf(MultiSelectProperty);
   });
 });

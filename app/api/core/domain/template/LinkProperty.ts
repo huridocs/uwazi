@@ -1,4 +1,4 @@
-import { Property, PropertyTypes, PropertyProps } from 'api/templates.v2/model/Property';
+import { Property, PropertyTypes, PropertyProps, Context } from 'api/templates.v2/model/Property';
 import { PropertyTypeInvalidTypeError } from './errors';
 
 type Props = {
@@ -6,8 +6,8 @@ type Props = {
 } & Omit<PropertyProps, 'type'>;
 
 class LinkProperty extends Property {
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'link' });
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'link' }, context);
 
     this.validate();
   }

@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
-import db from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import { testingDB } from 'api/utils/testing_db';
 
 import fixtures, {
   propertyToBeInherited,
@@ -134,7 +134,7 @@ describe('template schema', () => {
 
       it('invalid if select or multiselect property content does not exists', async () => {
         template.properties = [];
-        template.properties.push(makeProperty('foo', 'multiselect', { content: db.id() }));
+        template.properties.push(makeProperty('foo', 'multiselect', { content: testingDB.id() }));
         await testInvalid();
       });
 

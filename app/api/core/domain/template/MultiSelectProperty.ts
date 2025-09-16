@@ -1,28 +1,21 @@
-import { FieldIsRequiredError, PropertyTypeInvalidTypeError } from './errors';
-import { FilterableProperty, FilterablePropertyProps } from './FilterableProperty';
+import { Context } from 'api/templates.v2/model/Property';
+import { PropertyTypeInvalidTypeError } from './errors';
+import { AbstractSelectProperty, AbstractSelectPropertyProps } from './AbstractSelectProperty';
 
 type Props = {
-  content: string;
   type?: 'multiselect';
-} & Omit<FilterablePropertyProps, 'type'>;
+} & Omit<AbstractSelectPropertyProps, 'type'>;
 
-class MultiSelectProperty extends FilterableProperty {
-  content: string; // Keeping name wrong for backwards compatibility. This is Thesaurus id
+class MultiSelectProperty extends AbstractSelectProperty {
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'multiselect' }, context);
 
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'multiselect' });
-    this.content = props.content;
-
-    this.validate();
+    this.validateMultiSelectProperty();
   }
 
-  protected validate() {
+  protected validateMultiSelectProperty() {
     if (this.type !== 'multiselect') {
       throw new PropertyTypeInvalidTypeError(this.type, 'MultiSelectProperty');
-    }
-
-    if (!this?.content?.length) {
-      throw new FieldIsRequiredError('content');
     }
   }
 }
