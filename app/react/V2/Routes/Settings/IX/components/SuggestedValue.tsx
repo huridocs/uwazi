@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { get } from 'lodash';
+import { get, isArray } from 'lodash';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { secondsToDate } from 'V2/shared/dateHelpers';
@@ -27,7 +27,10 @@ const SuggestedValue = ({
   if (!suggestion || suggestion.suggestedValue === '') {
     colorClass = 'text-orange-600';
   }
-  if (value === suggestion.suggestedValue) {
+  if (
+    value === suggestion.suggestedValue ||
+    (get(value, 'id') !== undefined && get(value, 'id') === get(suggestion.suggestedValue, 'id'))
+  ) {
     colorClass = 'text-green-600';
   } else {
     colorClass = 'text-orange-600';
@@ -63,7 +66,15 @@ const SuggestedValue = ({
     }
 
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      const label = getLabelFromThesaurus(value as string, thesaurus);
+      if (isArray(value)) {
+        const labelCurrentValue = value.map(v =>
+          thesaurus ? getLabelFromThesaurus(v as string, thesaurus) : get(value, 'label')
+        );
+        return <Translate context={content}>{labelCurrentValue.join(', ')}</Translate>;
+      }
+      const label = thesaurus
+        ? getLabelFromThesaurus(value as string, thesaurus)
+        : get(value, 'label');
       return <Translate context={content}>{label}</Translate>;
     }
 
@@ -80,7 +91,9 @@ const SuggestedValue = ({
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       const suggestedValueId =
         get(suggestion.suggestedValue, 'id') || (suggestion.suggestedValue as string);
-      const label = getLabelFromThesaurus(suggestedValueId, thesaurus);
+      const label =
+        get(suggestion.suggestedValue, 'label') ||
+        getLabelFromThesaurus(suggestedValueId, thesaurus);
       return <Translate context={content}>{label}</Translate>;
     }
     return suggestion.suggestedValue!.toString();
