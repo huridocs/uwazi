@@ -13,25 +13,25 @@ const prepareFiles = async (mediaProperties, values) => {
         if (!values.metadata[p.name]) {
           return Promise.resolve();
         }
-        
+
         const metadataValue = values.metadata[p.name];
-        
+
         // Skip if it's a simple URL string (from URL input)
         if (typeof metadataValue === 'string' && /^https?:\/\//.test(metadataValue)) {
           return Promise.resolve();
         }
-        
+
         // Skip if it's not an object with data/originalFile
         if (typeof metadataValue !== 'object' || !metadataValue.data) {
           return Promise.resolve();
         }
-        
+
         const { data, originalFile } = metadataValue;
         if (originalFile) {
           if (originalFile instanceof File) {
             const fileID = uniqueID();
             metadataFiles[p.name] = fileID;
-            
+
             entityAttachments.push({
               originalname: originalFile.name,
               filename: originalFile.name,
@@ -39,15 +39,15 @@ const prepareFiles = async (mediaProperties, values) => {
               mimetype: originalFile.type,
               fileLocalID: fileID,
             });
-            
+
             files.push(originalFile);
             return Promise.resolve();
           }
-          
+
           if (data instanceof File) {
             const fileID = uniqueID();
             metadataFiles[p.name] = fileID;
-            
+
             entityAttachments.push({
               originalname: data.name,
               filename: data.name,
@@ -55,17 +55,17 @@ const prepareFiles = async (mediaProperties, values) => {
               mimetype: data.type,
               fileLocalID: fileID,
             });
-            
+
             files.push(data);
             return Promise.resolve();
           }
-          
+
           // Handle blob URLs (legacy case)
           const validBlobUrlRegExp =
             /^\(?(blob:https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
 
           const [, url, , timeLinks] = data.match(validBlobUrlRegExp) || ['', data];
-          
+
           try {
             const blob = await fetch(url).then(r => r.blob());
             const file = new File([blob], originalFile.name, { type: blob.type });
@@ -116,7 +116,7 @@ function wrapEntityMetadata(entity, template) {
     const property = mediaProperties.find(p => p.name === key);
     const fieldValue = entity.metadata[key]?.data || entity.metadata[key];
     let fileLocalID = fieldValue;
-    
+
     if (property && entity.metadata[key] && property.type === 'media') {
       const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
       const mediaExpGroups = fieldValue.match(uniqueIdTimeLinksExp);
@@ -149,20 +149,23 @@ const prepareMetadataAndFiles = async (values, attachedFiles, template, mediaPro
   wrappedEntity.attachments = [];
   wrappedEntity.attachments.push(...files);
   wrappedEntity.attachments.push(...attachedFiles);
-  
-  // Remove any remaining blob URLs from metadata (but preserve URLs)
+
   Object.keys(wrappedEntity.metadata).forEach(key => {
     const value = wrappedEntity.metadata[key];
     if (value && value[0] && value[0].value) {
       const fieldValue = value[0].value;
-      
-      // Only remove blob URLs, preserve HTTP/HTTPS URLs
-      if (fieldValue.startsWith('blob:') && !fieldValue.startsWith('https://') && !fieldValue.startsWith('http://')) {
+
+      if (
+        typeof fieldValue === 'string' &&
+        fieldValue.startsWith('blob:') &&
+        !fieldValue.startsWith('https://') &&
+        !fieldValue.startsWith('http://')
+      ) {
         value[0].value = '';
       }
     }
   });
-  
+
   return { ...wrappedEntity, template: template._id };
 };
 

@@ -160,8 +160,7 @@ const bindAttachmentToMetadataProperty = (
     // Handle time links
     if (_values[0].timeLinks !== undefined && _values[0].timeLinks.length > 0) {
       const timeLinks = _values[0].timeLinks.replace(/([()])/g, '');
-      const finalValue = `(${values[0].value}, ${timeLinks})`;
-      values[0].value = finalValue;
+      values[0].value = `(${values[0].value}, ${timeLinks})`;
     }
   }
   return values;
@@ -171,13 +170,14 @@ const handleAttachmentInMetadataProperties = (
   entity: EntityWithFilesSchema,
   attachments: FileType[]
 ) => {
-  Object.entries(entity.metadata || {}).forEach(([propertyName, _values]) => {
+  Object.entries(entity.metadata || {}).forEach(([_property, _values]) => {
     if (_values && _values.length) {
       const values = bindAttachmentToMetadataProperty(_values, attachments);
       delete values[0].attachment;
       delete values[0].timeLinks;
     }
   });
+
   return entity;
 };
 

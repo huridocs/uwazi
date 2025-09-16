@@ -120,7 +120,7 @@ const MediaModalComponent = ({
       const blobUrl = URL.createObjectURL(file);
       const data = {
         data: blobUrl,
-        originalFile: file
+        originalFile: file,
       };
 
       onChange(data);
@@ -190,8 +190,9 @@ const MediaModalComponent = ({
             </div>
           </div>
           <div
-            className={`tab-content attachments-modal__tabs-content ${!filteredAttachments.length ? 'centered' : ''
-              }`}
+            className={`tab-content attachments-modal__tabs-content ${
+              !filteredAttachments.length ? 'centered' : ''
+            }`}
           >
             <MediaModalFileList
               filteredAttachments={filteredAttachments}
