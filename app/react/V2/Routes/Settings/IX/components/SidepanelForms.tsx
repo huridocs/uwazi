@@ -247,7 +247,7 @@ const Relationships = ({
           initialOptionsRef.current = initialOptions;
           setOptions(initialOptions);
         })
-        .catch((e) => {
+        .catch(e => {
           initialOptionsRef.current = [];
           setOptions([]);
           if (isClient) {
@@ -269,10 +269,11 @@ const Relationships = ({
         ? '.label'
         : '.value';
 
-      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${extractor?.inheritedProperty && fieldName
-        ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
-        : `title:(${escapedText}*)`
-        } `;
+      const searchQuery = `(template:${property?.content}) AND language:(${suggestion?.language}) AND ${
+        extractor?.inheritedProperty && fieldName
+          ? `(metadata.${fieldName}${searchField}:("${escapedText}") OR metadata.${fieldName}${searchField}:(${escapedText}*))`
+          : `title:(${escapedText}*)`
+      } `;
 
       const response = await searchRelatedEntities(searchQuery, extractor?.inheritedProperty);
 
