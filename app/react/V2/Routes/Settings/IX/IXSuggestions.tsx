@@ -159,6 +159,8 @@ const IXSuggestions = () => {
 
         const response = await suggestionsAPI.process(params);
 
+        const autoAccepting = data.autoAccept?.enabled;
+
         const initialTotal =
           data.mode === 'process_extractor'
             ? Number(response?.data?.total)
@@ -170,6 +172,15 @@ const IXSuggestions = () => {
             message: ixmessages[ixStatus.processing_suggestions],
             data: { processed: 0, total: initialTotal },
           });
+          return;
+        }
+
+        if (autoAccepting) {
+          setStatus({
+            status: ixStatus.processing_auto_accept,
+            message: ixmessages[ixStatus.processing_auto_accept],
+          });
+          return;
         }
 
         if (response.status === ixStatus.ready) {
