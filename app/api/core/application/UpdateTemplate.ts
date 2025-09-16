@@ -106,6 +106,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     }
 
     await this.deps.templatesDS.update(updatedTemplate);
+    await this.deps.translationService.updateTemplateTranslation(currentTemplate, updatedTemplate);
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({

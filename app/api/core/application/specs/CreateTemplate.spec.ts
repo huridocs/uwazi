@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
 import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTranslationService';
+import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';

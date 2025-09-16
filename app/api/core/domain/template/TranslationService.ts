@@ -16,7 +16,8 @@ interface TranslationService {
    *
    * That way we can not use anymore the term `TranslationService`, a domain service. Because all is decoupled.
    */
-  translate(template: Template): Promise<void>;
+  createTemplateTranslation(template: Template): Promise<void>;
+  updateTemplateTranslation(currentTemplate: Template, updatedTemplate: Template): Promise<void>;
 }
 
 export type { TranslationService };
