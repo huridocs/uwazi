@@ -1,5 +1,5 @@
 import { CommonProperty, CommonPropertyProps } from 'api/templates.v2/model/CommonProperty';
-import { PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, PropertyTypes } from 'api/templates.v2/model/Property';
 import { TitlePropertyInvalidNameError, PropertyTypeInvalidTypeError } from './errors';
 
 type Props = { prioritySorting?: boolean; generatedId?: boolean; type?: PropertyTypes } & Omit<
@@ -12,8 +12,8 @@ class TitleProperty extends CommonProperty {
 
   generatedId: boolean;
 
-  constructor(props: Props) {
-    super({ ...props, type: props.type || 'text', name: props.name || 'title' });
+  constructor(props: Props, context?: Context) {
+    super({ ...props, type: props.type || 'text', name: props.name || 'title' }, context);
     this.prioritySorting = props.prioritySorting || false;
     this.generatedId = props.generatedId || false;
 

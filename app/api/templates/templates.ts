@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
@@ -19,10 +20,36 @@ import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
-import { checkIfReindex } from './reindex';
-import model from './templatesModel';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { tenants } from 'api/tenants';
+import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
+import {
+  DefaultIdGenerator,
+  DefaultTransactionManager,
+} from 'api/common.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
+import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
+import {
+  CreateTemplateDTOSchema,
+  UpdateTemplateDTOSchema,
+} from 'api/core/application/TemplateDTOs';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
+import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
+import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
+import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
+import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
+import { TemplateValidationService } from './validation/TemplateValidationService';
+import * as v2 from './v2_support';
 import {
   setInheritedPropertiesType,
   generateNames,
@@ -31,10 +58,10 @@ import {
   getUpdatedNames,
   updateExtractedMetadataProperties,
 } from './utils';
-import * as v2 from './v2_support';
-import { TemplateValidationService } from './validation/TemplateValidationService';
-import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import model from './templatesModel';
+import { checkIfReindex } from './reindex';
+import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -51,13 +78,14 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
-  translations.addContext(
+const addTemplateTranslation = async (template: WithId<TemplateSchema>) => {
+  return translations.addContext(
     template._id.toString(),
     template.name,
     createTranslationContext(template),
     ContextType.entity
   );
+};
 
 const updateTranslation = async (
   currentTemplate: WithId<TemplateSchema>,
@@ -97,31 +125,6 @@ const updateTranslation = async (
     deletedPropertiesByLabel,
     context
   );
-};
-
-const removeExcludedPropertiesValues = async (
-  currentTemplate: TemplateSchema,
-  template: TemplateSchema
-) => {
-  const currentTemplateContentProperties = (currentTemplate.properties || []).filter(
-    p => p.content
-  );
-  const templateContentProperties = (template.properties || []).filter(p => p.content);
-  const toRemoveValues = currentTemplateContentProperties
-    .map(prop => {
-      const sameProperty = templateContentProperties.find(
-        p => p._id?.toString() === prop._id?.toString()
-      );
-      if (sameProperty && sameProperty.content !== prop.content) {
-        return sameProperty.name;
-      }
-      return null;
-    })
-    .filter(v => v);
-
-  if (toRemoveValues.length > 0) {
-    await entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
-  }
 };
 
 const checkAndFillGeneratedIdProperties = async (
@@ -174,6 +177,73 @@ export default {
       denormalizationExecuted?: boolean
     ) => Promise<void> = async () => {}
   ) {
+    const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
+    if (v2CreateTemplateUseCase && !template._id) {
+      const input = CreateTemplateDTOSchema.parse(template);
+      const transactionManager = DefaultTransactionManager();
+      const output = await new CreateTemplateUseCase({
+        idGenerator: DefaultIdGenerator,
+        templatesDS: DefaultTemplatesDataSource(transactionManager),
+        thesauriDS: new MongoThesauriDataSource(),
+        translationService: new LegacyTranslationService(),
+        settingsDS: DefaultSettingsDataSource(transactionManager),
+        relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
+        transactionManager,
+        pageService: new LegacyPageService(),
+      }).execute(input);
+
+      return TemplateMapper.toSchema(output);
+    }
+    const v2UpdateTemplateUseCase = tenants.current().featureFlags?.v2UpdateTemplateUseCase;
+    if (v2UpdateTemplateUseCase && template._id) {
+      const input = UpdateTemplateDTOSchema.parse({
+        ...template,
+        _id: template._id.toString(),
+        properties: (template.properties || []).map(p => ({ ...p, _id: p._id?.toString() })),
+        commonProperties: (template.commonProperties || []).map(p => ({
+          ...p,
+          _id: p._id?.toString(),
+        })),
+      });
+      const transactionManager = DefaultTransactionManager();
+      const templatesDS = DefaultTemplatesDataSource(transactionManager);
+      const entitiesDS = new MongoMultiLanguageEntityDataSource(
+        getConnection(),
+        transactionManager,
+        templatesDS
+      );
+      const relationshipsV1DS = new MongoRelationshipsV1DataSource(
+        getConnection(),
+        transactionManager
+      );
+      const useCase = new TemplateUpdateDenormalizeEntitiesBatch({
+        entitiesDS,
+        relationshipsV1DS,
+        templatesDS,
+        transactionManager,
+      });
+      let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
+        TemplatePostProcessEntitiesJob: async () =>
+          new TemplatePostProcessEntitiesJob({ useCase, templatesDS }),
+      });
+
+      if (process.env.NODE_ENV !== 'test') {
+        dispatcher = await DefaultDispatcher(tenants.current().name);
+      }
+      const output = await new UpdateTemplateUseCase({
+        idGenerator: DefaultIdGenerator,
+        templatesDS,
+        thesauriDS: new MongoThesauriDataSource(),
+        translationService: new LegacyTranslationService(),
+        settingsDS: DefaultSettingsDataSource(transactionManager),
+        relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
+        jobsDispatcher: dispatcher,
+        entitiesDS,
+      }).execute(input, language);
+
+      return TemplateMapper.toSchema(output);
+    }
+
     // processing can not be saved from this interface, its an internal tracking property
     delete template.processing;
     template.properties = template.properties || [];
@@ -208,7 +278,7 @@ export default {
         p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
       if (swapingNameWithExistingProperty) {
-        throw createError(`Properties can't swap names: ${prop.name}`, 400);
+        throw new ValidationError([{ path: prop.name, message: "Properties can't swap names" }]);
       }
     });
   },
@@ -302,7 +372,6 @@ export default {
       await updateTranslation(currentTemplate, template);
     }
     if (templateStructureChanges) {
-      await removeExcludedPropertiesValues(currentTemplate, template);
       await updateExtractedMetadataProperties(currentTemplate.properties, template.properties);
     }
 
@@ -339,11 +408,10 @@ export default {
         })
         .catch(async error => onTemplateProcessed(error));
     }
-
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
         before: currentTemplate,
-        after: savedTemplate,
+        after: { ...savedTemplate },
       })
     );
 

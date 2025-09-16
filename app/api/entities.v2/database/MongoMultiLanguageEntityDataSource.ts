@@ -89,7 +89,7 @@ export class MongoMultiLanguageEntityDataSource
     entitiesToSave.map(e => e.sharedId).forEach(id => this.modifiedSharedIds.add(id));
   }
 
-  async countByTemplateId(templateId: string) {
+  async countByTemplateId(templateId: string): Promise<number> {
     const aggregation = [
       { $match: { template: new ObjectId(templateId) } },
       { $group: { _id: '$sharedId' } },

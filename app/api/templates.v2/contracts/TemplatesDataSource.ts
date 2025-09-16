@@ -16,10 +16,12 @@ export interface TemplatesDataSource {
   getByIds(ids: Template['id'][]): ResultSet<Template>;
   getByNames(names: Template['name'][]): ResultSet<Template>;
   getById(id: Template['id']): Promise<Template | undefined>;
+  getTemplatesByPropertyName(property: Property): Promise<Template[]>;
   incrementProcessingTracking(id: Template['id']): Promise<{ total: number; completed: number }>;
   completeProcessing(templateId: string): Promise<void>;
   setProcessingTotalJobs(templateId: string, totalJobs: number): Promise<void>;
   create(template: Template): Promise<void>;
+  update(template: Template): Promise<void>;
   isPropertyUnique(property: Property): Promise<boolean>;
   isTemplateUnique(template: Template): Promise<boolean>;
 }

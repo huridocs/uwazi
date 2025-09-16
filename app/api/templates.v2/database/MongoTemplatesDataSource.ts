@@ -1,9 +1,12 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+/* eslint-disable max-lines */
+import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/mapper';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { updateMapping } from 'api/search/entitiesIndex';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -20,6 +23,18 @@ export class MongoTemplatesDataSource
   protected collectionName = 'templates';
 
   private _nameToPropertyMap?: Record<string, Property>;
+
+  private templatesMutated = new Map<ObjectId, TemplateDBO>();
+
+  constructor(db: Db, transactionManager: MongoTransactionManager, options?: MongoDSOptions) {
+    super(db, transactionManager, options);
+
+    this.transactionManager.onCommitted(async () => {
+      const templates = [...this.templatesMutated.values()];
+      this.templatesMutated.clear();
+      await updateMapping(templates);
+    });
+  }
 
   getAll() {
     return new MongoResultSet(this.getCollection().find({}), TemplateMappers.toApp);
@@ -214,10 +229,16 @@ export class MongoTemplatesDataSource
     );
   }
 
+  async update(template: Template): Promise<void> {
+    const schema = TemplateMapper.toSchema(template);
+    await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
+    await updateMapping([schema]);
+  }
+
   async create(template: Template): Promise<void> {
     const schema = TemplateMapper.toSchema(template);
-
     await this.getCollection().insertOne(schema);
+    this.templatesMutated.set(schema._id, schema);
   }
 
   async isPropertyUnique(property: Property): Promise<boolean> {
@@ -246,5 +267,20 @@ export class MongoTemplatesDataSource
     );
 
     return count === 0;
+  }
+
+  async getTemplatesByPropertyName(property: Property): Promise<Template[]> {
+    const schemas = await this.getCollection()
+      .find({
+        _id: { $not: { $eq: new ObjectId(property.template) } },
+        properties: {
+          $elemMatch: {
+            name: property.name,
+          },
+        },
+      })
+      .toArray();
+
+    return schemas.map(TemplateMapper.toDomain);
   }
 }

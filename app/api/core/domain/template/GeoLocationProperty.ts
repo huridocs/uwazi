@@ -1,4 +1,4 @@
-import { Property, PropertyProps, PropertyTypes } from 'api/templates.v2/model/Property';
+import { Context, Property, PropertyProps, PropertyTypes } from 'api/templates.v2/model/Property';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertyName } from './PropertyName';
 import { PropertyTypeInvalidTypeError } from './errors';
@@ -8,11 +8,12 @@ type Props = {
 } & Omit<PropertyProps, 'type'>;
 
 class GeolocationProperty extends Property {
-  constructor(props: Props) {
+  constructor(props: Props, context?: Context) {
     const name =
-      props.name || PropertyName.fromLabel(`${props.label}_${propertyTypes.geolocation}`).value;
+      props.name ||
+      PropertyName.fromLabel(`${props.label}_${propertyTypes.geolocation}`, context).value;
 
-    super({ ...props, type: props.type || 'geolocation', name });
+    super({ ...props, type: props.type || 'geolocation', name }, context);
 
     this.validate();
   }
