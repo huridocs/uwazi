@@ -4,6 +4,5 @@ type Option = {
   value: string;
   disabled?: boolean;
 };
-type ContextOption = Option & { selected: boolean };
 
-export type { Option, ContextOption };
+export type { Option };

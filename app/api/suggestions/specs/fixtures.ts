@@ -8,6 +8,8 @@ const factory = getFixturesFactory();
 
 const suggestionId = testingDB.id();
 
+const shared1enId = testingDB.id();
+const shared1esId = testingDB.id();
 const shared2esId = testingDB.id();
 const shared2enId = testingDB.id();
 const shared6enId = testingDB.id();
@@ -109,6 +111,7 @@ const fixtures: DBFixture = {
   ixsuggestions: [
     {
       entityId: 'shared1',
+      entityLanguageId: shared1enId,
       entityTemplate: personTemplateId.toString(),
       propertyName: 'title',
       extractorId: factory.id('title_extractor'),
@@ -132,6 +135,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared1',
+      entityLanguageId: shared1enId,
       entityTemplate: personTemplateId.toString(),
       propertyName: 'enemy',
       extractorId: factory.id('enemy_extractor'),
@@ -155,6 +159,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared1',
+      entityLanguageId: shared1esId,
       entityTemplate: personTemplateId.toString(),
       propertyName: 'title',
       extractorId: factory.id('title_extractor'),
@@ -168,6 +173,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared1',
+      entityLanguageId: shared1enId,
       fileId: factory.id('F1'),
       entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
@@ -182,6 +188,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared2',
+      entityLanguageId: shared2enId,
       entityTemplate: personTemplateId.toString(),
       propertyName: 'super_powers',
       extractorId: factory.id('super_powers_extractor'),
@@ -202,11 +209,11 @@ const fixtures: DBFixture = {
         match: false,
         error: false,
       },
-      entityLanguageId: shared2enId,
     },
     {
       fileId: factory.id('F2'),
       entityId: 'shared2',
+      entityLanguageId: shared2enId,
       entityTemplate: personTemplateId.toString(),
       propertyName: 'super_powers',
       extractorId: factory.id('super_powers_extractor'),
@@ -217,7 +224,6 @@ const fixtures: DBFixture = {
       page: 5,
       status: 'ready',
       error: '',
-      entityLanguageId: shared2enId,
       state: {
         hasContext: true,
         labeled: true,
@@ -233,6 +239,7 @@ const fixtures: DBFixture = {
       _id: shared2AgeSuggestionId,
       fileId: factory.id('F2'),
       entityId: 'shared2',
+      entityLanguageId: shared2enId,
       entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
       extractorId: factory.id('age_extractor'),
@@ -541,6 +548,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('fileForentityWithSelects'),
       entityId: 'entityWithSelects',
+      entityLanguageId: factory.id('entityWithSelects'),
       entityTemplate: factory.id('templateWithSelects').toString(),
       propertyName: 'property_select',
       extractorId: factory.id('select_extractor'),
@@ -553,6 +561,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('fileForentityWithSelects'),
       entityId: 'entityWithSelects',
+      entityLanguageId: factory.id('entityWithSelects'),
       entityTemplate: factory.id('templateWithSelects').toString(),
       propertyName: 'property_multiselect',
       extractorId: factory.id('multiselect_extractor'),
@@ -614,7 +623,7 @@ const fixtures: DBFixture = {
   ],
   entities: [
     {
-      _id: testingDB.id(),
+      _id: shared1enId,
       sharedId: 'shared1',
       title: 'Robin',
       language: 'en',
@@ -622,7 +631,7 @@ const fixtures: DBFixture = {
       template: personTemplateId,
     },
     {
-      _id: testingDB.id(),
+      _id: shared1esId,
       sharedId: 'shared1',
       title: 'Robin es',
       language: 'es',

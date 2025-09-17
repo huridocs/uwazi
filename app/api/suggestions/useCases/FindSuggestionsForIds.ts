@@ -65,10 +65,8 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
     }
 
     // Prevent individual find while training/test-run suggestions are running
-    if (model.findingSuggestions && !model.findSuggestionsRunTimestamp) {
-      throw new Error(
-        "Model is training or running a test run. Individual 'Find suggestions' is disabled."
-      );
+    if (model.findingSuggestions && !model.processRun?.suggestionsRunTimestamp) {
+      throw new Error("Model is training. Individual 'Find suggestions' is disabled.");
     }
   }
 
@@ -91,7 +89,7 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
     return Suggestions.getAlreadySeenInFindRun(
       model.extractorId,
       candidateIds,
-      model.findSuggestionsRunTimestamp!
+      model.processRun!.suggestionsRunTimestamp!
     );
   }
 
@@ -101,8 +99,8 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
   ) {
     const uniqueRequestedSharedIds = Array.from(new Set(sharedIds));
 
-    if (model.findSuggestionsRunTimestamp) {
-      const currentQueue = new Set(model.findSuggestionsSharedIds || []);
+    if (model.processRun?.suggestionsRunTimestamp) {
+      const currentQueue = new Set(model.processRun?.findSuggestionsSharedIds || []);
       const seen = await this.getAlreadySeenInThisRun(model, uniqueRequestedSharedIds);
 
       // Exclude those already in the current queue or already queued/processed in this run

@@ -16,7 +16,7 @@ import { columnsThesaurus, ThesaurusRow } from './components/TableComponents';
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;
   thesaurusValues: ThesaurusRow[];
-  form: UseFormReturn<ClientThesaurus, any, undefined>;
+  form: UseFormReturn<ClientThesaurus>;
   edit: (row: Row<ThesaurusRow>) => void;
   setThesaurusValues: React.Dispatch<React.SetStateAction<ThesaurusRow[]>>;
   setSelectedThesaurusValue: React.Dispatch<React.SetStateAction<ThesaurusRow[]>>;

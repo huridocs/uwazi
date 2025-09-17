@@ -16,7 +16,7 @@ import {
 import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
-import { FindSuggestionsForIds } from './useCases/FindSuggestionsForIds';
+import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';
 
 const IX = new InformationExtraction();
 
@@ -35,21 +35,6 @@ function extractorIdRequestValidation(root = 'body') {
     },
   });
 }
-
-const findSuggestionsRequestValidation = validateAndCoerceRequest({
-  type: 'object',
-  properties: {
-    body: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['extractorId', 'sharedIds'],
-      properties: {
-        extractorId: { type: 'string' },
-        sharedIds: { type: 'array', items: { type: 'string' } },
-      },
-    },
-  },
-});
 
 export const suggestionsRoutes = (app: Application) => {
   app.get(
@@ -148,39 +133,35 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/train',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
-    extractorIdRequestValidation('body'),
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['extractorId'],
+          properties: {
+            extractorId: { type: 'string' },
+            suggestionsToFind: { type: 'number', minimum: 0 },
+          },
+        },
+      },
+    }),
     async (req, res, _next) => {
-      const output = await IX.trainModel(ObjectId.createFromHexString(req.body.extractorId));
+      const { extractorId, suggestionsToFind } = req.body;
+      const output = await IX.trainModel(
+        ObjectId.createFromHexString(extractorId),
+        suggestionsToFind
+      );
       res.status(202).json(output);
     }
   );
 
   app.post(
-    '/api/suggestions/test_model',
+    '/api/suggestions/process',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
-    extractorIdRequestValidation('body'),
-    async (req, res, _next) => {
-      const output = await IX.testModel(ObjectId.createFromHexString(req.body.extractorId));
-
-      res.status(202).json(output);
-    }
-  );
-
-  app.post(
-    '/api/suggestions/find',
-    serviceMiddleware,
-    needsAuthorization(['admin', 'editor']),
-    findSuggestionsRequestValidation,
-    async (req, res, _next) => {
-      const { extractorId, sharedIds } = req.body;
-      const findSuggestionsForIds = new FindSuggestionsForIds(IX);
-      const output = await findSuggestionsForIds.execute({
-        extractorId: ObjectId.createFromHexString(extractorId),
-        sharedIds,
-      });
-      res.status(202).json(output);
-    }
+    ProcessSuggestionsController.adapt(ProcessSuggestionsController)
   );
 
   app.post(

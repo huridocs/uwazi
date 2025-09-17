@@ -9,7 +9,7 @@ import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXModelType } from 'shared/types/IXModelType';
 import { TemplateSchema } from 'shared/types/templateType';
-import ixmodels, { TEST_RUN_SUGGESTIONS_SIZE } from './ixmodels';
+import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {
   extractor: IXExtractorType;
@@ -60,16 +60,45 @@ export class IXServices {
     model: EnforcedWithId<IXModelType>
   ) {
     const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
-    let totalSuggestions = allPossibleSuggestions;
-
-    if (model.testRun) {
-      totalSuggestions = Math.min(
-        model.testRunSuggestionsToFind || TEST_RUN_SUGGESTIONS_SIZE,
-        allPossibleSuggestions
-      );
-    }
-
+    const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
+    const totalSuggestions = Math.min(maxCap, allPossibleSuggestions);
     return totalSuggestions;
+  }
+
+  static async computeTotalSuggestionsForProcess(
+    extractorId: ObjectIdSchema,
+    model: EnforcedWithId<IXModelType>,
+    filters?: { nonProcessed?: boolean; obsolete?: boolean; error?: boolean }
+  ) {
+    const statuses = {
+      nonProcessed: filters?.nonProcessed ?? false,
+      obsolete: filters?.obsolete ?? false,
+      error: filters?.error ?? false,
+    };
+
+    const usingAnyFilter = statuses.nonProcessed || statuses.obsolete || statuses.error;
+
+    // Default to all three statuses if no explicit filter selection
+    const matchAny = usingAnyFilter
+      ? [
+          statuses.nonProcessed ? { date: null } : null,
+          statuses.obsolete ? { date: { $ne: null }, 'state.obsolete': true } : null,
+          statuses.error ? { date: { $ne: null }, 'state.error': true } : null,
+        ].filter(Boolean)
+      : [
+          { date: null },
+          { date: { $ne: null }, 'state.obsolete': true },
+          { date: { $ne: null }, 'state.error': true },
+        ];
+
+    const count = await IXSuggestionsModel.db.countDocuments({
+      extractorId,
+      $or: matchAny as any[],
+    });
+
+    const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
+    const total = Math.min(maxCap, count);
+    return total;
   }
 
   static async saveModelProcess(
@@ -92,7 +121,7 @@ export class IXServices {
       newModel.totalSuggestionsToFind = totalSuggestions;
     }
 
-    await ixmodels.save(newModel);
+    await ixmodels.saveAndObsoleteSuggestions(newModel);
   }
 
   static extractCurrentValue({ entity, targetProperty }: ExtractCurrentValueInput) {

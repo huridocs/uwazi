@@ -1,13 +1,15 @@
+import { ObjectId } from 'mongodb';
 import { Suggestions } from 'api/suggestions/suggestions';
+import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXModelsModel as model } from './IXModelsModel';
 
-const TEST_RUN_SUGGESTIONS_SIZE = 1000;
+const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 
 type StartTrainingOptions = {
-  testRun?: boolean;
+  suggestionsToFind?: number;
 };
 
 const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
@@ -15,23 +17,42 @@ const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
     { _id: ixModelId },
     {
       $unset: {
-        findSuggestionsRunTimestamp: '',
-        findSuggestionsSharedIds: '',
-        findSuggestionsInitialSharedIdsCount: '',
+        'processRun.suggestionsRunTimestamp': '',
+        'processRun.findSuggestionsSharedIds': '',
+        'processRun.findSuggestionsInitialSharedIdsCount': '',
       },
     }
   );
 };
 
 const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string[]) => {
+  const [current] = await model.get({ _id: modelId });
+  const { extractorId } = current;
+
+  // Trim pre-processed (already has ready, non-obsolete and non-error suggestion)
+  const alreadySuggested = (await IXSuggestionsModel.db.distinct('entityId', {
+    extractorId,
+    entityId: { $in: sharedIds },
+    date: { $ne: null },
+    'state.obsolete': { $ne: true },
+    'state.error': { $ne: true },
+  })) as string[];
+  const alreadySet = new Set(alreadySuggested);
+  const pendingIds = sharedIds.filter(id => !alreadySet.has(id));
+
+  // Establish a run timestamp for this selection
+  const runTimestamp = Date.now();
+
   await model.updateMany(
     { _id: modelId },
     {
       $set: {
-        findSuggestionsRunTimestamp: Date.now(),
-        findSuggestionsSharedIds: sharedIds,
+        'processRun.suggestionsRunTimestamp': runTimestamp,
+        'processRun.findSuggestionsSharedIds': pendingIds,
         findingSuggestions: true,
-        findSuggestionsInitialSharedIdsCount: sharedIds.length,
+        'processRun.findSuggestionsInitialSharedIdsCount': sharedIds.length,
+        // Persist the entire cohort to support auto-accept of pre-existing ready suggestions
+        'processRun.selectedSharedIdsForAutoAccept': sharedIds,
       },
     }
   );
@@ -41,21 +62,24 @@ const appendToFindRunQueue = async (modelId: ObjectIdSchema, newSharedIds: strin
   await model.updateMany({ _id: modelId }, [
     {
       $set: {
-        findSuggestionsSharedIds: {
-          $setUnion: [{ $ifNull: ['$findSuggestionsSharedIds', []] }, newSharedIds],
+        'processRun.findSuggestionsSharedIds': {
+          $setUnion: [{ $ifNull: ['$processRun.findSuggestionsSharedIds', []] }, newSharedIds],
         },
         findingSuggestions: true,
-        findSuggestionsInitialSharedIdsCount: {
+        'processRun.findSuggestionsInitialSharedIdsCount': {
           $add: [
-            { $ifNull: ['$findSuggestionsInitialSharedIdsCount', 0] },
+            { $ifNull: ['$processRun.findSuggestionsInitialSharedIdsCount', 0] },
             {
               $subtract: [
                 {
                   $size: {
-                    $setUnion: [{ $ifNull: ['$findSuggestionsSharedIds', []] }, newSharedIds],
+                    $setUnion: [
+                      { $ifNull: ['$processRun.findSuggestionsSharedIds', []] },
+                      newSharedIds,
+                    ],
                   },
                 },
-                { $size: { $ifNull: ['$findSuggestionsSharedIds', []] } },
+                { $size: { $ifNull: ['$processRun.findSuggestionsSharedIds', []] } },
               ],
             },
           ],
@@ -68,7 +92,8 @@ const appendToFindRunQueue = async (modelId: ObjectIdSchema, newSharedIds: strin
 export default {
   get: model.get.bind(model),
   delete: model.delete.bind(model),
-  save: async (ixmodel: IXModelType) => {
+  save: model.save.bind(model),
+  saveAndObsoleteSuggestions: async (ixmodel: IXModelType) => {
     const saved = await model.save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
       await Suggestions.setObsolete({ extractorId: saved.extractorId });
@@ -77,7 +102,7 @@ export default {
   },
   startTraining: async (
     extractorId: ObjectIdSchema,
-    { testRun = false }: StartTrainingOptions = {}
+    { suggestionsToFind }: StartTrainingOptions = {}
   ) => {
     const [current] = await model.get({ extractorId });
 
@@ -86,11 +111,10 @@ export default {
       extractorId,
       findingSuggestions: true,
       status: ModelStatus.processing,
-      testRun,
-      testRunSuggestionsToFind: TEST_RUN_SUGGESTIONS_SIZE,
+      maxSuggestionsToFind: suggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE,
     });
+    await model.updateMany({ extractorId }, { $unset: { processRun: '' } });
 
-    // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
     await unsetFindSuggestionsData(updatedModel._id);
   },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
@@ -100,12 +124,15 @@ export default {
       throw new Error(`Model with extractorId ${extractorId} not found.`);
     }
 
-    await model.save({
-      ...current,
-      findingSuggestions: true,
-      status: ModelStatus.processing,
-      creationDate: new Date().getTime(),
-    });
+    await model.updateMany(
+      { _id: current._id },
+      {
+        $set: {
+          findingSuggestions: true,
+          status: ModelStatus.processing,
+        },
+      }
+    );
   },
   stopTraining: async (extractorId: ObjectIdSchema) => {
     const [current] = await model.get({ extractorId });
@@ -120,13 +147,49 @@ export default {
       status: ModelStatus.ready,
     });
 
-    // Hack to unset findSuggestionsRunTimestamp and findSuggestionsSharedIds, as our models don't support $unset in any of the normal operations
     await unsetFindSuggestionsData(current._id);
   },
   updateMany: model.updateMany.bind(model),
   unsetFindSuggestionsData,
   initializeFindRunQueue,
   appendToFindRunQueue,
+  setProcessRun: async (extractorId: string, processRun: any) => {
+    const extractorObjectId = ObjectId.createFromHexString(extractorId);
+    const processRunToSet = {
+      ...processRun,
+      suggestionsRunTimestamp: processRun?.suggestionsRunTimestamp || Date.now(),
+    };
+    await model.updateMany(
+      { extractorId: extractorObjectId },
+      { $set: { processRun: processRunToSet } }
+    );
+  },
+  unsetProcessRun: async (extractorId: string) => {
+    const extractorObjectId = ObjectId.createFromHexString(extractorId);
+    await model.updateMany({ extractorId: extractorObjectId }, { $unset: { processRun: '' } });
+  },
+  setAutoAcceptProgress: async (
+    extractorId: ObjectIdSchema,
+    progress: { total?: number; processed?: number }
+  ) => {
+    const update: any = {};
+    if (typeof progress.total === 'number') {
+      update['processRun.autoAcceptProgress.total'] = progress.total;
+    }
+    if (typeof progress.processed === 'number') {
+      update['processRun.autoAcceptProgress.processed'] = progress.processed;
+    }
+    if (Object.keys(update).length) {
+      await model.updateMany({ extractorId }, { $set: update });
+    }
+  },
+  incAutoAcceptProcessed: async (extractorId: string, incBy: number) => {
+    const extractorObjectId = ObjectId.createFromHexString(extractorId);
+    await model.updateMany(
+      { extractorId: extractorObjectId },
+      { $inc: { 'processRun.autoAcceptProgress.processed': incBy } }
+    );
+  },
 };
 
-export { TEST_RUN_SUGGESTIONS_SIZE };
+export { DEFAULT_MAX_SUGGESTIONS_SIZE };

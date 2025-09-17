@@ -44,7 +44,8 @@ const fixtures: DBFixture = {
       extractorId,
       status: ModelStatus.ready, // Already trained model!
       creationDate: Date.now(),
-      totalSuggestionsToFind: 100,
+      totalSuggestionsToFind: 2,
+      maxSuggestionsToFind: 100,
     },
   ],
   templates: [factory.template('template_1', [factory.property('target_text', 'text')])],
@@ -72,7 +73,7 @@ const fixtures: DBFixture = {
       entityTemplate: factory.id('template_1').toString(),
       propertyName: 'target_text',
       status: 'ready',
-      state: { labeled: false, withValue: true, withSuggestion: false },
+      state: { labeled: false, withValue: true, withSuggestion: false, obsolete: true },
     }),
     factory.ixSuggestion({
       entityId: 'entity2',
@@ -80,7 +81,7 @@ const fixtures: DBFixture = {
       entityTemplate: factory.id('template_1').toString(),
       propertyName: 'target_text',
       status: 'ready',
-      state: { labeled: false, withValue: true, withSuggestion: false },
+      state: { labeled: false, withValue: true, withSuggestion: false, obsolete: true },
     }),
   ],
 };
@@ -163,9 +164,7 @@ describe('FindSuggestionsForIds', () => {
           extractorId,
           sharedIds: ['entity1', 'entity2'],
         })
-      ).rejects.toThrow(
-        "Model is training or running a test run. Individual 'Find suggestions' is disabled."
-      );
+      ).rejects.toThrow("Model is training. Individual 'Find suggestions' is disabled.");
     });
 
     it('should start find suggestions process, update model state, and return status', async () => {
@@ -220,10 +219,10 @@ describe('FindSuggestionsForIds', () => {
       // Verify the model state after the process has been initiated
       const testStartTime = Date.now() - 10000; // 10 seconds ago
       const [finalModel] = await ixmodels.get({ extractorId });
-      expect(finalModel.findSuggestionsRunTimestamp).toBeGreaterThan(testStartTime);
+      expect(finalModel.processRun?.suggestionsRunTimestamp).toBeGreaterThan(testStartTime);
 
       // In an async process, sharedIds get processed and cleared, but process flag remains true
-      expect(finalModel.findSuggestionsSharedIds).toEqual([]); // Entities have been processed
+      expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]); // Entities have been processed
       expect(finalModel.findingSuggestions).toBe(true); // Process still running
     });
 
@@ -255,8 +254,8 @@ describe('FindSuggestionsForIds', () => {
 
       // Verify the process started
       const [updatedModel] = await ixmodels.get({ extractorId: propertyExtractorId });
-      expect(updatedModel.findSuggestionsRunTimestamp).toBeDefined();
-      expect(updatedModel.findSuggestionsSharedIds).toEqual([]);
+      expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeDefined();
+      expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([]);
 
       expect(result).toEqual({ processed: 1, total: 1 });
     });
@@ -288,8 +287,8 @@ describe('FindSuggestionsForIds', () => {
 
       // Model should keep the correct initial count (delta-increment), queue is drained by the flow
       const [finalModel] = await ixmodels.get({ extractorId });
-      expect(finalModel.findSuggestionsInitialSharedIdsCount).toBe(3);
-      expect(finalModel.findSuggestionsSharedIds).toEqual([]);
+      expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(3);
+      expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]);
     });
 
     it('should not re-send materials when no new IDs are provided during an ongoing per-id run', async () => {
@@ -314,7 +313,7 @@ describe('FindSuggestionsForIds', () => {
 
       // Model initial total stays the same (no delta)
       const [finalModel] = await ixmodels.get({ extractorId });
-      expect(finalModel.findSuggestionsInitialSharedIdsCount).toBe(1);
+      expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
     });
 
     it('should increase initial total exactly by the number of new unique IDs when appending', async () => {
@@ -324,7 +323,7 @@ describe('FindSuggestionsForIds', () => {
         sharedIds: ['entity1'],
       });
       const [afterFirst] = await ixmodels.get({ extractorId });
-      expect(afterFirst.findSuggestionsInitialSharedIdsCount).toBe(1);
+      expect(afterFirst.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
 
       // Append 1 new (entity3) and 1 duplicate (entity1)
       await useCase.execute({
@@ -334,7 +333,7 @@ describe('FindSuggestionsForIds', () => {
 
       const [afterSecond] = await ixmodels.get({ extractorId });
       // Only delta of 1 should be added
-      expect(afterSecond.findSuggestionsInitialSharedIdsCount).toBe(2);
+      expect(afterSecond.processRun?.findSuggestionsInitialSharedIdsCount).toBe(2);
     });
   });
 });
