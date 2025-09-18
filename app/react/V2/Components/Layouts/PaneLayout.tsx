@@ -11,15 +11,9 @@ const getClientXValue = (event: MouseEvent | TouchEvent): number | undefined => 
   return undefined;
 };
 
-type PaneHeadingProps = React.PropsWithChildren;
-type PaneFooterProps = React.PropsWithChildren;
-
-type PaneProps = {
-  children: [
-    React.ReactElement<PaneHeadingProps>,
-    React.ReactNode,
-    React.ReactElement<PaneFooterProps>,
-  ];
+type PaneProps = React.PropsWithChildren & {
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
   background?: string;
 };
 
@@ -30,19 +24,13 @@ type PaneLayoutProps = {
 
 const MIN_WIDTH = 100;
 
-const PaneHeading = ({ children }: PaneHeadingProps) => <div>{children}</div>;
-const PaneFooter = ({ children }: PaneFooterProps) => <div>{children}</div>;
-
-const Pane = ({ children, background = 'white' }: PaneProps) => {
-  const [heading, content, footer] = children;
-  return (
-    <div style={{ background }} className="w-full flex flex-col h-full overflow-x-auto min-w-80">
-      <div>{heading}</div>
-      <div className="flex-grow overflow-auto">{content}</div>
-      <div>{footer}</div>
-    </div>
-  );
-};
+const Pane = ({ children, header, footer, background = 'white' }: PaneProps) => (
+  <section style={{ background }} className="w-full flex flex-col h-full overflow-x-auto px-1">
+    {header && <header>{header}</header>}
+    <div className="flex-grow overflow-auto">{children}</div>
+    {footer && <footer>{footer}</footer>}
+  </section>
+);
 
 // eslint-disable-next-line max-statements
 const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
@@ -50,14 +38,11 @@ const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
 
-  const totalWidth = widths.reduce((a, b) => a + b, 0) || 1;
-  const percentages = widths.map(w => `${(w / totalWidth) * 100}%`);
-
   useEffect(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.getBoundingClientRect().width;
-      const initial = children.map(() => containerWidth / children.length);
-      setWidths(initial);
+      const initials = children.map(() => containerWidth / children.length - 4);
+      setWidths(initials);
     }
     // Only update if the number of children changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,16 +106,19 @@ const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
       {children.map((child, index) => (
         <Fragment key={child.key!}>
           <div
-            className="px-2"
-            style={{ width: percentages[index], background: child.props.background || 'white' }}
+            style={{
+              width: widths[index],
+              background: child.props.background || 'white',
+            }}
           >
             {child}
           </div>
           {index < children.length - 1 && (
             <div
+              aria-hidden
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="w-1 cursor-col-resize flex-shrink-0 bg-black"
+              className="w-1 cursor-col-resize flex-shrink-0 bg-black md:block hidden"
             />
           )}
         </Fragment>
@@ -140,7 +128,5 @@ const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
 };
 
 PaneLayout.Pane = Pane;
-PaneLayout.PaneHeading = PaneHeading;
-PaneLayout.PaneFooter = PaneFooter;
 
 export { PaneLayout };

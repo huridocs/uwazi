@@ -14,8 +14,7 @@ const Primary: Story = {
     <div className="tw-content">
       <div className="h-96">
         <PaneLayout>
-          <PaneLayout.Pane key="pane-1">
-            <PaneLayout.PaneHeading>Heading 1</PaneLayout.PaneHeading>
+          <PaneLayout.Pane key="pane-1" header="Heading 1" footer="Footer 1">
             <div>
               <p>
                 Aenean ac purus nulla. Fusce non consequat odio. Duis non sagittis mi. In at magna a
@@ -26,10 +25,8 @@ const Primary: Story = {
                 pellentesque elit blandit, facilisis sapien vitae, tristique nisl.
               </p>
             </div>
-            <PaneLayout.PaneFooter>Footer 1</PaneLayout.PaneFooter>
           </PaneLayout.Pane>
-          <PaneLayout.Pane key="pane-2">
-            <PaneLayout.PaneHeading>Heading 2</PaneLayout.PaneHeading>
+          <PaneLayout.Pane key="pane-2" header="Heading 2" footer="Footer 2">
             <div>
               <p>
                 Nunc ullamcorper metus risus, vitae semper augue laoreet vitae. Morbi commodo risus
@@ -40,10 +37,8 @@ const Primary: Story = {
                 ac id neque.
               </p>
             </div>
-            <PaneLayout.PaneFooter>Footer 2</PaneLayout.PaneFooter>
           </PaneLayout.Pane>
-          <PaneLayout.Pane key="pane-3">
-            <PaneLayout.PaneHeading>Heading 3</PaneLayout.PaneHeading>
+          <PaneLayout.Pane key="pane-3" header="Heading 3" footer="Footer 3">
             <div>
               <p>
                 Pellentesque justo purus, porta a interdum vel, posuere sit amet nisl. Aenean
@@ -58,25 +53,20 @@ const Primary: Story = {
                 laoreet erat finibus sit amet. Nulla tristique vitae augue non sagittis.
               </p>
             </div>
-            <PaneLayout.PaneFooter>Footer 3</PaneLayout.PaneFooter>
           </PaneLayout.Pane>
-          <PaneLayout.Pane key="pane-4">
-            <PaneLayout.PaneHeading>Heading 4</PaneLayout.PaneHeading>
-            <div>
-              <p>
-                Sed velit eros, pretium id imperdiet eget, tristique vel odio. Vestibulum ante ipsum
-                primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque non mollis
-                mi. Proin pharetra, tellus quis ultrices aliquet, magna nibh accumsan neque, id
-                viverra ex neque a libero. Aliquam auctor a ante id pretium. Cras lobortis, metus
-                eget pellentesque feugiat, purus purus porttitor ligula, nec euismod orci massa eu
-                sem. Phasellus tincidunt interdum lacinia. Praesent ac ornare nisi. Nulla ornare
-                quis felis vel auctor. Donec bibendum odio urna, in rutrum justo lacinia a. Mauris
-                accumsan commodo metus. Suspendisse eu venenatis massa. Vivamus lorem metus, sodales
-                ac porttitor eget, dignissim sit amet sem. Sed nec nisi at felis iaculis venenatis
-                in vitae magna.
-              </p>
-            </div>
-            <PaneLayout.PaneFooter>Footer 4</PaneLayout.PaneFooter>
+          <PaneLayout.Pane key="pane-4" footer="Footer 4">
+            <p>
+              Sed velit eros, pretium id imperdiet eget, tristique vel odio. Vestibulum ante ipsum
+              primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque non mollis
+              mi. Proin pharetra, tellus quis ultrices aliquet, magna nibh accumsan neque, id
+              viverra ex neque a libero. Aliquam auctor a ante id pretium. Cras lobortis, metus eget
+              pellentesque feugiat, purus purus porttitor ligula, nec euismod orci massa eu sem.
+              Phasellus tincidunt interdum lacinia. Praesent ac ornare nisi. Nulla ornare quis felis
+              vel auctor. Donec bibendum odio urna, in rutrum justo lacinia a. Mauris accumsan
+              commodo metus. Suspendisse eu venenatis massa. Vivamus lorem metus, sodales ac
+              porttitor eget, dignissim sit amet sem. Sed nec nisi at felis iaculis venenatis in
+              vitae magna.
+            </p>
           </PaneLayout.Pane>
         </PaneLayout>
       </div>
