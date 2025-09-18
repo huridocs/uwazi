@@ -253,6 +253,16 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
 
   const BATCH_SIZE = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PROPERTY;
 
+  // In process_selected, if the selected queue is empty (after trimming), do not sample.
+  // End the find phase immediately.
+  const isSelectedMode = model.processRun?.mode === 'process_selected';
+  const hasSelectedQueue = Array.isArray(model.processRun?.findSuggestionsSharedIds)
+    ? model.processRun!.findSuggestionsSharedIds!.length > 0
+    : false;
+  if (isSelectedMode && !hasSelectedQueue) {
+    return [];
+  }
+
   let entityQuery: UwaziFilterQuery<any> | null = {};
 
   if (model.processRun?.findSuggestionsSharedIds?.length) {
@@ -422,14 +432,18 @@ async function getFileIdsWithReadySegmentations(
     return [];
   }
 
-  const allFileIds: ObjectIdSchema[] = [];
+  const readyLabeledFileIds: ObjectIdSchema[] = [];
+  const readyUnlabeledFileIds: ObjectIdSchema[] = [];
   const suggestionsWithFailedSegmentations: IXSuggestionType[] = [];
 
   // Process suggestions in batches to check segmentation status (keep existing batching logic)
   const batchSize = 100;
   let suggestionIndex = 0;
 
-  while (suggestionIndex < suggestions.length && allFileIds.length < targetLimit) {
+  while (
+    suggestionIndex < suggestions.length &&
+    readyLabeledFileIds.length + readyUnlabeledFileIds.length < targetLimit
+  ) {
     const currentBatch = suggestions.slice(suggestionIndex, suggestionIndex + batchSize);
 
     if (!currentBatch.length) {
@@ -456,8 +470,21 @@ async function getFileIdsWithReadySegmentations(
       const failedSuggestions = currentBatch.filter(s =>
         failedSegmentationFileIds.some(failedId => failedId.toString() === s.fileId?.toString())
       );
-
-      allFileIds.push(...readySegmentationFileIds);
+      // Partition ready fileIds into labeled / unlabeled buckets preserving insertion order
+      const readySet = new Set(readySegmentationFileIds.map(id => id.toString()));
+      currentBatch.forEach(s => {
+        const fId = s.fileId as ObjectIdSchema | undefined;
+        if (!fId) return;
+        if (!readySet.has(fId.toString())) return;
+        const isLabeled = !!s.state?.labeled;
+        if (isLabeled) {
+          if (!readyLabeledFileIds.some(x => x.toString() === fId.toString())) {
+            readyLabeledFileIds.push(fId);
+          }
+        } else if (!readyUnlabeledFileIds.some(x => x.toString() === fId.toString())) {
+          readyUnlabeledFileIds.push(fId);
+        }
+      });
       suggestionsWithFailedSegmentations.push(...failedSuggestions);
     }
 
@@ -479,7 +506,30 @@ async function getFileIdsWithReadySegmentations(
     await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
   }
 
-  return allFileIds.slice(0, targetLimit);
+  // Balance selection: take up to half from each bucket, then fill the remainder
+  const idealHalf = Math.floor(targetLimit / 2);
+  const chosen: ObjectIdSchema[] = [];
+
+  const takeFrom = (arr: ObjectIdSchema[], count: number) => {
+    for (let i = 0; i < arr.length && chosen.length < count; i += 1) {
+      const id = arr[i];
+      if (!chosen.some(x => x.toString() === id.toString())) {
+        chosen.push(id);
+      }
+    }
+  };
+
+  const firstLabeled = Math.min(idealHalf, readyLabeledFileIds.length);
+  const firstUnlabeled = Math.min(idealHalf, readyUnlabeledFileIds.length);
+  takeFrom(readyLabeledFileIds, firstLabeled);
+  takeFrom(readyUnlabeledFileIds, firstUnlabeled + firstLabeled);
+
+  // Fill remainder from either side until reaching targetLimit
+  const fillTarget = targetLimit;
+  if (chosen.length < fillTarget) takeFrom(readyLabeledFileIds, fillTarget);
+  if (chosen.length < fillTarget) takeFrom(readyUnlabeledFileIds, fillTarget);
+
+  return chosen.slice(0, targetLimit);
 }
 
 function createBaseFileQuery() {
@@ -579,6 +629,16 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
   }
 
   const BATCH_SIZE = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
+
+  // In process_selected, if the selected queue is empty (after trimming), do not sample.
+  // End the find phase immediately.
+  const isSelectedMode = model.processRun?.mode === 'process_selected';
+  const hasSelectedQueue = Array.isArray(model.processRun?.findSuggestionsSharedIds)
+    ? model.processRun!.findSuggestionsSharedIds!.length > 0
+    : false;
+  if (isSelectedMode && !hasSelectedQueue) {
+    return [];
+  }
 
   let filesQuery: UwaziFilterQuery<FileType> | null = {};
 

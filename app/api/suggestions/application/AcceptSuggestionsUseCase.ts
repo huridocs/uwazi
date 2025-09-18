@@ -19,7 +19,7 @@ export class AcceptSuggestionsUseCase {
       return { processed: 0 };
     }
 
-    const { autoAccept, suggestionsRunTimestamp, selectedSharedIdsForAutoAccept } =
+    const { autoAccept, suggestionsRunTimestamp, selectedSharedIdsForAutoAccept, mode } =
       model.processRun;
     const overwriteAll = autoAccept?.overwriteMode === 'overwrite_all';
     const source = autoAccept?.source === 'all' ? 'all' : 'previous';
@@ -34,18 +34,29 @@ export class AcceptSuggestionsUseCase {
     };
     if (!overwriteAll) (baseMatch as any)['state.withValue'] = { $ne: true };
 
-    // Scope to this run: by run timestamp OR by selected cohort (for process_selected)
+    // Scope to this run
+    // - process_selected: strictly selected cohort (no OR with run timestamp)
+    // - others (process_extractor/accept-only with source 'previous'): scope by run timestamp
     let match: UwaziFilterQuery<DataType<IXSuggestionType>> = baseMatch;
     if (source !== 'all') {
-      const orClauses: any[] = [];
-      if (suggestionsRunTimestamp) {
-        orClauses.push({ 'modelData.suggestionsRunTimestamp': suggestionsRunTimestamp });
-      }
-      if (Array.isArray(selectedSharedIdsForAutoAccept) && selectedSharedIdsForAutoAccept.length) {
-        orClauses.push({ entityId: { $in: selectedSharedIdsForAutoAccept } });
-      }
-      if (orClauses.length) {
-        match = { ...(baseMatch as any), $or: orClauses } as any;
+      if (mode === 'process_selected') {
+        if (
+          Array.isArray(selectedSharedIdsForAutoAccept) &&
+          selectedSharedIdsForAutoAccept.length
+        ) {
+          match = {
+            ...baseMatch,
+            entityId: { $in: selectedSharedIdsForAutoAccept },
+          };
+        } else {
+          // Empty cohort: nothing to accept
+          match = { ...baseMatch, entityId: { $in: [] } };
+        }
+      } else if (suggestionsRunTimestamp) {
+        match = {
+          ...baseMatch,
+          'modelData.suggestionsRunTimestamp': suggestionsRunTimestamp,
+        };
       }
     }
 
