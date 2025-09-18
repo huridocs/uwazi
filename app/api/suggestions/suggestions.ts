@@ -158,7 +158,8 @@ const Suggestions = {
       },
     ];
 
-    return (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
+    const result = (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
+    return result;
   },
 
   // Balanced sampling honoring process-run filters stored in the model. If filters are not provided,
