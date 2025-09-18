@@ -397,7 +397,6 @@ describe('prepareMetadataAndFiles', () => {
       },
     ]);
 
-    // Non-media properties should be preserved
     expect(wrappedEntity.metadata.text).toEqual([
       {
         value: 'some text value',
@@ -452,5 +451,29 @@ describe('prepareMetadataAndFiles', () => {
 
     // Should have 0 files since blob URL processing fails
     expect(wrappedEntity.attachments.length).toBe(0);
+  });
+
+  it('should handle null and undefined fieldValue gracefully', async () => {
+    const testTemplate = {
+      _id: 'template1',
+      properties: [
+        { name: 'image', type: 'image' },
+        { name: 'media', type: 'media' },
+      ],
+    };
+
+    const entity = {
+      title: 'Test Entity',
+      metadata: {
+        image: null,
+        media: undefined,
+      },
+    };
+
+    const result = await prepareMetadataAndFiles(entity, [], testTemplate, testTemplate.properties);
+
+    // Should not crash and return empty metadata for null/undefined values
+    expect(result.metadata.image).toEqual([{ value: '' }]);
+    expect(result.metadata.media).toEqual([{ value: '' }]);
   });
 });

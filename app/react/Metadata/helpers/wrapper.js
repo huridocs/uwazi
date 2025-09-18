@@ -1,7 +1,33 @@
 /* eslint-disable max-statements */
 import { isString } from 'lodash';
 import uniqueID from 'shared/uniqueID';
-import { isValidUrl } from 'shared/urlValidationUtils';
+
+const isMediaProperty = property => {
+  return property && (property.type === 'image' || property.type === 'media');
+};
+
+const shouldSkipValue = fieldValue => {
+  if (fieldValue === null || fieldValue === undefined) {
+    return true;
+  }
+  if (typeof fieldValue === 'string' && fieldValue.startsWith('blob:')) {
+    return true;
+  }
+
+  if (
+    typeof fieldValue === 'object' &&
+    fieldValue &&
+    fieldValue.data &&
+    fieldValue.data.startsWith('blob:') &&
+    (fieldValue.originalFile === null ||
+      fieldValue.originalFile === undefined ||
+      !fieldValue.originalFile)
+  ) {
+    return true;
+  }
+
+  return false;
+};
 
 const prepareFiles = async (mediaProperties, values) => {
   const metadataFiles = {};
@@ -10,14 +36,20 @@ const prepareFiles = async (mediaProperties, values) => {
 
   if (values.metadata) {
     await Promise.all(
-      mediaProperties.map(async p => {        
-        if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name]) || /^blob:/.test(values.metadata[p.name])) {
+      mediaProperties.map(async p => {
+        if (
+          !values.metadata[p.name] ||
+          /^https?:\/\//.test(values.metadata[p.name]) ||
+          /^blob:/.test(values.metadata[p.name])
+        ) {
           return Promise.resolve();
         }
 
         const metadataValue = values.metadata[p.name];
+        if (shouldSkipValue(metadataValue)) {
+          return Promise.resolve();
+        }
 
-        // Skip if it's a simple URL string (from URL input)
         if (typeof metadataValue === 'string' && /^https?:\/\//.test(metadataValue)) {
           return Promise.resolve();
         }
@@ -114,16 +146,11 @@ function wrapEntityMetadata(entity, template) {
     let timeLinks;
     const property = mediaProperties.find(p => p.name === key);
     const fieldValue = entity.metadata[key]?.data || entity.metadata[key];
-    
-    if (property && (property.type === 'image' || property.type === 'media')) {
-      if (typeof fieldValue === 'string' && fieldValue.startsWith('blob:')) {
-        return { ...wrappedMo, [key]: [{ value: '' }] };
-      }
-      if (typeof fieldValue === 'object' && fieldValue.data && fieldValue.data.startsWith('blob:')) {
-        return { ...wrappedMo, [key]: [{ value: '' }] };
-      }
+
+    if (isMediaProperty(property) && shouldSkipValue(fieldValue)) {
+      return { ...wrappedMo, [key]: [{ value: '' }] };
     }
-    
+
     let fileLocalID = fieldValue;
     if (property && entity.metadata[key] && property.type === 'media') {
       const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
@@ -150,7 +177,19 @@ function wrapEntityMetadata(entity, template) {
 
 const prepareMetadataAndFiles = async (values, attachedFiles, template, mediaProperties) => {
   const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
-  const fields = { ...values.metadata, ...metadataFiles };
+
+  // Remove blob URLs from metadata before passing to wrapEntityMetadata
+  const cleanedMetadata = { ...values.metadata };
+  Object.keys(cleanedMetadata).forEach(key => {
+    if (cleanedMetadata[key]) {
+      const metadataValue = cleanedMetadata[key];
+      if (shouldSkipValue(metadataValue)) {
+        cleanedMetadata[key] = '';
+      }
+    }
+  });
+
+  const fields = { ...cleanedMetadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };
   const wrappedEntity = wrapEntityMetadata(entity, template);
   wrappedEntity.file = values.file ? values.file[0] : undefined;
