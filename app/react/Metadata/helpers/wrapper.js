@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import { isString } from 'lodash';
 import uniqueID from 'shared/uniqueID';
+import { isValidUrl } from 'shared/urlValidationUtils';
 
 const prepareFiles = async (mediaProperties, values) => {
   const metadataFiles = {};
@@ -10,7 +11,12 @@ const prepareFiles = async (mediaProperties, values) => {
   if (values.metadata) {
     await Promise.all(
       mediaProperties.map(async p => {
-        if (!values.metadata[p.name]) {
+        if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
+          const url = values.metadata[p.name];
+          if (!isValidUrl(url)) {
+            values.metadata[p.name] = '';
+            return Promise.resolve();
+          }
           return Promise.resolve();
         }
 
@@ -21,7 +27,6 @@ const prepareFiles = async (mediaProperties, values) => {
           return Promise.resolve();
         }
 
-        // Skip if it's not an object with data/originalFile
         if (typeof metadataValue !== 'object' || !metadataValue.data) {
           return Promise.resolve();
         }
@@ -60,7 +65,6 @@ const prepareFiles = async (mediaProperties, values) => {
             return Promise.resolve();
           }
 
-          // Handle blob URLs (legacy case)
           const validBlobUrlRegExp =
             /^\(?(blob:https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
 
@@ -116,7 +120,6 @@ function wrapEntityMetadata(entity, template) {
     const property = mediaProperties.find(p => p.name === key);
     const fieldValue = entity.metadata[key]?.data || entity.metadata[key];
     let fileLocalID = fieldValue;
-
     if (property && entity.metadata[key] && property.type === 'media') {
       const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
       const mediaExpGroups = fieldValue.match(uniqueIdTimeLinksExp);
@@ -149,23 +152,6 @@ const prepareMetadataAndFiles = async (values, attachedFiles, template, mediaPro
   wrappedEntity.attachments = [];
   wrappedEntity.attachments.push(...files);
   wrappedEntity.attachments.push(...attachedFiles);
-
-  Object.keys(wrappedEntity.metadata).forEach(key => {
-    const value = wrappedEntity.metadata[key];
-    if (value && value[0] && value[0].value) {
-      const fieldValue = value[0].value;
-
-      if (
-        typeof fieldValue === 'string' &&
-        fieldValue.startsWith('blob:') &&
-        !fieldValue.startsWith('https://') &&
-        !fieldValue.startsWith('http://')
-      ) {
-        value[0].value = '';
-      }
-    }
-  });
-
   return { ...wrappedEntity, template: template._id };
 };
 
