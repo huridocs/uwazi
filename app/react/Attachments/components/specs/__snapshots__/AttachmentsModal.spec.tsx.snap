@@ -111,7 +111,8 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
               >
                 <div>
                   <input
-                    class="form-control web-attachment-url"
+                    class="form-control web-attachment-url border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    maxlength="2048"
                     name="urlForm.url"
                     placeholder="Paste URL here"
                     type="text"
@@ -135,7 +136,7 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
                 </div>
               </div>
               <button
-                class="btn"
+                class="btn hover:bg-blue-600"
                 type="submit"
               >
                 <svg
