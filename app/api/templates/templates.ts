@@ -34,10 +34,7 @@ import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/templa
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
-import {
-  CreateTemplateDTOSchema,
-  UpdateTemplateDTOSchema,
-} from 'api/core/application/TemplateDTOs';
+import { CreateTemplateDTO, UpdateTemplateDTOSchema } from 'api/core/application/TemplateDTOs';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
 import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
@@ -78,14 +75,13 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const addTemplateTranslation = async (template: WithId<TemplateSchema>) => {
-  return translations.addContext(
+const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
+  translations.addContext(
     template._id.toString(),
     template.name,
     createTranslationContext(template),
     ContextType.entity
   );
-};
 
 const updateTranslation = async (
   currentTemplate: WithId<TemplateSchema>,
@@ -179,7 +175,6 @@ export default {
   ) {
     const v2CreateTemplateUseCase = tenants.current().featureFlags?.v2CreateTemplateUseCase;
     if (v2CreateTemplateUseCase && !template._id) {
-      const input = CreateTemplateDTOSchema.parse(template);
       const transactionManager = DefaultTransactionManager();
       const output = await new CreateTemplateUseCase({
         idGenerator: DefaultIdGenerator,
@@ -190,7 +185,7 @@ export default {
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
         transactionManager,
         pageService: new LegacyPageService(),
-      }).execute(input);
+      }).execute(template as CreateTemplateDTO);
 
       return TemplateMapper.toSchema(output);
     }
