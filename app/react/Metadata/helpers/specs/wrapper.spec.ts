@@ -351,7 +351,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     ]);
 
-    // Blob URL should be processed (converted to file) - but since it fails, it gets cleaned up
+    // Blob URL should be skipped (set to empty)
     expect(wrappedEntity.metadata.image3).toEqual([
       {
         value: '',
@@ -377,7 +377,7 @@ describe('prepareMetadataAndFiles', () => {
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
-    // Blob URL should be removed (set to empty string)
+    // Blob URL should be skipped (set to empty)
     expect(wrappedEntity.metadata.image).toEqual([
       {
         value: '',
@@ -437,7 +437,7 @@ describe('prepareMetadataAndFiles', () => {
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
-    // Should fall back to blob URL processing - but since it fails, it gets cleaned up
+    // Blob URLs should be skipped (set to empty)
     expect(wrappedEntity.metadata.image).toEqual([
       {
         value: '',

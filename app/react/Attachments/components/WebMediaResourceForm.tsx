@@ -40,23 +40,25 @@ const WebMediaResourceForm = ({
   };
 
   const handleFormSubmit = (formData: any) => {
-    if (formData.url && typeof formData.url === 'string') {
+    if (formData.url && typeof formData.url === 'string' && formData.url.trim() !== '') {
       const sanitized = sanitizeUrl(formData.url);
       const isValid = isValidUrl(sanitized) && isValidUrlLength(sanitized);
-
+      
       if (!isValid) {
         setIsUrlValid(false);
         setHasBeenTouched(true);
         return;
       }
-
+      
       const sanitizedFormData = {
         ...formData,
         url: sanitized,
       };
       handleSubmit(sanitizedFormData);
     } else {
-      handleSubmit(formData);
+      // Don't submit if URL is empty or invalid
+      setIsUrlValid(false);
+      setHasBeenTouched(true);
     }
   };
 

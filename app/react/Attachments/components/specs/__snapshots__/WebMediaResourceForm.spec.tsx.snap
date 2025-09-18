@@ -9,11 +9,12 @@ exports[`Should match render of wem media form 1`] = `
     }
   }
   model="urlForm"
-  onSubmit={[MockFunction]}
+  onSubmit={[Function]}
   validators={
     Object {
       "url": Object {
         "required": [Function],
+        "validUrl": [Function],
       },
     }
   }
@@ -26,14 +27,16 @@ exports[`Should match render of wem media form 1`] = `
       model=".url"
     >
       <input
-        className="form-control web-attachment-url"
+        className="form-control web-attachment-url border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+        maxLength={2048}
         placeholder="Paste URL here"
         type="text"
       />
     </Modeled(Connect(Field))>
   </Connect(FormGroup)>
   <button
-    className="btn"
+    className="btn hover:bg-blue-600"
+    disabled={false}
     type="submit"
   >
     <Icon
@@ -56,7 +59,7 @@ exports[`should also display a name field when hasName is true 1`] = `
     }
   }
   model="urlForm"
-  onSubmit={[MockFunction]}
+  onSubmit={[Function]}
   validators={
     Object {
       "name": Object {
@@ -64,6 +67,7 @@ exports[`should also display a name field when hasName is true 1`] = `
       },
       "url": Object {
         "required": [Function],
+        "validUrl": [Function],
       },
     }
   }
@@ -76,7 +80,8 @@ exports[`should also display a name field when hasName is true 1`] = `
       model=".url"
     >
       <input
-        className="form-control web-attachment-url"
+        className="form-control web-attachment-url border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+        maxLength={2048}
         placeholder="Paste URL here"
         type="text"
       />
@@ -98,7 +103,8 @@ exports[`should also display a name field when hasName is true 1`] = `
     </Modeled(Connect(Field))>
   </Connect(FormGroup)>
   <button
-    className="btn"
+    className="btn hover:bg-blue-600"
+    disabled={false}
     type="submit"
   >
     <Icon

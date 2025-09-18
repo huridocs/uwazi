@@ -10,13 +10,8 @@ const prepareFiles = async (mediaProperties, values) => {
 
   if (values.metadata) {
     await Promise.all(
-      mediaProperties.map(async p => {
-        if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
-          const url = values.metadata[p.name];
-          if (!isValidUrl(url)) {
-            values.metadata[p.name] = '';
-            return Promise.resolve();
-          }
+      mediaProperties.map(async p => {        
+        if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name]) || /^blob:/.test(values.metadata[p.name])) {
           return Promise.resolve();
         }
 
@@ -119,6 +114,16 @@ function wrapEntityMetadata(entity, template) {
     let timeLinks;
     const property = mediaProperties.find(p => p.name === key);
     const fieldValue = entity.metadata[key]?.data || entity.metadata[key];
+    
+    if (property && (property.type === 'image' || property.type === 'media')) {
+      if (typeof fieldValue === 'string' && fieldValue.startsWith('blob:')) {
+        return { ...wrappedMo, [key]: [{ value: '' }] };
+      }
+      if (typeof fieldValue === 'object' && fieldValue.data && fieldValue.data.startsWith('blob:')) {
+        return { ...wrappedMo, [key]: [{ value: '' }] };
+      }
+    }
+    
     let fileLocalID = fieldValue;
     if (property && entity.metadata[key] && property.type === 'media') {
       const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
