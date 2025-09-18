@@ -1,5 +1,6 @@
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Context } from 'api/templates.v2/model/Property';
+import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TitleProperty, TitlePropertyProps } from './TitleProperty';
 import { CreationDateProperty } from './CreationDateProperty';
 import { ModifiedDateProperty } from './ModifiedDateProperty';
@@ -15,7 +16,24 @@ class CommonPropertyFactory {
       if (input.name === 'editDate') return new ModifiedDateProperty(input, context);
     }
 
-    throw new Error(`The following type was not handled. Type = ${input.type}`);
+    SystemLogger().warning(
+      `The following CommonProperty was not properly handled. ${JSON.stringify(input, null, 2)}`
+    );
+
+    return new CommonProperty(
+      {
+        id: input.id,
+        label: input.label,
+        template: input.template,
+        type: input.type as any,
+        isCommonProperty: input.isCommonProperty,
+        name: input.name,
+        noLabel: input.noLabel,
+        required: input.required,
+        showInCard: input.showInCard,
+      },
+      context
+    );
   }
 }
 
