@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FormGroup } from 'app/Forms';
 import { LocalForm } from 'app/Forms/Form';
 import { Translate, t } from 'app/I18N';
-import { isValidUrl, sanitizeUrl } from 'shared/urlValidationUtils';
+import { isValidUrl, sanitizeUrl, isValidUrlLength } from 'shared/urlValidationUtils';
 
 interface WebMediaResourceFormProps {
   handleSubmit: (args: any) => void;
@@ -19,26 +19,12 @@ const WebMediaResourceForm = ({
   dispatch,
   hasName = false,
 }: WebMediaResourceFormProps) => {
-  const [urlValue, setUrlValue] = useState(url || '');
   const [isUrlValid, setIsUrlValid] = useState(true);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
 
-  const handleUrlChange = (value: string) => {
-    setUrlValue(value);
-    setHasBeenTouched(true);
-
-    if (value.trim() === '') {
-      setIsUrlValid(true);
-    } else {
-      const sanitized = sanitizeUrl(value);
-      const isValid = isValidUrl(sanitized);
-      setIsUrlValid(isValid);
-    }
-  };
-
   const getInputClassName = () => {
     if (hasBeenTouched && !isUrlValid) {
-      return 'form-control web-attachment-url border-red-500 focus:border-red-500 focus:ring-red-500';
+      return 'form-control has-error web-attachment-url border-red-500 focus:border-red-500 focus:ring-red-500';
     }
     if (hasBeenTouched && isUrlValid) {
       return 'form-control web-attachment-url border-green-500 focus:border-green-500 focus:ring-green-500';
@@ -55,9 +41,18 @@ const WebMediaResourceForm = ({
 
   const handleFormSubmit = (formData: any) => {
     if (formData.url && typeof formData.url === 'string') {
+      const sanitized = sanitizeUrl(formData.url);
+      const isValid = isValidUrl(sanitized) && isValidUrlLength(sanitized);
+
+      if (!isValid) {
+        setIsUrlValid(false);
+        setHasBeenTouched(true);
+        return;
+      }
+
       const sanitizedFormData = {
         ...formData,
-        url: sanitizeUrl(formData.url),
+        url: sanitized,
       };
       handleSubmit(sanitizedFormData);
     } else {
@@ -72,7 +67,7 @@ const WebMediaResourceForm = ({
       validUrl: (val: any) => {
         if (!val || typeof val !== 'string') return false;
         const sanitized = sanitizeUrl(val);
-        return isValidUrl(sanitized);
+        return isValidUrl(sanitized) && isValidUrlLength(sanitized);
       },
     },
   };
@@ -90,22 +85,11 @@ const WebMediaResourceForm = ({
         <Field model=".url">
           <input
             type="text"
-            value={urlValue}
-            onChange={e => handleUrlChange(e.target.value)}
             className={getInputClassName()}
             placeholder={t('System', 'Paste URL here', null, false)}
+            maxLength={2048}
           />
         </Field>
-        {hasBeenTouched && !isUrlValid && (
-          <div className="mt-1 text-sm text-red-600 flex items-center">
-            <Icon icon="exclamation-triangle" />
-          </div>
-        )}
-        {hasBeenTouched && isUrlValid && urlValue.trim() !== '' && (
-          <div className="mt-1 text-sm text-green-600 flex items-center">
-            <Icon icon="check" />
-          </div>
-        )}
       </FormGroup>
       {hasName && (
         <FormGroup className="form-group" model=".name">
