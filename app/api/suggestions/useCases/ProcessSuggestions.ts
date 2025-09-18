@@ -121,6 +121,31 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
         totalSuggestionsToFind: total,
       });
 
+      // In process_selected, if the selected queue is empty (all selected were already suggested),
+      // transition directly to auto-accept when enabled, otherwise stop.
+      if (isProcessSelected) {
+        const remainingSelected = Array.isArray(
+          updatedWithTotal.processRun?.findSuggestionsSharedIds
+        )
+          ? updatedWithTotal.processRun.findSuggestionsSharedIds.length
+          : 0;
+        if (remainingSelected === 0) {
+          if (autoAcceptOptions.enabled) {
+            await this.deps.informationExtraction.startAutoAcceptIfEnabled(extractorId);
+            return {
+              status: 'processing_suggestions',
+              message: 'Finding suggestions',
+              data: { total },
+            };
+          }
+          await this.deps.informationExtraction.stopModelAndEmitReadyMessage(
+            extractorObjectId,
+            'Completed'
+          );
+          return { status: 'ready', message: 'No suggestions to find' };
+        }
+      }
+
       // If there is nothing to find (e.g., selected sharedIds were already suggested)
       // - If auto-accept is enabled, trigger it immediately
       // - If auto-accept is disabled, stop the run and emit ready
