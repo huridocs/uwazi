@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState, useRef, useCallback, useEffect, Fragment } from 'react';
+import { t, Translate } from 'app/I18N';
 
 const getClientXValue = (event: MouseEvent | TouchEvent): number | undefined => {
   if ('clientX' in event) {
@@ -23,9 +24,10 @@ type PaneLayoutProps = {
 };
 
 const MIN_WIDTH = 100;
+const MOBILE_VIEW_MAX_WIDTH = 768;
 
 const Pane = ({ children, header, footer, background = 'white' }: PaneProps) => (
-  <section style={{ background }} className="w-full flex flex-col h-full overflow-x-auto px-1">
+  <section style={{ background }} className="flex h-full flex-col gap-1">
     {header && <header>{header}</header>}
     <div className="flex-grow overflow-auto">{children}</div>
     {footer && <footer>{footer}</footer>}
@@ -33,17 +35,26 @@ const Pane = ({ children, header, footer, background = 'white' }: PaneProps) => 
 );
 
 // eslint-disable-next-line max-statements
-const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
+const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);
   const [widths, setWidths] = useState<number[]>([]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.getBoundingClientRect().width;
-      const initials = children.map(() => containerWidth / children.length - 4);
-      setWidths(initials);
-    }
+    const handleResize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.getBoundingClientRect().width;
+        const initials = children.map(() => containerWidth / children.length - 4);
+        setWidths(initials);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
     // Only update if the number of children changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children.length]);
@@ -102,7 +113,7 @@ const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
   };
 
   return (
-    <div ref={containerRef} className={`flex w-full h-full ${className ?? ''}`}>
+    <div ref={containerRef} className={`flex ${className ?? ''}`}>
       {children.map((child, index) => (
         <Fragment key={child.key!}>
           <div
@@ -118,13 +129,75 @@ const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
               aria-hidden
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="w-1 cursor-col-resize flex-shrink-0 bg-black md:block hidden"
+              className="w-1 cursor-col-resize flex-shrink-0 bg-black"
             />
           )}
         </Fragment>
       ))}
     </div>
   );
+};
+
+const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentPane, setCurrentPane] = useState(0);
+
+  const goToNext = () => {
+    setCurrentPane(prev => Math.min(prev + 1, children.length - 1));
+  };
+
+  const goToPrev = () => {
+    setCurrentPane(prev => Math.max(prev - 1, 0));
+  };
+
+  return (
+    <div className={`overflow-hidden relative ${className}`}>
+      <div
+        ref={containerRef}
+        className="flex transition-transform duration-300 ease-in-out h-full"
+        style={{ transform: `translateX(-${currentPane * 100}%)` }}
+      >
+        {children.map(child => (
+          <div
+            key={child.key!}
+            className="flex-shrink-0 w-full h-full"
+            style={{ background: child.props.background || 'white' }}
+          >
+            {child}
+          </div>
+        ))}
+      </div>
+
+      <nav className="flex w-full justify-between sticky">
+        <button
+          onClick={goToPrev}
+          disabled={currentPane === 0}
+          type="button"
+          aria-label={t('System', 'Previus', null, false)}
+        >
+          <Translate>Previus</Translate>
+        </button>
+        <button
+          onClick={goToNext}
+          disabled={currentPane === children.length - 1}
+          type="button"
+          aria-label={t('System', 'Next', null, false)}
+        >
+          <Translate>Next</Translate>
+        </button>
+      </nav>
+    </div>
+  );
+};
+
+const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
+  const [isMobile, setIsMobile] = useState<boolean>();
+
+  if (false) {
+    return <PaneLayoutMobile className={className}>{children}</PaneLayoutMobile>;
+  }
+
+  return <PaneLayoutDesktop className={className}>{children}</PaneLayoutDesktop>;
 };
 
 PaneLayout.Pane = Pane;
