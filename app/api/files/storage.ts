@@ -1,4 +1,4 @@
-import { NoSuchKey, S3Client } from '@aws-sdk/client-s3';
+import { NoSuchKey, NotFound, S3Client } from '@aws-sdk/client-s3';
 import { NodeHttpHandler, NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { inspect } from 'util';
 // eslint-disable-next-line node/no-restricted-import
@@ -88,7 +88,14 @@ const s3 = () => {
       timeout: 60000,
       maxFreeSockets: 100,
       keepAlive: true,
-      keepAliveMsecs: 30000,
+      keepAliveMsecs: 5000,
+    },
+    httpsAgent: {
+      maxSockets: 500,
+      timeout: 60000,
+      maxFreeSockets: 100,
+      keepAlive: true,
+      keepAliveMsecs: 5000,
     },
   };
 
@@ -179,14 +186,14 @@ export const storage = {
   async fileExists(filename: string, type: FileTypes): Promise<boolean> {
     try {
       if (tenants.current().featureFlags?.s3Storage) {
-        (await readFromS3(filename, type)).destroy();
+        await s3().head(s3KeyWithPath(filename, type));
       } else {
         await access(paths[type](filename));
       }
     } catch (err) {
       if (
         err?.code === 'ENOENT' ||
-        (err instanceof S3Error && err.originalError instanceof NoSuchKey)
+        (err instanceof S3Error && err.originalError instanceof NotFound)
       ) {
         return false;
       }
