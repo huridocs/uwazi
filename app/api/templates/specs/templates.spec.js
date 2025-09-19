@@ -738,7 +738,7 @@ describe('templates', () => {
             label: 'New Inherit',
             inherit: {
               property: propertyToBeInherited.toString(),
-              type: 'this should not be saved',
+              type: 'text',
             },
           },
         ],
