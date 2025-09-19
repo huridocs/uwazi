@@ -941,8 +941,7 @@ class InformationExtraction {
     const { job } = await AcceptSuggestionsFactory.createDefault({
       tenantName: tenant.name,
     });
-    const user = permissionsContext.getUserInContext();
-    const userId = user?._id?.toString?.();
+    const userId = model?.processRun?.initiatorUserId;
     await dispatcher.dispatch(job.constructor as any, {
       extractorId,
       tenantName: tenant.name,
