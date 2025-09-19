@@ -44,6 +44,7 @@ import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
 import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
 import { IXSuggestionType } from 'shared/types/suggestionType';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
@@ -937,8 +938,16 @@ class InformationExtraction {
     emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
 
     const dispatcher = await DefaultDispatcher(tenant.name, { lockWindow: 1000 * 60 * 10 });
-    const { job } = await AcceptSuggestionsFactory.createDefault({ tenantName: tenant.name });
-    await dispatcher.dispatch(job.constructor as any, { extractorId });
+    const { job } = await AcceptSuggestionsFactory.createDefault({
+      tenantName: tenant.name,
+    });
+    const user = permissionsContext.getUserInContext();
+    const userId = user?._id?.toString?.();
+    await dispatcher.dispatch(job.constructor as any, {
+      extractorId,
+      tenantName: tenant.name,
+      userId,
+    });
     return true;
   };
 
