@@ -1,0 +1,251 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Menu Links returns the expected HTML 1`] = `
+<ul>
+  <li
+    className="menuItems"
+  >
+    <ul
+      className="menuNav-list"
+    >
+      <li
+        className="menuNav-item"
+        key="1"
+      >
+        <Connect(I18NLink)
+          activeclassname="active-link"
+          className="btn menuNav-btn"
+          onClick={[Function]}
+          to="internal_url"
+        >
+          <Translate
+            context="Menu"
+          >
+            Internal url
+          </Translate>
+        </Connect(I18NLink)>
+      </li>
+      <li
+        className="menuNav-item"
+        key="2"
+      >
+        <a
+          className="btn menuNav-btn"
+          href="http://external_url"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <Translate
+            context="Menu"
+          >
+            External url
+          </Translate>
+        </a>
+      </li>
+      <li
+        className="menuNav-item"
+        key="3"
+      >
+        <Connect(I18NLink)
+          activeclassname="active-link"
+          className="btn menuNav-btn"
+          onClick={[Function]}
+          to="/"
+        >
+          <Translate
+            context="Menu"
+          >
+            undefined url
+          </Translate>
+        </Connect(I18NLink)>
+      </li>
+      <li
+        className="menuNav-item"
+        key="4"
+      >
+        <Connect(I18NLink)
+          activeclassname="active-link"
+          className="btn menuNav-btn"
+          onClick={[Function]}
+          to="/"
+        >
+          <Translate
+            context="Menu"
+          >
+            single slash url
+          </Translate>
+        </Connect(I18NLink)>
+      </li>
+    </ul>
+  </li>
+  <I18NMenu />
+  <li
+    className="menuActions mobile-menuActions"
+  >
+    <ul
+      className="menuNav-list"
+    >
+      <Connect(FeatureToggleSemanticSearch)>
+        <li
+          className="menuNav-item semantic-search"
+        >
+          <button
+            aria-label="Semantic search"
+            className="menuNav-btn btn btn-default"
+            onClick={[Function]}
+            type="button"
+          >
+            <Icon
+              icon="flask"
+            />
+            <span
+              className="tab-link-tooltip"
+            >
+              <Translate>
+                Semantic search
+              </Translate>
+            </span>
+          </button>
+        </li>
+      </Connect(FeatureToggleSemanticSearch)>
+      <li
+        className="menuNav-item"
+      >
+        <Connect(I18NLink)
+          activeclassname="active-link"
+          aria-label="Library"
+          className="menuNav-btn btn btn-default public-documents"
+          onClick={[Function]}
+          to="/library/?q=(searchTerm:'asd',sort:asc)"
+        >
+          <Icon
+            icon="th"
+          />
+          <span
+            className="tab-link-label"
+          >
+            <Translate>
+              Library
+            </Translate>
+          </span>
+        </Connect(I18NLink)>
+      </li>
+      <Connect(NeedAuthorization)
+        roles={
+          Array [
+            "admin",
+            "editor",
+            "collaborator",
+          ]
+        }
+      >
+        <li
+          className="menuNav-item only-desktop"
+        >
+          <Connect(I18NLink)
+            activeclassname="active-link"
+            aria-label="Settings"
+            className="menuNav-btn btn btn-default settings-section"
+            onClick={[Function]}
+            to="/settings/account"
+          >
+            <Icon
+              icon="cog"
+            />
+            <span
+              className="tab-link-label"
+            >
+              <Translate>
+                Settings
+              </Translate>
+            </span>
+          </Connect(I18NLink)>
+        </li>
+      </Connect(NeedAuthorization)>
+      <Connect(NeedAuthorization)
+        roles={
+          Array [
+            "admin",
+            "editor",
+            "collaborator",
+          ]
+        }
+      >
+        <li
+          className="menuNav-item only-mobile"
+        >
+          <Connect(I18NLink)
+            activeclassname="active-link"
+            aria-label="Settings"
+            className="menuNav-btn btn btn-default settings-section"
+            onClick={[Function]}
+            to="/settings"
+          >
+            <Icon
+              icon="cog"
+            />
+            <span
+              className="tab-link-label"
+            >
+              <Translate>
+                Settings
+              </Translate>
+            </span>
+          </Connect(I18NLink)>
+        </li>
+      </Connect(NeedAuthorization)>
+      <Connect(NeedAuthorization)
+        roles={
+          Array [
+            "admin",
+            "editor",
+            "collaborator",
+          ]
+        }
+      >
+        <li
+          className="menuNav-item only-mobile"
+        >
+          <a
+            className="menuNav-btn btn btn-default"
+            href="/logout"
+          >
+            <Icon
+              icon="power-off"
+            />
+            <span
+              className="tab-link-label"
+            >
+              <Translate>
+                Logout
+              </Translate>
+            </span>
+          </a>
+        </li>
+      </Connect(NeedAuthorization)>
+      <li
+        className="menuNav-item"
+      >
+        <I18NLink
+          activeClassname="active-link"
+          aria-label="Sign in"
+          className="menuNav-btn btn btn-default"
+          localized={true}
+          to="/login"
+        >
+          <Icon
+            icon="power-off"
+          />
+          <span
+            className="tab-link-label"
+          >
+            <Translate>
+              Sign in
+            </Translate>
+          </span>
+        </I18NLink>
+      </li>
+    </ul>
+  </li>
+</ul>
+`;
