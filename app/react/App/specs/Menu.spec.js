@@ -71,6 +71,11 @@ describe('Menu', () => {
       expect(externalLink.props().href).toBe('http://external_url');
       expect(externalLink.props().target).toBe('_blank');
     });
+
+    it('returns the expected HTML', () => {
+      render();
+      expect(component).toMatchSnapshot();
+    });
   });
 
   describe('Default library view', () => {
