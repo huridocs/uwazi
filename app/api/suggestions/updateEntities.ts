@@ -8,6 +8,7 @@ import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextract
 import thesauri from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { ObjectId } from 'mongodb';
+import { tenants } from 'api/tenants/tenantContext';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex';
 import { setIntersection } from 'shared/data_utils/setUtils';
@@ -399,8 +400,11 @@ const updateEntitiesWithSuggestion = async (
         throw e; // bubble validation errors (e.g., invalid select IDs)
       }
       DefaultLogger().error('IX accept: failed to save entity during updateEntities', {
+        tenant: tenants.current()?.name,
         entityId: as.entityId,
         sharedId: as.sharedId,
+        suggestionId: as._id?.toString?.() || as._id,
+        propertyName,
         error: (e as Error)?.message,
       });
     }

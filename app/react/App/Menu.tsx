@@ -213,18 +213,20 @@ const MenuComponent = ({
           {(() => {
             if (!user?.get('_id')) {
               return (
-                <I18NLinkV2
-                  to="/login"
-                  className="menuNav-btn btn btn-default menuNav-item"
-                  activeClassname="active-link"
-                  aria-label={t('System', 'Sign in', null, false)}
-                  localized={!privateInstance}
-                >
-                  <Icon icon="power-off" />
-                  <span className="tab-link-label">
-                    <Translate>Sign in</Translate>
-                  </span>
-                </I18NLinkV2>
+                <li className="menuNav-item">
+                  <I18NLinkV2
+                    to="/login"
+                    className="menuNav-btn btn btn-default"
+                    activeClassname="active-link"
+                    aria-label={t('System', 'Sign in', null, false)}
+                    localized={!privateInstance}
+                  >
+                    <Icon icon="power-off" />
+                    <span className="tab-link-label">
+                      <Translate>Sign in</Translate>
+                    </span>
+                  </I18NLinkV2>
+                </li>
               );
             }
             return null;
