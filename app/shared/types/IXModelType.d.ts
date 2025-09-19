@@ -12,6 +12,7 @@ export interface IXModelType {
   processRun?: {
     suggestionsRunTimestamp?: number;
     mode?: string;
+    initiatorUserId?: string;
     find?: {
       enabled?: boolean;
       size?: number;

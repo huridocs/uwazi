@@ -28,6 +28,8 @@ export const IXModelSchema = {
         suggestionsRunTimestamp: { type: 'number', optional: true },
         // persisted copy of request options
         mode: { type: 'string', optional: true },
+        // user who initiated the run (used by worker jobs for permissions)
+        initiatorUserId: { type: 'string', optional: true },
         find: {
           type: 'object',
           optional: true,
