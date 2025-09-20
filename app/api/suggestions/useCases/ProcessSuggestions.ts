@@ -7,6 +7,7 @@ import { Extractors, ModelNotReadyError } from 'api/services/informationextracti
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { IXServices } from 'api/services/informationextraction/IXServices';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import {
   ProcessMode,
   ProcessFindFilters,
@@ -79,6 +80,7 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
     };
 
     // Persist process run metadata on the model for recursive pick-up
+    const initiatorUserId = permissionsContext.getUserInContext()?._id?.toString?.();
     await ixmodels.setProcessRun(extractorId, {
       mode,
       find: {
@@ -89,6 +91,7 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
           mode === 'process_selected' ? (find?.selectedSharedIds ?? []) : undefined,
       },
       autoAccept: autoAcceptOptions,
+      initiatorUserId,
     });
 
     // Initialize run queue for process_selected
