@@ -39,8 +39,8 @@ const prepareFiles = async (mediaProperties, values) => {
       mediaProperties.map(async p => {
         if (
           !values.metadata[p.name] ||
-          /^https?:\/\//.test(values.metadata[p.name]) ||
-          /^blob:/.test(values.metadata[p.name])
+          (typeof values.metadata[p.name] === 'string' &&
+            /^https?:\/\//.test(values.metadata[p.name]))
         ) {
           return Promise.resolve();
         }
