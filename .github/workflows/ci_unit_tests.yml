@@ -73,7 +73,7 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --maxWorkers=2 --logHeapUsage
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --logHeapUsage
   app_unit_tests:
     runs-on: ubuntu-24.04
     steps:
@@ -90,7 +90,7 @@ jobs:
       - name: install dependencies
         run: yarn install
       - name: Run tests
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --maxWorkers=2
+        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react 
   migrations_unit_tests:
     runs-on: ubuntu-24.04
     services:
@@ -149,4 +149,4 @@ jobs:
       - name: Run migration tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api/migrations --maxWorkers=2 --logHeapUsage
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api/migrations --logHeapUsage
