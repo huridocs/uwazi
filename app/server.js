@@ -112,6 +112,7 @@ app.use(multitenantMiddleware);
 app.use(requestIdMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
+
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();

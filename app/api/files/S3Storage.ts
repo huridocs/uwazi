@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
@@ -50,6 +51,17 @@ export class S3Storage {
     return catchS3Errors(async () =>
       this.client.send(
         new PutObjectCommand({ Bucket: S3Storage.bucketName(), Key: key, Body: body })
+      )
+    );
+  }
+
+  async head(key: string) {
+    return catchS3Errors(async () =>
+      this.client.send(
+        new HeadObjectCommand({
+          Bucket: S3Storage.bucketName(),
+          Key: key,
+        })
       )
     );
   }
