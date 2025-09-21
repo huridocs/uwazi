@@ -97,6 +97,25 @@ const prepareFiles = async (mediaProperties, values) => {
 
           const [, url, , timeLinks] = data.match(validBlobUrlRegExp) || ['', data];
 
+          if (!url || url === data) {
+            if (originalFile && originalFile instanceof File && originalFile.size > 0) {
+              const fileID = uniqueID();
+              metadataFiles[p.name] = fileID;
+
+              entityAttachments.push({
+                originalname: originalFile.name,
+                filename: originalFile.name,
+                type: 'attachment',
+                mimetype: originalFile.type,
+                fileLocalID: fileID,
+                timeLinks,
+              });
+
+              files.push(originalFile);
+            }
+            return Promise.resolve();
+          }
+
           try {
             const blob = await fetch(url).then(r => r.blob());
             const file = new File([blob], originalFile.name, { type: blob.type });
@@ -115,7 +134,22 @@ const prepareFiles = async (mediaProperties, values) => {
 
             files.push(file);
           } catch (error) {
-            // Let the blob URL remain in metadata if processing fails
+            // Fallback: If blob URL processing fails, process originalFile directly
+            if (originalFile && originalFile instanceof File && originalFile.size > 0) {
+              const fileID = uniqueID();
+              metadataFiles[p.name] = fileID;
+
+              entityAttachments.push({
+                originalname: originalFile.name,
+                filename: originalFile.name,
+                type: 'attachment',
+                mimetype: originalFile.type,
+                fileLocalID: fileID,
+                timeLinks,
+              });
+
+              files.push(originalFile);
+            }
           }
         }
       })

@@ -476,4 +476,87 @@ describe('prepareMetadataAndFiles', () => {
     expect(result.metadata.image).toEqual([{ value: '' }]);
     expect(result.metadata.media).toEqual([{ value: '' }]);
   });
+
+  it('should fallback to originalFile when blob URL processing fails', async () => {
+    const imageFile = new File(
+      [Buffer.from('image content').toString('base64')],
+      'test-image.jpg',
+      {
+        type: 'image/jpeg',
+      }
+    );
+
+    const entity = {
+      title: 'Test Entity',
+      metadata: {
+        image: {
+          data: 'blob:invalid-url-format', // Invalid blob URL that will fail regex match
+          originalFile: imageFile,
+        },
+      },
+    };
+
+    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const result = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
+
+    // Should fallback to originalFile and create proper metadata linking
+    expect(result.metadata).toEqual({
+      image: [
+        {
+          value: '',
+          attachment: 0,
+        },
+      ],
+    });
+
+    // Should have the File object in attachments
+    expect(result.attachments.length).toBe(1);
+    expect(result.attachments[0]).toBeInstanceOf(File);
+    expect(result.attachments[0]).toBe(imageFile);
+  });
+
+  it('should fallback to originalFile when fetch fails', async () => {
+    const imageFile = new File(
+      [Buffer.from('image content').toString('base64')],
+      'test-image.jpg',
+      {
+        type: 'image/jpeg',
+      }
+    );
+
+    // Mock fetch to throw an error
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+    const entity = {
+      title: 'Test Entity',
+      metadata: {
+        image: {
+          data: 'blob:http://localhost:3000/12345678-1234-1234-1234-123456789abc',
+          originalFile: imageFile,
+        },
+      },
+    };
+
+    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const result = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
+
+    // Should fallback to originalFile despite fetch failure
+    expect(result.metadata).toEqual({
+      image: [
+        {
+          value: '',
+          attachment: 0,
+        },
+      ],
+    });
+
+    // Should have the File object in attachments
+    expect(result.attachments.length).toBe(1);
+    expect(result.attachments[0]).toBeInstanceOf(File);
+    expect(result.attachments[0]).toBe(imageFile);
+
+    // Restore original fetch
+    global.fetch = originalFetch;
+  });
 });
