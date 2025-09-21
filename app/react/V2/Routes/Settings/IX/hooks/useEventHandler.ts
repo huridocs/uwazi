@@ -36,8 +36,9 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
 
       const isCompleted = message === 'Completed';
 
-      const autoAcceptCount =
-        ixStatus.processing_auto_accept && Number(data?.total) - Number(data?.processed) > 0;
+      const autoAcceptCount = Boolean(
+        ixStatus.processing_auto_accept && data?.total && data?.processed
+      );
 
       if (modelStatus === ixStatus.processing_model) {
         updateStatus(ixStatus.processing_model);
@@ -46,13 +47,13 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
           processed: Number(data?.processed),
           total: Number(data?.total),
         });
-      } else if (modelStatus === ixStatus.processing_auto_accept) {
-        updateStatus(ixStatus.processing_auto_accept);
       } else if (autoAcceptCount) {
         updateStatus(ixStatus.processing_auto_accept, {
           processed: Number(data?.processed),
           total: Number(data?.total),
         });
+      } else if (modelStatus === ixStatus.processing_auto_accept) {
+        updateStatus(ixStatus.processing_auto_accept);
       } else if (isCompleted) {
         updateStatus(ixStatus.ready);
       } else {
