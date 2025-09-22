@@ -18,11 +18,7 @@ export const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
 };
 
 export default (app: Application) => {
-  app.post(
-    '/api/templates',
-    needsAuthorization(),
-    TemplateMutationController.adapt(TemplateMutationController)
-  );
+  app.post('/api/templates', needsAuthorization(), TemplateMutationController.createHandler());
 
   app.post(
     '/api/templates/setasdefault',
