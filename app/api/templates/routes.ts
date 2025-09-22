@@ -1,11 +1,12 @@
 import settings from 'api/settings';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
+import { TemplateMutationController } from 'api/core/infrastructure/express/template/TemplateMutationController';
 import needsAuthorization from '../auth/authMiddleware';
-import { createError, handleError, validation } from '../utils';
+import { createError, validation } from '../utils';
 import templates from './templates';
 
-const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
+export const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
   try {
     return await callback();
   } catch (e: any) {
@@ -17,43 +18,7 @@ const handleMappingConflict = async <T>(callback: () => Promise<T>) => {
 };
 
 export default (app: Application) => {
-  app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
-    try {
-      const { reindex: fullReindex, ...template } = req.body;
-
-      const response = await handleMappingConflict(async () =>
-        templates.save(
-          template,
-          req.language,
-          !fullReindex,
-          fullReindex,
-          async (error?: Error, fullyProcessed?: boolean) => {
-            if (error) {
-              handleError(error, { req });
-            }
-            if (fullyProcessed) {
-              req.sockets.emitToCurrentTenant('templateProcessed', {
-                templateId: template._id.toString(),
-              });
-            }
-          }
-        )
-      );
-
-      req.sockets.emitToCurrentTenant('templateChange', response);
-
-      const updatedSettings = await settings.updateFilterName(
-        response._id.toString(),
-        response.name
-      );
-
-      if (updatedSettings) req.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
-
-      res.json(response);
-    } catch (error) {
-      next(error);
-    }
-  });
+  app.post('/api/templates', needsAuthorization(), TemplateMutationController.createHandler());
 
   app.post(
     '/api/templates/setasdefault',

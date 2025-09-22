@@ -78,14 +78,13 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const addTemplateTranslation = async (template: WithId<TemplateSchema>) => {
-  return translations.addContext(
+const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
+  translations.addContext(
     template._id.toString(),
     template.name,
     createTranslationContext(template),
     ContextType.entity
   );
-};
 
 const updateTranslation = async (
   currentTemplate: WithId<TemplateSchema>,

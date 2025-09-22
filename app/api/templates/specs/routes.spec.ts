@@ -2,7 +2,6 @@ import translations from 'api/i18n';
 import * as entitiesIndex from 'api/search/entitiesIndex';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { testingDB } from 'api/utils/testing_db';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
 import templateRoutes from '../routes';
@@ -206,21 +205,26 @@ describe('templates routes', () => {
       expect(body.error).toContain('swap');
     });
 
+    // eslint-disable-next-line max-statements
     it('should check mapping of new added inherited properties', async () => {
       await testingEnvironment.setUp(fixtures, 'templates_index');
-      const inheritPropId = testingDB.id();
-      const inheritPropNum = testingDB.id();
       const templateA = {
         ...templateToSave,
         name: 'template A',
         properties: [
-          { _id: inheritPropNum, name: 'num', type: 'numeric', label: 'Numeric' },
-          { _id: inheritPropId, name: 'name', type: 'text', label: 'Name' },
+          { name: 'num', type: 'numeric', label: 'Numeric' },
+          { name: 'name', type: 'text', label: 'Name' },
         ],
-        commonProperties: [{ name: 'title', type: 'text', label: 'Name' }],
+        commonProperties: [
+          { name: 'title', type: 'text', label: 'Name' },
+          { name: 'creationDate', type: 'date', label: 'Creation Date' },
+          { name: 'editDate', type: 'date', label: 'Modified Date' },
+        ],
       };
 
       await postToEndpoint('/api/templates', templateA);
+      const [savedTemplateA] = await templates.get({ name: 'template A' });
+      const [numericProp, textProp] = savedTemplateA.properties!;
 
       const templateB = {
         ...templateToSave,
@@ -230,15 +234,16 @@ describe('templates routes', () => {
             name: 'relationship',
             label: 'relationship',
             type: 'relationship',
-            relationType: 'asdf',
-            inherit: { property: inheritPropNum.toString() },
+            relationType: fixtureFactory.id('relation_type').toHexString(),
+            content: savedTemplateA._id.toHexString(),
+            inherit: { property: numericProp._id!.toString(), type: 'numeric' },
           },
         ],
       };
       await postToEndpoint('/api/templates', templateB);
       const [savedTemplate] = await templates.get({ name: 'template B' });
 
-      savedTemplate.properties![0].inherit!.property = inheritPropId.toString();
+      savedTemplate.properties![0].inherit!.property = textProp._id!.toString();
 
       const { body } = await postToEndpoint('/api/templates', savedTemplate, 409);
       expect(body.error).toContain('conflict');
