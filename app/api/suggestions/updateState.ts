@@ -1,9 +1,9 @@
-import settings from 'api/settings';
-import templates from 'api/templates';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import settings from '../settings/index.js';
+import templates from '../templates/index.js';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
 import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';
-import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
+import { LanguagesListSchema, PropertyTypeSchema } from '../../shared/types/commonTypes.js';
 import { IXExtractorModel } from 'api/services/informationextraction/IXExtractorModel';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {

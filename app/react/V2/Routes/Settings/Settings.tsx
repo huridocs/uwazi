@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useOutlet } from 'react-router';
 import { Helmet } from 'react-helmet';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { SettingsNavigation } from './SettingsNavigation';
 
 const Settings = () => {

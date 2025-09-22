@@ -1,6 +1,6 @@
 import React from 'react';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { DisplayPill } from './DisplayPills';
 
 const TableTitle = ({

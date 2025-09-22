@@ -2,7 +2,7 @@
 /* eslint-disable class-methods-use-this,max-lines */
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { TriStateSelectValue } from 'app/istore';
 import { Icon as CustomIcon } from 'app/Layout/Icon';
 import React, { Component, createRef, RefObject } from 'react';

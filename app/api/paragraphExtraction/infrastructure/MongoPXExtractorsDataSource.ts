@@ -2,7 +2,7 @@ import { Db, ObjectId } from 'mongodb';
 import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 
 import { PXExtractor } from '../domain/PXExtractor';

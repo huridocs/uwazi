@@ -6,7 +6,7 @@ import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { unique } from 'shared/filterUnique';
-import { SelectionRectangleSchema } from 'shared/types/commonTypes';
+import { SelectionRectangleSchema } from '../../shared/types/commonTypes.js';
 import { pdfScaleAtom } from 'V2/atoms';
 import { selectionHandlers } from 'V2/Components/PDFViewer';
 

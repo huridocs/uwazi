@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
-import { ClientSettings } from 'app/apiResponseTypes';
+import { ClientSettings } from '../../apiResponseTypes.js';
 import { settingsAtom, localeAtom } from 'app/V2/atoms';
 
 interface ActivityLogSearch {

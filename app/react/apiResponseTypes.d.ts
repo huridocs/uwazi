@@ -5,8 +5,8 @@ import {
   Settings,
   SettingsFilterSchema,
   SettingsLinkSchema,
-} from 'shared/types/settingsType';
-import { LanguageSchema } from 'shared/types/commonTypes';
+} from '../../shared/types/settingsType.js';
+import { LanguageSchema } from '../../shared/types/commonTypes.js';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { TemplateSchema } from 'shared/types/templateType';
 

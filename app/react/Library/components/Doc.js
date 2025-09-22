@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';

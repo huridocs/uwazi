@@ -3,14 +3,14 @@
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
-import { EnforcedWithId } from 'api/odm';
+import { EnforcedWithId } from '../odm/index.js';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import templates from 'api/templates';
+import templates from '../templates/index.js';
 import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
-import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
+import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { IXSuggestionAggregation, IXSuggestionType } from 'shared/types/suggestionType';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,

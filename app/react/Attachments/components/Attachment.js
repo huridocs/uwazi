@@ -7,11 +7,11 @@ import { Icon } from 'UI';
 import { withContext } from 'app/componentWrappers';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { store } from 'app/store';
+import { store } from '../../store.js';
 import { getFileExtension } from 'app/utils/getFileExtension';
 
 import {

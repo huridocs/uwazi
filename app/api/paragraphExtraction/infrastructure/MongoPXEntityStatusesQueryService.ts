@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { LanguagesListSchema } from '../../shared/types/commonTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { mongoPXEntitiesStatusCollection } from './MongoPXEntitiesStatusDataSource';
 import { PXEntityStatusesQueryService } from '../domain/PXEntityStatusesQueryService';

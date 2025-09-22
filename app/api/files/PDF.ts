@@ -1,12 +1,12 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import * as os from 'os';
-import { legacyLogger } from 'api/log';
+import { legacyLogger } from '../log/index.js';
 import { spawn } from 'child-process-promise';
 import EventEmitter from 'events';
 import path from 'path';
 import { detectLanguage } from 'shared/detectLanguage';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import { storage } from './storage';
 
 class PDF extends EventEmitter {

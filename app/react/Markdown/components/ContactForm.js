@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { actions, Field } from 'react-redux-form';
-import { FormGroup } from 'app/ReactReduxForms';
-import { Translate, t } from 'app/I18N';
+import { FormGroup } from '../../ReactReduxForms/index.js';
+import { Translate, t } from '../../I18N/index.js';
 import api from 'app/utils/api';
 import { Icon } from 'UI';
 import { connect } from 'react-redux';

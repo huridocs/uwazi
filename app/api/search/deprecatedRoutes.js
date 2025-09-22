@@ -1,4 +1,4 @@
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { searchParamsSchema } from 'shared/types/searchParameterSchema';
 import { search } from './search';
 import { validation, parseQuery } from '../utils';

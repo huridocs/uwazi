@@ -1,7 +1,7 @@
-import users from 'api/users/users';
+import users from '../users/users.js';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { validateUserGroup } from 'api/usergroups/validateUserGroup';
-import { WithId } from 'api/odm';
+import { WithId } from '../odm/index.js';
 import { UserSchema } from 'shared/types/userType';
 import model from './userGroupsModel';
 

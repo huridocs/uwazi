@@ -1,8 +1,8 @@
 import { elastic } from 'api/search';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 import templatesModel from 'api/templates/templates';
-import propertiesHelper from 'shared/commonProperties';
-import { PropertySchema } from 'shared/types/commonTypes';
+import propertiesHelper from '../../shared/commonProperties.js';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 
 export const cleanUp = (value: any) => value;
 

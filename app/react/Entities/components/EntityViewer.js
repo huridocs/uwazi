@@ -17,7 +17,7 @@ import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
-import { t, I18NLinkV2 as I18NLink } from 'app/I18N';
+import { t, I18NLinkV2 as I18NLink } from '../../I18N/index.js';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';

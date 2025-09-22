@@ -1,9 +1,9 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
-import settings from 'api/settings';
-import { LanguageUtils } from 'shared/language';
-import { FileType } from 'shared/types/fileType';
+import settings from '../settings/index.js';
+import { LanguageUtils } from '../../shared/language/index.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { IXServices } from 'api/services/informationextraction/IXServices';
 import { SuggestionFactory } from '../suggestionFactory';

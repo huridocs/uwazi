@@ -1,8 +1,8 @@
-import { availableLanguages } from 'shared/language';
+import { availableLanguages } from '../../shared/language/index.js';
 import { typeParsers } from 'api/activitylog/migrationsParser';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
-import users from 'api/users/users';
+import users from '../users/users.js';
 import userGroups from 'api/usergroups/userGroups';
 import { files } from 'api/files';
 import { PermissionType } from 'shared/types/permissionSchema';

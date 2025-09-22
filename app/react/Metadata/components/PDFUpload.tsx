@@ -4,7 +4,7 @@ import { actions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { get } from 'lodash';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { IStore } from 'app/istore';
 import { MetadataFormFiles } from './MetadataFormFiles';
 

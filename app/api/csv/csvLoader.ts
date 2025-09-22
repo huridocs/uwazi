@@ -2,16 +2,16 @@ import { ObjectId } from 'mongodb';
 import { groupBy } from 'lodash';
 
 import translations from 'api/i18n';
-import { EnforcedWithId } from 'api/odm';
-import settings from 'api/settings';
-import templates from 'api/templates';
+import { EnforcedWithId } from '../odm/index.js';
+import settings from '../settings/index.js';
+import templates from '../templates/index.js';
 import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
 
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { TranslationType } from 'shared/translationType';
-import { ensure } from 'shared/tsUtils';
-import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+import { TranslationType } from '../../shared/translationType.js';
+import { ensure } from '../../shared/tsUtils.js';
+import { LanguageSchema, ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 

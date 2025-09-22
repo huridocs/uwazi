@@ -1,4 +1,4 @@
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { NamespacedDispatcher } from './NamespacedDispatcher';

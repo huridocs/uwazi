@@ -3,7 +3,7 @@ import { Aggregations } from 'shared/types/aggregations';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import SelectFilter from 'app/Library/components/SelectFilter';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { NeedAuthorization } from 'app/Auth';
 
 export interface FilterTocGenerationProps {

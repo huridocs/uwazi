@@ -4,7 +4,7 @@ import { groupBy } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
-import { ensure } from 'shared/tsUtils';
+import { ensure } from '../../shared/tsUtils.js';
 import { constructFile } from 'shared/fileUploadUtils';
 import loadingBar from 'app/App/LoadingProgressBar';
 

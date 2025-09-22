@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { Modal, Button } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { save as saveThesauri } from 'V2/api/thesauri';

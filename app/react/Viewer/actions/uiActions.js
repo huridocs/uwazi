@@ -1,5 +1,5 @@
-import { actions } from 'app/BasicReducer';
-import { events } from 'app/utils';
+import { actions } from '../../BasicReducer/index.js';
+import { events } from '../../utils/index.js';
 import { setTargetSelection } from 'app/Viewer/actions/selectionActions';
 import Marker from 'app/Viewer/utils/Marker.js';
 import scroller from 'app/Viewer/utils/Scroller';

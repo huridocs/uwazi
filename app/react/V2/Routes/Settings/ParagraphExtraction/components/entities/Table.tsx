@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table } from 'V2/Components/UI';
 import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { Template } from 'app/apiResponseTypes';
+import { Template } from '../../apiResponseTypes.js';
 import { TableTitle } from '../TableTitle';
 import { PXTableFooter } from '../PXTableFooter';
 import { columns } from './TableElements';

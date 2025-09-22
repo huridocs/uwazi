@@ -6,10 +6,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
-import { debounce } from 'app/utils';
+import { debounce } from '../../utils/index.js';
 import libraryHelper, { prepareDefaultFilters } from 'app/Library/helpers/libraryFilters';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';

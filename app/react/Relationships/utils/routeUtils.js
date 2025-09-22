@@ -2,7 +2,7 @@
 import { fromJS } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { actions as connectionsListActions } from 'app/ConnectionsList';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';

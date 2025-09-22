@@ -1,4 +1,4 @@
-import { objectIdSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema } from '../../shared/types/commonSchemas.js';
 import { entitySchema } from 'shared/types/entitySchema';
 
 export const emitSchemaTypes = true;

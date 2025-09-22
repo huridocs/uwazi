@@ -1,5 +1,5 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { IXServices } from 'api/services/informationextraction/IXServices';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { PipelineBuilder } from '../queryBuilder';

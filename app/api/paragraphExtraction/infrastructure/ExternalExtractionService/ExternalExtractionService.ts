@@ -1,6 +1,6 @@
 import { HttpClient } from 'api/common.v2/contracts/HttpClient';
 import { HttpField } from 'api/common.v2/contracts/HttpField';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
 
 import {

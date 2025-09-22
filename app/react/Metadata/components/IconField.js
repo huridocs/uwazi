@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { IconSelector } from 'app/ReactReduxForms';
+import { IconSelector } from '../../ReactReduxForms/index.js';
 import { actions } from 'app/Metadata';
-import { FormValue } from 'app/Forms';
+import { FormValue } from '../../Forms/index.js';
 import ToggleDisplay from 'app/Layout/ToggleDisplay';
 import { bindActionCreators } from 'redux';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 
 export const IconFieldBase = ({ model, removeIcon }) => (

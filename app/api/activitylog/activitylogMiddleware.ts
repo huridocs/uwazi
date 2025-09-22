@@ -4,7 +4,7 @@ import { tenants } from 'api/tenants';
 import { Readable } from 'stream';
 import activitylog from './activitylog';
 import { NextFunction, Request, Response } from 'express';
-import { handleError } from 'api/utils';
+import { handleError } from '../utils/index.js';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 export const IGNORED_ENDPOINTS = [

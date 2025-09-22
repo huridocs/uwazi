@@ -2,15 +2,15 @@
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
-import templates from 'api/templates';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import templates from '../templates/index.js';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { IXExtractorType } from 'shared/types/extractorType';
 import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
 } from 'api/suggestions/blankSuggestions';
-import { Subset } from 'shared/tsUtils';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { Subset } from '../../shared/tsUtils.js';
+import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
 import { IXExtractorModel as model } from './IXExtractorModel';
 import { IXErrorCode, IXValidationError } from './IXValidationError';
 

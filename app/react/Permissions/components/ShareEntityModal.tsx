@@ -3,7 +3,7 @@
 import Modal from 'app/Layout/Modal';
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, MixedAccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';

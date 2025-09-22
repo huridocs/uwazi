@@ -2,7 +2,7 @@ import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler
 import { EventsBus } from 'api/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '../../shared/language/index.js';
 import { inspect } from 'util';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXEntityStatusManagerFactory } from './PXEntityStatusManagerFactory';

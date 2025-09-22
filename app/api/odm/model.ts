@@ -8,7 +8,7 @@ import mongoose, {
   Schema,
   UpdateQuery,
 } from 'mongoose';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { inspect } from 'util';
 import { MongooseModelWrapper } from './MongooseModelWrapper';
 import { UpdateLogger, createUpdateLogHelper } from './logHelper';

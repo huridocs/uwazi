@@ -1,4 +1,4 @@
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageSchema } from '../../shared/types/commonTypes.js';
 import { LanguageCode, availableLanguages, otherLanguageSchema } from './availableLanguages';
 
 class LanguageUtils {

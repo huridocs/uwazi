@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 
 import { DocumentSidePanel, TocForm as tocFormComponent } from 'app/Documents';
-import { actions as actionCreators } from 'app/BasicReducer';
+import { actions as actionCreators } from '../../BasicReducer/index.js';
 import { actions } from 'app/Metadata';
 import { actions as connectionsActions, uiActions as connectionsUiActions } from 'app/Connections';
 import { deleteDocument } from 'app/Viewer/actions/documentActions';

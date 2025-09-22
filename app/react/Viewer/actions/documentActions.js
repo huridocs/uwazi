@@ -5,7 +5,7 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import { documentsApi } from 'app/Documents';
 import { notificationActions } from 'app/Notifications';

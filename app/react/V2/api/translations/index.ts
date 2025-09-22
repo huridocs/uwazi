@@ -1,8 +1,8 @@
 import { Params } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
-import { I18NApi } from 'app/I18N';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { I18NApi } from '../../I18N/index.js';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { ClientTranslationSchema, ClientTranslationContextSchema } from 'app/istore';
 import { RequestParams } from 'app/utils/RequestParams';
 import { TranslationValue } from 'V2/shared/types';

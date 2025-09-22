@@ -1,6 +1,6 @@
 import React from 'react';
-import { isClient } from 'app/utils';
-import { actions } from 'app/BasicReducer';
+import { isClient } from '../../utils/index.js';
+import { actions } from '../../BasicReducer/index.js';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import RouteHandler from 'app/App/RouteHandler';

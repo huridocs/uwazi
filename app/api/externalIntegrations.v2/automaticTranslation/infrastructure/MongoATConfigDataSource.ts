@@ -5,7 +5,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Property } from 'api/templates.v2/model/Property';
 import { Db } from 'mongodb';
-import { Settings as SettingsType } from 'shared/types/settingsType';
+import { Settings as SettingsType } from '../../shared/types/settingsType.js';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
 import { ATGateway } from '../contracts/ATGateway';
 import { ATConfig, ATTemplateConfig } from '../model/ATConfig';

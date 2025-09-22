@@ -1,8 +1,8 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
-import api from 'app/Search/SearchAPI';
+import api from '../../Search/SearchAPI.js';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { risonDecodeOrIgnore } from 'app/utils';
+import { risonDecodeOrIgnore } from '../../utils/index.js';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { setTableViewColumns } from 'app/Library/actions/libraryActions';
 import { tocGenerationUtils } from 'app/ToggledFeatures/tocGeneration';

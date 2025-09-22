@@ -1,7 +1,7 @@
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { ClientTemplateSchema } from 'app/istore';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { IImmutable } from 'shared/types/Immutable';
 
 type SortType = {

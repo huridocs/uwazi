@@ -6,7 +6,7 @@ import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Document } from 'api/files.v2/model/Document';
-import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, LanguagesListSchema } from '../../shared/types/commonTypes.js';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';

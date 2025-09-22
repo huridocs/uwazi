@@ -1,4 +1,4 @@
-import createReducer, { actions } from 'app/BasicReducer';
+import createReducer, { actions } from '../../BasicReducer/index.js';
 import * as types from 'app/Library/actions/actionTypes';
 
 const reducer = createReducer('aggregations', {});

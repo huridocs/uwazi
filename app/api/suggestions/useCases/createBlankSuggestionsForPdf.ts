@@ -1,5 +1,5 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '../../shared/language/index.js';
 import { files } from 'api/files';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from '../suggestions';

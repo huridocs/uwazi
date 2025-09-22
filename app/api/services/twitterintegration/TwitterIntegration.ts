@@ -1,8 +1,8 @@
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { tenants } from 'api/tenants';
-import settings from 'api/settings/settings';
+import settings from '../settings/settings.js';
 import entities from 'api/entities/entities';
-import templates from 'api/templates';
+import templates from '../templates/index.js';
 import relationtypes from 'api/relationtypes';
 import {
   getTextWithAttachedImages,

@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 

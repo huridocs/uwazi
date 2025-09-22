@@ -1,14 +1,14 @@
-import { WithId } from 'api/odm';
+import { WithId } from '../odm/index.js';
 import thesauri from 'api/thesauri';
-import settings from 'api/settings';
-import templates from 'api/templates';
-import request from 'shared/JSONRequest';
+import settings from '../settings/index.js';
+import templates from '../templates/index.js';
+import request from '../../shared/JSONRequest.js';
 import createError from 'api/utils/Error';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { TemplateSchema } from 'shared/types/templateType';
-import { User } from 'api/users/usersModel';
-import { PreserveConfig } from 'shared/types/settingsType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { User } from '../users/usersModel.js';
+import { PreserveConfig } from '../../shared/types/settingsType.js';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {

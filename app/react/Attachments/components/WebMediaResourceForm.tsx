@@ -1,9 +1,9 @@
 import { Field } from 'react-redux-form';
 import { Icon } from 'UI';
 import React from 'react';
-import { FormGroup } from 'app/Forms';
+import { FormGroup } from '../../Forms/index.js';
 import { LocalForm } from 'app/Forms/Form';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 
 interface WebMediaResourceFormProps {
   handleSubmit: (args: any) => void;

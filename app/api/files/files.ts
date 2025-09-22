@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { applicationEventsBus } from 'api/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
@@ -7,7 +7,7 @@ import connections from 'api/relationships';
 import { search } from 'api/search';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import { validateFile } from 'shared/types/fileSchema';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import { inspect } from 'util';
 import { FileCreatedEvent } from './events/FileCreatedEvent';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent';

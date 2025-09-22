@@ -1,8 +1,8 @@
 import * as types from 'app/RelationTypes/actions/actionTypes';
 import api from 'app/RelationTypes/RelationTypesAPI';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { notificationActions } from 'app/Notifications';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 
 export function saveRelationType(relationType) {

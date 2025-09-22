@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 
 import { connect } from 'react-redux';
 import { EntityDisplayState, IStore, TableViewColumn } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { TableRows } from 'app/Layout/TableRows';
 import { CollectionViewerProps } from './CollectionViewerProps';
 

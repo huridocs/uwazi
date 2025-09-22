@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { OptionSchema, Select } from 'app/V2/Components/Forms';
 import { useAtomValue } from 'jotai';
 import { relationshipTypesAtom, templatesAtom } from 'app/V2/atoms';

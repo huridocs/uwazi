@@ -1,8 +1,8 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { withConnectedData } from './relationshipsHelpers';
 import { Relation } from './RelationsV1Collection';
-import settings from 'api/settings';
+import settings from '../settings/index.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';

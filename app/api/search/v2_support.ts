@@ -3,7 +3,7 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { propertyTypes } from 'shared/propertyTypes';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 
 async function checkFeatureEnabled() {
   const db = getConnection();

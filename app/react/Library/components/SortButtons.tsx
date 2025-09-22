@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
-import { DropdownList } from 'app/Forms';
+import { DropdownList } from '../../Forms/index.js';
 import { IImmutable } from 'shared/types/Immutable';
 import { IStore } from 'app/istore';
 import { omit } from 'lodash';

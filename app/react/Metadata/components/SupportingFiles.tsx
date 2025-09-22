@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ClientFile } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
 import {
   uploadLocalAttachment,

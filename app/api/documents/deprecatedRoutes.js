@@ -1,5 +1,5 @@
-import { objectIdSchema } from 'shared/types/commonSchemas';
-import { legacyLogger } from 'api/log';
+import { objectIdSchema } from '../../shared/types/commonSchemas.js';
+import { legacyLogger } from '../log/index.js';
 import { validation } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';

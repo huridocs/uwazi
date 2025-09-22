@@ -1,7 +1,7 @@
-import { createError } from 'api/utils';
+import { createError } from '../utils/index.js';
 import csvtojson from 'csvtojson';
-import { availableLanguages } from 'shared/language';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { availableLanguages } from '../../shared/language/index.js';
+import { LanguageSchema } from '../../shared/types/commonTypes.js';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Readable } from 'stream';
 import { CSVRow } from './csv';

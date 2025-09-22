@@ -1,6 +1,6 @@
 import { UserSchema } from 'shared/types/userType';
 import { appContext } from 'api/utils/AppContext';
-import { DataType } from 'api/odm';
+import { DataType } from '../odm/index.js';
 
 export const permissionsContext = {
   commandUser: { _id: 'commandId', role: 'editor' },

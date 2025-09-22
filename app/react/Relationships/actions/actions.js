@@ -1,13 +1,13 @@
 import { sortBy } from 'lodash';
 import api from 'app/utils/api';
-import { actions } from 'app/BasicReducer';
-import { debounce } from 'app/utils';
+import { actions } from '../../BasicReducer/index.js';
+import { debounce } from '../../utils/index.js';
 import { createSelector } from 'reselect';
 import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';
 import { RequestParams } from 'app/utils/RequestParams';
-import SearchApi from 'app/Search/SearchAPI';
-import { t } from 'app/I18N';
+import SearchApi from '../../Search/SearchAPI.js';
+import { t } from '../../I18N/index.js';
 import EntitiesApi from '../../Entities/EntitiesAPI';
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';

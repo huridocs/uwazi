@@ -1,4 +1,4 @@
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 

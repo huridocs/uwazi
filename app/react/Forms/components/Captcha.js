@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'app/UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import api from '../../utils/api';
 
 class Captcha extends Component {

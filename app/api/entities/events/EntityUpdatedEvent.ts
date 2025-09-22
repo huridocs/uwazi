@@ -1,5 +1,5 @@
 import { AbstractEvent } from 'api/eventsbus';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
 interface EntityUpdatedData {
   before: EntitySchema[];

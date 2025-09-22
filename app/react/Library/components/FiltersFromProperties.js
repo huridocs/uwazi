@@ -4,7 +4,7 @@ import { useLocation } from 'react-router';
 import rison from '@huridocs/rison';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 import { selectTemplates } from 'app/utils/coreSelectors';

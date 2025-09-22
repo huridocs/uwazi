@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'V2/Components/Forms/InputField';

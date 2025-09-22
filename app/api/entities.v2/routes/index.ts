@@ -1,5 +1,5 @@
 import { Application, Request } from 'express';
-import { validation } from 'api/utils';
+import { validation } from '../utils/index.js';
 import entities from 'api/entities/entities';
 
 const entitiesRoutes = (app: Application) => {

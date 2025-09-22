@@ -3,7 +3,7 @@ import { actions as formActions } from 'react-redux-form';
 import { withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { showTab } from 'app/Entities/actions/uiActions';
 import { trackPage } from 'app/App/GoogleAnalytics';

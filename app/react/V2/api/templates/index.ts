@@ -2,7 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientTemplateSchema } from 'V2/shared/types';
-import { Template } from 'app/apiResponseTypes';
+import { Template } from '../../apiResponseTypes.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Template[]> => {
   try {

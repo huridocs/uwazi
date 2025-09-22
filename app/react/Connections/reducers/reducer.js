@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import createReducer from 'app/BasicReducer';
+import createReducer from '../../BasicReducer/index.js';
 
 import connection from './connectionReducer';
 import uiState from './uiReducer';

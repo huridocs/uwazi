@@ -1,4 +1,4 @@
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 
 export interface SanitizationWarning {
   property: string;

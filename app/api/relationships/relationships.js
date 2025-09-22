@@ -2,11 +2,11 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import templatesAPI from 'api/templates';
-import settings from 'api/settings';
+import templatesAPI from '../templates/index.js';
+import settings from '../settings/index.js';
 import relationtypes from 'api/relationtypes';
 import entities from 'api/entities/entities';
-import { createError } from 'api/utils';
+import { createError } from '../utils/index.js';
 
 import { ObjectId } from 'mongodb';
 import { ArrayUtils } from 'api/common.v2/utils/Array';

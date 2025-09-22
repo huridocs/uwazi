@@ -1,6 +1,6 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
-import { parseQuery, validation } from 'api/utils';
+import { parseQuery, validation } from '../utils/index.js';
 import userGroups from './userGroups';
 
 export default (app: Application) => {

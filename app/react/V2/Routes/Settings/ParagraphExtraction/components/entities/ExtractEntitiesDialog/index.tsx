@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRevalidator, useLoaderData } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
 import { Button, ConfirmationModal } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';

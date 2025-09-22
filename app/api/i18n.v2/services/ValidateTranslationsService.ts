@@ -1,6 +1,6 @@
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { objectIndex, objectIndexToArrays } from '../../shared/data_utils/objectIndex.js';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';

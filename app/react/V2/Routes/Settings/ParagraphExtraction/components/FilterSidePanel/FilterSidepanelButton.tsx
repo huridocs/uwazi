@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSetAtom } from 'jotai';
 import { useSearchParams } from 'react-router';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Button } from 'app/V2/Components/UI';
 import { FunnelIcon } from '@heroicons/react/24/solid';
 import { filterSidepanelAtom } from './filterSidepanelAtom';

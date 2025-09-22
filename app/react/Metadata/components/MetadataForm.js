@@ -1,8 +1,8 @@
 import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
-import { Select as SimpleSelect } from 'app/Forms';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { Select as SimpleSelect } from '../../Forms/index.js';
+import { I18NLink, t, Translate } from '../../I18N/index.js';
 import { notificationActions } from 'app/Notifications';
-import { FormGroup } from 'app/ReactReduxForms';
+import { FormGroup } from '../../ReactReduxForms/index.js';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';

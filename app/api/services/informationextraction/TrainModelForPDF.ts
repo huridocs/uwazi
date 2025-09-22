@@ -3,9 +3,9 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { storage } from 'api/files';
 import urljoin from 'url-join';
-import request from 'shared/JSONRequest';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { EnforcedWithId } from 'api/odm';
+import request from '../../shared/JSONRequest.js';
+import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
+import { EnforcedWithId } from '../odm/index.js';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { Suggestions } from 'api/suggestions/suggestions';
 import {

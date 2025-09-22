@@ -1,12 +1,12 @@
 import { files, storage } from 'api/files';
 import { prettifyError } from 'api/utils/handleError';
-import { legacyLogger } from 'api/log';
-import request from 'shared/JSONRequest';
-import entities from 'api/entities';
-import { TocSchema } from 'shared/types/commonTypes';
-import { FileType } from 'shared/types/fileType';
+import { legacyLogger } from '../log/index.js';
+import request from '../../shared/JSONRequest.js';
+import entities from '../entities/index.js';
+import { TocSchema } from '../../shared/types/commonTypes.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { tenants } from 'api/tenants';
-import settings from 'api/settings';
+import settings from '../settings/index.js';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const fakeTocEntry = (label: string): TocSchema => ({

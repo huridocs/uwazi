@@ -1,4 +1,4 @@
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { Application } from 'express';
 
 export const versionRoutes = (app: Application) => {

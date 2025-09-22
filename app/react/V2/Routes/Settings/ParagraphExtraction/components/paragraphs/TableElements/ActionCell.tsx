@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Button } from 'app/V2/Components/UI';
 
 const ActionCell = (action: () => void) => (

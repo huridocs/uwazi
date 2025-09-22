@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
-import { config } from 'api/config';
-import { Tenant } from 'api/tenants/tenantContext';
+import { config } from '../config.js';
+import { Tenant } from '../tenants/tenantContext.js';
 import path from 'path';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage';
 import { Attachment } from '../model/Attachment';

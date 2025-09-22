@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { InputError } from './InputError';
 import { Label } from './Label';
 

@@ -16,8 +16,8 @@ import {
   MetadataObjectSchema,
   MetadataSchema,
   PropertyValueSchema,
-} from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+} from '../../shared/types/commonTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 

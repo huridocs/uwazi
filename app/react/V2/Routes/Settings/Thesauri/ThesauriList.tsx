@@ -2,12 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import * as ThesauriAPI from 'app/V2/api/thesauri';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, ConfirmationModal } from 'app/V2/Components/UI';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { ClientThesaurus, Template } from 'app/apiResponseTypes';
+import { ClientThesaurus, Template } from '../../apiResponseTypes.js';
 import { ThesauriTable } from './components/ThesauriTable';
 import type { ThesauriRow } from './components/ThesauriTable';
 

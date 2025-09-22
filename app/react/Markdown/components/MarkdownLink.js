@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 import PropTypes from 'prop-types';
 import React from 'react';
 

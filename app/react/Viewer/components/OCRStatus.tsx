@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { FileType } from 'shared/types/fileType';
-import { Translate } from 'app/I18N';
+import { FileType } from '../../shared/types/fileType.js';
+import { Translate } from '../../I18N/index.js';
 import { socket } from 'app/socket';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';

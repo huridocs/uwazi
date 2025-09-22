@@ -5,8 +5,8 @@ import api from 'app/utils/api';
 import { notificationActions } from 'app/Notifications';
 import { IStore } from 'app/istore';
 import { Dispatch } from 'redux';
-import { ensure } from 'shared/tsUtils';
-import { FileType } from 'shared/types/fileType';
+import { ensure } from '../../shared/tsUtils.js';
+import { FileType } from '../../shared/types/fileType.js';
 
 const tocGenerationActions = {
   reviewToc(fileId: string) {

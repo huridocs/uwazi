@@ -2,9 +2,9 @@ import React, { ChangeEvent, Dispatch } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Icon } from 'app/UI';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { generateID } from 'shared/IDGenerator';
 import {
   uploadDocument as uploadDocumentAction,

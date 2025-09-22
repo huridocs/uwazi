@@ -6,8 +6,8 @@ import { notify } from 'app/Notifications/actions/notificationsActions';
 import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { actions as basicReducerActions } from 'app/BasicReducer';
-import { t } from 'app/I18N';
+import { actions as basicReducerActions } from '../../BasicReducer/index.js';
+import { t } from '../../I18N/index.js';
 
 import * as types from './actionTypes';
 

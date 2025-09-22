@@ -1,5 +1,5 @@
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { I18NLink, Translate } from 'app/I18N';
+import { I18NLink, Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import React, { useRef, useState, useCallback } from 'react';
 import { ILink, ISublink } from 'app/V2/shared/types';

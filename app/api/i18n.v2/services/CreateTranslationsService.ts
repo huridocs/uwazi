@@ -1,5 +1,5 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { Translation } from '../model/Translation';
 import { ValidateTranslationsService } from './ValidateTranslationsService';

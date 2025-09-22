@@ -1,4 +1,4 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import api from 'app/Thesauri/ThesauriAPI';
 
 export function reloadThesauri() {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map, List } from 'immutable';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import * as actions from '../actions/actions';
 
 import LeftRelationship from './LeftRelationship';

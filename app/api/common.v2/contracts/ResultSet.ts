@@ -1,4 +1,4 @@
-import { IndexTypes } from 'shared/data_utils/objectIndex';
+import { IndexTypes } from '../../shared/data_utils/objectIndex.js';
 
 export type BreakLoopSignal = Promise<void | boolean> | void | boolean;
 

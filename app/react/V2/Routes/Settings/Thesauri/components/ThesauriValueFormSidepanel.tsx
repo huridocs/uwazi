@@ -3,10 +3,10 @@ import React, { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { isEmpty, last } from 'lodash';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { InputField, Select } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import uniqueID from 'shared/uniqueID';
+import uniqueID from '../../shared/uniqueID.js';
 import { ThesaurusRow } from './TableComponents';
 import { sanitizeThesaurusLabel } from '../helpers';
 

@@ -5,7 +5,7 @@ import {
   initializeFiltersForm,
 } from 'app/Library/actions/libraryActions';
 import { actions as formActions } from 'react-redux-form';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 
 export default function setReduxState(state, key, addinsteadOfSet) {
   return _dispatch => {

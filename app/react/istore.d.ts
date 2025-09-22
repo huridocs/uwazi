@@ -3,14 +3,14 @@ import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import { LabelCountSchema } from 'app/Thesauri/types/labelCountType';
 import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from 'shared/types/templateType';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { ConnectionSchema } from 'shared/types/connectionType';
-import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/apiResponseTypes';
-import { FileType } from 'shared/types/fileType';
+import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from '../../apiResponseTypes.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { PageType } from 'shared/types/pageType';
-import { TranslationContext, TranslationType } from 'shared/translationType';
+import { TranslationContext, TranslationType } from '../../shared/translationType.js';
 import { ClientIXExtractorType } from 'V2/shared/types';
 
 interface InstanceStats {

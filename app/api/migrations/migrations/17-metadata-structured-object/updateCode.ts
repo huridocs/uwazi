@@ -1,5 +1,5 @@
 /* eslint-disable max-statements,no-eval,node/no-restricted-import,no-console */
-import { config } from 'api/config';
+import { config } from '../config.js';
 import fs from 'fs';
 import path from 'path';
 import index from 'api/migrations/migrations/17-metadata-structured-object';

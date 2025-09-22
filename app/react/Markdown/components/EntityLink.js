@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { I18NLink } from 'app/I18N';
+import { I18NLink } from '../../I18N/index.js';
 import PagesContext from './Context';
 
 export default class EntityLink extends Component {

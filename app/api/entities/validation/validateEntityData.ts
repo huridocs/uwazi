@@ -1,8 +1,8 @@
 import Ajv, { ErrorObject } from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { wrapValidator } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { wrapValidator } from '../../shared/tsUtils.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 

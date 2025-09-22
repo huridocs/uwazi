@@ -1,8 +1,8 @@
 import { SyncConfig } from 'api/sync/syncWorker';
 import templatesModel from 'api/templates/templatesModel';
-import { model as updateLog, UpdateLog } from 'api/updatelogs';
+import { model as updateLog, UpdateLog } from '../updatelogs/index.js';
 import { explicitOrdering } from 'shared/data_utils/arrayUtils';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import { ProcessNamespaces } from './processNamespaces';
 import syncsModel from './syncsModel';

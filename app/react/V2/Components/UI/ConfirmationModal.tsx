@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import { isString } from 'lodash';
 import { Button, Modal } from '../UI';
 import { modalSizeType } from './Modal';

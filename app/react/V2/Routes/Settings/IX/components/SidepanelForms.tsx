@@ -5,9 +5,9 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { get, isEmpty, uniqBy } from 'lodash';
 import { captureException } from '@sentry/react';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 import {
   defaultSearch,
   InputField,

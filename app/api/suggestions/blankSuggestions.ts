@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
-import templates from 'api/templates';
+import templates from '../templates/index.js';
 import { tenants } from 'api/tenants';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXServices } from 'api/services/informationextraction/IXServices';
 import { ExtractorNotFound, Extractors } from 'api/services/informationextraction/ixextractors';

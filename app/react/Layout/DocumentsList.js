@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { toUrlParams } from 'shared/JSONRequest';
+import { toUrlParams } from '../../shared/JSONRequest.js';
 import rison from '@huridocs/rison';
 import { SearchBar } from 'app/Library/components/SearchBar';
 import ConnectionSearchBar from 'app/ConnectionsList/components/SearchBar';
@@ -10,12 +10,12 @@ import { Loader } from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
 import { withRouter } from 'app/componentWrappers';
 import { LibraryHeader } from 'app/Library/components/LibraryHeader';
-import { risonDecodeOrIgnore } from 'app/utils';
+import { risonDecodeOrIgnore } from '../../utils/index.js';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
 import blankState from '../Library/helpers/blankState';

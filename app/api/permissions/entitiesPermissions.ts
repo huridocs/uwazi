@@ -1,12 +1,12 @@
 import { WithId } from 'mongodb';
 
-import { model as entityModel } from 'api/entities';
+import { model as entityModel } from '../entities/index.js';
 import entities from 'api/entities/entities';
 import { search } from 'api/search';
-import users from 'api/users/users';
+import users from '../users/users.js';
 import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
+import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
 import {
   AccessLevels,
   PermissionType,
@@ -15,7 +15,7 @@ import {
 } from 'shared/types/permissionSchema';
 import { PermissionSchema, PermissionsDataSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';
 

@@ -1,6 +1,6 @@
 import { EventsBus } from 'api/eventsbus';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { inspect } from 'util';
 import { Logger } from 'api/log.v2/contracts/Logger';

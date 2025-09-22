@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, Dispatch, SetStateAction } from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 
 type Filters = { [key: string]: { count: number; status: boolean } };

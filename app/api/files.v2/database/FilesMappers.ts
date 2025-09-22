@@ -1,4 +1,4 @@
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '../../shared/language/index.js';
 import { FileDBOType } from './schemas/filesTypes';
 import { UwaziFile } from '../model/UwaziFile';
 import { Document } from '../model/Document';

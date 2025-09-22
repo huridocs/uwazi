@@ -1,4 +1,4 @@
-import { Template } from 'app/apiResponseTypes';
+import { Template } from '../../apiResponseTypes.js';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import { PXTemplate, PXTable } from '../types';
 import { getTemplateProperties } from './getTemplateProperties';

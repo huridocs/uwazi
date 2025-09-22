@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, FindCursor } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { BreakLoopSignal, ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {

@@ -5,9 +5,9 @@ import {
   RequestNDBody,
   TransportRequestOptions,
 } from '@elastic/elasticsearch/lib/Transport';
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { tenants } from 'api/tenants';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes';
 
 const elasticClient = new elasticSearch.Client({

@@ -2,7 +2,7 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
-import settings from 'api/settings';
+import settings from '../settings/index.js';
 import mailer from 'api/utils/mailer';
 import cors from 'cors';
 import { withTransaction } from 'api/utils/withTransaction';

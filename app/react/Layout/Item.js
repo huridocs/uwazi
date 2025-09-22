@@ -8,7 +8,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { FavoriteBanner } from 'app/Favorites';
 import helpers from 'app/Documents/helpers';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';

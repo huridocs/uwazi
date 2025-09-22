@@ -2,17 +2,17 @@
 import _ from 'lodash';
 
 import date from 'api/utils/date';
-import propertiesHelper from 'shared/commonProperties';
+import propertiesHelper from '../../shared/commonProperties.js';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
-import { createError } from 'api/utils';
+import { createError } from '../utils/index.js';
 import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
-import usersModel from 'api/users/users';
+import usersModel from '../users/users.js';
 import userGroups from 'api/usergroups/userGroups';
 import { sequentialPromises } from 'shared/asyncUtils';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { OperationalError } from 'api/common.v2/errors/OperationalError';

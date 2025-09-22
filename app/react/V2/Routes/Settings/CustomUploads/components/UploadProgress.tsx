@@ -1,5 +1,5 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { uploadProgressAtom } from './uploadProgressAtom';
 

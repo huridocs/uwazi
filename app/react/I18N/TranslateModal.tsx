@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { Modal } from 'V2/Components/UI';
 import { settingsAtom, translationsAtom, inlineEditAtom, notificationAtom } from 'V2/atoms';
 import { InputField } from 'app/V2/Components/Forms';

@@ -1,4 +1,4 @@
-import { createError } from 'api/utils';
+import { createError } from '../utils/index.js';
 import { files } from 'api/files';
 import entities from '../entities';
 

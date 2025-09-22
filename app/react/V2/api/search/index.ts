@@ -3,7 +3,7 @@ import qs from 'qs';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SearchQuery } from 'shared/types/SearchQueryType';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
 type SearchResponse = {
   data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];

@@ -2,7 +2,7 @@ import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
-import { DropdownList } from 'app/Forms';
+import { DropdownList } from '../../Forms/index.js';
 import { TableViewColumn, IStore } from 'app/istore';
 import { wrapDispatch } from 'app/Multireducer';
 import {

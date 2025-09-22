@@ -5,18 +5,18 @@ import {
   getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
-} from 'api/templates/utils';
-import entities from 'api/entities/entities';
-import { preloadOptionsLimit } from 'shared/config';
-import templates from 'api/templates/templates';
-import settings from 'api/settings/settings';
-import translations from 'api/i18n/translations';
-import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
-import { search } from 'api/search';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
-import model from './dictionariesModel';
-import { validateThesauri } from './validateThesauri';
+} from '../templates/utils.js';
+import entities from '../entities/entities.js';
+import { preloadOptionsLimit } from '../../shared/config.js';
+import templates from '../templates/templates.js';
+import settings from '../settings/settings.js';
+import translations from '../i18n/translations.js';
+import { denormalizeThesauriLabelInMetadata } from '../entities/denormalize.js';
+import { search } from '../search/index.js';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+import { sanitizeThesaurusLabel } from '../../shared/sanitizationUtils.js';
+import model from './dictionariesModel.js';
+import { validateThesauri } from './validateThesauri.js';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);

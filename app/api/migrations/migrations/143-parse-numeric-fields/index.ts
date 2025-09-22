@@ -1,7 +1,7 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 import { Db, ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { EntitySchema, TemplateSchema } from './types';
 
 export default {

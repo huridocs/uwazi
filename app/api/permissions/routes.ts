@@ -1,6 +1,6 @@
 import { Application, Request } from 'express';
 import { needsAuthorization } from 'api/auth';
-import { validation } from 'api/utils';
+import { validation } from '../utils/index.js';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { permissionsDataSchema } from 'shared/types/permissionSchema';

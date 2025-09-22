@@ -20,7 +20,7 @@ import { IXTaskService } from 'api/services/informationextraction/TaskService';
 import { TrainModelForPDF } from 'api/services/informationextraction/TrainModelForPDF';
 import { TrainModelForText } from 'api/services/informationextraction/TrainModelForText';
 import { IXTrainModelJob } from 'api/services/informationextraction/TrainModelJob';
-import settings from 'api/settings';
+import settings from '../settings/index.js';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { AcceptSuggestionsJob } from 'api/suggestions/jobs/AcceptSuggestionsJob';
 import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';

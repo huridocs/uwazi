@@ -4,8 +4,8 @@
 import Ajv from 'ajv';
 
 import date from 'api/utils/date';
-import { LanguageISO6391, PropertySchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { LanguageISO6391, PropertySchema } from '../../shared/types/commonTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import {
   CommonSuggestion,
   IXSuggestionType,
@@ -16,7 +16,7 @@ import {
   TextSelectionSuggestionSchema,
   ValuesSelectionSuggestionSchema,
 } from 'shared/types/suggestionSchema';
-import { syncWrapValidator } from 'shared/tsUtils';
+import { syncWrapValidator } from '../../shared/tsUtils.js';
 import { InternalIXResultsMessage } from './InformationExtraction';
 import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';
 

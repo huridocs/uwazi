@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import SnippetList from 'app/Documents/components/SnippetList';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { Form } from 'react-redux-form';
-import { NumericRangeSlide } from 'app/ReactReduxForms';
+import { NumericRangeSlide } from '../../ReactReduxForms/index.js';
 import { Icon } from 'app/Layout/Icon';
 import { TemplateLabel, DocumentLanguage } from 'app/Layout';
 

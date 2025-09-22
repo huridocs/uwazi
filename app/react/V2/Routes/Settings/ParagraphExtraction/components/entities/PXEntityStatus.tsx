@@ -1,6 +1,6 @@
 import { Pill } from 'app/V2/Components/UI';
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 

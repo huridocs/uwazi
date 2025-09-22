@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';

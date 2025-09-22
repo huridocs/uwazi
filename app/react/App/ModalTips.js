@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import Modal from 'app/Layout/Modal';
 // eslint-disable-next-line import/exports-last
 export default class ModalTips extends Component {

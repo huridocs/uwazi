@@ -1,7 +1,7 @@
 /** @format */
 
-import { I18NUtils } from 'app/I18N';
-import { isClient } from 'app/utils';
+import { I18NUtils } from '../../I18N/index.js';
+import { isClient } from '../../utils/index.js';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import moment from 'moment';

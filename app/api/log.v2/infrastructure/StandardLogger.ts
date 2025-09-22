@@ -1,5 +1,5 @@
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { Tenant } from 'api/tenants/tenantContext';
+import { Tenant } from '../tenants/tenantContext.js';
 import { Logger } from '../contracts/Logger';
 import { LogLevel, LogLevels } from './LogLevels';
 import { LogEntry, LogMetadata } from './LogEntry';

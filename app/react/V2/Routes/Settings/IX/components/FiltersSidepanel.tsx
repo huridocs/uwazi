@@ -4,7 +4,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'V2/Components/Forms';
 import { StatsTooltip } from './Tooltip';

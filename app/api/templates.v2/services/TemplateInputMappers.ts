@@ -2,7 +2,7 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectId } from 'mongodb';

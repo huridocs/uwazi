@@ -8,22 +8,22 @@ import { storage } from 'api/files';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { EnforcedWithId } from 'api/odm';
-import { tenants } from 'api/tenants/tenantContext';
+import { EnforcedWithId } from '../odm/index.js';
+import { tenants } from '../tenants/tenantContext.js';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { filesModel } from 'api/files/filesModel';
 import entities from 'api/entities/entities';
-import settings from 'api/settings/settings';
-import request from 'shared/JSONRequest';
-import { EntitySchema } from 'shared/types/entityType';
+import settings from '../settings/settings.js';
+import request from '../../shared/JSONRequest.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import {
   ExtractedMetadataSchema,
   LanguageISO6391,
   ObjectIdSchema,
   PropertySchema,
-} from 'shared/types/commonTypes';
+} from '../../shared/types/commonTypes.js';
 import { ModelStatus } from 'shared/types/IXModelSchema';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import {
   BATCH_SIZE_FOR_PDF,
   BATCH_SIZE_FOR_PROPERTY,
@@ -34,7 +34,7 @@ import {
 } from 'api/services/informationextraction/ixMaterials';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '../../shared/language/index.js';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
 import moment from 'moment';

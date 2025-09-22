@@ -5,7 +5,7 @@ import React from 'react';
 import SafeHTML from 'app/utils/SafeHTML';
 import getFieldLabel from 'app/Templates/utils/getFieldLabel';
 
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 
 export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   let content;

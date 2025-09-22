@@ -1,8 +1,8 @@
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import { ensure } from 'shared/tsUtils';
+import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
+import { ensure } from '../../shared/tsUtils.js';
 import { sanitizeStringValue } from '../sanitizationUtils';
 import {
   LabelInfo,

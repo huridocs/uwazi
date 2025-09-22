@@ -1,8 +1,8 @@
 import { createStore } from 'jotai';
 import { sortBy } from 'lodash';
-import { isClient } from 'app/utils';
-import { store } from 'app/store';
-import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
+import { isClient } from '../../utils/index.js';
+import { store } from '../../store.js';
+import { ClientSettings, ClientThesaurus, ClientUserSchema } from '../../apiResponseTypes.js';
 import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from 'app/istore';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';

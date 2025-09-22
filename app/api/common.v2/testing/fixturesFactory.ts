@@ -11,7 +11,7 @@ import {
   ReadableRelationship,
   Relationship,
 } from 'api/relationships.v2/model/Relationship';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { EntityPermissions, Entry } from 'api/authorization.v2/model/EntityPermissions';
 
 type idMapperFunction = (id: string) => ObjectId;

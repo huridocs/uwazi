@@ -1,7 +1,7 @@
 /** @format */
 
 import { combineReducers } from 'redux';
-import createReducer from 'app/BasicReducer';
+import createReducer from '../../BasicReducer/index.js';
 
 import page from 'app/Pages/reducers/reducer';
 import notifications from 'app/Notifications/reducers/notificationsReducer';

@@ -1,6 +1,6 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import api from 'app/Entities/EntitiesAPI';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import {
   removeDocument,
   removeDocuments,

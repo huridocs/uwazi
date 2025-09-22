@@ -1,7 +1,7 @@
 import React from 'react';
 import { HandleTextSelection } from '@huridocs/react-text-selection-handler/dist';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 
 type TextPropertyProps = {

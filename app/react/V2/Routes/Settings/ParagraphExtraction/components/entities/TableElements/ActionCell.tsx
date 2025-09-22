@@ -1,7 +1,7 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { Link } from 'react-router';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Button } from 'app/V2/Components/UI';
 import { TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
 

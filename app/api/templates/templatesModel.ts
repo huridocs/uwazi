@@ -1,4 +1,4 @@
-import { instanceModel } from 'api/odm';
+import { instanceModel } from '../odm/index.js';
 import mongoose from 'mongoose';
 import { TemplateSchema } from '../../shared/types/templateType';
 

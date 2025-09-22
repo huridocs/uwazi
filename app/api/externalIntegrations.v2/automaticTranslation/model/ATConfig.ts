@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Property } from 'api/templates.v2/model/Property';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
 class ATTemplateConfig {
   readonly template: string;

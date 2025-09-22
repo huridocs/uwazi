@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import { get, uniqBy } from 'lodash';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
-import { t } from 'app/I18N';
+import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
+import { t } from '../../I18N/index.js';
 import { RadioProps } from 'V2/Components/Forms';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { TableSuggestion, MultiValueSuggestion } from '../types';

@@ -1,6 +1,6 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
 export class ElasticEntityMapper {
   private templateDS: TemplatesDataSource;

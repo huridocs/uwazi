@@ -9,7 +9,7 @@ import { search } from 'api/search';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
-import { MetadataSchema } from 'shared/types/commonTypes';
+import { MetadataSchema } from '../../shared/types/commonTypes.js';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';

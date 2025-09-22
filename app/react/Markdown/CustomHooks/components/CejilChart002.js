@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 
 import { RequestParams } from 'app/utils/RequestParams';
-import api from 'app/Search/SearchAPI';
-import { t } from 'app/I18N';
+import api from '../../Search/SearchAPI.js';
+import { t } from '../../I18N/index.js';
 
 import CejilChart from './CejilChart';
 import parsingUtils from '../utils/parsingUtils';

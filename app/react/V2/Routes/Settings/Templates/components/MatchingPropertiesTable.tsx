@@ -5,9 +5,9 @@ import { useAtomValue } from 'jotai';
 import { templatesAtom, thesauriAtom, relationshipTypesAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI';
 import { propertyIconsSmall } from 'V2/Components/UI/Icons';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import { translationsKeys } from '../helpers';
 

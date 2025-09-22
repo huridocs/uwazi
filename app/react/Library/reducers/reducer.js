@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import Immutable from 'immutable';
-import createReducer from 'app/BasicReducer';
-import { isClient } from 'app/utils';
+import createReducer from '../../BasicReducer/index.js';
+import { isClient } from '../../utils/index.js';
 
 import { modelReducer, formReducer } from 'react-redux-form';
 import { manageAttachmentsReducer } from 'app/Attachments';

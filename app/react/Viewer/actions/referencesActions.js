@@ -1,7 +1,7 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { notificationActions } from 'app/Notifications';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions as connectionsActions } from 'app/Connections';

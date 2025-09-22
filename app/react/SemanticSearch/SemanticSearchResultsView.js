@@ -1,5 +1,5 @@
 import React from 'react';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import RouteHandler from 'app/App/RouteHandler';
 import ResultsViewer from './components/SemanticSearchResults';
 import semanticSearchAPI from './SemanticSearchAPI';

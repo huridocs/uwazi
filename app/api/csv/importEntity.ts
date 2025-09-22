@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { search } from 'api/search';
 import { processDocument } from 'api/files/processDocument';
 import { RawEntity } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
-import { MetadataObjectSchema, MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, MetadataSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ImportFile } from 'api/csv/importFile';
-import { EntitySchema } from 'shared/types/entityType';
-import { ensure } from 'shared/tsUtils';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { ensure } from '../../shared/tsUtils.js';
 import { files, generateFileName, storage } from 'api/files';
 import { generateID } from 'shared/IDGenerator';
 

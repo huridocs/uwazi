@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -23,7 +23,7 @@ import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from 'V2/Compone
 import { CodeEditor } from 'V2/Components/CodeEditor';
 import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable';
 import { HTMLNotification, JSNotification } from './components/PageEditorComponents';
 

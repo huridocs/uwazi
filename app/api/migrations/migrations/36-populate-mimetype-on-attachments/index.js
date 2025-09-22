@@ -1,4 +1,4 @@
-import request from 'shared/JSONRequest';
+import request from '../../shared/JSONRequest.js';
 import { attachmentsPath } from 'api/files/filesystem';
 import mime from 'mime-types';
 

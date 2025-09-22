@@ -1,5 +1,5 @@
 import React from 'react';
-import { I18NLinkV2 as I18NLink, Translate } from 'app/I18N';
+import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
 import { NeedAuthorization } from 'V2/Components/UI/NeedAuthorization';
 import { Icon } from 'app/UI';
 import { PreserveIcon } from 'app/Layout/PreserveIcon';

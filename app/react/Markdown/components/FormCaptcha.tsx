@@ -1,7 +1,7 @@
 import React from 'react';
-import { FormGroup } from 'app/Forms';
-import { Captcha } from 'app/ReactReduxForms';
-import { Translate } from 'app/I18N';
+import { FormGroup } from '../../Forms/index.js';
+import { Captcha } from '../../ReactReduxForms/index.js';
+import { Translate } from '../../I18N/index.js';
 
 type CaptchaComponentProps = { remote: Boolean; refresh: () => {} };
 

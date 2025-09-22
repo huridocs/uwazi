@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Button } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
-import { isClient } from 'app/utils';
+import { Translate } from '../../I18N/index.js';
+import { isClient } from '../../utils/index.js';
 import { captureException } from '@sentry/react';
 import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
 import { notificationAtom } from 'V2/atoms';

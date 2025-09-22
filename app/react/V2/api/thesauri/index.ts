@@ -1,5 +1,5 @@
 import api from 'app/utils/api';
-import { ClientThesaurus } from 'app/apiResponseTypes';
+import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import { httpRequest } from 'shared/superagent';

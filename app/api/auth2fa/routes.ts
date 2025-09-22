@@ -1,7 +1,7 @@
 import { Application } from 'express';
 import needsAuthorization from 'api/auth/authMiddleware';
-import * as usersUtils from 'api/auth2fa/usersUtils';
-import { validation } from 'api/utils';
+import * as usersUtils from '../auth2fa/usersUtils.js';
+import { validation } from '../utils/index.js';
 import { ObjectIdAsString } from 'api/utils/ajvSchemas';
 import { validatePasswordMiddleWare } from 'api/auth';
 

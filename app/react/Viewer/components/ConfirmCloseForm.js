@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 
 import { hideModal } from 'app/Modals/actions/modalActions';
 import Modal from 'app/Layout/Modal';

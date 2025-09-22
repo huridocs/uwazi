@@ -1,6 +1,6 @@
 import { EventsBus } from 'api/eventsbus';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 import { PageReferences } from 'app/Viewer/components/PageReferences';
 import { PageSelections } from 'app/Viewer/components/PageSelections';
 import { calculateScaling } from 'V2/Components/PDFViewer';

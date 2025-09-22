@@ -1,4 +1,4 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { getDocument } from 'app/Viewer/actions/documentActions';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';

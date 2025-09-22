@@ -14,7 +14,7 @@ import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { advancedSort } from 'app/utils/advancedSort';
 import { ClientTranslationSchema } from 'app/istore';
 import { InputField } from 'app/V2/Components/Forms';
@@ -24,9 +24,9 @@ import { Button, ToggleButton, ConfirmNavigationModal } from 'V2/Components/UI';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
-import { availableLanguages } from 'shared/language';
-import { Settings } from 'shared/types/settingsType';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { availableLanguages } from '../../shared/language/index.js';
+import { Settings } from '../../shared/types/settingsType.js';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { LanguagePill } from './components/LanguagePill';
 
 const editTranslationsLoader =

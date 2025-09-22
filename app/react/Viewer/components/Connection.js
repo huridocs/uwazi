@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { fromJS as Immutable } from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import { I18NLink } from 'app/I18N';
+import { I18NLink } from '../../I18N/index.js';
 import { NeedAuthorization } from 'app/Auth';
 import { withContext } from 'app/componentWrappers';
 import ShowIf from 'app/App/ShowIf';

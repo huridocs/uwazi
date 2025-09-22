@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import RouteHandler from 'app/App/RouteHandler';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { withRouter } from 'app/componentWrappers';
 import auth from 'app/Auth';
 

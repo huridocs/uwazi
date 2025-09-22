@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
-import settings from 'api/settings';
-import { FileType } from 'shared/types/fileType';
+import settings from '../settings/index.js';
+import { FileType } from '../../shared/types/fileType.js';
 
 import { files } from './files';
 import { PDF } from './PDF';

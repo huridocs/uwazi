@@ -2,8 +2,8 @@
 import RedisSMQ, { QueueMessage } from 'rsmq';
 import { RedisClient } from 'redis';
 import { Repeater } from 'api/utils/Repeater';
-import { config } from 'api/config';
-import { handleError } from 'api/utils';
+import { config } from '../config.js';
+import { handleError } from '../utils/index.js';
 import { Redis } from 'api/infrastructure/Redis';
 
 type DefaultTaskType = string;

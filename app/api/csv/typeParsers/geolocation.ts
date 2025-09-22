@@ -1,6 +1,6 @@
 import { RawEntity } from 'api/csv/entityRow';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import { ensure } from 'shared/tsUtils';
+import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
+import { ensure } from '../../shared/tsUtils.js';
 import { csvConstants } from '../csvDefinitions';
 import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils';
 

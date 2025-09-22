@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
 import { EntityFilter, Filters } from './Filters';

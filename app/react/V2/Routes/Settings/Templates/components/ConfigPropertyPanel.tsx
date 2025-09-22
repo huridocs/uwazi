@@ -2,9 +2,9 @@
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Sidepanel } from 'V2/Components/UI/Sidepanel';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { Button } from 'V2/Components/UI/Button';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
 import { ClientTemplateSchema, ClientProperty } from 'V2/shared/types';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { useAtomValue } from 'jotai';

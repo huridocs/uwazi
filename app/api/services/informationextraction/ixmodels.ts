@@ -3,7 +3,7 @@ import { Suggestions } from 'api/suggestions/suggestions';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXModelType } from 'shared/types/IXModelType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { IXModelsModel as model } from './IXModelsModel';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;

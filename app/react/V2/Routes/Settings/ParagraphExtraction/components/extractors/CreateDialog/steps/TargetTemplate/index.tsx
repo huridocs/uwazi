@@ -1,7 +1,7 @@
 import React from 'react';
 import { Body } from './Body';
 import { Footer } from './Footer';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 
 const TargetTemplateStep = {
   Body,

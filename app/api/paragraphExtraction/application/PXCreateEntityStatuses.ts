@@ -1,5 +1,5 @@
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguagesListSchema } from '../../shared/types/commonTypes.js';
 import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';

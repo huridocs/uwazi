@@ -1,4 +1,4 @@
-import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
+import { ClientSettingsFilterSchema } from '../../apiResponseTypes.js';
 import { ClientTemplateSchema } from 'app/istore';
 
 type Filter = ClientSettingsFilterSchema & {

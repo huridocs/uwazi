@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
-import { Translate, I18NLinkV2 as I18NLink, t } from 'app/I18N';
+import { Translate, I18NLinkV2 as I18NLink, t } from '../../I18N/index.js';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { Table } from 'V2/Components/UI/Table/Table';
@@ -10,7 +10,7 @@ import * as templatesApi from 'V2/api/templates';
 import { RequestParams } from 'app/utils/RequestParams';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { ColumnDef } from '@tanstack/react-table';
-import { Template } from 'app/apiResponseTypes';
+import { Template } from '../../apiResponseTypes.js';
 import { columns } from './components/TemplatesTableComponents';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
 import { TemplateRow } from './types';

@@ -12,7 +12,7 @@ import { Template } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { tenants } from 'api/tenants';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
 import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';

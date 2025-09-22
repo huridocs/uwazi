@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { formatBytes } from 'V2/shared/formatHelpers';
 
 type FileDropzoneProps = {

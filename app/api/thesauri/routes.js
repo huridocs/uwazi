@@ -1,4 +1,4 @@
-import { CSVLoader } from 'api/csv';
+import { CSVLoader } from '../csv/index.js';
 import { uploadMiddleware } from 'api/files';
 
 import { validation } from '../utils';

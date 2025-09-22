@@ -1,4 +1,4 @@
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 import NProgress from 'nprogress';
 
 const loadingProgressBar = {

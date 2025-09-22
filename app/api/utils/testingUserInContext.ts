@@ -1,7 +1,7 @@
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { UserSchema } from 'shared/types/userType';
 import { UserRole } from 'shared/types/userSchema';
-import { DataType } from 'api/odm';
+import { DataType } from '../odm/index.js';
 import { ObjectId } from 'mongodb';
 
 export class UserInContextMockFactory {

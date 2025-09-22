@@ -3,11 +3,11 @@ import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
 import { get as getThesauri } from 'V2/api/thesauri';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { httpRequest } from 'shared/superagent';
-import uniqueID from 'shared/uniqueID';
+import uniqueID from '../../shared/uniqueID.js';
 import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
 import { ThesaurusRow } from './components/TableComponents';
 

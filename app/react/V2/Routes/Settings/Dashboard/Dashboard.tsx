@@ -4,7 +4,7 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router';
 
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Card } from 'app/V2/Components/UI';
 import { getStats } from 'app/V2/api/settings';

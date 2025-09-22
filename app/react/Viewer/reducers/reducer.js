@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import createReducer from 'app/BasicReducer';
+import createReducer from '../../BasicReducer/index.js';
 import { modelReducer, formReducer } from 'react-redux-form';
 
 import { manageAttachmentsReducer } from 'app/Attachments';

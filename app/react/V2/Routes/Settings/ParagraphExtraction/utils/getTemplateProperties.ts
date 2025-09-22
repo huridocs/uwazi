@@ -1,4 +1,4 @@
-import { Template } from 'app/apiResponseTypes';
+import { Template } from '../../apiResponseTypes.js';
 import { TemplateSchema } from 'shared/types/templateType';
 
 type TemplateSchemaKeys = keyof TemplateSchema;

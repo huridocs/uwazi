@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 
-import { FileType as LegacyFileType } from 'shared/types/fileType';
+import { FileType as LegacyFileType } from '../../shared/types/fileType.js';
 import { FileType } from 'api/files.v2/model/FileType';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { Document } from 'api/files.v2/model/Document';

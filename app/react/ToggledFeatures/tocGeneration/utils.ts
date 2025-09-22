@@ -1,4 +1,4 @@
-import { ClientSettings } from 'app/apiResponseTypes';
+import { ClientSettings } from '../../apiResponseTypes.js';
 import { SearchParams } from 'shared/types/searchParameterType';
 
 export const tocGenerationUtils = {

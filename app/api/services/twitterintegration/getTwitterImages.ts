@@ -1,5 +1,5 @@
 import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { Readable } from 'stream';
 import { files, generateFileName, storage } from 'api/files';
 

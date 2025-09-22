@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 
 import { showFilters, hideFilters } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';

@@ -1,6 +1,6 @@
-import { DB } from 'api/odm';
-import { tenants } from 'api/tenants/tenantContext';
-import { config } from 'api/config';
+import { DB } from '../odm/index.js';
+import { tenants } from '../tenants/tenantContext.js';
+import { config } from '../config.js';
 import { migrator } from './migrator';
 
 export const runMigration = async () => {

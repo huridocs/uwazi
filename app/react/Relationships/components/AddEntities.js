@@ -8,7 +8,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import SearchResults from 'app/Connections/components/SearchResults';
 import { loadInReduxForm } from 'app/Metadata/actions/actions';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { closePanel } from '../actions/uiActions';
 import SearchForm from './SearchEntitiesForm';
 import * as actions from '../actions/actions';

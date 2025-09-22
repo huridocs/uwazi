@@ -2,7 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import { get, has, isEmpty } from 'lodash';
 import { ClientPropertySchema, ClientEntitySchema } from 'app/istore';
 import { search } from 'V2/api/search';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { ClientTemplateSchema } from 'app/V2/shared/types';
 import { SuggestionValue, EntitySuggestion } from '../types';
 

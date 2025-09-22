@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';

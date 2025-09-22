@@ -1,13 +1,13 @@
 import multer from 'multer';
 
-import { models, WithId } from 'api/odm';
+import { models, WithId } from '../odm/index.js';
 import { search } from 'api/search';
 
 import { storage, uploadMiddleware } from 'api/files';
 import { updateMapping } from 'api/search/entitiesIndex';
 import { Application, Request } from 'express';
-import { TranslationType } from 'shared/translationType';
-import { FileType } from 'shared/types/fileType';
+import { TranslationType } from '../../shared/translationType.js';
+import { FileType } from '../../shared/types/fileType.js';
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { needsAuthorization } from '../auth';

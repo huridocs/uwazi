@@ -2,7 +2,7 @@
  * Uwazi routes that start and inspect tasks.
  */
 import { needsAuthorization } from 'api/auth';
-import { validation } from 'api/utils';
+import { validation } from '../utils/index.js';
 import { Application, Request, Response } from 'express';
 import { TaskProvider } from 'shared/tasks/tasks';
 

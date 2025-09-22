@@ -2,12 +2,12 @@ import Ajv, { ErrorObject } from 'ajv';
 import { ObjectId } from 'mongodb';
 
 import model from 'api/templates/templatesModel';
-import templates from 'api/templates';
+import templates from '../templates/index.js';
 import pages from 'api/pages';
-import { thesauri } from 'api/thesauri/thesauri';
+import { thesauri } from '../thesauri/thesauri.js';
 
-import { ensure, wrapValidator } from 'shared/tsUtils';
-import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
+import { ensure, wrapValidator } from '../../shared/tsUtils.js';
+import { objectIdSchema, propertySchema } from '../../shared/types/commonSchemas.js';
 import { getCompatibleTypes } from 'shared/propertyTypes';
 
 import { TemplateSchema } from './templateType';

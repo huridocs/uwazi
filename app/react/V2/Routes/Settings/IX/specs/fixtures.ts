@@ -1,6 +1,6 @@
 import { ClientEntitySchema } from 'app/istore';
 import { ClientTemplateSchema } from 'V2/shared/types';
-import { ClientThesaurus } from 'app/apiResponseTypes';
+import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
 
 const thesauri: ClientThesaurus[] = [

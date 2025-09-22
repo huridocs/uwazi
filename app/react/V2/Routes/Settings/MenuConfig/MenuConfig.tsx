@@ -6,7 +6,7 @@ import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { cloneDeep, isEqual } from 'lodash';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import * as SettingsAPI from 'app/V2/api/settings';
 import { notificationAtom } from 'app/V2/atoms';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';

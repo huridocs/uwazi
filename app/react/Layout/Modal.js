@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactModal from 'react-modal';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 
 export default class Modal extends Component {
   render() {

@@ -1,5 +1,5 @@
-import { actions } from 'app/BasicReducer';
-import { t } from 'app/I18N';
+import { actions } from '../../BasicReducer/index.js';
+import { t } from '../../I18N/index.js';
 import { notificationActions } from 'app/Notifications';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';

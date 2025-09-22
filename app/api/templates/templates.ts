@@ -1,55 +1,55 @@
 /* eslint-disable max-statements */
 import { ClientSession, ObjectId } from 'mongodb';
 
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import entities from 'api/entities';
-import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
-import { applicationEventsBus } from 'api/eventsbus';
-import translations from 'api/i18n/translations';
-import { WithId } from 'api/odm';
-import { search } from 'api/search';
-import { reindexAll, updateMapping } from 'api/search/entitiesIndex';
-import settings from 'api/settings/settings';
-import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
-import createError from 'api/utils/Error';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ContextType } from 'shared/translationSchema';
-import { ensure } from 'shared/tsUtils';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { validateTemplate } from 'shared/types/templateSchema';
-import { TemplateSchema } from 'shared/types/templateType';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
-import { tenants } from 'api/tenants';
-import { CreateTemplateUseCase } from 'api/core/application/CreateTemplate';
+import { ValidationError } from '../common.v2/validation/ValidationError.js';
+import entities from '../entities/index.js';
+import { populateGeneratedIdByTemplate } from '../entities/generatedIdPropertyAutoFiller.js';
+import { applicationEventsBus } from '../eventsbus/index.js';
+import translations from '../i18n/translations.js';
+import { WithId } from '../odm/index.js';
+import { search } from '../search/index.js';
+import { reindexAll, updateMapping } from '../search/entitiesIndex.js';
+import settings from '../settings/settings.js';
+import { TemplateInputMappers } from '../templates.v2/services/TemplateInputMappers.js';
+import dictionariesModel from '../thesauri/dictionariesModel.js';
+import createError from '../utils/Error.js';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
+import { ContextType } from '../../shared/translationSchema.js';
+import { ensure } from '../../shared/tsUtils.js';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
+import { validateTemplate } from '../../shared/types/templateSchema.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+import { tenants } from '../tenants/index.js';
+import { CreateTemplateUseCase } from '../core/application/CreateTemplate.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
-import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { UpdateTemplateUseCase } from 'api/core/application/UpdateTemplate';
+} from '../common.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+import { MongoThesauriDataSource } from '../core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { TemplateMapper } from '../core/infrastructure/mongodb/template/Mapper.js';
+import { LegacyTranslationService } from '../core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { DefaultRelationshipTypesDataSource } from '../relationshiptypes.v2/database/data_source_defaults.js';
+import { UpdateTemplateUseCase } from '../core/application/UpdateTemplate.js';
 import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
-} from 'api/core/application/TemplateDTOs';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
-import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase';
-import { TemplateValidationService } from './validation/TemplateValidationService';
-import * as v2 from './v2_support';
+} from '../core/application/TemplateDTOs.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoMultiLanguageEntityDataSource } from '../entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { TemplatePostProcessEntitiesJob } from '../core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '../core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
+import { LegacyPageService } from '../core/infrastructure/mongodb/page/LegacyPageService.js';
+import { denormalizeTemplateEntities } from './templateUpdateDenormalizeUseCase.js';
+import { TemplateValidationService } from './validation/TemplateValidationService.js';
+import * as v2 from './v2_support.js';
 import {
   setInheritedPropertiesType,
   generateNames,

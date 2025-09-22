@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import * as Sentry from '@sentry/node';
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
 import { Redis } from 'api/infrastructure/Redis';
@@ -8,7 +8,7 @@ import { LogEntry } from 'api/log.v2/infrastructure/LogEntry';
 import { LogWriter } from 'api/log.v2/infrastructure/LogWriter';
 import { SystemLogger, withFeature } from 'api/log.v2/infrastructure/StandardLogger';
 import { StandardJSONWriter } from 'api/log.v2/infrastructure/writers/StandardJSONWriter';
-import { DB } from 'api/odm';
+import { DB } from '../odm/index.js';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { RoundRobinQueueAdapter } from 'api/queue.v2/configuration/factories';

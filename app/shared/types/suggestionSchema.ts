@@ -3,7 +3,7 @@ import {
   objectIdSchema,
   propertyValueSchema,
   selectionRectanglesSchema,
-} from 'shared/types/commonSchemas';
+} from '../../shared/types/commonSchemas.js';
 import { propertyTypes } from 'shared/propertyTypes';
 
 const commonSuggestionMessageProperties = {

@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { I18NLink } from 'app/I18N';
-import { actions } from 'app/BasicReducer';
+import { I18NLink } from '../../I18N/index.js';
+import { actions } from '../../BasicReducer/index.js';
 import { store } from '../store';
 
 export class SiteName extends Component {

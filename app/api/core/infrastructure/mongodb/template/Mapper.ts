@@ -27,7 +27,7 @@ import { Property } from 'api/templates.v2/model/Property';
 import { Template } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { ObjectId } from 'mongodb';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {

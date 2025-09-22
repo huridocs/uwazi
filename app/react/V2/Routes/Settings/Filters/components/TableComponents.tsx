@@ -2,7 +2,7 @@
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Button } from 'V2/Components/UI';
 import { sidepanelAtom } from './sidepanelAtom';
 import { Filter } from './helpers';

@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from 'V2/Components/Forms';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { thesauriAtom } from 'V2/atoms';
-import { ClientThesaurus } from 'app/apiResponseTypes';
+import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { orderBy } from 'lodash';
 
 interface ThesaurusFieldProps {

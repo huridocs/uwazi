@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import settings from 'api/settings';
+import settings from '../settings/index.js';
 import { captchaAuthorization } from './index';
 
 export const publicAPIMiddleware = async (req: Request, res: Response, next: NextFunction) => {

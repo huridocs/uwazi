@@ -1,11 +1,11 @@
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import { IXServices } from 'api/services/informationextraction/IXServices';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
-import { LanguageUtils } from 'shared/language';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { LanguageUtils } from '../../shared/language/index.js';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { IXExtractorType } from 'shared/types/extractorType';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import { IXSuggestionStateType, IXSuggestionType } from 'shared/types/suggestionType';
 import { LanguageNotSupportedError } from './ixValidationError';
 

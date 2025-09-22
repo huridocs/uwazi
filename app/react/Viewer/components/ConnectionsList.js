@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import { Warning } from 'app/Layout';
 import { closePanel, deactivateReference } from 'app/Viewer/actions/uiActions';

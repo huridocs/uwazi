@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
 import entitiesModel from 'api/entities/entitiesModel';
 import { filesModel } from 'api/files/filesModel';
-import { DataType, models, WithId } from 'api/odm';
+import { DataType, models, WithId } from '../odm/index.js';
 import { settingsModel } from 'api/settings/settingsModel';
 import templatesModel from 'api/templates/templatesModel';
-import { UpdateLog } from 'api/updatelogs';
-import { ensure } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { UpdateLog } from '../updatelogs/index.js';
+import { ensure } from '../../shared/tsUtils.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { FileType } from '../../shared/types/fileType.js';
 import {
   Settings,
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
-} from 'shared/types/settingsType';
+} from '../../shared/types/settingsType.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import sift from 'sift';
 

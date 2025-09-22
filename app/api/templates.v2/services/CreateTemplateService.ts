@@ -4,7 +4,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
-import { createError } from 'api/utils';
+import { createError } from '../utils/index.js';
 import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';

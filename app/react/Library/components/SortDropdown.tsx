@@ -5,7 +5,7 @@ import { actions } from 'react-redux-form';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
 import { useLocation, Location } from 'react-router';
 import { Icon } from 'UI';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t } from '../../I18N/index.js';
 import { wrapDispatch } from 'app/Multireducer';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';

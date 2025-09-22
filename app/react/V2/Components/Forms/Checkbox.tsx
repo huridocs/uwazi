@@ -2,7 +2,7 @@
 import React, { ReactEventHandler, Ref } from 'react';
 import { Checkbox as FlowbiteCheckbox, Label } from 'flowbite-react';
 import { isString } from 'lodash';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 
 interface CheckboxProps {
   name: string;

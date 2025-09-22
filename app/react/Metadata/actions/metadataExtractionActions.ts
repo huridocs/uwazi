@@ -2,9 +2,9 @@ import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { IImmutable } from 'shared/types/Immutable';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { notificationActions } from 'app/Notifications';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientFile } from 'app/istore';
 

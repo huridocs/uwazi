@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 
 import { tenants } from 'api/tenants';
-import { config } from 'api/config';
+import { config } from '../config.js';
 
 import { FileSystemStorage } from './FileSystemStorage';
 import { PathManager } from './PathManager';

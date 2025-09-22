@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { useFetchers } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { last } from 'lodash';
-import { Translate } from 'app/I18N';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { Translate } from '../../I18N/index.js';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { notificationAtom } from 'app/V2/atoms';
 import { FormIntent } from './types';
 

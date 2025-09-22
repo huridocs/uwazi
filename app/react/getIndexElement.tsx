@@ -1,4 +1,4 @@
-import { ClientSettings } from 'app/apiResponseTypes';
+import { ClientSettings } from '../../apiResponseTypes.js';
 import React from 'react';
 import { Navigate } from 'react-router';
 import LibraryRoot from './Library/Library';

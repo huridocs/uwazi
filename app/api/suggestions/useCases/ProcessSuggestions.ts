@@ -1,6 +1,6 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { ObjectId } from 'mongodb';
-import { EnforcedWithId } from 'api/odm';
+import { EnforcedWithId } from '../odm/index.js';
 import { IXModelType } from 'shared/types/IXModelType';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { Extractors, ModelNotReadyError } from 'api/services/informationextraction/ixextractors';

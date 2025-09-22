@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 import { Redis } from 'api/infrastructure/Redis';
 import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { DB } from 'api/odm';
+import { DB } from '../odm/index.js';
 import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
@@ -18,7 +18,7 @@ import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { syncWorker } from 'api/sync/syncWorker';
 import { tenants } from 'api/tenants';
 import { tocService } from 'api/toc_generation/tocService';
-import { sleep } from 'shared/tsUtils';
+import { sleep } from '../../shared/tsUtils.js';
 import { handleError } from './api/utils/handleError';
 
 const systemLogger = SystemLogger();

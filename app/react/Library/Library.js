@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, matchPath } from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import { withRouter } from 'app/componentWrappers';

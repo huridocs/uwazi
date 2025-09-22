@@ -7,13 +7,13 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
-import { objectIdSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema } from '../../shared/types/commonSchemas.js';
 import {
   IXAggregationQuery,
   IXSuggestionAggregation,
   IXSuggestionsQuery,
 } from 'shared/types/suggestionType';
-import { handleError } from 'api/utils';
+import { handleError } from '../utils/index.js';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';

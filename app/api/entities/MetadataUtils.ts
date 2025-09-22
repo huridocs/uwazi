@@ -1,4 +1,4 @@
-import { MetadataSchema } from 'shared/types/commonTypes';
+import { MetadataSchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from 'shared/types/templateType';
 
 type SanitizeInput = {

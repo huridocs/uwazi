@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { isObject } from 'lodash';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
 import { prepareHTMLMediaView } from 'shared/fileUploadUtils';

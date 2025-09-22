@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Form, Field } from 'react-redux-form';
 
-import { FormGroup, Select } from 'app/ReactReduxForms';
-import { elasticLanguages } from 'shared/language';
-import { t } from 'app/I18N';
+import { FormGroup, Select } from '../../ReactReduxForms/index.js';
+import { elasticLanguages } from '../../shared/language/index.js';
+import { t } from '../../I18N/index.js';
 import ShowIf from 'app/App/ShowIf';
 
 export class AttachmentForm extends Component {

@@ -2,7 +2,7 @@
 
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
-import createReducer from 'app/BasicReducer';
+import createReducer from '../../BasicReducer/index.js';
 
 import ui from './uiReducer.js';
 

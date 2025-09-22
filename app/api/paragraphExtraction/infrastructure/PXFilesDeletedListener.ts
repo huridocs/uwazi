@@ -7,7 +7,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { Document } from 'api/files.v2/model/Document';
 import { FileMappers } from 'api/files.v2/database/FilesMappers';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';

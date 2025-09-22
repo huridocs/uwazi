@@ -7,10 +7,10 @@ import { createReadStream, createWriteStream } from 'fs';
 import { access, readdir } from 'fs/promises';
 import path from 'path';
 
-import { config } from 'api/config';
-import { legacyLogger } from 'api/log';
+import { config } from '../config.js';
+import { legacyLogger } from '../log/index.js';
 import { tenants } from 'api/tenants';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 

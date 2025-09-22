@@ -3,11 +3,11 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import urljoin from 'url-join';
-import request from 'shared/JSONRequest';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import request from '../../shared/JSONRequest.js';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import moment from 'moment';
 import { emitToTenant } from 'api/socketio/setupSockets';
-import { EnforcedWithId } from 'api/odm';
+import { EnforcedWithId } from '../odm/index.js';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { getEntitiesForTraining } from './ixMaterials';

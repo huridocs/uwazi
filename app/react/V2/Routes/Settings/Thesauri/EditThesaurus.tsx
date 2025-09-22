@@ -5,12 +5,12 @@ import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { isEmpty } from 'lodash';
-import { Translate } from 'app/I18N';
-import { ClientThesaurus } from 'app/apiResponseTypes';
+import { Translate } from '../../I18N/index.js';
+import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, ConfirmNavigationModal } from 'V2/Components/UI';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import {
   addGroupSubmit,
   addItemSubmit,

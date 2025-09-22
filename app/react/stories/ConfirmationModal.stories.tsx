@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { action } from '@storybook/addon-actions';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 
 const meta: Meta<typeof ConfirmationModal> = {
   title: 'Components/Modal/ConfirmationModal',

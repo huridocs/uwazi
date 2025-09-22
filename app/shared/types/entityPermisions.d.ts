@@ -1,4 +1,4 @@
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { MixedAccessLevels } from './permissionSchema';
 
 export interface MemberWithPermission {

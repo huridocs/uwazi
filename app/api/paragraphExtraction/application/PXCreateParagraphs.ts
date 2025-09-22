@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import relationshipsDS from 'api/relationships';
 

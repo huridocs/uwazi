@@ -4,7 +4,7 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { SaveStream } from 'api/common.v2/contracts/SaveStream';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
+import { objectIndexToArrays, objectIndexToSets } from '../../shared/data_utils/objectIndex.js';
 import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { HubDataSource } from '../contracts/HubDataSource';

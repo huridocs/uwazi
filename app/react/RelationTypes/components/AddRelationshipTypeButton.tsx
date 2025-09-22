@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { IStore } from 'app/istore';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';

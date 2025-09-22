@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '../../shared/language/index.js';
 import { SegmentationType } from 'shared/types/segmentationType';
 
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';

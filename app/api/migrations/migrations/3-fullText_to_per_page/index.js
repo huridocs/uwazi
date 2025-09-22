@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { PDF } from 'api/files/PDF';
 import fs from 'fs';
 import path from 'path';

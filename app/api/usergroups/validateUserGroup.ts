@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
-import { wrapValidator } from 'shared/tsUtils';
+import { wrapValidator } from '../../shared/tsUtils.js';
 
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { userGroupSchema } from 'shared/types/userGroupSchema';

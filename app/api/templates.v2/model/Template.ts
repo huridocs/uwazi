@@ -1,4 +1,4 @@
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { Validator } from 'api/core/domain/Validator';
 import { TemplateWithDuplicatedPropertyValidator } from 'api/core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';

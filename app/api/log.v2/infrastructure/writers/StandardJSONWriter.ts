@@ -1,4 +1,4 @@
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { LogEntry } from '../LogEntry';
 import { LogWriter } from '../LogWriter';
 

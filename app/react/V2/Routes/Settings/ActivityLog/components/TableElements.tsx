@@ -5,7 +5,7 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
 import { Pill, Button } from 'app/V2/Components/UI';
 import type { PillColor } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { ActivityLogSemanticType } from 'shared/types/activityLogEntryType';
 import { LogEntry } from '../ActivityLogLoader';
 

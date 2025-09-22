@@ -1,9 +1,9 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXModelType } from 'shared/types/IXModelType';
 import { IXExtractorType } from 'shared/types/extractorType';
-import { EnforcedWithId } from 'api/odm';
+import { EnforcedWithId } from '../odm/index.js';
 import { Extractors, ModelNotReadyError } from 'api/services/informationextraction/ixextractors';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';

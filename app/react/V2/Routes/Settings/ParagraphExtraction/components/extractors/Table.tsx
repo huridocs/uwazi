@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { columns, NoDataCell } from './TableElements';
 import { PXTable } from '../../types';
 

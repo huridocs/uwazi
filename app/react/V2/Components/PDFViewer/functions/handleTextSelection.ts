@@ -1,5 +1,5 @@
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
 import { Highlights } from '../../../Routes/Settings/IX/types';
 
 const getHighlightsFromFile = (

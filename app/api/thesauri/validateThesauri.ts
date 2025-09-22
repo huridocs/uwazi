@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
-import { wrapValidator } from 'shared/tsUtils';
+import { wrapValidator } from '../../shared/tsUtils.js';
 import { thesaurusSchema } from 'shared/types/thesaurusSchema';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import model from './dictionariesModel';

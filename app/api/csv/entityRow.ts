@@ -1,4 +1,4 @@
-import { templateUtils } from 'api/templates';
+import { templateUtils } from '../templates/index.js';
 import { CSVRow } from 'api/csv/csv';
 import { csvConstants, headerWithLanguage, languageCodeSuffix } from './csvDefinitions';
 

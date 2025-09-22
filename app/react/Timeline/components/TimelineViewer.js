@@ -5,13 +5,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { Loader } from 'app/components/Elements/Loader';
-import { t as translate, I18NLink } from 'app/I18N';
+import { t as translate, I18NLink } from '../../I18N/index.js';
 import ShowIf from 'app/App/ShowIf';
 
 import DocumentsAPI from 'app/Documents/DocumentsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import ReferencesAPI from 'app/Viewer/referencesAPI';
-import formater from 'app/Metadata/helpers/formater';
+import formater from '../../Metadata/helpers/formater.js';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import { Icon } from 'UI';

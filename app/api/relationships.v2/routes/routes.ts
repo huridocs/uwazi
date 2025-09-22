@@ -4,7 +4,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 
 import { needsAuthorization } from 'api/auth';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { parseQuery } from 'api/utils';
+import { parseQuery } from '../utils/index.js';
 import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
 import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
 import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';

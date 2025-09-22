@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 

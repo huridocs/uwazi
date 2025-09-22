@@ -8,18 +8,18 @@ import {
   LanguageISO6391,
   ObjectIdSchema,
   PropertyTypeSchema,
-} from 'shared/types/commonTypes';
+} from '../../shared/types/commonTypes.js';
 import { filesModel } from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
 import entitiesModel from 'api/entities/entitiesModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
-import { FileType } from 'shared/types/fileType';
+import { FileType } from '../../shared/types/fileType.js';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ensure } from 'shared/tsUtils';
-import { EnforcedWithId, UwaziFilterQuery } from 'api/odm';
+import { ensure } from '../../shared/tsUtils.js';
+import { EnforcedWithId, UwaziFilterQuery } from '../odm/index.js';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { IXModelType } from 'shared/types/IXModelType';
 import { IXSuggestionType } from 'shared/types/suggestionType';

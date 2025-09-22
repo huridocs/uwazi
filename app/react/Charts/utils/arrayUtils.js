@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import colorScheme from './colorScheme';
 
 const compareStrings = (a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase());

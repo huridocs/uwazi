@@ -1,6 +1,6 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { EntitySchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import { MetadataSchema } from 'shared/types/commonTypes';
+import { MetadataSchema } from '../../shared/types/commonTypes.js';
 import { Entity } from '../model/Entity';
 import { EntityDBO } from './schemas/EntityTypes';
 

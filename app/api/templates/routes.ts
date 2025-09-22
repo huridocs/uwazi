@@ -1,4 +1,4 @@
-import settings from 'api/settings';
+import settings from '../settings/index.js';
 import { Application, Request } from 'express';
 import { inspect } from 'util';
 import needsAuthorization from '../auth/authMiddleware';

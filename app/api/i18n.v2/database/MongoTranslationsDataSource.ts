@@ -2,7 +2,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { MongoBulkWriteError, OptionalId } from 'mongodb';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
 import { Translation } from '../model/Translation';

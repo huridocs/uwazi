@@ -1,13 +1,13 @@
 import superagent from 'superagent';
 
-import { actions as basicActions } from 'app/BasicReducer';
+import { actions as basicActions } from '../../BasicReducer/index.js';
 import { notificationActions } from 'app/Notifications';
 import { selectSingleDocument } from 'app/Library/actions/libraryActions';
 import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { APIURL } from '../../config.js';
 import EntitiesApi from '../../Entities/EntitiesAPI';
 

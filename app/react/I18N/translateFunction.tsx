@@ -1,6 +1,6 @@
 import React from 'react';
 import { atomStore, translationsAtom, localeAtom } from 'V2/atoms';
-import translate, { getLocaleTranslation, getContext } from 'shared/translate';
+import translate, { getLocaleTranslation, getContext } from '../../shared/translate.js';
 import { Translate } from './Translate';
 
 //return type as any since there is no way to create conditional returns based on parameters

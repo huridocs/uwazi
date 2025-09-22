@@ -3,8 +3,8 @@ import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
 import { testingDB } from 'api/utils/testing_db';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
@@ -14,8 +14,8 @@ import {
   PropertyValueSchema,
   MetadataObjectSchema,
   ExtractedMetadataSchema,
-} from 'shared/types/commonTypes';
-import { UpdateLog } from 'api/updatelogs';
+} from '../../shared/types/commonTypes.js';
+import { UpdateLog } from '../updatelogs/index.js';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { WithId } from 'api/odm/model';
@@ -24,7 +24,7 @@ import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFact
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
-import { LanguageUtils } from 'shared/language';
+import { LanguageUtils } from '../../shared/language/index.js';
 import { ConnectionSchema } from 'shared/types/connectionType';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {

@@ -1,4 +1,4 @@
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';

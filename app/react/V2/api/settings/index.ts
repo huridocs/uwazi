@@ -1,8 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import { SettingsAPI } from 'app/Settings';
 import { RequestParams } from 'app/utils/RequestParams';
-import { ClientSettings, ClientSettingsLinkSchema } from 'app/apiResponseTypes';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { ClientSettings, ClientSettingsLinkSchema } from '../../apiResponseTypes.js';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import api from 'app/utils/api';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<ClientSettings> => {

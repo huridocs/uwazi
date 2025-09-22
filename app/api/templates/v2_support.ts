@@ -1,8 +1,8 @@
-import { WithId } from 'api/odm';
+import { WithId } from '../odm/index.js';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty';
 import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
-import { ensure } from 'shared/tsUtils';
+import { ensure } from '../../shared/tsUtils.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import templates from './templates';

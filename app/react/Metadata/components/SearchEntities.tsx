@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
 import SearchResults from 'app/Connections/components/SearchResults';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import SearchInput from 'app/Layout/SearchInput';
-import { debounce } from 'app/utils';
+import { debounce } from '../../utils/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
-import SearchApi from 'app/Search/SearchAPI';
+import SearchApi from '../../Search/SearchAPI.js';
 
 export type SearchEntitiesProps = {
   onSelect: Function;

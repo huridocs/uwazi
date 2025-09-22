@@ -8,7 +8,7 @@ import rison from '@huridocs/rison';
 import ShowIf from 'app/App/ShowIf';
 import { withRouter } from 'app/componentWrappers';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';

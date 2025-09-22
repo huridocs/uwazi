@@ -1,7 +1,7 @@
 import DatePicker from 'app/Forms/components/DatePicker';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 
 export interface MultiDateProps {
   value?: (number | null)[];

@@ -1,5 +1,5 @@
 import { Segmentation } from 'api/files.v2/model/Segmentation';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { Document } from 'api/files.v2/model/Document';
 import { File } from 'api/files.v2/model/File';
 import { PXExtractionKey } from './PXExtractionKey';

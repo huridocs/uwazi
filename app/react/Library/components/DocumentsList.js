@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
-import { actions as actionCreators } from 'app/BasicReducer';
+import { actions as actionCreators } from '../../BasicReducer/index.js';
 
 import {
   searchDocuments,

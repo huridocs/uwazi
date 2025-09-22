@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sidepanel } from 'app/V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { ActionPill } from './TableElements';
 

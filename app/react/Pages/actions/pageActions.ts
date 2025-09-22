@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import * as types from 'app/Pages/actions/actionTypes';
 
 import { PageType } from 'shared/types/pageType';

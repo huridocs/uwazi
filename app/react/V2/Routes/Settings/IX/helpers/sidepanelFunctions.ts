@@ -1,5 +1,5 @@
 import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertyValueSchema } from '../../shared/types/commonTypes.js';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import * as entitiesAPI from 'V2/api/entities';

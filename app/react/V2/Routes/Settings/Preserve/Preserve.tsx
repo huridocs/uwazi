@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { PreserveIcon } from 'app/Layout/PreserveIcon';
 import { useAtomValue } from 'jotai';
 import { settingsAtom, userAtom } from 'V2/atoms';

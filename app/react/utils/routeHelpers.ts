@@ -1,5 +1,5 @@
 import { Location } from 'react-router';
-import { risonDecodeOrIgnore } from 'app/utils';
+import { risonDecodeOrIgnore } from '../../utils/index.js';
 import { isArray } from 'lodash';
 
 const validateHomePageRoute = (route: string) => {

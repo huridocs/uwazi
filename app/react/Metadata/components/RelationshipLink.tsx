@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { I18NLink } from 'app/I18N';
+import { I18NLink } from '../../I18N/index.js';
 import { IStore } from 'app/istore';
 import { Icon } from 'app/Layout';
 import * as actions from '../../Relationships/actions/actions';

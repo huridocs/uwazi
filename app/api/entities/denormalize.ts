@@ -1,19 +1,19 @@
 /* eslint-disable max-lines */
-import { WithId } from 'api/odm';
-import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
+import { WithId } from '../odm/index.js';
+import translationsModel, { IndexedTranslations } from '../i18n/translations.js';
 import { search } from 'api/search';
-import templates from 'api/templates';
+import templates from '../templates/index.js';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import translate, { getContext } from 'shared/translate';
+import translate, { getContext } from '../../shared/translate.js';
 import {
   MetadataSchema,
   MetadataObjectSchema,
   PropertySchema,
   LanguageISO6391,
-} from 'shared/types/commonTypes';
+} from '../../shared/types/commonTypes.js';
 import { isString } from 'util';
 
 import model from './entitiesModel';

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { createSelector } from 'reselect';
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 
 const LibraryModeToggleButtons = ({
   zoomLevel,

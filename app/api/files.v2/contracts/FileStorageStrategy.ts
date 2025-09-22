@@ -1,4 +1,4 @@
-import { Tenant } from 'api/tenants/tenantContext';
+import { Tenant } from '../tenants/tenantContext.js';
 import { FileStorage, GetFileInput } from './FileStorage';
 import { File } from '../model/File';
 import { StoredFile } from '../model/StoredFile';

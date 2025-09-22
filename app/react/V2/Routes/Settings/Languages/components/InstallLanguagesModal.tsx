@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Translate, I18NApi } from 'app/I18N';
+import { Translate, I18NApi } from '../../I18N/index.js';
 import { Button, Modal } from 'app/V2/Components/UI';
 import { defaultSearch, MultiselectList, MultiselectListOption } from 'app/V2/Components/Forms';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageSchema } from '../../shared/types/commonTypes.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useApiCaller } from 'app/V2/CustomHooks/useApiCaller';
 

@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { Logger } from 'api/log.v2/contracts/Logger';
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import relationshipsDS from 'api/relationships';
 
 import { PXExtractor } from '../domain/PXExtractor';

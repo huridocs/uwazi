@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { withContext } from 'app/componentWrappers';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { deleteEntities } from 'app/Entities/actions/actions';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';

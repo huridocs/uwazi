@@ -1,4 +1,4 @@
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Icon } from 'app/UI';
 import React, { useState } from 'react';
 import { ShareEntityModal } from './ShareEntityModal';

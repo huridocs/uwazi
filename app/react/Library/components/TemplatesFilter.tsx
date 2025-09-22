@@ -2,12 +2,12 @@ import React from 'react';
 import _ from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Switcher } from 'app/ReactReduxForms';
-import { Translate } from 'app/I18N';
+import { Switcher } from '../../ReactReduxForms/index.js';
+import { Translate } from '../../I18N/index.js';
 import { IStore } from 'app/istore';
 import { NeedAuthorization } from 'app/Auth';
 import { withRouter } from 'app/componentWrappers';
-import { SettingsFilterSchema } from 'shared/types/settingsType';
+import { SettingsFilterSchema } from '../../shared/types/settingsType.js';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { LookupMultiSelect, Switcher } from 'app/ReactReduxForms';
+import { LookupMultiSelect, Switcher } from '../../ReactReduxForms/index.js';
 
 const SelectFilter = ({
   onChange = () => {},

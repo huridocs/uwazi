@@ -1,10 +1,10 @@
-import { EnforcedWithId } from 'api/odm';
+import { EnforcedWithId } from '../odm/index.js';
 import templatesModel from 'api/templates/templatesModel';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { ModelStatus } from 'shared/types/IXModelSchema';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { IXModelType } from 'shared/types/IXModelType';

@@ -6,7 +6,7 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserSchema } from 'shared/types/userType';
 import { PermissionSchema } from 'shared/types/permissionType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 
 import { createUpdateLogHelper } from './logHelper';
 import {

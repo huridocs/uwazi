@@ -8,7 +8,7 @@ import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 import { withContext } from 'app/componentWrappers';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from 'app/Metadata';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLink } from '../../I18N/index.js';
 import SidePanel from 'app/Layout/SidePanel';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { api as entitiesAPI } from 'app/Entities';

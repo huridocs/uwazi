@@ -1,6 +1,6 @@
 import { set } from 'lodash';
 import entities from 'api/entities/entities';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
 import { UserSchema } from 'shared/types/userType';
 import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
 

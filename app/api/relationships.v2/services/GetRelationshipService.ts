@@ -5,7 +5,7 @@ import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/
 import { RelationshipType } from 'api/relationshiptypes.v2/model/RelationshipType';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Template } from 'api/templates.v2/model/Template';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { Relationship, ReadableRelationship } from '../model/Relationship';
 

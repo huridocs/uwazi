@@ -1,4 +1,4 @@
-import { templateUtils } from 'api/templates';
+import { templateUtils } from '../templates/index.js';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';

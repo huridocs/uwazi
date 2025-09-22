@@ -1,6 +1,6 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { EnforcedWithId } from 'api/odm';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { EnforcedWithId } from '../odm/index.js';
 import { IXModelType } from 'shared/types/IXModelType';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';

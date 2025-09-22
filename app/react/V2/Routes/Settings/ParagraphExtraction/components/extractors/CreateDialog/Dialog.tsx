@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'V2/Components/UI';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { AddExtractorSteps } from './steps';
 import { useCreateExtractorContext } from './CreateExtractorContext';
 import { Steppers } from './Steppers';

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import settings from 'api/settings/settings';
+import settings from '../settings/settings.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {

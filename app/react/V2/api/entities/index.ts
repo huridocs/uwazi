@@ -1,7 +1,7 @@
 import api from 'app/utils/api';
 import { IncomingHttpHeaders } from 'http';
-import { EntitySchema } from 'shared/types/entityType';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as formatter from './formatter';
 

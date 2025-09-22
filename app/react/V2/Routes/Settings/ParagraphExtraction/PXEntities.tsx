@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button } from 'V2/Components/UI';
 import { notificationAtom, templatesAtom } from 'V2/atoms';

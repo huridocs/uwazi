@@ -1,21 +1,21 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { Translation } from 'api/i18n.v2/model/Translation';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoTranslationsSyncDataSource } from '../i18n.v2/database/MongoTranslationsSyncDataSource.js';
+import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
+import { Translation } from '../i18n.v2/model/Translation.js';
 import {
   CreateTranslationsData,
   CreateTranslationsService,
-} from 'api/i18n.v2/services/CreateTranslationsService';
-import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslationsService';
-import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
-import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
-import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
-import { EnforcedWithId, models } from 'api/odm';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+} from '../i18n.v2/services/CreateTranslationsService.js';
+import { DeleteTranslationsService } from '../i18n.v2/services/DeleteTranslationsService.js';
+import { GetTranslationsService } from '../i18n.v2/services/GetTranslationsService.js';
+import { UpsertTranslationsService } from '../i18n.v2/services/UpsertTranslationsService.js';
+import { ValidateTranslationsService } from '../i18n.v2/services/ValidateTranslationsService.js';
+import { EnforcedWithId, models } from '../odm/index.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { TranslationContext, TranslationType, TranslationValue } from '../../shared/translationType.js';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { IndexedContextValues } from './translations';
 
 models.translationsV2 = () =>

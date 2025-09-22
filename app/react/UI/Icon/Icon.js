@@ -3,7 +3,7 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { localeAtom } from 'V2/atoms/translationsAtoms';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { availableLanguages } from 'shared/language';
+import { availableLanguages } from '../../shared/language/index.js';
 import { loadIcons } from './library';
 
 loadIcons();

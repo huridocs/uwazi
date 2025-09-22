@@ -1,4 +1,4 @@
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
 
 import { PXExternalExtractionService } from './ExternalExtractionService/ExternalExtractionService';

@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
-import { isClient } from 'app/utils';
+import { isClient } from '../../utils/index.js';
 
 const buildScript = ({
   globalUrl,

@@ -1,4 +1,4 @@
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { generateID } from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
 //@ts-ignore

@@ -1,11 +1,11 @@
-import ID from 'shared/uniqueID';
+import ID from '../../shared/uniqueID.js';
 import { PageType } from 'shared/types/pageType';
 import { validatePage } from 'shared/types/pageSchema';
 import date from 'api/utils/date.js';
-import templates from 'api/templates';
-import { createError } from 'api/utils';
-import { UwaziFilterQuery } from 'api/odm';
-import { User } from 'api/users/usersModel';
+import templates from '../templates/index.js';
+import { createError } from '../utils/index.js';
+import { UwaziFilterQuery } from '../odm/index.js';
+import { User } from '../users/usersModel.js';
 
 import model from './pagesModel';
 import settings from '../settings';

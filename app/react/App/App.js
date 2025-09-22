@@ -10,7 +10,7 @@ import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
 import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
-import { TranslateModal, t } from 'app/I18N';
+import { TranslateModal, t } from '../../I18N/index.js';
 import { inlineEditAtom } from 'V2/atoms';
 import Confirm from './Confirm';
 import { Menu } from './Menu';

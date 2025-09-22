@@ -2,10 +2,10 @@ import path from 'path';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
 
-import ID from 'shared/uniqueID';
+import ID from '../../shared/uniqueID.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs, { access } from 'fs/promises';
-import { tenants } from 'api/tenants/tenantContext';
+import { tenants } from '../tenants/tenantContext.js';
 import { testingTenants } from 'api/utils/testingTenants';
 
 import { FileType } from '../../shared/types/fileType';

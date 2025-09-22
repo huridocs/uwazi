@@ -3,11 +3,11 @@ import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { get, isArray } from 'lodash';
 import { ClientTemplateSchema } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { secondsToDate } from 'V2/shared/dateHelpers';
 import { Truncate } from 'V2/Components/UI';
 import { thesauriAtom } from 'V2/atoms';
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
 import { EntitySuggestion } from '../types';
 
 // eslint-disable-next-line max-statements

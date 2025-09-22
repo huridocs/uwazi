@@ -1,8 +1,8 @@
 import * as otplib from 'otplib';
 
-import settingsModel from 'api/settings';
-import usersModel, { User } from 'api/users/usersModel';
-import { createError } from 'api/utils';
+import settingsModel from '../settings/index.js';
+import usersModel, { User } from '../users/usersModel.js';
+import { createError } from '../utils/index.js';
 
 const checkUserExists = (user: User) => {
   if (!user) {

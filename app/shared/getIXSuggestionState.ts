@@ -1,5 +1,5 @@
 import { isSameDate } from 'shared/isSameDate';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import {
   IXSuggestionStateType,
   IXSuggestionType,

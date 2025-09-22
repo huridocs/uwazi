@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { ArrayUtils } from 'api/common.v2/utils/Array';
 import { IXServices } from 'api/services/informationextraction/IXServices';

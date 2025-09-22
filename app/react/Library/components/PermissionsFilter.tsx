@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { MultiSelect } from 'app/Forms';
+import { MultiSelect } from '../../Forms/index.js';
 import { Aggregations } from 'shared/types/aggregations';
 import { NeedAuthorization } from 'app/Auth';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Control } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientUserSchema } from '../../apiResponseTypes.js';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
 import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';

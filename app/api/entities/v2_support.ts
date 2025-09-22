@@ -4,7 +4,7 @@ import {
   DenormalizationService as CreateDenormalizationService,
 } from 'api/relationships.v2/services/service_factories';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';

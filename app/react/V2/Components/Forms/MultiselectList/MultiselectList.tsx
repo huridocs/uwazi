@@ -3,8 +3,8 @@
 /* eslint-disable max-lines */
 import React, { useEffect, useState, useRef } from 'react';
 import { isString } from 'lodash';
-import { t, Translate } from 'app/I18N';
-import { debounce } from 'app/utils';
+import { t, Translate } from '../../I18N/index.js';
+import { debounce } from '../../utils/index.js';
 import { Label } from '../Label';
 import { Checkbox } from '../Checkbox';
 import { MultiselectListButtonItem } from './MultiselectListButtonItem';

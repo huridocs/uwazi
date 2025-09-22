@@ -1,14 +1,14 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { updateEntities } from './libraryActions';
 
 function toggleQuickLabelAutoSave() {

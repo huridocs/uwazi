@@ -11,7 +11,7 @@ import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { ClientPropertySchema } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import {
   TableExtractor,
   TableSuggestion,

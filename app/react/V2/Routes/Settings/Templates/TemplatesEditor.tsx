@@ -14,12 +14,12 @@ import {
 } from 'react-router';
 import * as templatesAPI from 'V2/api/templates';
 import * as pagesAPI from 'V2/api/pages';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { Page, ClientTemplateSchema } from 'V2/shared/types';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from 'V2/atoms';
-import uniqueID from 'shared/uniqueID';
+import uniqueID from '../../shared/uniqueID.js';
 import { socket } from 'app/socket';
 import {
   cleanProperty,

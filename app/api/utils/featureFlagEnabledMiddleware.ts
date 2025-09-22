@@ -1,6 +1,6 @@
 import { tenants } from 'api/tenants';
 import { Request, Response, NextFunction } from 'express';
-import { TenantFeatureFlags } from 'api/tenants/tenantContext';
+import { TenantFeatureFlags } from '../tenants/tenantContext.js';
 
 export function featureFlagEnabled(flagKey: TenantFeatureFlags) {
   return async (_req: Request, res: Response, next: NextFunction) => {

@@ -1,7 +1,7 @@
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { IXSuggestionsQuery, SuggestionCustomFilter } from 'shared/types/suggestionType';
 import { ObjectId } from 'mongodb';
-import templates from 'api/templates';
+import templates from '../templates/index.js';
 import { propertyTypeIsMultiValued } from 'api/services/informationextraction/ixMaterials';
 import { getMatchStage } from '../pipelineStages';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';

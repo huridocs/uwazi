@@ -5,13 +5,13 @@ import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { Row, createColumnHelper } from '@tanstack/react-table';
-import { Translate, I18NApi, t } from 'app/I18N';
+import { Translate, I18NApi, t } from '../../I18N/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageSchema } from '../../shared/types/commonTypes.js';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 import {
   DefaultHeader,

@@ -1,8 +1,8 @@
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
-import { config } from 'api/config';
-import { tenants } from 'api/tenants/tenantContext';
-import { handleError } from 'api/utils';
+import { config } from '../config.js';
+import { tenants } from '../tenants/tenantContext.js';
+import { handleError } from '../utils/index.js';
 import * as cookie from 'cookie';
 import { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';

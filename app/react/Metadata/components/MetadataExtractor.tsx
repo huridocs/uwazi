@@ -4,9 +4,9 @@ import { connect, ConnectedProps } from 'react-redux';
 import { ModelAction } from 'react-redux-form';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { notificationActions } from 'app/Notifications';
-import { SelectionRectanglesSchema } from 'shared/types/commonTypes';
+import { SelectionRectanglesSchema } from '../../shared/types/commonTypes.js';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
 
 type OwnPropTypes = {

@@ -1,9 +1,9 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
-import { risonDecodeOrIgnore } from 'app/utils';
+import { risonDecodeOrIgnore } from '../../utils/index.js';
 import Big from 'big.js';
 
-import searchApi from 'app/Search/SearchAPI';
+import searchApi from '../../Search/SearchAPI.js';
 import api from 'app/utils/api';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 

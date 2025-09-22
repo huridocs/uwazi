@@ -1,9 +1,9 @@
-import entities from 'api/entities';
+import entities from '../entities/index.js';
 import { unique, emptyString } from 'api/utils/filters';
 import { RawEntity } from 'api/csv/entityRow';
-import { ensure } from 'shared/tsUtils';
-import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { ensure } from '../../shared/tsUtils.js';
+import { PropertySchema, MetadataObjectSchema } from '../../shared/types/commonTypes.js';
+import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
 import { csvConstants } from '../csvDefinitions';
 import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils';
 

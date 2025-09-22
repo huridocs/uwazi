@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import ixmodels from 'api/services/informationextraction/ixmodels';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { DataType, UwaziFilterQuery } from 'api/odm';
+import { DataType, UwaziFilterQuery } from '../odm/index.js';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { updateStates } from '../updateState';

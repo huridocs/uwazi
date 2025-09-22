@@ -13,7 +13,7 @@ import { Login } from 'app/Users/Login';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
-import { ClientSettings } from 'app/apiResponseTypes';
+import { ClientSettings } from '../../apiResponseTypes.js';
 import {
   TranslationsList,
   translationsListLoader,

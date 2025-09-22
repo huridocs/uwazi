@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
 import { withContext } from 'app/componentWrappers';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import { APIURL } from 'app/config.js';
 import { ClientBlobFile } from 'app/istore';
@@ -12,10 +12,10 @@ import { wrapDispatch } from 'app/Multireducer';
 import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
 import { NeedAuthorization } from 'app/Auth';
 import { LocalForm } from 'app/Forms/Form';
-import { availableLanguages, LanguageUtils } from 'shared/language';
-import { isBlobFile } from 'shared/tsUtils';
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { availableLanguages, LanguageUtils } from '../../shared/language/index.js';
+import { isBlobFile } from '../../shared/tsUtils.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { FileType } from '../../shared/types/fileType.js';
 
 import { ViewDocumentLink } from './ViewDocumentLink';
 

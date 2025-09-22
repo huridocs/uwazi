@@ -3,7 +3,7 @@ import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDat
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { Db, ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
 import { updateMapping } from 'api/search/entitiesIndex';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import { Modal, Button } from 'V2/Components/UI';
 import { Checkbox, InputField } from 'V2/Components/Forms';
 

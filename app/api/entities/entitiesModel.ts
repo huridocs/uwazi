@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
+import { MetadataObjectSchema, PropertyValueSchema } from '../../shared/types/commonTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
 export interface MetadataObject<T extends PropertyValueSchema> extends MetadataObjectSchema {
   value: T | null;

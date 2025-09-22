@@ -1,4 +1,4 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 import { actions as formActions } from 'react-redux-form';
 import { notificationActions } from 'app/Notifications';
 import referencesAPI from 'app/Viewer/referencesAPI';

@@ -7,7 +7,7 @@ import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import * as semanticSearchActions from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
-import { Translate, t } from 'app/I18N';
+import { Translate, t } from '../../I18N/index.js';
 import SearchDescription from 'app/Library/components/SearchDescription';
 import { Icon } from 'UI';
 import ResultsSidePanel from './ResultsSidePanel';

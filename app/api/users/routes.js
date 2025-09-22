@@ -1,4 +1,4 @@
-import { parseQuery, validation } from 'api/utils';
+import { parseQuery, validation } from '../utils/index.js';
 import { userSchema } from 'shared/types/userSchema';
 import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
 import users from './users';

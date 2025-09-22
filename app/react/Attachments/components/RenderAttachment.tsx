@@ -1,5 +1,5 @@
 import React from 'react';
-import { AttachmentSchema } from 'shared/types/commonTypes';
+import { AttachmentSchema } from '../../shared/types/commonTypes.js';
 import ReactPlayer from 'react-player';
 import { ClientFile } from 'app/istore';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';

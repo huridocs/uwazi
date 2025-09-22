@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
-import { createError, validation } from 'api/utils';
-import settings from 'api/settings';
-import entities from 'api/entities';
+import { createError, validation } from '../utils/index.js';
+import settings from '../settings/index.js';
+import entities from '../entities/index.js';
 import pages from 'api/pages';
-import { CSVLoader } from 'api/csv';
+import { CSVLoader } from '../csv/index.js';
 import { uploadMiddleware } from 'api/files';
 import { sequentialPromises } from 'shared/asyncUtils';
-import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas';
-import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391Schema, languageSchema } from '../../shared/types/commonSchemas.js';
+import { LanguageISO6391, LanguageSchema } from '../../shared/types/commonTypes.js';
 import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';

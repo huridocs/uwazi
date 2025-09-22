@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler } from 'react';
-import { Translate } from 'app/I18N';
-import { ClientThesaurus } from 'app/apiResponseTypes';
+import { Translate } from '../../I18N/index.js';
+import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { Button } from 'app/V2/Components/UI';
 import { importThesaurus } from 'app/V2/api/thesauri';
 

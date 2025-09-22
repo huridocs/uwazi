@@ -1,9 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { t, Translate } from 'app/I18N';
+import { t, Translate } from '../../I18N/index.js';
 import { Button, Pill } from 'V2/Components/UI';
-import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
 import { ThesauriRow } from './ThesauriTable';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;

@@ -1,7 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { LanguageUtils } from 'shared/language';
-import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes';
-import { Settings as SettingsType } from 'shared/types/settingsType';
+import { LanguageUtils } from '../../shared/language/index.js';
+import { LanguageSchema, LanguagesListSchema } from '../../shared/types/commonTypes.js';
+import { Settings as SettingsType } from '../../shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { DefaultLanguageMissingError } from '../errors/settingsErrors';
 

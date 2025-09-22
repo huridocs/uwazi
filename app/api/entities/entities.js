@@ -12,7 +12,7 @@ import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
 import { propertyTypes } from 'shared/propertyTypes';
 import { AccessLevels } from 'shared/types/permissionSchema';
-import ID from 'shared/uniqueID';
+import ID from '../../shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
 import settings from '../settings';

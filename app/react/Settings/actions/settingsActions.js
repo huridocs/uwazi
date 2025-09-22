@@ -1,8 +1,8 @@
 import { notificationActions } from 'app/Notifications';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer/index.js';
 
 const saveSettings = data => dispatch =>
   SettingsAPI.save(new RequestParams(data)).then(newSettings => {

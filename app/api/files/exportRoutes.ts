@@ -5,10 +5,10 @@ import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
 import QueryString from 'qs';
 
-import { legacyLogger } from 'api/log';
+import { legacyLogger } from '../log/index.js';
 import { search } from 'api/search';
-import { CSVExporter } from 'api/csv';
-import settings from 'api/settings';
+import { CSVExporter } from '../csv/index.js';
+import settings from '../settings/index.js';
 import captchaMiddleware from 'api/auth/captchaMiddleware';
 import { csvExportParamsSchema } from 'shared/types/searchParameterSchema';
 import { CsvExportBody } from 'shared/types/searchParameterType';

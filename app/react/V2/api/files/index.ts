@@ -1,8 +1,8 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
-import { FetchResponseError } from 'shared/JSONRequest';
-import { FileType } from 'shared/types/fileType';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
+import { FileType } from '../../shared/types/fileType.js';
 
 const getById = async (_id: string): Promise<FileType[]> => {
   try {

@@ -11,7 +11,7 @@ import {
   unselectAllDocuments,
 } from 'app/Library/actions/libraryActions';
 import { SearchBar } from 'app/Library/components/SearchBar';
-import { t } from 'app/I18N';
+import { t } from '../../I18N/index.js';
 
 class MapViewComponent extends Component {
   constructor(props) {

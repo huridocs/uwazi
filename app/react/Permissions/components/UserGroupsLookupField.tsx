@@ -1,8 +1,8 @@
-import { Translate } from 'app/I18N';
+import { Translate } from '../../I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from 'UI';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { debounce } from 'app/utils';
+import { debounce } from '../../utils/index.js';
 import { MemberListItemInfo } from './MemberListItemInfo';
 
 interface UserGroupsLookupFieldProps {
