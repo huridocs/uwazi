@@ -4091,6 +4091,11 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
+"@topoconfig/extends@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@topoconfig/extends/-/extends-0.16.2.tgz#0741dbe5198a28f306a116498f7ded1089d0fadc"
+  integrity sha512-sTF+qpWakr5jf1Hn/kkFSi833xPW15s/loMAiKSYSSVv4vDonxf6hwCGzMXjLq+7HZoaK6BgaV72wXr1eY7FcQ==
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
@@ -7516,6 +7521,11 @@ depd@2.0.0, depd@~2.0.0:
   resolved "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
 
+depseek@^0.4.1:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/depseek/-/depseek-0.4.3.tgz#a3b006ff57b2f947c4b659e8c8f16550c8fbcec6"
+  integrity sha512-0Ex/Uoz9Y9oipbqvgSc7FoV2q4GTDGORkg8TGgM9Pd3RyvRzrDYScKplWiqHU7WqckbKN5kukqD0opEayu2bXg==
+
 dequal@^2.0.2, dequal@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
@@ -9263,6 +9273,15 @@ fs-extra@^10.0.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
   integrity sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
+fs-extra@^11.2.0:
+  version "11.3.2"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.3.2.tgz#c838aeddc6f4a8c74dd15f85e11fe5511bfe02a4"
+  integrity sha512-Xr9F6z6up6Ws+NjzMCZc6WXg2YFRlrLP9NQDO3VQrWrfiojdhS56TzueT88ze0uBdCTwEIhQ3ptnmKeWGFAe0A==
   dependencies:
     graceful-fs "^4.2.0"
     jsonfile "^6.0.1"
@@ -15890,6 +15909,18 @@ ts-node@^10.9.2:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
+tsc-esm-fix@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/tsc-esm-fix/-/tsc-esm-fix-3.1.2.tgz#cf275fd552f2e96dd1d9f86395fb72699a284e6a"
+  integrity sha512-1/OpZssMcEp2ae6DyZV+yvDviofuCdDf7dEWEaBvm/ac8vtS04lFyl0LVs8LQE56vjKHytgzVjPIL9udM4QuNg==
+  dependencies:
+    "@topoconfig/extends" "^0.16.2"
+    depseek "^0.4.1"
+    fast-glob "^3.3.2"
+    fs-extra "^11.2.0"
+    json5 "^2.2.3"
+    type-flag "^3.0.0"
+
 tsconfig-paths@^3.15.0:
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz#5299ec605e55b1abb23ec939ef15edaf483070d4"
@@ -15987,6 +16018,11 @@ type-fest@^4.27.0:
   version "4.31.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.31.0.tgz#a3de630c96eb77c281b6ba2affa5dae5fb3c326c"
   integrity sha512-yCxltHW07Nkhv/1F6wWBr8kz+5BGMfP+RbRSYFnegVb0qV/UMT0G0ElBloPVerqn4M2ZV80Ir1FtCcYv1cT6vQ==
+
+type-flag@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/type-flag/-/type-flag-3.0.0.tgz#2caef2f20f2c71e960fe1d3b6f57bae8c8246459"
+  integrity sha512-3YaYwMseXCAhBB14RXW5cRQfJQlEknS6i4C8fCfeUdS3ihG9EdccdR9kt3vP73ZdeTGmPb4bZtkDn5XMIn1DLA==
 
 type-is@^1.6.18, type-is@~1.6.18:
   version "1.6.18"

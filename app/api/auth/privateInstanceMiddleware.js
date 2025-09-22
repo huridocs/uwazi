@@ -1,4 +1,4 @@
-import settings from '../settings';
+import settings from '../settings/index.ts';
 
 const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/'];
 const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));

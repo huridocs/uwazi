@@ -1,4 +1,4 @@
-import uniqueID from 'shared/uniqueID';
+import uniqueID from '../shared/uniqueID.js';
 import dotenv from 'dotenv';
 import { Tenant } from './tenants/tenantContext';
 import { version } from '../../package.json';

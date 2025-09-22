@@ -2,7 +2,7 @@ import 'isomorphic-fetch';
 import superagent from 'superagent';
 import rison from '@huridocs/rison';
 import { assign } from 'lodash';
-import { getResponseType } from 'shared/apiClient/httpResponses';
+import { getResponseType } from './apiClient/httpResponses.ts';
 
 let cookie;
 

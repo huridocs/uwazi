@@ -1,8 +1,8 @@
-import { risonDecodeOrIgnore } from 'app/utils';
+import { risonDecodeOrIgnore } from '../../utils/index.js';
 import { get, has, uniq } from 'lodash';
-import api from 'app/Search/SearchAPI';
-import { markdownDatasets } from 'app/Markdown';
-import { RequestParams } from 'app/utils/RequestParams';
+import api from '../../Search/SearchAPI.js';
+import { markdownDatasets } from '../../Markdown/index.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import PagesAPI from '../PagesAPI';
 import pageItemLists from './pageItemLists';
 

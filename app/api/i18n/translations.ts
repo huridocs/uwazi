@@ -1,23 +1,23 @@
-import { CSVLoader } from 'api/csv';
-import { generateFileName } from 'api/files';
-import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
-import { DefaultTranslations } from 'api/i18n/defaultTranslations';
-import { legacyLogger } from 'api/log';
-import { EnforcedWithId, WithId } from 'api/odm';
-import settings from 'api/settings/settings';
-import thesauri from 'api/thesauri/thesauri';
-import { prettifyError } from 'api/utils/handleError';
+import { CSVLoader } from '../csv/index.js';
+import { generateFileName } from '../files/index.js';
+import { CreateTranslationsData } from '../i18n.v2/services/CreateTranslationsService.js';
+import { DefaultTranslations } from './defaultTranslations.js';
+import { legacyLogger } from '../log/index.js';
+import { EnforcedWithId, WithId } from '../odm/index.js';
+import settings from '../settings/settings.js';
+import thesauri from '../thesauri/thesauri.js';
+import { prettifyError } from '../utils/handleError.js';
 import * as os from 'os';
 import path from 'path';
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { TranslationContext, TranslationType, TranslationValue } from '../../shared/translationType.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';
-import { availableLanguages } from 'shared/language';
-import { ContextType } from 'shared/translationSchema';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { availableLanguages } from '../../shared/language/index.js';
+import { ContextType } from '../../shared/translationSchema.js';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { pipeline } from 'stream/promises';
-import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
+import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,

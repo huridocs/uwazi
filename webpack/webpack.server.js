@@ -1,30 +1,34 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const webpack = require('webpack');
-const express = require('express');
-const cors = require('cors');
+import webpack from 'webpack';
+import express from 'express';
+import cors from 'cors';
+import { createServer } from 'http';
+import httpRequest from 'http';
+import rtlcss from 'rtlcss';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
+
+(async () => {
+// Load webpack config dynamically since it's CommonJS
+const webpackConfig = await import('./webpack.config.hot.cjs');
 
 const app = express();
 app.use(cors());
 
-const http = require('http').Server(app);
+const http = createServer(app);
 
-const httpRequest = require('http');
-// TEMP
-const rtlcss = require('rtlcss');
-const webpackConfig = require('./webpack.config.hot');
-
-const compiler = webpack(webpackConfig);
+const compiler = webpack(webpackConfig.default);
 
 app.use(
-  require('webpack-dev-middleware')(compiler, {
-    publicPath: webpackConfig.output.publicPath,
+  webpackDevMiddleware(compiler, {
+    publicPath: webpackConfig.default.output.publicPath,
     headers: { 'Access-Control-Allow-Origin': '*' },
     stats: 'errors-warnings',
   })
 );
 
-app.use(require('webpack-hot-middleware')(compiler));
+app.use(webpackHotMiddleware(compiler));
 
 app.get('/CSS/:file', (req, res) => {
   const request = httpRequest.request(
@@ -53,3 +57,4 @@ app.get('/CSS/:file', (req, res) => {
 });
 
 http.listen(8080);
+})();

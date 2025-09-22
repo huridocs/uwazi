@@ -5,7 +5,8 @@
   "compilerOptions": {
     "useUnknownInCatchVariables": false,
     "allowJs": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "./dist",
     "module": "ES2022",
     "target": "es2022",
     "jsx": "react",
@@ -16,16 +17,7 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      // must match babel.config.json
-      "api/*": ["./app/api/*"],
-      "app/*": ["./app/react/*"],
-      "shared/*": ["./app/shared/*"],
-      "UI": ["./app/react/UI"],
-      "UI/*": ["./app/react/UI/*"],
-      "V2/*": ["./app/react/V2/*"]
-    },
+    // Path aliases removed for ESM compatibility
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },

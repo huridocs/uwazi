@@ -1,5 +1,5 @@
-import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
-import { legacyLogger } from 'api/log';
+import { SyncDBDataSource } from '../common.v2/database/SyncDBDataSource.js';
+import { legacyLogger } from '../log/index.js';
 import { ObjectId, UpdateOptions } from 'mongodb';
 import mongoose, {
   FilterQuery,

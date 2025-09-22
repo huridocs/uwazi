@@ -1,8 +1,15 @@
-import activitylogMiddleware from './activitylog/activitylogMiddleware';
-import CSRFMiddleware from './auth/CSRFMiddleware';
-import languageMiddleware from './utils/languageMiddleware';
-
 export default async (app, server) => {
+  // Load TypeScript modules dynamically
+  const [
+    { default: activitylogMiddleware },
+    { default: CSRFMiddleware },
+    { default: languageMiddleware }
+  ] = await Promise.all([
+    import('./activitylog/activitylogMiddleware.ts'),
+    import('./auth/CSRFMiddleware.ts'),
+    import('./utils/languageMiddleware.ts')
+  ]);
+
   //common middlewares
   app.use(CSRFMiddleware);
   app.use(languageMiddleware);

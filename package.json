@@ -1,6 +1,7 @@
 {
   "name": "uwazi",
   "version": "1.228.23",
+  "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -16,6 +17,13 @@
   "license": "MIT",
   "author": "huridocs.org",
   "main": "server.js",
+  "imports": {
+    "#api": "./app/api/index.js",
+    "#shared": "./app/shared/index.js",
+    "#app": "./app/react/index.js",
+    "#UI": "./app/react/UI/index.js",
+    "#V2": "./app/react/V2/index.js"
+  },
   "scripts": {
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
@@ -27,7 +35,7 @@
     "production-build": "./webpack/build.sh",
     "build-production": "yarn production-build",
     "run-production": "NODE_ENV=production node --no-experimental-fetch server.js",
-    "dev-server": "nodemon --inspect --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
+    "dev-server": "nodemon --inspect --no-experimental-fetch --import tsx ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
     "dev-queue": "node --no-experimental-fetch --max-old-space-size=512 --inspect=9230 ./scripts/run.js ../app/queueWorker.ts",
@@ -394,6 +402,7 @@
     "tailwindcss": "3.4.17",
     "terser-webpack-plugin": "^5.3.11",
     "ts-node": "^10.9.2",
+    "tsc-esm-fix": "^3.1.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.2",
     "wait-for-expect": "^3.0.2",

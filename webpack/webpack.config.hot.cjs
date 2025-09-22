@@ -2,7 +2,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const config = require('./config')();
+const config = require('./config.cjs')();
 
 const rootPath = `${__dirname}/../`;
 const RtlCssPlugin = require('rtlcss-webpack-plugin');

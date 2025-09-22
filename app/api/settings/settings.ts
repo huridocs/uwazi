@@ -1,19 +1,19 @@
-import translations from 'api/i18n/translations';
+import translations from '../i18n/translations.js';
 
 import {
   Settings,
   SettingsLinkSchema,
   SettingsFilterSchema,
   SettingsSublinkSchema,
-} from 'shared/types/settingsType';
-import { ensure } from 'shared/tsUtils';
-import templates from 'api/templates';
-import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+} from '../../shared/types/settingsType.js';
+import { ensure } from '../../shared/tsUtils.js';
+import templates from '../templates/index.js';
+import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '../../shared/types/commonTypes.js';
 
-import { TemplateSchema } from 'shared/types/templateType';
-import { validateSettings } from 'shared/types/settingsSchema';
-import { ContextType } from 'shared/translationSchema';
-import { settingsModel } from './settingsModel';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { validateSettings } from '../../shared/types/settingsSchema.js';
+import { ContextType } from '../../shared/translationSchema.js';
+import { settingsModel } from './settingsModel.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 

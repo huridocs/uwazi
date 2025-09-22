@@ -3,16 +3,16 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
 import svgCaptcha from 'svg-captcha';
-import settings from 'api/settings';
+import settings from '../settings/index.ts';
 import urljoin from 'url-join';
-import { DB } from 'api/odm';
-import { config } from 'api/config';
+import { DB } from '../odm/index.ts';
+import { config } from '../config.ts';
 import cors from 'cors';
-import request from 'shared/JSONRequest';
-import { randomSleep } from 'shared/tsUtils';
-import { CaptchaModel } from './CaptchaModel';
+import request from '../../shared/JSONRequest.js';
+import { randomSleep } from '../../shared/tsUtils.ts';
+import { CaptchaModel } from './CaptchaModel.ts';
 
-import { validation } from '../utils';
+import { validation } from '../utils/index.js';
 
 import './passport_conf.js';
 

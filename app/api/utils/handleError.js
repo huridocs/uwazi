@@ -1,17 +1,17 @@
 import * as Sentry from '@sentry/node';
 import Ajv from 'ajv';
-import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { config } from 'api/config';
-import { DomainError } from 'api/core/domain/error/DomainError';
-import { FileNotFound } from 'api/files/FileNotFound';
-import { S3Error } from 'api/files/S3Storage';
-import { legacyLogger } from 'api/log';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
-import { IXValidationError } from 'api/services/informationextraction/IXValidationError';
-import { appContext } from 'api/utils/AppContext';
-import { createError } from 'api/utils/index';
+import { UnauthorizedError } from '../authorization.v2/errors/UnauthorizedError.ts';
+import { OperationalError } from '../common.v2/errors/OperationalError.ts';
+import { ValidationError } from '../common.v2/validation/ValidationError.ts';
+import { config } from '../config.ts';
+import { DomainError } from '../core/domain/error/DomainError.ts';
+import { FileNotFound } from '../files/FileNotFound.ts';
+import { S3Error } from '../files/S3Storage.ts';
+import { legacyLogger } from '../log/index.ts';
+import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.ts';
+import { IXValidationError } from '../services/informationextraction/IXValidationError.ts';
+import { appContext } from './AppContext.ts';
+import { createError } from './index.js';
 import util from 'node:util';
 
 const ajvPrettifier = error => {
