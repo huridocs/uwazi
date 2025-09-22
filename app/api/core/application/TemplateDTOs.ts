@@ -55,7 +55,7 @@ const BaseCommonPropertySchema = z.object({
   label: z.string(),
   type: z.enum(types),
   name: z.string(),
-  isCommonProperty: z.literal(true),
+  isCommonProperty: z.literal(true).default(true),
 
   prioritySorting: z.boolean().optional(),
   generatedId: z.boolean().optional(),
