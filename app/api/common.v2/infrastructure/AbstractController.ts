@@ -39,17 +39,15 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   /**
-   * Adapts a controller class to an Express route handler.
-   *
-   * This method takes a controller class (not an instance), instantiates it with
-   * the request and response objects, and calls its `handleAsync` method.
-   *
+   * Adapts the controller class to an Express route handler.
+   * In this static context, `this` refers to the constructor of the
+   * class that is calling this method (e.g., TemplateMutationController).
    */
-  static adapt<Controller extends AbstractController>(
-    ControllerClass: new (dependencies: Dependencies) => Controller
-  ) {
+  static createHandler() {
+    // 'this' is the ControllerClass constructor
     return async (request: Request, response: Response) =>
-      new ControllerClass({ request, response }).handleAsync();
+      // @ts-ignore - 'this' is a constructor, so 'new' is valid
+      new this({ request, response }).handleAsync();
   }
 
   protected get request() {

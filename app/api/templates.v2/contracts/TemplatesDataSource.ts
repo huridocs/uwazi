@@ -1,4 +1,5 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
@@ -9,6 +10,7 @@ export interface TemplatesDataSource {
   getAllTemplatesIds(): ResultSet<string>;
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
   getV1RelationshipPropertiesByIds(ids?: string[]): ResultSet<V1RelationshipProperty>;
+  getGeneratedIdPropertiesByIds(ids?: string[]): ResultSet<GenerateIdProperty>;
   getAllProperties(): ResultSet<Property>;
   getAllTextProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;

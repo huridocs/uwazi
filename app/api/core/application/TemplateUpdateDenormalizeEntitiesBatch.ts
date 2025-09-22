@@ -8,11 +8,13 @@ import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelations
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { cloneDeep } from 'lodash';
+import { generateID } from 'shared/IDGenerator';
 
 type Input = {
   entitiesIds: string[];
   language: string;
   modifiedRelationshipsProps: string[];
+  newGeneratedIdProps: string[];
   deletedProperties: string[];
   renamedProperties: { [oldName: string]: string };
   templateId: string;
@@ -36,6 +38,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     entitiesIds,
     language,
     modifiedRelationshipsProps,
+    newGeneratedIdProps,
     deletedProperties,
     renamedProperties,
     templateId,
@@ -46,33 +49,46 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
       await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
       await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
 
-      if (modifiedRelationshipsProps.length) {
+      if (modifiedRelationshipsProps.length || newGeneratedIdProps.length) {
+        const entities = await (
+          await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
+        ).all();
         const relationshipProps = await this.dependencies.templatesDS
           .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
           .all();
 
-        const entities = await (
-          await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
-        ).all();
+        const generatedIdProps = await this.dependencies.templatesDS
+          .getGeneratedIdPropertiesByIds(newGeneratedIdProps)
+          .all();
+        const modifiedEntities = cloneDeep(entities);
 
-        const relations = new RelationsV1Collection(
-          await this.dependencies.relationshipsV1DS.getByEntitySharedIds(
-            entities.map(e => e.sharedId)
-          )
-        );
+        if (relationshipProps.length) {
+          const relations = new RelationsV1Collection(
+            await this.dependencies.relationshipsV1DS.getByEntitySharedIds(
+              entities.map(e => e.sharedId)
+            )
+          );
+          modifiedEntities.map(e =>
+            e.createMetadataValuesFromRelationships(relationshipProps, relations)
+          );
+          const relatedEntities = await (
+            await this.dependencies.entitiesDS.getEntitiesByRelatedProperties(
+              modifiedEntities,
+              relationshipProps
+            )
+          ).indexed(e => e.sharedId);
+          modifiedEntities.forEach(entity => entity.denormalizeRelationshipProps(relatedEntities));
+        }
 
-        const modifiedEntities = cloneDeep(entities).map(e =>
-          e.createMetadataValuesFromRelationships(relationshipProps, relations)
-        );
-
-        const relatedEntities = await (
-          await this.dependencies.entitiesDS.getEntitiesByRelatedProperties(
-            modifiedEntities,
-            relationshipProps
-          )
-        ).indexed(e => e.sharedId);
-
-        modifiedEntities.forEach(entity => entity.denormalizeRelationshipProps(relatedEntities));
+        if (generatedIdProps.length) {
+          modifiedEntities.forEach(entity => {
+            generatedIdProps.forEach(prop => {
+              entity.translations.setValueInAllLanguages(prop.name, [
+                { value: generateID(3, 4, 4), label: '' },
+              ]);
+            });
+          });
+        }
 
         await ArrayUtils.sequentialFor(entities, async (entity, i) =>
           applicationEventsBus.emit(
@@ -84,7 +100,10 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
           )
         );
 
-        await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, relationshipProps);
+        await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, [
+          ...relationshipProps,
+          ...generatedIdProps,
+        ]);
       }
     });
     const jobs = await this.dependencies.templatesDS.incrementProcessingTracking(templateId);
