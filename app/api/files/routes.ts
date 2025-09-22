@@ -244,7 +244,11 @@ export default (app: Application) => {
       }
 
       res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
-      (await storage.readableFile(file.filename, file.type)).pipe(res);
+      const stream = await storage.readableFile(file.filename, file.type);
+      res.on('close', () => {
+        stream.destroy();
+      });
+      stream.pipe(res);
     }
   );
 

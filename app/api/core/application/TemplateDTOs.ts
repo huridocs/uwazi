@@ -33,7 +33,9 @@ const BasePropertySchema = z.object({
       property: z.string(),
       type: z.enum(types),
     })
-    .optional(), // Only for relationship type properties
+    .optional()
+    .or(z.literal(''))
+    .nullable(), // Only for relationship type propertie
 
   filter: z.boolean().optional(), // Depends on the type of Property
   defaultFilter: z.boolean().optional(), // Depends on the type of Property

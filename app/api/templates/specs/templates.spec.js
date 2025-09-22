@@ -1,21 +1,22 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
 import documents from 'api/documents/documents.js';
-import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 import translations from 'api/i18n/translations';
 import { elasticClient } from 'api/search/elastic';
+import * as setupSockets from 'api/socketio/setupSockets';
 import db, { testingDB } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
+import * as idGenerator from 'shared/IDGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
 
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
 
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { applicationEventsBus } from 'api/eventsbus';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { testingTenants } from 'api/utils/testingTenants';
 import { inspect } from 'util';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import templates from '../templates';
@@ -44,6 +45,7 @@ jest.mock('../templateUpdateDenormalizeUseCase', () => ({
 
 async function updateTemplate(template, language = 'en', updateV2 = false) {
   if (updateV2) {
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
     return templates.save(template, language, true, false);
   }
   return new Promise((resolve, reject) => {
@@ -79,6 +81,7 @@ describe('templates', () => {
   ])('$title', ({ featureFlags }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, elasticIndex);
+      jest.spyOn(idGenerator, 'generateID').mockImplementation(() => 'generated_id');
       testingTenants.mockCurrentTenant({
         name: testingDB.dbName,
         dbName: testingDB.dbName,
@@ -343,40 +346,48 @@ describe('templates', () => {
       //   dbTranslations.filter(t => t.key === 'Country template' && t.language === 'en').length
       // ).toBe(1);
     });
+
+    describe('when there is a new property with generatedId type', () => {
+      it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
+        const templateToUpdate = factory.template(
+          '',
+          [{ name: 'auto_id', type: propertyTypes.generatedid, label: 'Auto Id' }],
+          {
+            _id: thesaurusTemplateId,
+            name: 'thesauri template',
+          }
+        );
+
+        await updateTemplate(templateToUpdate, 'en', featureFlags.v2UpdateTemplateUseCase);
+
+        const generatedIdEntities = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          e => e.metadata.auto_id
+        );
+
+        expect(generatedIdEntities.length).toBe(9);
+        const generatedIds = generatedIdEntities.map(e => e.metadata.auto_id[0].value);
+        expect(generatedIds).toEqual([
+          'generated_id',
+          'generated_id',
+          'generated_id',
+          'generated_id',
+          'generated_id',
+          'generated_id',
+          'generated_id',
+          'generated_id',
+          'generated_id',
+        ]);
+      });
+    });
   });
 
-  xdescribe('save', () => {
-    describe('generatedId', () => {
+  describe('save', () => {
+    xdescribe('generatedId', () => {
       let populateGeneratedIdByTemplateSpy;
       beforeEach(() => {
-        populateGeneratedIdByTemplateSpy = jest
-          .spyOn(generatedIdPropertyAutoFiller, 'populateGeneratedIdByTemplate')
-          .mockImplementation(() => Promise.resolve());
+        jest.spyOn(idGenerator, 'generateID').mockImplementation(() => 'generated_id');
       });
 
-      afterEach(() => {
-        populateGeneratedIdByTemplateSpy.mockReset();
-      });
-
-      describe('when there is a new property with generatedId type', () => {
-        it('should call populateGeneratedIdBTemplate to auto-fill values', async () => {
-          const templateToUpdate = factory.template(
-            '',
-            [{ name: 'autoId', type: propertyTypes.generatedid, label: 'Auto Id' }],
-            {
-              _id: templateToBeEditedId,
-              name: 'template to be edited',
-            }
-          );
-
-          await updateTemplate(templateToUpdate);
-
-          expect(populateGeneratedIdByTemplateSpy).toHaveBeenCalledWith(
-            templateToBeEditedId,
-            templateToUpdate.properties
-          );
-        });
-      });
       describe('when there are no new properties with generatedId type', () => {
         it('should not call populateGeneratedIdBTemplate to auto-fill values', async () => {
           const [storedTemplate] = await templates.get({ _id: templateWithContents });
