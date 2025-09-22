@@ -15,6 +15,7 @@ import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './schemas/TemplateDBO';
 import { TemplateMappers } from './TemplateMappers';
+import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -72,6 +73,33 @@ export class MongoTemplatesDataSource
           MongoIdHandler.mapToApp(template._id),
           template.properties.denormalizedProperty
         )
+    );
+  }
+
+  getGeneratedIdPropertiesByIds(propertyIds: string[]) {
+    const cursor = this.getCollection().aggregate([
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties._id': { $in: propertyIds.map(id => new ObjectId(id)) },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
+        },
+      },
+    ]);
+    return new MongoResultSet(
+      cursor,
+      template =>
+        new GenerateIdProperty({
+          id: template.properties._id,
+          name: template.properties.name,
+          label: template.properties.label,
+          template: template._id,
+        })
     );
   }
 

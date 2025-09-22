@@ -25,6 +25,7 @@ import { TranslationService } from '../domain/template/TranslationService';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
+import { GenerateIdProperty } from '../domain/template/GenerateIdProperty';
 
 type Output = Template;
 
@@ -126,12 +127,18 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
         .map(({ oldProperty, newProperty }) => [oldProperty.name, newProperty.name])
     );
 
-    const newRelationshipProps = currentTemplate
-      .selectNewProperties(updatedTemplate)
-      .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
+    const newProperties = currentTemplate.selectNewProperties(updatedTemplate);
+
+    const newRelationshipProps = newProperties.filter(
+      (p): p is V1RelationshipProperty => p.type === 'relationship'
+    );
+    const newGeneratedIdProps = newProperties.filter(
+      (p): p is GenerateIdProperty => p.type === 'generatedid'
+    );
     if (
-      !relationshipPropsWithChangedRelData.length ||
+      relationshipPropsWithChangedRelData.length ||
       newRelationshipProps.length ||
+      newGeneratedIdProps.length ||
       renamedProperties ||
       deletedProperties
     ) {
@@ -159,6 +166,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
           modifiedRelationshipsProps: relationshipPropsWithChangedRelData
             .concat(newRelationshipProps)
             .map(p => p.id),
+          newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
           deletedProperties,
           renamedProperties,
           tenantName: tenants.current().name,
