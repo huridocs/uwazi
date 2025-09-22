@@ -10,7 +10,7 @@ const initTest = async () => {
   db = testingDB.mongodb!;
   await db
     .collection('entities')
-    .createIndex({ title: 'text'}, {language_override: 'mongoLanguage' });
+    .createIndex({ title: 'text' }, { language_override: 'mongoLanguage' });
   await migration.up(db);
 };
 
@@ -25,7 +25,6 @@ afterAll(async () => {
 describe('migration test', () => {
   beforeAll(async () => {
     await initTest();
-    
   });
 
   it('should have a delta number', () => {
@@ -39,17 +38,15 @@ describe('migration test', () => {
   it('should add hashed index on entities title', async () => {
     const indexes = await db?.collection('entities').listIndexes().toArray();
     expect(indexes?.length).toBe(2);
-    const hashedIndex = indexes?.find(idx => 
-      idx.key && idx.key.title === 'hashed'
-    );
+    const hashedIndex = indexes?.find(idx => idx.key && idx.key.title === 'hashed');
     expect(hashedIndex).toBeDefined();
     expect(hashedIndex?.key).toEqual({ title: 'hashed' });
   });
 
   it('should remove text index from entities title', async () => {
     const indexes = await db?.collection('entities').listIndexes().toArray();
-    const textIndex = indexes?.find(idx => 
-      idx.key && idx.key.title === 'text'
+    const textIndex = indexes?.find(
+      idx => idx.key && idx.key._fts === 'text' && idx.weights && idx.weights.title === 1
     );
     expect(textIndex).toBeUndefined();
   });
