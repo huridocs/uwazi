@@ -1,12 +1,10 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
+import { TemplateProperty } from 'api/templates.v2/model/Template';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
 
 export interface MultiLanguageEntityDataSource {
-  bulkUpdate(
-    entitiesToSave: MultiLanguageEntity[],
-    properties: V1RelationshipProperty[]
-  ): Promise<void>;
+  bulkUpdate(entitiesToSave: MultiLanguageEntity[], properties: TemplateProperty[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
 
