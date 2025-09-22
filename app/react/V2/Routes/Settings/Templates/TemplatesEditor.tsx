@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from 'V2/Components/UI';
-import { Translate } from 'app/I18N/Translate';
+import { Translate } from '../../I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -20,7 +20,7 @@ import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from 'V2/atoms';
 import uniqueID from '../../shared/uniqueID.js';
-import { socket } from 'app/socket';
+import { socket } from '../../socket.js';
 import {
   cleanProperty,
   emptyTemplate,

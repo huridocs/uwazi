@@ -4,12 +4,12 @@
 import React, { ReactNode } from 'react';
 import { render } from '@testing-library/react';
 import { userAtom } from 'V2/atoms';
-import { ClientUserSchema } from 'app/apiResponseTypes';
-import { UserRole } from 'shared/types/userSchema';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { ClientUserSchema } from '../../apiResponseTypes.js';
+import { UserRole } from '../../shared/types/userSchema.js';
+import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
 import { NeedAuthorization } from 'V2/Components/UI';
 import { TestAtomStoreProvider } from 'V2/testing';
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema } from '../../istore.js';
 
 describe('NeedAuthorization', () => {
   const editorUser = {

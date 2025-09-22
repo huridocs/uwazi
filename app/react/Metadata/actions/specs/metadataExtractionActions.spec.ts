@@ -1,11 +1,11 @@
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer.js';
 import { actions as formActions } from 'react-redux-form';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
-import { IImmutable } from 'shared/types/Immutable';
-import api from 'app/Entities/EntitiesAPI';
-import { ClientFile } from 'app/istore';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import api from '../../Entities/EntitiesAPI.js';
+import { ClientFile } from '../../istore.js';
 import { updateSelection, updateFormField, deleteSelection } from '../metadataExtractionActions';
 
 describe('metadataExtractionActions', () => {

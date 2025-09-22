@@ -1,11 +1,11 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import searchRoutes from 'api/search/routes';
-import { setUpApp } from 'api/utils/testingRoutes';
+import searchRoutes from '../search/routes.js';
+import { setUpApp } from '../utils/testingRoutes.js';
 
-import { UserRole } from 'shared/types/userSchema';
+import { UserRole } from '../../shared/types/userSchema.js';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
 import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 

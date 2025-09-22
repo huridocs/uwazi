@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { t } from '../../I18N/index.js';
 
-import { showFilters, hideFilters } from 'app/Library/actions/libraryActions';
-import { wrapDispatch } from 'app/Multireducer';
+import { showFilters, hideFilters } from '../../Library/actions/libraryActions.js';
+import { wrapDispatch } from '../../Multireducer.js';
 import { Icon } from 'UI';
 import { unselectAllDocuments } from '../actions/libraryActions';
 

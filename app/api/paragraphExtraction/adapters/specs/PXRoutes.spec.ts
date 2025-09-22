@@ -2,10 +2,10 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { ObjectId } from 'mongodb';
-import { CreateParagraphExtractionEntityStatusesJob } from 'api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { tenants } from 'api/tenants';
+import { CreateParagraphExtractionEntityStatusesJob } from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { tenants } from '../tenants.js';
 import {
   EntityStatusDTO,
   PXCreateExtractorRequest,
@@ -14,9 +14,9 @@ import {
   PXExtractRequest,
   PXGetEntityParagraphsRequest,
   PXGetExtractorStatusesRequest,
-} from 'api/paragraphExtraction/types';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
+} from '../paragraphExtraction/types.js';
+import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { paragraphExtractionRoutes } from '../PXRoutes';
 
 import {

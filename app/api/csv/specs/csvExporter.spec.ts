@@ -1,7 +1,7 @@
 import { ObjectWritableMock } from 'stream-mock';
-import templates from 'api/templates';
-import translations from 'api/i18n/translations';
-import * as translate from 'shared/translate';
+import templates from '../templates.js';
+import translations from '../i18n/translations.js';
+import * as translate from '../../shared/translate.js';
 import moment from 'moment-timezone';
 import CSVExporter, {
   concatCommonHeaders,

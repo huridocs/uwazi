@@ -1,10 +1,10 @@
 import { fromJS as Immutable } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { notificationActions } from 'app/Notifications';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import referencesAPI from 'app/Viewer/referencesAPI';
-import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from '../../Notifications.js';
+import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
+import referencesAPI from '../../Viewer/referencesAPI.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 
 import * as actions from '../actions';
 

@@ -7,10 +7,10 @@ import { ClientSettings } from '../../apiResponseTypes.js';
 import { Translate } from '../../I18N/index.js';
 import * as settingsAPI from 'V2/api/settings';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Tabs } from 'app/V2/Components/UI';
-import { CodeEditor } from 'app/V2/Components/CodeEditor';
+import { Button, Tabs } from '../../V2/Components/UI.js';
+import { CodeEditor } from '../../V2/Components/CodeEditor.js';
 import { ConfirmNavigationModal } from 'V2/Components/UI';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom } from '../../V2/atoms.js';
 
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 

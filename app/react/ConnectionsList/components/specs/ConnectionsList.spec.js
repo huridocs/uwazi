@@ -1,5 +1,5 @@
 import { fromJS as Immutable } from 'immutable';
-import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
+import RelationshipsGraph from '../../Relationships/components/RelationshipsGraphEdit.js';
 import { mapStateToProps } from '../ConnectionsList';
 
 describe('ConnectionsList', () => {

@@ -1,18 +1,18 @@
 import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { Suggestions } from 'api/suggestions/suggestions';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { needsAuthorization } from 'api/auth';
-import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
+import { Suggestions } from '../suggestions/suggestions.js';
+import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
+import { validateAndCoerceRequest } from '../utils/validateRequest.js';
+import { needsAuthorization } from '../auth.js';
+import { parseQuery } from '../utils/parseQueryMiddleware.js';
+import { SuggestionsQueryFilterSchema } from '../../shared/types/suggestionSchema.js';
 import { objectIdSchema } from '../../shared/types/commonSchemas.js';
 import {
   IXAggregationQuery,
   IXSuggestionAggregation,
   IXSuggestionsQuery,
-} from 'shared/types/suggestionType';
+} from '../../shared/types/suggestionType.js';
 import { handleError } from '../utils/index.js';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';

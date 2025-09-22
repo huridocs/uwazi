@@ -2,11 +2,11 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { setUpApp } from 'api/utils/testingRoutes';
-import userGroupRoutes from 'api/usergroups/routes';
-import { testingTenants } from 'api/utils/testingTenants';
+import { setUpApp } from '../utils/testingRoutes.js';
+import userGroupRoutes from '../usergroups/routes.js';
+import { testingTenants } from '../utils/testingTenants.js';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import userGroups from '../userGroups';
 
 jest.mock(

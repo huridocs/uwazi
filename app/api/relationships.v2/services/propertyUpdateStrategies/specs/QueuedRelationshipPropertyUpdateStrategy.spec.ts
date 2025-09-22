@@ -1,6 +1,6 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { NamespacedDispatcher } from 'api/queue.v2/infrastructure/NamespacedDispatcher';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
+import { NamespacedDispatcher } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';

@@ -1,18 +1,18 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import relationshipTypeDS from 'api/relationtypes';
-import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
-import { DBFixture } from 'api/utils/testing_db';
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import relationshipTypeDS from '../relationtypes.js';
+import { PXErrorCode } from '../paragraphExtraction/domain/PXValidationError.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob';
 import { mongoPXExtractorsCollection } from '../../infrastructure/MongoPXExtractorsDataSource';

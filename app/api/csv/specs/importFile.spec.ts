@@ -1,5 +1,5 @@
 import path from 'path';
-import { streamToString, deleteFiles } from 'api/files/filesystem';
+import { streamToString, deleteFiles } from '../files/filesystem.js';
 
 import importFile from '../importFile';
 import { createTestingZip } from './helpers';

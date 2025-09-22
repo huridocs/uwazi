@@ -1,7 +1,7 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
 import { Relationship } from '../model/Relationship';
 import { TraversalResult, RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType } from './schemas/relationshipTypes';

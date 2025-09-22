@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { FileType } from '../../shared/types/fileType.js';
 import { Translate } from '../../I18N/index.js';
-import { socket } from 'app/socket';
+import { socket } from '../../socket.js';
 import { bindActionCreators } from 'redux';
 import { postToOcr, getOcrStatus } from '../actions/ocrActions';
 import { ocrStatusTips } from '../utils/ocrStatusTips';

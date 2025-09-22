@@ -1,9 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
 import { get, has, isEmpty } from 'lodash';
-import { ClientPropertySchema, ClientEntitySchema } from 'app/istore';
+import { ClientPropertySchema, ClientEntitySchema } from '../../istore.js';
 import { search } from 'V2/api/search';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { ClientTemplateSchema } from 'app/V2/shared/types';
+import { ClientTemplateSchema } from '../../shared/V2/shared/types.js';
 import { SuggestionValue, EntitySuggestion } from '../types';
 
 type TransformedSuggestion = EntitySuggestion & {

@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import { File } from 'api/files.v2/model/File';
+import { File } from '../files.v2/model/File.js';
 import { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient';
 import { HttpField } from '../contracts/HttpField';
 

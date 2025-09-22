@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
 import { isEmpty } from 'lodash';
 import { Icon } from 'UI';
-import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
-import { wrapDispatch } from 'app/Multireducer';
-import { socket } from 'app/socket';
+import { uploadDocument } from '../../Uploads/actions/uploadsActions.js';
+import { wrapDispatch } from '../../Multireducer.js';
+import { socket } from '../../socket.js';
 import { Translate } from '../../I18N/index.js';
 
 const renderProgress = progress => (

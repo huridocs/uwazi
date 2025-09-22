@@ -1,12 +1,12 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DBFixture } from '../utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
 import { PXExtractorsQueryServiceFactory } from '../PXExtractorsQueryServiceFactory';
 import {
   mongoPXEntitiesStatusCollection,

@@ -6,9 +6,9 @@ import React, { Component } from 'react';
 import { Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import { bindActionCreators } from 'redux';
-import { closeImportProgress } from 'app/Uploads/actions/uploadsActions';
+import { closeImportProgress } from '../../Uploads/actions/uploadsActions.js';
 import Immutable from 'immutable';
-import StackTrace from 'app/components/Elements/StackTrace';
+import StackTrace from '../../components/Elements/StackTrace.js';
 
 export class ImportProgress extends Component {
   render() {

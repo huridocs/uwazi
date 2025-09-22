@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import date from 'api/utils/date.js';
+import date from '../utils/date.js.js';
 
 import { instanceModel } from '../odm/index.js';
 import { FileType } from '../../shared/types/fileType.js';

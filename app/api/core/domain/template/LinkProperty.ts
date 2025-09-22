@@ -1,4 +1,4 @@
-import { Property, PropertyTypes, PropertyProps, Context } from 'api/templates.v2/model/Property';
+import { Property, PropertyTypes, PropertyProps, Context } from '../templates.v2/model/Property.js';
 import { PropertyTypeInvalidTypeError } from './errors';
 
 type Props = {

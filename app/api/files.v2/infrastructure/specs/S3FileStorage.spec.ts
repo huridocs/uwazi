@@ -6,11 +6,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { config } from 'api/config';
-import { Attachment } from 'api/files.v2/model/Attachment';
-import { Document } from 'api/files.v2/model/Document';
-import { testingTenants } from 'api/utils/testingTenants';
-import { Tenant } from 'api/tenants/tenantContext';
+import { config } from '../config.js';
+import { Attachment } from '../files.v2/model/Attachment.js';
+import { Document } from '../files.v2/model/Document.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import { Tenant } from '../tenants/tenantContext.js';
 import { S3FileStorage } from '../S3FileStorage';
 
 describe('S3FileStorage', () => {

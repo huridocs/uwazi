@@ -2,10 +2,10 @@ import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
 import io from 'socket.io-client';
-import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
-import { tenants, Tenant } from 'api/tenants/tenantContext';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { config } from 'api/config';
+import { multitenantMiddleware } from '../utils/multitenantMiddleware.js';
+import { tenants, Tenant } from '../tenants/tenantContext.js';
+import { appContextMiddleware } from '../utils/appContextMiddleware.js';
+import { config } from '../config.js';
 import waitForExpect from 'wait-for-expect';
 
 import { endSocketServer, setupApiSockets } from '../setupSockets';

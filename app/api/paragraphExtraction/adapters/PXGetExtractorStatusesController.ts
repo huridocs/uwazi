@@ -2,7 +2,7 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from 'api/common.v2/infrastructure/AbstractController';
+} from '../common.v2/infrastructure/AbstractController.js';
 
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 import { PXExtractorsStatusesFactory } from '../infrastructure/PXExtractorsStatusesFactory';

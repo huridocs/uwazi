@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
 import { getConnection } from '../getConnectionForCurrentTenant';

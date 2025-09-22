@@ -7,7 +7,7 @@ import { FileType } from '../../shared/types/fileType.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { PropertyValueSchema } from '../../shared/types/commonTypes.js';
 import { Translate } from '../../I18N/index.js';
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
 import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from 'V2/Components/UI';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, pdfScaleAtom } from 'V2/atoms';

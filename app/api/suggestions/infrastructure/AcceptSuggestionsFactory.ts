@@ -1,6 +1,6 @@
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { tenants } from 'api/tenants';
+import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { tenants } from '../tenants.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase';
 import { AcceptSuggestionsJob } from '../jobs/AcceptSuggestionsJob';
 

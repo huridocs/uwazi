@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from '../../I18N/index.js';
-import { ClientPropertySchema } from 'app/istore';
+import { ClientPropertySchema } from '../../istore.js';
 
 const MultiselectItemLabel = ({
   isSelected,

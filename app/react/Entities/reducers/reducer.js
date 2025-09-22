@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import createReducer from '../../BasicReducer/index.js';
 import { modelReducer, formReducer } from 'react-redux-form';
 
-import { manageAttachmentsReducer } from 'app/Attachments';
+import { manageAttachmentsReducer } from '../../Attachments.js';
 import uiState from './uiReducer';
 
 export default combineReducers({

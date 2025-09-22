@@ -5,9 +5,9 @@ import { fromJS } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { CreateConnectionPanel } from 'app/Connections';
-import ContextMenu from 'app/ContextMenu';
-import ShowIf from 'app/App/ShowIf';
+import { CreateConnectionPanel } from '../../Connections.js';
+import ContextMenu from '../../ContextMenu.js';
+import ShowIf from '../../App/ShowIf.js';
 import { ConnectedViewer } from '../Viewer';
 import SourceDocument from '../SourceDocument';
 import TargetDocument from '../TargetDocument';

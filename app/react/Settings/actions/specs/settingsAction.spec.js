@@ -1,4 +1,4 @@
-import SettingsAPI from 'app/Settings/SettingsAPI';
+import SettingsAPI from '../../Settings/SettingsAPI.js';
 
 import saveSettings from '../settingsActions';
 

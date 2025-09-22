@@ -1,4 +1,4 @@
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob } from './UpdateTemplateRelationshipPropertiesJob';

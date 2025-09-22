@@ -1,9 +1,9 @@
-import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
-import { deleteFile, storage } from 'api/files';
-import { tenants } from 'api/tenants';
-import date from 'api/utils/date';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { legacyLogger } from 'api/log';
+import { IGNORED_ENDPOINTS } from '../activitylog/activitylogMiddleware.js';
+import { deleteFile, storage } from '../files.js';
+import { tenants } from '../tenants.js';
+import date from '../utils/date.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { legacyLogger } from '../log.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import waitForExpect from 'wait-for-expect';

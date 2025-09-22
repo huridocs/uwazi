@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
+import { instanceModelWithPermissions } from '../odm/ModelWithPermissions.js';
 import { MetadataObjectSchema, PropertyValueSchema } from '../../shared/types/commonTypes.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 

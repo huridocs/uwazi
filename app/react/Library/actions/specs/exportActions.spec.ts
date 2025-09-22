@@ -7,8 +7,8 @@ import superagent from 'superagent';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { APIURL } from 'app/config.js';
-import * as notifications from 'app/Notifications/actions/notificationsActions';
+import { APIURL } from '../../config.js.js';
+import * as notifications from '../../Notifications/actions/notificationsActions.js';
 import * as actions from '../exportActions';
 
 const middlewares = [thunk];

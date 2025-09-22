@@ -1,11 +1,11 @@
 import { Application, Request, Response } from 'express';
 
-import { elastic } from 'api/search/elastic';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
-import { SearchQuery, Page } from 'shared/types/SearchQueryType';
+import { elastic } from '../search/elastic.js';
+import { validateAndCoerceRequest } from '../utils/validateRequest.js';
+import { SearchQuerySchema } from '../../shared/types/SearchQuerySchema.js';
+import { SearchQuery, Page } from '../../shared/types/SearchQueryType.js';
 
-import { mapResults } from 'api/search.v2/searchResponse';
+import { mapResults } from '../search.v2/searchResponse.js';
 import qs from 'qs';
 import { buildQuery } from './buildQuery';
 

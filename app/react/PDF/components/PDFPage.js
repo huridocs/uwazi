@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { isClient } from '../../utils/index.js';
-import { PageReferences } from 'app/Viewer/components/PageReferences';
-import { PageSelections } from 'app/Viewer/components/PageSelections';
+import { PageReferences } from '../../Viewer/components/PageReferences.js';
+import { PageSelections } from '../../Viewer/components/PageSelections.js';
 import { calculateScaling } from 'V2/Components/PDFViewer';
 import { atomStore, pdfScaleAtom } from 'V2/atoms';
 import PDFJS, { EventBus } from '../PDFJS';

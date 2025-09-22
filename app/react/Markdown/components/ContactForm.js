@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { actions, Field } from 'react-redux-form';
 import { FormGroup } from '../../ReactReduxForms/index.js';
 import { Translate, t } from '../../I18N/index.js';
-import api from 'app/utils/api';
+import api from '../../utils/api.js';
 import { Icon } from 'UI';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { RequestParams } from 'app/utils/RequestParams';
-import { LocalForm } from 'app/Forms/Form';
+import { notify } from '../../Notifications/actions/notificationsActions.js';
+import { RequestParams } from '../../utils/RequestParams.js';
+import { LocalForm } from '../../Forms/Form.js';
 import { FormCaptcha } from './FormCaptcha';
 
 class ContactForm extends Component {

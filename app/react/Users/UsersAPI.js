@@ -1,4 +1,4 @@
-import api from 'app/utils/api';
+import api from '../../utils/api.js';
 
 export default {
   save(requestParams) {

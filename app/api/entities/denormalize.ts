@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 import { WithId } from '../odm/index.js';
 import translationsModel, { IndexedTranslations } from '../i18n/translations.js';
-import { search } from 'api/search';
+import { search } from '../search/index.js';
 import templates from '../templates/index.js';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
+import dictionariesModel from '../thesauri/dictionariesModel.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
 import translate, { getContext } from '../../shared/translate.js';
 import {
   MetadataSchema,

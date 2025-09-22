@@ -1,6 +1,6 @@
-import translations from 'api/i18n';
-import { search } from 'api/search';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import translations from '../i18n.js';
+import { search } from '../search.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { checkIfReindex } from '../reindex';
 import templates from '../templates';
 import fixtures, {

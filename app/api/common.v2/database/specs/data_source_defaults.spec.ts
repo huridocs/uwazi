@@ -1,4 +1,4 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 import { DefaultTransactionManager, DefaultIdGenerator } from '../data_source_defaults';
 

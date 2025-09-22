@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { I18NLink } from 'app/I18N';
+import { I18NLink } from '../../I18N.js';
 
-import { HiddenColumnsDropdown } from 'app/Library/components/HiddenColumnsDropdown';
+import { HiddenColumnsDropdown } from '../../Library/components/HiddenColumnsDropdown.js';
 import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons';
 
 describe('LibraryModeToggleButtons', () => {

@@ -1,15 +1,15 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { setSelection, unsetSelection } from 'app/Viewer/actions/selectionActions';
+import { setSelection, unsetSelection } from '../../Viewer/actions/selectionActions.js';
 import {
   resetReferenceCreation,
   highlightReference,
   activateReference,
   scrollToActive,
   deactivateReference,
-} from 'app/Viewer/actions/uiActions';
-import Document from 'app/Viewer/components/Document';
+} from '../../Viewer/actions/uiActions.js';
+import Document from '../../Viewer/components/Document.js';
 import { createSelector } from 'reselect';
 import { selectDoc, selectReferences } from '../selectors';
 

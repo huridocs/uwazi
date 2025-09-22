@@ -2,9 +2,9 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { Markers } from 'app/Map';
+import { Markers } from '../../Map.js';
 
-import * as actions from 'app/Library/actions/libraryActions';
+import * as actions from '../../Library/actions/libraryActions.js';
 import { mapStateToProps, mapDispatchToProps, MapComponent } from '../Map.js';
 import markdownDatasets from '../../markdownDatasets';
 

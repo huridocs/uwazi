@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 
-import { tenants } from 'api/tenants';
+import { tenants } from '../tenants.js';
 import { config } from '../config.js';
 
 import { FileSystemStorage } from './FileSystemStorage';

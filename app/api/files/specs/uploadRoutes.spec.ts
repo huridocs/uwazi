@@ -2,19 +2,19 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from 'api/search';
-import { uploadsPath, customUploadsPath, storage } from 'api/files';
-import { setUpApp, socketEmit, iosocket, TestEmitSources } from 'api/utils/testingRoutes';
-import { FileType } from 'shared/types/fileType';
-import entities from 'api/entities';
+import { search } from '../search.js';
+import { uploadsPath, customUploadsPath, storage } from '../files.js';
+import { setUpApp, socketEmit, iosocket, TestEmitSources } from '../utils/testingRoutes.js';
+import { FileType } from '../../shared/types/fileType.js';
+import entities from '../entities.js';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { fixtures, templateId, importTemplate, adminUser, collabUser } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
-import { UserSchema } from 'shared/types/userType';
+import { UserSchema } from '../../shared/types/userType.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

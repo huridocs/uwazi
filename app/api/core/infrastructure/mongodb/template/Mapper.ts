@@ -1,33 +1,33 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import { AbstractImageProperty, ImageStyle } from 'api/core/domain/template/AbstractImageProperty';
-import { CreationDateProperty } from 'api/core/domain/template/CreationDateProperty';
-import { DateProperty } from 'api/core/domain/template/DateProperty';
-import { DateRangeProperty } from 'api/core/domain/template/DateRangeProperty';
-import { FilterableProperty } from 'api/core/domain/template/FilterableProperty';
-import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
-import { GeolocationProperty } from 'api/core/domain/template/GeoLocationProperty';
-import { ImageProperty } from 'api/core/domain/template/ImageProperty';
-import { LinkProperty } from 'api/core/domain/template/LinkProperty';
-import { MarkdownProperty } from 'api/core/domain/template/MarkdownProperty';
-import { MediaProperty } from 'api/core/domain/template/MediaProperty';
-import { ModifiedDateProperty } from 'api/core/domain/template/ModifiedDateProperty';
-import { MultiDateProperty } from 'api/core/domain/template/MultiDateProperty';
-import { MultiDateRangeProperty } from 'api/core/domain/template/MultiDateRangeProperty';
-import { MultiSelectProperty } from 'api/core/domain/template/MultiSelectProperty';
-import { NumericProperty } from 'api/core/domain/template/NumericProperty';
-import { PreviewProperty } from 'api/core/domain/template/PreviewProperty';
-import { SelectProperty } from 'api/core/domain/template/SelectProperty';
-import { TextProperty } from 'api/core/domain/template/TextProperty';
-import { TitleProperty } from 'api/core/domain/template/TitleProperty';
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Property } from 'api/templates.v2/model/Property';
-import { Template } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { AbstractImageProperty, ImageStyle } from '../../../domain/template/AbstractImageProperty.js';
+import { CreationDateProperty } from '../../../domain/template/CreationDateProperty.js';
+import { DateProperty } from '../../../domain/template/DateProperty.js';
+import { DateRangeProperty } from '../../../domain/template/DateRangeProperty.js';
+import { FilterableProperty } from '../../../domain/template/FilterableProperty.js';
+import { GenerateIdProperty } from '../../../domain/template/GenerateIdProperty.js';
+import { GeolocationProperty } from '../../../domain/template/GeoLocationProperty.js';
+import { ImageProperty } from '../../../domain/template/ImageProperty.js';
+import { LinkProperty } from '../../../domain/template/LinkProperty.js';
+import { MarkdownProperty } from '../../../domain/template/MarkdownProperty.js';
+import { MediaProperty } from '../../../domain/template/MediaProperty.js';
+import { ModifiedDateProperty } from '../../../domain/template/ModifiedDateProperty.js';
+import { MultiDateProperty } from '../../../domain/template/MultiDateProperty.js';
+import { MultiDateRangeProperty } from '../../../domain/template/MultiDateRangeProperty.js';
+import { MultiSelectProperty } from '../../../domain/template/MultiSelectProperty.js';
+import { NumericProperty } from '../../../domain/template/NumericProperty.js';
+import { PreviewProperty } from '../../../domain/template/PreviewProperty.js';
+import { SelectProperty } from '../../../domain/template/SelectProperty.js';
+import { TextProperty } from '../../../domain/template/TextProperty.js';
+import { TitleProperty } from '../../../domain/template/TitleProperty.js';
+import { TemplateDBO } from '../../../../templates.v2/database/schemas/TemplateDBO.js';
+import { CommonProperty } from '../../../../templates.v2/model/CommonProperty.js';
+import { Property } from '../../../../templates.v2/model/Property.js';
+import { Template } from '../../../../templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '../../../../templates.v2/model/V1RelationshipProperty.js';
 import { ObjectId } from 'mongodb';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+import { PropertySchema } from '../../../../shared/types/commonTypes.js';
 
 class CommonPropertyMapper {
   static toSchema(domain: CommonProperty): PropertySchema {

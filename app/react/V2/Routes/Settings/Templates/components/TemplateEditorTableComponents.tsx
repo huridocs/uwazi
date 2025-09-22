@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from 'V2/Components/UI/Button';
 import { ColumnDef, createColumnHelper, CellContext } from '@tanstack/react-table';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { Translate } from 'app/I18N/Translate';
+import { Translate } from '../../I18N/Translate.js';
 import { propertyIcons } from 'V2/Components/UI/Icons';
 import { Pill } from 'V2/Components/UI';
 import { LockClosedIcon } from '@heroicons/react/24/outline';

@@ -1,11 +1,11 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
-import { getIdMapper } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
+import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
+import { getIdMapper } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB, { DBFixture } from '../utils/testing_db.js';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { MongoTranslationsSyncDataSource } from '../MongoTranslationsSyncDataSource';
 
 const id = getIdMapper();

@@ -1,11 +1,11 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import db from 'api/utils/testing_db';
-import thesauri from 'api/thesauri';
-import { templateUtils } from 'api/templates';
-import translations from 'api/i18n/translations';
-import { TemplateSchema } from 'shared/types/templateType';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { propertyTypes } from 'shared/propertyTypes';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import db from '../utils/testing_db.js';
+import thesauri from '../thesauri.js';
+import { templateUtils } from '../templates.js';
+import translations from '../i18n/translations.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 
 import { arrangeThesauri, ArrangeThesauriError } from '../arrangeThesauri';
 

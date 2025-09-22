@@ -2,12 +2,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 
-import { DocumentSidePanel, TocForm as tocFormComponent } from 'app/Documents';
+import { DocumentSidePanel, TocForm as tocFormComponent } from '../../Documents.js';
 import { actions as actionCreators } from '../../BasicReducer/index.js';
-import { actions } from 'app/Metadata';
-import { actions as connectionsActions, uiActions as connectionsUiActions } from 'app/Connections';
-import { deleteDocument } from 'app/Viewer/actions/documentActions';
-import modals from 'app/Modals';
+import { actions } from '../../Metadata.js';
+import { actions as connectionsActions, uiActions as connectionsUiActions } from '../../Connections.js';
+import { deleteDocument } from '../../Viewer/actions/documentActions.js';
+import modals from '../../Modals.js';
 
 import { closePanel } from '../actions/uiActions';
 import {

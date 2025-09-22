@@ -6,7 +6,7 @@ import loadable from '@loadable/component';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { PropertyValueSchema } from '../../shared/types/commonTypes.js';
 import { Translate } from '../../I18N/index.js';
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
 import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { secondsToISODate } from 'V2/shared/dateHelpers';

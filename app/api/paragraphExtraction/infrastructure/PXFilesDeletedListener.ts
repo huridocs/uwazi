@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
-import { EventsBus } from 'api/eventsbus';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { Document } from 'api/files.v2/model/Document';
-import { FileMappers } from 'api/files.v2/database/FilesMappers';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { EventsBus } from '../eventsbus.js';
+import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { Document } from '../files.v2/model/Document.js';
+import { FileMappers } from '../files.v2/database/FilesMappers.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
+import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { featureFlaggedHandler } from '../common.v2/utils/featureFlaggedHandler.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 

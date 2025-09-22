@@ -3,7 +3,7 @@
 
 import { fromJS as Immutable } from 'immutable';
 
-import createReducer, * as actions from 'app/BasicReducer/reducer';
+import createReducer, * as actions from '../../BasicReducer/reducer.js';
 
 describe('BasicReducer', () => {
   describe('createReducer', () => {

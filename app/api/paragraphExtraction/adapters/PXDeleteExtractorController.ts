@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
+import { AbstractController } from '../common.v2/infrastructure/AbstractController.js';
 import { PXDeleteExtractorFactory } from '../infrastructure/PXDeleteExtractorFactory';
 
 const RequestSchema = z.object({

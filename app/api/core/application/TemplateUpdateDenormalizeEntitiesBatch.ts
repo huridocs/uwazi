@@ -1,12 +1,12 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { applicationEventsBus } from 'api/eventsbus';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { TransactionManager } from '../../common.v2/contracts/TransactionManager.js';
+import { UseCase } from '../../common.v2/contracts/UseCase.js';
+import { ArrayUtils } from '../../common.v2/utils/Array.js';
+import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntityUpdatedEvent } from '../../entities/events/EntityUpdatedEvent.js';
+import { applicationEventsBus } from '../../eventsbus/index.js';
+import { MongoRelationshipsV1DataSource } from '../../relationships/MongoRelationshipsV1DataSource.js';
+import { RelationsV1Collection } from '../../relationships/RelationsV1Collection.js';
+import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
 import { cloneDeep } from 'lodash';
 
 type Input = {

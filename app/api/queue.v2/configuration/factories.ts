@@ -1,15 +1,15 @@
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoTransactionManager } from '../../common.v2/database/MongoTransactionManager.js';
 import {
   getClient,
   getConnection,
   getSharedClient,
   getSharedConnection,
-} from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultLogger, SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { JobsRouter } from '../infrastructure/JobsRouter';
-import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
-import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher';
-import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter';
+} from '../../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultLogger, SystemLogger } from '../../log.v2/infrastructure/StandardLogger.js';
+import { JobsRouter } from '../infrastructure/JobsRouter.js';
+import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter.js';
+import { NamespacedDispatcher, QueueOptions } from '../infrastructure/NamespacedDispatcher.js';
+import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAdapter.js';
 
 export function DefaultQueueAdapter() {
   return new MongoQueueAdapter(

@@ -1,6 +1,6 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { UserRole } from 'shared/types/userSchema';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import db, { DBFixture } from '../utils/testing_db.js';
+import { UserRole } from '../../shared/types/userSchema.js';
 
 const fixturesFactory = getFixturesFactory();
 

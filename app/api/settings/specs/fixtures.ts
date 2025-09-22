@@ -1,7 +1,7 @@
 import { templateUtils } from '../templates/index.js';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import db, { DBFixture } from '../utils/testing_db.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 
 const factory = getFixturesFactory();
 

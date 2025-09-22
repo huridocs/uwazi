@@ -2,9 +2,9 @@ import bodyParser from 'body-parser';
 import express, { Application, Request, Response, NextFunction, RequestHandler } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
-import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
-import languageMiddleware from 'api/utils/languageMiddleware';
-import { routesErrorHandler } from 'api/utils/routesErrorHandler';
+import errorHandlingMiddleware from '../utils/error_handling_middleware.js';
+import languageMiddleware from '../utils/languageMiddleware.js';
+import { routesErrorHandler } from '../utils/routesErrorHandler.js';
 import { extendSupertest } from './supertestExtensions';
 import { appContext } from './AppContext';
 

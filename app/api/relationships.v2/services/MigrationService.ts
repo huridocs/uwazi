@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { SaveStream } from 'api/common.v2/contracts/SaveStream';
-import { Logger } from 'api/log.v2/contracts/Logger';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import { SaveStream } from '../common.v2/contracts/SaveStream.js';
+import { Logger } from '../log.v2/contracts/Logger.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
 import { objectIndexToArrays, objectIndexToSets } from '../../shared/data_utils/objectIndex.js';
-import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';
+import { TestOneHubRequest } from '../../shared/types/api.v2/relationships.testOneHub.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';

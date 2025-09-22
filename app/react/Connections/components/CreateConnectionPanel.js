@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { Icon } from 'UI';
-import SidePanel from 'app/Layout/SidePanel';
+import SidePanel from '../../Layout/SidePanel.js';
 import { Translate } from '../../I18N/index.js';
 
 import { closePanel } from '../actions/uiActions';

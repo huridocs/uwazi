@@ -5,13 +5,13 @@ import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
 import { Link } from 'react-router';
 import rison from '@huridocs/rison';
-import ShowIf from 'app/App/ShowIf';
-import { withRouter } from 'app/componentWrappers';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import ShowIf from '../../App/ShowIf.js';
+import { withRouter } from '../../componentWrappers.js';
+import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
 import { t, Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
 
-import { filterDocumentTypes } from 'app/Library/actions/filterActions';
+import { filterDocumentTypes } from '../../Library/actions/filterActions.js';
 
 const getItemsToShow = (fromFilters, templates, settings) => {
   let items = fromFilters ? settings.collection.toJS().filters : [];

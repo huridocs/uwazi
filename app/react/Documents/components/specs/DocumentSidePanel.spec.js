@@ -3,11 +3,11 @@ import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 import { Tabs } from 'react-tabs-redux';
 
-import { ConnectionsGroups } from 'app/ConnectionsList';
-import SidePanel from 'app/Layout/SidePanel';
-import Connections from 'app/Viewer/components/ConnectionsList';
-import * as viewerModule from 'app/Viewer';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { ConnectionsGroups } from '../../ConnectionsList.js';
+import SidePanel from '../../Layout/SidePanel.js';
+import Connections from '../../Viewer/components/ConnectionsList.js';
+import * as viewerModule from '../../Viewer.js';
+import { entityDefaultDocument } from '../../shared/entityDefaultDocument.js';
 
 import ShowToc from '../ShowToc';
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';

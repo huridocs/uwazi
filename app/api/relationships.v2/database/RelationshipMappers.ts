@@ -1,8 +1,8 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
 import { ObjectId } from 'mongodb';
-import { EntityMappers } from 'api/entities.v2/database/EntityMapper';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+import { EntityMappers } from '../entities.v2/database/EntityMapper.js';
+import { Entity } from '../entities.v2/model/Entity.js';
+import { EntityDBO } from '../entities.v2/database/schemas/EntityTypes.js';
 import { RelationshipDBOType } from './schemas/relationshipTypes';
 import {
   EntityPointer,

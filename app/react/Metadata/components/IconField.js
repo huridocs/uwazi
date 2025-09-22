@@ -5,9 +5,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { IconSelector } from '../../ReactReduxForms/index.js';
-import { actions } from 'app/Metadata';
+import { actions } from '../../Metadata.js';
 import { FormValue } from '../../Forms/index.js';
-import ToggleDisplay from 'app/Layout/ToggleDisplay';
+import ToggleDisplay from '../../Layout/ToggleDisplay.js';
 import { bindActionCreators } from 'redux';
 import { Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';

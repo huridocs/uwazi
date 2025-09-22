@@ -1,4 +1,4 @@
-import { IXExtractorType } from 'shared/types/extractorType';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { CreateBlankSuggestionsForPdf } from './createBlankSuggestionsForPdf';

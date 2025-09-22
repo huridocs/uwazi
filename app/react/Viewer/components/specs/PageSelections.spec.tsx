@@ -4,9 +4,9 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+import { ClientEntitySchema, ClientFile } from '../../istore.js';
 import { TestAtomStoreProvider } from 'V2/testing';
 import { pdfScaleAtom } from 'V2/atoms';
 import { PageSelections } from '../PageSelections';

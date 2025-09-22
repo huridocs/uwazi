@@ -3,16 +3,16 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import { DocumentSidePanel } from 'app/Documents';
+import { DocumentSidePanel } from '../../Documents.js';
 import { actions as actionCreators } from '../../BasicReducer/index.js';
-import { actions } from 'app/Metadata';
-import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions';
-import { deleteEntity } from 'app/Entities/actions/actions';
-import { wrapDispatch } from 'app/Multireducer';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import modals from 'app/Modals';
+import { actions } from '../../Metadata.js';
+import { deleteDocument, searchSnippets } from '../../Library/actions/libraryActions.js';
+import { deleteEntity } from '../../Entities/actions/actions.js';
+import { wrapDispatch } from '../../Multireducer.js';
+import { entityDefaultDocument } from '../../shared/entityDefaultDocument.js';
+import modals from '../../Modals.js';
 
-import * as connectionsActions from 'app/ConnectionsList/actions/actions';
+import * as connectionsActions from '../../ConnectionsList/actions/actions.js';
 import {
   getDocumentReferences,
   unselectAllDocuments,

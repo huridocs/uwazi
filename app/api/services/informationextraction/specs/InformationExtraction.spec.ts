@@ -6,24 +6,24 @@ import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { sortByStrings } from 'shared/data_utils/objectSorting';
-import { PropertyTypeSchema } from 'shared/types/commonTypes';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import * as setupSockets from '../socketio/setupSockets.js';
+import { sortByStrings } from '../../shared/data_utils/objectSorting.js';
+import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
 
-import testingDB from 'api/utils/testing_db';
-import entities from 'api/entities';
-import { EnforcedWithId } from 'api/odm';
-import settings from 'api/settings';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { LanguageUtils } from 'shared/language';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { FileType } from 'shared/types/fileType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { filesModel } from 'api/files/filesModel';
+import testingDB from '../utils/testing_db.js';
+import entities from '../entities.js';
+import { EnforcedWithId } from '../odm.js';
+import settings from '../settings.js';
+import { Suggestions } from '../suggestions/suggestions.js';
+import { LanguageUtils } from '../../shared/language.js';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
+import { FileType } from '../../shared/types/fileType.js';
+import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
+import { filesModel } from '../files/filesModel.js';
 import { factory, fixtures } from './fixtures';
 import {
   CommonSuggestion,

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { appContext } from 'api/utils/AppContext';
+import { appContext } from '../utils/AppContext.js';
 import { config } from '../config.js';
 
 const multitenantMiddleware = (req: Request, _res: Response, next: NextFunction) => {

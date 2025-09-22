@@ -3,8 +3,8 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Translate } from '../../I18N/index.js';
-import { IStore } from 'app/istore';
-import Modal from 'app/Layout/Modal';
+import { IStore } from '../../istore.js';
+import Modal from '../../Layout/Modal.js';
 import { Icon } from 'UI';
 import { saveRelationType } from '../actions/relationTypeActions';
 

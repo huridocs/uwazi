@@ -11,7 +11,7 @@ export interface SanitizationResult {
   warnings: SanitizationWarning[];
 }
 
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import { sanitizeThesaurusLabel } from '../../shared/sanitizationUtils.js';
 
 export const sanitizeText = sanitizeThesaurusLabel;
 

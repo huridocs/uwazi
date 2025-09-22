@@ -1,7 +1,7 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoSaveStream } from 'api/common.v2/database/MongoSaveStream';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
+import { MongoSaveStream } from '../common.v2/database/MongoSaveStream.js';
 import { MigrationHubRecordDBO } from './schemas/v1ConnectionTypes';
 import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
 import { MigrationHubRecord } from '../model/MigrationHubRecord';

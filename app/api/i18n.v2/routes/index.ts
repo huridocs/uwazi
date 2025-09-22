@@ -1,7 +1,7 @@
 import { Application, Request } from 'express';
-import { needsAuthorization } from 'api/auth';
+import { needsAuthorization } from '../auth.js';
 import { validation } from '../utils/index.js';
-import translations from 'api/i18n';
+import translations from '../i18n.js';
 import { getTranslationsEntriesV2 } from '../i18n/v2_support.js';
 
 const translationsRoutes = (app: Application) => {

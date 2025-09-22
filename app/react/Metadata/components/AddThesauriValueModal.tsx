@@ -2,7 +2,7 @@ import React from 'react';
 import { Translate } from '../../I18N/index.js';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import { sanitizeThesaurusLabel } from '../../shared/sanitizationUtils.js';
 
 interface AddThesauriValueModalProps {
   isOpen: boolean;

@@ -1,7 +1,7 @@
-import { notificationActions } from 'app/Notifications';
+import { notificationActions } from '../../Notifications.js';
 import { t } from '../../I18N/index.js';
-import { RequestParams } from 'app/utils/RequestParams';
-import SettingsAPI from 'app/Settings/SettingsAPI';
+import { RequestParams } from '../../utils/RequestParams.js';
+import SettingsAPI from '../../Settings/SettingsAPI.js';
 import { actions } from '../../BasicReducer/index.js';
 
 const saveSettings = data => dispatch =>

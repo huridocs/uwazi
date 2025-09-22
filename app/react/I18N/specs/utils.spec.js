@@ -1,5 +1,5 @@
 import * as Cookie from 'tiny-cookie';
-import * as appUtils from 'app/utils';
+import * as appUtils from '../../utils.js';
 
 import utils from '../utils.js';
 

@@ -1,18 +1,18 @@
 import _ from 'lodash';
 
-import { ImportFile } from 'api/csv/importFile';
+import { ImportFile } from '../csv/importFile.js';
 import translations from '../i18n/translations.js';
 import { WithId } from '../odm/index.js';
-import thesauri from 'api/thesauri';
+import thesauri from '../thesauri/index.js';
 import { normalizeThesaurusLabel } from '../thesauri/thesauri.js';
 import { objectIndex } from '../../shared/data_utils/objectIndex.js';
-import { Sets } from 'shared/data_utils/sets';
+import { Sets } from '../../shared/data_utils/sets.js';
 import { ensure } from '../../shared/tsUtils.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { Arrays } from 'shared/data_utils/arrays';
-import { DoubleIndexedObject } from 'shared/data_utils/DoubleIndexedObject';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { Arrays } from '../../shared/data_utils/arrays.js';
+import { DoubleIndexedObject } from '../../shared/data_utils/DoubleIndexedObject.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';

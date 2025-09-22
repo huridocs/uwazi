@@ -1,4 +1,4 @@
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
   PropertyRelationTypeMismatchError,

@@ -1,9 +1,9 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { setUpApp } from 'api/utils/testingRoutes';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from '../utils/testingRoutes.js';
+import testingDB from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import {
   fixtures,
   fileName1,

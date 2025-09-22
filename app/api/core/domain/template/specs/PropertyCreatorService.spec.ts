@@ -1,7 +1,7 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { PropertyCreatorService } from '../propertyCreatorService/PropertyCreatorService';
 import { TextProperty } from '../TextProperty';
 import { PropertyTypeMismatchError } from '../errors';

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import { TemplateSchema } from 'shared/types/templateType';
-import { IImmutable } from 'shared/types/Immutable';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
 import comonProperties from '../../shared/commonProperties.js';
 import { Icon } from 'UI';
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
-import { actions, ShowMetadata, wrapEntityMetadata } from 'app/Metadata';
+import { actions, ShowMetadata, wrapEntityMetadata } from '../../Metadata.js';
 import { store } from '../../store.js';
 
 import { SearchEntities } from './SearchEntities';

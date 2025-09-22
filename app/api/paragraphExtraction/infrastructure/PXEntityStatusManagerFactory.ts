@@ -1,9 +1,9 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
 
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXEntityStatusManager } from '../application/PXEntityStatusManager';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';

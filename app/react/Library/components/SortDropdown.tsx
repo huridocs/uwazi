@@ -2,14 +2,14 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
 import { useLocation, Location } from 'react-router';
 import { Icon } from 'UI';
 import { I18NLink, t } from '../../I18N/index.js';
-import { wrapDispatch } from 'app/Multireducer';
-import { IStore } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
+import { wrapDispatch } from '../../Multireducer.js';
+import { IStore } from '../../istore.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { useOnClickOutsideElement } from '../../utils/useOnClickOutsideElementHook.js';
 import { encodeSearch } from '../actions/libraryActions';
 
 import {

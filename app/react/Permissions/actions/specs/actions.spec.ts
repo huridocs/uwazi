@@ -1,12 +1,12 @@
 import { Dispatch } from 'redux';
-import { IStore } from 'app/istore';
-import { notificationActions } from 'app/Notifications';
-import { PermissionsDataSchema } from 'shared/types/permissionType';
+import { IStore } from '../../istore.js';
+import { notificationActions } from '../../Notifications.js';
+import { PermissionsDataSchema } from '../../shared/types/permissionType.js';
 import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,
-} from 'app/Library/actions/actionTypes';
-import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission';
+} from '../../Library/actions/actionTypes.js';
+import { PUBLIC_PERMISSION } from '../../api/permissions/publicPermission.js';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';
 

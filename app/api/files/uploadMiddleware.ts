@@ -1,5 +1,5 @@
-import { generateFileName } from 'api/files';
-import { tenants } from 'api/tenants';
+import { generateFileName } from './index.js';
+import { tenants } from '../tenants/index.js';
 import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -7,7 +7,7 @@ import { FileType } from '../../shared/types/fileType.js';
 import { legacyLogger } from '../log/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { storage } from './storage';
+import { storage } from './storage.js';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 

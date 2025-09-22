@@ -1,7 +1,7 @@
-import { HttpClient } from 'api/common.v2/contracts/HttpClient';
-import { HttpField } from 'api/common.v2/contracts/HttpField';
+import { HttpClient } from '../common.v2/contracts/HttpClient.js';
+import { HttpField } from '../common.v2/contracts/HttpField.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
+import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
 
 import {
   ExtractParagraphInput,

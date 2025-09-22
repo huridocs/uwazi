@@ -1,7 +1,7 @@
-import { model } from 'api/entities';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { model as updatelogsModel } from 'api/updatelogs';
+import { model } from '../entities.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { model as updatelogsModel } from '../updatelogs.js';
 
 const fixtureFactory = getFixturesFactory();
 

@@ -1,5 +1,5 @@
-import { ThesauriDataSource } from 'api/core/domain/template/propertyCreatorService/SelectPropertyCreatorService';
-import thesauri from 'api/thesauri';
+import { ThesauriDataSource } from '../../../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';
+import thesauri from '../../../../thesauri/index.js';
 
 class MongoThesauriDataSource implements ThesauriDataSource {
   async exists(id: string): Promise<boolean> {

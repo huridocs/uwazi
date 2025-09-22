@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import rison from '@huridocs/rison';
 import { Icon } from 'UI';
 import { t } from '../../I18N/index.js';
-import ModalTips from 'app/App/ModalTips';
-import { SearchTipsContent } from 'app/App/SearchTipsContent';
+import ModalTips from '../../App/ModalTips.js';
+import { SearchTipsContent } from '../../App/SearchTipsContent.js';
 
 const SearchBox = ({ placeholder, classname }) => {
   const navigate = useNavigate();

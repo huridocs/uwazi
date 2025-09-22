@@ -6,8 +6,8 @@ import {
   defaultState,
   renderConnected,
   renderConnectedContainer,
-} from 'app/utils/test/renderConnected';
-import * as uploadActions from 'app/Uploads/actions/uploadsActions';
+} from '../../utils/test/renderConnected.js';
+import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
 import { ShallowWrapper } from 'enzyme';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { fromJS } from 'immutable';

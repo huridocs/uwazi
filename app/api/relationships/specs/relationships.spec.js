@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 
-import entities from 'api/entities/entities';
-import db from 'api/utils/testing_db';
+import entities from '../entities/entities.js';
+import db from '../utils/testing_db.js';
 
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
 import { search } from '../../search';
 import relationships from '../relationships';
 import fixtures, {

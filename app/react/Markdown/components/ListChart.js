@@ -6,8 +6,8 @@ import rison from '@huridocs/rison';
 import { risonDecodeOrIgnore } from '../../utils/index.js';
 import qs from 'qs';
 
-import { Loader } from 'app/components/Elements/Loader';
-import { arrayUtils } from 'app/Charts';
+import { Loader } from '../../components/Elements/Loader.js';
+import { arrayUtils } from '../../Charts.js';
 import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
 

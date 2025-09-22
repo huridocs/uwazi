@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { TargetDocumentHeader } from 'app/Viewer/components/TargetDocumentHeader.js';
+import { TargetDocumentHeader } from '../../Viewer/components/TargetDocumentHeader.js.js';
 
 describe('TargetDocumentHeader', () => {
   let component;

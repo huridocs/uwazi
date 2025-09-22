@@ -2,14 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { getIndexElement } from 'app/getIndexElement';
-import { ClientSettings } from 'app/apiResponseTypes';
-import { Login } from 'app/Users/Login';
-import { LibraryTable } from 'app/Library/LibraryTable';
-import { PageView } from 'app/Pages/PageView';
-import { ViewerRoute } from 'app/Viewer/ViewerRoute';
-import { LibraryMap } from 'app/Library/LibraryMap';
-import LibraryRoot from 'app/Library/Library';
+import { getIndexElement } from '../../getIndexElement.js';
+import { ClientSettings } from '../../apiResponseTypes.js';
+import { Login } from '../../Users/Login.js';
+import { LibraryTable } from '../../Library/LibraryTable.js';
+import { PageView } from '../../Pages/PageView.js';
+import { ViewerRoute } from '../../Viewer/ViewerRoute.js';
+import { LibraryMap } from '../../Library/LibraryMap.js';
+import LibraryRoot from '../../Library/Library.js';
 
 let settings: ClientSettings;
 let userId: string;

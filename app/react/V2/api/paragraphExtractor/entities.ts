@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import {
   TablePXEntityRow,
   PXEntityQuery,

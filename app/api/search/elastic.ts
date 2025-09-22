@@ -6,7 +6,7 @@ import {
   TransportRequestOptions,
 } from '@elastic/elasticsearch/lib/Transport';
 import { config } from '../config.js';
-import { tenants } from 'api/tenants';
+import { tenants } from '../tenants.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes';
 

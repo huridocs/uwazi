@@ -1,9 +1,9 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import settings from 'api/settings';
-import templates from 'api/templates';
-import thesauri from 'api/thesauri';
-import request from 'shared/JSONRequest';
-import { PreserveConfig } from 'shared/types/settingsType.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import settings from '../settings.js';
+import templates from '../templates.js';
+import thesauri from '../thesauri.js';
+import request from '../../shared/JSONRequest.js';
+import { PreserveConfig } from '../../shared/types/settingsType.js.js';
 import fixtures, { userId1, userId2 } from './fixtures';
 import { Preserve } from '../preserve';
 

@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
-import testingDB, { fixturer } from 'api/utils/testing_db';
+import testingDB, { fixturer } from '../utils/testing_db.js';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -11,19 +11,19 @@ import {
   fixturesOneHundredFiles,
   fixturesFiveFiles,
   fixturesMissingPdf,
-} from 'api/services/pdfsegmentation/specs/fixtures';
+} from '../services/pdfsegmentation/specs/fixtures.js';
 
-import { storage } from 'api/files';
+import { storage } from '../files.js';
 import path from 'path';
 
-import { tenants } from 'api/tenants/tenantContext';
-import { DB } from 'api/odm';
+import { tenants } from '../tenants/tenantContext.js';
+import { DB } from '../odm.js';
 import { Db } from 'mongodb';
-import request from 'shared/JSONRequest';
+import request from '../../shared/JSONRequest.js';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { PDFSegmentation } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';

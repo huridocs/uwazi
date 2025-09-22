@@ -1,10 +1,10 @@
-import { notificationActions } from 'app/Notifications';
-import api from 'app/Entities/EntitiesAPI';
-import { actions as relationshipActions } from 'app/Relationships';
-import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from '../../Notifications.js';
+import api from '../../Entities/EntitiesAPI.js';
+import { actions as relationshipActions } from '../../Relationships.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { atomStore, deletedEntityAtom } from 'V2/atoms';
 
-import * as saveEntityWithFiles from 'app/Library/actions/saveEntityWithFiles';
+import * as saveEntityWithFiles from '../../Library/actions/saveEntityWithFiles.js';
 import * as actions from '../actions';
 
 describe('Entities actions', () => {

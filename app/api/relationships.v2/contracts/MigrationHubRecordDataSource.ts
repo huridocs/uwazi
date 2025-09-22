@@ -1,5 +1,5 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { SaveStream } from 'api/common.v2/contracts/SaveStream';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { SaveStream } from '../common.v2/contracts/SaveStream.js';
 import { MigrationHubRecord } from '../model/MigrationHubRecord';
 
 interface MigrationHubRecordDataSource {

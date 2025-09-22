@@ -1,5 +1,5 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { RelationshipType } from 'api/relationshiptypes.v2/model/RelationshipType';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { RelationshipType } from '../relationshiptypes.v2/model/RelationshipType.js';
 import { RelationshipTypeDBO } from '../schemas/RelationshipTypeDBO';
 
 const mapRelationshipTypeToApp = (relationshipType: RelationshipTypeDBO): RelationshipType =>

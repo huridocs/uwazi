@@ -1,6 +1,6 @@
-import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultRelationshipDataSource } from '../relationships.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
 import { DefaultEntitiesDataSource } from '../database/data_source_defaults';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from './EntityRelationshipsUpdateService';
 

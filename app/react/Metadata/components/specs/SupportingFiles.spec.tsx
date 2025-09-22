@@ -6,8 +6,8 @@ import { fireEvent, RenderResult, screen, within } from '@testing-library/react'
 import { actions } from 'react-redux-form';
 import Immutable from 'immutable';
 
-import { ClientFile } from 'app/istore';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { ClientFile } from '../../istore.js';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { SupportingFiles } from '../SupportingFiles';
 import * as supportingLocalFilesActions from '../../actions/supportingFilesActions';
 

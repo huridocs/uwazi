@@ -6,11 +6,11 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { t, Translate } from '../../I18N/index.js';
-import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
+import * as relationshipTypesAPI from '../../api/V2/api/relationshiptypes.js';
 import { Template } from '../../apiResponseTypes.js';
-import { notificationAtom, templatesAtom, relationshipTypesAtom } from 'app/V2/atoms';
-import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { notificationAtom, templatesAtom, relationshipTypesAtom } from '../../V2/atoms.js';
+import { Button, Table, Sidepanel, ConfirmationModal } from '../../V2/Components/UI.js';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
 

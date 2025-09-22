@@ -2,12 +2,12 @@
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import { testingDB } from 'api/utils/testing_db';
+import { testingDB } from '../utils/testing_db.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { UserRole } from '../../shared/types/userSchema.js';
+import { UserSchema } from '../../shared/types/userType.js';
+import { ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
 import {
   PropertySchema,
   MetadataSchema,
@@ -16,16 +16,16 @@ import {
   ExtractedMetadataSchema,
 } from '../../shared/types/commonTypes.js';
 import { UpdateLog } from '../updatelogs/index.js';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { WithId } from 'api/odm/model';
-import { TemplateSchema } from 'shared/types/templateType';
-import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
-import { IXModelType } from 'shared/types/IXModelType';
-import { PermissionSchema } from 'shared/types/permissionType';
-import { MongoSegmentationBuilder } from 'api/files.v2/database/specs/MongoSegmentationBuilder';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
+import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+import { WithId } from '../odm/model.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { getV2FixturesFactoryElements } from '../common.v2/testing/fixturesFactory.js';
+import { IXModelType } from '../../shared/types/IXModelType.js';
+import { PermissionSchema } from '../../shared/types/permissionType.js';
+import { MongoSegmentationBuilder } from '../files.v2/database/specs/MongoSegmentationBuilder.js';
 import { LanguageUtils } from '../../shared/language/index.js';
-import { ConnectionSchema } from 'shared/types/connectionType';
+import { ConnectionSchema } from '../../shared/types/connectionType.js';
 
 type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
   state?: Partial<IXSuggestionType['state']>;

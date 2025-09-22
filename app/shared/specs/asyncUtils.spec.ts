@@ -1,4 +1,4 @@
-import { sleep } from 'shared/tsUtils';
+import { sleep } from './tsUtils.js';
 import { sequentialPromises } from '../asyncUtils';
 
 describe('asyncUtils', () => {

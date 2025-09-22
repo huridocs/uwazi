@@ -6,7 +6,7 @@ import ID from '../../shared/uniqueID.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs, { access } from 'fs/promises';
 import { tenants } from '../tenants/tenantContext.js';
-import { testingTenants } from 'api/utils/testingTenants';
+import { testingTenants } from '../utils/testingTenants.js';
 
 import { FileType } from '../../shared/types/fileType';
 // eslint-disable-next-line node/no-restricted-import

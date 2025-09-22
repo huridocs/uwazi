@@ -1,7 +1,7 @@
-import { applicationEventsBus } from 'api/eventsbus';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
-import db from 'api/utils/testing_db';
+import { applicationEventsBus } from '../eventsbus.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
+import db from '../utils/testing_db.js';
 import { registerEventListeners } from '../eventListeners';
 import { SegmentationModel } from '../segmentationModel';
 

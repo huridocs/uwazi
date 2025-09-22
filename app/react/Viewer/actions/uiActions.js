@@ -1,9 +1,9 @@
 import { actions } from '../../BasicReducer/index.js';
 import { events } from '../../utils/index.js';
-import { setTargetSelection } from 'app/Viewer/actions/selectionActions';
-import Marker from 'app/Viewer/utils/Marker.js';
-import scroller from 'app/Viewer/utils/Scroller';
-import * as types from 'app/Viewer/actions/actionTypes';
+import { setTargetSelection } from '../../Viewer/actions/selectionActions.js';
+import Marker from '../../Viewer/utils/Marker.js.js';
+import scroller from '../../Viewer/utils/Scroller.js';
+import * as types from '../../Viewer/actions/actionTypes.js';
 
 const waitForElement = (selector, callback, { timeout = 4000, frequency = 500 } = {}) => {
   const interval = setInterval(() => {

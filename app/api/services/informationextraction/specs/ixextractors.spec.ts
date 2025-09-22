@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
 import _ from 'lodash';
 
-import { Suggestions } from 'api/suggestions/suggestions';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture, testingDB } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { testingTenants } from 'api/utils/testingTenants';
-import { IXSuggestionStateType } from 'shared/types/suggestionType';
+import { Suggestions } from '../suggestions/suggestions.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import db, { DBFixture, testingDB } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import { IXSuggestionStateType } from '../../shared/types/suggestionType.js';
 import { Extractors } from '../ixextractors';
 import { IXValidationError } from '../IXValidationError';
 

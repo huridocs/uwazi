@@ -1,6 +1,6 @@
 /** @format */
 
-import { advancedSort } from 'app/utils/advancedSort';
+import { advancedSort } from '../../utils/advancedSort.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from '../../I18N/index.js';

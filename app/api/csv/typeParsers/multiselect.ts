@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
-import thesauri from 'api/thesauri';
-import { RawEntity } from 'api/csv/entityRow';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import thesauri from '../thesauri.js';
+import { RawEntity } from '../csv/entityRow.js';
+import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { ensure } from '../../shared/tsUtils.js';
 

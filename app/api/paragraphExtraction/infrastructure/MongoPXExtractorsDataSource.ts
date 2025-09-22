@@ -1,9 +1,9 @@
 import { Db, ObjectId } from 'mongodb';
-import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { TemplateMappers } from '../templates.v2/database/TemplateMappers.js';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
 import entities from '../entities/index.js';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import {

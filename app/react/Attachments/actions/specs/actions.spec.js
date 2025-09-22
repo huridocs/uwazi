@@ -1,13 +1,13 @@
-import { APIURL } from 'app/config.js';
-import api from 'app/utils/api';
+import { APIURL } from '../../config.js.js';
+import api from '../../utils/api.js';
 import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mockID } from 'shared/uniqueID.js';
+import { mockID } from '../../shared/uniqueID.js.js';
 import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 
-import { NOTIFY } from 'app/Notifications/actions/actionTypes';
+import { NOTIFY } from '../../Notifications/actions/actionTypes.js';
 import * as actions from '../actions';
 import * as types from '../actionTypes';
 

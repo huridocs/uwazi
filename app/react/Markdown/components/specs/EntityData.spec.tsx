@@ -3,7 +3,7 @@
  */
 import React, { act } from 'react';
 import { screen } from '@testing-library/react';
-import { renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { TestAtomStoreProvider } from 'V2/testing';
 import { localeAtom, translationsAtom } from 'V2/atoms';
 import { state, translations } from './fixture/state';

@@ -1,9 +1,9 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { Tenant, tenants } from 'api/tenants/tenantContext';
-import { FileType } from 'api/files.v2/model/FileType';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { Tenant, tenants } from '../tenants/tenantContext.js';
+import { FileType } from '../files.v2/model/FileType.js';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';
 

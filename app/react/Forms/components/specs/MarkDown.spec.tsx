@@ -2,7 +2,7 @@ import { TabLink, TabContent } from 'react-tabs-redux';
 import React from 'react';
 
 import { shallow, ShallowWrapper } from 'enzyme';
-import MarkDownViewer from 'app/Markdown';
+import MarkDownViewer from '../../Markdown.js';
 
 import { MarkDown, MarkDownType } from '../MarkDown';
 

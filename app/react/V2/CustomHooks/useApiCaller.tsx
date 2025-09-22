@@ -2,7 +2,7 @@ import React from 'react';
 import { useSetAtom } from 'jotai';
 import { Translate } from '../../I18N/index.js';
 import { notificationAtom } from 'V2/atoms';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 
 interface ApiCallerResult {

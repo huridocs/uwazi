@@ -1,5 +1,5 @@
-import { UserGroupSchema } from 'shared/types/userGroupType';
-import { UserSchema } from 'shared/types/userType';
+import { UserGroupSchema } from '../../shared/types/userGroupType.js';
+import { UserSchema } from '../../shared/types/userType.js';
 import {
   PreserveConfig,
   Settings,
@@ -7,8 +7,8 @@ import {
   SettingsLinkSchema,
 } from '../../shared/types/settingsType.js';
 import { LanguageSchema } from '../../shared/types/commonTypes.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 
 export interface GroupMemberSchema {
   refId: string;

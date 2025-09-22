@@ -1,8 +1,8 @@
 import { fromJS } from 'immutable';
-import { SettingsFilterSchema } from 'shared/types/settingsType';
-import { ConnectedComponent as TemplatesFilterComponent } from 'app/Library/components/TemplatesFilter';
-import { renderConnected } from 'app/utils/test/renderConnected';
-import { filterDocumentTypes } from 'app/Library/actions/filterActions';
+import { SettingsFilterSchema } from '../../shared/types/settingsType.js';
+import { ConnectedComponent as TemplatesFilterComponent } from '../../Library/components/TemplatesFilter.js';
+import { renderConnected } from '../../utils/test/renderConnected.js';
+import { filterDocumentTypes } from '../../Library/actions/filterActions.js';
 import * as redux from 'redux';
 import DocumentTypesList from '../DocumentTypesList';
 

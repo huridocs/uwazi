@@ -4,7 +4,7 @@ import {
   propertyValueSchema,
   selectionRectanglesSchema,
 } from '../../shared/types/commonSchemas.js';
-import { propertyTypes } from 'shared/propertyTypes';
+import { propertyTypes } from './propertyTypes.js';
 
 const commonSuggestionMessageProperties = {
   tenant: { type: 'string', minLength: 1 },

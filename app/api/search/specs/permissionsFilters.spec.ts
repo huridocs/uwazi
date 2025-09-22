@@ -1,10 +1,10 @@
-import { search } from 'api/search/search';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { search } from '../search/search.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
 
-import { AggregationBucket, Aggregations } from 'shared/types/aggregations';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { UserSchema } from 'shared/types/userType';
+import { AggregationBucket, Aggregations } from '../../shared/types/aggregations.js';
+import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { UserSchema } from '../../shared/types/userType.js';
 import { fixturesTimeOut } from './fixtures_elastic';
 import {
   group1,

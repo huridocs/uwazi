@@ -1,7 +1,7 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+import { DefaultRelationshipTypesDataSource } from '../relationshiptypes.v2/database/data_source_defaults.js';
+import { DenormalizationService } from '../relationships.v2/services/service_factories.js';
 import { DefaultTemplatesDataSource } from '../database/data_source_defaults';
 import { CreateTemplateService as GenericCreateTemplateService } from './CreateTemplateService';
 

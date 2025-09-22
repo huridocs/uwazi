@@ -1,9 +1,9 @@
 import React from 'react';
 import { Icon } from 'UI';
-import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { ClientFile } from 'app/istore';
+import { ClientFile } from '../../istore.js';
 import { tocGenerationActions } from './actions';
 
 interface ReviewTocButtonProps {

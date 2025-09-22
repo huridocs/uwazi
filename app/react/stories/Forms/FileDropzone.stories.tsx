@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { FileDropzone } from 'app/V2/Components/Forms';
+import { FileDropzone } from '../../V2/Components/Forms.js';
 
 const meta: Meta<typeof FileDropzone> = {
   title: 'Forms/FileDropzone',

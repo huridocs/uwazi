@@ -1,4 +1,4 @@
-import { AbstractEvent } from 'api/eventsbus';
+import { AbstractEvent } from '../../eventsbus/index.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 
 interface EntityCreatedData {

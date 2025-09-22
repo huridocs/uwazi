@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { PdfCharacterCountToAbsolute } from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
+import { PdfCharacterCountToAbsolute } from '../migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute.js';
 import path from 'path';
 import { config } from '../config.js';
 

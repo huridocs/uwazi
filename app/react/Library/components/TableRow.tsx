@@ -1,13 +1,13 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { connect, ConnectedProps } from 'react-redux';
-import { IStore, TableViewColumn } from 'app/istore';
-import { Icon as PropertyIcon } from 'app/Layout';
+import { IStore, TableViewColumn } from '../../istore.js';
+import { Icon as PropertyIcon } from '../../Layout.js';
 import formatter from '../../Metadata/helpers/formater.js';
-import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
+import { FormattedMetadataValue, TableCell } from '../../Library/components/TableCell.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { deletedEntityAtom } from 'V2/atoms';
-import { IImmutable } from 'shared/types/Immutable';
+import { IImmutable } from '../../shared/types/Immutable.js';
 
 interface TableRowProps {
   columns: TableViewColumn[];

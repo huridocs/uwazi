@@ -5,11 +5,11 @@ import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
-import { renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { TableRow } from 'app/Library/components/TableRow';
-import { EntitySchema } from 'shared/types/entityType';
-import { TableViewColumn } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
+import { renderConnectedContainer } from '../../utils/test/renderConnected.js';
+import { TableRow } from '../../Library/components/TableRow.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { TableViewColumn } from '../../istore.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
 import { deletedEntityAtom } from 'V2/atoms';
 
 describe('TableRow', () => {

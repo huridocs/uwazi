@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 
-import { actions as basicActions } from 'app/BasicReducer';
-import { notificationActions } from 'app/Notifications';
-import api from 'app/Pages/PagesAPI';
+import { actions as basicActions } from '../../BasicReducer.js';
+import { notificationActions } from '../../Notifications.js';
+import api from '../../Pages/PagesAPI.js';
 
 import * as actions from '../pageActions';
 

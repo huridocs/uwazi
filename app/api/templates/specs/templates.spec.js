@@ -1,21 +1,21 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
-import documents from 'api/documents/documents.js';
-import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
-import translations from 'api/i18n/translations';
-import { elasticClient } from 'api/search/elastic';
-import db, { testingDB } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import documents from '../documents/documents.js.js';
+import * as generatedIdPropertyAutoFiller from '../entities/generatedIdPropertyAutoFiller.js';
+import translations from '../i18n/translations.js';
+import { elasticClient } from '../search/elastic.js';
+import db, { testingDB } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { propertyTypes } from 'shared/propertyTypes';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
+import { spyOnEmit } from '../eventsbus/eventTesting.js';
 
-import { applicationEventsBus } from 'api/eventsbus';
-import { testingTenants } from 'api/utils/testingTenants';
+import { applicationEventsBus } from '../eventsbus.js';
+import { testingTenants } from '../utils/testingTenants.js';
 import { inspect } from 'util';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import templates from '../templates';

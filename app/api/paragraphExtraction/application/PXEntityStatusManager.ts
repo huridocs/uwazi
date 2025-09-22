@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
 
 import { FileType as LegacyFileType } from '../../shared/types/fileType.js';
-import { FileType } from 'api/files.v2/model/FileType';
+import { FileType } from '../files.v2/model/FileType.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { Document } from 'api/files.v2/model/Document';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { Document } from '../files.v2/model/Document.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';

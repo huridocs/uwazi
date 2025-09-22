@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import entitiesModel from 'api/entities/entitiesModel';
-import { filesModel } from 'api/files/filesModel';
+import entitiesModel from '../entities/entitiesModel.js';
+import { filesModel } from '../files/filesModel.js';
 import { DataType, models, WithId } from '../odm/index.js';
-import { settingsModel } from 'api/settings/settingsModel';
-import templatesModel from 'api/templates/templatesModel';
+import { settingsModel } from '../settings/settingsModel.js';
+import templatesModel from '../templates/templatesModel.js';
 import { UpdateLog } from '../updatelogs/index.js';
 import { ensure } from '../../shared/tsUtils.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
@@ -13,7 +13,7 @@ import {
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
 } from '../../shared/types/settingsType.js';
-import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';

@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { get } from 'lodash';
 import { Icon } from 'UI';
 import { Translate } from '../../I18N/index.js';
-import { IStore } from 'app/istore';
+import { IStore } from '../../istore.js';
 import { MetadataFormFiles } from './MetadataFormFiles';
 
 type PDFUploadProps = {

@@ -1,9 +1,9 @@
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import relationshipTypeDS from 'api/relationtypes';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import relationshipTypeDS from '../relationtypes.js';
+import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob';
 
 import { PXExtractor } from '../domain/PXExtractor';

@@ -6,15 +6,15 @@
 import React from 'react';
 import { fromJS } from 'immutable';
 import { shallow } from 'enzyme';
-import entitiesAPI from 'app/Entities/EntitiesAPI';
-import { actions } from 'app/BasicReducer';
-import { PDFView, PDFViewComponent } from 'app/Viewer/PDFView';
-import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
-import RouteHandler from 'app/App/RouteHandler';
-import * as utils from 'app/utils';
-import { RequestParams } from 'app/utils/RequestParams';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import * as documentActions from 'app/Viewer/actions/documentActions';
+import entitiesAPI from '../../Entities/EntitiesAPI.js';
+import { actions } from '../../BasicReducer.js';
+import { PDFView, PDFViewComponent } from '../../Viewer/PDFView.js';
+import { ConnectedViewer as Viewer } from '../../Viewer/components/Viewer.js';
+import RouteHandler from '../../App/RouteHandler.js';
+import * as utils from '../../utils.js';
+import { RequestParams } from '../../utils/RequestParams.js';
+import { renderConnectedMount } from '../../utils/test/renderConnected.js';
+import * as documentActions from '../../Viewer/actions/documentActions.js';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
 

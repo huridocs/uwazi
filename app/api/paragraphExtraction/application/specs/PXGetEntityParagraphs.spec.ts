@@ -1,6 +1,6 @@
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { PXEntityParagraphsFactory } from 'api/paragraphExtraction/infrastructure/PXEntityParagraphsFactory';
+import { DBFixture } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { PXEntityParagraphsFactory } from '../paragraphExtraction/infrastructure/PXEntityParagraphsFactory.js';
 import {
   extractorsQueryFixtures,
   entityFixtures,

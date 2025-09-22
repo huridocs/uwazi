@@ -1,6 +1,6 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import {
   Input,
   UpdateSuggestionsAfterEntityUpdate,

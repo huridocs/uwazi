@@ -1,7 +1,7 @@
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from 'api/common.v2/infrastructure/AbstractController';
+} from '../common.v2/infrastructure/AbstractController.js';
 
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { PXExtractorsQueryServiceFactory } from '../infrastructure/PXExtractorsQueryServiceFactory';

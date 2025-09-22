@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { Icon } from 'app/UI';
+import { Icon } from '../../UI.js';
 import { t, Translate } from '../../I18N/index.js';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
-import { exportDocuments } from 'app/Library/actions/exportActions';
+import { wrapDispatch } from '../../Multireducer.js';
+import { exportDocuments } from '../../Library/actions/exportActions.js';
 import { User } from '../users/usersModel.js';
-import Modal from 'app/Layout/Modal';
-import { CaptchaValue } from 'shared/types/Captcha';
+import Modal from '../../Layout/Modal.js';
+import { CaptchaValue } from '../../shared/types/Captcha.js';
 import { Captcha, FormGroup } from '../../ReactReduxForms/index.js';
-import { IImmutable } from 'shared/types/Immutable';
-import { LocalForm } from 'app/Forms/Form';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { LocalForm } from '../../Forms/Form.js';
 import { ExportStore } from '../reducers/ExportStoreType';
 
 type ExportButtonProps = {

@@ -2,13 +2,13 @@ import { ObjectId } from 'mongodb';
 import Ajv, { ErrorObject } from 'ajv';
 import { isUndefined, isNull } from 'util';
 import { ensure } from '../../shared/tsUtils.js';
-import { propertyTypes } from 'shared/propertyTypes';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 import { PropertySchema, MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
-import { TemplateSchema } from 'shared/types/templateType';
-import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { arrayBidirectionalDiff } from '../../shared/data_utils/arrayBidirectionalDiff.js';
 import entities from '../entities/index.js';
-import thesauris from 'api/thesauri';
+import thesauris from '../thesauri.js';
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
 import { validators, customErrorMessages } from './metadataValidators';
 

@@ -7,9 +7,9 @@ import thunk from 'redux-thunk';
 import configureStore, { MockStoreCreator } from 'redux-mock-store';
 import { mount, ReactWrapper } from 'enzyme';
 import { Provider } from 'react-redux';
-import { AccessLevels } from 'shared/types/permissionSchema';
-import { UserRole } from 'shared/types/userSchema';
-import { ClientUserSchema } from 'app/apiResponseTypes';
+import { AccessLevels } from '../../shared/types/permissionSchema.js';
+import { UserRole } from '../../shared/types/userSchema.js';
+import { ClientUserSchema } from '../../apiResponseTypes.js';
 import { RelationshipsFormButtons } from '../RelationshipsFormButtons';
 
 describe('RelationshipsFormButtons', () => {

@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { setTargetDocument } from 'app/Connections/actions/actions';
-import SearchForm from 'app/Connections/components/SearchForm';
-import SearchResults from 'app/Connections/components/SearchResults';
-import { Icon } from 'app/UI';
-import { sortByStrings } from 'shared/data_utils/objectSorting';
+import { setTargetDocument } from '../../Connections/actions/actions.js';
+import SearchForm from '../../Connections/components/SearchForm.js';
+import SearchResults from '../../Connections/components/SearchResults.js';
+import { Icon } from '../../UI.js';
+import { sortByStrings } from '../../shared/data_utils/objectSorting.js';
 import {
   deleteRelationships,
   getRelationshipsByEntity,

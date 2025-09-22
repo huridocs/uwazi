@@ -1,8 +1,8 @@
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { saveEntity } from 'api/entities/entitySavingManager';
-import { uploadMiddleware } from 'api/files';
-import { search } from 'api/search';
-import { withTransaction } from 'api/utils/withTransaction';
+import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
+import { saveEntity } from '../entities/entitySavingManager.js';
+import { uploadMiddleware } from '../files.js';
+import { search } from '../search.js';
+import { withTransaction } from '../utils/withTransaction.js';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates/templates';
 import { thesauri } from '../thesauri/thesauri';

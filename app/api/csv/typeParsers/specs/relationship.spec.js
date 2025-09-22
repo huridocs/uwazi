@@ -1,7 +1,7 @@
-import entities, { model } from 'api/entities';
-import { search } from 'api/search';
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import entities, { model } from '../entities.js';
+import { search } from '../search.js';
+import db from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 
 import { fixtures, templateToRelateId } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';

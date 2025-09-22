@@ -1,8 +1,8 @@
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';
 

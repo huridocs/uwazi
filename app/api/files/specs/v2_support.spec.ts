@@ -1,7 +1,7 @@
-import { search } from 'api/search';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
+import { search } from '../search.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB, { DBFixture } from '../utils/testing_db.js';
 import { files } from '../files';
 
 const factory = getFixturesFactory();

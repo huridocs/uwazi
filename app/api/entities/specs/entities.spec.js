@@ -5,18 +5,18 @@ import Ajv from 'ajv';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
-import entitiesModel from 'api/entities/entitiesModel';
-import { spyOnEmit } from 'api/eventsbus/eventTesting';
-import relationships from 'api/relationships';
-import { storage, uploadsPath } from 'api/files';
-import { search } from 'api/search';
-import date from 'api/utils/date.js';
-import db from 'api/utils/testing_db';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
+import entitiesModel from '../entities/entitiesModel.js';
+import { spyOnEmit } from '../eventsbus/eventTesting.js';
+import relationships from '../relationships.js';
+import { storage, uploadsPath } from '../files.js';
+import { search } from '../search.js';
+import date from '../utils/date.js.js';
+import db from '../utils/testing_db.js';
+import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+import { UserRole } from '../../shared/types/userSchema.js';
 
-import { applicationEventsBus } from 'api/eventsbus';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { applicationEventsBus } from '../eventsbus.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import entities from '../entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';

@@ -5,10 +5,10 @@ import { ReactWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
 import ReactPlayer from 'react-player';
 import { actions as formActions } from 'react-redux-form';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
-import * as supportingFileActions from 'app/Metadata/actions/supportingFilesActions';
+import { renderConnectedMount } from '../../utils/test/renderConnected.js';
+import { RenderAttachment } from '../../Attachments/components/RenderAttachment.js';
+import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
+import * as supportingFileActions from '../../Metadata/actions/supportingFilesActions.js';
 import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
 const store = {

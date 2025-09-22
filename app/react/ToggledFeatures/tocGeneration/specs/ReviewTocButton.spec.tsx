@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import { ClientFile } from 'app/istore';
+import { ClientFile } from '../../istore.js';
 import { ReviewTocButton } from '../ReviewTocButton';
 
 describe('ReviewTocButton', () => {

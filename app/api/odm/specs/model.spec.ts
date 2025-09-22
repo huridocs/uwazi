@@ -1,13 +1,13 @@
-import { legacyLogger } from 'api/log';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UpdateLogHelper } from 'api/odm/logHelper';
-import { tenants } from 'api/tenants';
-import { model as updatelogsModel } from 'api/updatelogs';
-import { UpdateLog } from 'api/updatelogs/updatelogsModel';
-import { testingTenants } from 'api/utils/testingTenants';
-import testingDB from 'api/utils/testing_db';
+import { legacyLogger } from '../log.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { UpdateLogHelper } from '../odm/logHelper.js';
+import { tenants } from '../tenants.js';
+import { model as updatelogsModel } from '../updatelogs.js';
+import { UpdateLog } from '../updatelogs/updatelogsModel.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import testingDB from '../utils/testing_db.js';
 import mongoose, { Schema } from 'mongoose';
-import { ensure } from 'shared/tsUtils';
+import { ensure } from '../../shared/tsUtils.js';
 import { instanceModel, models, OdmModel, WithId } from '../model';
 
 const testSchema = new Schema({

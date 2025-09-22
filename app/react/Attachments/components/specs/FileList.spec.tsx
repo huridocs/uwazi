@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { FileType } from 'shared/types/fileType';
-import UploadButton from 'app/Metadata/components/UploadButton';
-import { LanguageUtils } from 'shared/language';
-import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from '../../shared/types/fileType.js';
+import UploadButton from '../../Metadata/components/UploadButton.js';
+import { LanguageUtils } from '../../shared/language.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 import { ConnectedFile as File } from '../File';
 import { FileList, FileListProps } from '../FileList';
 

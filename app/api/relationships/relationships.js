@@ -4,23 +4,23 @@ import _ from 'lodash';
 
 import templatesAPI from '../templates/index.js';
 import settings from '../settings/index.js';
-import relationtypes from 'api/relationtypes';
-import entities from 'api/entities/entities';
+import relationtypes from '../relationtypes/index.js';
+import entities from '../entities/entities.js';
 import { createError } from '../utils/index.js';
 
 import { ObjectId } from 'mongodb';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import model from './model';
-import { generateNames } from '../templates/utils';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
+import model from './model.js';
+import { generateNames } from '../templates/utils.js';
 
-import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
+import { filterRelevantRelationships, groupRelationships } from './groupByRelationships.js';
 import {
   processRelationshipCollection,
   getEntityReferencesByRelationshipTypes,
   guessRelationshipPropertyHub,
-} from './relationshipsHelpers';
-import { validateConnectionSchema } from './validateConnectionSchema';
-import { relationshipsSearch } from './relationshipsSearch';
+} from './relationshipsHelpers.js';
+import { validateConnectionSchema } from './validateConnectionSchema.js';
+import { relationshipsSearch } from './relationshipsSearch.js';
 
 function excludeRefs(template) {
   delete template.refs;

@@ -1,9 +1,9 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import bodyParser from 'body-parser';
 import express from 'express';
 import request from 'supertest';
 
-import users from 'api/users/users';
+import users from '../users/users.js';
 import backend from 'fetch-mock';
 import svgCaptcha from 'svg-captcha';
 import instrumentRoutes from '../../utils/instrumentRoutes';

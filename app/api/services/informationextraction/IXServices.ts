@@ -1,14 +1,14 @@
 import { EnforcedWithId } from '../odm/index.js';
-import templatesModel from 'api/templates/templatesModel';
+import templatesModel from '../templates/templatesModel.js';
 import { ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { ModelStatus } from 'shared/types/IXModelSchema';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
+import { ModelStatus } from '../../shared/types/IXModelSchema.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { propertyIsMultiValued } from 'shared/getIXSuggestionState';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { IXModelType } from 'shared/types/IXModelType';
-import { TemplateSchema } from 'shared/types/templateType';
+import { propertyIsMultiValued } from '../../shared/getIXSuggestionState.js';
+import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { IXModelType } from '../../shared/types/IXModelType.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels';
 
 type GetTargetPropertyInput = {

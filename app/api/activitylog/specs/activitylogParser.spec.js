@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 /* eslint-disable max-statements */
 
-import db from 'api/utils/testing_db';
-import { fileId, groupId, suggestionId, userId } from 'api/activitylog/specs/fixturesParser';
+import db from '../utils/testing_db.js';
+import { fileId, groupId, suggestionId, userId } from '../activitylog/specs/fixturesParser.js';
 import {
   fixtures,
   firstTemplate,

@@ -1,10 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 import backend from 'fetch-mock';
-import { APIURL } from 'app/config.js';
+import { APIURL } from '../../config.js.js';
 
-import referencesAPI from 'app/Viewer/referencesAPI';
-import * as modalActions from 'app/Modals/actions/modalActions';
-import * as actions from 'app/RelationTypes/actions/relationTypesActions';
+import referencesAPI from '../../Viewer/referencesAPI.js';
+import * as modalActions from '../../Modals/actions/modalActions.js';
+import * as actions from '../../RelationTypes/actions/relationTypesActions.js';
 
 describe('relationTypesActions', () => {
   describe('editRelationType', () => {

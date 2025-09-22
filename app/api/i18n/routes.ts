@@ -2,14 +2,14 @@
 import { createError, validation } from '../utils/index.js';
 import settings from '../settings/index.js';
 import entities from '../entities/index.js';
-import pages from 'api/pages';
+import pages from '../pages.js';
 import { CSVLoader } from '../csv/index.js';
-import { uploadMiddleware } from 'api/files';
-import { sequentialPromises } from 'shared/asyncUtils';
+import { uploadMiddleware } from '../files.js';
+import { sequentialPromises } from '../../shared/asyncUtils.js';
 import { LanguageISO6391Schema, languageSchema } from '../../shared/types/commonSchemas.js';
 import { LanguageISO6391, LanguageSchema } from '../../shared/types/commonTypes.js';
 import { Application, Request } from 'express';
-import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
+import { UITranslationNotAvailable } from '../i18n/defaultTranslations.js';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 

@@ -1,9 +1,9 @@
-import { actions } from 'app/BasicReducer';
-import EntitiesAPI from 'app/Entities/EntitiesAPI';
-import { QuickLabelState } from 'app/istore';
-import { wrapDispatch } from 'app/Multireducer';
-import { store } from 'app/store';
-import { RequestParams } from 'app/utils/RequestParams';
+import { actions } from '../../BasicReducer.js';
+import EntitiesAPI from '../../Entities/EntitiesAPI.js';
+import { QuickLabelState } from '../../istore.js';
+import { wrapDispatch } from '../../Multireducer.js';
+import { store } from '../../store.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import * as libraryActions from '../libraryActions';
 import * as quickLabelActions from '../quickLabelActions';

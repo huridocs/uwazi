@@ -5,7 +5,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { Modal } from 'V2/Components/UI';
 import { settingsAtom, translationsAtom, inlineEditAtom, notificationAtom } from 'V2/atoms';
-import { InputField } from 'app/V2/Components/Forms';
+import { InputField } from '../../V2/Components/Forms.js';
 import { Button } from 'V2/Components/UI/Button';
 import { TranslationValue } from 'V2/shared/types';
 import { postV2 } from 'V2/api/translations';

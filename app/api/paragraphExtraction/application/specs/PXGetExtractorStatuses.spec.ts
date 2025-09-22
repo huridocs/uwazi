@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { PXExtractorsQueryServiceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory';
-import { GetExtractorStatusesInput } from 'api/paragraphExtraction/domain/PXExtractorsQueryService';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { DBFixture } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { PXExtractorsQueryServiceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { GetExtractorStatusesInput } from '../paragraphExtraction/domain/PXExtractorsQueryService.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { extractorsQueryFixtures, extractor1 } from './shared/extractorsQueryFixtures';
 import { PXGetExtractorStatuses } from '../PXGetExtractorStatuses';

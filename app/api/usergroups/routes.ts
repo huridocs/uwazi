@@ -1,5 +1,5 @@
 import { Application, NextFunction, Request, Response } from 'express';
-import { needsAuthorization } from 'api/auth';
+import { needsAuthorization } from '../auth.js';
 import { parseQuery, validation } from '../utils/index.js';
 import userGroups from './userGroups';
 

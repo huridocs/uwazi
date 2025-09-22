@@ -1,21 +1,21 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
-import { setUpApp } from 'api/utils/testingRoutes';
-import db from 'api/utils/testing_db';
+import { setUpApp } from '../utils/testingRoutes.js';
+import db from '../utils/testing_db.js';
 
-import * as entitySavingManager from 'api/entities/entitySavingManager';
-import routes from 'api/entities/routes';
-import { legacyLogger } from 'api/log';
-import templates from 'api/templates';
-import thesauri from 'api/thesauri';
-import { appContext } from 'api/utils/AppContext';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import * as entitySavingManager from '../entities/entitySavingManager.js';
+import routes from '../entities/routes.js';
+import { legacyLogger } from '../log.js';
+import templates from '../templates.js';
+import thesauri from '../thesauri.js';
+import { appContext } from '../utils/AppContext.js';
+import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
 import { ObjectId } from 'mongodb';
 import path from 'path';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserRole } from 'shared/types/userSchema';
+import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
+import { UserRole } from '../../shared/types/userSchema.js';
 import entities from '../entities';
 import fixtures, { permissions } from './fixtures';
 

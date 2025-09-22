@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { StackedDualBarChart, arrayUtils } from 'app/Charts';
-import { Loader } from 'app/components/Elements/Loader';
+import { StackedDualBarChart, arrayUtils } from '../../Charts.js';
+import { Loader } from '../../components/Elements/Loader.js';
 
 const countriesTemplate = '58b2f3a35d59f31e1345b480';
 const countryKey = 'pa_s';

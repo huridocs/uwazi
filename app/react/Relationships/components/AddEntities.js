@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immuable from 'immutable';
 
-import SidePanel from 'app/Layout/SidePanel';
-import SearchResults from 'app/Connections/components/SearchResults';
-import { loadInReduxForm } from 'app/Metadata/actions/actions';
+import SidePanel from '../../Layout/SidePanel.js';
+import SearchResults from '../../Connections/components/SearchResults.js';
+import { loadInReduxForm } from '../../Metadata/actions/actions.js';
 import { Icon } from 'UI';
 import { Translate } from '../../I18N/index.js';
 import { closePanel } from '../actions/uiActions';

@@ -1,6 +1,6 @@
-import searchAPI from 'app/Search/SearchAPI';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { RequestParams } from 'app/utils/RequestParams';
+import searchAPI from '../../Search/SearchAPI.js';
+import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import Immutable from 'immutable';
 import rison from '@huridocs/rison';
 import { requestState, processQuery } from '../requestState';

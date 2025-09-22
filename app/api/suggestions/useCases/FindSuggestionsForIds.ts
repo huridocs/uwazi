@@ -1,12 +1,12 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { IXModelType } from 'shared/types/IXModelType';
-import { IXExtractorType } from 'shared/types/extractorType';
+import { ModelStatus } from '../../shared/types/IXModelSchema.js';
+import { IXModelType } from '../../shared/types/IXModelType.js';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { EnforcedWithId } from '../odm/index.js';
-import { Extractors, ModelNotReadyError } from 'api/services/informationextraction/ixextractors';
-import ixmodels from 'api/services/informationextraction/ixmodels';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
+import ixmodels from '../services/informationextraction/ixmodels.js';
+import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
 import { Suggestions } from '../suggestions';
 
 type Input = {

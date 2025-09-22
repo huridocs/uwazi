@@ -1,5 +1,5 @@
-import { IStore } from 'app/istore';
-import { formater as formatter } from 'app/Metadata';
+import { IStore } from '../../istore.js';
+import { formater as formatter } from '../../Metadata.js';
 import {
   pick,
   isArray,
@@ -18,8 +18,8 @@ import {
   PropertyValueSchema,
 } from '../../shared/types/commonTypes.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { IImmutable } from 'shared/types/Immutable';
-import { TemplateSchema } from 'shared/types/templateType';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 
 type Relation = { template: string; entityData: EntitySchema };
 type FormattedEntity = EntitySchema & { metadata: any[]; relations: Relation[] };

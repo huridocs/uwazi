@@ -1,9 +1,9 @@
-import { IXExtractorType } from 'shared/types/extractorType';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import settings from '../settings/index.js';
 import { ObjectId } from 'mongodb';
 import entities from '../entities/index.js';
-import dictionatiesModel from 'api/thesauri/dictionariesModel';
+import dictionatiesModel from '../thesauri/dictionariesModel.js';
 import _ from 'lodash';
 import { EnforcedWithId } from '../odm/index.js';
 import { IXTaskManager, TaskParameters } from './InformationExtraction';

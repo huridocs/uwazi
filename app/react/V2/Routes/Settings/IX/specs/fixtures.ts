@@ -1,4 +1,4 @@
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema } from '../../istore.js';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types';

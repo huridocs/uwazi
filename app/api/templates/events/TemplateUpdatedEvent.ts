@@ -1,5 +1,5 @@
-import { AbstractEvent } from 'api/eventsbus';
-import { TemplateSchema } from 'shared/types/templateType';
+import { AbstractEvent } from '../../eventsbus/index.js';
+import { TemplateSchema } from '../../../shared/types/templateType.js';
 
 export interface TemplateUpdatedData {
   before: TemplateSchema;

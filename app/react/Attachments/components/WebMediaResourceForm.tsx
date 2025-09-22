@@ -2,7 +2,7 @@ import { Field } from 'react-redux-form';
 import { Icon } from 'UI';
 import React from 'react';
 import { FormGroup } from '../../Forms/index.js';
-import { LocalForm } from 'app/Forms/Form';
+import { LocalForm } from '../../Forms/Form.js';
 import { Translate, t } from '../../I18N/index.js';
 
 interface WebMediaResourceFormProps {

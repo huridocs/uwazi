@@ -1,6 +1,6 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
+import { DuplicatedKeyError } from '../common.v2/errors/DuplicatedKeyError.js';
 import { MongoBulkWriteError, OptionalId } from 'mongodb';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';

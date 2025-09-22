@@ -1,8 +1,8 @@
 import backend from 'fetch-mock';
-import { APIURL } from 'app/config.js';
+import { APIURL } from '../../config.js.js';
 
-import * as actions from 'app/Thesauri/actions/thesaurisActions';
-import api from 'app/Thesauri/ThesauriAPI';
+import * as actions from '../../Thesauri/actions/thesaurisActions.js';
+import api from '../../Thesauri/ThesauriAPI.js';
 
 describe('thesaurisActions', () => {
   describe('async action', () => {

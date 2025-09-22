@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 
-import { Entity } from 'api/entities.v2/model/Entity';
-import { Template } from 'api/templates.v2/model/Template';
+import { Entity } from '../entities.v2/model/Entity.js';
+import { Template } from '../templates.v2/model/Template.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { Property } from 'api/templates.v2/model/Property';
+import { Property } from '../templates.v2/model/Property.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
 import { PXValidationError, PXErrorCode } from './PXValidationError';

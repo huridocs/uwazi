@@ -1,10 +1,10 @@
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
 import { MetadataObjectSchema, PropertyValueSchema } from '../../shared/types/commonTypes.js';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { EntitySuggestionType } from '../../shared/types/suggestionType.js';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import * as entitiesAPI from 'V2/api/entities';
 import * as filesAPI from 'V2/api/files';
-import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 

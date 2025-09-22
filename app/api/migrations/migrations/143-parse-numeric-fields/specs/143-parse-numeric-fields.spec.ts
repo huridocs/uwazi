@@ -1,4 +1,4 @@
-import testingDB from 'api/utils/testing_db';
+import testingDB from '../utils/testing_db.js';
 import { WithId } from 'mongodb';
 import migration from '../index';
 import { fixtures } from './fixtures';

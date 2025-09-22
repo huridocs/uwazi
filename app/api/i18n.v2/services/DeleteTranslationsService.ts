@@ -1,4 +1,4 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 
 export class DeleteTranslationsService {

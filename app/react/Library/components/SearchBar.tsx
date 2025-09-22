@@ -8,15 +8,15 @@ import { Icon } from 'UI';
 import {
   searchDocuments as searchDocumentsAction,
   processFilters,
-} from 'app/Library/actions/libraryActions';
+} from '../../Library/actions/libraryActions.js';
 import { t, Translate } from '../../I18N/index.js';
-import { wrapDispatch } from 'app/Multireducer';
-import ModalTips from 'app/App/ModalTips';
-import { SearchTipsContent } from 'app/App/SearchTipsContent';
-import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import { IStore } from 'app/istore';
-import { Form } from 'app/Forms/Form';
+import { wrapDispatch } from '../../Multireducer.js';
+import ModalTips from '../../App/ModalTips.js';
+import { SearchTipsContent } from '../../App/SearchTipsContent.js';
+import { submitNewSearch } from '../../SemanticSearch/actions/actions.js';
+import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
+import { IStore } from '../../istore.js';
+import { Form } from '../../Forms/Form.js';
 
 interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {

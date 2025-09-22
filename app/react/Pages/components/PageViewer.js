@@ -4,13 +4,13 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component, Suspense } from 'react';
 
-import Footer from 'app/App/Footer';
+import Footer from '../../App/Footer.js';
 import MarkdownViewer from '../../Markdown/index.js';
-import { Context } from 'app/Markdown/components';
+import { Context } from '../../Markdown/components.js';
 import { Icon } from 'UI';
 import { Translate } from '../../I18N/index.js';
-import { NeedAuthorization } from 'app/Auth';
-import { ErrorBoundary, ErrorFallback } from 'app/V2/Components/ErrorHandling';
+import { NeedAuthorization } from '../../Auth.js';
+import { ErrorBoundary, ErrorFallback } from '../../V2/Components/ErrorHandling.js';
 import Script from './Script';
 
 class PageViewer extends Component {

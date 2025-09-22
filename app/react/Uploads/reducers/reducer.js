@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import progress from 'app/Uploads/reducers/progressReducer';
+import progress from '../../Uploads/reducers/progressReducer.js';
 
 export default combineReducers({
   progress,

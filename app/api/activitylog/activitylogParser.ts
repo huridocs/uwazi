@@ -1,6 +1,6 @@
-import * as helpers from 'api/activitylog/helpers';
-import { nameFunc } from 'api/activitylog/helpers';
-import { buildActivityEntry, Methods, EntryValue } from 'api/activitylog/activityLogBuilder';
+import * as helpers from '../activitylog/helpers.js';
+import { nameFunc } from '../activitylog/helpers.js';
+import { buildActivityEntry, Methods, EntryValue } from '../activitylog/activityLogBuilder.js';
 
 const ParsedActions: { [key: string]: EntryValue } = {
   'POST/api/users': {

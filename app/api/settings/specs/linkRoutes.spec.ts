@@ -1,10 +1,10 @@
 import request from 'supertest';
 
-import { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import { DBFixture } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { UserRole } from '../../shared/types/userSchema.js';
+import { UserSchema } from '../../shared/types/userType.js';
 import { expectedLinks, linkFixtures, newLinks } from './fixtures';
 import settingsRoutes from '../routes';
 import settings from '../settings';

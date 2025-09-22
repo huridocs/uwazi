@@ -1,4 +1,4 @@
-import * as errorHelper from 'api/utils/handleError';
+import * as errorHelper from '../utils/handleError.js';
 import Redis from 'redis';
 import waitForExpect from 'wait-for-expect';
 import { DistributedLoop } from '../DistributedLoop';

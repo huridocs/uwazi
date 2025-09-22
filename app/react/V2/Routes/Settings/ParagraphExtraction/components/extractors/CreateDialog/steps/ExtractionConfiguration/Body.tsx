@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Translate } from '../../I18N/index.js';
-import { OptionSchema, Select } from 'app/V2/Components/Forms';
+import { OptionSchema, Select } from '../../V2/Components/Forms.js';
 import { useAtomValue } from 'jotai';
-import { relationshipTypesAtom, templatesAtom } from 'app/V2/atoms';
-import { TemplateSchema } from 'shared/types/templateType';
+import { relationshipTypesAtom, templatesAtom } from '../../V2/atoms.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 
 const getOptions = (options: OptionSchema[]) => [

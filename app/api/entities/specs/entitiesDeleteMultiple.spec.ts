@@ -1,7 +1,7 @@
-import entities from 'api/entities';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import entities from '../entities.js';
+import { elasticTesting } from '../utils/elastic_testing.js';
+import db from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 import entitiesModel from '../entitiesModel';
 

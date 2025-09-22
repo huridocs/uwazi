@@ -1,15 +1,15 @@
-import { TaskStatus } from 'shared/tasks/tasks';
-import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
-import { LabelCountSchema } from 'app/Thesauri/types/labelCountType';
-import { IImmutable } from 'shared/types/Immutable';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { TaskStatus } from '../../shared/tasks/tasks.js';
+import { ClassifierModelSchema } from '../../Thesauri/types/classifierModelType.js';
+import { LabelCountSchema } from '../../Thesauri/types/labelCountType.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 import { ExtractedMetadataSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { ConnectionSchema } from 'shared/types/connectionType';
+import { ConnectionSchema } from '../../shared/types/connectionType.js';
 import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from '../../apiResponseTypes.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { PageType } from 'shared/types/pageType';
+import { PageType } from '../../shared/types/pageType.js';
 import { TranslationContext, TranslationType } from '../../shared/translationType.js';
 import { ClientIXExtractorType } from 'V2/shared/types';
 

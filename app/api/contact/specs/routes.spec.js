@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import contactRoutes from '../routes.js';
 import contact from '../contact';
 

@@ -1,5 +1,5 @@
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 
 export class ElasticEntityMapper {

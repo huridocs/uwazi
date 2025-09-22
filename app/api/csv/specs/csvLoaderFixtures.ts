@@ -1,9 +1,9 @@
-import db from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
+import db from '../utils/testing_db.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 import { templateUtils } from '../templates/index.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
 
 const template1Id = db.id();
 const simpleTemplateId = db.id();

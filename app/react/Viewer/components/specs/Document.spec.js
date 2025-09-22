@@ -5,8 +5,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { PDF } from 'app/PDF';
-import { Document } from 'app/Viewer/components/Document.js';
+import { PDF } from '../../PDF.js';
+import { Document } from '../../Viewer/components/Document.js.js';
 
 jest.mock('V2/atoms', () => ({
   atomStore: { get: () => 2 },

@@ -1,7 +1,7 @@
-import { needsAuthorization } from 'api/auth';
-import { Extractors } from 'api/services/informationextraction/ixextractors';
+import { needsAuthorization } from '../auth.js';
+import { Extractors } from '../services/informationextraction/ixextractors.js';
 import { parseQuery } from '../utils/index.js';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { validateAndCoerceRequest } from '../utils/validateRequest.js';
 import { Application, Request, Response, NextFunction } from 'express';
 import { ObjectId } from 'mongodb';
 import { ensure } from '../../shared/tsUtils.js';

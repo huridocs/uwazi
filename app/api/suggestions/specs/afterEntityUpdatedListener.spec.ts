@@ -1,9 +1,9 @@
-import { EventsBus } from 'api/eventsbus';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { EventsBus } from '../eventsbus.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { TestUtils } from '../common.v2/utils/Test.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
+import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
 import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';
 import { AfterEntityUpdatedListener } from '../listeners/afterEntityUpdatedListener';
 import { ProcessSuggestionsAfterTemplateChanged } from '../useCases/processSuggestionsAfterTemplateChanged';

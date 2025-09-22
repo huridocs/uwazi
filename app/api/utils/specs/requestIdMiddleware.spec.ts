@@ -1,7 +1,7 @@
 import request from 'supertest';
 import express, { Application } from 'express';
-import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
+import { requestIdMiddleware } from '../utils/requestIdMiddleware.js';
+import { appContextMiddleware } from '../utils/appContextMiddleware.js';
 import { appContext } from '../AppContext';
 
 const testingRoutes = (app: Application) => {

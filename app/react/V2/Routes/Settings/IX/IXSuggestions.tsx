@@ -20,7 +20,7 @@ import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { notificationAtom } from 'V2/atoms';
 import { Translate } from '../../I18N/index.js';
-import { ClientPropertySchema } from 'app/istore';
+import { ClientPropertySchema } from '../../istore.js';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';

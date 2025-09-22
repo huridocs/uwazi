@@ -1,6 +1,6 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXExtractParagraphsFromEntityJob } from '../infrastructure/PXExtractParagraphsFromEntityJob';

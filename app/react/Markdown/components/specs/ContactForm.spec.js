@@ -4,10 +4,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { act } from 'react-dom/test-utils';
-import { LocalForm } from 'app/Forms/Form';
-import { Captcha } from 'app/ReactReduxForms';
-import api from 'app/utils/api';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import { LocalForm } from '../../Forms/Form.js';
+import { Captcha } from '../../ReactReduxForms.js';
+import api from '../../utils/api.js';
+import { renderConnectedMount } from '../../utils/test/renderConnected.js';
 import { ContactForm } from '../ContactForm.js';
 
 describe('ContactForm', () => {

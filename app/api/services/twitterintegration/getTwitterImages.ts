@@ -1,7 +1,7 @@
-import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
+import { ResultsMessage } from '../services/tasksmanager/TaskManager.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { Readable } from 'stream';
-import { files, generateFileName, storage } from 'api/files';
+import { files, generateFileName, storage } from '../files.js';
 
 interface TwitterImageData {
   fileName: string;

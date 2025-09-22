@@ -5,10 +5,10 @@ import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
 import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
 import { get as getThesauri } from 'V2/api/thesauri';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { httpRequest } from 'shared/superagent';
+import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
+import { httpRequest } from '../../shared/superagent.js';
 import uniqueID from '../../shared/uniqueID.js';
-import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils';
+import { sanitizeThesaurusLabel } from '../../shared/sanitizationUtils.js';
 import { ThesaurusRow } from './components/TableComponents';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>

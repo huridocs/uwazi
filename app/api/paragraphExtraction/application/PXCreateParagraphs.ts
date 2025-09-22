@@ -1,17 +1,17 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
 import entities from '../entities/index.js';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import relationshipsDS from 'api/relationships';
+import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
+import relationshipsDS from '../relationships.js';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXCreateParagraph } from './PXCreateParagraph';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { OperationalError } from '../common.v2/errors/OperationalError.js';
 
 type PXCreateParagraphsInput = {
   userId: string;

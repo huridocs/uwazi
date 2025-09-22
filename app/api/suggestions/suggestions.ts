@@ -2,21 +2,21 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { files } from 'api/files/files';
+import { files } from '../files/files.js';
 import { EnforcedWithId } from '../odm/index.js';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 import templates from '../templates/index.js';
-import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
+import { syncedPromiseLoop } from '../../shared/data_utils/promiseUtils.js';
 import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { IXSuggestionAggregation, IXSuggestionType } from 'shared/types/suggestionType';
+import { IXSuggestionAggregation, IXSuggestionType } from '../../shared/types/suggestionType.js';
 import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import {
   getSegmentedFilesIds,
   propertyTypeIsWithoutExtractedMetadata,
-} from 'api/services/informationextraction/ixMaterials';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { IXModelType } from 'shared/types/IXModelType';
+} from '../services/informationextraction/ixMaterials.js';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { IXModelType } from '../../shared/types/IXModelType.js';
 import { registerEventListeners } from './eventListeners';
 import { updateStates } from './updateState';
 import {

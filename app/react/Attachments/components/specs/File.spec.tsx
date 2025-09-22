@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { LocalForm } from 'app/Forms/Form';
-import { FileType } from 'shared/types/fileType';
-import { Translate } from 'app/I18N';
+import { LocalForm } from '../../Forms/Form.js';
+import { FileType } from '../../shared/types/fileType.js';
+import { Translate } from '../../I18N.js';
 import { File, FileProps } from '../File';
 
 describe('file', () => {

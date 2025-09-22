@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { store } from 'app/store';
+import { store } from '../../store.js';
 import Immutable from 'immutable';
 import blankState from '../blankState';
 

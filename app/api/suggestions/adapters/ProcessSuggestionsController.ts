@@ -2,13 +2,13 @@ import { z } from 'zod';
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
-} from 'api/common.v2/infrastructure/AbstractController';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+} from '../common.v2/infrastructure/AbstractController.js';
+import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
 import {
   PROCESS_MODES,
   AUTO_ACCEPT_SOURCES,
   OVERWRITE_MODES,
-} from 'api/suggestions/contracts/ProcessSuggestionsContracts';
+} from '../suggestions/contracts/ProcessSuggestionsContracts.js';
 import { ProcessSuggestions } from '../useCases/ProcessSuggestions';
 
 type Dependencies = AbstractControllerDependencies<Request>;

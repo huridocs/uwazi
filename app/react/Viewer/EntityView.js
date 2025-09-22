@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { actions } from '../../BasicReducer/index.js';
-import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import * as relationships from 'app/Relationships/utils/routeUtils';
+import relationTypesAPI from '../../RelationTypes/RelationTypesAPI.js';
+import * as relationships from '../../Relationships/utils/routeUtils.js';
 
-import { getPageAssets } from 'app/Pages/utils/getPageAssets';
+import { getPageAssets } from '../../Pages/utils/getPageAssets.js';
 
-import { notificationActions } from 'app/Notifications';
+import { notificationActions } from '../../Notifications.js';
 import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
 import { prepareAssets } from './pageAssets';

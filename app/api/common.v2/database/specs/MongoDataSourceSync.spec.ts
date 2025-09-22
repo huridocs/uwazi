@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { getIdMapper } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import { StandardLogger } from '../log.v2/infrastructure/StandardLogger.js';
+import { getIdMapper } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB from '../utils/testing_db.js';
 import { MongoClient, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
 import { MongoTransactionManager } from '../MongoTransactionManager';

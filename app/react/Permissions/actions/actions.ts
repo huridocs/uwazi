@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
 import { Dispatch } from 'redux';
-import { IStore } from 'app/istore';
-import { notificationActions } from 'app/Notifications';
+import { IStore } from '../../istore.js';
+import { notificationActions } from '../../Notifications.js';
 import { t } from '../../I18N/index.js';
-import { savePermissions } from 'app/Permissions/PermissionsAPI';
-import { PermissionsDataSchema } from 'shared/types/permissionType';
-import { wrapDispatch } from 'app/Multireducer';
+import { savePermissions } from '../../Permissions/PermissionsAPI.js';
+import { PermissionsDataSchema } from '../../shared/types/permissionType.js';
+import { wrapDispatch } from '../../Multireducer.js';
 import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,
-} from 'app/Library/actions/actionTypes';
-import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
+} from '../../Library/actions/actionTypes.js';
+import { unselectAllDocuments } from '../../Library/actions/libraryActions.js';
 import { PermissionType, MixedAccess } from '../../../shared/types/permissionSchema';
 
 export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey?: string) {

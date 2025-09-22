@@ -2,7 +2,7 @@ import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
 import { Link } from 'react-router';
-import { Button } from 'app/V2/Components/UI';
+import { Button } from '../../V2/Components/UI.js';
 import { PXTable } from '../../../types';
 
 const ActionCell = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (

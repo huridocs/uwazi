@@ -13,8 +13,8 @@ import {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
 } from 'V2/shared/ParagraphExtractionTypes';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
-import { ClientEntitySchema } from 'app/istore';
+import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
+import { ClientEntitySchema } from '../../istore.js';
 
 const PAGE_SIZE = 30;
 

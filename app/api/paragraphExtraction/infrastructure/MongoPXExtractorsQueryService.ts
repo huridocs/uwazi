@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
 
 import {
   GetEntityParagraphRelationshipsOutput,

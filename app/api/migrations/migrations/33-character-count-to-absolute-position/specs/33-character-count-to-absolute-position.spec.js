@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop */
 
-import testingDB from 'api/utils/testing_db';
-import { legacyLogger } from 'api/log';
-import { config } from 'api/config';
+import testingDB from '../utils/testing_db.js';
+import { legacyLogger } from '../log.js';
+import { config } from '../config.js';
 import {
   connectionOutOfRangeId,
   connectionToMissingDocumentId,
@@ -11,7 +11,7 @@ import {
   firstConnectionId,
   missingDocumentId,
   secondConnectionId,
-} from 'api/migrations/migrations/33-character-count-to-absolute-position/specs/fixtures';
+} from '../migrations/migrations/33-character-count-to-absolute-position/specs/fixtures.js';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';

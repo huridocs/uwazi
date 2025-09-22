@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { I18NLink, t } from '../../I18N/index.js';
 import { Icon } from 'UI';
-import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { processFilters, encodeSearch } from '../../Library/actions/libraryActions.js';
 import { createSelector } from 'reselect';
 import { isClient } from '../../utils/index.js';
 

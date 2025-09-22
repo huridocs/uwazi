@@ -1,5 +1,5 @@
-import { config } from 'api/config';
-import { tenants } from 'api/tenants';
+import { config } from '../config.js';
+import { tenants } from '../tenants.js';
 import { createLegacyLogger } from '../legacyLogger';
 
 let lastLogMessage = '';

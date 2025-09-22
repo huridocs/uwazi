@@ -1,8 +1,8 @@
 import React from 'react';
 import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
 import { NeedAuthorization } from 'V2/Components/UI/NeedAuthorization';
-import { Icon } from 'app/UI';
-import { PreserveIcon } from 'app/Layout/PreserveIcon';
+import { Icon } from '../../UI.js';
+import { PreserveIcon } from '../../Layout/PreserveIcon.js';
 import { FeatureToggle } from 'V2/Components/UI/FeatureToggle';
 import { useAtomValue } from 'jotai';
 import { settingsAtom } from 'V2/atoms/settingsAtom';

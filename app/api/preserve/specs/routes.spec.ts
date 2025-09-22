@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { Application } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import requestShared from 'shared/JSONRequest';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import requestShared from '../../shared/JSONRequest.js';
 import { PreserveRoutes } from '../routes';
 
 import fixtures, { userId1, userId2 } from './fixtures';

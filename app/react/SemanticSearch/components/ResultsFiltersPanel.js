@@ -5,7 +5,7 @@ import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from '../../ReactReduxForms/index.js';
 import { Icon } from 'UI';
 
-import SidePanel from 'app/Layout/SidePanel';
+import SidePanel from '../../Layout/SidePanel.js';
 import { t, Translate } from '../../I18N/index.js';
 
 const filters = [

@@ -3,7 +3,7 @@ import React, { MouseEventHandler } from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { Tooltip } from 'flowbite-react';
-import { Button, Pill } from 'app/V2/Components/UI';
+import { Button, Pill } from '../../V2/Components/UI.js';
 import { t, Translate } from '../../I18N/index.js';
 import { User, Group } from '../types';
 

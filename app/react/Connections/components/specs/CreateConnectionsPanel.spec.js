@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import SidePanel from 'app/Layout/SidePanel';
+import SidePanel from '../../Layout/SidePanel.js';
 
 import { Icon } from 'UI';
 

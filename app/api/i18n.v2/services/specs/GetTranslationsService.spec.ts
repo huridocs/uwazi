@@ -1,8 +1,8 @@
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { GetTranslationsService } from '../GetTranslationsService';
 
 const createService = () => {

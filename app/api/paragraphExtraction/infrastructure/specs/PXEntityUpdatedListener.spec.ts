@@ -1,11 +1,11 @@
-import { EventsBus } from 'api/eventsbus';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { EventsBus } from '../eventsbus.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { ObjectId } from 'mongodb';
-import { tenants } from 'api/tenants';
+import { tenants } from '../tenants.js';
 import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener';
 import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';

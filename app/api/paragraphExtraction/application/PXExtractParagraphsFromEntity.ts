@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { Document } from 'api/files.v2/model/Document';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { Entity } from '../entities.v2/model/Entity.js';
+import { Document } from '../files.v2/model/Document.js';
 import { LanguageISO6391, LanguagesListSchema } from '../../shared/types/commonTypes.js';
-import { FileStorage } from 'api/files.v2/contracts/FileStorage';
-import { Segmentation } from 'api/files.v2/model/Segmentation';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { FileStorage } from '../files.v2/contracts/FileStorage.js';
+import { Segmentation } from '../files.v2/model/Segmentation.js';
+import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import { Logger } from '../log.v2/contracts/Logger.js';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';

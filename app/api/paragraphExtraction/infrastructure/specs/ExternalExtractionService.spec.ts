@@ -3,10 +3,10 @@ import multer from 'multer';
 import express from 'express';
 import { Server } from 'http';
 
-import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
-import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
-import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
+import { HttpClientFactory } from '../common.v2/infrastructure/HttpClientFactory.js';
+import { FileBuilder } from '../files.v2/model/specs/utils/FileBuilder.js';
+import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
+import { GetParagraphsResultOutput } from '../paragraphExtraction/domain/PXExtractionService.js';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
 import { document, mockGetParagraphsResult, segmentation } from './fixtures';

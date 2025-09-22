@@ -1,20 +1,20 @@
-import { testingDB } from 'api/utils/testing_db';
-import * as filesApi from 'api/files/filesystem';
-import { storage, files } from 'api/files';
+import { testingDB } from '../utils/testing_db.js';
+import * as filesApi from '../files/filesystem.js';
+import { storage, files } from '../files.js';
 import {
   TweetParamsType,
   TwitterIntegration,
-} from 'api/services/twitterintegration/TwitterIntegration';
+} from '../services/twitterintegration/TwitterIntegration.js';
 import {
   fixturesOneTenant,
   fixturesOtherTenant,
   fixturesTenantWithoutTwitter,
-} from 'api/services/twitterintegration/specs/fixtures';
-import EntitiesModel from 'api/entities/entitiesModel';
-import templates from 'api/templates/templates';
-import { testingTenants } from 'api/utils/testingTenants';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { tenants } from 'api/tenants';
+} from '../services/twitterintegration/specs/fixtures.js';
+import EntitiesModel from '../entities/entitiesModel.js';
+import templates from '../templates/templates.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { tenants } from '../tenants.js';
 import fetchMock from 'fetch-mock';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');

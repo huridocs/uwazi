@@ -1,6 +1,6 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { FilesHealthCheck } from '../FilesHealthCheck';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';

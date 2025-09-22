@@ -1,15 +1,15 @@
 import { ObjectId } from 'mongodb';
 
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import entities from 'api/entities';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import translations from 'api/i18n';
-import { TemplateSchema } from 'api/migrations/migrations/143-parse-numeric-fields/types';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ValidationError } from '../common.v2/validation/ValidationError.js';
+import entities from '../entities.js';
+import { EntityRelationshipsUpdateService } from '../entities.v2/services/EntityRelationshipsUpdateService.js';
+import translations from '../i18n.js';
+import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-fields/types.js';
+import * as setupSockets from '../socketio/setupSockets.js';
+import { elasticTesting } from '../utils/elastic_testing.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import db, { DBFixture } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { inspect } from 'util';
 import templates from '../templates';
 

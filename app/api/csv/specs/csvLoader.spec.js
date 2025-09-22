@@ -2,15 +2,15 @@
 /* eslint-disable max-lines */
 import path from 'path';
 import moment from 'moment';
-import { CSVLoader } from 'api/csv';
-import { simpleTemplateId, templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
-import entities from 'api/entities';
-import translations from 'api/i18n';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import thesauri from 'api/thesauri';
+import { CSVLoader } from '../csv.js';
+import { simpleTemplateId, templateWithGeneratedTitle } from '../csv/specs/csvLoaderFixtures.js';
+import entities from '../entities.js';
+import translations from '../i18n.js';
+import { search } from '../search.js';
+import settings from '../settings.js';
+import testingDB from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import thesauri from '../thesauri.js';
 import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';

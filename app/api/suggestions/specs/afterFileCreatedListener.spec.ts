@@ -1,9 +1,9 @@
-import { EventsBus } from 'api/eventsbus';
-import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { EventsBus } from '../eventsbus.js';
+import { FileUpdatedEvent } from '../files/events/FileUpdatedEvent.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { TestUtils } from '../common.v2/utils/Test.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
 import { AfterFileUpdatedListener } from '../listeners/afterFileCreatedListener';
 import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
 import { ExtractorsNotAvailableError } from '../ixValidationError';

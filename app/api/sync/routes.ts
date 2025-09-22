@@ -1,15 +1,15 @@
 import multer from 'multer';
 
 import { models, WithId } from '../odm/index.js';
-import { search } from 'api/search';
+import { search } from '../search.js';
 
-import { storage, uploadMiddleware } from 'api/files';
-import { updateMapping } from 'api/search/entitiesIndex';
+import { storage, uploadMiddleware } from '../files.js';
+import { updateMapping } from '../search/entitiesIndex.js';
 import { Application, Request } from 'express';
 import { TranslationType } from '../../shared/translationType.js';
 import { FileType } from '../../shared/types/fileType.js';
 
-import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import { needsAuthorization } from '../auth';
 
 const diskStorage = multer.diskStorage({

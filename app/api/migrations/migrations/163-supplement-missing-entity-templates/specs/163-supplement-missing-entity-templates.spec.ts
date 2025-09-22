@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 
-import testingDB from 'api/utils/testing_db';
+import testingDB from '../utils/testing_db.js';
 import migration from '../index';
 import { Entity, Fixture, Template, TranslationDBO } from '../types';
 import { fixtures, correctFixture, template1, template2, template3 } from './fixtures';

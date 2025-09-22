@@ -1,7 +1,7 @@
-import { APIURL } from 'app/config.js';
+import { APIURL } from '../../config.js.js';
 import backend from 'fetch-mock';
-import { RequestParams } from 'app/utils/RequestParams';
-import api from 'app/utils/api';
+import { RequestParams } from '../../utils/RequestParams.js';
+import api from '../../utils/api.js';
 import entitiesAPI from '../EntitiesAPI';
 
 describe('EntitiesAPI', () => {

@@ -1,6 +1,6 @@
 import { Db, Document } from 'mongodb';
-import { tenants } from 'api/tenants';
-import { DocumentTracker } from 'api/core/infrastructure/mongodb/documentTracker/DocumentTracker';
+import { tenants } from '../tenants.js';
+import { DocumentTracker } from '../core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';

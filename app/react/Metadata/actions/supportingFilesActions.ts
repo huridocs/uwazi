@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
-import { readFileAsBase64 } from 'app/Library/actions/saveEntityWithFiles';
+import { readFileAsBase64 } from '../../Library/actions/saveEntityWithFiles.js';
 import uniqueID from '../../shared/uniqueID.js';
 import * as types from '../../Attachments/actions/actionTypes';
 

@@ -1,7 +1,7 @@
 import { Application } from 'express';
 
-import { needsAuthorization } from 'api/auth';
-import { featureFlagEnabled } from 'api/utils/featureFlagEnabledMiddleware';
+import { needsAuthorization } from '../auth.js';
+import { featureFlagEnabled } from '../utils/featureFlagEnabledMiddleware.js';
 
 import { PXCreateExtractorController } from './PXCreateExtractorController';
 import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController';

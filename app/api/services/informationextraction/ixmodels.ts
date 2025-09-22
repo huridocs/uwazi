@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { IXModelType } from 'shared/types/IXModelType';
+import { Suggestions } from '../suggestions/suggestions.js';
+import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { ModelStatus } from '../../shared/types/IXModelSchema.js';
+import { IXModelType } from '../../shared/types/IXModelType.js';
 import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { IXModelsModel as model } from './IXModelsModel';
 

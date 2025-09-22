@@ -6,18 +6,18 @@ import { fromJS as Immutable } from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 import { I18NLink } from '../../I18N/index.js';
-import { NeedAuthorization } from 'app/Auth';
-import { withContext } from 'app/componentWrappers';
-import ShowIf from 'app/App/ShowIf';
-import { deleteReference } from 'app/Viewer/actions/referencesActions';
+import { NeedAuthorization } from '../../Auth.js';
+import { withContext } from '../../componentWrappers.js';
+import ShowIf from '../../App/ShowIf.js';
+import { deleteReference } from '../../Viewer/actions/referencesActions.js';
 import {
   highlightReference,
   activateReference,
   selectReference,
   toggleReferences,
-} from 'app/Viewer/actions/uiActions';
-import { Item } from 'app/Layout';
-import helpers from 'app/Documents/helpers';
+} from '../../Viewer/actions/uiActions.js';
+import { Item } from '../../Layout.js';
+import helpers from '../../Documents/helpers.js';
 
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,

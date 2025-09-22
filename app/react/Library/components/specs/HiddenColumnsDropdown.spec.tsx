@@ -5,8 +5,8 @@ import React from 'react';
 import Immutable from 'immutable';
 import { screen, fireEvent, act } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import * as actions from 'app/Library/actions/libraryActions';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+import * as actions from '../../Library/actions/libraryActions.js';
 import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 
 describe('HiddenColumnsDropdown', () => {

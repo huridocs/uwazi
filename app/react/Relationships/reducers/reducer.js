@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from '../../BasicReducer/index.js';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
 import hubs from './hubsReducer';
 import hubActions from './hubActionsReducer';
 import uiState from './uiReducer';

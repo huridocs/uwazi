@@ -4,8 +4,8 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { screen, act, fireEvent } from '@testing-library/react';
-import { notificationActions } from 'app/Notifications';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { notificationActions } from '../../Notifications.js';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import * as actions from '../../actions/metadataExtractionActions';
 import { MetadataExtractor, Selection } from '../MetadataExtractor';
 

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
-import { t } from 'app/I18N';
+import { t } from '../../I18N.js';
 import {
   aggregationWithNestedValues,
   expectNestedResult,

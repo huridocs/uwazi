@@ -6,11 +6,11 @@ import { useAtomValue } from 'jotai';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi, t } from '../../I18N/index.js';
-import { RequestParams } from 'app/utils/RequestParams';
-import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { RequestParams } from '../../utils/RequestParams.js';
+import { settingsAtom } from '../../V2/atoms/settingsAtom.js';
 import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { LanguageSchema } from '../../shared/types/commonTypes.js';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 import {

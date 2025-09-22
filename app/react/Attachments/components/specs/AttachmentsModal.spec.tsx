@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
 
 describe('Attachments Modal', () => {

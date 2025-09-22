@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import loadable from '@loadable/component';
 import React from 'react';
-import { Map, Layer } from 'app/Map/MapContainer';
+import { Map, Layer } from '../../Map/MapContainer.js';
 import * as helper from './helper';
 
 const LMap = loadable(async () => {

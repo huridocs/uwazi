@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { Logger } from '../log.v2/contracts/Logger.js';
 import entities from '../entities/index.js';
-import relationshipsDS from 'api/relationships';
+import relationshipsDS from '../relationships.js';
 
 import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';

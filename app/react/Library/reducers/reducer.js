@@ -4,8 +4,8 @@ import createReducer from '../../BasicReducer/index.js';
 import { isClient } from '../../utils/index.js';
 
 import { modelReducer, formReducer } from 'react-redux-form';
-import { manageAttachmentsReducer } from 'app/Attachments';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { manageAttachmentsReducer } from '../../Attachments.js';
+import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
 import { documentsReducer } from './documentsReducer';
 import libraryUI from './uiReducer';
 import libraryFilters from './filtersReducer';

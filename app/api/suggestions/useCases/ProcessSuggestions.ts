@@ -1,19 +1,19 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { ObjectId } from 'mongodb';
 import { EnforcedWithId } from '../odm/index.js';
-import { IXModelType } from 'shared/types/IXModelType';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { Extractors, ModelNotReadyError } from 'api/services/informationextraction/ixextractors';
-import ixmodels from 'api/services/informationextraction/ixmodels';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
-import { IXServices } from 'api/services/informationextraction/IXServices';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { IXModelType } from '../../shared/types/IXModelType.js';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
+import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
+import ixmodels from '../services/informationextraction/ixmodels.js';
+import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
+import { IXServices } from '../services/informationextraction/IXServices.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
 import {
   ProcessMode,
   ProcessFindFilters,
   AutoAcceptSource,
   OverwriteMode,
-} from 'api/suggestions/contracts/ProcessSuggestionsContracts';
+} from '../suggestions/contracts/ProcessSuggestionsContracts.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 

@@ -1,10 +1,10 @@
-import entities from 'api/entities';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fileExistsOnPath, uploadsPath } from 'api/files';
-import relationships from 'api/relationships';
-import { search } from 'api/search';
-import db from 'api/utils/testing_db';
-import { mockID } from 'shared/uniqueID';
+import entities from '../entities.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { fileExistsOnPath, uploadsPath } from '../files.js';
+import relationships from '../relationships.js';
+import { search } from '../search.js';
+import db from '../utils/testing_db.js';
+import { mockID } from '../../shared/uniqueID.js';
 
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';

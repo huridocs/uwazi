@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { Map, Markers } from 'app/Map';
+import { Map, Markers } from '../../Map.js';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '../../Multireducer.js';
 import {
   getAndSelectDocument,
   selectDocuments,
   unselectAllDocuments,
-} from 'app/Library/actions/libraryActions';
-import { SearchBar } from 'app/Library/components/SearchBar';
+} from '../../Library/actions/libraryActions.js';
+import { SearchBar } from '../../Library/components/SearchBar.js';
 import { t } from '../../I18N/index.js';
 
 class MapViewComponent extends Component {

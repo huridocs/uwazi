@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ShowIf from 'app/App/ShowIf';
+import ShowIf from '../../App/ShowIf.js';
 import { Icon } from 'UI';
 
-import { openPanel } from 'app/Viewer/actions/uiActions';
+import { openPanel } from '../../Viewer/actions/uiActions.js';
 
 export class ViewerDefaultMenu extends Component {
   render() {

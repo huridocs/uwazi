@@ -1,4 +1,4 @@
-import { tenants } from 'api/tenants';
+import { tenants } from '../tenants.js';
 import { Request, Response, NextFunction } from 'express';
 import { TenantFeatureFlags } from '../tenants/tenantContext.js';
 

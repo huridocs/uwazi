@@ -1,9 +1,9 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { DBFixture } from 'api/utils/testing_db';
-import { EventsBus } from 'api/eventsbus';
-import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-import { tenants } from 'api/tenants';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { EventsBus } from '../eventsbus.js';
+import { EntityDeletedEvent } from '../entities/events/EntityDeletedEvent.js';
+import { tenants } from '../tenants.js';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';

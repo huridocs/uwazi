@@ -1,6 +1,6 @@
 import React from 'react';
 
-import RouteHandler from 'app/App/RouteHandler';
+import RouteHandler from '../../App/RouteHandler.js';
 import { actions } from '../../BasicReducer/index.js';
 import PagesAPI from './PagesAPI';
 

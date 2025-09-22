@@ -1,11 +1,11 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FileStorageStrategyFactory } from 'api/files.v2/infrastructure/FileStorageStrategyFactory';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { FileStorageStrategyFactory } from '../files.v2/infrastructure/FileStorageStrategyFactory.js';
+import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
 
 import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraphsFromEntity';
 import { PXExtractionServiceFactory } from './PXExtractionServiceFactory';

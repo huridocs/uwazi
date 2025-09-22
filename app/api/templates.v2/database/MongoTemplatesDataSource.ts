@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
-import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoDataSource, MongoDSOptions } from '../common.v2/database/MongoDataSource.js';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from '../../shared/data_utils/objectIndex.js';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
-import { updateMapping } from 'api/search/entitiesIndex';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { TemplateMapper } from '../core/infrastructure/mongodb/template/Mapper.js';
+import { updateMapping } from '../search/entitiesIndex.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';

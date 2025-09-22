@@ -1,7 +1,7 @@
-import settings from 'api/settings/settings';
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { PropertySchema } from 'shared/types/commonTypes';
+import settings from '../settings/settings.js';
+import db from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
 import {
   generateIds,
   generateNames,

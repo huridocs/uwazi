@@ -1,4 +1,4 @@
-import model from 'api/activitylog/activitylogModel';
+import model from '../activitylog/activitylogModel.js';
 import logger from '../logger';
 
 describe('Migrations ActivityLog logger', () => {

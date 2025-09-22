@@ -1,5 +1,5 @@
-import { legacyLogger } from 'api/log';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { legacyLogger } from '../log.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { PDF } from '../PDF';
 import { uploadsPath, deleteFile, fileExistsOnPath } from '../filesystem';
 

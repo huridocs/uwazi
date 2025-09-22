@@ -2,9 +2,9 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
-import { IImmutable } from 'shared/types/Immutable';
+import { IImmutable } from '../../shared/types/Immutable.js';
 import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
-import { ClientFile, IStore } from 'app/istore';
+import { ClientFile, IStore } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
 import { deleteSelection } from '../actions/metadataExtractionActions';
 

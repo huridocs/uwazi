@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Translate } from '../../I18N/index.js';
-import { Button, Modal } from 'app/V2/Components/UI';
-import { defaultSearch, MultiselectList, MultiselectListOption } from 'app/V2/Components/Forms';
-import { ClientTemplateSchema } from 'app/istore';
+import { Button, Modal } from '../../V2/Components/UI.js';
+import { defaultSearch, MultiselectList, MultiselectListOption } from '../../V2/Components/Forms.js';
+import { ClientTemplateSchema } from '../../istore.js';
 
 type AddTemplateModalProps = {
   onCancel: React.Dispatch<React.SetStateAction<boolean>>;

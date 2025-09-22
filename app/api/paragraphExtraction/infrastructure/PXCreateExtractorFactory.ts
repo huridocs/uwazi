@@ -1,9 +1,9 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import relationshipTypeDS from 'api/relationtypes';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import relationshipTypeDS from '../relationtypes.js';
+import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor';
 import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory';

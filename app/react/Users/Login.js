@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from 'UI';
 import { t, Translate } from '../../I18N/index.js';
-import { reconnectSocket } from 'app/socket';
-import RouteHandler from 'app/App/RouteHandler';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
-import { withRouter } from 'app/componentWrappers';
-import auth from 'app/Auth';
+import { reconnectSocket } from '../../socket.js';
+import RouteHandler from '../../App/RouteHandler.js';
+import { reloadThesauri } from '../../Thesauri/actions/thesaurisActions.js';
+import { withRouter } from '../../componentWrappers.js';
+import auth from '../../Auth.js';
 
 const reloadHome = () => {
   window.location.assign('/');

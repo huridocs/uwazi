@@ -1,7 +1,7 @@
 /** @format */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 
-import thesauri from 'api/thesauri';
+import thesauri from '../thesauri.js';
 
 import { fixtures, thesauri1Id } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from 'UI';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { TableViewColumn } from 'app/istore';
+import { TableViewColumn } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
 
 interface SelectableColumn extends TableViewColumn {

@@ -1,14 +1,14 @@
 import { Translate } from '../../I18N/index.js';
-import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'app/UI';
+import { wrapDispatch } from '../../Multireducer.js';
+import { Icon } from '../../UI.js';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
   newEntity as newEntityAction,
   showImportPanel as showImportPanelAction,
-} from 'app/Uploads/actions/uploadsActions';
+} from '../../Uploads/actions/uploadsActions.js';
 import { connect } from 'react-redux';
-import { NeedAuthorization } from 'app/Auth';
+import { NeedAuthorization } from '../../Auth.js';
 import Export from './ExportButton';
 import { PDFUploadButton } from './PDFUploadButton';
 

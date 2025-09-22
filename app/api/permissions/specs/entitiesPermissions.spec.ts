@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
-import entities from 'api/entities/entities';
-import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
-import { search } from 'api/search';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { AccessLevels, MixedAccess, PermissionType } from 'shared/types/permissionSchema';
-import { PermissionsDataSchema } from 'shared/types/permissionType';
+import entities from '../entities/entities.js';
+import { entitiesPermissions } from '../permissions/entitiesPermissions.js';
+import { fixtures, groupA, userA, userB } from '../permissions/specs/fixtures.js';
+import { search } from '../search.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
+import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
+import { AccessLevels, MixedAccess, PermissionType } from '../../shared/types/permissionSchema.js';
+import { PermissionsDataSchema } from '../../shared/types/permissionType.js';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 const publicPermission = {

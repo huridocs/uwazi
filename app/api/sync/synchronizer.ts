@@ -1,7 +1,7 @@
 import urljoin from 'url-join';
 
 import request from '../../shared/JSONRequest.js';
-import { storage } from 'api/files';
+import { storage } from '../files.js';
 import { DataType } from '../odm/index.js';
 import { UpdateLog } from '../updatelogs/index.js';
 import { FileType } from '../../shared/types/fileType.js';

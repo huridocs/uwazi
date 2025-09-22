@@ -1,7 +1,7 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { LanguageUtils } from '../../shared/language/index.js';
-import { files } from 'api/files';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import { files } from '../files.js';
+import { IXSuggestionType } from '../../shared/types/suggestionType.js';
 import { Suggestions } from '../suggestions';
 import { CreateBlankSuggestionsInput } from './createBlankSuggestionStrategy';
 import { SuggestionFactory } from '../suggestionFactory';

@@ -2,9 +2,9 @@
 import fs from 'fs';
 import { promisify } from 'util';
 
-import { legacyLogger } from 'api/log';
-import { config } from 'api/config';
-import testingDB from 'api/utils/testing_db';
+import { legacyLogger } from '../log.js';
+import { config } from '../config.js';
+import testingDB from '../utils/testing_db.js';
 import migration from '../index.js';
 import fixtures, { docId1, docId4 } from './fixtures.js';
 

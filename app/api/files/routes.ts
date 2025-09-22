@@ -1,21 +1,21 @@
 import { Application, Request } from 'express';
 
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import needsAuthorization from 'api/auth/authMiddleware';
+import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
+import needsAuthorization from '../auth/authMiddleware.js';
 import { CSVLoader } from '../csv/index.js';
 import entities from '../entities/index.js';
-import { processDocument } from 'api/files/processDocument';
-import { uploadMiddleware } from 'api/files/uploadMiddleware';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { processDocument } from '../files/processDocument.js';
+import { uploadMiddleware } from '../files/uploadMiddleware.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import { validateAndCoerceRequest } from '../utils/validateRequest.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { fileSchema } from 'shared/types/fileSchema';
+import { fileSchema } from '../../shared/types/fileSchema.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { UserSchema } from 'shared/types/userType';
+import { UserSchema } from '../../shared/types/userType.js';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { withTransaction } from 'api/utils/withTransaction';
+import { withTransaction } from '../utils/withTransaction.js';
 
 const checkEntityPermission = async (
   file: FileType,

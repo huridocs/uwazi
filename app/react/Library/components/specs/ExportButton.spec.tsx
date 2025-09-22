@@ -2,12 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 
-import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportButton';
+import ExportButton, { ExportButtonProps } from '../../Library/components/ExportButton.js';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import Modal from 'app/Layout/Modal';
+import Modal from '../../Layout/Modal.js';
 import Immutable from 'immutable';
-import { LocalForm } from 'app/Forms/Form';
+import { LocalForm } from '../../Forms/Form.js';
 import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {

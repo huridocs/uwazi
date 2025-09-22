@@ -1,4 +1,4 @@
-import { Pill } from 'app/V2/Components/UI';
+import { Pill } from '../../V2/Components/UI.js';
 import React from 'react';
 import { Translate } from '../../I18N/index.js';
 import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';

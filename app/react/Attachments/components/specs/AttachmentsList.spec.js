@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import UploadSupportingFile from 'app/Attachments/components/UploadSupportingFile';
+import UploadSupportingFile from '../../Attachments/components/UploadSupportingFile.js';
 import AttachmentsList from '../AttachmentsList';
 
 describe('AttachmentsList', () => {

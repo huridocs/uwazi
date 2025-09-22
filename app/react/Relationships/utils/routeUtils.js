@@ -3,9 +3,9 @@ import { fromJS } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
 import { actions } from '../../BasicReducer/index.js';
-import { actions as connectionsListActions } from 'app/ConnectionsList';
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import referencesAPI from 'app/Viewer/referencesAPI';
+import { actions as connectionsListActions } from '../../ConnectionsList.js';
+import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
+import referencesAPI from '../../Viewer/referencesAPI.js';
 
 function requestState(requestParams, state) {
   return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {

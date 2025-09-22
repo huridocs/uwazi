@@ -1,10 +1,10 @@
 import { Db } from 'mongodb';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
 
 import { PXGetExtractorStatuses } from '../application/PXGetExtractorStatuses';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';

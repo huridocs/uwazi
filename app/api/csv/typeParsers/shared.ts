@@ -1,9 +1,9 @@
 import moment from 'moment';
-import { RawEntity } from 'api/csv/entityRow';
+import { RawEntity } from '../csv/entityRow.js';
 import { normalizeThesaurusLabel } from '../thesauri/thesauri.js';
 import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { ensure } from '../../shared/tsUtils.js';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 import {
   sanitizeMetadataValue,
   SanitizationWarning,

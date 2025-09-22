@@ -1,9 +1,9 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { Application } from 'express';
 import request from 'supertest';
 
-import { setUpApp } from 'api/utils/testingRoutes';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
 
 import { searchRoutes } from '../routes';
 import { permissionsLevelFixtures, users } from './permissionsFiltersFixtures';

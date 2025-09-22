@@ -3,11 +3,11 @@ import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 import { ClientSettings } from '../../apiResponseTypes.js';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
+import { ActivityLogEntryType } from '../../shared/types/activityLogEntryType.js';
 
 const ITEMS_PER_PAGE = 100;
 

@@ -1,10 +1,10 @@
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { RelationshipType } from 'api/relationshiptypes.v2/model/RelationshipType';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
+import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+import { Entity } from '../entities.v2/model/Entity.js';
+import { RelationshipTypesDataSource } from '../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipType } from '../relationshiptypes.v2/model/RelationshipType.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { Template } from '../templates.v2/model/Template.js';
 import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { Relationship, ReadableRelationship } from '../model/Relationship';

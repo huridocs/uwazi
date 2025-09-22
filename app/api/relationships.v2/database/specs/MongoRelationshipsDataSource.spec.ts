@@ -1,10 +1,10 @@
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
+import { TraversalQueryNode } from '../relationships.v2/model/TraversalQueryNode.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB from '../utils/testing_db.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { Relationship } from '../relationships.v2/model/Relationship.js';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();

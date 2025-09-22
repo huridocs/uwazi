@@ -1,9 +1,9 @@
-import testingDB from 'api/utils/testing_db';
-import { migrator } from 'api/migrations/migrator';
+import testingDB from '../utils/testing_db.js';
+import { migrator } from '../migrations/migrator.js';
 import path from 'path';
-import { runMigration } from 'api/migrations/migrate';
+import { runMigration } from '../migrations/migrate.js';
 import { Connection } from 'mongoose';
-import { DB } from 'api/odm';
+import { DB } from '../odm.js';
 
 describe('migrate', () => {
   let connection: Connection;

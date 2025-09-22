@@ -1,5 +1,5 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
   RelationshipMigrationFieldUniqueId,

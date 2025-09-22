@@ -1,7 +1,7 @@
 import { actions } from '../../BasicReducer/index.js';
 import { t } from '../../I18N/index.js';
-import { notificationActions } from 'app/Notifications';
-import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { notificationActions } from '../../Notifications.js';
+import { documentProcessed } from '../../Uploads/actions/uploadsActions.js';
 import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { store } from '../store';
 import { socket, reconnectSocket } from '../socket';

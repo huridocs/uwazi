@@ -1,10 +1,10 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import db from 'api/utils/testing_db';
+import db from '../utils/testing_db.js';
 
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { fixtures, document1 } from './fixtures';
 
 import { documentRoutes } from '../routes';

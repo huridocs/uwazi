@@ -1,7 +1,7 @@
 /* eslint-disable no-redeclare */
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { CommonPropertyFactory } from 'api/core/domain/template/CommonPropertyFactory';
-import { propertyTypes } from 'shared/propertyTypes';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { CommonPropertyFactory } from '../core/domain/template/CommonPropertyFactory.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';

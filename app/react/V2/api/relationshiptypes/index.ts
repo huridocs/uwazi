@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 
 type RelationshipType = {
   name: string;

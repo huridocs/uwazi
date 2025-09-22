@@ -1,4 +1,4 @@
-import { Template } from 'api/templates.v2/model/Template';
+import { Template } from '../templates.v2/model/Template.js';
 import { ValidationStep } from '../../Validator';
 import { TemplateWithDuplicatedPropertyError } from '../errors';
 

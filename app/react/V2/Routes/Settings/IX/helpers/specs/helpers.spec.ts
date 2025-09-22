@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import * as translate from 'app/I18N/translateFunction';
+import * as translate from '../../I18N/translateFunction.js';
 import { formatOptions } from '../../components/ExtractorModal';
 import { formatExtractors } from '../../IXDashboard';
 import { getAvailableSources, generateChildrenRows, formatAccepted } from '../helpers';

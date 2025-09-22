@@ -1,5 +1,5 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { Translation } from '../model/Translation';
 import { CreateTranslationsData } from './CreateTranslationsService';

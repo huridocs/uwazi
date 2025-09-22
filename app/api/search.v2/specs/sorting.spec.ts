@@ -1,14 +1,14 @@
 import { Application } from 'express';
 import request from 'supertest';
 
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingDB } from 'api/utils/testing_db';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import entities from 'api/entities';
-import { SearchQuery } from 'shared/types/SearchQueryType';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { testingDB } from '../utils/testing_db.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import entities from '../entities.js';
+import { SearchQuery } from '../../shared/types/SearchQueryType.js';
 
 import { searchRoutes } from '../routes';
-import { elasticTesting } from 'api/utils/elastic_testing';
+import { elasticTesting } from '../utils/elastic_testing.js';
 import { setupTestingEnviroment } from './setupTestingEnvironment';
 
 describe('Sorting', () => {

@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
-import { config } from 'api/config';
-import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { config } from '../config.js';
+import { Dispatchable } from '../queue.v2/application/contracts/Dispatchable.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { JobsRouter } from '../JobsRouter';
 

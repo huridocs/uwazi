@@ -2,23 +2,23 @@
 import { ObjectId } from 'mongodb';
 import { ApiResponse } from '@elastic/elasticsearch';
 
-import { search } from 'api/search';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
-import { DBFixture } from 'api/utils/testing_db';
-import { tenants } from 'api/tenants';
-import { mongoPXEntitiesStatusCollection } from 'api/paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXEntitiesStatusDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory';
-import { PXExtractorsDataSourceFactory } from 'api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory';
+import { search } from '../search.js';
+import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { PXErrorCode } from '../paragraphExtraction/domain/PXValidationError.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { tenants } from '../tenants.js';
+import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {

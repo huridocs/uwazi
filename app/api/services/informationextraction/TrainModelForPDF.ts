@@ -1,13 +1,13 @@
 /* eslint-disable max-statements */
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { storage } from 'api/files';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { emitToTenant } from '../socketio/setupSockets.js';
+import { storage } from '../files.js';
 import urljoin from 'url-join';
 import request from '../../shared/JSONRequest.js';
 import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
 import { EnforcedWithId } from '../odm/index.js';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { Suggestions } from 'api/suggestions/suggestions';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
+import { Suggestions } from '../suggestions/suggestions.js';
 import {
   FileWithAggregation,
   getFilesForTraining,

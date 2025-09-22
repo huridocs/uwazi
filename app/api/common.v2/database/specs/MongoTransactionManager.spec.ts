@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
-import { getIdMapper } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import { getIdMapper } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB from '../utils/testing_db.js';
 import { MongoClient, MongoError } from 'mongodb';
-import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { StandardLogger } from '../log.v2/infrastructure/StandardLogger.js';
 import { getClient, getTenant } from '../getConnectionForCurrentTenant';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 

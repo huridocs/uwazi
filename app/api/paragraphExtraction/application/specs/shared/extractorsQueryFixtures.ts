@@ -2,10 +2,10 @@
 import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
+import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { mongoPXEntitiesStatusCollection } from '../../../infrastructure/MongoPXEntitiesStatusDataSource';
 import { MongoPXEntityStatusDBO } from '../../../infrastructure/MongoPXEntityStatusDBO';

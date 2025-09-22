@@ -1,4 +1,4 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
+import { Context, Property } from '../templates.v2/model/Property.js';
 import { AbstractPropertyCreatorService, CreateInput } from './AbstractPropertyCreatorService';
 import { PropertyFactory } from '../PropertyFactory';
 

@@ -1,6 +1,6 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
 import { MongoPermissionsDataSource } from './MongoPermissionsDataSource';
 
 const DefaultPermissionsDataSource = (_transactionManager?: MongoTransactionManager) => {

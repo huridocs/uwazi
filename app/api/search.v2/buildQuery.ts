@@ -1,4 +1,4 @@
-import { CompoundFilter, RangeFilter, SearchQuery } from 'shared/types/SearchQueryType';
+import { CompoundFilter, RangeFilter, SearchQuery } from '../../shared/types/SearchQueryType.js';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
 import { extractSearchParams, snippetsHighlight } from './queryHelpers';
 import { permissionsFilters } from './permissionsFilters';

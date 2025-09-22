@@ -3,8 +3,8 @@
  */
 import { fromJS } from 'immutable';
 import { Store } from 'redux';
-import create from 'app/store';
-import { IStore } from 'app/istore';
+import create from '../../store.js';
+import { IStore } from '../../istore.js';
 import { updatePageDatasets } from '../updatePageDatasets';
 
 describe('Update page datasets', () => {

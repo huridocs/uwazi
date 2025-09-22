@@ -1,5 +1,5 @@
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { FileType } from '../../shared/types/fileType.js';

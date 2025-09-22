@@ -1,5 +1,5 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
 import {
   GetExtractedParagraphsOutput,
   PXExtractorsQueryService,

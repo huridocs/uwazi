@@ -1,5 +1,5 @@
 import { actions } from '../../BasicReducer/index.js';
-import api from 'app/Thesauri/ThesauriAPI';
+import api from '../../Thesauri/ThesauriAPI.js';
 
 export function reloadThesauri() {
   return dispatch =>

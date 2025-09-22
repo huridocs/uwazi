@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import { actions } from '../../BasicReducer/index.js';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 
 import api from '../SemanticSearchAPI';
 

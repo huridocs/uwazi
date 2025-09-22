@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
 import { MongoDataSource } from '../../common.v2/database/MongoDataSource';
 import { HubDataSource, HubType } from '../contracts/HubDataSource';
 

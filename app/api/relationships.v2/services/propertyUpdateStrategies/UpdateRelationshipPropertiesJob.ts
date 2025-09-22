@@ -1,6 +1,6 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { EntityRelationshipsUpdateService } from '../entities.v2/services/EntityRelationshipsUpdateService.js';
+import { Dispatchable, HeartbeatCallback } from '../queue.v2/application/contracts/Dispatchable.js';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;

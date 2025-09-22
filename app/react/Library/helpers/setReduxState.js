@@ -1,9 +1,9 @@
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '../../Multireducer.js';
 import {
   addDocuments,
   setDocuments,
   initializeFiltersForm,
-} from 'app/Library/actions/libraryActions';
+} from '../../Library/actions/libraryActions.js';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from '../../BasicReducer/index.js';
 

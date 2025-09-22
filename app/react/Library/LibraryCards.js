@@ -1,10 +1,10 @@
 import React from 'react';
-import { LibraryRootComponent } from 'app/Library/Library';
-import LibraryLayout from 'app/Library/LibraryLayout';
-import DocumentsList from 'app/Library/components/DocumentsList';
-import { withRouter } from 'app/componentWrappers';
-import { trackPage } from 'app/App/GoogleAnalytics';
-import { requestState } from 'app/Library/helpers/requestState';
+import { LibraryRootComponent } from '../../Library/Library.js';
+import LibraryLayout from '../../Library/LibraryLayout.js';
+import DocumentsList from '../../Library/components/DocumentsList.js';
+import { withRouter } from '../../componentWrappers.js';
+import { trackPage } from '../../App/GoogleAnalytics.js';
+import { requestState } from '../../Library/helpers/requestState.js';
 
 class LibraryCardsComponent extends LibraryRootComponent {
   static async requestState(requestParams, globalResources) {

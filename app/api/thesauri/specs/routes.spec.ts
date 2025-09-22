@@ -2,12 +2,12 @@ import path from 'path';
 import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from 'api/search';
-import { setUpApp } from 'api/utils/testingRoutes';
+import { search } from '../search.js';
+import { setUpApp } from '../utils/testingRoutes.js';
 
-import { ensure } from 'shared/tsUtils';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ensure } from '../../shared/tsUtils.js';
+import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { routes } from '../routes';
 import { thesauri } from '../thesauri';
 import { fixtures } from './fixtures';

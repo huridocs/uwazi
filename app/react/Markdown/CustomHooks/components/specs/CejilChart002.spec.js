@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 
-import api from 'app/Search/SearchAPI';
+import api from '../../Search/SearchAPI.js';
 import CejilChart, {
   mapStateToProps,
   judgesCommisionersTemplate as template,

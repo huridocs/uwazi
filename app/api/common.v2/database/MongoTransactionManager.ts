@@ -1,5 +1,5 @@
 import { MongoClient, ClientSession } from 'mongodb';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { Logger } from '../log.v2/contracts/Logger.js';
 import { TransactionManager } from '../contracts/TransactionManager';
 
 export class MongoTransactionManager implements TransactionManager {

@@ -1,13 +1,13 @@
 import { Db } from 'mongodb';
 import mongoose from 'mongoose';
 import waitForExpect from 'wait-for-expect';
-import { tenants } from 'api/tenants/tenantContext';
-import { testingTenants } from 'api/utils/testingTenants';
+import { tenants } from '../tenants/tenantContext.js';
+import { testingTenants } from '../utils/testingTenants.js';
 
-import { config } from 'api/config';
+import { config } from '../config.js';
 import { DB } from '../DB';
 import { instanceModel } from '../model';
-import testingDB from 'api/utils/testing_db';
+import testingDB from '../utils/testing_db.js';
 
 const testSchema = new mongoose.Schema({
   name: { type: String, index: true },

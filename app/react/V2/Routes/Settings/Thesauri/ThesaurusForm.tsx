@@ -7,7 +7,7 @@ import { Row } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
 import * as thesauriAPI from 'V2/api/thesauri';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom } from '../../V2/atoms.js';
 import { Table } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { addSelection, sanitizeThesaurusValues } from './helpers';

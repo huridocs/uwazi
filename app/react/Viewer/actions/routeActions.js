@@ -1,8 +1,8 @@
 import { actions } from '../../BasicReducer/index.js';
-import { getDocument } from 'app/Viewer/actions/documentActions';
-import referencesAPI from 'app/Viewer/referencesAPI';
-import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import * as relationships from 'app/Relationships/utils/routeUtils';
+import { getDocument } from '../../Viewer/actions/documentActions.js';
+import referencesAPI from '../../Viewer/referencesAPI.js';
+import relationTypesAPI from '../../RelationTypes/RelationTypesAPI.js';
+import * as relationships from '../../Relationships/utils/routeUtils.js';
 
 import { setReferences } from './referencesActions';
 import entitiesAPI from '../../Entities/EntitiesAPI';

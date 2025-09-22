@@ -6,9 +6,9 @@ import React from 'react';
 import Immutable from 'immutable';
 import { createStore, Provider } from 'jotai';
 import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
-import { Map } from 'app/Map';
-import { renderConnectedContainer } from 'app/utils/test/renderConnected';
-import * as MapHelper from 'app/Map/MapHelper';
+import { Map } from '../../Map.js';
+import { renderConnectedContainer } from '../../utils/test/renderConnected.js';
+import * as MapHelper from '../../Map/MapHelper.js';
 import { deletedEntityAtom } from 'V2/atoms';
 
 jest.mock('app/Map/GoogleMapLayer', () => ({

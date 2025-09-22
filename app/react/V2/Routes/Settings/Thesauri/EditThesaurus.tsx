@@ -9,7 +9,7 @@ import { Translate } from '../../I18N/index.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, ConfirmNavigationModal } from 'V2/Components/UI';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms';
+import { notificationAtom, templatesAtom } from '../../V2/atoms.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import {
   addGroupSubmit,

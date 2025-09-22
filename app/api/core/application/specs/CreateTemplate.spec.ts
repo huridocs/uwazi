@@ -1,18 +1,18 @@
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
-} from 'api/common.v2/database/data_source_defaults';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+} from '../common.v2/database/data_source_defaults.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { TemplateWithDuplicatedNameOnTheSystemError } from 'api/core/domain/template/errors';
-import { MongoThesauriDataSource } from 'api/core/infrastructure/mongodb/thesauri/MongoThesauriDS';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { LegacyTranslationService } from 'api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService';
-import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
-import { LegacyPageService } from 'api/core/infrastructure/mongodb/page/LegacyPageService';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '../core/domain/template/errors.js';
+import { MongoThesauriDataSource } from '../core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { LegacyTranslationService } from '../core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
+import { DefaultRelationshipTypesDataSource } from '../relationshiptypes.v2/database/data_source_defaults.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { DBFixture } from '../utils/testing_db.js';
+import { LegacyPageService } from '../core/infrastructure/mongodb/page/LegacyPageService.js';
 import { CreateTemplateUseCase } from '../CreateTemplate';
 
 const createSut = () => {

@@ -5,7 +5,7 @@ import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react
 import { Translate } from '../../I18N/index.js';
 import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,

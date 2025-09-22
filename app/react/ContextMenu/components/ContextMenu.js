@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { openMenu, closeMenu } from 'app/ContextMenu/actions/contextMenuActions';
+import { openMenu, closeMenu } from '../../ContextMenu/actions/contextMenuActions.js';
 
 class ContextMenu extends Component {
   render() {

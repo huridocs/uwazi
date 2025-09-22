@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { COLORS } from 'app/utils/colors';
+import { COLORS } from '../../utils/colors.js';
 import { t } from '../../I18N/index.js';
 
 const getTemplateInfo = createSelector(

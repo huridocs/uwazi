@@ -1,8 +1,8 @@
 import { redirect } from 'react-router';
 import { isClient } from '../../utils/index.js';
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import { notify } from '../../Notifications/actions/notificationsActions.js';
 import { store } from '../../store.js';
-import loadingBar from 'app/App/LoadingProgressBar';
+import loadingBar from '../../App/LoadingProgressBar.js';
 import { t } from '../../I18N/index.js';
 
 import { APIURL } from '../config.js';

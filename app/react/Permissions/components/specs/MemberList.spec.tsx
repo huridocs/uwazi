@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { NeedAuthorization } from 'app/Auth';
+import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
+import { NeedAuthorization } from '../../Auth.js';
 import { MembersList } from '../MembersList';
 import { data, pseudoData } from './testData';
 import { MemberListItemInfo } from '../MemberListItemInfo';

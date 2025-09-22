@@ -1,9 +1,9 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { Entity } from 'api/entities.v2/model/Entity';
+import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
+import { Entity } from '../entities.v2/model/Entity.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';

@@ -1,17 +1,17 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { TemplatePostProcessEntitiesJob } from 'api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob';
-import { MongoMultiLanguageEntityDataSource } from 'api/entities.v2/database/MongoMultiLanguageEntityDataSource';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { SyncDispatcherForTests } from 'api/queue.v2/infrastructure/SyncDispatcherForTests';
-import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { Template } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
-import { tenants } from 'api/tenants';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '../core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { TemplatePostProcessEntitiesJob } from '../core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { MongoMultiLanguageEntityDataSource } from '../entities.v2/database/MongoMultiLanguageEntityDataSource.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
+import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
+import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+import { Template } from '../templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+import { tenants } from '../tenants/index.js';
 
 export const denormalizeTemplateEntities = async (
   template: Template,

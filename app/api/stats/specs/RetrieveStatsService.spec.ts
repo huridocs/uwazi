@@ -1,8 +1,8 @@
-import { RetrieveStatsService } from 'api/stats/services/RetrieveStatsService';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { fixtures } from 'api/stats/specs/fixtures';
-import testingDB from 'api/utils/testing_db';
-import { elastic } from 'api/search/elastic';
+import { RetrieveStatsService } from '../stats/services/RetrieveStatsService.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { fixtures } from '../stats/specs/fixtures.js';
+import testingDB from '../utils/testing_db.js';
+import { elastic } from '../search/elastic.js';
 import { Db } from 'mongodb';
 
 describe('RetrieveStats', () => {

@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import { TraverseQueryDBO } from './RelationshipsQueryDBO';
 
 export interface RelationshipPropertyDBO {

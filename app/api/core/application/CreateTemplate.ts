@@ -1,17 +1,17 @@
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
-import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors';
-import { TranslationService } from '../domain/template/TranslationService';
-import { CreateTemplateDTO } from './TemplateDTOs';
-import { PageService } from '../domain/template/PageService';
+import { AbstractUseCase } from '../../common.v2/contracts/UseCase.js';
+import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
+import { Template } from '../../templates.v2/model/Template.js';
+import { IdGenerator } from '../../common.v2/contracts/IdGenerator.js';
+import { SettingsDataSource } from '../../settings.v2/contracts/SettingsDataSource.js';
+import { RelationshipTypesDataSource } from '../../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { TransactionManager } from '../../common.v2/contracts/TransactionManager.js';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
+import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { ThesauriDataSource } from '../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';
+import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { CreateTemplateDTO } from './TemplateDTOs.js';
+import { PageService } from '../domain/template/PageService.js';
 
 type Output = Template;
 

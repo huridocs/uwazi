@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { is, Map } from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { NeedAuthorization } from 'app/Auth';
-import ShowIf from 'app/App/ShowIf';
+import { NeedAuthorization } from '../../Auth.js';
+import ShowIf from '../../App/ShowIf.js';
 import { t } from '../../I18N/index.js';
-import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
-import ViewDocButton from 'app/Library/components/ViewDocButton';
+import UploadEntityStatus from '../../Library/components/UploadEntityStatus.js';
+import ViewDocButton from '../../Library/components/ViewDocButton.js';
 import { Icon } from 'UI';
 import { atomStore, deletedEntityAtom } from 'V2/atoms';
 
-import { Item } from 'app/Layout';
-import helpers from 'app/Documents/helpers';
+import { Item } from '../../Layout.js';
+import helpers from '../../Documents/helpers.js';
 
 class Doc extends Component {
   shouldComponentUpdate(nextProps) {

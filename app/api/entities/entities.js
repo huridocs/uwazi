@@ -1,27 +1,27 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
-import { applicationEventsBus } from 'api/eventsbus';
-import * as filesystem from 'api/files';
-import { PDF, files } from 'api/files';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import relationships from 'api/relationships/relationships';
-import { search } from 'api/search';
-import templates from 'api/templates/templates';
-import date from 'api/utils/date';
-import { unique } from 'api/utils/filters';
-import { propertyTypes } from 'shared/propertyTypes';
-import { AccessLevels } from 'shared/types/permissionSchema';
+import { applicationEventsBus } from '../eventsbus/index.js';
+import * as filesystem from '../files/index.js';
+import { PDF, files } from '../files/index.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import relationships from '../relationships/relationships.js';
+import { search } from '../search/index.js';
+import templates from '../templates/templates.js';
+import date from '../utils/date.js';
+import { unique } from '../utils/filters.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
+import { AccessLevels } from '../../shared/types/permissionSchema.js';
 import ID from '../../shared/uniqueID.js';
 
-import { ATSolveVersionConflict } from 'api/externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict';
-import settings from '../settings';
-import { denormalizeMetadata, denormalizeRelated } from './denormalize';
-import model from './entitiesModel';
-import { EntityCreatedEvent } from './events/EntityCreatedEvent';
-import { EntityDeletedEvent } from './events/EntityDeletedEvent';
-import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
-import { saveSelections } from './metadataExtraction/saveSelections';
+import { ATSolveVersionConflict } from '../externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
+import settings from '../settings/index.js';
+import { denormalizeMetadata, denormalizeRelated } from './denormalize.js';
+import model from './entitiesModel.js';
+import { EntityCreatedEvent } from './events/EntityCreatedEvent.js';
+import { EntityDeletedEvent } from './events/EntityDeletedEvent.js';
+import { EntityUpdatedEvent } from './events/EntityUpdatedEvent.js';
+import { saveSelections } from './metadataExtraction/saveSelections.js';
 import {
   deleteRelatedNewRelationships,
   denormalizeAfterEntityCreation,

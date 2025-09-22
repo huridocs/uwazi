@@ -1,11 +1,11 @@
 import { actions as formActions } from 'react-redux-form';
 import superagent from 'superagent';
 
-import { APIURL } from 'app/config.js';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import { APIURL } from '../../config.js.js';
+import { notify } from '../../Notifications/actions/notificationsActions.js';
+import { updateEntity, selectSingleDocument } from '../../Library/actions/libraryActions.js';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { actions as basicReducerActions } from '../../BasicReducer/index.js';
 import { t } from '../../I18N/index.js';
 

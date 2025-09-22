@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
-import { I18NLink } from 'app/I18N';
+import { I18NLink } from '../../I18N.js';
 
 import { Icon } from 'UI';
 
-import { ShareButton } from 'app/Permissions/components/ShareButton';
+import { ShareButton } from '../../Permissions/components/ShareButton.js';
 import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {

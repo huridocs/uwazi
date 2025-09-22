@@ -2,7 +2,7 @@
 import React from 'react';
 import { Translate } from '../../I18N/index.js';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Button, Pill } from 'app/V2/Components/UI';
+import { Button, Pill } from '../../V2/Components/UI.js';
 import { ClientRelationshipType, Template } from '../../apiResponseTypes.js';
 
 type Relationships = ClientRelationshipType & { rowId: string };

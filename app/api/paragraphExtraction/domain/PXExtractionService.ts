@@ -1,7 +1,7 @@
-import { Segmentation } from 'api/files.v2/model/Segmentation';
+import { Segmentation } from '../files.v2/model/Segmentation.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { Document } from 'api/files.v2/model/Document';
-import { File } from 'api/files.v2/model/File';
+import { Document } from '../files.v2/model/Document.js';
+import { File } from '../files.v2/model/File.js';
 import { PXExtractionKey } from './PXExtractionKey';
 
 type ExtractParagraphInput = {

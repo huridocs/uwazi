@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
 import { MongoPXEntityStatusesQueryService } from './MongoPXEntityStatusesQueryService';
 
 type Props = {

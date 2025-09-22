@@ -1,10 +1,10 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
-import { Property } from 'api/templates.v2/model/Property';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { TraversalQueryNode } from '../relationships.v2/model/TraversalQueryNode.js';
+import { Property } from '../templates.v2/model/Property.js';
+import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
 import { mapPropertyQuery } from '../QueryMapper';
 

@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-import templatesModel from 'api/templates/templatesModel';
+import templatesModel from '../api/templates/templatesModel.js';
 
 import { objectIdSchema } from '../../shared/types/commonSchemas.js';
 import { wrapValidator } from '../../shared/tsUtils.js';

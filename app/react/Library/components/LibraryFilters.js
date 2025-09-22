@@ -1,15 +1,15 @@
 import { t, Translate } from '../../I18N/index.js';
-import SidePanel from 'app/Layout/SidePanel';
-import { resetFilters } from 'app/Library/actions/filterActions';
-import FiltersForm from 'app/Library/components/FiltersForm';
-import { wrapDispatch } from 'app/Multireducer';
+import SidePanel from '../../Layout/SidePanel.js';
+import { resetFilters } from '../../Library/actions/filterActions.js';
+import FiltersForm from '../../Library/components/FiltersForm.js';
+import { wrapDispatch } from '../../Multireducer.js';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-import { hideFilters } from 'app/Entities/actions/uiActions';
-import { withRouter } from 'app/componentWrappers';
+import { hideFilters } from '../../Entities/actions/uiActions.js';
+import { withRouter } from '../../componentWrappers.js';
 
 class LibraryFilters extends Component {
   reset() {

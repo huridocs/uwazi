@@ -7,9 +7,9 @@ import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import moment from 'moment';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { I18NUtils } from 'app/I18N';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
+import { I18NUtils } from '../../I18N.js';
 import RouteHandler from '../RouteHandler';
 import { APIURL } from '../../config.js';
 

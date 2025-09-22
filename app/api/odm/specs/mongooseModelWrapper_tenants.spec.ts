@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import { Db } from 'mongodb';
-import { tenants } from 'api/tenants/tenantContext';
-import { config } from 'api/config';
-import { testingTenants } from 'api/utils/testingTenants';
-import { instanceModel } from 'api/odm';
-import testingDB from 'api/utils/testing_db';
+import { tenants } from '../tenants/tenantContext.js';
+import { config } from '../config.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import { instanceModel } from '../odm.js';
+import testingDB from '../utils/testing_db.js';
 
 const testSchema = new mongoose.Schema({
   name: String,

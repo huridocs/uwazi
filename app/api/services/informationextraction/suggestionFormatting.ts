@@ -3,7 +3,7 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
 
-import date from 'api/utils/date';
+import date from '../utils/date.js';
 import { LanguageISO6391, PropertySchema } from '../../shared/types/commonTypes.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import {
@@ -11,11 +11,11 @@ import {
   IXSuggestionType,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
-} from 'shared/types/suggestionType';
+} from '../../shared/types/suggestionType.js';
 import {
   TextSelectionSuggestionSchema,
   ValuesSelectionSuggestionSchema,
-} from 'shared/types/suggestionSchema';
+} from '../../shared/types/suggestionSchema.js';
 import { syncWrapValidator } from '../../shared/tsUtils.js';
 import { InternalIXResultsMessage } from './InformationExtraction';
 import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';

@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 
-import uiReducer from 'app/Viewer/reducers/uiReducer';
-import * as types from 'app/Viewer/actions/actionTypes';
-import * as actions from 'app/Viewer/actions/uiActions';
+import uiReducer from '../../Viewer/reducers/uiReducer.js';
+import * as types from '../../Viewer/actions/actionTypes.js';
+import * as actions from '../../Viewer/actions/uiActions.js';
 
 describe('Viewer uiReducer', () => {
   describe('when state is undefined', () => {

@@ -1,9 +1,9 @@
 import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
-import { files, generateFileName, storage } from 'api/files';
-import { processDocument } from 'api/files/processDocument';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { tenants } from 'api/tenants';
+import { files, generateFileName, storage } from '../files.js';
+import { processDocument } from '../files/processDocument.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import { emitToTenant } from '../socketio/setupSockets.js';
+import { tenants } from '../tenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import * as os from 'os';

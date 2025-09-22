@@ -1,4 +1,4 @@
-import { Icon } from 'app/UI';
+import { Icon } from '../../UI.js';
 import React from 'react';
 import { Field } from 'react-redux-form';
 import { Translate } from '../../I18N/index.js';

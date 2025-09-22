@@ -2,11 +2,11 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '../../Multireducer.js';
 import { Icon } from 'UI';
 import { DropdownList } from '../../Forms/index.js';
-import { IImmutable } from 'shared/types/Immutable';
-import { IStore } from 'app/istore';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { IStore } from '../../istore.js';
 import { omit } from 'lodash';
 import {
   filterTemplates,

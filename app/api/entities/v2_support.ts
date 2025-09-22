@@ -2,20 +2,20 @@ import {
   CreateRelationshipService,
   DeleteRelationshipService,
   DenormalizationService as CreateDenormalizationService,
-} from 'api/relationships.v2/services/service_factories';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+} from '../relationships.v2/services/service_factories.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { TemplateSchema } from 'shared/types/templateType';
-import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
-import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { DefaultRelationshipDataSource } from '../relationships.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { TemplateMappers } from '../templates.v2/database/TemplateMappers.js';
+import { TemplateDBO } from '../templates.v2/database/schemas/TemplateDBO.js';
+import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
+import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
+import { arrayBidirectionalDiff } from '../../shared/data_utils/arrayBidirectionalDiff.js';
+import { DenormalizationService } from '../relationships.v2/services/DenormalizationService.js';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = DefaultTransactionManager();

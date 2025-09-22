@@ -1,7 +1,7 @@
 import { Application, Request, Response, NextFunction } from 'express';
-import { storage } from 'api/files';
-import needsAuthorization from 'api/auth/authMiddleware';
-import { isOcrEnabled, ocrManager, getOcrStatus } from 'api/services/ocr/OcrManager';
+import { storage } from '../files.js';
+import needsAuthorization from '../auth/authMiddleware.js';
+import { isOcrEnabled, ocrManager, getOcrStatus } from '../services/ocr/OcrManager.js';
 import { files } from './files';
 import { validation, createError } from '../utils';
 

@@ -1,15 +1,15 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-statements */
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
 import urljoin from 'url-join';
 import request from '../../shared/JSONRequest.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 import moment from 'moment';
-import { emitToTenant } from 'api/socketio/setupSockets';
+import { emitToTenant } from '../socketio/setupSockets.js';
 import { EnforcedWithId } from '../odm/index.js';
-import { IXExtractorType } from 'shared/types/extractorType';
-import { Suggestions } from 'api/suggestions/suggestions';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
+import { Suggestions } from '../suggestions/suggestions.js';
 import { getEntitiesForTraining } from './ixMaterials';
 import { PropertySourceMaterials } from './InformationExtraction';
 import { IXTaskService } from './TaskService';

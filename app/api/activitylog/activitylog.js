@@ -1,4 +1,4 @@
-import { sortingParams } from 'shared/types/activityLogApiSchemas';
+import { sortingParams } from '../../shared/types/activityLogApiSchemas.js';
 import model from './activitylogModel';
 import { getSemanticData } from './activitylogParser';
 import { ActivityLogFilter } from './activityLogFilter';

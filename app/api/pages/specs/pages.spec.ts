@@ -1,7 +1,7 @@
-import { mockID } from 'shared/uniqueID';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import date from 'api/utils/date.js';
-import db from 'api/utils/testing_db';
+import { mockID } from '../../shared/uniqueID.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import date from '../utils/date.js.js';
+import db from '../utils/testing_db.js';
 
 import { fixtures, pageToUpdate } from './fixtures';
 import pages from '../pages';

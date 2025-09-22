@@ -2,16 +2,16 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import RouteHandler from 'app/App/RouteHandler';
+import RouteHandler from '../../App/RouteHandler.js';
 import { shallow } from 'enzyme';
-import { actions } from 'app/BasicReducer';
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import { PageViewer } from 'app/Pages/components/PageViewer';
-import { RequestParams } from 'app/utils/RequestParams';
+import { actions } from '../../BasicReducer.js';
+import ViewMetadataPanel from '../../Library/components/ViewMetadataPanel.js';
+import SelectMultiplePanelContainer from '../../Library/containers/SelectMultiplePanelContainer.js';
+import { PageViewer } from '../../Pages/components/PageViewer.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 
-import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import { ErrorFallback } from '../../V2/Components/ErrorHandling.js';
+import { renderConnectedMount } from '../../utils/test/renderConnected.js';
 import PageView from '../PageView';
 import * as assetsUtils from '../utils/getPageAssets';
 

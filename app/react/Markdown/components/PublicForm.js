@@ -7,15 +7,15 @@ import { BrowserView, MobileView } from 'react-device-detect';
 import Immutable from 'immutable';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
-import { LocalForm } from 'app/Forms/Form';
-import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
+import { LocalForm } from '../../Forms/Form.js';
+import { MetadataFormFields, validator, prepareMetadataAndFiles } from '../../Metadata.js';
 import { Translate } from '../../I18N/index.js';
-import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
+import { publicSubmit } from '../../Uploads/actions/uploadsActions.js';
 import { FormGroup } from '../../Forms/index.js';
 import { Icon } from 'UI';
-import { Loader } from 'app/components/Elements/Loader';
+import { Loader } from '../../components/Elements/Loader.js';
 import './scss/public-form.scss';
-import { generateID } from 'shared/IDGenerator';
+import { generateID } from '../../shared/IDGenerator.js';
 import { FormCaptcha } from './FormCaptcha';
 
 class PublicFormComponent extends Component {

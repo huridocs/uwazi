@@ -5,10 +5,10 @@ import rison from '@huridocs/rison';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { t } from '../../I18N/index.js';
-import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
-import { selectTemplates } from 'app/utils/coreSelectors';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import FormGroup from '../../DocumentForm/components/FormGroup.js';
+import { getAggregationSuggestions } from '../../Library/actions/libraryActions.js';
+import { selectTemplates } from '../../utils/coreSelectors.js';
+import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
 
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';

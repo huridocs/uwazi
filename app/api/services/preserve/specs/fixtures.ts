@@ -1,7 +1,7 @@
 import { templateUtils } from '../templates/index.js';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { propertyTypes } from 'shared/propertyTypes';
-import { UserSchema } from 'shared/types/userType';
+import db, { DBFixture } from '../utils/testing_db.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
+import { UserSchema } from '../../shared/types/userType.js';
 
 export const templateId = db.id();
 export const anotherTemplateId = db.id();

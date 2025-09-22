@@ -4,17 +4,17 @@ import { useLocation } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { fromJS } from 'immutable';
-import { wrapDispatch } from 'app/Multireducer';
-import { NeedAuthorization } from 'app/Auth';
+import { wrapDispatch } from '../../Multireducer.js';
+import { NeedAuthorization } from '../../Auth.js';
 import { I18NLink, I18NLinkV2, I18NMenu, t, Translate } from '../../I18N/index.js';
-import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { showSemanticSearch as showSemanticSearchAction } from 'app/SemanticSearch/actions/actions';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import { libraryViewInfo } from 'app/App/libraryViewInfo';
+import { processFilters, encodeSearch } from '../../Library/actions/libraryActions.js';
+import { showSemanticSearch as showSemanticSearchAction } from '../../SemanticSearch/actions/actions.js';
+import { FeatureToggleSemanticSearch } from '../../SemanticSearch/components/FeatureToggleSemanticSearch.js';
+import { libraryViewInfo } from '../../App/libraryViewInfo.js';
 import { Icon } from 'UI';
 import { actions } from '../../BasicReducer/index.js';
-import { IStore } from 'app/istore';
-import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+import { IStore } from '../../istore.js';
+import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
 import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {

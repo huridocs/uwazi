@@ -1,8 +1,8 @@
-import translations from 'api/i18n/translations';
-import { WithId } from 'api/odm';
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { Settings } from 'shared/types/settingsType';
+import translations from '../i18n/translations.js';
+import { WithId } from '../odm.js';
+import db from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { Settings } from '../../shared/types/settingsType.js';
 import settings from '../settings';
 import fixtures, { linkFixtures, newLinks } from './fixtures';
 

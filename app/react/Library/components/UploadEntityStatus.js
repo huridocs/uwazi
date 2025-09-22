@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ItemFooter } from 'app/Layout/Lists';
+import { ItemFooter } from '../../Layout/Lists.js';
 import { connect } from 'react-redux';
 import docState from '../docState';
 

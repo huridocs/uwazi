@@ -1,9 +1,9 @@
-import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
-import { Logger } from 'api/log.v2/contracts/Logger';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { getTenant } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { Entity } from '../entities.v2/model/Entity.js';
+import { EntityInputModel } from '../entities.v2/types/EntityInputDataType.js';
+import { Logger } from '../log.v2/contracts/Logger.js';
+import { TaskManager } from '../services/tasksmanager/TaskManager.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 

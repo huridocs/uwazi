@@ -1,9 +1,9 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/queue.v2/application/contracts/UserAwareDispatchable';
+} from '../queue.v2/application/contracts/UserAwareDispatchable.js';
 
-import { HeartbeatCallback, JobInfo } from 'api/queue.v2/application/contracts/Dispatchable';
+import { HeartbeatCallback, JobInfo } from '../queue.v2/application/contracts/Dispatchable.js';
 import { PXExtractParagraphsFromEntityInput } from '../application/PXExtractParagraphsFromEntity';
 import { PXExtractParagraphsFromEntityFactory } from './PXExtractParagraphsFromEntityFactory';
 

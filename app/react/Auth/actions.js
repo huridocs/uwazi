@@ -1,10 +1,10 @@
 /** @format */
 
-import api from 'app/utils/api';
+import api from '../../utils/api.js';
 import { t } from '../../I18N/index.js';
 import { actions } from '../../BasicReducer/index.js';
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { RequestParams } from 'app/utils/RequestParams';
+import { notify } from '../../Notifications/actions/notificationsActions.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 
 export function login(credentials) {
   const request = new RequestParams(credentials);

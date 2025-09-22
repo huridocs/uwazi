@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ShowMetadata, MetadataForm } from 'app/Metadata';
-import { api as entitiesAPI } from 'app/Entities';
+import { ShowMetadata, MetadataForm } from '../../Metadata.js';
+import { api as entitiesAPI } from '../../Entities.js';
 import * as saveEntityWithFiles from '../../../Library/actions/saveEntityWithFiles';
 import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata';
 import * as routeUtils from '../../utils/routeUtils';

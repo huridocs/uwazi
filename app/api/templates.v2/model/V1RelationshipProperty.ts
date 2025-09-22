@@ -1,11 +1,11 @@
 import {
   FilterableProperty,
   FilterablePropertyProps,
-} from 'api/core/domain/template/FilterableProperty';
+} from '../core/domain/template/FilterableProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
   PropertyRelationTypeMismatchError,
-} from 'api/core/domain/template/errors';
+} from '../core/domain/template/errors.js';
 import { Context, Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 
 type Inherit = {

@@ -1,8 +1,8 @@
-import SettingsAPI from 'app/Settings/SettingsAPI';
-import { APIURL } from 'app/config.js';
+import SettingsAPI from '../../Settings/SettingsAPI.js';
+import { APIURL } from '../../config.js.js';
 import backend from 'fetch-mock';
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import { RequestParams } from 'app/utils/RequestParams';
+import { catchErrors } from '../../api/utils/jasmineHelpers.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 
 describe('SettingsAPI', () => {
   beforeEach(() => {

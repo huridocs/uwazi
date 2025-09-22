@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 import api from '../../Search/SearchAPI.js';
 import { t } from '../../I18N/index.js';
 

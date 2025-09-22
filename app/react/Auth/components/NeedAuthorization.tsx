@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
-import { PermissionSchema } from 'shared/types/permissionType';
+import { PermissionSchema } from '../../shared/types/permissionType.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { ClientUserSchema } from '../../apiResponseTypes.js';
 

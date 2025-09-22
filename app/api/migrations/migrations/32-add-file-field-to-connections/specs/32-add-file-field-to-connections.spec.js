@@ -1,6 +1,6 @@
-import { config } from 'api/config';
-import testingDB from 'api/utils/testing_db';
-import { legacyLogger } from 'api/log';
+import { config } from '../config.js';
+import testingDB from '../utils/testing_db.js';
+import { legacyLogger } from '../log.js';
 import fixtures, { connectionWithRangeId, documentId } from './fixtures.js';
 import migration from '../index.js';
 

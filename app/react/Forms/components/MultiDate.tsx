@@ -1,4 +1,4 @@
-import DatePicker from 'app/Forms/components/DatePicker';
+import DatePicker from '../../Forms/components/DatePicker.js';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { Translate } from '../../I18N/index.js';

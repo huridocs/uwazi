@@ -1,6 +1,6 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB from '../utils/testing_db.js';
 import { elastic } from '../elastic';
 import { search } from '../search';
 import { fixturesTimeOut } from './fixtures_elastic';

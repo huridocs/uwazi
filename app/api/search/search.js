@@ -1,21 +1,21 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
 
-import date from 'api/utils/date';
+import date from '../utils/date.js';
 import propertiesHelper from '../../shared/commonProperties.js';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
+import dictionariesModel from '../thesauri/dictionariesModel.js';
 import { createError } from '../utils/index.js';
-import { filterOptions } from 'shared/optionsUtils';
-import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { checkWritePermissions } from 'shared/permissionsUtils';
+import { filterOptions } from '../../shared/optionsUtils.js';
+import { preloadOptionsLimit, preloadOptionsSearch } from '../../shared/config.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import { checkWritePermissions } from '../../shared/permissionsUtils.js';
 import usersModel from '../users/users.js';
-import userGroups from 'api/usergroups/userGroups';
-import { sequentialPromises } from 'shared/asyncUtils';
+import userGroups from '../usergroups/userGroups.js';
+import { sequentialPromises } from '../../shared/asyncUtils.js';
 import { objectIndex } from '../../shared/data_utils/objectIndex.js';
-import { propertyTypes } from 'shared/propertyTypes';
-import { UserRole } from 'shared/types/userSchema';
-import { OperationalError } from 'api/common.v2/errors/OperationalError';
+import { propertyTypes } from '../../shared/propertyTypes.js';
+import { UserRole } from '../../shared/types/userSchema.js';
+import { OperationalError } from '../common.v2/errors/OperationalError.js';
 import { inspect } from 'util';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';

@@ -3,7 +3,7 @@ import { sortBy } from 'lodash';
 import { isClient } from '../../utils/index.js';
 import { store } from '../../store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '../../apiResponseTypes.js';
-import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from 'app/istore';
+import { ClientTemplateSchema, ClientTranslationSchema, RelationshipTypesType } from '../../istore.js';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 import { relationshipTypesAtom } from './relationshipTypes';

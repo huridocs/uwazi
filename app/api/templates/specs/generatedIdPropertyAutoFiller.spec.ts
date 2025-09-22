@@ -1,19 +1,19 @@
-import entities from 'api/entities';
-import translations from 'api/i18n';
-import { elastic } from 'api/search';
+import entities from '../entities.js';
+import translations from '../i18n.js';
+import { elastic } from '../search.js';
 import {
   factory,
   fixtures,
   templateId,
   textPropertyId,
-} from 'api/templates/specs/generatedIdPropertyAutoFillerFixtures';
-import { elasticTesting } from 'api/utils/elastic_testing';
-import { unique } from 'api/utils/filters';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { propertyTypes } from 'shared/propertyTypes';
-import { EntitySchema } from 'shared/types/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
+} from '../templates/specs/generatedIdPropertyAutoFillerFixtures.js';
+import { elasticTesting } from '../utils/elastic_testing.js';
+import { unique } from '../utils/filters.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import * as setupSockets from '../socketio/setupSockets.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import { inspect } from 'util';
 import templates from '../templates';
 

@@ -2,17 +2,17 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import entities from '../entities/index.js';
-import { search } from 'api/search';
-import { processDocument } from 'api/files/processDocument';
-import { RawEntity } from 'api/csv/entityRow';
-import { TemplateSchema } from 'shared/types/templateType';
+import { search } from '../search/index.js';
+import { processDocument } from '../files/processDocument.js';
+import { RawEntity } from '../csv/entityRow.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import { MetadataObjectSchema, MetadataSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ImportFile } from 'api/csv/importFile';
+import { propertyTypes } from '../../shared/propertyTypes.js';
+import { ImportFile } from '../csv/importFile.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { ensure } from '../../shared/tsUtils.js';
-import { files, generateFileName, storage } from 'api/files';
-import { generateID } from 'shared/IDGenerator';
+import { files, generateFileName, storage } from '../files.js';
+import { generateID } from '../../shared/IDGenerator.js';
 
 import typeParsers from './typeParsers';
 import { csvConstants } from './csvDefinitions';

@@ -21,7 +21,7 @@ import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from 'V2/Components/UI';
 import { CodeEditor } from 'V2/Components/CodeEditor';
-import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
+import { EnableButtonCheckbox, InputField } from '../../V2/Components/Forms.js';
 import { notificationAtom } from 'V2/atoms';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { getPageUrl } from './components/PageListTable';

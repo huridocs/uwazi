@@ -1,7 +1,7 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { IXServices } from 'api/services/informationextraction/IXServices';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import { IXServices } from '../services/informationextraction/IXServices.js';
+import { IXSuggestionType } from '../../shared/types/suggestionType.js';
 import { PipelineBuilder } from '../queryBuilder';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { SuggestionFactory } from '../suggestionFactory';

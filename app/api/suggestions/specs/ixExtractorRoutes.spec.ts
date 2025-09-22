@@ -2,11 +2,11 @@ import { Application } from 'express';
 import { Db, ObjectId } from 'mongodb';
 import request from 'supertest';
 
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { UserRole } from 'shared/types/userSchema';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { setUpApp } from '../utils/testingRoutes.js';
+import testingDB, { DBFixture } from '../utils/testing_db.js';
+import { UserRole } from '../../shared/types/userSchema.js';
 import { extractorsRoutes } from '../extractorsRoutes';
 
 const adminUser = {

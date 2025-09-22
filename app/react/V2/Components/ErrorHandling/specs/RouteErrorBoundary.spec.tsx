@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import { renderConnectedMount } from '../../utils/test/renderConnected.js';
 import { ErrorFallback } from '../ErrorFallback';
 import { RouteErrorBoundary } from '../RouteErrorBoundary';
 

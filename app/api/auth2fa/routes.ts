@@ -1,9 +1,9 @@
 import { Application } from 'express';
-import needsAuthorization from 'api/auth/authMiddleware';
+import needsAuthorization from '../auth/authMiddleware.js';
 import * as usersUtils from '../auth2fa/usersUtils.js';
 import { validation } from '../utils/index.js';
-import { ObjectIdAsString } from 'api/utils/ajvSchemas';
-import { validatePasswordMiddleWare } from 'api/auth';
+import { ObjectIdAsString } from '../utils/ajvSchemas.js';
+import { validatePasswordMiddleWare } from '../auth.js';
 
 export default (app: Application) => {
   app.post(

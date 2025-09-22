@@ -2,7 +2,7 @@ import React from 'react';
 import { fromJS } from 'immutable';
 import { shallow } from 'enzyme';
 
-import { actions } from 'app/BasicReducer';
+import { actions } from '../../BasicReducer.js';
 
 import { ViewDocButton, mapDispatchToProps } from '../ViewDocButton';
 

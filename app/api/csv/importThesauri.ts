@@ -2,7 +2,7 @@ import { createError } from '../utils/index.js';
 import csvtojson from 'csvtojson';
 import { availableLanguages } from '../../shared/language/index.js';
 import { LanguageSchema } from '../../shared/types/commonTypes.js';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
 import { Readable } from 'stream';
 import { CSVRow } from './csv';
 import { sanitizeStringValue } from './sanitizationUtils';

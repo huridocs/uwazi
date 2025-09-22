@@ -4,15 +4,15 @@
 import urljoin from 'url-join';
 import { ObjectId } from 'mongodb';
 
-import { storage } from 'api/files';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
+import { storage } from '../files.js';
+import { TaskManager } from '../services/tasksmanager/TaskManager.js';
+import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
 import { EnforcedWithId } from '../odm/index.js';
 import { tenants } from '../tenants/tenantContext.js';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { filesModel } from 'api/files/filesModel';
-import entities from 'api/entities/entities';
+import { emitToTenant } from '../socketio/setupSockets.js';
+import { filesModel } from '../files/filesModel.js';
+import entities from '../entities/entities.js';
 import settings from '../settings/settings.js';
 import request from '../../shared/JSONRequest.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
@@ -22,7 +22,7 @@ import {
   ObjectIdSchema,
   PropertySchema,
 } from '../../shared/types/commonTypes.js';
-import { ModelStatus } from 'shared/types/IXModelSchema';
+import { ModelStatus } from '../../shared/types/IXModelSchema.js';
 import { FileType } from '../../shared/types/fileType.js';
 import {
   BATCH_SIZE_FOR_PDF,
@@ -31,19 +31,19 @@ import {
   getEntitiesForSuggestions,
   getFilesForSuggestions,
   propertyTypeIsWithoutExtractedMetadata,
-} from 'api/services/informationextraction/ixMaterials';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { IXExtractorType } from 'shared/types/extractorType';
+} from '../services/informationextraction/ixMaterials.js';
+import { Suggestions } from '../suggestions/suggestions.js';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { LanguageUtils } from '../../shared/language/index.js';
-import { IXModelType } from 'shared/types/IXModelType';
-import { ParagraphSchema } from 'shared/types/segmentationType';
+import { IXModelType } from '../../shared/types/IXModelType.js';
+import { ParagraphSchema } from '../../shared/types/segmentationType.js';
 import moment from 'moment';
-import { ArrayUtils } from 'api/common.v2/utils/Array';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
-import { retryWithBackoff, descriptiveError } from 'api/utils/retryWithBackoff';
-import { SuggestionFactory } from 'api/suggestions/suggestionFactory';
-import { AcceptSuggestionsFactory } from 'api/suggestions/infrastructure/AcceptSuggestionsFactory';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import { ArrayUtils } from '../common.v2/utils/Array.js';
+import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+import { retryWithBackoff, descriptiveError } from '../utils/retryWithBackoff.js';
+import { SuggestionFactory } from '../suggestions/suggestionFactory.js';
+import { AcceptSuggestionsFactory } from '../suggestions/infrastructure/AcceptSuggestionsFactory.js';
+import { IXSuggestionType } from '../../shared/types/suggestionType.js';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';

@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import libraryHelpers from '../../Library/helpers/libraryFilters.js';
 
-import { SearchDescription } from 'app/Library/components/SearchDescription';
+import { SearchDescription } from '../../Library/components/SearchDescription.js';
 import { mapStateToProps } from '../SearchDescription';
 
 describe('SearchDescription', () => {

@@ -1,6 +1,6 @@
-import { Property } from 'api/templates.v2/model/Property';
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Template } from 'api/templates.v2/model/Template';
+import { Property } from '../templates.v2/model/Property.js';
+import { CommonProperty } from '../templates.v2/model/CommonProperty.js';
+import { Template } from '../templates.v2/model/Template.js';
 import { CreationDateProperty } from '../CreationDateProperty';
 import { ModifiedDateProperty } from '../ModifiedDateProperty';
 import { TitleProperty } from '../TitleProperty';

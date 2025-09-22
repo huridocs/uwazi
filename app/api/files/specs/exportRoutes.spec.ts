@@ -1,15 +1,15 @@
-import authMiddleware from 'api/auth/authMiddleware';
-import csvExporter, { SearchResults } from 'api/csv/csvExporter';
-import * as filesystem from 'api/files/filesystem';
-import { search } from 'api/search';
-import { setUpApp } from 'api/utils/testingRoutes';
+import authMiddleware from '../auth/authMiddleware.js';
+import csvExporter, { SearchResults } from '../csv/csvExporter.js';
+import * as filesystem from '../files/filesystem.js';
+import { search } from '../search.js';
+import { setUpApp } from '../utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import { Writable } from 'stream';
 import request from 'supertest';
 
-import { User } from 'api/users/usersModel';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
+import { User } from '../users/usersModel.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DBFixture } from '../utils/testing_db.js';
 import routes from '../exportRoutes';
 
 jest.mock('api/csv/csvExporter');

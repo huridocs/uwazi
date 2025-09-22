@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { IStore } from 'app/istore';
-import Doc from 'app/Library/components/Doc';
+import { IStore } from '../../istore.js';
+import Doc from '../../Library/components/Doc.js';
 import { CollectionViewerProps } from './CollectionViewerProps';
 import { RowList } from './Lists';
 

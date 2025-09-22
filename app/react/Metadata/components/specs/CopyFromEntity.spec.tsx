@@ -1,7 +1,7 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import Immutable from 'immutable';
-import { store } from 'app/store';
+import { store } from '../../store.js';
 import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity';
 import { SearchEntities } from '../SearchEntities';
 

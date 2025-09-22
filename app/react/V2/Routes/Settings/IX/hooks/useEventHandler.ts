@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
-import { socket } from 'app/socket';
+import { socket } from '../../socket.js';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { t } from '../../I18N/index.js';

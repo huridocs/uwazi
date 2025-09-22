@@ -1,4 +1,4 @@
-import { UserRole } from 'shared/types/userSchema';
+import { UserRole } from './types/userSchema.js';
 import { UserSchema } from '../types/userType';
 import { PermissionSchema } from '../types/permissionType';
 import { checkWritePermissions } from '../permissionsUtils';

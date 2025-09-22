@@ -1,12 +1,12 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from '../../BasicReducer/index.js';
-import EntitiesAPI from 'app/Entities/EntitiesAPI';
-import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
-import { notificationActions } from 'app/Notifications';
-import { RequestParams } from 'app/utils/RequestParams';
+import EntitiesAPI from '../../Entities/EntitiesAPI.js';
+import { IStore, QuickLabelState, QuickLabelMetadata } from '../../istore.js';
+import { notificationActions } from '../../Notifications.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { t } from '../../I18N/index.js';
-import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
+import { getThesaurusPropertyNames } from '../../shared/commonTopicClassification.js';
 import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { updateEntities } from './libraryActions';

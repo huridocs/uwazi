@@ -1,6 +1,6 @@
-import { storage } from 'api/files';
-import date from 'api/utils/date';
-import { tenants } from 'api/tenants';
+import { storage } from '../files.js';
+import date from '../utils/date.js';
+import { tenants } from '../tenants.js';
 import { Readable } from 'stream';
 import activitylog from './activitylog';
 import { NextFunction, Request, Response } from 'express';

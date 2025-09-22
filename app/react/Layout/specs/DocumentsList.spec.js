@@ -2,14 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 
-import Doc from 'app/Library/components/Doc';
-import Footer from 'app/App/Footer';
+import Doc from '../../Library/components/Doc.js';
+import Footer from '../../App/Footer.js';
 
-import { DocumentCounter } from 'app/Layout/DocumentCounter';
-import { TilesViewer } from 'app/Layout/TilesViewer';
-import { TableViewer } from 'app/Layout/TableViewer';
-import { LibraryHeader } from 'app/Library/components/LibraryHeader';
-import { SearchBar } from 'app/Library/components/SearchBar';
+import { DocumentCounter } from '../../Layout/DocumentCounter.js';
+import { TilesViewer } from '../../Layout/TilesViewer.js';
+import { TableViewer } from '../../Layout/TableViewer.js';
+import { LibraryHeader } from '../../Library/components/LibraryHeader.js';
+import { SearchBar } from '../../Library/components/SearchBar.js';
 import { DocumentsList } from '../DocumentsList';
 
 describe('DocumentsList', () => {

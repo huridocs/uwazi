@@ -1,7 +1,7 @@
 import React from 'react';
 import { fromJS as Immutable } from 'immutable';
 import { shallow } from 'enzyme';
-import { ItemFooter } from 'app/Layout/Lists';
+import { ItemFooter } from '../../Layout/Lists.js';
 import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus';
 
 describe('UploadEntityStatus', () => {

@@ -1,4 +1,4 @@
-import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
 import { IXSuggestionsLoaderResponse, TableSuggestion, ixStatus } from '../../types';
 
 const suggestion1: TableSuggestion = {

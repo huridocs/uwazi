@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { withContext } from 'app/componentWrappers';
-import { advancedSort } from 'app/utils/advancedSort';
+import { withContext } from '../../componentWrappers.js';
+import { advancedSort } from '../../utils/advancedSort.js';
 import { Translate } from '../../I18N/index.js';
 import { FileType } from '../../shared/types/fileType.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import UploadButton from 'app/Metadata/components/UploadButton';
+import UploadButton from '../../Metadata/components/UploadButton.js';
 import { LanguageUtils } from '../../shared/language/index.js';
-import { NeedAuthorization } from 'app/Auth';
+import { NeedAuthorization } from '../../Auth.js';
 import { ConnectedFile as File } from './File';
 import './scss/filelist.scss';
 

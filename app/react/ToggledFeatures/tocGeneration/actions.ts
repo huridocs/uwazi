@@ -1,9 +1,9 @@
-import { actions } from 'app/BasicReducer/reducer';
+import { actions } from '../../BasicReducer/reducer.js';
 import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from 'app/utils/RequestParams';
-import api from 'app/utils/api';
-import { notificationActions } from 'app/Notifications';
-import { IStore } from 'app/istore';
+import { RequestParams } from '../../utils/RequestParams.js';
+import api from '../../utils/api.js';
+import { notificationActions } from '../../Notifications.js';
+import { IStore } from '../../istore.js';
 import { Dispatch } from 'redux';
 import { ensure } from '../../shared/tsUtils.js';
 import { FileType } from '../../shared/types/fileType.js';

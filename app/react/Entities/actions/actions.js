@@ -1,16 +1,16 @@
 import { actions } from '../../BasicReducer/index.js';
-import api from 'app/Entities/EntitiesAPI';
+import api from '../../Entities/EntitiesAPI.js';
 import { t } from '../../I18N/index.js';
 import {
   removeDocument,
   removeDocuments,
   unselectAllDocuments,
   unselectDocument,
-} from 'app/Library/actions/libraryActions';
-import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
-import { notificationActions } from 'app/Notifications';
-import { actions as relationshipActions } from 'app/Relationships';
-import { RequestParams } from 'app/utils/RequestParams';
+} from '../../Library/actions/libraryActions.js';
+import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
+import { notificationActions } from '../../Notifications.js';
+import { actions as relationshipActions } from '../../Relationships.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import { atomStore, deletedEntityAtom } from 'V2/atoms';
 

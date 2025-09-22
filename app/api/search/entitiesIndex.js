@@ -1,18 +1,18 @@
-import { detectLanguage } from 'shared/detectLanguage';
+import { detectLanguage } from '../../shared/detectLanguage.js';
 import entities from '../entities/index.js';
 import { legacyLogger } from '../log/index.js';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { entityDefaultDocument } from '../../shared/entityDefaultDocument.js';
 import PromisePool from '@supercharge/promise-pool';
-import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { ElasticEntityMapper } from '../entities.v2/database/ElasticEntityMapper.js';
+import { MongoTemplatesDataSource } from '../templates.v2/database/MongoTemplatesDataSource.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
 import { LanguageUtils } from '../../shared/language/index.js';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { otherLanguageSchema } from 'shared/language/availableLanguages';
-import { getTenantESMapping } from 'api/tenants/tenantESMapping';
-import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
-import { elastic } from './elastic';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { otherLanguageSchema } from '../../shared/language/availableLanguages.js';
+import { getTenantESMapping } from '../tenants/tenantESMapping.js';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
+import { elastic } from './elastic.js';
 
 class IndexError extends Error {}
 

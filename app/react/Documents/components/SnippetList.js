@@ -5,8 +5,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { t, I18NLink } from '../../I18N/index.js';
-import SafeHTML from 'app/utils/SafeHTML';
-import getFieldLabel from 'app/Templates/utils/getFieldLabel';
+import SafeHTML from '../../utils/SafeHTML.js';
+import getFieldLabel from '../../Templates/utils/getFieldLabel.js';
 import Immutable from 'immutable';
 
 const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm = '' }) => (

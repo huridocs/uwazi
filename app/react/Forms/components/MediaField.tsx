@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { isObject } from 'lodash';
 import { Translate } from '../../I18N/index.js';
-import { Icon } from 'app/UI';
-import { ClientFile } from 'app/istore';
-import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
-import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
-import MarkdownMedia, { TimeLink } from 'app/Markdown/components/MarkdownMedia';
-import { ImageViewer } from 'app/Metadata/components/ImageViewer';
+import { Icon } from '../../UI.js';
+import { ClientFile } from '../../istore.js';
+import { prepareHTMLMediaView } from '../../shared/fileUploadUtils.js';
+import { MediaModal, MediaModalProps, MediaModalType } from '../../Metadata/components/MediaModal.js';
+import MarkdownMedia, { TimeLink } from '../../Markdown/components/MarkdownMedia.js';
+import { ImageViewer } from '../../Metadata/components/ImageViewer.js';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: Partial<File> } | null;

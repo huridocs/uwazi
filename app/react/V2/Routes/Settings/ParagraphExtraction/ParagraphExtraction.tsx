@@ -5,7 +5,7 @@ import { Translate } from '../../I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from 'V2/atoms';
 import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import { Button } from 'app/V2/Components/UI';
+import { Button } from '../../V2/Components/UI.js';
 import { PXTable } from './types';
 import { formatExtractors } from './utils/formatters';
 import { CreateDialog } from './components/extractors/CreateDialog';

@@ -5,7 +5,7 @@ import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 import uniqueID from '../../shared/uniqueID.js';
 import { Translate } from '../../I18N/index.js';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientTemplateSchema } from '../../istore.js';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { sidepanelAtom } from './sidepanelAtom';

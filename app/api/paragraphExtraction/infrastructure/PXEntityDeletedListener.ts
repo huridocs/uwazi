@@ -1,8 +1,8 @@
-import { EventsBus } from 'api/eventsbus';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
-import { featureFlaggedHandler } from 'api/common.v2/utils/featureFlaggedHandler';
+import { EventsBus } from '../eventsbus.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { EntityDeletedEvent } from '../entities/events/EntityDeletedEvent.js';
+import { featureFlaggedHandler } from '../common.v2/utils/featureFlaggedHandler.js';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 

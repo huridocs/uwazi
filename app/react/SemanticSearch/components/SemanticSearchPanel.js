@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
-import { socket } from 'app/socket';
+import { socket } from '../../socket.js';
 import { Icon } from 'UI';
-import ShowIf from 'app/App/ShowIf';
+import ShowIf from '../../App/ShowIf.js';
 
-import SidePanel from 'app/Layout/SidePanel';
+import SidePanel from '../../Layout/SidePanel.js';
 import {
   fetchSearches,
   submitNewSearch,

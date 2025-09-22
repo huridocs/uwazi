@@ -1,7 +1,7 @@
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TaskManager } from '../services/tasksmanager/TaskManager.js';
 
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { QueueOptions } from 'api/queue.v2/infrastructure/NamespacedDispatcher';
+import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
+import { QueueOptions } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
 import { PXExtractionKey } from '../domain/PXExtractionKey';
 import { PXCreateParagraphsJob } from './PXCreateParagraphsJob';
 

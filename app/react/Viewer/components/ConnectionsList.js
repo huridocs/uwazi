@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t, Translate } from '../../I18N/index.js';
 import { Icon } from 'UI';
-import { Warning } from 'app/Layout';
-import { closePanel, deactivateReference } from 'app/Viewer/actions/uiActions';
+import { Warning } from '../../Layout.js';
+import { closePanel, deactivateReference } from '../../Viewer/actions/uiActions.js';
 import Connection from './Connection';
 import { sortTextSelections } from '../utils/sortTextSelections';
 

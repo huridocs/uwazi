@@ -1,11 +1,11 @@
-import { files, storage, testingUploadPaths } from 'api/files';
-import { Redis } from 'api/infrastructure/Redis';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import * as setupSockets from 'api/socketio/setupSockets';
-import { tenants } from 'api/tenants';
-import * as handleError from 'api/utils/handleError.js';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { files, storage, testingUploadPaths } from '../files.js';
+import { Redis } from '../infrastructure/Redis.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import * as setupSockets from '../socketio/setupSockets.js';
+import { tenants } from '../tenants.js';
+import * as handleError from '../utils/handleError.js.js';
+import testingDB from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { ObjectId } from 'mongodb';

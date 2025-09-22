@@ -5,7 +5,7 @@ import { ObjectIdSchema, MetadataSchema } from '../../shared/types/commonTypes.j
 
 import { FileType } from '../../shared/types/fileType.js';
 
-import { PermissionSchema } from 'shared/types/permissionType';
+import { PermissionSchema } from './types/permissionType.js';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;

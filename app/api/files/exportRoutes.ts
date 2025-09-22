@@ -6,12 +6,12 @@ import fs from 'fs/promises';
 import QueryString from 'qs';
 
 import { legacyLogger } from '../log/index.js';
-import { search } from 'api/search';
+import { search } from '../search.js';
 import { CSVExporter } from '../csv/index.js';
 import settings from '../settings/index.js';
-import captchaMiddleware from 'api/auth/captchaMiddleware';
-import { csvExportParamsSchema } from 'shared/types/searchParameterSchema';
-import { CsvExportBody } from 'shared/types/searchParameterType';
+import captchaMiddleware from '../auth/captchaMiddleware.js';
+import { csvExportParamsSchema } from '../../shared/types/searchParameterSchema.js';
+import { CsvExportBody } from '../../shared/types/searchParameterType.js';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
 

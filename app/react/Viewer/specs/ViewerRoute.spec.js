@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
-import { RequestParams } from 'app/utils/RequestParams';
-import { FetchResponseError } from 'shared/JSONRequest';
+import { RequestParams } from '../../utils/RequestParams.js';
+import { FetchResponseError } from '../../shared/JSONRequest.js';
 import EntitiesAPI from '../../Entities/EntitiesAPI';
 import EntityView from '../EntityView';
 import { PDFViewComponent } from '../PDFView';

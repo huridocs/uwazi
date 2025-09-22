@@ -1,11 +1,11 @@
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
+import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
+import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+import { MissingEntityError } from '../entities.v2/errors/entityErrors.js';
+import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+import { RelationshipTypesDataSource } from '../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { MissingRelationshipTypeError } from '../relationshiptypes.v2/errors/relationshipTypeErrors.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import {
   EntityPointer,

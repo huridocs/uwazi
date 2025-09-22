@@ -1,7 +1,7 @@
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
 import { LanguagesListSchema } from '../../shared/types/commonTypes.js';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
-import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
 import { EntityStatus } from '../domain/PXEntityStatusModel';

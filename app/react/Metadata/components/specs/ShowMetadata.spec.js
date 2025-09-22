@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedData';
+import { caseTemplate, matterTemplate } from '../../Timeline/utils/timelineFixedData.js';
 import { shallow } from 'enzyme';
 
-import { FormatMetadata } from 'app/Metadata/containers/FormatMetadata';
+import { FormatMetadata } from '../../Metadata/containers/FormatMetadata.js';
 import { ShowMetadata } from '../ShowMetadata';
 
 describe('Metadata', () => {

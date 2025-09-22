@@ -5,7 +5,7 @@ import { InputField } from 'V2/Components/Forms';
 import { save as saveThesauri } from 'V2/api/thesauri';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
-import { sanitizeThesaurusName } from 'shared/sanitizationUtils';
+import { sanitizeThesaurusName } from '../../shared/sanitizationUtils.js';
 
 interface AddThesaurusModalProps {
   onClose: () => void;

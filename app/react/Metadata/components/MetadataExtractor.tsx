@@ -2,10 +2,10 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { ModelAction } from 'react-redux-form';
-import { Icon } from 'app/UI';
-import { IStore } from 'app/istore';
+import { Icon } from '../../UI.js';
+import { IStore } from '../../istore.js';
 import { t, Translate } from '../../I18N/index.js';
-import { notificationActions } from 'app/Notifications';
+import { notificationActions } from '../../Notifications.js';
 import { SelectionRectanglesSchema } from '../../shared/types/commonTypes.js';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
 

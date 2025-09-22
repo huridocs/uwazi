@@ -2,15 +2,15 @@
  * @jest-environment jsdom
  */
 
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
-import { TemplateSchema } from 'shared/types/templateType';
+import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
   handleEntitySave,
   getFormValue,
 } from '../sidepanelFunctions';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { EntitySuggestionType } from '../../shared/types/suggestionType.js';
 
 jest.mock('V2/api/entities', () => ({
   formatter: {

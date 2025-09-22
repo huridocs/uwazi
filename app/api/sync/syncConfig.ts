@@ -1,9 +1,9 @@
-import { SyncConfig } from 'api/sync/syncWorker';
-import templatesModel from 'api/templates/templatesModel';
+import { SyncConfig } from '../sync/syncWorker.js';
+import templatesModel from '../templates/templatesModel.js';
 import { model as updateLog, UpdateLog } from '../updatelogs/index.js';
-import { explicitOrdering } from 'shared/data_utils/arrayUtils';
+import { explicitOrdering } from '../../shared/data_utils/arrayUtils.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
+import { syncedPromiseLoop } from '../../shared/data_utils/promiseUtils.js';
 import { ProcessNamespaces } from './processNamespaces';
 import syncsModel from './syncsModel';
 

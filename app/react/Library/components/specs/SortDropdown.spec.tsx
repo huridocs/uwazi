@@ -4,7 +4,7 @@
 import React from 'react';
 import { fromJS } from 'immutable';
 import { RenderResult, screen } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { SortDropdown } from '../SortDropdown';
 
 describe('Sort dropdown', () => {

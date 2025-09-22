@@ -4,9 +4,9 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, act } from '@testing-library/react';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientFile } from 'app/istore';
+import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+import { ClientFile } from '../../istore.js';
 import { DeleteSelectionButton } from '../DeleteSelectionButton';
 import * as actions from '../../actions/metadataExtractionActions';
 

@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import moment from 'moment-timezone';
 import Immutable from 'immutable';
-import { advancedSort } from 'app/utils/advancedSort';
+import { advancedSort } from '../../utils/advancedSort.js';
 import { store } from '../../store.js';
-import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
+import nestedProperties from '../../Templates/components/ViolatedArticlesNestedProperties.js';
 
 const prepareRelatedEntity = (options, propValue, templates, property) => {
   const relation =

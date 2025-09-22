@@ -1,4 +1,4 @@
-import { propertyTypes } from 'shared/propertyTypes';
+import { propertyTypes } from './propertyTypes.js';
 import { TemplateSchema } from './types/templateType';
 
 export function convertThesaurusName(thesaurusName: string) {

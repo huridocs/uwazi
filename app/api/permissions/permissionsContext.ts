@@ -1,5 +1,5 @@
-import { UserSchema } from 'shared/types/userType';
-import { appContext } from 'api/utils/AppContext';
+import { UserSchema } from '../../shared/types/userType.js';
+import { appContext } from '../utils/AppContext.js';
 import { DataType } from '../odm/index.js';
 
 export const permissionsContext = {

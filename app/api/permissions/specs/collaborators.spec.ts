@@ -1,7 +1,7 @@
-import { collaborators } from 'api/permissions/collaborators';
-import { fixtures, groupA, groupB, userA, userB } from 'api/permissions/specs/fixtures';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { PermissionType } from 'shared/types/permissionSchema';
+import { collaborators } from '../permissions/collaborators.js';
+import { fixtures, groupA, groupB, userA, userB } from '../permissions/specs/fixtures.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { PermissionType } from '../../shared/types/permissionSchema.js';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 

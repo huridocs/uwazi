@@ -1,6 +1,6 @@
 import { fromJS as Immutable } from 'immutable';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import * as uploadTypes from 'app/Uploads/actions/actionTypes';
+import * as attachmentsTypes from '../../Attachments/actions/actionTypes.js';
+import * as uploadTypes from '../../Uploads/actions/actionTypes.js';
 
 const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
 const getSharedId = (state, setInArray) => state.getIn(setInArray.concat(['sharedId']));

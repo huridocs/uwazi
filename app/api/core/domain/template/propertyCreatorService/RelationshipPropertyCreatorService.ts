@@ -1,9 +1,9 @@
-import { Context, Property } from 'api/templates.v2/model/Property';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { Context, Property } from '../templates.v2/model/Property.js';
+import { RelationshipTypesDataSource } from '../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import {
   V1RelationshipProperty,
   V1RelationshipPropertyProps,
-} from 'api/templates.v2/model/V1RelationshipProperty';
+} from '../templates.v2/model/V1RelationshipProperty.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import {
   RelationshipTargetPropertyNotFoundError,

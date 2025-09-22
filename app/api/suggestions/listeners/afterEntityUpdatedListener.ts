@@ -1,7 +1,7 @@
-import { EventsBus } from 'api/eventsbus';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { Logger } from 'api/log.v2/contracts/Logger';
-import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
+import { EventsBus } from '../eventsbus.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { Logger } from '../log.v2/contracts/Logger.js';
+import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
 import { isEqual } from 'lodash';
 import { ObjectId } from 'mongodb';
 import { UpdateSuggestionsAfterEntityUpdate } from '../useCases/updateSuggestionsAfterEntityUpdate';

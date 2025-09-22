@@ -2,7 +2,7 @@
 import React from 'react';
 import { kebabCase } from 'lodash';
 import { CellContext } from '@tanstack/react-table';
-import { Button, Pill } from 'app/V2/Components/UI';
+import { Button, Pill } from '../../V2/Components/UI.js';
 import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
 import { TablePage } from '../PagesList';
 

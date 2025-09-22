@@ -4,7 +4,7 @@ import * as redux from 'redux';
 import { fromJS } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import { FormGroup } from 'app/Forms';
+import { FormGroup } from '../../Forms.js';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms';
 import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields';

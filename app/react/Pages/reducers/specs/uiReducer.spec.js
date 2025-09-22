@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
 
-import * as actions from 'app/Pages/actions/actionTypes';
+import * as actions from '../../Pages/actions/actionTypes.js';
 import reducer from '../uiReducer';
 
 describe('uiReducer', () => {

@@ -1,8 +1,8 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Property } from 'api/templates.v2/model/Property';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { partialImplementation } from '../common.v2/testing/partialImplementation.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { Property } from '../templates.v2/model/Property.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
 import { propertyMappings } from 'database/elastic_mapping/mappings';
 import { RelationshipPropertyMappingFactory } from '../RelationshipPropertyMappingFactory';
 

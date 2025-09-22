@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 import { connect, ConnectedProps } from 'react-redux';
 
-import { TableRow } from 'app/Library/components/TableRow';
-import { IStore, TableViewColumn } from 'app/istore';
+import { TableRow } from '../../Library/components/TableRow.js';
+import { IStore, TableViewColumn } from '../../istore.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 
 interface TableRowsProps {

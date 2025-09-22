@@ -1,8 +1,8 @@
-import api from 'app/RelationTypes/RelationTypesAPI';
+import api from '../../RelationTypes/RelationTypesAPI.js';
 import { actions as formActions } from 'react-redux-form';
-import referencesAPI from 'app/Viewer/referencesAPI';
+import referencesAPI from '../../Viewer/referencesAPI.js';
 import { actions } from '../../BasicReducer/index.js';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 
 export function editRelationType(relationType) {
   return formActions.load('template.data', relationType);

@@ -4,16 +4,16 @@ import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import { Map, Markers } from 'app/Map';
-import { TemplateLabel } from 'app/Layout';
+import { Map, Markers } from '../../Map.js';
+import { TemplateLabel } from '../../Layout.js';
 import {
   getAndSelectDocument,
   selectDocuments,
   unselectAllDocuments,
-} from 'app/Library/actions/libraryActions';
-import { wrapDispatch } from 'app/Multireducer';
+} from '../../Library/actions/libraryActions.js';
+import { wrapDispatch } from '../../Multireducer.js';
 
-import { Loader } from 'app/components/Elements/Loader';
+import { Loader } from '../../components/Elements/Loader.js';
 import markdownDatasets from '../markdownDatasets';
 
 const renderInfo = marker => (

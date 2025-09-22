@@ -1,12 +1,12 @@
 import { ClientSession } from 'mongodb';
 import { Schema } from 'mongoose';
 
-import entities from 'api/entities';
-import { instanceModel } from 'api/odm/model';
-import { dbSessionContext } from 'api/odm/sessionsContext';
-import { EntitySchema } from 'shared/types/entityType';
+import entities from '../entities.js';
+import { instanceModel } from '../odm/model.js';
+import { dbSessionContext } from '../odm/sessionsContext.js';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
-import { storage } from 'api/files';
+import { storage } from '../files.js';
 import { Readable } from 'stream';
 import { appContext } from '../AppContext';
 import { elasticTesting } from '../elastic_testing';

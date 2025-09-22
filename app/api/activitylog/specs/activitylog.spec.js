@@ -1,5 +1,5 @@
-import db from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import db from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import activitylog from '../activitylog';
 import * as activityLogParser from '../activitylogParser';
 import fixtures from './fixtures';

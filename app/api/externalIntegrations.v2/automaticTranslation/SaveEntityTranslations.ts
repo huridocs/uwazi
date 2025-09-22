@@ -1,7 +1,7 @@
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Logger } from 'api/log.v2/contracts/Logger';
-import { Entity } from 'api/entities.v2/model/Entity';
+import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { Logger } from '../log.v2/contracts/Logger.js';
+import { Entity } from '../entities.v2/model/Entity.js';
 import { TranslationResult } from './types/TranslationResult';
 import { Validator } from './infrastructure/Validator';
 

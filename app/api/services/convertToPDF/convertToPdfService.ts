@@ -1,5 +1,5 @@
-import { storage } from 'api/files';
-import { tenants } from 'api/tenants';
+import { storage } from '../files.js';
+import { tenants } from '../tenants.js';
 import JSONRequest from '../../shared/JSONRequest.js';
 import { FileType } from '../../shared/types/fileType.js';
 import { Readable } from 'stream';

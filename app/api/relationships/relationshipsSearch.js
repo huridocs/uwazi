@@ -1,4 +1,4 @@
-import entities from 'api/entities/entities';
+import entities from '../entities/entities.js';
 
 import { ObjectId } from 'mongodb';
 import { search } from '../search';

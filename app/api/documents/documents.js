@@ -1,5 +1,5 @@
 import { createError } from '../utils/index.js';
-import { files } from 'api/files';
+import { files } from '../files.js';
 import entities from '../entities';
 
 const documents = {

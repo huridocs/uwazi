@@ -1,9 +1,9 @@
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
-import { dbSessionContext } from 'api/odm/sessionsContext';
-import { IdGenerator } from '../contracts/IdGenerator';
-import { getClient } from './getConnectionForCurrentTenant';
-import { MongoIdHandler } from './MongoIdGenerator';
-import { MongoTransactionManager } from './MongoTransactionManager';
+import { DefaultLogger } from '../../log.v2/infrastructure/StandardLogger.js';
+import { dbSessionContext } from '../../odm/sessionsContext.js';
+import { IdGenerator } from '../contracts/IdGenerator.js';
+import { getClient } from './getConnectionForCurrentTenant.js';
+import { MongoIdHandler } from './MongoIdGenerator.js';
+import { MongoTransactionManager } from './MongoTransactionManager.js';
 
 const DefaultTransactionManager = () => {
   const v1withTransactionStoredManager = dbSessionContext.getTransactionManager();

@@ -1,12 +1,12 @@
 /*eslint-disable max-lines*/
-import entities from 'api/entities';
-import { search } from 'api/search';
-import { settingsModel } from 'api/settings/settingsModel';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import entities from '../entities.js';
+import { search } from '../search.js';
+import { settingsModel } from '../settings/settingsModel.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import express from 'express';
 import request from 'supertest';
 
-import mailer from 'api/utils/mailer';
+import mailer from '../utils/mailer.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { legacyLogger } from '../../log';

@@ -1,9 +1,9 @@
 import qs from 'qs';
 import { actions } from '../../BasicReducer/index.js';
-import { notificationActions } from 'app/Notifications';
-import api from 'app/utils/api';
+import { notificationActions } from '../../Notifications.js';
+import api from '../../utils/api.js';
 import { debounce } from '../../utils/index.js';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { t } from '../../I18N/index.js';
 
 import * as types from './actionTypes';

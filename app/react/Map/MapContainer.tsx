@@ -2,10 +2,10 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
-import { IStore } from 'app/istore';
-import { LMap } from 'app/Map/index';
-import { DataMarker, MarkerInput } from 'app/Map/MapHelper';
-import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
+import { IStore } from '../../istore.js';
+import { LMap } from '../../Map/index.js';
+import { DataMarker, MarkerInput } from '../../Map/MapHelper.js';
+import { ErrorBoundary } from '../../V2/Components/ErrorHandling.js';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 

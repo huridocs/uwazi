@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { I18NLink } from '../../I18N/index.js';
-import SearchDescription from 'app/Library/components/SearchDescription';
-import { withContext } from 'app/componentWrappers';
+import SearchDescription from '../../Library/components/SearchDescription.js';
+import { withContext } from '../../componentWrappers.js';
 import { Icon, ProgressBar } from 'UI';
 
 import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';

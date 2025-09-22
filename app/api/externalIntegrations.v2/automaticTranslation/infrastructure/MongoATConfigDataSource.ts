@@ -1,9 +1,9 @@
-import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Property } from 'api/templates.v2/model/Property';
+import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { CommonProperty } from '../templates.v2/model/CommonProperty.js';
+import { Property } from '../templates.v2/model/Property.js';
 import { Db } from 'mongodb';
 import { Settings as SettingsType } from '../../shared/types/settingsType.js';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource';

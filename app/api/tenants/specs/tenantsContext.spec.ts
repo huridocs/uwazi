@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
-import testingDB from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { config } from 'api/config';
+import testingDB from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { config } from '../config.js';
 import { tenants } from '../tenantContext';
 import { tenantsModel } from '../tenantsModel';
 

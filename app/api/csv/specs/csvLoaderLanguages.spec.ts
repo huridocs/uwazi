@@ -1,14 +1,14 @@
-import entities from 'api/entities';
-import { files } from 'api/files/files';
-import * as filesystem from 'api/files/filesystem';
-import { uploadsPath } from 'api/files/filesystem';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import entities from '../entities.js';
+import { files } from '../files/files.js';
+import * as filesystem from '../files/filesystem.js';
+import { uploadsPath } from '../files/filesystem.js';
+import { search } from '../search.js';
+import settings from '../settings.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import path from 'path';
-import { EntitySchema } from 'shared/types/entityType';
+import { EntitySchema } from '../../shared/types/entityType.js';
 
-import translations from 'api/i18n';
+import translations from '../i18n.js';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';
 import { createTestingZip } from './helpers';

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSearchParams } from 'react-router';
 import { Translate } from '../../I18N/index.js';
-import { CurrentLocationLink } from 'app/Layout';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { CurrentLocationLink } from '../../Layout.js';
+import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 
 const disableButton = (page, pageToDisable) => ({
   className: page === pageToDisable ? 'btn disabled' : 'btn',

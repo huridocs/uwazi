@@ -1,5 +1,5 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory';
 import { PXExtractParagraphsByEntityStatus } from '../application/PXExtractParagraphsByEntityStatus';

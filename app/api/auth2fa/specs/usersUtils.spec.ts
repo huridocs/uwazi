@@ -1,12 +1,12 @@
 /** @format */
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 
 import * as otplib from 'otplib';
 
-import db from 'api/utils/testing_db';
-import usersModel from 'api/users/usersModel';
-import settingsModel from 'api/settings/settings';
-import { createError } from 'api/utils';
+import db from '../utils/testing_db.js';
+import usersModel from '../users/usersModel.js';
+import settingsModel from '../settings/settings.js';
+import { createError } from '../utils.js';
 
 import * as usersUtils from '../usersUtils';
 import fixtures, { userId, secretedUserId } from './fixtures';

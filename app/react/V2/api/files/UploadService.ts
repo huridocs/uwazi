@@ -1,5 +1,5 @@
 import superagent, { MultipartValueSingle, SuperAgentRequest } from 'superagent';
-import { APIURL } from 'app/config';
+import { APIURL } from '../../config.js';
 import { FileType } from '../../shared/types/fileType.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 

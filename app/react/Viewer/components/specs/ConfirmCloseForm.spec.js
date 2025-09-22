@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import Modal from 'app/Layout/Modal';
+import Modal from '../../Layout/Modal.js';
 
 import { ConfirmCloseForm } from '../ConfirmCloseForm';
 

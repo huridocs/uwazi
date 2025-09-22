@@ -2,15 +2,15 @@ import { performance } from 'perf_hooks';
 
 import { Application, NextFunction, Request, Response } from 'express';
 
-import { needsAuthorization } from 'api/auth';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { needsAuthorization } from '../auth.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
 import { parseQuery } from '../utils/index.js';
-import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
-import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
-import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
-import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
-import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { GetMigrationHubRecordsResponse } from '../../shared/types/api.v2/migrationHubRecords.get.js';
+import { MigrationResponse } from '../../shared/types/api.v2/relationships.migrate.js';
+import { TestOneHubResponse } from '../../shared/types/api.v2/relationships.testOneHub.js';
+import { CreateRelationshipMigRationFieldResponse } from '../../shared/types/api.v2/relationshipMigrationField.create.js';
+import { GetRelationshipMigrationFieldsResponse } from '../../shared/types/api.v2/relationshipMigrationField.get.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,

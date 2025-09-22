@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { Property } from 'api/templates.v2/model/Property';
-import { Template } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { Property } from '../templates.v2/model/Property.js';
+import { Template } from '../templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
 import { AbstractSelectProperty } from './AbstractSelectProperty';

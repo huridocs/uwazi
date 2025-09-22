@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DBFixture } from 'api/utils/testing_db';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { DBFixture } from '../utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { ModelStatus } from 'shared/types/IXModelSchema';
-import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
-import { ModelNotReadyError } from 'api/services/informationextraction/ixextractors';
-import { ExternalDummyService } from 'api/services/tasksmanager/specs/ExternalDummyService';
-import { testingTenants } from 'api/utils/testingTenants';
-import ixmodels from 'api/services/informationextraction/ixmodels';
+import { ModelStatus } from '../../shared/types/IXModelSchema.js';
+import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
+import { ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
+import { ExternalDummyService } from '../services/tasksmanager/specs/ExternalDummyService.js';
+import { testingTenants } from '../utils/testingTenants.js';
+import ixmodels from '../services/informationextraction/ixmodels.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds';
 
 // Mock only the TaskManager to make startTask calls work without real Redis

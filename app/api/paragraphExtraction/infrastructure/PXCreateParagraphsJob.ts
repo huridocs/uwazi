@@ -1,9 +1,9 @@
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/queue.v2/application/contracts/UserAwareDispatchable';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
-import { HeartbeatCallback, JobInfo } from 'api/queue.v2/application/contracts/Dispatchable';
+} from '../queue.v2/application/contracts/UserAwareDispatchable.js';
+import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { HeartbeatCallback, JobInfo } from '../queue.v2/application/contracts/Dispatchable.js';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource';

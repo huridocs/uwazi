@@ -1,4 +1,4 @@
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
 import {
   RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,

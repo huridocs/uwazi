@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { actions } from 'app/Metadata';
-import { MenuButtons } from 'app/ContextMenu';
-import { NeedAuthorization } from 'app/Auth';
+import { actions } from '../../Metadata.js';
+import { MenuButtons } from '../../ContextMenu.js';
+import { NeedAuthorization } from '../../Auth.js';
 import { Icon } from 'UI';
 
 export class MetadataPanelMenu extends Component {

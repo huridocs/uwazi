@@ -9,12 +9,12 @@ import path from 'path';
 
 import { config } from '../config.js';
 import { legacyLogger } from '../log/index.js';
-import { tenants } from 'api/tenants';
+import { tenants } from '../tenants/index.js';
 import { FileType } from '../../shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
-import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
 import { FileNotFound } from './FileNotFound';
 import {
   activityLogPath,

@@ -6,8 +6,8 @@ import Dropzone from 'react-dropzone';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { Translate } from '../../I18N/index.js';
-import { Icon } from 'app/UI';
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import { Icon } from '../../UI.js';
+import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
 
 interface AttachmentsModalProps {
   isOpen: boolean;

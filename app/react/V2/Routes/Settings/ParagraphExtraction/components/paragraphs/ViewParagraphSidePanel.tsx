@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Translate } from '../../I18N/index.js';
-import { Button } from 'app/V2/Components/UI';
-import { Sidepanel } from 'app/V2/Components/UI/Sidepanel';
-import { TablePXEntityParagraphRow } from 'app/V2/shared/ParagraphExtractionTypes';
+import { Button } from '../../V2/Components/UI.js';
+import { Sidepanel } from '../../V2/Components/UI/Sidepanel.js';
+import { TablePXEntityParagraphRow } from '../../shared/V2/shared/ParagraphExtractionTypes.js';
 import { ViewParagraph } from './ViewParagraph';
 
 type ViewParagraphSidePanelProps = {

@@ -2,8 +2,8 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from 'api/queue.v2/application/contracts/Dispatchable';
-import { tenants } from 'api/tenants';
+} from '../queue.v2/application/contracts/Dispatchable.js';
+import { tenants } from '../tenants.js';
 import { BatchRange } from '../batchProcessing';
 import { createBlankStateSuggestionsBatch } from '../blankSuggestions';
 

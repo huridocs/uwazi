@@ -1,7 +1,7 @@
 import ID from '../../shared/uniqueID.js';
-import { PageType } from 'shared/types/pageType';
-import { validatePage } from 'shared/types/pageSchema';
-import date from 'api/utils/date.js';
+import { PageType } from '../../shared/types/pageType.js';
+import { validatePage } from '../../shared/types/pageSchema.js';
+import date from '../utils/date.js.js';
 import templates from '../templates/index.js';
 import { createError } from '../utils/index.js';
 import { UwaziFilterQuery } from '../odm/index.js';

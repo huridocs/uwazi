@@ -4,8 +4,8 @@ import { risonDecodeOrIgnore } from '../../utils/index.js';
 import Big from 'big.js';
 
 import searchApi from '../../Search/SearchAPI.js';
-import api from 'app/utils/api';
-import entitiesApi from 'app/Entities/EntitiesAPI';
+import api from '../../utils/api.js';
+import entitiesApi from '../../Entities/EntitiesAPI.js';
 
 const conformUrl = ({ url = '', geolocation = false }) => {
   const { q } = qs.parse(url.substring(url.indexOf('?')), { ignoreQueryPrefix: true });

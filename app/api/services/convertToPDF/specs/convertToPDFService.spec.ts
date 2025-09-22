@@ -1,12 +1,12 @@
 import 'isomorphic-fetch';
 import backend from 'fetch-mock';
-import { attachmentsPath, setupTestUploadedPaths } from 'api/files';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { attachmentsPath, setupTestUploadedPaths } from '../files.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
-import { tenants } from 'api/tenants';
+import { tenants } from '../tenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, writeFile } from 'fs/promises';
-import JSONRequest from 'shared/JSONRequest';
+import JSONRequest from '../../shared/JSONRequest.js';
 import { Readable } from 'stream';
 import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';
 

@@ -1,12 +1,12 @@
 /* eslint-disable max-statements */
-import { models } from 'api/odm';
-import { search } from 'api/search';
-import { storage } from 'api/files/storage';
+import { models } from '../odm.js';
+import { search } from '../search.js';
+import { storage } from '../files/storage.js';
 import 'api/utils/jasmineHelpers';
 import { ObjectId } from 'mongodb';
 
-import * as index from 'api/search/entitiesIndex';
-import { LanguageUtils } from 'shared/language';
+import * as index from '../search/entitiesIndex.js';
+import { LanguageUtils } from '../../shared/language.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes';
 

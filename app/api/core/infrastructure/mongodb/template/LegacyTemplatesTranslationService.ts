@@ -1,9 +1,9 @@
-import { TranslationService } from 'api/core/domain/template/TranslationService';
-import translations from '../i18n/translations.js';
-import { Template } from 'api/templates.v2/model/Template';
-import { ContextType } from '../../shared/translationSchema.js';
-import { TemplateSchema } from 'shared/types/templateType';
-import { TemplateMapper } from './Mapper';
+import { TranslationService } from '../../../domain/template/TranslationService.js';
+import translations from '../../../../i18n/translations.js';
+import { Template } from '../../../templates.v2/model/Template.js';
+import { ContextType } from '../../../../../shared/translationSchema.js';
+import { TemplateSchema } from '../../../../../shared/types/templateType.js';
+import { TemplateMapper } from './Mapper.js';
 
 class LegacyTemplatesTranslationService implements TranslationService {
   async createTemplateTranslation(template: Template): Promise<void> {

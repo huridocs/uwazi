@@ -5,10 +5,10 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router';
 
 import { Translate } from '../../I18N/index.js';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Card } from 'app/V2/Components/UI';
-import { getStats } from 'app/V2/api/settings';
-import { formatBytes } from 'app/V2/shared/formatHelpers';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+import { Card } from '../../V2/Components/UI.js';
+import { getStats } from '../../api/V2/api/settings.js';
+import { formatBytes } from '../../shared/V2/shared/formatHelpers.js';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };

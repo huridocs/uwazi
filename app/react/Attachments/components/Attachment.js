@@ -4,15 +4,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { filesize } from 'filesize';
 import { Icon } from 'UI';
-import { withContext } from 'app/componentWrappers';
-import { NeedAuthorization } from 'app/Auth';
-import ShowIf from 'app/App/ShowIf';
+import { withContext } from '../../componentWrappers.js';
+import { NeedAuthorization } from '../../Auth.js';
+import ShowIf from '../../App/ShowIf.js';
 import { Translate, t } from '../../I18N/index.js';
-import AttachmentForm from 'app/Attachments/components/AttachmentForm';
-import { wrapDispatch } from 'app/Multireducer';
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import AttachmentForm from '../../Attachments/components/AttachmentForm.js';
+import { wrapDispatch } from '../../Multireducer.js';
+import { notify } from '../../Notifications/actions/notificationsActions.js';
 import { store } from '../../store.js';
-import { getFileExtension } from 'app/utils/getFileExtension';
+import { getFileExtension } from '../../utils/getFileExtension.js';
 
 import {
   deleteAttachment,

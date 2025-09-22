@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '../../Multireducer.js';
 import { actions as actionCreators } from '../../BasicReducer/index.js';
 
 import {
@@ -10,7 +10,7 @@ import {
   unselectDocument,
   unselectAllDocuments,
   selectDocuments,
-} from 'app/Library/actions/libraryActions';
+} from '../../Library/actions/libraryActions.js';
 import DocumentsList from '../../Layout/DocumentsList';
 
 function clickOnDocument(e, doc, active, multipleSelection = false) {

@@ -1,8 +1,8 @@
-import translations from 'api/i18n';
-import * as entitiesIndex from 'api/search/entitiesIndex';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingDB } from 'api/utils/testing_db';
+import translations from '../i18n.js';
+import * as entitiesIndex from '../search/entitiesIndex.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { testingDB } from '../utils/testing_db.js';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
 import templateRoutes from '../routes';

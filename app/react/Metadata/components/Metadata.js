@@ -6,7 +6,7 @@ import { flattenDeep } from 'lodash';
 import { t } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import MarkdownViewer from '../../Markdown/index.js';
-import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
+import { GroupedGeolocationViewer } from '../../Metadata/components/GroupedGeolocationViewer.js';
 import { MediaPlayer } from 'V2/Components/UI';
 import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';

@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientTemplateSchema } from '../../istore.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { IImmutable } from 'shared/types/Immutable';
+import { IImmutable } from '../../shared/types/Immutable.js';
 
 const DocumentWithRelationsTemplate = Immutable.fromJS({
   _id: '629e567fd4242c571392f548',

@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '../../Multireducer.js';
 
-import { saveEntity } from 'app/Library/actions/libraryActions';
-import { actions, MetadataForm } from 'app/Metadata';
+import { saveEntity } from '../../Library/actions/libraryActions.js';
+import { actions, MetadataForm } from '../../Metadata.js';
 
 function mapStateToProps(state, props) {
   const { templates } = state;

@@ -1,4 +1,4 @@
-import { ExtractParagraphInput } from 'api/paragraphExtraction/domain/PXExtractionService';
+import { ExtractParagraphInput } from '../paragraphExtraction/domain/PXExtractionService.js';
 
 import { ExtractionDTO } from './types';
 

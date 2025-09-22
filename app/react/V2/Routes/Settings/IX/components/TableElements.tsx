@@ -10,7 +10,7 @@ import { Button, Pill } from 'V2/Components/UI';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { ClientTemplateSchema } from 'V2/shared/types';
 import { propertyIcons } from 'V2/Components/UI/Icons';
-import { ClientPropertySchema } from 'app/istore';
+import { ClientPropertySchema } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
 import {
   TableExtractor,

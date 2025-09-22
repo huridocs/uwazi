@@ -1,30 +1,30 @@
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
-import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
-import { applicationEventsBus } from 'api/eventsbus';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Template } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
-import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
-import { tenants } from 'api/tenants';
+import { IdGenerator } from '../../common.v2/contracts/IdGenerator.js';
+import { AbstractUseCase } from '../../common.v2/contracts/UseCase.js';
+import { ValidationError } from '../../common.v2/validation/ValidationError.js';
+import { MultiLanguageEntityDataSource } from '../../entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { applicationEventsBus } from '../../eventsbus/index.js';
+import { permissionsContext } from '../../permissions/permissionsContext.js';
+import { JobsDispatcher } from '../../queue.v2/application/contracts/JobsDispatcher.js';
+import { RelationshipTypesDataSource } from '../../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { SettingsDataSource } from '../../settings.v2/contracts/SettingsDataSource.js';
+import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
+import { Template } from '../../templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '../../templates.v2/model/V1RelationshipProperty.js';
+import { TemplateUpdatedEvent } from '../../templates/events/TemplateUpdatedEvent.js';
+import { tenants } from '../../tenants/index.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
-import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
-import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
-import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService';
+import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
+import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService.js';
+import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy.js';
+import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService.js';
 import {
   SelectPropertyCreatorService,
   ThesauriDataSource,
-} from '../domain/template/propertyCreatorService/SelectPropertyCreatorService';
-import { TranslationService } from '../domain/template/TranslationService';
-import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
-import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
-import { UpdateTemplateDTO } from './TemplateDTOs';
+} from '../domain/template/propertyCreatorService/SelectPropertyCreatorService.js';
+import { TranslationService } from '../domain/template/TranslationService.js';
+import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
+import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper.js';
+import { UpdateTemplateDTO } from './TemplateDTOs.js';
 
 type Output = Template;
 

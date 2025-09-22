@@ -1,5 +1,5 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity';
 
 export interface MultiLanguageEntityDataSource {

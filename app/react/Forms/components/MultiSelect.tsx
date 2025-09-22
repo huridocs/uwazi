@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
-import ShowIf from 'app/App/ShowIf';
-import { filterOptions } from 'shared/optionsUtils';
+import ShowIf from '../../App/ShowIf.js';
+import { filterOptions } from '../../shared/optionsUtils.js';
 import { t, Translate } from '../../I18N/index.js';
-import { TriStateSelectValue } from 'app/istore';
-import { Icon as CustomIcon } from 'app/Layout/Icon';
+import { TriStateSelectValue } from '../../istore.js';
+import { Icon as CustomIcon } from '../../Layout/Icon.js';
 import React, { Component, createRef, RefObject } from 'react';
 import { Icon } from 'UI';
 

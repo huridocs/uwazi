@@ -1,8 +1,8 @@
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
-import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
+import { UseCase } from '../common.v2/contracts/UseCase.js';
+import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 
 import {
   GetExtractorStatusesInput,

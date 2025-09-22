@@ -1,12 +1,12 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { PXCreateParagraphs } from 'api/paragraphExtraction/application/PXCreateParagraphs';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { PXExtractionKey } from 'api/paragraphExtraction/domain/PXExtractionKey';
-import { PXExtractionService } from 'api/paragraphExtraction/domain/PXExtractionService';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { PXCreateParagraphs } from '../paragraphExtraction/application/PXCreateParagraphs.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
+import { PXExtractionService } from '../paragraphExtraction/domain/PXExtractionService.js';
+import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 import {
   mongoPXEntitiesStatusCollection,

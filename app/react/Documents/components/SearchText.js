@@ -2,16 +2,16 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { withRouter } from 'app/componentWrappers';
+import { withRouter } from '../../componentWrappers.js';
 import { t } from '../../I18N/index.js';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
-import { searchSnippets } from 'app/Library/actions/libraryActions';
-import { selectSnippet } from 'app/Viewer/actions/uiActions';
+import { searchSnippets } from '../../Library/actions/libraryActions.js';
+import { selectSnippet } from '../../Viewer/actions/uiActions.js';
 import { Icon } from 'UI';
-import ModalTips from 'app/App/ModalTips';
+import ModalTips from '../../App/ModalTips.js';
 import { toUrlParams } from '../../shared/JSONRequest.js';
-import { SearchTipsContent } from 'app/App/SearchTipsContent';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { SearchTipsContent } from '../../App/SearchTipsContent.js';
+import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 import SnippetList from './SnippetList';
 
 class SearchText extends Component {

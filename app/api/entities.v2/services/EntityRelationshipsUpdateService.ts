@@ -1,8 +1,8 @@
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { Template } from 'api/templates.v2/model/Template';
-import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { RelationshipsDataSource } from 'api/relationships.v2/contracts/RelationshipsDataSource';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
+import { Template } from '../templates.v2/model/Template.js';
+import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
+import { RelationshipsDataSource } from '../relationships.v2/contracts/RelationshipsDataSource.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
 import { Entity, EntityMetadata } from '../model/Entity';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 

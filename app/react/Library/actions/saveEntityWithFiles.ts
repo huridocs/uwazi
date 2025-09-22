@@ -1,12 +1,12 @@
 import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
 import { groupBy } from 'lodash';
-import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from '../../istore.js';
+import * as attachmentsTypes from '../../Attachments/actions/actionTypes.js';
+import * as uploadsActionTypes from '../../Uploads/actions/actionTypes.js';
 import { ensure } from '../../shared/tsUtils.js';
-import { constructFile } from 'shared/fileUploadUtils';
-import loadingBar from 'app/App/LoadingProgressBar';
+import { constructFile } from '../../shared/fileUploadUtils.js';
+import loadingBar from '../../App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {

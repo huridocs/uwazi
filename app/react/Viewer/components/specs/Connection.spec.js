@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { Connection } from 'app/Viewer/components/Connection';
-import { Item } from 'app/Layout';
+import { Connection } from '../../Viewer/components/Connection.js';
+import { Item } from '../../Layout.js';
 
 describe('Connection', () => {
   let component;

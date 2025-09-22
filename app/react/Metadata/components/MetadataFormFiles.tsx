@@ -2,10 +2,10 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Field, actions } from 'react-redux-form';
-import { ClientFile } from 'app/istore';
-import { Icon } from 'app/UI';
+import { ClientFile } from '../../istore.js';
+import { Icon } from '../../UI.js';
 import { Translate } from '../../I18N/index.js';
-import { getFileExtension } from 'app/utils/getFileExtension';
+import { getFileExtension } from '../../utils/getFileExtension.js';
 import uniqueID from '../../shared/uniqueID.js';
 
 const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {

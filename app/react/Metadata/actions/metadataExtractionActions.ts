@@ -1,12 +1,12 @@
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
-import { IImmutable } from 'shared/types/Immutable';
-import entitiesAPI from 'app/Entities/EntitiesAPI';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import entitiesAPI from '../../Entities/EntitiesAPI.js';
 import { actions } from '../../BasicReducer/index.js';
-import { notificationActions } from 'app/Notifications';
+import { notificationActions } from '../../Notifications.js';
 import { t } from '../../I18N/index.js';
-import { RequestParams } from 'app/utils/RequestParams';
-import { ClientFile } from 'app/istore';
+import { RequestParams } from '../../utils/RequestParams.js';
+import { ClientFile } from '../../istore.js';
 
 const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);

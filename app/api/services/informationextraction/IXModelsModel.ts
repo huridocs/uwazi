@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from '../odm/index.js';
-import { IXModelType } from 'shared/types/IXModelType';
+import { IXModelType } from '../../shared/types/IXModelType.js';
 
 const props = {};
 

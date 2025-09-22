@@ -1,6 +1,6 @@
-import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
-import { Context } from 'api/templates.v2/model/Property';
-import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { CommonProperty } from '../templates.v2/model/CommonProperty.js';
+import { Context } from '../templates.v2/model/Property.js';
+import { SystemLogger } from '../log.v2/infrastructure/StandardLogger.js';
 import { TitleProperty, TitlePropertyProps } from './TitleProperty';
 import { CreationDateProperty } from './CreationDateProperty';
 import { ModifiedDateProperty } from './ModifiedDateProperty';

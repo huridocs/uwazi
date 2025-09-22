@@ -2,8 +2,8 @@
 
 import { I18NUtils } from '../../I18N/index.js';
 import { isClient } from '../../utils/index.js';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';

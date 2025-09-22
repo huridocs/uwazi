@@ -4,7 +4,7 @@
 import React, { act } from 'react';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { ImageViewer, ImageViewerProps } from '../ImageViewer';
 
 describe('ImageViewer', () => {

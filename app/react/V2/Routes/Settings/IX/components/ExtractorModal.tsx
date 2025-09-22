@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from '../../I18N/index.js';
-import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
 import { ClientIXExtractorType } from 'V2/shared/types';
 import { InputField } from 'V2/Components/Forms/InputField';
 import { defaultSearch, MultiselectList, RadioSelect } from 'V2/Components/Forms';

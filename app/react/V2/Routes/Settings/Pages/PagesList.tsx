@@ -6,10 +6,10 @@ import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
 import * as pagesAPI from 'V2/api/pages';
-import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Page } from 'app/V2/shared/types';
-import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
+import { Button, ConfirmationModal, Table } from '../../V2/Components/UI.js';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+import { Page } from '../../shared/V2/shared/types.js';
+import { notificationAtom, notificationAtomType } from '../../V2/atoms.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import {
   EntityViewHeader,

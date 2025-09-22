@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 import Immutable from 'immutable';
-import * as types from 'app/Library/actions/actionTypes';
+import * as types from '../../Library/actions/actionTypes.js';
 
-import { documentsReducer } from 'app/Library/reducers/documentsReducer';
-import * as actions from 'app/Library/actions/libraryActions';
-import * as uploadTypes from 'app/Uploads/actions/actionTypes';
-import * as attachmentTypes from 'app/Attachments/actions/actionTypes';
+import { documentsReducer } from '../../Library/reducers/documentsReducer.js';
+import * as actions from '../../Library/actions/libraryActions.js';
+import * as uploadTypes from '../../Uploads/actions/actionTypes.js';
+import * as attachmentTypes from '../../Attachments/actions/actionTypes.js';
 
 describe('documentsReducer', () => {
   const initialState = Immutable.fromJS({ rows: [], totalRows: 0 });

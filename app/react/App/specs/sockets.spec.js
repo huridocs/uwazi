@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import * as uploadActions from 'app/Uploads/actions/uploadsActions';
+import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
 import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
 import { socket } from '../../socket';
 import '../sockets';

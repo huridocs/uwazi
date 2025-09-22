@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { Aggregations } from 'shared/types/aggregations';
-import { NeedAuthorization } from 'app/Auth';
+import FormGroup from '../../DocumentForm/components/FormGroup.js';
+import { Aggregations } from '../../shared/types/aggregations.js';
+import { NeedAuthorization } from '../../Auth.js';
 import { Translate } from '../../I18N/index.js';
 import { MultiSelect } from '../../Forms/index.js';
 import { Control } from 'react-redux-form';

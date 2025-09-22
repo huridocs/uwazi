@@ -1,6 +1,6 @@
-import { TestUtils } from 'api/common.v2/utils/Test';
-import { NonRetryableJobError } from 'api/queue.v2/infrastructure/errors';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { TestUtils } from '../common.v2/utils/Test.js';
+import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { IXTrainModelJob } from '../TrainModelJob';
 import { TrainModelForPDF } from '../TrainModelForPDF';
 import { NoEntitiesForTraining, TrainModelForText } from '../TrainModelForText';

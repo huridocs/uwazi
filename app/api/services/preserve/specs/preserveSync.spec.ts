@@ -1,22 +1,22 @@
-import entities from 'api/entities';
-import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
-import { storage } from 'api/files/storage';
-import { legacyLogger } from 'api/log';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { search } from 'api/search';
-import { tenants } from 'api/tenants';
-import thesauri from 'api/thesauri';
-import db from 'api/utils/testing_db';
+import entities from '../entities.js';
+import { generateFileName, testingUploadPaths } from '../files/filesystem.js';
+import { storage } from '../files/storage.js';
+import { legacyLogger } from '../log.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import { search } from '../search.js';
+import { tenants } from '../tenants.js';
+import thesauri from '../thesauri.js';
+import db from '../utils/testing_db.js';
 import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
-import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
+import { FileType } from '../../shared/types/fileType.js';
 import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { config } from 'api/config';
-import { Tenant } from 'api/tenants/tenantContext';
+import { config } from '../config.js';
+import { Tenant } from '../tenants/tenantContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { preserveSync } from '../preserveSync';

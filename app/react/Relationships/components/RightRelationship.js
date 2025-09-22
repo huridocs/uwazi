@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { Translate, t } from '../../I18N/index.js';
-import Doc from 'app/Library/components/Doc';
+import Doc from '../../Library/components/Doc.js';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '../actions/actions';
 import * as uiActions from '../actions/uiActions';

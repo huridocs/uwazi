@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import SearchInput from 'app/Layout/SearchInput';
+import SearchInput from '../../Layout/SearchInput.js';
 import { search } from '../actions/actions';
 
 export class SearchForm extends Component {

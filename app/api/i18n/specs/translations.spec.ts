@@ -1,11 +1,11 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 
-import entities from 'api/entities';
-import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
-import pages from 'api/pages';
-import settings from 'api/settings';
-import thesauri from 'api/thesauri/thesauri.js';
-import { ContextType } from 'shared/translationSchema';
+import entities from '../entities.js';
+import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
+import pages from '../pages.js';
+import settings from '../settings.js';
+import thesauri from '../thesauri/thesauri.js.js';
+import { ContextType } from '../../shared/translationSchema.js';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
 import { UITranslationNotAvailable } from '../defaultTranslations';

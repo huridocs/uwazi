@@ -1,6 +1,6 @@
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+import { EntityDBO } from '../entities.v2/database/schemas/EntityTypes.js';
 
 import { EntityStatus } from './PXEntityStatusModel';
 import { EntityStatusDTO } from '../types';

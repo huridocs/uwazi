@@ -1,12 +1,12 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { permissionRoutes } from 'api/permissions/routes';
-import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { collaborators } from 'api/permissions/collaborators';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from '../utils/testingRoutes.js';
+import { permissionRoutes } from '../permissions/routes.js';
+import { entitiesPermissions } from '../permissions/entitiesPermissions.js';
+import { collaborators } from '../permissions/collaborators.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { PUBLIC_PERMISSION } from '../publicPermission';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',

@@ -3,9 +3,9 @@ import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
-import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
+import { ClientTranslationContextSchema, ClientTranslationSchema } from '../../istore.js';
 import { Table } from 'V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import * as translationsAPI from 'V2/api/translations/index';
 import {
   ContextPill,

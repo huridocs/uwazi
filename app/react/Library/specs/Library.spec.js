@@ -3,9 +3,9 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { LibraryRootComponent } from 'app/Library/Library';
-import RouteHandler from 'app/App/RouteHandler';
-import createStore from 'app/store';
+import { LibraryRootComponent } from '../../Library/Library.js';
+import RouteHandler from '../../App/RouteHandler.js';
+import createStore from '../../store.js';
 
 const routes = [
   {

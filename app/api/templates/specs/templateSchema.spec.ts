@@ -1,9 +1,9 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { testingDB } from 'api/utils/testing_db';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { PropertySchema } from '../../shared/types/commonTypes.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
+import { testingDB } from '../utils/testing_db.js';
 
 import fixtures, {
   propertyToBeInherited,

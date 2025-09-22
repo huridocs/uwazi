@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
 import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
-} from 'api/queue.v2/application/contracts/Dispatchable';
-import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+} from '../queue.v2/application/contracts/Dispatchable.js';
+import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';

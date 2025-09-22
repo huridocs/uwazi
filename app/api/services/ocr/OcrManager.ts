@@ -1,13 +1,13 @@
-import { files, storage } from 'api/files';
-import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
-import { processDocument } from 'api/files/processDocument';
-import relationships from 'api/relationships/relationships';
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { files, storage } from '../files.js';
+import { generateFileName, temporalFilesPath } from '../files/filesystem.js';
+import { processDocument } from '../files/processDocument.js';
+import relationships from '../relationships/relationships.js';
+import { ResultsMessage, TaskManager } from '../services/tasksmanager/TaskManager.js';
 import settings from '../settings/settings.js';
-import { emitToTenant } from 'api/socketio/setupSockets';
+import { emitToTenant } from '../socketio/setupSockets.js';
 import { tenants } from '../tenants/tenantContext.js';
-import createError from 'api/utils/Error';
-import { handleError } from 'api/utils/handleError';
+import createError from '../utils/Error.js';
+import { handleError } from '../utils/handleError.js';
 import { LanguageUtils } from '../../shared/language/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';

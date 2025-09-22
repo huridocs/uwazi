@@ -1,6 +1,6 @@
-import relationtypesRoutes from 'api/relationtypes/routes.js';
-import instrumentRoutes from 'api/utils/instrumentRoutes';
-import relationtypes from 'api/relationtypes/relationtypes';
+import relationtypesRoutes from '../relationtypes/routes.js.js';
+import instrumentRoutes from '../utils/instrumentRoutes.js';
+import relationtypes from '../relationtypes/relationtypes.js';
 
 describe('relationtypes routes', () => {
   let routes;

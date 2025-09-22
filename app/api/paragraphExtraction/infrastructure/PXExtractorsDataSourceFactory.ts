@@ -1,9 +1,9 @@
 import { Db } from 'mongodb';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';

@@ -1,8 +1,8 @@
 import users from '../users/users.js';
-import userGroups from 'api/usergroups/userGroups';
-import { PermissionType } from 'shared/types/permissionSchema';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { UserSchema } from 'shared/types/userType';
+import userGroups from '../usergroups/userGroups.js';
+import { PermissionType } from '../../shared/types/permissionSchema.js';
+import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
+import { UserSchema } from '../../shared/types/userType.js';
 import { WithId } from '../odm/index.js';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';

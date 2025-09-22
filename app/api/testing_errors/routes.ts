@@ -1,5 +1,5 @@
 import { Application } from 'express';
-import needsAuthorization from 'api/auth/authMiddleware';
+import needsAuthorization from '../auth/authMiddleware.js';
 
 // eslint-disable-next-line import/no-default-export
 export default (app: Application) => {

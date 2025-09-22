@@ -1,4 +1,4 @@
-import mailer from 'api/utils/mailer';
+import mailer from '../utils/mailer.js';
 import settings from '../settings/settings.js';
 
 export default {

@@ -1,11 +1,11 @@
-import { TemplateUpdateDenormalizeEntitiesBatch } from 'api/core/application/TemplateUpdateDenormalizeEntitiesBatch';
-import { PXCreateParagraphsJob } from 'api/paragraphExtraction/infrastructure/PXCreateParagraphsJob';
+import { TemplateUpdateDenormalizeEntitiesBatch } from '../../application/TemplateUpdateDenormalizeEntitiesBatch.js';
+import { PXCreateParagraphsJob } from '../../../paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
-} from 'api/queue.v2/application/contracts/UserAwareDispatchable';
-import { emitToTenant } from 'api/socketio/setupSockets';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+} from '../../../queue.v2/application/contracts/UserAwareDispatchable.js';
+import { emitToTenant } from '../../../socketio/setupSockets.js';
+import { TemplatesDataSource } from '../../../templates.v2/contracts/TemplatesDataSource.js';
 
 type Params = UserAwareDispatchableParams & {
   entitiesIds: string[];

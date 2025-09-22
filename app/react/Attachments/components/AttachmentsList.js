@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Translate } from '../../I18N/index.js';
-import { advancedSort } from 'app/utils/advancedSort';
-import { NeedAuthorization } from 'app/Auth';
-import Attachment from 'app/Attachments/components/Attachment';
+import { advancedSort } from '../../utils/advancedSort.js';
+import { NeedAuthorization } from '../../Auth.js';
+import Attachment from '../../Attachments/components/Attachment.js';
 
 import UploadSupportingFile from './UploadSupportingFile';
 

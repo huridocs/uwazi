@@ -1,6 +1,6 @@
-import { PropertyTypes } from 'api/templates.v2/model/Property';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { PropertyTypes } from '../templates.v2/model/Property.js';
+import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+import { RelationshipTypesDataSource } from '../relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
 import { AbstractPropertyCreatorService } from './AbstractPropertyCreatorService';
 import { PropertyCreatorService } from './PropertyCreatorService';
 import { SelectPropertyCreatorService, ThesauriDataSource } from './SelectPropertyCreatorService';

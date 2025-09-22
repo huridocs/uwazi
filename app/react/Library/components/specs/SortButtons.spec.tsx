@@ -4,12 +4,12 @@
 import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { fromJS, fromJS as immutable } from 'immutable';
 
-import { IStore } from 'app/istore';
+import { IStore } from '../../istore.js';
 import { actions } from 'react-redux-form';
-import { IImmutable } from 'shared/types/Immutable';
+import { IImmutable } from '../../shared/types/Immutable.js';
 import { SortButtons, SortButtonsOwnProps, mapStateToProps } from '../SortButtons';
 
 describe('SortButtons', () => {

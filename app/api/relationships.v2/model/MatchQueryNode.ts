@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { Relationship } from '../relationships.v2/model/Relationship.js';
 import _ from 'lodash';
 import { QueryNode } from './QueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';

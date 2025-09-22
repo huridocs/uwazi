@@ -2,7 +2,7 @@
 import React from 'react';
 import { Translate } from '../../I18N/index.js';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Button } from 'app/V2/Components/UI';
+import { Button } from '../../V2/Components/UI.js';
 import { Link } from '../shared';
 
 const EditButton = ({ cell, column }: CellContext<Link, string>) => (

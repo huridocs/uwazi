@@ -1,10 +1,10 @@
 import React from 'react';
-import { Aggregations } from 'shared/types/aggregations';
-import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
-import SelectFilter from 'app/Library/components/SelectFilter';
-import FormGroup from 'app/DocumentForm/components/FormGroup';
+import { Aggregations } from '../../shared/types/aggregations.js';
+import { FeatureToggle } from '../../components/Elements/FeatureToggle.js';
+import SelectFilter from '../../Library/components/SelectFilter.js';
+import FormGroup from '../../DocumentForm/components/FormGroup.js';
 import { t } from '../../I18N/index.js';
-import { NeedAuthorization } from 'app/Auth';
+import { NeedAuthorization } from '../../Auth.js';
 
 export interface FilterTocGenerationProps {
   onChange: () => void;

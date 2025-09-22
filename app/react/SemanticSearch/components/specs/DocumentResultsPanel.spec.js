@@ -1,8 +1,8 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import multiReducer from 'app/Multireducer';
-import { actions as basicActions } from 'app/BasicReducer';
+import multiReducer from '../../Multireducer.js';
+import { actions as basicActions } from '../../BasicReducer.js';
 import actions from '../../actions';
 
 import DocumentResultsPanel, { mapDispatchToProps, mapStateToProps } from '../DocumentResultsPanel';

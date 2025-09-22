@@ -8,8 +8,8 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { config } from 'api/config';
-import { testingTenants } from 'api/utils/testingTenants';
+import { config } from '../config.js';
+import { testingTenants } from '../utils/testingTenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import { rmdir } from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import

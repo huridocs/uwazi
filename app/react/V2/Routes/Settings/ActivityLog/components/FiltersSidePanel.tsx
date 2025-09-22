@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Sidepanel, Button } from 'app/V2/Components/UI';
+import { Sidepanel, Button } from '../../V2/Components/UI.js';
 import { Translate, t } from '../../I18N/index.js';
-import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
+import { InputField, DateRangePicker, MultiSelect } from '../../V2/Components/Forms.js';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from '../../apiResponseTypes.js';
-import { settingsAtom, localeAtom } from 'app/V2/atoms';
+import { settingsAtom, localeAtom } from '../../V2/atoms.js';
 
 interface ActivityLogSearch {
   username: string;

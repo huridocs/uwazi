@@ -1,7 +1,7 @@
-import { files } from 'api/files';
-import translations from 'api/i18n/translations';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TemplateSchema } from 'shared/types/templateType';
+import { files } from '../files.js';
+import translations from '../i18n/translations.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { TemplateSchema } from '../../shared/types/templateType.js';
 import templates from '../templates';
 import fixtures, {
   propertyA,

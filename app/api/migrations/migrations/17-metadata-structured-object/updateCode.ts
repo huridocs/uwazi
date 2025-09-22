@@ -2,7 +2,7 @@
 import { config } from '../config.js';
 import fs from 'fs';
 import path from 'path';
-import index from 'api/migrations/migrations/17-metadata-structured-object';
+import index from '../migrations/migrations/17-metadata-structured-object.js';
 
 function walk(dir: string, callback: (file: string, stats: fs.Stats) => void) {
   fs.readdir(dir, (err, files) => {

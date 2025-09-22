@@ -4,10 +4,10 @@ import 'app/Viewer/scss/document.scss';
 import PropTypes from 'prop-types';
 import React, { Component, createRef } from 'react';
 
-import { Loader } from 'app/components/Elements/Loader';
-import { PDF } from 'app/PDF';
+import { Loader } from '../../components/Elements/Loader.js';
+import { PDF } from '../../PDF.js';
 import Immutable from 'immutable';
-import { highlightSnippet } from 'app/Viewer/actions/uiActions';
+import { highlightSnippet } from '../../Viewer/actions/uiActions.js';
 import { selectionHandlers } from 'V2/Components/PDFViewer';
 import { atomStore, pdfScaleAtom } from 'V2/atoms';
 

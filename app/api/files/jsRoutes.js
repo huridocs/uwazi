@@ -1,11 +1,11 @@
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
-import { saveEntity } from 'api/entities/entitySavingManager';
-import { processDocument } from 'api/files/processDocument';
-import { search } from 'api/search';
+import activitylogMiddleware from '../activitylog/activitylogMiddleware.js';
+import { saveEntity } from '../entities/entitySavingManager.js';
+import { processDocument } from '../files/processDocument.js';
+import { search } from '../search.js';
 import settings from '../settings/index.js';
-import mailer from 'api/utils/mailer';
+import mailer from '../utils/mailer.js';
 import cors from 'cors';
-import { withTransaction } from 'api/utils/withTransaction';
+import { withTransaction } from '../utils/withTransaction.js';
 import proxy from 'express-http-proxy';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';

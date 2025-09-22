@@ -1,5 +1,5 @@
-import { Context, Property, PropertyProps } from 'api/templates.v2/model/Property';
-import { propertyTypes } from 'shared/propertyTypes';
+import { Context, Property, PropertyProps } from '../templates.v2/model/Property.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 import { PropertyName } from './PropertyName';
 
 class NestedProperty extends Property {

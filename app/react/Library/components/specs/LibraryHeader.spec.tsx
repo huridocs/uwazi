@@ -7,11 +7,11 @@ import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import * as libraryActions from 'app/Library/actions/libraryActions';
+import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+import * as libraryActions from '../../Library/actions/libraryActions.js';
 
-import { IStore } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
+import { IStore } from '../../istore.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';

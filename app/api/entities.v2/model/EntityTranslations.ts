@@ -1,7 +1,7 @@
 import { inspect } from 'util';
 
-import { TemplateProperty } from 'api/templates.v2/model/Template';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
+import { TemplateProperty } from '../templates.v2/model/Template.js';
+import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
 import { IndexTypes } from '../../shared/data_utils/objectIndex.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 

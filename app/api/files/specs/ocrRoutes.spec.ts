@@ -3,20 +3,20 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import relationships from 'api/relationships';
-import { storage } from 'api/files';
-import { search } from 'api/search';
-import { ocrManager } from 'api/services/ocr/OcrManager';
-import settings from 'api/settings/settings';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { DBFixture } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { setUpApp } from 'api/utils/testingRoutes';
-import JSONRequest from 'shared/JSONRequest';
-import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import relationships from '../relationships.js';
+import { storage } from '../files.js';
+import { search } from '../search.js';
+import { ocrManager } from '../services/ocr/OcrManager.js';
+import settings from '../settings/settings.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import db, { DBFixture } from '../utils/testing_db.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { setUpApp } from '../utils/testingRoutes.js';
+import JSONRequest from '../../shared/JSONRequest.js';
+import { UserRole } from '../../shared/types/userSchema.js';
+import { UserSchema } from '../../shared/types/userType.js';
 
-import * as setupSockets from 'api/socketio/setupSockets';
+import * as setupSockets from '../socketio/setupSockets.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { files } from '../files';

@@ -6,7 +6,7 @@ import { useAtomValue } from 'jotai';
 import { get, isEmpty, uniqBy } from 'lodash';
 import { captureException } from '@sentry/react';
 import { Translate } from '../../I18N/index.js';
-import { ClientEntitySchema, ClientPropertySchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
 import { isClient } from '../../utils/index.js';
 import {
   defaultSearch,

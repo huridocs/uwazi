@@ -9,24 +9,24 @@ import {
   ObjectIdSchema,
   PropertyTypeSchema,
 } from '../../shared/types/commonTypes.js';
-import { filesModel } from 'api/files/filesModel';
-import { SegmentationType } from 'shared/types/segmentationType';
-import entitiesModel from 'api/entities/entitiesModel';
-import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import ixmodels from 'api/services/informationextraction/ixmodels';
+import { filesModel } from '../files/filesModel.js';
+import { SegmentationType } from '../../shared/types/segmentationType.js';
+import entitiesModel from '../entities/entitiesModel.js';
+import { SegmentationModel } from '../services/pdfsegmentation/segmentationModel.js';
+import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+import ixmodels from '../services/informationextraction/ixmodels.js';
 import { FileType } from '../../shared/types/fileType.js';
-import templatesModel from 'api/templates/templates';
-import { propertyTypes } from 'shared/propertyTypes';
+import templatesModel from '../templates/templates.js';
+import { propertyTypes } from '../../shared/propertyTypes.js';
 import { ensure } from '../../shared/tsUtils.js';
 import { EnforcedWithId, UwaziFilterQuery } from '../odm/index.js';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { IXModelType } from 'shared/types/IXModelType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { PipelineBuilder } from 'api/suggestions/queryBuilder';
-import { IXExtractorType } from 'shared/types/extractorType';
+import { Entity } from '../entities.v2/model/Entity.js';
+import { IXModelType } from '../../shared/types/IXModelType.js';
+import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+import { PipelineBuilder } from '../suggestions/queryBuilder.js';
+import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
-import { Suggestions } from 'api/suggestions/suggestions';
+import { Suggestions } from '../suggestions/suggestions.js';
 import { Extractors } from './ixextractors';
 import { IXServices } from './IXServices';
 

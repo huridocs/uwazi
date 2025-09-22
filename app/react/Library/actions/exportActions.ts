@@ -2,13 +2,13 @@ import { List } from 'immutable';
 
 import superagent from 'superagent';
 import { actions } from '../../BasicReducer/index.js';
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import { notify } from '../../Notifications/actions/notificationsActions.js';
 import { t } from '../../I18N/index.js';
 import { Dispatch } from 'redux';
-import { IImmutable } from 'shared/types/Immutable';
-import { CaptchaValue } from 'shared/types/Captcha';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { CaptchaValue } from '../../shared/types/Captcha.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { CsvExportBody } from 'shared/types/searchParameterType';
+import { CsvExportBody } from '../../shared/types/searchParameterType.js';
 import { processFilters } from './libraryActions';
 import { ExportStore } from '../reducers/ExportStoreType';
 

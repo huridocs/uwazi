@@ -9,13 +9,13 @@ import { Field, actions as formActions } from 'react-redux-form';
 import uuid from 'node-uuid';
 import { FormGroup } from '../../Forms/index.js';
 import { t, Translate } from '../../I18N/index.js';
-import { getSuggestions } from 'app/Metadata/actions/actions';
-import Tip from 'app/Layout/Tip';
-import { generateID } from 'shared/IDGenerator';
+import { getSuggestions } from '../../Metadata/actions/actions.js';
+import Tip from '../../Layout/Tip.js';
+import { generateID } from '../../shared/IDGenerator.js';
 
-import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
-import { sanitizeThesauri } from 'app/V2/Routes/Settings/Thesauri/helpers';
-import { NeedAuthorization } from 'app/Auth';
+import { saveThesaurus } from '../../Thesauri/actions/thesauriActions.js';
+import { sanitizeThesauri } from '../../V2/Routes/Settings/Thesauri/helpers.js';
+import { NeedAuthorization } from '../../Auth.js';
 import {
   DatePicker,
   DateRange,

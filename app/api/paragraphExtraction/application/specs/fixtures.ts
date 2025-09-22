@@ -1,8 +1,8 @@
-import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
-import { EntityStatus } from 'api/paragraphExtraction/domain/PXEntityStatusModel';
-import { MongoPXEntityStatusDBO } from 'api/paragraphExtraction/infrastructure/MongoPXEntityStatusDBO';
-import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { FileBuilder } from '../files.v2/model/specs/utils/FileBuilder.js';
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();

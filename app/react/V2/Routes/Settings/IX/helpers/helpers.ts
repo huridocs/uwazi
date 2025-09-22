@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { get, uniqBy } from 'lodash';
-import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientTemplateSchema } from '../../istore.js';
 import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { t } from '../../I18N/index.js';
 import { RadioProps } from 'V2/Components/Forms';

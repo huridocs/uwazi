@@ -1,4 +1,4 @@
-import { renderConnected } from 'app/utils/test/renderConnected';
+import { renderConnected } from '../../utils/test/renderConnected.js';
 import Immutable from 'immutable';
 import { ShallowWrapper } from 'enzyme';
 import {

@@ -3,19 +3,19 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 import { DropdownList } from '../../Forms/index.js';
-import { TableViewColumn, IStore } from 'app/istore';
-import { wrapDispatch } from 'app/Multireducer';
+import { TableViewColumn, IStore } from '../../istore.js';
+import { wrapDispatch } from '../../Multireducer.js';
 import {
   ColumnItem,
   ValueItem,
   SelectableColumn,
-} from 'app/Library/components/HiddenColumnsDropdownItem';
+} from '../../Library/components/HiddenColumnsDropdownItem.js';
 import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,
-} from 'app/Library/actions/libraryActions';
-import { IImmutable } from 'shared/types/Immutable';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
+} from '../../Library/actions/libraryActions.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
+import { useOnClickOutsideElement } from '../../utils/useOnClickOutsideElementHook.js';
 
 interface HideColumnsComponentProps {
   columns: List<IImmutable<TableViewColumn>>;

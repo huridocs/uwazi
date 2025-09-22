@@ -1,16 +1,16 @@
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { tenants } from 'api/tenants';
+import { ResultsMessage, TaskManager } from '../services/tasksmanager/TaskManager.js';
+import { tenants } from '../tenants.js';
 import settings from '../settings/settings.js';
-import entities from 'api/entities/entities';
+import entities from '../entities/entities.js';
 import templates from '../templates/index.js';
-import relationtypes from 'api/relationtypes';
+import relationtypes from '../relationtypes.js';
 import {
   getTextWithAttachedImages,
   getTwitterImages,
   getTwitterImagesData,
   TwitterImageData,
-} from 'api/services/twitterintegration/getTwitterImages';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+} from '../services/twitterintegration/getTwitterImages.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
 
 interface TweetParamsType {
   title: string;

@@ -1,5 +1,5 @@
-import testingDB from 'api/utils/testing_db';
-import logger from 'api/migrations/logger.js';
+import testingDB from '../utils/testing_db.js';
+import logger from '../migrations/logger.js.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 

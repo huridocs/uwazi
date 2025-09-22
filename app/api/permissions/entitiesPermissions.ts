@@ -1,20 +1,20 @@
 import { WithId } from 'mongodb';
 
 import { model as entityModel } from '../entities/index.js';
-import entities from 'api/entities/entities';
-import { search } from 'api/search';
+import entities from '../entities/entities.js';
+import { search } from '../search.js';
 import users from '../users/users.js';
-import userGroups from 'api/usergroups/userGroups';
-import { unique } from 'api/utils/filters';
+import userGroups from '../usergroups/userGroups.js';
+import { unique } from '../utils/filters.js';
 import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
 import {
   AccessLevels,
   PermissionType,
   MixedAccess,
   validateUniquePermissions,
-} from 'shared/types/permissionSchema';
-import { PermissionSchema, PermissionsDataSchema } from 'shared/types/permissionType';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
+} from '../../shared/types/permissionSchema.js';
+import { PermissionSchema, PermissionsDataSchema } from '../../shared/types/permissionType.js';
+import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
 import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';

@@ -9,7 +9,7 @@ import { t, Translate } from '../../I18N/index.js';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Card, ConfirmationModal, Sidepanel } from 'V2/Components/UI';
 import { validEmailFormat } from 'V2/shared/formatHelpers';
-import { UserRole } from 'shared/types/userSchema';
+import { UserRole } from '../../shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal';
 import { User, Group } from '../types';

@@ -1,15 +1,15 @@
-import entities from 'api/entities';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import templates from 'api/templates';
-import users from 'api/users/users';
-import { setUpApp } from 'api/utils/testingRoutes';
+import entities from '../entities.js';
+import { permissionsContext } from '../permissions/permissionsContext.js';
+import { search } from '../search.js';
+import settings from '../settings.js';
+import templates from '../templates.js';
+import users from '../users/users.js';
+import { setUpApp } from '../utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
-import translations from 'api/i18n';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import translations from '../i18n.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import waitForExpect from 'wait-for-expect';
 import settingsRoutes from '../routes';
 import { settingsModel } from '../settingsModel';

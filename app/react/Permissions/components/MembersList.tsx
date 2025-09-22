@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { PermissionType } from 'shared/types/permissionSchema';
-import { NeedAuthorization } from 'app/Auth';
+import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
+import { PermissionType } from '../../shared/types/permissionSchema.js';
+import { NeedAuthorization } from '../../Auth.js';
 import { MemberListItemInfo } from './MemberListItemInfo';
 import { MemberListItemPermission } from './MemberListItemPermission';
 

@@ -3,20 +3,20 @@ import { Translate } from '../../I18N/index.js';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
+import { wrapDispatch } from '../../Multireducer.js';
 
 import { Icon } from 'UI';
-import { NeedAuthorization } from 'app/Auth';
-import { SortDropdown } from 'app/Library/components/SortDropdown';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
-import { SearchBar as SearchBarComponent } from 'app/Library/components/SearchBar';
+import { NeedAuthorization } from '../../Auth.js';
+import { SortDropdown } from '../../Library/components/SortDropdown.js';
+import LibraryModeToggleButtons from '../../Library/components/LibraryModeToggleButtons.js';
+import { SearchBar as SearchBarComponent } from '../../Library/components/SearchBar.js';
 import {
   zoomIn as zoomInAction,
   zoomOut as zoomOutAction,
-} from 'app/Library/actions/libraryActions';
-import { showFilters as showFiltersAction } from 'app/Entities/actions/uiActions';
-import { IStore } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
+} from '../../Library/actions/libraryActions.js';
+import { showFilters as showFiltersAction } from '../../Entities/actions/uiActions.js';
+import { IStore } from '../../istore.js';
+import { IImmutable } from '../../shared/types/Immutable.js';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 interface LibraryHeaderOwnProps {

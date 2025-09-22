@@ -1,14 +1,14 @@
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
-} from 'api/i18n.v2/errors/translationErrors';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
+} from '../i18n.v2/errors/translationErrors.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import testingDB, { DBFixture } from '../utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 import { ValidateTranslationsService } from '../ValidateTranslationsService';
 

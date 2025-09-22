@@ -1,4 +1,4 @@
-import { appContext } from 'api/utils/AppContext';
+import { appContext } from '../utils/AppContext.js';
 import middleware from '../error_handling_middleware.js';
 import { legacyLogger } from '../../log';
 

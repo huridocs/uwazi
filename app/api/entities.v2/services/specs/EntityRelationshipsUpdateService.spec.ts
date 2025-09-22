@@ -1,12 +1,12 @@
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import testingDB from 'api/utils/testing_db';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getFixturesFactory } from '../utils/fixturesFactory.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { MongoEntitiesDataSource } from '../entities.v2/database/MongoEntitiesDataSource.js';
+import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
+import { MongoTemplatesDataSource } from '../templates.v2/database/MongoTemplatesDataSource.js';
+import { MongoRelationshipsDataSource } from '../relationships.v2/database/MongoRelationshipsDataSource.js';
+import testingDB from '../utils/testing_db.js';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
 import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService';
 
 const factory = getFixturesFactory();

@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 import backend from 'fetch-mock';
-import { APIURL } from 'app/config';
-import { store } from 'app/store';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import loadingBar from 'app/App/LoadingProgressBar';
-import * as notifyActions from 'app/Notifications/actions/notificationsActions';
+import { APIURL } from '../../config.js';
+import { store } from '../../store.js';
+import api from '../../utils/api.js';
+import { RequestParams } from '../../utils/RequestParams.js';
+import loadingBar from '../../App/LoadingProgressBar.js';
+import * as notifyActions from '../../Notifications/actions/notificationsActions.js';
 
 const mockRedirect = jest.fn();
 

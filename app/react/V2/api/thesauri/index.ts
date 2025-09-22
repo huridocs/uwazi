@@ -1,8 +1,8 @@
-import api from 'app/utils/api';
+import api from '../../utils/api.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
-import { RequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from '../../utils/RequestParams.js';
 import { IncomingHttpHeaders } from 'http';
-import { httpRequest } from 'shared/superagent';
+import { httpRequest } from '../../shared/superagent.js';
 
 const get = async (
   params: { _id?: string },

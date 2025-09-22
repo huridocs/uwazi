@@ -2,16 +2,16 @@ import { groupBy } from 'lodash';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { WithId } from '../odm/index.js';
-import { files as filesAPI, storage } from 'api/files';
-import { processDocument } from 'api/files/processDocument';
-import { search } from 'api/search';
+import { files as filesAPI, storage } from '../files.js';
+import { processDocument } from '../files/processDocument.js';
+import { search } from '../search.js';
 import { legacyLogger } from '../log/index.js';
-import { handleError, prettifyError } from 'api/utils/handleError';
+import { handleError, prettifyError } from '../utils/handleError.js';
 import { ClientEntitySchema } from 'app/istore';
 import { FileType } from '../../shared/types/fileType.js';
 import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
-import { TypeOfFile } from 'shared/types/fileSchema';
+import { TypeOfFile } from '../../shared/types/fileSchema.js';
 import { FileAttachment } from './entitySavingManager';
 
 const prepareNewFiles = async (

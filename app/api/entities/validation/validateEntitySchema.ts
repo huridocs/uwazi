@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { entitySchema } from 'shared/types/entitySchema';
+import { entitySchema } from '../../shared/types/entitySchema.js';
 import { wrapValidator } from '../../shared/tsUtils.js';
 
 const ajv = new Ajv({ allErrors: true });

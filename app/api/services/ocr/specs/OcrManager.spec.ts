@@ -1,16 +1,16 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
-import { files, storage } from 'api/files';
-import * as filesApi from 'api/files/filesystem';
-import * as processDocumentApi from 'api/files/processDocument';
-import { tenants } from 'api/tenants/tenantContext';
-import settings from 'api/settings/settings';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { files, storage } from '../files.js';
+import * as filesApi from '../files/filesystem.js';
+import * as processDocumentApi from '../files/processDocument.js';
+import { tenants } from '../tenants/tenantContext.js';
+import settings from '../settings/settings.js';
+import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { Readable } from 'stream';
-import request from 'shared/JSONRequest';
-import * as sockets from 'api/socketio/setupSockets';
-import * as handleError from 'api/utils/handleError';
+import request from '../../shared/JSONRequest.js';
+import * as sockets from '../socketio/setupSockets.js';
+import * as handleError from '../utils/handleError.js';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';

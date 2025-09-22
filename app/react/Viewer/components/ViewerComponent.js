@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import EntityView from 'app/Viewer/EntityView';
-import { Loader } from 'app/components/Elements/Loader';
+import EntityView from '../../Viewer/EntityView.js';
+import { Loader } from '../../components/Elements/Loader.js';
 import { actions } from '../../BasicReducer/index.js';
 import { t } from '../../I18N/index.js';
-import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
+import { ErrorFallback } from '../../V2/Components/ErrorHandling.js';
 import { PDFView } from '../PDFView';
 
 class EntityViewerComponent extends Component {

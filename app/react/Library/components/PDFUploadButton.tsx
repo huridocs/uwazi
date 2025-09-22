@@ -3,15 +3,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
 import { Translate } from '../../I18N/index.js';
-import { Icon } from 'app/UI';
+import { Icon } from '../../UI.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { generateID } from 'shared/IDGenerator';
+import { generateID } from '../../shared/IDGenerator.js';
 import {
   uploadDocument as uploadDocumentAction,
   createDocument as createDocumentAction,
-} from 'app/Uploads/actions/uploadsActions';
-import { unselectAllDocuments as unselectAllDocumentsAction } from 'app/Library/actions/libraryActions';
-import { ClientEntitySchema } from 'app/istore';
+} from '../../Uploads/actions/uploadsActions.js';
+import { unselectAllDocuments as unselectAllDocumentsAction } from '../../Library/actions/libraryActions.js';
+import { ClientEntitySchema } from '../../istore.js';
 import { templatesAtom } from 'V2/atoms';
 import { ClientTemplateSchema } from 'V2/shared/types';
 

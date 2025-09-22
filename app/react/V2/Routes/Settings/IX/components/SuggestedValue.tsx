@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { get, isArray } from 'lodash';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientTemplateSchema } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
 import { secondsToDate } from 'V2/shared/dateHelpers';
 import { Truncate } from 'V2/Components/UI';

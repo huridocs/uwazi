@@ -1,7 +1,7 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { DefaultRelationshipDataSource } from '../relationships.v2/database/data_source_defaults.js';
+import { DenormalizationService } from '../relationships.v2/services/service_factories.js';
+import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
 
 export const V2 = {
   async deleteTextReferencesToFiles(_ids: string[]) {
