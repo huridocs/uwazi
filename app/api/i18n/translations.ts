@@ -9,7 +9,11 @@ import thesauri from '../thesauri/thesauri.js';
 import { prettifyError } from '../utils/handleError.js';
 import * as os from 'os';
 import path from 'path';
-import { TranslationContext, TranslationType, TranslationValue } from '../../shared/translationType.js';
+import {
+  TranslationContext,
+  TranslationType,
+  TranslationValue,
+} from '../../shared/translationType.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';

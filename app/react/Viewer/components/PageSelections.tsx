@@ -4,7 +4,10 @@ import { uniqBy } from 'lodash';
 import { useAtomValue } from 'jotai';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { IStore } from '../../istore.js';
-import { ExtractedMetadataSchema, SelectionRectangleSchema } from '../../shared/types/commonTypes.js';
+import {
+  ExtractedMetadataSchema,
+  SelectionRectangleSchema,
+} from '../../shared/types/commonTypes.js';
 import { pdfScaleAtom } from 'V2/atoms';
 import { selectionHandlers } from '../../V2/Components/PDFViewer.js';
 

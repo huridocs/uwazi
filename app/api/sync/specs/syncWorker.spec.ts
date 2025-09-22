@@ -10,7 +10,13 @@ import _ from 'lodash';
 import authRoutes from '../auth/routes.js';
 import entities from '../entities.js';
 import entitiesModel from '../entities/entitiesModel.js';
-import { attachmentsPath, customUploadsPath, files, storage, testingUploadPaths } from '../files.js';
+import {
+  attachmentsPath,
+  customUploadsPath,
+  files,
+  storage,
+  testingUploadPaths,
+} from '../files.js';
 import translations from '../i18n.js';
 import { permissionsContext } from '../permissions/permissionsContext.js';
 import relationships from '../relationships.js';

@@ -2,7 +2,12 @@ import React from 'react';
 import { Outlet, matchPath } from 'react-router';
 import RouteHandler from '../../App/RouteHandler.js';
 import { actions } from '../../BasicReducer/index.js';
-import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from '../../Library/actions/libraryActions.js';
+import {
+  enterLibrary,
+  unsetDocuments,
+  zoomIn,
+  zoomOut,
+} from '../../Library/actions/libraryActions.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import { withRouter } from '../../componentWrappers.js';
 import { routes as appRoutes } from '../../appRoutes.js';

@@ -3,11 +3,11 @@ export default async (app, server) => {
   const [
     { default: activitylogMiddleware },
     { default: CSRFMiddleware },
-    { default: languageMiddleware }
+    { default: languageMiddleware },
   ] = await Promise.all([
     import('./activitylog/activitylogMiddleware.ts'),
     import('./auth/CSRFMiddleware.ts'),
-    import('./utils/languageMiddleware.ts')
+    import('./utils/languageMiddleware.ts'),
   ]);
 
   //common middlewares

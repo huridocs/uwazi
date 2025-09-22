@@ -1,7 +1,10 @@
 import { MongoIdHandler } from '../../common.v2/database/MongoIdGenerator.js';
 import { MatchQueryNode } from '../../relationships.v2/model/MatchQueryNode.js';
 import { TraversalQueryNode } from '../../relationships.v2/model/TraversalQueryNode.js';
-import { MatchQuery, TraverseQuery } from '../../shared/types/api.v2/templates.createTemplateRequest.js';
+import {
+  MatchQuery,
+  TraverseQuery,
+} from '../../shared/types/api.v2/templates.createTemplateRequest.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
 import { propertyTypes } from '../../../shared/propertyTypes.js';

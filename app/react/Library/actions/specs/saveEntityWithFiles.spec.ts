@@ -5,7 +5,10 @@ import superagent from 'superagent';
 import fetchMock from 'fetch-mock';
 
 import { APIURL } from '../../config.js';
-import { readFileAsBase64, saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
+import {
+  readFileAsBase64,
+  saveEntityWithFiles,
+} from '../../Library/actions/saveEntityWithFiles.js';
 import { contentForFiles } from './fixtures';
 
 describe('saveEntityWithFiles', () => {

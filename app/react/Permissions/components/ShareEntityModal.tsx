@@ -5,7 +5,11 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from '../../I18N/index.js';
 import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
-import { AccessLevels, MixedAccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
+import {
+  AccessLevels,
+  MixedAccessLevels,
+  PermissionType,
+} from '../../shared/types/permissionSchema.js';
 import { saveEntitiesPermissions } from '../../Permissions/actions/actions.js';
 import { connect } from 'react-redux';
 import { PermissionsDataSchema } from '../../shared/types/permissionType.js';

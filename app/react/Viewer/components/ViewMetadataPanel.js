@@ -5,7 +5,10 @@ import { actions as formActions } from 'react-redux-form';
 import { DocumentSidePanel, TocForm as tocFormComponent } from '../../Documents.js';
 import { actions as actionCreators } from '../../BasicReducer/index.js';
 import { actions } from '../../Metadata.js';
-import { actions as connectionsActions, uiActions as connectionsUiActions } from '../../Connections.js';
+import {
+  actions as connectionsActions,
+  uiActions as connectionsUiActions,
+} from '../../Connections.js';
 import { deleteDocument } from '../../Viewer/actions/documentActions.js';
 import modals from '../../Modals.js';
 

@@ -6,7 +6,11 @@ import { search } from '../search/index.js';
 import { processDocument } from '../files/processDocument.js';
 import { RawEntity } from '../csv/entityRow.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
-import { MetadataObjectSchema, MetadataSchema, PropertySchema } from '../../shared/types/commonTypes.js';
+import {
+  MetadataObjectSchema,
+  MetadataSchema,
+  PropertySchema,
+} from '../../shared/types/commonTypes.js';
 import { propertyTypes } from '../../shared/propertyTypes.js';
 import { ImportFile } from '../csv/importFile.js';
 import { EntitySchema } from '../../shared/types/entityType.js';

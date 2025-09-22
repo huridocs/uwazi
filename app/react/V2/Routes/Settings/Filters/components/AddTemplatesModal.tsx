@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Translate } from '../../I18N/index.js';
 import { Button, Modal } from '../../V2/Components/UI.js';
-import { defaultSearch, MultiselectList, MultiselectListOption } from '../../V2/Components/Forms.js';
+import {
+  defaultSearch,
+  MultiselectList,
+  MultiselectListOption,
+} from '../../V2/Components/Forms.js';
 import { ClientTemplateSchema } from '../../istore.js';
 
 type AddTemplateModalProps = {

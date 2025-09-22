@@ -1,4 +1,7 @@
-import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from '../activitylog/activitylogMiddleware.js';
+import {
+  BODY_REQUIRED_ENDPOINTS,
+  IGNORED_ENDPOINTS,
+} from '../activitylog/activitylogMiddleware.js';
 import date from '../utils/date.js';
 
 export default {

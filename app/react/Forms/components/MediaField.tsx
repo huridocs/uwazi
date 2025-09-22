@@ -4,7 +4,11 @@ import { Translate } from '../../I18N/index.js';
 import { Icon } from '../../UI.js';
 import { ClientFile } from '../../istore.js';
 import { prepareHTMLMediaView } from '../../shared/fileUploadUtils.js';
-import { MediaModal, MediaModalProps, MediaModalType } from '../../Metadata/components/MediaModal.js';
+import {
+  MediaModal,
+  MediaModalProps,
+  MediaModalType,
+} from '../../Metadata/components/MediaModal.js';
 import MarkdownMedia, { TimeLink } from '../../Markdown/components/MarkdownMedia.js';
 import { ImageViewer } from '../../Metadata/components/ImageViewer.js';
 

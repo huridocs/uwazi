@@ -1,7 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable max-classes-per-file */
-import { AbstractImageProperty, ImageStyle } from '../../../domain/template/AbstractImageProperty.js';
+import {
+  AbstractImageProperty,
+  ImageStyle,
+} from '../../../domain/template/AbstractImageProperty.js';
 import { CreationDateProperty } from '../../../domain/template/CreationDateProperty.js';
 import { DateProperty } from '../../../domain/template/DateProperty.js';
 import { DateRangeProperty } from '../../../domain/template/DateRangeProperty.js';
