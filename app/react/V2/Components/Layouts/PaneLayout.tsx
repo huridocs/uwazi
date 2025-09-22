@@ -3,19 +3,14 @@ import React, { useState, useRef, useCallback, useEffect, Fragment } from 'react
 import { t, Translate } from 'app/I18N';
 
 const getClientXValue = (event: MouseEvent | TouchEvent): number | undefined => {
-  if ('clientX' in event) {
-    return event.clientX;
-  }
-  if ('touches' in event && event.touches.length) {
-    return event.touches[0].clientX;
-  }
+  if ('clientX' in event) return event.clientX;
+  if ('touches' in event && event.touches.length) return event.touches[0].clientX;
   return undefined;
 };
 
 type PaneProps = React.PropsWithChildren & {
-  header?: React.ReactNode;
-  footer?: React.ReactNode;
   background?: string;
+  className?: string;
 };
 
 type PaneLayoutProps = {
@@ -26,15 +21,12 @@ type PaneLayoutProps = {
 const MIN_WIDTH = 100;
 const MOBILE_VIEW_MAX_WIDTH = 768;
 
-const Pane = ({ children, header, footer, background = 'white' }: PaneProps) => (
-  <section style={{ background }} className="flex h-full flex-col gap-1">
-    {header && <header>{header}</header>}
-    <div className="flex-grow overflow-auto">{children}</div>
-    {footer && <footer>{footer}</footer>}
+const Pane = ({ children, className, background = 'white' }: PaneProps) => (
+  <section style={{ background }} className={className}>
+    {children}
   </section>
 );
 
-// eslint-disable-next-line max-statements
 const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingIndex = useRef<number | null>(null);
@@ -66,6 +58,7 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
       if (draggingIndex.current === null || !containerRef.current) return;
 
       const xValue = getClientXValue(event);
+
       if (xValue === undefined) return;
 
       const newWidths = [...widths];
@@ -113,23 +106,20 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
   };
 
   return (
-    <div ref={containerRef} className={`flex ${className ?? ''}`}>
+    <div ref={containerRef} className={`flex h-full min-h-0 ${className ?? ''}`}>
       {children.map((child, index) => (
-        <Fragment key={child.key!}>
-          <div
-            style={{
-              width: widths[index],
-              background: child.props.background || 'white',
-            }}
-          >
-            {child}
+        <Fragment key={child.key ?? index}>
+          <div style={{ width: widths[index] }} className="flex-shrink-0 h-full min-h-0">
+            <div className="h-full min-h-0 overflow-auto">{child}</div>
           </div>
+
           {index < children.length - 1 && (
             <div
+              role="separator"
               aria-hidden
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}
-              className="w-1 cursor-col-resize flex-shrink-0 bg-black"
+              className="w-1 cursor-col-resize flex-shrink-0 bg-gray-200"
             />
           )}
         </Fragment>
@@ -139,28 +129,21 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
 };
 
 const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [currentPane, setCurrentPane] = useState(0);
 
-  const goToNext = () => {
-    setCurrentPane(prev => Math.min(prev + 1, children.length - 1));
-  };
-
-  const goToPrev = () => {
-    setCurrentPane(prev => Math.max(prev - 1, 0));
-  };
+  const goToNext = () => setCurrentPane(p => Math.min(p + 1, children.length - 1));
+  const goToPrev = () => setCurrentPane(p => Math.max(p - 1, 0));
 
   return (
-    <div className={`overflow-hidden relative ${className}`}>
+    <div className={`overflow-hidden relative h-full min-h-0 ${className}`}>
       <div
-        ref={containerRef}
-        className="flex transition-transform duration-300 ease-in-out h-full"
+        className="flex transition-transform duration-300 ease-in-out h-full min-h-0"
         style={{ transform: `translateX(-${currentPane * 100}%)` }}
       >
-        {children.map(child => (
+        {children.map((child, index) => (
           <div
-            key={child.key!}
-            className="flex-shrink-0 w-full h-full"
+            key={child.key ?? index}
+            className="flex-shrink-0 w-full h-full min-h-0"
             style={{ background: child.props.background || 'white' }}
           >
             {child}
@@ -168,14 +151,14 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         ))}
       </div>
 
-      <nav className="flex w-full justify-between sticky">
+      <nav className="flex w-full justify-between sticky bottom-0">
         <button
           onClick={goToPrev}
           disabled={currentPane === 0}
           type="button"
-          aria-label={t('System', 'Previus', null, false)}
+          aria-label={t('System', 'Previous', null, false)}
         >
-          <Translate>Previus</Translate>
+          <Translate>Previous</Translate>
         </button>
         <button
           onClick={goToNext}
