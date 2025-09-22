@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-const rules = require('./uwazi-eslint-rules');
+const rules = require('./uwazi-eslint-rules.cjs');
 
 module.exports = {
   extends: ['airbnb', 'plugin:cypress/recommended', 'plugin:storybook/recommended'],
