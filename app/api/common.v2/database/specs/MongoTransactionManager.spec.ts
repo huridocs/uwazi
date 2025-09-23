@@ -88,16 +88,29 @@ describe('When every operation goes well', () => {
     expect(col2).toEqual([]);
   });
 
-  it('should return an undefined session', async () => {
+  it('should be able to perform different transactions one after another', async () => {
     const transactionManager = createTransactionManager();
     const source1 = new Transactional1(transactionManager);
     const source2 = new Transactional2(transactionManager);
+    const source3 = new Transactional3(transactionManager);
     await transactionManager.run(async () => {
       await source1.do();
-      await source2.do();
     });
 
-    expect(transactionManager.getSession()).toBeUndefined();
+    await transactionManager.run(async () => {
+      await source2.do();
+      await source3.do();
+    });
+
+    const col1 = await testingDB.mongodb?.collection('collection1').find({}).toArray();
+    const col2 = await testingDB.mongodb?.collection('collection2').find({}).toArray();
+
+    expect(col1).toEqual([
+      { _id: ids('doc1'), name: 'doc1', updated: true },
+      { _id: ids('doc3'), name: 'doc3' },
+    ]);
+
+    expect(col2).toEqual([]);
   });
 });
 
