@@ -57,6 +57,12 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
           '',
           { total: progress.total, processed: progress.processed, remaining }
         );
+        // If completed, finish without redispatch
+        if ((progress.total || 0) > 0 && progress.processed >= (progress.total || 0)) {
+          await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
+          emitToTenant(this.tenantName, 'ix_model_status', extractorId, 'ready', 'Completed');
+          return;
+        }
       } else {
         emitToTenant(this.tenantName, 'ix_model_status', extractorId, 'processing_auto_accept');
       }
