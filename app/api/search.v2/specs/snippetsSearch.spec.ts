@@ -1,7 +1,7 @@
 import { searchRoutes } from '../search.v2/routes.js';
 import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { setUpApp } from '../utils/testingRoutes.js';
-import { advancedSort } from 'app/utils/advancedSort';
+import { advancedSort } from '../../../utils/advancedSort.js';
 import { Application } from 'express';
 import qs from 'qs';
 import request from 'supertest';

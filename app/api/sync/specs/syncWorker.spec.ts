@@ -32,7 +32,7 @@ import { elasticTesting } from '../utils/elastic_testing.js';
 import errorHandlingMiddleware from '../utils/error_handling_middleware.js';
 import mailer from '../utils/mailer.js';
 import db, { DBFixture } from '../utils/testing_db.js';
-import { advancedSort } from 'app/utils/advancedSort';
+import { advancedSort } from '../../../utils/advancedSort.js';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
 import { CreateTranslationsService } from '../i18n.v2/services/CreateTranslationsService.js';

@@ -1,10 +1,11 @@
-import { CSVLoader } from 'api/csv';
-import { DB } from 'api/odm';
-import users from 'api/users/users';
-import { prettifyError } from 'api/utils/handleError';
-import { tenants } from 'api/tenants/tenantContext';
+import yargs from 'yargs';
+import { CSVLoader } from '../app/api/csv/index.js';
+import { DB } from '../app/api/odm/index.js';
+import users from '../app/api/users/users.js';
+import { prettifyError } from '../app/api/utils/handleError.js';
+import { tenants } from '../app/api/tenants/tenantContext.js';
 
-const { template, importThesauri, username, language, file, stop } = require('yargs') // eslint-disable-line
+const { template, importThesauri, username, language, file, stop } = await yargs // eslint-disable-line
   .option('template', {
     alias: 't',
     describe: '_id of a template or thesauri',

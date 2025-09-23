@@ -1,9 +1,9 @@
 import { Store } from 'redux';
-import { AtomStoreData } from 'app/V2/atoms';
+import { AtomStoreData } from '../../V2/atoms.js';
 import { ClientFeatureFlags } from './V2/shared/types.js';
 import { RequestError } from './V2/shared/errorUtils.js';
-import { IStore } from 'app/istore';
-import { updatePageDatasets } from 'app/Pages/utils/updatePageDatasets';
+import { IStore } from '../../istore.js';
+import { updatePageDatasets } from '../../Pages/utils/updatePageDatasets.js';
 
 declare global {
   namespace jest {

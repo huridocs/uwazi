@@ -1,7 +1,7 @@
 import util from 'util';
 import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
-import { ClientBlobFile } from 'app/istore';
+import { ClientBlobFile } from '../istore.js';
 
 export type Subset<K, T extends K> = T;
 

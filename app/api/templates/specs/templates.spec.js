@@ -1,14 +1,14 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
-import documents from 'api/documents/documents.js';
-import translations from 'api/i18n/translations';
-import { elasticClient } from 'api/search/elastic';
-import * as setupSockets from 'api/socketio/setupSockets';
-import db, { testingDB } from 'api/utils/testing_db';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import documents from '../../documents/documents.js.js';
+import translations from '../../i18n/translations.js';
+import { elasticClient } from '../../search/elastic.js';
+import * as setupSockets from '../../socketio/setupSockets.js';
+import db, { testingDB } from '../../utils/testing_db.js';
+import { testingEnvironment } from '../../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import * as idGenerator from 'shared/IDGenerator';
-import { propertyTypes } from 'shared/propertyTypes';
+import * as idGenerator from '../../../shared/IDGenerator.js';
+import { propertyTypes } from '../../../shared/propertyTypes.js';
 import documents from '../documents/documents.js.js';
 import * as generatedIdPropertyAutoFiller from '../entities/generatedIdPropertyAutoFiller.js';
 import translations from '../i18n/translations.js';
@@ -21,10 +21,10 @@ import { propertyTypes } from '../../shared/propertyTypes.js';
 
 import { spyOnEmit } from '../eventsbus/eventTesting.js';
 
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { applicationEventsBus } from 'api/eventsbus';
-import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import { testingTenants } from 'api/utils/testingTenants';
+import { DefaultTransactionManager } from '../../common.v2/database/data_source_defaults.js';
+import { applicationEventsBus } from '../../eventsbus/index.js';
+import { DefaultTranslationsDataSource } from '../../i18n.v2/database/data_source_defaults.js';
+import { testingTenants } from '../../utils/testingTenants.js';
 import { inspect } from 'util';
 import { applicationEventsBus } from '../eventsbus.js';
 import { testingTenants } from '../utils/testingTenants.js';

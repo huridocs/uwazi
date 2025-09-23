@@ -1,6 +1,7 @@
+import yargs from 'yargs';
 import { emitSocketEvent } from '../app/api/socketio/standaloneEmitSocketEvent';
 
-const { tenant, event } = require('yargs')
+const { tenant, event } = await yargs
   .option('tenant', {
     alias: 't',
     type: 'string',

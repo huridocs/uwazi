@@ -1,8 +1,8 @@
-import { AbstractController } from 'api/common.v2/infrastructure/AbstractController';
-import settings from 'api/settings';
-import templates from 'api/templates';
-import { handleMappingConflict } from 'api/templates/routes';
-import { handleError } from 'api/utils';
+import { AbstractController } from '../../../../common.v2/infrastructure/AbstractController.js';
+import settings from '../../../../settings/index.js';
+import templates from '../../../../templates/index.js';
+import { handleMappingConflict } from '../../../../templates/routes.js';
+import { handleError } from '../../../../utils/index.js';
 
 class TemplateMutationController extends AbstractController {
   protected async handle(): Promise<void> {

@@ -111,7 +111,7 @@ while IFS= read -r file; do
     else
         PRODUCTION_CONFLICTS+=("$file")
     fi
-done <<< "$CONFLICT_FILES"
+done <<<"$CONFLICT_FILES"
 
 echo "📊 Conflict Analysis:"
 echo "🔧 ESM-related conflicts: ${#ESM_CONFLICTS[@]}"
@@ -127,7 +127,7 @@ if [ ${#ESM_CONFLICTS[@]} -gt 0 ]; then
         echo "  - $file"
     done
     echo ""
-    
+
     # Run our conflict resolution script
     if [ -f "resolve-esm-conflicts.js" ]; then
         node resolve-esm-conflicts.js
@@ -145,7 +145,7 @@ if [ ${#PRODUCTION_CONFLICTS[@]} -gt 0 ]; then
         echo "  - $file"
     done
     echo ""
-    
+
     print_status "Opening conflict files for manual resolution..."
     for file in "${PRODUCTION_CONFLICTS[@]}"; do
         if [ -f "$file" ]; then

@@ -3,7 +3,7 @@ import entities from '../entities/entities.js';
 import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
 import { UserSchema } from '../../shared/types/userType.js';
 import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
-import { isValidUrl, sanitizeUrl } from 'shared/urlValidationUtils';
+import { isValidUrl, sanitizeUrl } from '../../shared/urlValidationUtils.js';
 
 const validateAndSanitizeUrls = (entity: EntityWithFilesSchema): EntityWithFilesSchema => {
   if (!entity.metadata) return entity;

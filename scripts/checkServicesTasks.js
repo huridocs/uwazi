@@ -1,7 +1,8 @@
+import yargs from 'yargs';
 const RedisSMQ = require('rsmq');
 const Redis = require('redis');
 
-const { tenant, redisUrl, read, deleteAll, service, deleteOne } = require('yargs')
+const { tenant, redisUrl, read, deleteAll, service, deleteOne } = await yargs
   .option('tenant', {
     alias: 't',
     type: 'string',

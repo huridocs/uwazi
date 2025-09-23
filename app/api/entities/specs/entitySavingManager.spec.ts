@@ -4,7 +4,7 @@ import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } fro
 import * as processDocumentApi from '../files/processDocument.js';
 import { search } from '../search.js';
 import db from '../utils/testing_db.js';
-import { advancedSort } from 'app/utils/advancedSort';
+import { advancedSort } from '../../../utils/advancedSort.js';
 import * as os from 'os';
 import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { UserInContextMockFactory } from '../utils/testingUserInContext.js';

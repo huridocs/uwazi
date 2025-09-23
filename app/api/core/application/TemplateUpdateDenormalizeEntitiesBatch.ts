@@ -9,7 +9,7 @@ import { RelationsV1Collection } from '../../relationships/RelationsV1Collection
 import { search } from '../../search/index.js';
 import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
 import { cloneDeep } from 'lodash';
-import { generateID } from 'shared/IDGenerator';
+import { generateID } from '../../../shared/IDGenerator.js';
 
 type Input = {
   entitiesIds: string[];
