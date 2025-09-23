@@ -24,7 +24,8 @@ const Component = () => (
       </div>
     </PaneLayout.Pane>
     <PaneLayout.Pane key="pane-2">
-      <div>
+      <div className="min-w-96 overflow-x-auto">
+        <h2 className="text-lg font-semibold">This pane children has a min width</h2>
         <p>
           Nunc ullamcorper metus risus, vitae semper augue laoreet vitae. Morbi commodo risus id
           interdum tempus. Sed condimentum lectus lacus, a imperdiet augue feugiat ut. Nam ac
