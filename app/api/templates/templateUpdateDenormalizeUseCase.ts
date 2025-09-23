@@ -64,8 +64,10 @@ export const denormalizeTemplateEntities = async (
       templateId: template.id,
       language,
       modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
+      newGeneratedIdProps: [],
       deletedProperties,
       renamedProperties,
+      fullReindex: false,
       tenantName: tenants.current().name,
       userId,
     });
