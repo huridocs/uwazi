@@ -81,7 +81,7 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       });
     };
 
-    const handleSuggestionError: AcceptSuggestionErrorCallback = async message: any => {
+    const handleSuggestionError: AcceptSuggestionErrorCallback = async (message) => {
       await revalidate();
       setNotifications({
         type: 'error',

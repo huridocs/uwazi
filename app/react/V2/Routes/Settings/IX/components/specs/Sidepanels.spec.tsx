@@ -74,7 +74,7 @@ const createSuggestionWithProperty = (propertyName: string, additionalProps = {}
   ...additionalProps,
 });
 
-const clickToFillAndWait = async (expectedValue: any) => {
+const clickToFillAndWait = async (expectedValue) => {
   fireEvent.click(screen.getByTestId('selectable-text'));
   fireEvent.click(screen.getByText('Click to fill'));
   await waitFor(() => {
@@ -125,7 +125,7 @@ jest.mock('V2/api/entities', () => ({
 }));
 
 jest.mock('V2/api/search', () => ({
-  search: jest.fn().mockImplementation(async query: any => {
+  search: jest.fn().mockImplementation(async (query) => {
     if (query.filters.searchString.includes('template:template2')) {
       return Promise.resolve({
         rows: [
@@ -722,7 +722,7 @@ describe('Sidepanel forms', () => {
       const { search } = jest.requireMock('V2/api/search');
       const extractorWithInheritedProperty = createExtractorWithInheritedProperty();
 
-      search.mockImplementation(async (query: any) => {
+      search.mockImplementation(async (query) => {
         if (query.filters.searchString.includes('template:template2')) {
           return Promise.resolve({
             rows: [

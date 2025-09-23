@@ -95,7 +95,7 @@ export default {
 
     const duplicate = async () => {
       const pages = await this.get({ language: defaultLanguage });
-      const savePages = pages.map(async _page: any => {
+      const savePages = pages.map(async (_page) => {
         const page: PageType = { ..._page, language };
         delete page._id;
         delete page.__v;

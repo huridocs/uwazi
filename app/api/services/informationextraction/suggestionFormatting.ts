@@ -36,7 +36,7 @@ type TitleAsProperty = {
   type: 'title';
 };
 
-const createAjvValidator = (schema: any) => {
+const createAjvValidator = (schema) => {
   const ajv = new Ajv({ allErrors: true });
   ajv.addVocabulary(['tsType']);
   return syncWrapValidator(ajv.compile(schema));
@@ -47,14 +47,14 @@ const valuesSelectionAjv = createAjvValidator(ValuesSelectionSuggestionSchema);
 
 const textSelectionValidator = (
   suggestion: RawSuggestion
-): suggestion is TextSelectionSuggestion: any => {
+): suggestion is TextSelectionSuggestion => {
   textSelectionAjv(suggestion);
   return true;
 };
 
 const valuesSelectionValidator = (
   suggestion: RawSuggestion
-): suggestion is ValuesSelectionSuggestion: any => {
+): suggestion is ValuesSelectionSuggestion => {
   valuesSelectionAjv(suggestion);
   return true;
 };
@@ -64,7 +64,7 @@ const VALIDATORS = {
   text: textSelectionValidator,
   numeric: textSelectionValidator,
   date: textSelectionValidator,
-  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion: any => {
+  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
     if (!valuesSelectionValidator(suggestion)) {
       throw new RawSuggestionValidationError('Select suggestion is not valid.');
     }
@@ -85,7 +85,7 @@ const simpleSuggestion = (
 ) => ({
   suggestedValue,
   segment: rawSuggestion.segment_text,
-  selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
+  selectionRectangles: rawSuggestion.segments_boxes.map((box) => {
     const rect = { ...box, page: box.page_number.toString() };
     delete rect.page_number;
     return rect;

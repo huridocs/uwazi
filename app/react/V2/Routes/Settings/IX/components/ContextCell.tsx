@@ -74,7 +74,7 @@ const filterNodes = (nodes: React.ReactNode[]) => {
   );
 
   if (hasMatches) {
-    return nodes.filter(node: any => {
+    return nodes.filter((node) => {
       if (
         React.isValidElement(node) &&
         (node.props.className === ixContextClassnames.ix_adjacent_paragraph ||
@@ -89,7 +89,7 @@ const filterNodes = (nodes: React.ReactNode[]) => {
   return nodes;
 };
 
-const createNode = (node: ChildNode, key: number): React.ReactNode: any => {
+const createNode = (node: ChildNode, key: number): React.ReactNode => {
   if (node.type === 'text') {
     return node.data;
   }

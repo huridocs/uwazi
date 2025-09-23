@@ -47,7 +47,7 @@ const toMetadata = async (
 
   const propertyPromises = (template.properties || [])
     .filter(prop => hasValidValue(prop, toImportEntity))
-    .map(async prop: any => {
+    .map(async (prop) => {
       const propName = ensure<string>(prop.name);
       const originalValue = toImportEntity.propertiesFromColumns[propName];
 
@@ -56,7 +56,7 @@ const toMetadata = async (
       if (parsed && typeof parsed === 'object' && 'data' in parsed) {
         const { data, warnings } = parsed;
 
-        warnings.forEach(warning: any => {
+        warnings.forEach((warning) => {
           if (feedbackCallback) {
             feedbackCallback(warning);
           }
@@ -304,7 +304,7 @@ const translateEntity = async (
   }, Promise.resolve());
 
   await Promise.all(
-    translations.map(async translatedEntity: any => {
+    translations.map(async (translatedEntity) => {
       if (translatedEntity.propertiesFromColumns.file) {
         const file = await importFile.extractFile(translatedEntity.propertiesFromColumns.file);
         await processDocument(ensure(entity.sharedId), file);

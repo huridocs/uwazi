@@ -91,7 +91,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     setVideoPlaying(playingStatus);
   };
 
-  const timeLinks = (_timelinks: any) => {
+  const timeLinks = (_timelinks) => {
     const timelinks = _timelinks || {};
     return Object.keys(timelinks).map((timeKey, index) => {
       const linkIndex = index;

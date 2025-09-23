@@ -11,7 +11,7 @@ import { UserRole } from '../../shared/types/userSchema.js';
 import { getTableColumns } from './tableColumns.js';
 import setReduxState from './setReduxState.js';
 
-const decodeQuery = params: any => {
+const decodeQuery = (params) => {
   try {
     return risonDecodeOrIgnore(params.q || '()');
   } catch (error) {

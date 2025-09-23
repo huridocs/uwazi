@@ -88,7 +88,7 @@ export function saveConnection(connection, callback = () => {}) {
       save: [[sourceRelationship, targetRelationship]],
     };
 
-    return api.post('relationships/bulk', new RequestParams(apiCall)).then(response: any => {
+    return api.post('relationships/bulk', new RequestParams(apiCall)).then((response) => {
       dispatch({ type: types.CONNECTION_CREATED });
       callback(response.json);
       dispatch(

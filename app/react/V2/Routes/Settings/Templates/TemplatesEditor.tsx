@@ -159,7 +159,7 @@ const TemplatesEditor = () => {
     }
   }, [loadedTemplate]);
 
-  const getCurrentStatus = useCallback((): ClientTemplateSchema: any => {
+  const getCurrentStatus = useCallback((): ClientTemplateSchema => {
     const cleanedCommonProperties = commonProperties.map(cleanProperty);
     const cleanedProperties = properties.map(cleanProperty);
 

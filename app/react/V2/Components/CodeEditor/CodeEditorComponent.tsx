@@ -17,7 +17,7 @@ const createMonacoEditor = (
   container: HTMLDivElement,
   language: string,
   initialValue?: string
-): CodeEditorInstance: any => {
+): CodeEditorInstance => {
   const editor = monaco.editor.create(container, {
     value: initialValue,
     language,
@@ -27,7 +27,7 @@ const createMonacoEditor = (
     fontLigatures: false,
   });
 
-  editor.changeViewZones(accessor: any => {
+  editor.changeViewZones((accessor) => {
     accessor.addZone({
       afterLineNumber: 0,
       heightInPx: 8,
@@ -58,7 +58,7 @@ const CodeEditorComponent = ({
           monaco.editor.remeasureFonts();
           setFontsReady(true);
         })
-        .catch(e: any => {
+        .catch((e) => {
           setHasError(true);
           const error = new Error('Code editor error', { cause: e });
           captureException(error);

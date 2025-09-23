@@ -86,7 +86,7 @@ const handleEntitySave = async (
           prop.content === property.content &&
           prop.type === property.type
       )
-      .forEach(prop: any => {
+      .forEach((prop) => {
         data.properties?.push({ [prop.name]: metadata });
       });
   }

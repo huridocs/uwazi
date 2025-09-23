@@ -75,7 +75,7 @@ const PXEntityDashboard = () => {
       previousPageRef.current = page;
     } else {
       setData(prevRows =>
-        prevRows.map(row: any => {
+        prevRows.map((row) => {
           const newStatus = rows.find(r => r.entity._id === row.entity._id)?.status;
           if (newStatus && newStatus.status !== row.status.status) {
             // Only reassign if status changed

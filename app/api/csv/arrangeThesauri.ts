@@ -86,19 +86,19 @@ type ThesaurusMap = {
 
 type ThesaurusMaps = Record<string, ThesaurusMap>;
 
-const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesaurusMaps: any => {
+const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesaurusMaps => {
   const maps: ThesaurusMaps = {};
 
-  allRelatedThesauri.forEach(t: any => {
+  allRelatedThesauri.forEach((t) => {
     const id = t._id.toString();
 
     const normalizedLabelsPerParent: Sets<string> = new Sets({ '': [] });
-    (t.values || []).forEach(v: any => {
+    (t.values || []).forEach((v) => {
       const normalizedLabel = normalizeThesaurusLabel(v.label);
       if (!normalizedLabel) return;
       const isParent = v.values;
       if (isParent) {
-        (v.values || []).forEach(child: any => {
+        (v.values || []).forEach((child) => {
           const childNormalizedLabel = normalizeThesaurusLabel(child.label);
           if (childNormalizedLabel) {
             normalizedLabelsPerParent.add(normalizedLabel, childNormalizedLabel);
@@ -132,7 +132,7 @@ const isNewLabel = (
   map: ThesaurusMap,
   parentInfo: LabelInfoBase,
   childInfo: LabelInfoBase
-): boolean: any => {
+): boolean => {
   const hasInExisting = map.normalizedLabelsPerParent.has(
     parentInfo.normalizedLabel,
     childInfo.normalizedLabel
@@ -260,7 +260,7 @@ const tryAddingTranslation = (
   thesauriValueData: ThesaurusMaps,
   potentialTranslations: (string | undefined)[][],
   newKeys: Set<string>
-): void: any => {
+): void => {
   potentialTranslations
     .filter(([id, language, key, value]) => id && language && key && value && newKeys.has(key))
     .forEach(([id, language, key, value]) => {
@@ -279,16 +279,16 @@ const handleRow = (
   languagesPerHeader: Record<string, Set<string>>,
   defaultLanguage: string,
   template: TemplateSchema
-): void: any => {
+): void => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
 
-  headersWithoutLanguage.forEach(header: any => {
+  headersWithoutLanguage.forEach((header) => {
     const property = template.properties?.find(p => p.name === header);
     const isMultiselect = property?.type === 'multiselect';
 
     if (isMultiselect) {
       const result = splitMultiselectLabels(safeNamedRow[header]);
-      result.labelInfos.forEach(labelInfo: any => {
+      result.labelInfos.forEach((labelInfo) => {
         tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
       });
     } else {
@@ -309,7 +309,7 @@ const handleRow = (
     }
   });
 
-  Object.keys(languagesPerHeader).forEach(header: any => {
+  Object.keys(languagesPerHeader).forEach((header) => {
     const defaultLanguageHeader = headerWithLanguage(header, defaultLanguage);
 
     const property = template.properties?.find(p => p.name === header);
@@ -340,7 +340,7 @@ const handleRow = (
     }
 
     const potentialTranslations = Array.from(languagesPerHeader[header])
-      .map(lang: any => {
+      .map((lang) => {
         const fullHeader = headerWithLanguage(header, lang);
         let labelInfos: LabelInfo[] = [];
         if (isMultiselect) {
@@ -379,7 +379,7 @@ const handleRow = (
         return ptrs;
       })
       .flat();
-    keyInfos.forEach(labelInfo: any => {
+    keyInfos.forEach((labelInfo) => {
       const newKeys = tryAddingLabel(
         thesauriValueData,
         labelInfo,
@@ -404,7 +404,7 @@ const syncSaveThesauri = async (
     const { newInfos } = thesaurusMaps[thesaurus._id.toString()];
     const normalizedRootLabelsToOriginalRootLabels: Record<string, string> = {};
     const normalizedRootLabelsToChildLabels: Arrays<string> = new Arrays();
-    newInfos.forEach(info: any => {
+    newInfos.forEach((info) => {
       if (!(info.normalizedLabel in normalizedRootLabelsToOriginalRootLabels)) {
         normalizedRootLabelsToOriginalRootLabels[info.normalizedLabel] = info.label;
       }
@@ -415,7 +415,7 @@ const syncSaveThesauri = async (
 
     const newValues: ThesaurusSchema['values'] = Object.keys(
       normalizedRootLabelsToOriginalRootLabels
-    ).map(normalizedLabel: any => {
+    ).map((normalizedLabel) => {
       const rootValue = {
         label: normalizedRootLabelsToOriginalRootLabels[normalizedLabel],
       };

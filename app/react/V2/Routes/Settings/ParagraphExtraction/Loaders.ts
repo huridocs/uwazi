@@ -129,7 +129,7 @@ const PXParagraphLoader =
       property => property._id === extractor.paragraphNumberPropertyId
     );
 
-    const paragraphsRows = paragraphs.rows?.map(row: any => {
+    const paragraphsRows = paragraphs.rows?.map((row) => {
       const [defaultLanguageEntity, ...otherLanguagesEntities] = row.entities.map(entity =>
         getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );

@@ -227,7 +227,7 @@ async function getEntitiesForSuggestionsQuery(
   const uniquePairs = Array.from(
     new Set(suggestions.map(s => `${s.entityId}::${s.language || ''}`))
   )
-    .map(key: any => {
+    .map((key) => {
       const [sharedId, language] = key.split('::');
       return { sharedId, language } as { sharedId: string; language: string };
     })
@@ -472,7 +472,7 @@ async function getFileIdsWithReadySegmentations(
       );
       // Partition ready fileIds into labeled / unlabeled buckets preserving insertion order
       const readySet = new Set(readySegmentationFileIds.map(id => id.toString()));
-      currentBatch.forEach(s: any => {
+      currentBatch.forEach((s) => {
         const fId = s.fileId as ObjectIdSchema | undefined;
         if (!fId) return;
         if (!readySet.has(fId.toString())) return;

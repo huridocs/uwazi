@@ -44,7 +44,7 @@ const WebMediaResourceForm = ({
     return 'btn hover:bg-blue-600';
   };
 
-  const handleFormSubmit = (formData: any) => {
+  const handleFormSubmit = (formData) => {
     if (formData.url && typeof formData.url === 'string' && formData.url.trim() !== '') {
       const sanitized = sanitizeUrl(formData.url);
       const isValid = isValidUrl(sanitized) && isValidUrlLength(sanitized);
@@ -71,7 +71,7 @@ const WebMediaResourceForm = ({
     ...(hasName && { name: { required: (val: any) => !!val && val.trim() !== '' } }),
     url: {
       required: (val: any) => !!val && val.trim() !== '',
-      validUrl: (val: any) => {
+      validUrl: (val) => {
         if (!val || typeof val !== 'string') return false;
         const sanitized = sanitizeUrl(val);
         return isValidUrl(sanitized) && isValidUrlLength(sanitized);

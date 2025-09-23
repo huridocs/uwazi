@@ -46,7 +46,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       const { process } = await getFilesForTraining(extractor);
       const processedEntityIds: string[] = [];
 
-      await process(async file: any => {
+      await process(async (file) => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -152,7 +152,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       if (propertyLabeledData) {
         data = {
           ...data,
-          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r: any => {
+          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map((r) => {
             const { page, ...rectangle } = r;
             return { ...rectangle, page_number: page };
           }),

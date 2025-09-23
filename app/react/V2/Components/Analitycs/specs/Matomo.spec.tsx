@@ -28,7 +28,7 @@ describe('Matomo', () => {
     window.location = originalLocation;
   });
 
-  const renderComponent = (storeState: any) => {
+  const renderComponent = (storeState) => {
     render(
       <MemoryRouter>
         <TestAtomStoreProvider initialValues={storeState}>

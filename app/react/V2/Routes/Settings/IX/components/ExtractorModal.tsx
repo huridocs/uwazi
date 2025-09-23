@@ -61,7 +61,7 @@ const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
   const propertyName = values.length ? getPropertyNameFromExtractPair(values[0]) : null;
   return templates
-    .map(template: any => {
+    .map((template) => {
       const option = {
         label: template.name,
         id: template._id,
@@ -225,7 +225,7 @@ const ExtractorModal = ({
               <Translate>Selected templates</Translate>
             </h6>
             <div className="flex flex-wrap p-3">
-              {values.map(value: any => {
+              {values.map((value) => {
                 const templateId = getTemplateFromExtractPair(value);
                 const template = templates.find(temp => temp._id === templateId);
                 return (

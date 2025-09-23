@@ -20,7 +20,7 @@ const formatExtractors = (
   extractors: ClientIXExtractorType[],
   templates: ClientTemplateSchema[]
 ): TableExtractor[] =>
-  extractors.map(extractor: any => {
+  extractors.map((extractor) => {
     let propertyType: TableExtractor['propertyType'] = 'text';
     let propertyLabel = '';
     let sourceLabel: string | undefined =
@@ -31,7 +31,7 @@ const formatExtractors = (
         templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate
     );
 
-    templates.some(template: any => {
+    templates.some((template) => {
       const property = template.properties.find(
         templateProperty => templateProperty.name === extractor.property
       );

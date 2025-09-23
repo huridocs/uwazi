@@ -41,7 +41,7 @@ jest.mock('V2/Components/PDFViewer', () => ({
 }));
 
 const testCheckboxes = async (expectedSelected?: string) => {
-  thesauri[0].values.forEach(async value: any => {
+  thesauri[0].values.forEach(async (value) => {
     const checkbox = await screen.findByLabelText(value.label);
     if (value.label === expectedSelected) {
       expect(checkbox).toBeChecked();

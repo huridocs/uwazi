@@ -207,7 +207,7 @@ export function activateReference(
 
   const activeRefenreceSelection = {
     ...connection.reference,
-    selectionRectangles: connection.reference.selectionRectangles?.map(rectangle: any => {
+    selectionRectangles: connection.reference.selectionRectangles?.map((rectangle) => {
       const { _id, ...selectionRectangle } = rectangle;
       return selectionRectangle;
     }),

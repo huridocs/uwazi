@@ -31,7 +31,7 @@ const TranslateModal = () => {
   const { fields } = useFieldArray({ control, name: 'data' });
 
   React.useEffect(() => {
-    const initialValues = translations.map(translation: any => {
+    const initialValues = translations.map((translation) => {
       const language = languages.find(lang => lang.key === translation.locale)!;
       const languageContext = translation.contexts.find(c => c.id === context?.id);
       const value =

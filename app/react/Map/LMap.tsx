@@ -50,7 +50,7 @@ const LMap = ({
   const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = uniqueID();
 
-  const clickHandler = (markerPoint: any) => {
+  const clickHandler = (markerPoint) => {
     if (!map.dragging.enabled()) {
       map.dragging.enable();
       return;
@@ -67,16 +67,16 @@ const LMap = ({
   const initMarkers = () => {
     const markers = pointMarkers
       .map(pointMarker => parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo))
-      .filter(marker: any => {
+      .filter((marker) => {
         const entityId = marker.properties.entity?.sharedId;
         return entityId !== deletedEntity;
       });
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
-    markerGroup.on('clusterclick', cluster: any => {
+    markerGroup.on('clusterclick', (cluster) => {
       props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
     });
-    markerGroup.on('click', marker: any => {
+    markerGroup.on('click', (marker) => {
       props.clickOnMarker?.(marker.layer);
     });
     if (pointMarkers.length) {
@@ -104,7 +104,7 @@ const LMap = ({
   const initMap = () => {
     const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
     const mapLayers: { [k: string]: L.TileLayer } = {};
-    Object.keys(baseMaps).forEach(key: any => {
+    Object.keys(baseMaps).forEach((key) => {
       const mapKey = baseMaps[key].key;
       if (layers && layers.length && !layers.includes(mapKey as Layer)) {
         return;

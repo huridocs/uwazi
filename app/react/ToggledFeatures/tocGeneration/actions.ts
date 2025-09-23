@@ -18,7 +18,7 @@ const tocGenerationActions = {
       const doc = {
         ...currentDoc,
         defaultDoc: updatedFile,
-        documents: ensure<FileType[]>(currentDoc.documents).map(d: any => {
+        documents: ensure<FileType[]>(currentDoc.documents).map((d) => {
           if (d._id === updatedFile._id) {
             return updatedFile;
           }

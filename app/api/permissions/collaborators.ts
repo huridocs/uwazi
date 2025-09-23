@@ -27,7 +27,7 @@ export const collaborators = {
       });
     });
 
-    groups.forEach(group: any => {
+    groups.forEach((group) => {
       availableCollaborators.push({
         refId: group._id!.toString(),
         type: PermissionType.GROUP,

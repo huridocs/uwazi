@@ -18,7 +18,7 @@ describe('migration pdf_thumbnails', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done: any => {
+  afterAll((done) => {
     testingDB.disconnect().then(done);
   });
 
@@ -30,7 +30,7 @@ describe('migration pdf_thumbnails', () => {
     const thumbnail1 = `${__dirname}/${docId1}.jpg`;
     const thumbnail2 = `${__dirname}/${docId4}.jpg`;
 
-    const deleteThumbnails = done: any => {
+    const deleteThumbnails = (done) => {
       try {
         fs.unlinkSync(thumbnail1);
         fs.unlinkSync(thumbnail2);
@@ -40,11 +40,11 @@ describe('migration pdf_thumbnails', () => {
       }
     };
 
-    beforeEach(done: any => {
+    beforeEach((done) => {
       deleteThumbnails(done);
     });
 
-    afterEach(done: any => {
+    afterEach((done) => {
       deleteThumbnails(done);
     });
 

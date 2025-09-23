@@ -51,7 +51,7 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
   if (selections.length) {
     return (
       <>
-        {selections.map(selection: any => {
+        {selections.map((selection) => {
           const selected = selection.selection;
           const rectangles = (selected?.selectionRectangles || []).map(rectangle => ({
             regionId: rectangle.page,

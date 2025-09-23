@@ -13,7 +13,7 @@ import { RelationshipLink } from './RelationshipLink.js';
 import ValueList from './ValueList.js';
 import { ImageViewer } from './ImageViewer.js';
 
-const getMediaUrlAndName = fileUrl: any => {
+const getMediaUrlAndName = (fileUrl) => {
   let url = fileUrl;
   let filename = url.split('/').pop();
 
@@ -127,7 +127,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
         );
 
         // eslint-disable-next-line no-param-reassign
-        prop.value = propValue.map(_value: any => {
+        prop.value = propValue.map((_value) => {
           const value = showByType({ prop: _value, templateId, compact });
           return value && value.value
             ? value
@@ -159,7 +159,7 @@ const computeGroup = (metadata, startIndex) => {
   return [members, index];
 };
 
-const getNewGroupedGeolocationField = members: any => {
+const getNewGroupedGeolocationField = (members) => {
   if (members.length === 1) {
     return {
       type: 'geolocation_group',
@@ -177,7 +177,7 @@ const getNewGroupedGeolocationField = members: any => {
   };
 };
 
-const groupAdjacentGeolocations = metadata: any => {
+const groupAdjacentGeolocations = (metadata) => {
   const groupedMetadata = [];
   let index = 0;
 
@@ -212,7 +212,7 @@ function filterProps(showSubset) {
 }
 
 const flattenInherittedRelationships = metadata =>
-  metadata.map(property: any => {
+  metadata.map((property) => {
     if (property.type === 'inherit' && property.inheritedType === 'relationship') {
       // eslint-disable-next-line no-param-reassign
       property.value = property.value.reduce(

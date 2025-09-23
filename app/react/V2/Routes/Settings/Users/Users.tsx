@@ -216,7 +216,7 @@ const Users = () => {
               ['bulk-reset-2fa', 'delete-users'].includes(bulkActionIntent.current || '')) ||
             false
           }
-          onAcceptClick={async value: any => {
+          onAcceptClick={async (value) => {
             password.current = value;
             await handleBulkAction();
             setShowConfirmationModal(false);

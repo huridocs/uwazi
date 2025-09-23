@@ -199,7 +199,7 @@ const validateSameRelationshipsMatch = (
         p.relationType?.toString() === property.relationType?.toString()
     ) || [];
 
-  const valid = sameProps.every(p: any => {
+  const valid = sameProps.every((p) => {
     const otherProp = entity.metadata?.[p.name] || [];
     return (
       otherProp?.length === value?.length &&

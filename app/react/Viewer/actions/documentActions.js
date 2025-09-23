@@ -80,7 +80,7 @@ export function saveToc(toc, fileId) {
     const doc = {
       ...currentDoc,
       defaultDoc: updatedFile,
-      documents: currentDoc.documents.map(d: any => {
+      documents: currentDoc.documents.map((d) => {
         if (d._id === updatedFile._id) {
           return updatedFile;
         }
@@ -96,7 +96,7 @@ export function saveToc(toc, fileId) {
 }
 
 export function deleteDocument(doc) {
-  return async dispatch: any => {
+  return async (dispatch) => {
     await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
@@ -115,11 +115,11 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
 
 export function loadTargetDocument(sharedId) {
   return (dispatch, getState) =>
-    getDocument(new RequestParams({ sharedId }), getState().locale).then(entity: any => {
+    getDocument(new RequestParams({ sharedId }), getState().locale).then((entity) => {
       dispatch(actions.set('viewer/targetDoc', entity));
       return referencesAPI
         .get(new RequestParams({ sharedId, file: entity.defaultDoc._id, onlyTextReferences: true }))
-        .then(references: any => {
+        .then((references) => {
           dispatch(actions.set('viewer/targetDocReferences', references));
         });
     });

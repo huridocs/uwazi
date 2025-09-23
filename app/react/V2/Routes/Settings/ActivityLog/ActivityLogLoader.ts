@@ -136,7 +136,7 @@ const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
   } else if (value.length > 0) {
     prev.set(key, value[0]);
     value.splice(0, 1);
-    value.forEach(item: any => {
+    value.forEach((item) => {
       prev.append(key, item);
     });
   }

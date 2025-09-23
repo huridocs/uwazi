@@ -23,7 +23,7 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
   const recordsToNullSource: OcrRecord[] = [];
   const recordIdsToDelete: string[] = [];
 
-  records.forEach(record: any => {
+  records.forEach((record) => {
     if (record.sourceFile) {
       idRecordMap.set(record.sourceFile.toString(), record);
     }
@@ -32,7 +32,7 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
     }
   });
 
-  idStrings.forEach(fileId: any => {
+  idStrings.forEach((fileId) => {
     if (idRecordMap.has(fileId)) {
       const record = idRecordMap.get(fileId);
       if (record.sourceFile?.toString() === fileId) {

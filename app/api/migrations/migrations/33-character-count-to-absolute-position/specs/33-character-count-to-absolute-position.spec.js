@@ -25,7 +25,7 @@ describe('conversion of character count to absolute position', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done: any => {
+  afterAll((done) => {
     testingDB.disconnect().then(done);
   });
 

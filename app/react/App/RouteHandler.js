@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 
 const getLocale = ({ store }) => store.getState().locale;
 
-const setLocale = locale: any => {
+const setLocale = (locale) => {
   moment.locale(locale);
   api.locale(locale);
   I18NUtils.saveLocale(locale);
@@ -37,7 +37,7 @@ class RouteHandler extends Component {
     setLocale(getLocale(context));
     this.state = {};
     if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
-      this.getClientState(this.props).catch(ex: any => {
+      this.getClientState(this.props).catch((ex) => {
         // used in inherited types
         // eslint-disable-next-line react/no-unused-state
         this.setState({ loadingError: ex });
@@ -66,7 +66,7 @@ class RouteHandler extends Component {
     const requestParams = new RequestParams({ ...query, ...routeParams }, headers);
     const actions = await this.constructor.requestState(requestParams, store.getState());
 
-    actions.forEach(action: any => {
+    actions.forEach((action) => {
       store.dispatch(action);
     });
   }

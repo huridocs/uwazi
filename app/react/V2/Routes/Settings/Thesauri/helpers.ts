@@ -19,7 +19,7 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
   searchedItem
 ) =>
   items
-    .map(item: any => {
+    .map((item) => {
       let match = rootItemMatch(item, searchedItem);
       match = match || (item.subRows?.length ? findItem(item.subRows, searchedItem) : undefined);
       return match;
@@ -28,7 +28,7 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
 
 const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =>
   (rows || []).map(({ rowId: _rowId, groupId: _groupId, subRows: subItems, ...item }) => {
-    const values = subItems?.map(subItem: any => {
+    const values = subItems?.map((subItem) => {
       const { rowId, groupId, ...rest } = subItem;
       return rest;
     });
@@ -36,7 +36,7 @@ const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =
   });
 
 const addSelection =
-  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item: any) => {
+  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item) => {
     if (item.rowId in selectedRows) {
       selection.push(item);
     }
@@ -117,7 +117,7 @@ const removeItem = (prev: ThesaurusRow[], deletedItem: ThesaurusRow) => {
   if (!removed.length) {
     prev
       .filter(prevItem => prevItem.subRows?.length)
-      .forEach(prevItem: any => {
+      .forEach((prevItem) => {
         remove(prevItem.subRows!, subItem => subItem.rowId === deletedItem.rowId);
         if (prevItem.subRows?.length === 0) {
           remove(prev, item => item.rowId === prevItem.rowId);

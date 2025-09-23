@@ -43,7 +43,7 @@ const ThesauriValueFormSidepanel = ({
   const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'rowId' });
 
   useEffect(() => {
-    const subscription = watch(formData: any => {
+    const subscription = watch((formData) => {
       const values = formData.newValues;
       if (!editMode && !isEmpty(last(values)?.label)) {
         append(emptyRow(), { shouldFocus: false });

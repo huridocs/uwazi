@@ -35,8 +35,8 @@ const editTranslationsLoader =
     const translations = await translationsAPI.get(headers, params);
     const settings = await settingsAPI.get(headers);
 
-    const sortedTranslations = translations.map(language: any => {
-      const sortedContexts = language.contexts.map(context: any => {
+    const sortedTranslations = translations.map((language) => {
+      const sortedContexts = language.contexts.map((context) => {
         const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
 
         const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
@@ -135,7 +135,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
     language => language.locale === defaultLanguageKey
   )?.contexts[0].values;
 
-  return translations.map(language: any => {
+  return translations.map((language) => {
     const values = Object.entries(language.contexts[0].values || {}).reduce(
       (result, [key, value], index) => ({
         ...result,
@@ -298,7 +298,7 @@ const EditTranslations = () => {
           <div className="flex-grow">
             <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
               {tablesData?.length ? (
-                tablesData?.map(tableData: any => {
+                tablesData?.map((tableData) => {
                   if (!tableData) return null;
                   const [title] = Object.keys(tableData);
                   const values = tableData[title];
@@ -331,7 +331,7 @@ const EditTranslations = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {values.map(value: any => {
+                            {values.map((value) => {
                               const hasErrors = Boolean(
                                 getFieldState(value.fieldKey as any)?.error
                               );

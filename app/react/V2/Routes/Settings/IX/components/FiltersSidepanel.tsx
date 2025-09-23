@@ -75,7 +75,7 @@ const FiltersSidepanel = ({
   };
 
   const clearFilters = () => {
-    setSearchParams(prev: any => {
+    setSearchParams((prev) => {
       prev.delete('filter');
       return prev;
     });

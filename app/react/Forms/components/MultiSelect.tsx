@@ -55,7 +55,7 @@ const defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
-  onChange: (_v: any) => {},
+  onChange: (_v) => {},
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
   allowSelectGroup: false,

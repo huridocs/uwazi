@@ -41,7 +41,7 @@ export function buildLabelCounts(
   ) {
     const { buckets: rawValues } = raw.aggregations.all[suggestionFieldName];
     const totalValues: { [key: string]: number } = {};
-    rawValues.forEach((rawResult: any) => {
+    rawValues.forEach((rawResult) => {
       totalValues[rawResult.key] = rawResult.filtered.doc_count;
       result.totalLabels += rawResult.filtered.doc_count;
     });

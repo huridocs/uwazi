@@ -58,7 +58,7 @@ const ixmessages = {
   error: 'Error',
 };
 
-const getDefaultSorting = (searchParams: URLSearchParams): SortingState: any => {
+const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
   if (searchParams?.get('sort')) {
     const { property: sortingProperty, order } = JSON.parse(searchParams.get('sort') || '') as {
       property: string;
@@ -110,7 +110,7 @@ const IXSuggestions = () => {
     try {
       await suggestionsAPI.accept(preparedSuggestions);
       const newAcceptedIds = suggestionsToAccept.map(s => s._id);
-      setAcceptedSuggestionsAtom(prev: any => {
+      setAcceptedSuggestionsAtom((prev) => {
         const newSet = new Set(prev || []);
         newAcceptedIds.forEach(id => newSet.add(id));
         return newSet;
@@ -217,7 +217,7 @@ const IXSuggestions = () => {
   const handleSorting = (sortingState: SortingState) => {
     if (sortingState.length === 0) {
       if (searchParams.has('sort')) {
-        setSearchParams(prev: any => {
+        setSearchParams((prev) => {
           const newSearchParams = new URLSearchParams(prev);
           newSearchParams.delete('sort');
           return newSearchParams;
@@ -230,7 +230,7 @@ const IXSuggestions = () => {
         order: sortingObject.desc ? 'desc' : 'asc',
       };
 
-      setSearchParams(prev: any => {
+      setSearchParams((prev) => {
         const newSearchParams = new URLSearchParams(prev);
         newSearchParams.set('sort', JSON.stringify(sortingParams));
         return newSearchParams;
@@ -320,7 +320,7 @@ const IXSuggestions = () => {
                   <Paginator
                     totalPages={totalPages}
                     currentPage={searchParams.has('page') ? Number(searchParams.get('page')) : 1}
-                    buildUrl={(page: any) => {
+                    buildUrl={(page) => {
                       const innerSearchParams = new URLSearchParams(location.search);
                       innerSearchParams.delete('page');
                       innerSearchParams.set('page', page);

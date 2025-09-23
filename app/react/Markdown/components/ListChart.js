@@ -11,7 +11,7 @@ import { arrayUtils } from '../../Charts.js';
 import MarkdownLink from './MarkdownLink.js';
 import markdownDatasets from '../markdownDatasets.js';
 
-export const ListChartComponent = props: any => {
+export const ListChartComponent = (props) => {
   const { excludeZero, property, data, classname, context, scatter, colors } = props;
   const sliceColors = colors.split(',');
 

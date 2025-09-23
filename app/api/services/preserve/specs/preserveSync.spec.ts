@@ -42,7 +42,7 @@ const mockVault = async (evidences: any[], token: string = '', isoDate = '') => 
   const downloads = evidences.map(e => e.attributes.downloads).flat();
 
   return Promise.all(
-    downloads.map(async download: any => {
+    downloads.map(async (download) => {
       const tmpName = generateFileName({ originalname: 'test' });
       await fs.writeFile(path.join('/tmp', tmpName), 'content');
       const file = createReadStream(path.join('/tmp', tmpName));

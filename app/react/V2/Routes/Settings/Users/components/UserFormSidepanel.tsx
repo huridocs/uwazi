@@ -43,7 +43,7 @@ const isUnique = (nameVal: string, selectedUser?: User, users?: User[]) =>
   );
 
 const calculateSelectedGroups = (selectedGroups: string[], groups?: Group[]) =>
-  selectedGroups.map(selectedGroup: any => {
+  selectedGroups.map((selectedGroup) => {
     const group = groups?.find(originalGroup => originalGroup.name === selectedGroup);
     return { _id: group?._id as string, name: group?.name as string };
   });
@@ -350,7 +350,7 @@ const UserFormSidepanel = ({
           body="Confirm action"
           usePassword
           onCancelClick={() => setShowConfirmationModal(false)}
-          onAcceptClick={async value: any => {
+          onAcceptClick={async (value) => {
             password.current = value;
 
             if (actionType.current === 'formSubmit' && formSubmitRef.current) {

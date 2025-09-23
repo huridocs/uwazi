@@ -154,8 +154,8 @@ function saveRelationships() {
             });
           }
 
-          hubData.rightRelationships.forEach(rightGroup: any => {
-            rightGroup.relationships.forEach(r: any => {
+          hubData.rightRelationships.forEach((rightGroup) => {
+            rightGroup.relationships.forEach((r) => {
               const deleted = rightGroup.deleted || r.deleted || r.moved;
 
               if (deleted && r._id) {
@@ -210,7 +210,7 @@ function saveRelationships() {
           notificationActions.notify(t('System', 'Relationships saved', null, false), 'success')
         );
       })
-      .catch(e: any => {
+      .catch((e) => {
         dispatch({ type: types.SAVED_RELATIONSHIPS, e });
       });
   };
@@ -240,7 +240,7 @@ const selectRelationTypes = createSelector(
     const translationContexts = translations.find(
       translation => translation.get('locale') === locale
     );
-    const relations = relationTypes.toJS().map(rel: any => {
+    const relations = relationTypes.toJS().map((rel) => {
       const [translationContext] = translationContexts
         .get('contexts')
         .filter(context => context.get('id') === rel._id);

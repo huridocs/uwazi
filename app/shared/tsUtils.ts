@@ -18,7 +18,7 @@ export function ensure<T>(argument: T | undefined | null | any, message?: string
 }
 
 export function wrapValidator(validator: any) {
-  return async (value: any) => {
+  return async (value) => {
     try {
       return validator(value);
     } catch (error) {
@@ -34,7 +34,7 @@ export function wrapValidator(validator: any) {
 }
 
 export function syncWrapValidator(validator: any) {
-  return (value: any) => {
+  return (value) => {
     const valid = validator(value);
 
     if (!valid) {
@@ -54,7 +54,7 @@ export function syncWrapValidator(validator: any) {
 }
 
 export async function sleep(ms: number) {
-  return new Promise(resolve: any => {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }

@@ -82,12 +82,12 @@ const FiltersTable = () => {
 
   const handleDelete = () => {
     const idsToRemove: string[] = [];
-    currentFilters.current?.forEach(filter: any => {
+    currentFilters.current?.forEach((filter) => {
       if (filter.rowId in selectedFilters) {
         idsToRemove.push(filter.rowId);
       }
       if (filter.subRows) {
-        filter.subRows.forEach(subRow: any => {
+        filter.subRows.forEach((subRow) => {
           if (subRow.rowId in selectedFilters) {
             idsToRemove.push(subRow.rowId);
           }

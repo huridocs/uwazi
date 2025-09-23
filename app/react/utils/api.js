@@ -11,7 +11,7 @@ import request from '../../shared/JSONRequest.js';
 let API_URL = APIURL;
 let language;
 
-const doneLoading = data: any => {
+const doneLoading = (data) => {
   loadingBar.done();
   return data;
 };
@@ -55,7 +55,7 @@ function extractMessageFromValidation(error) {
 }
 
 // eslint-disable-next-line max-statements
-const handleErrorStatus = error: any => {
+const handleErrorStatus = (error) => {
   let errorMessage;
   switch (error.status || true) {
     case 400:
@@ -140,7 +140,7 @@ const _request = (url, req, method) => {
 
   return request[method](API_URL + url, req.data, headers)
     .then(doneLoading)
-    .catch(async e: any => {
+    .catch(async (e) => {
       await handleError(e, { url, method });
     });
 };

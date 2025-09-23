@@ -52,7 +52,7 @@ class PDFViewComponent extends Component {
     ) {
       entitiesAPI
         .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
-        .then(pageText: any => {
+        .then((pageText) => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
     }

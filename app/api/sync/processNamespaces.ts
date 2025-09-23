@@ -129,7 +129,7 @@ class ProcessNamespaces {
   ) {
     return hubOtherTemplates.reduce((_isRightRelationship: boolean, template) => {
       let isRightRelationship = _isRightRelationship;
-      (template.properties || []).forEach(p: any => {
+      (template.properties || []).forEach((p) => {
         if (
           p.type === 'relationship' &&
           p._id &&

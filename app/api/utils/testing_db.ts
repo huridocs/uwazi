@@ -44,7 +44,7 @@ const fixturer = {
       _collections || (await db.listCollections().toArray()).map(c => c.name);
 
     await Promise.all(
-      collections.map(async c: any => {
+      collections.map(async (c) => {
         await db.collection(c).deleteMany({});
       })
     );
@@ -60,7 +60,7 @@ const fixturer = {
     await this.clear(db);
     await Promise.all(missingCollections.map(async collname => db.createCollection(collname)));
     await Promise.all(
-      Object.keys(fixtures).map(async collectionName: any => {
+      Object.keys(fixtures).map(async (collectionName) => {
         if (fixtures[collectionName].length) {
           await db.collection(collectionName).insertMany(fixtures[collectionName]);
         }

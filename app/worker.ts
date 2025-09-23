@@ -115,6 +115,6 @@ DB.connect(config.DBHOST, config.DBAUTH)
       process.exit(0);
     });
   })
-  .catch(error: any => {
+  .catch((error) => {
     throw error;
   });

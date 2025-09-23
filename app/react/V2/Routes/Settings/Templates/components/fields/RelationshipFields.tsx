@@ -39,7 +39,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
     const options = orderBy(
       templates
         .filter(template => template._id !== templateId)
-        .map(template: any => {
+        .map((template) => {
           const name =
             template.name.length > 30 ? `${template.name.slice(0, 30)}...` : template.name;
           const translatedName = t(template._id, template.name, null, false, 30);

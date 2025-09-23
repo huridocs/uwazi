@@ -34,13 +34,13 @@ describe('migration separate-custom-uploads-from-documents', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterEach(done: any => {
+  afterEach((done) => {
     config.defaultTenant.uploadedDocuments = originalDocumentsPath;
     config.defaultTenant.customUploads = originalUploadsPath;
     done();
   });
 
-  afterAll(done: any => {
+  afterAll((done) => {
     testingDB.disconnect().then(done);
   });
 
@@ -57,7 +57,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     afterEach(async () => {
       await Promise.all(
-        files.map(async f: any => {
+        files.map(async (f) => {
           try {
             await asyncFs.unlink(path.join(config.defaultTenant.customUploads, f));
             // eslint-disable-next-line

@@ -30,7 +30,7 @@ const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extr
 
 const remove = async (extractors: PXTable[]) =>
   Promise.all(
-    extractors.map(extractor: any => {
+    extractors.map((extractor) => {
       const id = extractor._id;
       const requestParams = new RequestParams({ id });
       return api.delete('paragraphExtraction/extractor', requestParams);

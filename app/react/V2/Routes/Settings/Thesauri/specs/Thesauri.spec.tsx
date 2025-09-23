@@ -119,7 +119,7 @@ describe('Settings Thesauri', () => {
       cleanup();
     });
 
-    const checkRightSaving = async (expectedParams: any) => {
+    const checkRightSaving = async (expectedParams) => {
       await act(async () => {
         fireEvent.click(
           within(screen.getByTestId('settings-content-footer')).getByText('Save').parentNode!

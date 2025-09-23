@@ -38,7 +38,7 @@ const renderingStates = {
 jest.mock('../pdfjs.ts', () => ({
   EventBus: jest.fn(),
   PDFJS: {
-    getDocument: jest.fn(args: any => {
+    getDocument: jest.fn((args) => {
       mockGetDocument(args);
       return {
         promise: Promise.resolve({
@@ -54,7 +54,7 @@ jest.mock('../pdfjs.ts', () => ({
     PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
   },
   PDFJSViewer: {
-    PDFPageView: jest.fn().mockImplementation(args: any => {
+    PDFPageView: jest.fn().mockImplementation((args) => {
       mockPageViewer(args);
       return {
         setPdfPage: jest.fn(),

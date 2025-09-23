@@ -58,7 +58,7 @@ const defaultSearch = (search: string, items?: MultiselectListOption[]) => {
     return a.includes(b);
   };
 
-  items?.forEach(item: any => {
+  items?.forEach((item) => {
     const matchesSearch = !search || labelIncludesSearch(item.searchLabel);
 
     const containsChildrenMatchingSearch =
@@ -149,13 +149,13 @@ const MultiselectList = ({
   useEffect(() => {
     const newSet = new Set<string>(selections);
 
-    availableItems?.forEach(item: any => {
+    availableItems?.forEach((item) => {
       if (item.suggested) {
         newSet.add(item.value);
       }
 
       if (item.items) {
-        item.items.forEach(subItem: any => {
+        item.items.forEach((subItem) => {
           if (subItem.suggested) {
             newSet.add(subItem.value);
           }
@@ -183,7 +183,7 @@ const MultiselectList = ({
   const handleSelectAll = () => {
     const allValues: string[] = [];
 
-    availableItems?.forEach(item: any => {
+    availableItems?.forEach((item) => {
       if (item.items?.length) {
         item.items?.forEach(subItem => allValues.push(subItem.value));
       } else {

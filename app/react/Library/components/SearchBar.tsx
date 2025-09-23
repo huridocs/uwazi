@@ -74,7 +74,7 @@ const SearchBarComponent = ({
     semanticSearch(search);
   };
 
-  const doSearch = (newSearch: any) => {
+  const doSearch = (newSearch) => {
     change('library.search.searchTerm', searchTerm);
     searchDocuments({ search: { ...newSearch, searchTerm }, location, navigate });
   };

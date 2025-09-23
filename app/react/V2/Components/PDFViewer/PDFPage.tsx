@@ -28,7 +28,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
 
     pdf
       .getPage(page)
-      .then(pdfPage: any => {
+      .then((pdfPage) => {
         if (currentContainer && pdfPage) {
           const originalViewport = pdfPage.getViewport({ scale: 1 });
           const scale = calculateScaling(
@@ -54,7 +54,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
             const [entry] = entries;
             if (entry.isIntersecting) {
               if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
-                pageViewer.draw().catch(e: any => {
+                pageViewer.draw().catch((e) => {
                   setError(e.message);
                 });
               }
@@ -93,7 +93,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
 
   return (
     <div ref={pageContainerRef} className="pdf-page">
-      {highlights?.map(highlight: any => {
+      {highlights?.map((highlight) => {
         const scaledHightlight = {
           ...highlight,
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),

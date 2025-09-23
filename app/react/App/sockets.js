@@ -8,7 +8,7 @@ import { socket, reconnectSocket } from '../socket.js';
 
 let disconnectNotifyId;
 let disconnectTimeoutMessage;
-socket.on('disconnect', reason: any => {
+socket.on('disconnect', (reason) => {
   if (reason === 'transport close') {
     if (disconnectNotifyId) {
       store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
@@ -40,7 +40,7 @@ socket.on('forceReconnect', () => {
   reconnectSocket();
 });
 
-socket.on('templateChange', template: any => {
+socket.on('templateChange', (template) => {
   const currentTemplates = atomStore.get(templatesAtom);
   const index = currentTemplates.findIndex(current => current._id === template._id);
   atomStore.set(
@@ -51,18 +51,18 @@ socket.on('templateChange', template: any => {
   );
 });
 
-socket.on('templateDelete', payload: any => {
+socket.on('templateDelete', (payload) => {
   const updatedTemplates = atomStore
     .get(templatesAtom)
     .filter(currentTemplate => currentTemplate._id !== payload._id);
   atomStore.set(templatesAtom, updatedTemplates);
 });
 
-socket.on('updateSettings', settings: any => {
+socket.on('updateSettings', (settings) => {
   atomStore.set(settingsAtom, settings);
 });
 
-socket.on('thesauriChange', thesaurus: any => {
+socket.on('thesauriChange', (thesaurus) => {
   const currentThesauri = atomStore.get(thesauriAtom);
   const index = currentThesauri.findIndex(current => current._id === thesaurus._id);
   atomStore.set(
@@ -74,14 +74,14 @@ socket.on('thesauriChange', thesaurus: any => {
   store?.dispatch(actions.update('thesauris', thesaurus));
 });
 
-socket.on('thesauriDelete', payload: any => {
+socket.on('thesauriDelete', (payload) => {
   const updatedThesauri = atomStore
     .get(thesauriAtom)
     .filter(currentThesauri => currentThesauri._id !== payload._id);
   atomStore.set(thesauriAtom, updatedThesauri);
 });
 
-socket.on('translationsChange', languageTranslations: any => {
+socket.on('translationsChange', (languageTranslations) => {
   const translations = atomStore.get(translationsAtom);
   const modifiedLanguage = translations.find(
     translation => translation.locale === languageTranslations.locale
@@ -94,9 +94,9 @@ socket.on('translationsChange', languageTranslations: any => {
   atomStore.set(translationsAtom, [...translations]);
 });
 
-socket.on('translationKeysChange', translationsEntries: any => {
+socket.on('translationKeysChange', (translationsEntries) => {
   const translations = atomStore.get(translationsAtom);
-  translationsEntries.forEach(item: any => {
+  translationsEntries.forEach((item) => {
     const modifiedContext = translations
       .find(translation => translation.locale === item.language)
       .contexts.find(c => c.id && c.id === item.context.id);
@@ -114,7 +114,7 @@ socket.on('translationsInstallDone', () => {
   );
 });
 
-socket.on('translationsInstallError', errorMessage: any => {
+socket.on('translationsInstallError', (errorMessage) => {
   store.dispatch(
     notificationActions.notify(
       `${t(
@@ -128,7 +128,7 @@ socket.on('translationsInstallError', errorMessage: any => {
   );
 });
 
-socket.on('translationsDelete', locale: any => {
+socket.on('translationsDelete', (locale) => {
   const translations = atomStore.get(translationsAtom);
   const updatedTranslations = translations.filter(language => language.locale !== locale);
   atomStore.set(translationsAtom, [...updatedTranslations]);
@@ -143,7 +143,7 @@ socket.on('translationsDeleteDone', () => {
   );
 });
 
-socket.on('translationsDeleteError', errorMessage: any => {
+socket.on('translationsDeleteError', (errorMessage) => {
   store.dispatch(
     notificationActions.notify(
       `${t(
@@ -157,7 +157,7 @@ socket.on('translationsDeleteError', errorMessage: any => {
   );
 });
 
-socket.on('documentProcessed', sharedId: any => {
+socket.on('documentProcessed', (sharedId) => {
   store.dispatch(documentProcessed(sharedId, 'library'));
 });
 

@@ -275,7 +275,7 @@ class InformationExtraction {
     propertyType: FileWithAggregation['propertyType'],
     file: FileWithAggregation,
     _data: CommonMaterialsData
-  ): MaterialsData: any => {
+  ): MaterialsData => {
     const languageIso =
       LanguageUtils.fromISO639_3(file.language!, false)?.ISO639_1 || defaultTrainingLanguage;
 
@@ -287,7 +287,7 @@ class InformationExtraction {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
-        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r: any => {
+        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map((r) => {
           const { page, ...rectangle } = r;
           return { ...rectangle, page_number: page };
         }),
@@ -320,7 +320,7 @@ class InformationExtraction {
     }
 
     await Promise.all(
-      files.map(async file: any => {
+      files.map(async (file) => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -393,7 +393,7 @@ class InformationExtraction {
     targetProperty: PropertySchema,
     type = 'labeled_data'
   ) {
-    await ArrayUtils.sequentialFor(entitiesForTraining, async entity: any => {
+    await ArrayUtils.sequentialFor(entitiesForTraining, async (entity) => {
       const extractionKey = ExtractionKey.create({
         entitySharedId: entity.sharedId!,
         language: entity.language as LanguageISO6391,
@@ -530,7 +530,7 @@ class InformationExtraction {
   ) {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-    await ArrayUtils.sequentialFor(rawSuggestions, async rawSuggestion: any => {
+    await ArrayUtils.sequentialFor(rawSuggestions, async (rawSuggestion) => {
       if (!rawSuggestion.entity_name) {
         return;
       }
@@ -564,7 +564,7 @@ class InformationExtraction {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
 
     return Promise.all(
-      rawSuggestions.map(async rawSuggestion: any => {
+      rawSuggestions.map(async (rawSuggestion) => {
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
         if (!entity) {
           return Promise.resolve();

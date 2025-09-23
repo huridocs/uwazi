@@ -12,7 +12,7 @@ import { endSocketServer, setupApiSockets } from '../setupSockets.js';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
-  new Promise(resolve: any => {
+  new Promise((resolve) => {
     httpServer.close(() => {
       resolve();
     });
@@ -23,7 +23,7 @@ const connectSocket = async (
   tenant: string,
   session: string = ''
 ): Promise<SocketIOClient.Socket> =>
-  new Promise(resolve: any => {
+  new Promise((resolve) => {
     const socket = io.connect(`http://localhost:${port}`, {
       transports: ['websocket'],
       //@ts-ignore
@@ -42,7 +42,7 @@ let server: Server;
 
 const createServer = async (app: Application, port: number) => {
   server = new Server(app);
-  await new Promise<void>(resolve: any => {
+  await new Promise<void>(resolve) => {
     server.listen(port, resolve);
   });
   app.use(appContextMiddleware);
@@ -124,7 +124,7 @@ describe('socket middlewares setup', () => {
       await req.set('tenant', tenant);
     }
 
-    return req.expect(response: any => {
+    return req.expect((response) => {
       if (response.status !== 200) {
         throw new Error(response.text);
       }

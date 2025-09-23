@@ -117,7 +117,7 @@ export const postProcessCurrentValues = (
 ) => suggestions.map(s => postProcessCurrentValue(s, propertyType));
 
 // eslint-disable-next-line max-statements
-export const updateStates = async (query: any) => {
+export const updateStates = async (query) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
     (await templates.get({})).map(t => t.properties || []).flat(),

@@ -13,7 +13,7 @@ const filterTranslationsByContext = (
   translations: ClientTranslationSchema[],
   contextId: string
 ): ClientTranslationSchema[] =>
-  translations.map(language: any => {
+  translations.map((language) => {
     const contexts = language.contexts.filter(context => context.id === contextId);
     return { ...language, contexts };
   });

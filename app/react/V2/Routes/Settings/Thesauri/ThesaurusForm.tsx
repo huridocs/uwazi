@@ -64,7 +64,7 @@ const ThesaurusForm = ({
     await handleRevalidate(savedThesaurus);
   };
 
-  const formSubmit: SubmitHandler<ClientThesaurus> = async data: any => {
+  const formSubmit: SubmitHandler<ClientThesaurus> = async (data) => {
     try {
       await saveThesaurus(data);
     } catch (e) {
@@ -96,7 +96,7 @@ const ThesaurusForm = ({
           onSelect={({ selectedRows }) => {
             setSelectedThesaurusValue(() => {
               const selection: ThesaurusRow[] = [];
-              thesaurusValues.forEach(item: any => {
+              thesaurusValues.forEach((item) => {
                 addSelection(selectedRows, selection)(item);
                 item.subRows?.forEach(addSelection(selectedRows, selection));
               });

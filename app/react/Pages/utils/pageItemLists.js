@@ -28,7 +28,7 @@ export default {
     const options = [];
     let content = originalText || '';
 
-    const params = values.map(match: any => {
+    const params = values.map((match) => {
       const additionalOptions = extractAdditionalOptions(content, match);
       options.push(additionalOptions.options);
       content = content.replace(

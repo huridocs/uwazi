@@ -195,7 +195,7 @@ const denormalizeRelated = async (
   );
 
   await Promise.all(
-    updates.map(async update: any => {
+    updates.map(async (update) => {
       const inheritProperty = (template.properties || []).find(
         p => update.inheritProperty === p._id?.toString()
       );
@@ -276,7 +276,7 @@ const denormalizeSelectProperty = async (
   const context = getContext(translation, property.content);
 
   const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
-  thesaurus.values?.forEach(dv: any => {
+  thesaurus.values?.forEach((dv) => {
     if (dv.values) {
       dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
     } else {
@@ -284,7 +284,7 @@ const denormalizeSelectProperty = async (
     }
   });
 
-  return values.map(value: any => {
+  return values.map((value) => {
     const denormalizedValue = { ...value };
     const thesaurusValue = flattenValues.find(v => v.id === denormalizedValue.value);
 
@@ -335,11 +335,11 @@ const denormalizeRelationshipProperty = async (
   });
 
   const partnersBySharedId: Record<string, EntitySchema> = {};
-  partners.forEach(partner: any => {
+  partners.forEach((partner) => {
     partnersBySharedId[partner.sharedId!] = partner;
   });
 
-  return values.map(value: any => {
+  return values.map((value) => {
     let denormalizedValue = { ...value };
 
     const partner = partnersBySharedId[denormalizedValue.value as string];

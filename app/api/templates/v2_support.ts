@@ -16,7 +16,7 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const createTemplateService = await CreateTemplateService();
 
   const mappedProperties = await Promise.all(
-    (template.properties || []).map(async property: any => {
+    (template.properties || []).map(async (property) => {
       if (property.type !== 'newRelationship') {
         return property;
       }

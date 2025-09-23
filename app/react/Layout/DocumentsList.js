@@ -20,7 +20,7 @@ import Welcome from './components/Welcome.js';
 import { TilesViewer } from './TilesViewer.js';
 import blankState from '../Library/helpers/blankState.js';
 
-const selectAllEntities = command: any => {
+const selectAllEntities = (command) => {
   command.selectAllDocuments();
 };
 class DocumentsList extends Component {

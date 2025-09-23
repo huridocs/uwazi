@@ -19,7 +19,7 @@ function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
     return (hit: any) => hit._source.metadata;
   }
 
-  return (hit: any) => {
+  return (hit) => {
     const mappedMetadata = {} as any;
     Object.keys(hit._source.metadata || {}).forEach(propertyName => {
       mappedMetadata[propertyName] = (hit._source.metadata[propertyName] || []).map(

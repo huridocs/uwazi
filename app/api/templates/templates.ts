@@ -157,7 +157,7 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
     session,
   });
   const thesauriByKey: Record<any, TemplateSchema> = {};
-  thesauri.forEach(t: any => {
+  thesauri.forEach((t) => {
     thesauriByKey[t._id.toString()] = t;
   });
   return thesauriByKey;
@@ -275,7 +275,7 @@ export default {
 
     const currentTemplate = ensure<TemplateSchema>(current);
     currentTemplate.properties = currentTemplate.properties || [];
-    currentTemplate.properties.forEach(prop: any => {
+    currentTemplate.properties.forEach((prop) => {
       const swapingNameWithExistingProperty = (template.properties || []).find(
         p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
@@ -402,7 +402,7 @@ export default {
           }
           return false;
         })
-        .then(async denormalizationExecuted: any => {
+        .then(async (denormalizationExecuted) => {
           await onTemplateProcessed(
             undefined,
             !denormalizationExecuted && template.processing?.active

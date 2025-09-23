@@ -113,7 +113,7 @@ class PDFPage extends Component {
     if (!this.state.rendered) {
       this.props.onLoading(this.props.page);
       this.setState({ rendered: true });
-      this.props.pdf.getPage(this.props.page).then(page: any => {
+      this.props.pdf.getPage(this.props.page).then((page) => {
         const originalViewport = page.getViewport({ scale: 1 });
         const scale = calculateScaling(
           originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,

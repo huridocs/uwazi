@@ -4,7 +4,7 @@ import { createLegacyLogger } from '../legacyLogger.js';
 
 let lastLogMessage = '';
 
-const testLogger = log: any => {
+const testLogger = (log) => {
   lastLogMessage = log;
 };
 

@@ -32,7 +32,7 @@ const TranslationsList = () => {
     contentContexts: TranslationContext[];
   } = { systemContexts: [], contentContexts: [] };
 
-  translations[0]?.contexts?.forEach(context: any => {
+  translations[0]?.contexts?.forEach((context) => {
     const contextTranslations: TranslationContext = {
       ...context,
       rowId: context.id!,

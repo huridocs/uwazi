@@ -6,7 +6,7 @@ import { getTemplateProperties } from './getTemplateProperties.js';
 const requiredTemplateProperties = ['_id', 'name', 'color'];
 
 const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTable[] =>
-  extractors.map(extractor: any => {
+  extractors.map((extractor) => {
     const targetTemplate = getTemplateProperties(
       templates,
       extractor.targetTemplateId,
@@ -28,7 +28,7 @@ const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTab
   });
 
 const formatTemplatesToOptions = (templates: Template[]) =>
-  templates.map(template: any => {
+  templates.map((template) => {
     const option = {
       label: template.name,
       id: template._id,

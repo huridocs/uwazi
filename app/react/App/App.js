@@ -41,11 +41,11 @@ const App = ({ customParams }) => {
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
 
-  const toggleMobileMenu = visible: any => {
+  const toggleMobileMenu = (visible) => {
     setShowMenu(visible);
   };
 
-  const confirm = options: any => {
+  const confirm = (options) => {
     setConfirmOptions(options);
   };
 
@@ -62,7 +62,7 @@ const App = ({ customParams }) => {
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
-  socket.on('updateSettings', _settings: any => {
+  socket.on('updateSettings', (_settings) => {
     setSettings(_settings);
   });
 

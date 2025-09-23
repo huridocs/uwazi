@@ -42,7 +42,7 @@ const updateOptionsWithSelection = (
 
 const getSuggestionValues = (suggestedValue?: SuggestionValue[] | SuggestionValue): string[] => {
   if (!Array.isArray(suggestedValue)) return [String(suggestedValue)];
-  return suggestedValue.map(value: any => {
+  return suggestedValue.map((value) => {
     if (value && typeof value === 'object' && 'id' in value) {
       return value.id;
     }
@@ -50,7 +50,7 @@ const getSuggestionValues = (suggestedValue?: SuggestionValue[] | SuggestionValu
   });
 };
 
-const getEntityLabel = (entity: ClientEntitySchema, extractor?: ClientIXExtractorType): string: any => {
+const getEntityLabel = (entity: ClientEntitySchema, extractor?: ClientIXExtractorType): string => {
   if (!extractor?.inheritedProperty) {
     return entity.title as string;
   }
@@ -218,7 +218,7 @@ const Relationships = ({
 
       searchRelatedEntities(searchQuery, extractor?.inheritedProperty)
         .then((searchResult: ClientEntitySchema[]) => {
-          searchResult.forEach(entity: any => {
+          searchResult.forEach((entity) => {
             const existingOption = allOptions.find(option => entity.sharedId === option?.sharedId);
             if (!existingOption) {
               allOptions.push({
@@ -247,7 +247,7 @@ const Relationships = ({
           initialOptionsRef.current = initialOptions;
           setOptions(initialOptions);
         })
-        .catch(e: any => {
+        .catch((e) => {
           initialOptionsRef.current = [];
           setOptions([]);
           if (isClient) {

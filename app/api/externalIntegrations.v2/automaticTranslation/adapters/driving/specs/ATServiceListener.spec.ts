@@ -59,7 +59,7 @@ describe('ATServiceListener', () => {
       await redisSMQ.createQueueAsync({ qname: queueName });
     };
 
-    await recreateQueue(`${ATServiceListener.SERVICE_NAME}_results`).catch(error: any => {
+    await recreateQueue(`${ATServiceListener.SERVICE_NAME}_results`).catch((error) => {
       throw error;
     });
 

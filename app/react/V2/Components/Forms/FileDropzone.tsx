@@ -18,7 +18,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   useEffect(() => {
     let result = 0;
 
-    files.forEach(file: any => {
+    files.forEach((file) => {
       result += file.size;
     });
 

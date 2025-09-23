@@ -27,7 +27,7 @@ import { ContextCell } from './ContextCell.js';
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
 
-const statusColor = (suggestion: TableSuggestion): Color: any => {
+const statusColor = (suggestion: TableSuggestion): Color => {
   if (!suggestion.isChild && (!suggestion.suggestedValue || suggestion.suggestedValue === '')) {
     return 'red';
   }
@@ -197,7 +197,7 @@ const AcceptButton = ({
         color={color}
         disabled={isDisabled}
         onClick={async () => {
-          setAccepted(prev: any => {
+          setAccepted((prev) => {
             const newSet = new Set(prev || []);
             newSet.add(rowId);
             return newSet;

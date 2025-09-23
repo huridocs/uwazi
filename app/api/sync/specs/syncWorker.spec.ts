@@ -192,10 +192,10 @@ describe('syncWorker', () => {
     await tenants.run(async () => {
       await rm(attachmentsPath(), { recursive: true });
     }, 'target2');
-    await new Promise(resolve: any => {
+    await new Promise((resolve) => {
       server.close(resolve);
     });
-    await new Promise(resolve: any => {
+    await new Promise((resolve) => {
       server2.close(resolve);
     });
     await db.disconnect();

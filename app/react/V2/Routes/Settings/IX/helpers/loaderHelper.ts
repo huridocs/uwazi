@@ -75,9 +75,9 @@ const getRelationshipInfo = (
 ) => {
   const allCurrentValueIds = new Set<string>();
   const allSuggestedValueIds = new Set<string>();
-  suggestions.forEach(suggestion: any => {
+  suggestions.forEach((suggestion) => {
     if (Array.isArray(suggestion.currentValue)) {
-      suggestion.currentValue.forEach(value: any => {
+      suggestion.currentValue.forEach((value) => {
         if (typeof value === 'string') {
           allCurrentValueIds.add(value);
         }
@@ -86,7 +86,7 @@ const getRelationshipInfo = (
       allCurrentValueIds.add(suggestion.currentValue);
     }
     if (Array.isArray(suggestion.suggestedValue)) {
-      suggestion.suggestedValue.forEach(value: any => {
+      suggestion.suggestedValue.forEach((value) => {
         if (has(value, 'id')) {
           allSuggestedValueIds.add(get(value, 'id') as string);
         }
@@ -112,7 +112,7 @@ const updateSuggestionValues = (
   entityCurrentValuesMap: Map<string, string>,
   entitySuggestedValuesMap: Map<string, string>
 ) => {
-  suggestions = suggestions.map(suggestion: any => {
+  suggestions = suggestions.map((suggestion) => {
     const currentValue =
       suggestion.currentValue && !Array.isArray(suggestion.currentValue)
         ? [suggestion.currentValue]
@@ -126,7 +126,7 @@ const updateSuggestionValues = (
     let updatedSuggestedValue: EntitySuggestion['suggestedValue'] = suggestedValue;
 
     if (suggestion.currentValue && !isEmpty(currentValue)) {
-      updatedCurrentValue = currentValue.map(value: any => {
+      updatedCurrentValue = currentValue.map((value) => {
         if (typeof value === 'string' && entityCurrentValuesMap.has(value)) {
           return { id: value, label: entityCurrentValuesMap.get(value)! };
         }
@@ -134,7 +134,7 @@ const updateSuggestionValues = (
       });
     }
     if (suggestion.suggestedValue && !isEmpty(suggestedValue)) {
-      updatedSuggestedValue = suggestedValue.map(value: any => {
+      updatedSuggestedValue = suggestedValue.map((value) => {
         const suggestionValue = get(value, 'id') || value;
         if (typeof suggestionValue === 'string' && entitySuggestedValuesMap.has(suggestionValue)) {
           return { id: suggestionValue, label: entitySuggestedValuesMap.get(suggestionValue)! };

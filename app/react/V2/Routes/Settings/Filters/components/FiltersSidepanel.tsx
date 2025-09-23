@@ -32,7 +32,7 @@ const FiltersSidepanel = ({
 
   const selectedValues: string[] = [];
   const selectedOptions =
-    multiselectValues?.map(value: any => {
+    multiselectValues?.map((value) => {
       const template = allTemplates.find(t => t._id === value)!;
       selectedValues.push(template?._id);
       return {
@@ -64,7 +64,7 @@ const FiltersSidepanel = ({
   };
 
   const formatSelected = (selected: string[] | undefined) =>
-    selected?.map(selection: any => {
+    selected?.map((selection) => {
       const templateName = allTemplates?.find(template => template._id === selection)?.name;
       return { id: selection, name: templateName, rowId: selection };
     });

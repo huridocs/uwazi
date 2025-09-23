@@ -40,7 +40,7 @@ const buildS3Client = (params: {}) => {
   });
 
   // eslint-disable-next-line max-statements
-  client.middlewareStack.add((next, context) => async args: any => {
+  client.middlewareStack.add((next, context) => async (args) => {
     const startTime = Date.now();
 
     const input = args.input as { Body?: Buffer; Key?: string };
@@ -216,7 +216,7 @@ export const storage = {
     await Array.from(uniquePaths).reduce(async (prev, filesPath) => {
       await prev;
       try {
-        (await readdir(filesPath, { withFileTypes: true })).forEach(file: any => {
+        (await readdir(filesPath, { withFileTypes: true })).forEach((file) => {
           if (file.isFile()) {
             files.push(path.join(filesPath, file.name));
           }

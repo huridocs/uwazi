@@ -60,7 +60,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     t => t._id.toString(),
     t => t
   );
-  templateIds.forEach(id: any => {
+  templateIds.forEach((id) => {
     if (!(id in usedTemplates)) {
       throw new IXValidationError(IXErrorCode.TEMPLATE_MISSING, `template "${id}" does not exists`);
     }
@@ -70,7 +70,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     return;
   }
 
-  templateIds.forEach(id: any => {
+  templateIds.forEach((id) => {
     const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
 
     if (!property) {

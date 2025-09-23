@@ -159,7 +159,7 @@ export class CSVLoader extends EventEmitter {
 
     if (warnings.length > 0) {
       const groupedWarnings = groupBy(warnings, warning => warning.reason);
-      Object.keys(groupedWarnings).forEach(key: any => {
+      Object.keys(groupedWarnings).forEach((key) => {
         groupedWarnings[key] = groupedWarnings[key].map(warning => ({
           index: warning.index,
           property: warning.property,
@@ -214,7 +214,7 @@ export class CSVLoader extends EventEmitter {
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow, _index: number): Promise<void> => {
-        Object.keys(row).forEach(lang: any => {
+        Object.keys(row).forEach((lang) => {
           intermediateTranslation[lang] = intermediateTranslation[lang] || {};
           intermediateTranslation[lang][row.Key] = row[lang];
         });
@@ -237,7 +237,7 @@ export class CSVLoader extends EventEmitter {
         );
 
         if (trans && context) {
-          Object.keys(trans).forEach(transKey: any => {
+          Object.keys(trans).forEach((transKey) => {
             if (context.values[transKey] && trans[transKey] !== '') {
               context.values[transKey] = trans[transKey];
             }

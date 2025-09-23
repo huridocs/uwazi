@@ -60,7 +60,7 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](prettyError.message, { job: context?.job });
   if (prettyError.logLevel === 'error') {
-    Sentry.withScope(scope: any => {
+    Sentry.withScope((scope) => {
       if (context?.job) {
         scope.setExtra('job', context.job);
       }
@@ -118,7 +118,7 @@ export function setupQueueWorker(props?: Props) {
       await Redis.disconnect();
       logger.info('Disconected from redis');
     })
-    .catch(async e: any => {
+    .catch(async (e) => {
       captureError(e);
       await Sentry.close(2000);
       process.exit(1);

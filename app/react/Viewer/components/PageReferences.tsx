@@ -59,7 +59,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
         );
 
         if (props.groupedReferences && reference._id) {
-          props.groupedReferences.forEach(group: any => {
+          props.groupedReferences.forEach((group) => {
             const belongingGroup = group.find(ref => ref._id === reference._id);
             if (belongingGroup) {
               referenceGroup.current = group.map(ref => ref._id);
@@ -108,7 +108,7 @@ const indexdReferencesByPage = createSelector(
               .map(selection => selection.page)
               .filter(unique);
 
-            pages.forEach(page: any => {
+            pages.forEach((page) => {
               if (!page) {
                 return;
               }
@@ -140,7 +140,7 @@ const groupByRectangle = createSelector(
       if (!rectangles?.size) return groups;
 
       const hasGroup = groups?.some(refGroups =>
-        refGroups.some(refGroup: any => {
+        refGroups.some((refGroup) => {
           if (
             refGroup.length === rectangles.size &&
             refGroup.start.page === rectangles.get(0).get('page') &&

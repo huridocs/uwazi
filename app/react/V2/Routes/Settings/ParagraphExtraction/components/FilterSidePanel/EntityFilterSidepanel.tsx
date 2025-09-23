@@ -10,7 +10,7 @@ import { filterSidepanelAtom, filterSidepanelStatusAtom } from './filterSidepane
 const getFilterStatus = (
   searchParams: object,
   availableFilters?: Extractor['statusCount']
-): Filters: any => {
+): Filters => {
   const result: Filters = {};
 
   if (availableFilters) {
@@ -64,9 +64,9 @@ const EntityFilterSidepanel = () => {
   };
 
   const clearFilters = () => {
-    setAppliedFilters(prev: any => {
+    setAppliedFilters((prev) => {
       const keys = Object.keys(prev);
-      keys.forEach(key: any => {
+      keys.forEach((key) => {
         prev[key].status = false;
       });
 

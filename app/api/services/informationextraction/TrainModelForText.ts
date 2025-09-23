@@ -56,7 +56,7 @@ class TrainModelForText implements UseCase<Input, Output> {
       const processedEntityIds: string[] = [];
       const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-      await ArrayUtils.sequentialFor(entities, async entity: any => {
+      await ArrayUtils.sequentialFor(entities, async (entity) => {
         const extractionKey = ExtractionKey.create({
           entitySharedId: entity.sharedId!,
           language: entity.language as LanguageISO6391,

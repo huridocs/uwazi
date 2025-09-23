@@ -52,7 +52,7 @@ const ThesauriGroupFormSidepanel = ({
   }, [reset, value]);
 
   useEffect(() => {
-    const subscription: any = watch((formData): void: any => {
+    const subscription: any = watch((formData): void => {
       const { subRows } = formData;
       if (!isEmpty(last(subRows)?.label)) {
         append({ label: '', rowId: uniqueID() }, { shouldFocus: false });

@@ -66,7 +66,7 @@ const PDFSidepanel = ({
           setPdfFile(file || undefined);
           setEntity(suggestionEntity);
         })
-        .catch(e: any => {
+        .catch((e) => {
           throw e;
         });
     }

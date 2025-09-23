@@ -29,7 +29,7 @@ const googelFonts = (
   />
 );
 
-const getFaviconURL = reduxData: any => {
+const getFaviconURL = (reduxData) => {
   const favicon = reduxData.settings.collection.get('favicon');
 
   if (!favicon || favicon === '') {

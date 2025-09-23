@@ -27,7 +27,7 @@ const prepareNewFiles = async (
 
   if (newAttachments.length) {
     await Promise.all(
-      newAttachments.map(async file: any => {
+      newAttachments.map(async (file) => {
         await storage.storeFile(file.filename, createReadStream(file.path), 'attachment');
         attachments.push({
           ...file,
@@ -40,7 +40,7 @@ const prepareNewFiles = async (
 
   if (newDocuments.length) {
     await Promise.all(
-      newDocuments.map(async doc: any => {
+      newDocuments.map(async (doc) => {
         await storage.storeFile(doc.filename, createReadStream(doc.path), 'document');
         documents.push({
           ...doc,
@@ -53,7 +53,7 @@ const prepareNewFiles = async (
 
   if (newUrls && newUrls.length) {
     await Promise.all(
-      newUrls.map(async (url: any) => {
+      newUrls.map(async (url) => {
         attachments.push({
           ...url,
           entity: updatedEntity.sharedId,
@@ -187,7 +187,7 @@ const saveFiles = async (
   const filesToSave = [...attachments, ...documentsToSave];
 
   await Promise.all(
-    filesToSave.map(async file: any => {
+    filesToSave.map(async (file) => {
       try {
         await filesAPI.save(file, false);
       } catch (e) {
@@ -200,7 +200,7 @@ const saveFiles = async (
   if (documentsToProcess.length) {
     const documentsBeingProcessed = Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
-    ).then(results: any => {
+    ).then((results) => {
       results
         .filter(result => result.status === 'rejected')
         .map(rejected => handleError(rejected.reason));

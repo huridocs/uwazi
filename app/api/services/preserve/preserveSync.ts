@@ -117,7 +117,7 @@ const saveEvidence =
         { language: 'en', user: user || {} }
       );
       await Promise.all(
-        evidence.attributes.downloads.map(async (download: any) => {
+        evidence.attributes.downloads.map(async (download) => {
           const fileName = generateFileName({ originalname: path.basename(download.path) });
           const fileStream = (
             await fetch(new URL(path.join(host, download.path)).toString(), {

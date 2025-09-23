@@ -58,7 +58,7 @@ const PropertySidepanel = ({
         .then(({ entity: suggestionEntity }) => {
           setEntity(suggestionEntity);
         })
-        .catch(e: any => {
+        .catch((e) => {
           throw e;
         });
     }

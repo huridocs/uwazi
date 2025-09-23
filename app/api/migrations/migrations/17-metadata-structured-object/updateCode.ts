@@ -7,7 +7,7 @@ import index from '../migrations/migrations/17-metadata-structured-object.js';
 function walk(dir: string, callback: (file: string, stats: fs.Stats) => void) {
   fs.readdir(dir, (err, files) => {
     if (err) throw err;
-    files.forEach(file: any => {
+    files.forEach((file) => {
       const filepath = path.join(dir, file);
       fs.stat(filepath, (err2, stats) => {
         if (err2) throw err2;

@@ -54,7 +54,7 @@ describe('getPageAssets', () => {
     expect(stateActions).toMatchSnapshot();
   });
 
-  const assertItemLists = (itemLists: any) => {
+  const assertItemLists = (itemLists) => {
     expect(itemLists.length).toBe(4);
     expect(itemLists[0].params).toBe('?q=(a:1,b:2)');
     expect(itemLists[0].items).toEqual(['resultsFor:0']);

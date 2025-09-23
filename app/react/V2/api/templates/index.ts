@@ -30,7 +30,7 @@ const checkTemplatesEntityCount = async (
 ): Promise<Record<string, number>> => {
   if (!templateIds || !Array.isArray(templateIds) || templateIds.length === 0) return {};
   const counts = await Promise.all(
-    templateIds.map(async id: any => {
+    templateIds.map(async (id) => {
       const requestParams = new RequestParams({}, headers);
       const response = await api.get(
         `v2/entities/count_by_template?templateId=${id}`,

@@ -30,7 +30,7 @@ const getPropertyValue = (property: any, metadataProperty: any) => {
       return metadataProperty.map((v: any) => v.label || v.value);
     case 'relationship': {
       let value: any[] = [];
-      metadataProperty.forEach((v: any) => {
+      metadataProperty.forEach((v) => {
         if (v.inheritedType && v.inheritedValue) {
           const properties = getPropertyValue({ type: v.inheritedType }, v.inheritedValue);
           value = Array.isArray(properties) ? [...value, ...properties] : [...value, properties];

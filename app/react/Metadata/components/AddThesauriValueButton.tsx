@@ -14,7 +14,7 @@ const AddThesauriValueButton = ({ values, onModalAccept }: AddThesauriValueButto
         values={values}
         isOpen={openModal}
         onCancel={() => setOpenModal(false)}
-        onAccept={(addedValues: any) => {
+        onAccept={(addedValues) => {
           setOpenModal(false);
           onModalAccept(addedValues);
         }}

@@ -97,8 +97,8 @@ const EditThesaurus = () => {
   const edit = (row: Row<ThesaurusRow>) => (row.original.subRows ? editGroup(row) : editValue(row));
 
   const proceedDeletion = () => {
-    setThesaurusValues(prev: any => {
-      selectedThesaurusValue.forEach(deletedItem: any => {
+    setThesaurusValues((prev) => {
+      selectedThesaurusValue.forEach((deletedItem) => {
         removeItem(prev, deletedItem);
       });
       return [...prev];

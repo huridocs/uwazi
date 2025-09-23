@@ -20,7 +20,7 @@ describe('EntitySection Markdown', () => {
     spyOn(console, 'error').and.callFake(consoleErrorSpy);
   });
 
-  const render = (innerComponent: any) => {
+  const render = (innerComponent) => {
     component = renderConnectedMount(() => innerComponent, state);
   };
 

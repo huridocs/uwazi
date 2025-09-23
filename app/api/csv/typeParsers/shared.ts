@@ -41,7 +41,7 @@ export const extractAndSanitizeValue = (
 export const handleEmptyValue = (sanitizationResult: {
   value: string;
   warnings: SanitizationWarning[];
-}): ParserResult: any => {
+}): ParserResult => {
   return {
     data: [],
     warnings: sanitizationResult.warnings,
@@ -51,13 +51,13 @@ export const handleEmptyValue = (sanitizationResult: {
 export const createSuccessResult = (
   data: MetadataObjectSchema[],
   warnings: SanitizationWarning[]
-): ParserResult: any => {
+): ParserResult => {
   return { data, warnings };
 };
 
 export const splitLabel = (
   label: string
-): { split: string[]; normalizedSplit: string[] } | null: any => {
+): { split: string[]; normalizedSplit: string[] } | null => {
   const normalizedLabel = normalizeThesaurusLabel(label);
   if (!normalizedLabel) return null;
   const split = label.split(csvConstants.dictionaryParentChildSeparator);
@@ -91,7 +91,7 @@ export const pickParentChild = (
  * Determines parent-child relationship from a label string.
  * This is used by select, multiselect, and arrangeThesauri.
  */
-export const determineParentChildRelationship = (label: string): LabelInfo | null: any => {
+export const determineParentChildRelationship = (label: string): LabelInfo | null => {
   const splitLabelResult = splitLabel(label);
   if (!splitLabelResult) return null;
   const { split, normalizedSplit } = splitLabelResult;
@@ -118,7 +118,7 @@ export const determineParentChildRelationship = (label: string): LabelInfo | nul
  * Parses parent-child relationships using the ::separator.
  * This is used by select.ts, multiselect.ts, and arrangeThesauri.ts.
  */
-export const parseParentChildWithSpaces = (value: string): LabelInfo | null: any => {
+export const parseParentChildWithSpaces = (value: string): LabelInfo | null => {
   if (!value) return null;
 
   const separator = '::';
@@ -228,7 +228,7 @@ export const createStandardParser = (): ((
 export const generateMetadataValue = (
   currentThesaurus: ThesaurusSchema,
   labelInfo: LabelInfo
-): MetadataObjectSchema | null: any => {
+): MetadataObjectSchema | null => {
   const parent = currentThesaurus.values?.find(
     v => normalizeThesaurusLabel(v.label) === labelInfo.normalizedLabel
   );
@@ -276,7 +276,7 @@ export function splitMultiselectLabels(labelString: string): {
   const labelInfos: LabelInfo[] = [];
   const parsingFailures: string[] = [];
 
-  labels.forEach(label: any => {
+  labels.forEach((label) => {
     let labelInfo = determineParentChildRelationship(label);
 
     if (!labelInfo) {
