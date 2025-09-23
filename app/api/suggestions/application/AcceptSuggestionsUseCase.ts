@@ -65,8 +65,6 @@ export class AcceptSuggestionsUseCase {
     if (typeof total !== 'number') {
       total = await IXSuggestionsModel.db.countDocuments(match);
       await ixmodels.setAutoAcceptProgress(extractorId, { total, processed: 0 });
-    } else {
-      /* empty */
     }
 
     // Fetch first page; rely on state recompute to shrink the set between batches
