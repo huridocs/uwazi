@@ -1,4 +1,5 @@
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { AbstractUseCase } from 'api/common.v2/contracts/UseCase';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { MultiLanguageEntityDataSource } from 'api/entities.v2/contracts/MultiLanguageEntitiesDataSource';
@@ -14,6 +15,7 @@ import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent'
 import { tenants } from 'api/tenants';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory';
+import { GenerateIdProperty } from '../domain/template/GenerateIdProperty';
 import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService';
 import { PropertyCreatorServiceStrategy } from '../domain/template/propertyCreatorService/PropertyCreatorServiceStrategy';
 import { RelationshipPropertyCreatorService } from '../domain/template/propertyCreatorService/RelationshipPropertyCreatorService';
@@ -25,7 +27,6 @@ import { TranslationService } from '../domain/template/TranslationService';
 import { TemplatePostProcessEntitiesJob } from '../infrastructure/jobs/TemplatePostProcessEntitiesJob';
 import { TemplateMapper } from '../infrastructure/mongodb/template/Mapper';
 import { UpdateTemplateDTO } from './TemplateDTOs';
-import { GenerateIdProperty } from '../domain/template/GenerateIdProperty';
 
 type Output = Template;
 
@@ -38,6 +39,7 @@ type Deps = {
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
   jobsDispatcher: JobsDispatcher;
+  transactionManager: TransactionManager;
 };
 
 class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
@@ -61,7 +63,8 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
 
   protected async executeAsync(
     input: UpdateTemplateDTO,
-    language: LanguageISO6391
+    language: LanguageISO6391,
+    fullReindex = false
   ): Promise<Output> {
     const currentTemplate = await this.deps.templatesDS.getById(input._id);
     if (!currentTemplate) {
@@ -105,9 +108,14 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     if (swappedNameProp) {
       throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
     }
-
-    await this.deps.templatesDS.update(updatedTemplate);
-    await this.deps.translationService.updateTemplateTranslation(currentTemplate, updatedTemplate);
+    await this.deps.transactionManager.run(async () => {
+      await this.deps.templatesDS.update(updatedTemplate);
+      await this.deps.translationService.updateTemplateTranslation(
+        currentTemplate,
+        updatedTemplate
+      );
+      await this.deps.templatesDS.updateMapping(updatedTemplate, fullReindex);
+    });
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
@@ -169,12 +177,56 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
           newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
           deletedProperties,
           renamedProperties,
+          fullReindex: false,
           tenantName: tenants.current().name,
           userId,
         });
       }
     }
+
+    if (fullReindex) {
+      await (
+        await this.deps.templatesDS.getAll().all()
+      )
+        .filter(t => t.id !== currentTemplate.id)
+        .reduce(async (previous, t) => {
+          await previous;
+          await this.dispatchPostProcessJob(t.id, language);
+        }, Promise.resolve());
+    }
+
     return updatedTemplate;
+  }
+
+  private async dispatchPostProcessJob(templateId: string, language: LanguageISO6391) {
+    const limit = 50;
+    const resultSet = await this.deps.entitiesDS.getSharedIdsByTemplateId(templateId);
+    const totalJobs = Math.ceil((await this.deps.entitiesDS.countByTemplateId(templateId)) / limit);
+    if (totalJobs > 0) {
+      await this.deps.templatesDS.setProcessingTotalJobs(templateId, totalJobs);
+    }
+
+    const userId = permissionsContext.getUserInContext()?._id?.toString();
+    if (!userId) {
+      throw new Error('This process can not be started without a user');
+    }
+    // eslint-disable-next-line no-await-in-loop
+    while (await resultSet.hasNext()) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.deps.jobsDispatcher.dispatch(TemplatePostProcessEntitiesJob, {
+        // eslint-disable-next-line no-await-in-loop
+        entitiesIds: await resultSet.nextBatch(limit),
+        templateId,
+        language,
+        modifiedRelationshipsProps: [],
+        newGeneratedIdProps: [],
+        deletedProperties: [],
+        renamedProperties: {},
+        fullReindex: true,
+        tenantName: tenants.current().name,
+        userId,
+      });
+    }
   }
 }
 
