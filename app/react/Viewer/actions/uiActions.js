@@ -183,7 +183,7 @@ export async function scrollTo(connection) {
 }
 
 export function selectSnippet(page, snippet) {
-  return dispatch: any => {
+    return (dispatch) => {
     waitForElement(`.document-viewer div#page-${page}`, () => {
       scrollToPage(page);
       waitForElement(`.document-viewer div#page-${page} .textLayer`, () => {
@@ -214,7 +214,7 @@ export function activateReference(
   };
 
   // eslint-disable-next-line max-statements
-  return dispatch: any => {
+    return (dispatch) => {
     dispatch({ type: types.DEACTIVATE_REFERENCE });
     if (referenceGroup?.length) {
       dispatch({ type: types.ACTIVATE_MULTIPLE_REFERENCES, references: referenceGroup });
@@ -244,7 +244,7 @@ export function activateReference(
 }
 
 export function scrollToActive(reference, tab, doScroll) {
-  return dispatch: any => {
+    return (dispatch) => {
     if (doScroll) {
       dispatch(goToActive(false));
       dispatch(activateReference(reference, tab));
@@ -253,7 +253,7 @@ export function scrollToActive(reference, tab, doScroll) {
 }
 
 export function selectReference(connection) {
-  return dispatch: any => {
+    return (dispatch) => {
     dispatch(activateReference(connection));
     dispatch(setTargetSelection(connection.reference));
   };

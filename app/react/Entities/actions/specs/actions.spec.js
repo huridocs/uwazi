@@ -65,7 +65,7 @@ describe('Entities actions', () => {
   });
 
   describe('deleteEntity', () => {
-    it('should delete the entity and notify', (done: any) => {
+    it('should delete the entity and notify', (done) => {
       const entity = { sharedId: 'sharedId' };
       actions
         .deleteEntity(entity)(dispatch)

@@ -308,7 +308,7 @@ const MultiselectList = ({
           clearFieldAction={() => {
             setSearchTerm('');
           }}
-          onChange={e: any => {
+          onChange={(e: any) => {
             setSearchTerm(e.currentTarget.value);
             setIsDirty(true);
           }}

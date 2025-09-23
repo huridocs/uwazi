@@ -50,7 +50,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
 
           pageViewer.setPdfPage(pdfPage);
 
-          const handleIntersection: IntersectionObserverCallback = entries: any => {
+          const handleIntersection: IntersectionObserverCallback = (entries: any) => {
             const [entry] = entries;
             if (entry.isIntersecting) {
               if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {

@@ -246,7 +246,7 @@ const FiltersTable = () => {
       <FiltersSidepanel
         showSidepanel={showSidepanel}
         setShowSidepanel={setShowSidepanel}
-        onSave={newFilter: any => {
+        onSave={(newFilter: any) => {
           if (newFilter) {
             setFilters(updateFilters(newFilter, filters) || []);
           }

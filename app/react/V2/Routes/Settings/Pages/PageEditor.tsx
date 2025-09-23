@@ -190,7 +190,7 @@ const PageEditor = () => {
                   <CodeEditor
                     language="html"
                     intialValue={page.metadata?.content}
-                    onMount={editor: any => {
+                    onMount={(editor: any) => {
                       editor.getModel()?.onDidChangeContent(
                         debouncedChangeHandler(() => {
                           setValue('metadata.content', editor.getValue(), { shouldDirty: true });
@@ -212,7 +212,7 @@ const PageEditor = () => {
                   <CodeEditor
                     language="javascript"
                     intialValue={page.metadata?.script}
-                    onMount={editor: any => {
+                    onMount={(editor: any) => {
                       editor.getModel()?.onDidChangeContent(
                         debouncedChangeHandler(() => {
                           setValue('metadata.script', editor.getValue(), { shouldDirty: true });

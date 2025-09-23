@@ -9,10 +9,10 @@ import { constructFile } from '../../shared/fileUploadUtils.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
-  new Promise<void>(resolve) => {
+  new Promise<void>((resolve) => {
     const reader = new FileReader();
 
-    reader.onload = base64: any => {
+    reader.onload = (base64: any) => {
       const info = ensure<ArrayBuffer>(base64.target!.result);
       cb(info);
       resolve();

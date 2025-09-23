@@ -18,7 +18,7 @@ const Body = () => {
       <MultiselectList
         selectedValues={[targetTemplateId]}
         items={options}
-        onChange={selected: any => {
+        onChange={(selected: any) => {
           setTargetTemplateId(selected[0]);
         }}
         onSearch={s => setOptions(() => defaultSearch(s, targetTemplateOptions))}

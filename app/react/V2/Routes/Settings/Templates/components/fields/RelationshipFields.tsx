@@ -128,7 +128,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
               label={<Translate>Inherit property</Translate>}
               options={propertyOptions}
               disabled={disabled}
-              onChange={e: any => {
+              onChange={(e: any) => {
                 const { value } = e.target;
                 const option = propertyOptions.find(opt => opt.value === value);
                 if (option && option.type) {

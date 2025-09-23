@@ -79,7 +79,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
         result = (
           <div
             className="tw-content video-container compact"
-            onClick={e: any => {
+             onClick={(e) => {
               e.stopPropagation();
             }}
           >
@@ -197,7 +197,7 @@ const groupAdjacentGeolocations = (metadata) => {
 };
 
 function filterProps(showSubset) {
-  return p: any => {
+   return (p) => {
     if (showSubset && !showSubset.includes(p.name)) {
       return false;
     }

@@ -18,8 +18,8 @@ import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    getCurrentUser(headers);
+    async () =>
+      getCurrentUser(headers);
 
 const Account = () => {
   const userAccount = useLoaderData() as ClientUserSchema;
@@ -224,7 +224,7 @@ const Account = () => {
           body="Confirm action"
           usePassword
           onCancelClick={() => setConfirmationModal(false)}
-          onAcceptClick={value: any => {
+          onAcceptClick={(value: any) => {
             if (formSubmit.current) {
               passwordConfirmation.current = value;
               formSubmit.current.disabled = false;

@@ -17,7 +17,7 @@ const I18NUtils = {
     );
   },
 
-  saveLocale: (locale: any) => {
+  saveLocale: (locale) => {
     if (isClient) {
       Cookie.set('locale', locale, { expires: 365 * 10 });
     }

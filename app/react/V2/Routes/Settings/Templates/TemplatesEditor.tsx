@@ -340,7 +340,7 @@ const TemplatesEditor = () => {
                   color: template.color || '#C03B22',
                   entityViewPage: template.entityViewPage || '',
                 }}
-                onChange={values: any => {
+                onChange={(values: any) => {
                   setTemplate({ ...template, ...values });
                   if (values.name) setNameError(false);
                   if (values.color) setColorError(false);

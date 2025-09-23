@@ -139,7 +139,7 @@ const Selects = ({
           return (
             <MultiselectList
               onChange={onChange}
-              onSearch={s: any => {
+              onSearch={(s: any) => {
                 setItems(() => defaultSearch(s, intialOptions));
               }}
               selectedValues={value}

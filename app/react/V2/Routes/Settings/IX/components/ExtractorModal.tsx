@@ -197,7 +197,7 @@ const ExtractorModal = ({
           placeholder="Extractor name"
           hasErrors={hasNameError}
           value={name}
-          onChange={event: any => {
+          onChange={(event: any) => {
             setName(event.target.value);
             setNameError(false);
           }}
@@ -242,7 +242,7 @@ const ExtractorModal = ({
               <RadioSelect
                 name="pdf"
                 options={getAvailableSources(templates, values, extractor)}
-                onChange={selected: any => {
+                onChange={(selected: any) => {
                   setSource(selected.currentTarget.value);
                 }}
               />

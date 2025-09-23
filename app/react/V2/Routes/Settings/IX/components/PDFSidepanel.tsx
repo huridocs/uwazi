@@ -186,7 +186,7 @@ const PDFSidepanel = ({
           <PDF
             fileUrl={`/api/files/${pdfFile.filename}`}
             highlights={highlights}
-            onSelect={selection: any => {
+            onSelect={(selection: any) => {
               if (!selection.selectionRectangles.length) {
                 setSelectionError('Could not detect the area for the selected text');
                 setSelectedText(undefined);

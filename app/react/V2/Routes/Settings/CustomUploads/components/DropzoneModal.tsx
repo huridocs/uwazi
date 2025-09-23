@@ -52,7 +52,7 @@ const DropzoneModal = ({ notify, isOpen, setIsOpen, uploadService }: DropzoneMod
       <Modal.Body>
         <FileDropzone
           className="w-auto md:min-w-72"
-          onChange={newFiles: any => {
+          onChange={(newFiles: any) => {
             setFilesToUpload(newFiles);
           }}
         />

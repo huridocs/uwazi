@@ -74,7 +74,7 @@ const Users = () => {
 
         <SettingsContent.Body>
           <Tabs
-            onTabSelected={tab: any => {
+            onTabSelected={(tab: any) => {
               setActiveTab(tab as ActiveTab);
               setSelectedUsers([]);
               setSelectedGroups([]);

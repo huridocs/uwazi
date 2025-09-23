@@ -88,7 +88,7 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
         <CodeEditor
           language={language}
           intialValue={intialValue}
-          onMount={editor: any => {
+          onMount={(editor: any) => {
             editorInstance.current = editor;
           }}
           fallbackElement={fallbackElement}

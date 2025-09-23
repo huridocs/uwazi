@@ -104,7 +104,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Labeled</Translate>}
                 {...register('labeled')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'labeled');
                 }}
               />
@@ -115,7 +115,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Non-labeled</Translate>}
                 {...register('nonLabeled')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'nonLabeled');
                 }}
               />
@@ -132,7 +132,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Non processed</Translate>}
                 {...register('nonProcessed')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'nonProcessed');
                 }}
               />
@@ -143,7 +143,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Obsolete</Translate>}
                 {...register('obsolete')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'obsolete');
                 }}
               />
@@ -154,7 +154,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Error</Translate>}
                 {...register('error')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'error');
                 }}
               />
@@ -171,7 +171,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Match</Translate>}
                 {...register('match')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'match');
                 }}
               />
@@ -182,7 +182,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">Mismatch</Translate>}
                 {...register('mismatch')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'mismatch');
                 }}
               />
@@ -193,7 +193,7 @@ const FiltersSidepanel = ({
               <Checkbox
                 label={<Translate className="font-normal">No context</Translate>}
                 {...register('noContext')}
-                onChange={e: any => {
+                onChange={(e: any) => {
                   checkOption(e, 'noContext');
                 }}
               />

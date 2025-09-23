@@ -137,7 +137,7 @@ export function reloadDocument(sharedId) {
 }
 
 export function cancelTargetDocument() {
-  return dispatch: any => {
+    return (dispatch) => {
     dispatch({ type: connectionsTypes.CANCEL_RANGED_CONNECTION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocReferences'));
@@ -147,7 +147,7 @@ export function cancelTargetDocument() {
 }
 
 export function editToc(toc) {
-  return dispatch: any => {
+    return (dispatch) => {
     dispatch(closeConnectionPanel());
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
@@ -157,7 +157,7 @@ export function editToc(toc) {
 }
 
 export function leaveEditMode() {
-  return dispatch: any => {
+    return (dispatch) => {
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
   };

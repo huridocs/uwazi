@@ -154,7 +154,7 @@ class PDFPage extends Component {
       <div
         id={`page-${this.props.page}`}
         className="pdf-page"
-        ref={ref: any => {
+        ref={(ref) => {
           this.pageContainer = ref;
         }}
         style={style}

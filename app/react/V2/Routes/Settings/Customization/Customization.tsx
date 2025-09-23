@@ -16,10 +16,10 @@ type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'cust
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
-  async () => {
-    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-    return { allowcustomJS, customCSS, customJS };
-  };
+    async () => {
+      const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
+      return { allowcustomJS, customCSS, customJS };
+    };
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;
@@ -68,7 +68,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor: any => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setNewCSS(editor.getValue());
@@ -81,7 +81,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="javascript"
                   intialValue={customJS}
-                  onMount={editor: any => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setNewJS(editor.getValue());
@@ -97,7 +97,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor: any => {
+                  onMount={(editor: any) => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setNewCSS(editor.getValue());

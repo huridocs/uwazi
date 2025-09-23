@@ -67,7 +67,7 @@ function updateRightRelationshipType(index, rightIndex, _id) {
 }
 
 function addEntity(index, rightIndex, entity, errors = []) {
-  return dispatch: any => {
+    return (dispatch) => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
     let message = t('System', 'added to hub.', null, false);
 
@@ -259,7 +259,7 @@ const selectRelationTypes = createSelector(
 );
 
 function search(searchTerm) {
-  return dispatch: any => {
+    return (dispatch) => {
     dispatch(actions.set('relationships/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm);
   };

@@ -86,7 +86,7 @@ class DocumentsList extends Component {
       <Link
         to={url}
         className="btn btn-default btn-load-more"
-        onClick={e: any => {
+         onClick={(e) => {
           e.preventDefault();
           this.loadMoreDocuments(amount, from);
         }}

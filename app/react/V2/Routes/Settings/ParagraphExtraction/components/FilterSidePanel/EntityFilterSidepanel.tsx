@@ -93,7 +93,7 @@ const EntityFilterSidepanel = () => {
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <form
           className="flex justify-end gap-2"
-          onSubmit={e: any => {
+          onSubmit={(e: any) => {
             e.preventDefault();
             handleSubmit();
           }}

@@ -304,7 +304,7 @@ const UserFormSidepanel = ({
                       Groups
                     </Translate>
                   }
-                  onChange={selectedGroups: any => {
+                  onChange={(selectedGroups: any) => {
                     const values = calculateSelectedGroups(selectedGroups, groups);
                     setValue('groups', values, { shouldDirty: true });
                   }}

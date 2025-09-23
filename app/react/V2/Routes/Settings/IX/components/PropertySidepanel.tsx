@@ -138,7 +138,7 @@ const PropertySidepanel = ({
           propertyName={suggestion?.extractorSource.property}
           entity={entity}
           template={template}
-          onSelect={selection: any => {
+          onSelect={(selection: any) => {
             setSelectedText(selection);
           }}
           onDeselect={() => {

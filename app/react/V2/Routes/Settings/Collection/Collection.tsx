@@ -25,11 +25,11 @@ import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const settings = await SettingsAPI.get(headers);
-    const templates = await TemplatesAPI.get(headers);
-    return { settings, templates };
-  };
+    async () => {
+      const settings = await SettingsAPI.get(headers);
+      const templates = await TemplatesAPI.get(headers);
+      return { settings, templates };
+    };
 
 const dateOptions = () => {
   const date = new Date();
@@ -312,7 +312,7 @@ const Collection = () => {
                   <MultiSelect
                     label={labelWithTip('Whitelisted templates', tips.publicForm[2])}
                     options={templateOptions}
-                    onChange={newValues: any => {
+                    onChange={(newValues: any) => {
                       setValue('allowedPublicTemplates', newValues);
                     }}
                     value={settings.allowedPublicTemplates || []}
@@ -347,7 +347,7 @@ const Collection = () => {
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
-                    onChange={newValues: any => {
+                    onChange={(newValues: any) => {
                       clearErrors('mapLayers');
                       if (!newValues.length) {
                         setError(

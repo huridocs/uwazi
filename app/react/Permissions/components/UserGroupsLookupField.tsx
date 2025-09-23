@@ -77,7 +77,7 @@ export const UserGroupsLookupField = ({
         placeholder="Add people or groups"
         onChange={onChangeHandler}
         onKeyDown={onKeyPressHandler}
-        onBlur={e: any => {
+        onBlur={(e: any) => {
           if (e.relatedTarget !== optionsListRef.current) {
             setShow(false);
           }
