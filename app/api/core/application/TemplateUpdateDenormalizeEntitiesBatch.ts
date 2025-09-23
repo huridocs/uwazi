@@ -6,6 +6,7 @@ import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
 import { MongoRelationshipsV1DataSource } from 'api/relationships/MongoRelationshipsV1DataSource';
 import { RelationsV1Collection } from 'api/relationships/RelationsV1Collection';
+import { search } from 'api/search';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { cloneDeep } from 'lodash';
 import { generateID } from 'shared/IDGenerator';
@@ -18,6 +19,7 @@ type Input = {
   deletedProperties: string[];
   renamedProperties: { [oldName: string]: string };
   templateId: string;
+  fullReindex: boolean;
   onAllEntitiesDenormalized: () => void;
   onProgress: (progress: { active: boolean; totalJobs: number; completedJobs: number }) => void;
 };
@@ -42,9 +44,13 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
     deletedProperties,
     renamedProperties,
     templateId,
+    fullReindex,
     onAllEntitiesDenormalized,
     onProgress,
   }: Input) {
+    if (fullReindex) {
+      await search.indexEntities({ sharedId: { $in: entitiesIds } }, '+fullText', 10);
+    }
     await this.dependencies.transactionManager.run(async () => {
       await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
       await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
