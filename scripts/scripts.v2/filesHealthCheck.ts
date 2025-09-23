@@ -1,13 +1,14 @@
+import yargs from 'yargs';
 import { S3Client } from '@aws-sdk/client-s3';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { config } from 'api/config';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { FilesHealthCheck } from 'api/files.v2/FilesHealthCheck';
-import { S3FileStorage } from 'api/files.v2/infrastructure/S3FileStorage';
-import { DB } from 'api/odm';
-import { tenants } from 'api/tenants';
+import { DefaultTransactionManager } from '../../app/api/common.v2/database/data_source_defaults.js';
+import { config } from '../../app/api/config.js';
+import { DefaultFilesDataSource } from '../../app/api/files.v2/database/data_source_defaults.js';
+import { FilesHealthCheck } from '../../app/api/files.v2/FilesHealthCheck.js';
+import { S3FileStorage } from '../../app/api/files.v2/infrastructure/S3FileStorage.js';
+import { DB } from '../../app/api/odm/index.js';
+import { tenants } from '../../app/api/tenants/index.js';
 
-const { tenant, allTenants } = require('yargs')
+const { tenant, allTenants } = await yargs
   .option('tenant', {
     alias: 't',
     type: 'string',

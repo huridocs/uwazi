@@ -1,6 +1,6 @@
-import { config } from 'api/config';
-import { DB } from 'api/odm';
-import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { config } from '../../app/api/config.js';
+import { DB } from '../../app/api/odm/index.js';
+import { DefaultDispatcher } from '../../app/api/queue.v2/configuration/factories.js';
 import { TestJob } from '../../app/queueRegistry';
 
 (async () => {

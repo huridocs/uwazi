@@ -1,20 +1,21 @@
-import { config } from 'api/config';
-import { DB } from 'api/odm';
-import { tenants } from 'api/tenants';
+import yargs from 'yargs';
+import { config } from '../../app/api/config.js';
+import { DB } from '../../app/api/odm/index.js';
+import { tenants } from '../../app/api/tenants/index.js';
 
-import { denormalizeMetadata } from 'api/entities/denormalize';
-import entities from 'api/entities/entities';
-import entitiesModel from 'api/entities/entitiesModel';
-import translationsModel, { IndexedTranslations } from 'api/i18n/translations';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { search } from 'api/search';
-import templates from 'api/templates';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { denormalizeMetadata } from '../../app/api/entities/denormalize.js';
+import entities from '../../app/api/entities/entities.js';
+import entitiesModel from '../../app/api/entities/entitiesModel.js';
+import translationsModel, { IndexedTranslations } from '../../app/api/i18n/translations.js';
+import { permissionsContext } from '../../app/api/permissions/permissionsContext.js';
+import { search } from '../../app/api/search/index.js';
+import templates from '../../app/api/templates/index.js';
+import { LanguageISO6391 } from '../../app/shared/types/commonTypes.js';
+import { TemplateSchema } from '../../app/shared/types/templateType.js';
+import { ThesaurusSchema } from '../../app/shared/types/thesaurusType.js';
 import { inspect } from 'util';
 
-const { tenant, allTenants } = require('yargs')
+const { tenant, allTenants } = await yargs
   .option('tenant', {
     alias: 't',
     type: 'string',
