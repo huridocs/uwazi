@@ -187,4 +187,71 @@ describe('migration test', () => {
       ])
     );
   });
+
+  it('should replace wrong Common Properties name by the correct ones', async () => {
+    const templates: TemplateSchema[] = [
+      {
+        _id: new ObjectId(),
+        name: 't1',
+        commonProperties: [
+          {
+            _id: new ObjectId(),
+            name: 'date_added',
+            label: 'Date added',
+            type: 'date',
+          },
+        ],
+        properties: [{ label: 'Text', type: 'text', name: 'text' }],
+        default: false,
+        __v: 0,
+      },
+      {
+        _id: new ObjectId(),
+        name: 't2',
+        commonProperties: [
+          {
+            _id: new ObjectId(),
+            name: 'date_modified',
+            label: 'Date modified',
+            type: 'date',
+          },
+        ],
+        properties: [{ label: 'Text', type: 'text', name: 'text' }],
+        default: false,
+        __v: 0,
+      },
+    ];
+
+    await testingDB.mongodb?.collection('templates').insertMany(templates);
+
+    await migration.up(db);
+
+    const editedTemplates = await testingDB.mongodb?.collection('templates').find({}).toArray();
+
+    editedTemplates?.forEach(template =>
+      expect(template.commonProperties).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          label: 'Title',
+          name: 'title',
+          type: 'text',
+          isCommonProperty: true,
+        },
+        {
+          _id: expect.any(ObjectId),
+          label: 'Date added',
+          name: 'creationDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+        {
+          _id: expect.any(ObjectId),
+          label: 'Date modified',
+          name: 'editDate',
+          type: 'date',
+          isCommonProperty: true,
+        },
+      ])
+    );
+  });
 });

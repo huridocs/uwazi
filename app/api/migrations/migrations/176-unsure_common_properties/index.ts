@@ -13,12 +13,20 @@ const priority: Record<string, number> = {
   editDate: 2,
 };
 
+const fixPropertyName = (name: string) => {
+  if (name === 'date_added') return 'creationDate';
+  if (name === 'date_modified') return 'editDate';
+
+  return name;
+};
+
 export default {
   delta: 176,
 
   name: 'Ensure Common Properties',
 
-  description: 'Ensure Common Properties are present in every Template',
+  description:
+    'Ensure Common Properties are present in every Template and fix Property name inconsistency',
 
   reindex: false,
 
@@ -38,7 +46,11 @@ export default {
       .toArray();
 
     const ensureCommonProperties = (commonProperties: PropertySchema[]) => {
-      const fixed: PropertySchema[] = commonProperties.map(p => ({ ...p, isCommonProperty: true }));
+      const fixed: PropertySchema[] = commonProperties.map(p => ({
+        ...p,
+        name: fixPropertyName(p.name),
+        isCommonProperty: true,
+      }));
 
       required.forEach(
         prop =>
