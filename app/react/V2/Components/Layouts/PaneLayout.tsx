@@ -1,6 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState, useRef, useCallback, useEffect, Fragment } from 'react';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
+import { isClient } from 'app/utils';
 
 const getClientXValue = (event: MouseEvent | TouchEvent): number | undefined => {
   if ('clientX' in event) return event.clientX;
@@ -128,22 +130,66 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
   );
 };
 
+// eslint-disable-next-line max-statements
 const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
   const [currentPane, setCurrentPane] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const goToNext = () => setCurrentPane(p => Math.min(p + 1, children.length - 1));
-  const goToPrev = () => setCurrentPane(p => Math.max(p - 1, 0));
+  const goToNext = () => setCurrentPane(prev => (prev + 1) % children.length);
+  const goToPrev = () => setCurrentPane(prev => (prev - 1) % children.length);
+
+  const handleTouchStart = (event: React.TouchEvent) => {
+    setTouchStartX(event.touches[0]?.clientX);
+    setTouchMoveX(null);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (event: React.TouchEvent) => {
+    if (isDragging) {
+      setTouchMoveX(event.touches[0].clientX);
+    }
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    if (isDragging && touchStartX != null) {
+      const endX = event.changedTouches[0].clientX;
+      const diff = endX - touchStartX;
+      const threshold = 50;
+
+      if (diff > threshold) {
+        goToPrev();
+      } else if (diff < -threshold) {
+        goToNext();
+      }
+
+      setTouchStartX(null);
+      setTouchMoveX(null);
+      setIsDragging(false);
+    }
+  };
+
+  const dragOffset =
+    isDragging && touchStartX !== null && touchMoveX !== null ? touchMoveX - touchStartX : 0;
 
   return (
-    <div className={`overflow-hidden relative h-full min-h-0 ${className}`}>
+    <section className={`overflow-hidden relative h-full min-h-0 flex flex-col ${className}`}>
       <div
-        className="flex transition-transform duration-300 ease-in-out h-full min-h-0"
-        style={{ transform: `translateX(-${currentPane * 100}%)` }}
+        className={`flex grow h-full min-h-0 transition-transform duration-300 ease-in-out ${
+          isDragging ? 'transition-none' : ''
+        }`}
+        style={{
+          transform: `translateX(calc(-${currentPane * 100}% + ${dragOffset}px))`,
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {children.map((child, index) => (
           <div
             key={child.key ?? index}
-            className="flex-shrink-0 w-full h-full min-h-0"
+            className="flex-shrink-0 w-full h-full overflow-auto min-h-0"
             style={{ background: child.props.background || 'white' }}
           >
             {child}
@@ -151,32 +197,46 @@ const PaneLayoutMobile = ({ children, className = '' }: PaneLayoutProps) => {
         ))}
       </div>
 
-      <nav className="flex w-full justify-between sticky bottom-0">
-        <button
-          onClick={goToPrev}
-          disabled={currentPane === 0}
-          type="button"
-          aria-label={t('System', 'Previous', null, false)}
-        >
-          <Translate>Previous</Translate>
+      <nav className="flex w-full p-1 justify-between bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white to-gray-100 rounded-2xl">
+        <button onClick={goToPrev} type="button" aria-label={t('System', 'Previous', null, false)}>
+          <ArrowLeftIcon className="w-5" />
+          <Translate className="sr-only">Previous</Translate>
         </button>
-        <button
-          onClick={goToNext}
-          disabled={currentPane === children.length - 1}
-          type="button"
-          aria-label={t('System', 'Next', null, false)}
-        >
-          <Translate>Next</Translate>
+        <button onClick={goToNext} type="button" aria-label={t('System', 'Next', null, false)}>
+          <ArrowRightIcon className="w-5" />
+          <Translate className="sr-only">Next</Translate>
         </button>
       </nav>
-    </div>
+    </section>
   );
 };
 
 const PaneLayout = ({ children, className = '' }: PaneLayoutProps) => {
   const [isMobile, setIsMobile] = useState<boolean>();
 
-  if (false) {
+  useEffect(() => {
+    let maxWidthObserver: MediaQueryList;
+
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_VIEW_MAX_WIDTH);
+    };
+
+    if (isClient) {
+      maxWidthObserver = window.matchMedia(`(max-width: ${MOBILE_VIEW_MAX_WIDTH - 1}px)`);
+
+      maxWidthObserver.addEventListener('change', onChange);
+
+      setIsMobile(window.innerWidth < MOBILE_VIEW_MAX_WIDTH);
+    }
+
+    return () => {
+      if (maxWidthObserver) {
+        maxWidthObserver.removeEventListener('change', onChange);
+      }
+    };
+  }, []);
+
+  if (isMobile) {
     return <PaneLayoutMobile className={className}>{children}</PaneLayoutMobile>;
   }
 

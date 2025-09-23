@@ -60,6 +60,29 @@ const Component = () => (
           malesuada tellus erat, gravida laoreet erat finibus sit amet. Nulla tristique vitae augue
           non sagittis.
         </p>
+        <p>
+          Sed velit eros, pretium id imperdiet eget, tristique vel odio. Vestibulum ante ipsum
+          primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque non mollis mi.
+          Proin pharetra, tellus quis ultrices aliquet, magna nibh accumsan neque, id viverra ex
+          neque a libero. Aliquam auctor a ante id pretium. Cras lobortis, metus eget pellentesque
+          feugiat, purus purus porttitor ligula, nec euismod orci massa eu sem. Phasellus tincidunt
+          interdum lacinia. Praesent ac ornare nisi. Nulla ornare quis felis vel auctor. Donec
+          bibendum odio urna, in rutrum justo lacinia a. Mauris accumsan commodo metus. Suspendisse
+          eu venenatis massa. Vivamus lorem metus, sodales ac porttitor eget, dignissim sit amet
+          sem. Sed nec nisi at felis iaculis venenatis in vitae magna.
+        </p>
+        <p>
+          Pellentesque justo purus, porta a interdum vel, posuere sit amet nisl. Aenean pellentesque
+          semper ullamcorper. Etiam eget nisi in sapien convallis dictum ac vel justo. Donec
+          lobortis lectus odio, at euismod augue tincidunt ac. Quisque et tempor justo. Mauris
+          ultrices massa ullamcorper est porta iaculis vel quis metus. Pellentesque nibh sapien,
+          maximus vitae porttitor eu, efficitur quis arcu. Praesent tristique ac tortor at rhoncus.
+          Quisque quis velit porta, malesuada velit ut, suscipit nibh. Aenean sollicitudin sapien
+          laoreet lectus ultricies, eu porttitor eros condimentum. Integer eu aliquet mauris.
+          Vivamus interdum laoreet felis in pulvinar. Duis at risus a mi luctus luctus. Vivamus
+          malesuada tellus erat, gravida laoreet erat finibus sit amet. Nulla tristique vitae augue
+          non sagittis.
+        </p>
       </div>
     </PaneLayout.Pane>
   </PaneLayout>
