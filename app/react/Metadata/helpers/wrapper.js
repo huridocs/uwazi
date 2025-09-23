@@ -2,6 +2,33 @@
 import { isString } from 'lodash';
 import uniqueID from 'shared/uniqueID';
 
+const isMediaProperty = property => {
+  return property && (property.type === 'image' || property.type === 'media');
+};
+
+const shouldSkipValue = fieldValue => {
+  if (fieldValue === null || fieldValue === undefined) {
+    return true;
+  }
+  if (typeof fieldValue === 'string' && fieldValue.startsWith('blob:')) {
+    return true;
+  }
+
+  if (
+    typeof fieldValue === 'object' &&
+    fieldValue &&
+    fieldValue.data &&
+    fieldValue.data.startsWith('blob:') &&
+    (fieldValue.originalFile === null ||
+      fieldValue.originalFile === undefined ||
+      !fieldValue.originalFile)
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
 const prepareFiles = async (mediaProperties, values) => {
   const metadataFiles = {};
   const entityAttachments = [];
@@ -10,31 +37,112 @@ const prepareFiles = async (mediaProperties, values) => {
   if (values.metadata) {
     await Promise.all(
       mediaProperties.map(async p => {
-        if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
+        if (!values.metadata[p.name]) {
           return Promise.resolve();
         }
-        const { data, originalFile } = values.metadata[p.name];
+
+        const metadataValue = values.metadata[p.name];
+        if (shouldSkipValue(metadataValue)) {
+          return Promise.resolve();
+        }
+
+        if (typeof metadataValue !== 'object' || !metadataValue.data) {
+          return Promise.resolve();
+        }
+
+        const { data, originalFile } = metadataValue;
         if (originalFile) {
+          if (originalFile instanceof File) {
+            const fileID = uniqueID();
+            metadataFiles[p.name] = fileID;
+
+            entityAttachments.push({
+              originalname: originalFile.name,
+              filename: originalFile.name,
+              type: 'attachment',
+              mimetype: originalFile.type,
+              fileLocalID: fileID,
+            });
+
+            files.push(originalFile);
+            return Promise.resolve();
+          }
+
+          if (data instanceof File) {
+            const fileID = uniqueID();
+            metadataFiles[p.name] = fileID;
+
+            entityAttachments.push({
+              originalname: data.name,
+              filename: data.name,
+              type: 'attachment',
+              mimetype: data.type,
+              fileLocalID: fileID,
+            });
+
+            files.push(data);
+            return Promise.resolve();
+          }
+
           const validBlobUrlRegExp =
             /^\(?(blob:https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
 
           const [, url, , timeLinks] = data.match(validBlobUrlRegExp) || ['', data];
-          const blob = await fetch(url).then(r => r.blob());
-          const file = new File([blob], originalFile.name, { type: blob.type });
-          const fileID = uniqueID();
 
-          metadataFiles[p.name] = fileID;
+          if (!url || url === data) {
+            if (originalFile && originalFile instanceof File && originalFile.size > 0) {
+              const fileID = uniqueID();
+              metadataFiles[p.name] = fileID;
 
-          entityAttachments.push({
-            originalname: file.name,
-            filename: file.name,
-            type: 'attachment',
-            mimetype: blob.type,
-            fileLocalID: fileID,
-            timeLinks,
-          });
+              entityAttachments.push({
+                originalname: originalFile.name,
+                filename: originalFile.name,
+                type: 'attachment',
+                mimetype: originalFile.type,
+                fileLocalID: fileID,
+                timeLinks,
+              });
 
-          files.push(file);
+              files.push(originalFile);
+            }
+            return Promise.resolve();
+          }
+
+          try {
+            const blob = await fetch(url).then(r => r.blob());
+            const file = new File([blob], originalFile.name, { type: blob.type });
+            const fileID = uniqueID();
+
+            metadataFiles[p.name] = fileID;
+
+            entityAttachments.push({
+              originalname: file.name,
+              filename: file.name,
+              type: 'attachment',
+              mimetype: blob.type,
+              fileLocalID: fileID,
+              timeLinks,
+            });
+
+            files.push(file);
+          } catch (error) {
+            // Fallback: If blob URL processing fails, process originalFile directly
+            if (originalFile && originalFile instanceof File && originalFile.size > 0) {
+              const fileID = uniqueID();
+              metadataFiles[p.name] = fileID;
+
+              entityAttachments.push({
+                originalname: originalFile.name,
+                filename: originalFile.name,
+                type: 'attachment',
+                mimetype: originalFile.type,
+                fileLocalID: fileID,
+                timeLinks,
+              });
+
+              files.push(originalFile);
+            }
+          }
         }
       })
     );
@@ -64,6 +172,11 @@ function wrapEntityMetadata(entity, template) {
     let timeLinks;
     const property = mediaProperties.find(p => p.name === key);
     const fieldValue = entity.metadata[key]?.data || entity.metadata[key];
+
+    if (isMediaProperty(property) && shouldSkipValue(fieldValue)) {
+      return { ...wrappedMo, [key]: [{ value: '' }] };
+    }
+
     let fileLocalID = fieldValue;
     if (property && entity.metadata[key] && property.type === 'media') {
       const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
@@ -90,7 +203,19 @@ function wrapEntityMetadata(entity, template) {
 
 const prepareMetadataAndFiles = async (values, attachedFiles, template, mediaProperties) => {
   const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
-  const fields = { ...values.metadata, ...metadataFiles };
+
+  // Remove blob URLs from metadata before passing to wrapEntityMetadata
+  const cleanedMetadata = { ...values.metadata };
+  Object.keys(cleanedMetadata).forEach(key => {
+    if (cleanedMetadata[key]) {
+      const metadataValue = cleanedMetadata[key];
+      if (shouldSkipValue(metadataValue)) {
+        cleanedMetadata[key] = '';
+      }
+    }
+  });
+
+  const fields = { ...cleanedMetadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };
   const wrappedEntity = wrapEntityMetadata(entity, template);
   wrappedEntity.file = values.file ? values.file[0] : undefined;
