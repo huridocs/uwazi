@@ -16,49 +16,49 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractor',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXCreateExtractorController.adapt(PXCreateExtractorController)
+    PXCreateExtractorController.createHandler()
   );
 
   app.delete(
     '/api/paragraphExtraction/extractor',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXDeleteExtractorController.adapt(PXDeleteExtractorController)
+    PXDeleteExtractorController.createHandler()
   );
 
   app.post(
     '/api/paragraphExtraction/extract',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXExtractParagraphFromEntitiesController.adapt(PXExtractParagraphFromEntitiesController)
+    PXExtractParagraphFromEntitiesController.createHandler()
   );
 
   app.post(
     '/api/paragraphExtraction/extractNew',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXExtractParagraphsByEntityStatusController.adapt(PXExtractParagraphsByEntityStatusController)
+    PXExtractParagraphsByEntityStatusController.createHandler()
   );
 
   app.get(
     '/api/paragraphExtraction/extractors',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXGetExtractorsController.adapt(PXGetExtractorsController)
+    PXGetExtractorsController.createHandler()
   );
 
   app.get(
     '/api/paragraphExtraction/extractorStatuses',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXGetExtractorStatusesController.adapt(PXGetExtractorStatusesController)
+    PXGetExtractorStatusesController.createHandler()
   );
 
   app.get(
     '/api/paragraphExtraction/entityParagraphs',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
-    PXGetEntityParagraphsController.adapt(PXGetEntityParagraphsController)
+    PXGetEntityParagraphsController.createHandler()
   );
 };
 

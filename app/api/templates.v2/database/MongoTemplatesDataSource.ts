@@ -1,4 +1,13 @@
 /* eslint-disable max-lines */
+import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
+import { Db, ObjectId } from 'mongodb';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { MongoDataSource, MongoDSOptions } from '../common.v2/database/MongoDataSource.js';
 import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
 import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
@@ -7,6 +16,7 @@ import { objectIndex } from '../../shared/data_utils/objectIndex.js';
 import { TemplateMapper } from '../core/infrastructure/mongodb/template/Mapper.js';
 import { updateMapping } from '../search/entitiesIndex.js';
 import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -34,6 +44,14 @@ export class MongoTemplatesDataSource
       this.templatesMutated.clear();
       await updateMapping(templates);
     });
+  }
+
+  async updateMapping(template: Template, reset = false) {
+    if (reset) {
+      await resetIndex();
+      return updateMapping(await this.getCollection().find({}).toArray());
+    }
+    return updateMapping([TemplateMapper.toSchema(template)]);
   }
 
   getAll() {
@@ -72,6 +90,33 @@ export class MongoTemplatesDataSource
           MongoIdHandler.mapToApp(template._id),
           template.properties.denormalizedProperty
         )
+    );
+  }
+
+  getGeneratedIdPropertiesByIds(propertyIds: string[]) {
+    const cursor = this.getCollection().aggregate([
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties._id': { $in: propertyIds.map(id => new ObjectId(id)) },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
+        },
+      },
+    ]);
+    return new MongoResultSet(
+      cursor,
+      template =>
+        new GenerateIdProperty({
+          id: template.properties._id,
+          name: template.properties.name,
+          label: template.properties.label,
+          template: template._id,
+        })
     );
   }
 
@@ -232,7 +277,7 @@ export class MongoTemplatesDataSource
   async update(template: Template): Promise<void> {
     const schema = TemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
-    await updateMapping([schema]);
+    this.templatesMutated.set(schema._id, schema);
   }
 
   async create(template: Template): Promise<void> {

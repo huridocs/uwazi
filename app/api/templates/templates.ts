@@ -78,14 +78,13 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const addTemplateTranslation = async (template: WithId<TemplateSchema>) => {
-  return translations.addContext(
+const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
+  translations.addContext(
     template._id.toString(),
     template.name,
     createTranslationContext(template),
     ContextType.entity
   );
-};
 
 const updateTranslation = async (
   currentTemplate: WithId<TemplateSchema>,
@@ -216,15 +215,17 @@ export default {
         getConnection(),
         transactionManager
       );
-      const useCase = new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS,
-        relationshipsV1DS,
-        templatesDS,
-        transactionManager,
-      });
       let dispatcher: JobsDispatcher = new SyncDispatcherForTests({
         TemplatePostProcessEntitiesJob: async () =>
-          new TemplatePostProcessEntitiesJob({ useCase, templatesDS }),
+          new TemplatePostProcessEntitiesJob({
+            useCase: new TemplateUpdateDenormalizeEntitiesBatch({
+              entitiesDS,
+              relationshipsV1DS,
+              templatesDS,
+              transactionManager,
+            }),
+            templatesDS,
+          }),
       });
 
       if (process.env.NODE_ENV !== 'test') {
@@ -239,7 +240,8 @@ export default {
         relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManager),
         jobsDispatcher: dispatcher,
         entitiesDS,
-      }).execute(input, language);
+        transactionManager,
+      }).execute(input, language, fullReindex);
 
       return TemplateMapper.toSchema(output);
     }

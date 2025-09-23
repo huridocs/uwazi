@@ -17,7 +17,7 @@ class AbstractSelectProperty extends FilterableProperty {
   }
 
   private validateAbstractSelectProperty() {
-    if (!this?.content?.length) {
+    if (!this?.content?.toString()?.length) {
       throw new FieldIsRequiredError('content');
     }
   }

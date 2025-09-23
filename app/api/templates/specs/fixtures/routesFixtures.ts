@@ -30,6 +30,7 @@ const templateCommonProperties = [
 ];
 
 const fixtureFactory = getFixturesFactory();
+
 const fixtures: DBFixture = {
   settings: [
     {
@@ -86,6 +87,14 @@ const fixtures: DBFixture = {
     },
   ],
   translationsV2: [],
+  relationtypes: [
+    {
+      _id: fixtureFactory.id('relation_type'),
+      name: 'A -> B',
+      properties: [],
+      __v: 0,
+    },
+  ],
 };
 
 export { templateCommonProperties, fixtures, fixtureFactory };

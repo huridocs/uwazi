@@ -161,7 +161,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/process',
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
-    ProcessSuggestionsController.adapt(ProcessSuggestionsController)
+    ProcessSuggestionsController.createHandler()
   );
 
   app.post(
