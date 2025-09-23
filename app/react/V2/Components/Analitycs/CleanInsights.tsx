@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { CleanInsights as CI } from 'clean-insights-sdk';
 import { useAtomValue } from 'jotai';
-import { ciMatomoActiveAtom } from 'V2/atoms';
+import { ciMatomoActiveAtom } from '../../atoms/index.js';
 
 // January 1 of 2024 just happens to be a Monday.
 // This makes it a suitable starting period for the weekly
@@ -41,7 +41,7 @@ const ci = new CI({
 });
 
 const grant = () => {
-  Object.keys(campaigns).forEach(campaign => {
+  Object.keys(campaigns).forEach(campaign: any => {
     ci.grantCampaign(campaign);
   });
   ci.measureEvent('activity', 'daily', 'daily_active_users');
@@ -50,7 +50,7 @@ const grant = () => {
 };
 
 const deny = () => {
-  Object.keys(campaigns).forEach(campaign => {
+  Object.keys(campaigns).forEach(campaign: any => {
     ci.denyCampaign(campaign);
   });
 };

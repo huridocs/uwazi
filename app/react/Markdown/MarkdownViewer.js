@@ -2,16 +2,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
-import { risonDecodeOrIgnore } from '../../utils/index.js';
+import { risonDecodeOrIgnore } from '../../api/utils/index.js';
 import { Translate } from '../../I18N/index.js';
 import { atomStore, userAtom } from '../../V2/atoms.js';
 import { notify } from '../../Notifications/actions/notificationsActions.js';
 import { store } from '../../store.js';
-import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
-import CustomHookComponents from './CustomHooks';
-import markdownToReact from './markdownToReact';
-import { ValidatedElement } from './ValidatedElement';
-import { errorCollector, visualizationHtmlTags } from './utils';
+import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components/index.js';
+import CustomHookComponents from './CustomHooks/index.js';
+import markdownToReact from './markdownToReact.js';
+import { ValidatedElement } from './ValidatedElement.js';
+import { errorCollector, visualizationHtmlTags } from './utils.js';
 
 class MarkdownViewer extends Component {
   static errorHtml(index, message) {

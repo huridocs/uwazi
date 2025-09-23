@@ -1,8 +1,8 @@
 import { config } from '../config.js';
 import { HttpClientFactory } from '../common.v2/infrastructure/HttpClientFactory.js';
 
-import { PXExternalExtractionService } from './ExternalExtractionService/ExternalExtractionService';
-import { PXExtractionService } from '../domain/PXExtractionService';
+import { PXExternalExtractionService } from './ExternalExtractionService/ExternalExtractionService.js';
+import { PXExtractionService } from '../domain/PXExtractionService.js';
 
 export class PXExtractionServiceFactory {
   static createDefault(): PXExtractionService {

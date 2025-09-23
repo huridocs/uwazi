@@ -8,10 +8,10 @@ import { Loader } from '../../components/Elements/Loader.js';
 import { PDF } from '../../PDF.js';
 import Immutable from 'immutable';
 import { highlightSnippet } from '../../Viewer/actions/uiActions.js';
-import { selectionHandlers } from 'V2/Components/PDFViewer';
-import { atomStore, pdfScaleAtom } from 'V2/atoms';
+import { selectionHandlers } from '../../V2/Components/PDFViewer/index.js';
+import { atomStore, pdfScaleAtom } from '../../V2/atoms/index.js';
 
-import determineDirection from '../utils/determineDirection';
+import determineDirection from '../utils/determineDirection.js';
 
 import { APIURL } from '../../config.js';
 

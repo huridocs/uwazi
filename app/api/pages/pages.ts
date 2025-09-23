@@ -7,8 +7,8 @@ import { createError } from '../utils/index.js';
 import { UwaziFilterQuery } from '../odm/index.js';
 import { User } from '../users/usersModel.js';
 
-import model from './pagesModel';
-import settings from '../settings';
+import model from './pagesModel.js';
+import settings from '../settings/index.js';
 
 const assignUserAndDate = (page: PageType, user?: User) => {
   if (!user) {
@@ -95,7 +95,7 @@ export default {
 
     const duplicate = async () => {
       const pages = await this.get({ language: defaultLanguage });
-      const savePages = pages.map(async _page => {
+      const savePages = pages.map(async _page: any => {
         const page: PageType = { ..._page, language };
         delete page._id;
         delete page.__v;

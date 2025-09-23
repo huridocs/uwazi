@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Translate } from '../../I18N/index.js';
-import { formatBytes } from 'V2/shared/formatHelpers';
+import { formatBytes } from '../../shared/formatHelpers.js';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];
@@ -18,7 +18,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   useEffect(() => {
     let result = 0;
 
-    files.forEach(file => {
+    files.forEach(file: any => {
       result += file.size;
     });
 

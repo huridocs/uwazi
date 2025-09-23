@@ -4,11 +4,11 @@ import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { isEmpty, last } from 'lodash';
 import { Translate } from '../../I18N/index.js';
-import { InputField, Select } from 'V2/Components/Forms';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
+import { InputField, Select } from '../../../../Components/Forms/index.js';
+import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import uniqueID from '../../shared/uniqueID.js';
-import { ThesaurusRow } from './TableComponents';
-import { sanitizeThesaurusLabel } from '../helpers';
+import { ThesaurusRow } from './TableComponents.js';
+import { sanitizeThesaurusLabel } from '../helpers.js';
 
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
@@ -43,7 +43,7 @@ const ThesauriValueFormSidepanel = ({
   const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'rowId' });
 
   useEffect(() => {
-    const subscription = watch(formData => {
+    const subscription = watch(formData: any => {
       const values = formData.newValues;
       if (!editMode && !isEmpty(last(values)?.label)) {
         append(emptyRow(), { shouldFocus: false });

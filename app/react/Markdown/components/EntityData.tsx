@@ -9,7 +9,7 @@ import { showByType } from '../../Metadata/components/Metadata.js';
 import { Translate } from '../../I18N/index.js';
 import { IImmutable } from '../../shared/types/Immutable.js';
 import { ensure } from '../../shared/tsUtils.js';
-import { errorCollector } from '../utils';
+import { errorCollector } from '../utils.js';
 
 interface Options {
   formattedEntity: any;

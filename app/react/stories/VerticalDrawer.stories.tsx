@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { VerticalDrawer } from 'V2/Components/UI/VerticalDrawer';
+import { VerticalDrawer } from '../V2/Components/UI/VerticalDrawer.js';
 
 const meta: Meta<typeof VerticalDrawer> = {
   title: 'Components/VerticalDrawer',

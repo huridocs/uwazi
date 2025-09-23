@@ -8,7 +8,7 @@ import { t } from '../../I18N/index.js';
 import UploadEntityStatus from '../../Library/components/UploadEntityStatus.js';
 import ViewDocButton from '../../Library/components/ViewDocButton.js';
 import { Icon } from 'UI';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { atomStore, deletedEntityAtom } from '../../V2/atoms/index.js';
 
 import { Item } from '../../Layout.js';
 import helpers from '../../Documents/helpers.js';

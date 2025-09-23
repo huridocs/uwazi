@@ -9,10 +9,10 @@ import { constructFile } from '../../shared/fileUploadUtils.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
-  new Promise<void>(resolve => {
+  new Promise<void>(resolve: any => {
     const reader = new FileReader();
 
-    reader.onload = base64 => {
+    reader.onload = base64: any => {
       const info = ensure<ArrayBuffer>(base64.target!.result);
       cb(info);
       resolve();
@@ -60,7 +60,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
 
     if (dispatch) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      request.on('progress', data => {
+      request.on('progress', data: any => {
         if (data.percent && Math.floor(data.percent) === 100) {
           return dispatch({
             type: attachmentsTypes.ATTACHMENT_LOCAL_COMPLETE,

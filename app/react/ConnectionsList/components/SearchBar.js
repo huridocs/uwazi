@@ -4,11 +4,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 
-import { debounce } from '../../utils/index.js';
+import { debounce } from '../../api/utils/index.js';
 import { t } from '../../I18N/index.js';
 import { Icon } from 'UI';
 
-import { searchReferences } from '../actions/actions';
+import { searchReferences } from '../actions/actions.js';
 
 export class SearchBar extends Component {
   constructor(props) {

@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from 'V2/Components/UI';
+import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from '../../../Components/UI/index.js';
 import { Translate } from '../../I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
@@ -12,13 +12,13 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from 'V2/api/templates';
-import * as pagesAPI from 'V2/api/pages';
+import * as templatesAPI from '../../../api/templates/index.js';
+import * as pagesAPI from '../../../api/pages/index.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { Page, ClientTemplateSchema } from 'V2/shared/types';
+import { Page, ClientTemplateSchema } from '../../../shared/types.js';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from 'V2/atoms';
+import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
 import uniqueID from '../../shared/uniqueID.js';
 import { socket } from '../../socket.js';
 import {
@@ -27,13 +27,13 @@ import {
   processDefaultProperties,
   processProperties,
   confirmationMessages,
-} from './helpers';
-import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents';
-import { TemplateMetadata } from './components/TemplateMetadata';
-import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal';
-import { AddThesaurusModal } from './components/AddThesaurusModal';
-import { TemplatesEditorFooter } from './components/TemplatesEditorFooter';
-import { ConfigPropertyPanel } from './components/ConfigPropertyPanel';
+} from './helpers.js';
+import { propertyColumns, PropertyRow } from './components/TemplateEditorTableComponents.js';
+import { TemplateMetadata } from './components/TemplateMetadata.js';
+import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.js';
+import { AddThesaurusModal } from './components/AddThesaurusModal.js';
+import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
+import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -159,7 +159,7 @@ const TemplatesEditor = () => {
     }
   }, [loadedTemplate]);
 
-  const getCurrentStatus = useCallback((): ClientTemplateSchema => {
+  const getCurrentStatus = useCallback((): ClientTemplateSchema: any => {
     const cleanedCommonProperties = commonProperties.map(cleanProperty);
     const cleanedProperties = properties.map(cleanProperty);
 
@@ -340,7 +340,7 @@ const TemplatesEditor = () => {
                   color: template.color || '#C03B22',
                   entityViewPage: template.entityViewPage || '',
                 }}
-                onChange={values => {
+                onChange={values: any => {
                   setTemplate({ ...template, ...values });
                   if (values.name) setNameError(false);
                   if (values.color) setColorError(false);

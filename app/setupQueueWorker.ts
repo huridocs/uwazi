@@ -16,8 +16,8 @@ import { QueueWorker, QueueWorkerErrorHandler } from './api/queue.v2/infrastruct
 import { setupWorkerSockets } from './api/socketio/setupSockets.js';
 import { tenants } from './api/tenants/index.js';
 import { prettifyError } from './api/utils/handleError.js';
-import { initSentry } from './initSentry';
-import { registerJobs } from './queueRegistry';
+import { initSentry } from './initSentry.js';
+import { registerJobs } from './queueRegistry.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -60,7 +60,7 @@ const captureError: QueueWorkerErrorHandler = (error, context) => {
   const prettyError: { logLevel: 'debug' | 'error'; message: string } = prettifyError(error);
   logger[prettyError.logLevel](prettyError.message, { job: context?.job });
   if (prettyError.logLevel === 'error') {
-    Sentry.withScope(scope => {
+    Sentry.withScope(scope: any => {
       if (context?.job) {
         scope.setExtra('job', context.job);
       }
@@ -118,7 +118,7 @@ export function setupQueueWorker(props?: Props) {
       await Redis.disconnect();
       logger.info('Disconected from redis');
     })
-    .catch(async e => {
+    .catch(async e: any => {
       captureError(e);
       await Sentry.close(2000);
       process.exit(1);

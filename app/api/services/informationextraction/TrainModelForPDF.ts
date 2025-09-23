@@ -13,11 +13,11 @@ import {
   getFilesForTraining,
   NoFilesForTraining,
   propertyTypeIsWithoutExtractedMetadata,
-} from './ixMaterials';
-import { IXWebSocketEvents } from './WebSocketEvents';
-import { CommonMaterialsData, MaterialsData } from './InformationExtraction';
-import { IXTaskService } from './TaskService';
-import ixmodels from './ixmodels';
+} from './ixMaterials.js';
+import { IXWebSocketEvents } from './WebSocketEvents.js';
+import { CommonMaterialsData, MaterialsData } from './InformationExtraction.js';
+import { IXTaskService } from './TaskService.js';
+import ixmodels from './ixmodels.js';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -46,7 +46,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       const { process } = await getFilesForTraining(extractor);
       const processedEntityIds: string[] = [];
 
-      await process(async file => {
+      await process(async file: any => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -152,7 +152,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       if (propertyLabeledData) {
         data = {
           ...data,
-          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
+          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r: any => {
             const { page, ...rectangle } = r;
             return { ...rectangle, page_number: page };
           }),

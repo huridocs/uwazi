@@ -5,7 +5,7 @@ import { I18NApi } from '../../I18N/index.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { ClientTranslationSchema, ClientTranslationContextSchema } from '../../istore.js';
 import { RequestParams } from '../../utils/RequestParams.js';
-import { TranslationValue } from 'V2/shared/types';
+import { TranslationValue } from '../../shared/types.js';
 import { httpRequest } from '../../shared/superagent.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 
@@ -13,7 +13,7 @@ const filterTranslationsByContext = (
   translations: ClientTranslationSchema[],
   contextId: string
 ): ClientTranslationSchema[] =>
-  translations.map(language => {
+  translations.map(language: any => {
     const contexts = language.contexts.filter(context => context.id === contextId);
     return { ...language, contexts };
   });

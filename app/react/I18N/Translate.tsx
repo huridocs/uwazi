@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
-import { Truncate } from 'V2/Components/UI/Truncate';
+import { translationsAtom, inlineEditAtom, localeAtom } from '../V2/atoms/index.js';
+import { Truncate } from '../V2/Components/UI/Truncate.js';
 
 const parseMarkdownMarker = (
   line: string,
@@ -74,7 +74,7 @@ const Translate = ({
 
   return (
     <span
-      onClick={event => {
+      onClick={event: any => {
         if (inlineEditState.inlineEdit) {
           event.stopPropagation();
           event.preventDefault();

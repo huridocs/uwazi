@@ -32,7 +32,7 @@ import {
   updateContextV2,
   upsertTranslationEntries,
   upsertTranslationsV2,
-} from './v2_support';
+} from './v2_support.js';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -76,7 +76,7 @@ function checkDuplicateKeys(
   if (!values) return;
 
   const seen = new Set();
-  values.forEach(value => {
+  values.forEach(value: any => {
     if (seen.has(value.key)) {
       throw new Error(
         `Process is trying to save repeated translation key ${value.key} in context ${context.id} (${context.type}).`
@@ -91,7 +91,7 @@ function processContextValues(context: TranslationContext | IndexedContext): Tra
 
   if (context.values && !Array.isArray(context.values)) {
     const indexedValues: IndexedContextValues = context.values;
-    Object.keys(indexedValues).forEach(key => {
+    Object.keys(indexedValues).forEach(key: any => {
       if (indexedValues[key]) {
         processedValues.push({ key, value: indexedValues[key] });
       }
@@ -134,7 +134,7 @@ const propagateTranslationInMetadata = async (
     );
 
     const changesMatchingDictionaryId = Object.keys(valuesChanged)
-      .map(valueChanged => {
+      .map(valueChanged: any => {
         const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
         if (valueFound?.id) {
           return { id: valueFound.id, value: valuesChanged[valueChanged] };
@@ -224,7 +224,7 @@ export default {
     if (thesaurusTranslations) {
       const updatedTranslations = await getTranslationsV2ByContext(context.id);
       await Promise.all(
-        updatedTranslations.map(async translation => {
+        updatedTranslations.map(async translation: any => {
           const originalContexts = currentTranslations.find(
             t => t.locale === translation.locale
           )?.contexts;
@@ -248,14 +248,14 @@ export default {
     ) as LanguageISO6391[];
 
     const translationsToUpdate = await Promise.all(
-      languagesToUpdate.map(async language => {
+      languagesToUpdate.map(async language: any => {
         const [translation] = await getTranslationsV2ByLanguage(language);
         return translation;
       })
     );
 
     return Promise.all(
-      translationsToUpdate.map(async translation => {
+      translationsToUpdate.map(async translation: any => {
         if (!translation.locale) throw new Error('Translation local does not exist !');
 
         const context = (translation.contexts || []).find(c => c.id === contextId);
@@ -282,13 +282,13 @@ export default {
     type: ContextType
   ) {
     const translatedValues: TranslationValue[] = [];
-    Object.keys(values).forEach(key => {
+    Object.keys(values).forEach(key: any => {
       translatedValues.push({ key, value: values[key] });
     });
 
     const result = await getTranslationsV2();
     await upsertTranslationsV2(
-      result.map(translation => {
+      result.map(translation: any => {
         // eslint-disable-next-line no-param-reassign
         translation.contexts = translation.contexts || [];
         translation.contexts.push({

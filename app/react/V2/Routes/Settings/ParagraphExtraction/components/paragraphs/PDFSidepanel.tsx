@@ -2,8 +2,8 @@ import React from 'react';
 import { Translate } from '../../I18N/index.js';
 import { availableLanguages } from '../../shared/language/index.js';
 import { ClientEntitySchema } from '../../istore.js';
-import { Button, Sidepanel } from 'V2/Components/UI';
-import { PDF } from 'V2/Components/PDFViewer';
+import { Button, Sidepanel } from '../../../../../Components/UI/index.js';
+import { PDF } from '../../../../../Components/PDFViewer/index.js';
 
 interface PDFSidepanelSidepanelProps {
   showSidepanel: boolean;

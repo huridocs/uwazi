@@ -1,7 +1,7 @@
 import { ClientEntitySchema } from '../../istore.js';
-import { ClientTemplateSchema } from 'V2/shared/types';
+import { ClientTemplateSchema } from '../../../../shared/types.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
-import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
+import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
 
 const thesauri: ClientThesaurus[] = [
   {

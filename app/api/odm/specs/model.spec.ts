@@ -8,7 +8,7 @@ import { testingTenants } from '../utils/testingTenants.js';
 import testingDB from '../utils/testing_db.js';
 import mongoose, { Schema } from 'mongoose';
 import { ensure } from '../../shared/tsUtils.js';
-import { instanceModel, models, OdmModel, WithId } from '../model';
+import { instanceModel, models, OdmModel, WithId } from '../model.js';
 
 const testSchema = new Schema({
   name: String,

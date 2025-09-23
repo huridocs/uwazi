@@ -21,7 +21,7 @@ import { PreserveConfig } from '../../shared/types/settingsType.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
 import { Readable } from 'stream';
 import mimetypes from 'mime-types';
-import { preserveSyncModel } from './preserveSyncModel';
+import { preserveSyncModel } from './preserveSyncModel.js';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
   const [value] = await dictionariesModel.db.aggregate([

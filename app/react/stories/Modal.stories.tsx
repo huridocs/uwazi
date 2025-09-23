@@ -1,9 +1,9 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Modal } from 'V2/Components/UI/Modal';
-import { Button } from 'V2/Components/UI/Button';
+import { Modal } from '../V2/Components/UI/Modal.js';
+import { Button } from '../V2/Components/UI/Button.js';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { GeneratedContent } from './helpers/GeneratedContent';
+import { GeneratedContent } from './helpers/GeneratedContent.js';
 
 const meta: Meta<typeof Modal> = {
   title: 'Components/Modal',

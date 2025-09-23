@@ -11,7 +11,7 @@ import { Attachment } from '../files.v2/model/Attachment.js';
 import { Document } from '../files.v2/model/Document.js';
 import { testingTenants } from '../utils/testingTenants.js';
 import { Tenant } from '../tenants/tenantContext.js';
-import { S3FileStorage } from '../S3FileStorage';
+import { S3FileStorage } from '../S3FileStorage.js';
 
 describe('S3FileStorage', () => {
   let s3Client: S3Client;

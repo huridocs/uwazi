@@ -19,9 +19,9 @@ import { config } from '../config.js';
 import { Tenant } from '../tenants/tenantContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { preserveSync } from '../preserveSync';
-import { preserveSyncModel } from '../preserveSyncModel';
-import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
+import { preserveSync } from '../preserveSync.js';
+import { preserveSyncModel } from '../preserveSyncModel.js';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures.js';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -42,7 +42,7 @@ const mockVault = async (evidences: any[], token: string = '', isoDate = '') => 
   const downloads = evidences.map(e => e.attributes.downloads).flat();
 
   return Promise.all(
-    downloads.map(async download => {
+    downloads.map(async download: any => {
       const tmpName = generateFileName({ originalname: 'test' });
       await fs.writeFile(path.join('/tmp', tmpName), 'content');
       const file = createReadStream(path.join('/tmp', tmpName));

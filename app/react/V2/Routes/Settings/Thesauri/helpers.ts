@@ -4,12 +4,12 @@ import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
 import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
-import { get as getThesauri } from 'V2/api/thesauri';
+import { get as getThesauri } from '../../../api/thesauri/index.js';
 import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
 import { httpRequest } from '../../shared/superagent.js';
 import uniqueID from '../../shared/uniqueID.js';
 import { sanitizeThesaurusLabel } from '../../shared/sanitizationUtils.js';
-import { ThesaurusRow } from './components/TableComponents';
+import { ThesaurusRow } from './components/TableComponents.js';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>
   item.rowId === searchedItem.rowId ? item : undefined;
@@ -19,7 +19,7 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
   searchedItem
 ) =>
   items
-    .map(item => {
+    .map(item: any => {
       let match = rootItemMatch(item, searchedItem);
       match = match || (item.subRows?.length ? findItem(item.subRows, searchedItem) : undefined);
       return match;
@@ -28,7 +28,7 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
 
 const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =>
   (rows || []).map(({ rowId: _rowId, groupId: _groupId, subRows: subItems, ...item }) => {
-    const values = subItems?.map(subItem => {
+    const values = subItems?.map(subItem: any => {
       const { rowId, groupId, ...rest } = subItem;
       return rest;
     });
@@ -117,7 +117,7 @@ const removeItem = (prev: ThesaurusRow[], deletedItem: ThesaurusRow) => {
   if (!removed.length) {
     prev
       .filter(prevItem => prevItem.subRows?.length)
-      .forEach(prevItem => {
+      .forEach(prevItem: any => {
         remove(prevItem.subRows!, subItem => subItem.rowId === deletedItem.rowId);
         if (prevItem.subRows?.length === 0) {
           remove(prev, item => item.rowId === prevItem.rowId);

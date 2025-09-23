@@ -1,18 +1,18 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
-import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
-import * as pxParagraphApi from 'V2/api/paragraphExtractor/paragraphs';
-import * as pxEntitiesApi from 'V2/api/paragraphExtractor/entities';
-import * as entitiesApi from 'V2/api/entities';
-import * as settingsApi from 'V2/api/settings';
-import * as templatesApi from 'V2/api/templates';
+import * as extractorsAPI from '../../../api/paragraphExtractor/extractors.js';
+import * as pxParagraphApi from '../../../api/paragraphExtractor/paragraphs.js';
+import * as pxEntitiesApi from '../../../api/paragraphExtractor/entities.js';
+import * as entitiesApi from '../../../api/entities/index.js';
+import * as settingsApi from '../../../api/settings/index.js';
+import * as templatesApi from '../../../api/templates/index.js';
 import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from 'V2/shared/ParagraphExtractionTypes';
+} from '../../../shared/ParagraphExtractionTypes.js';
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 import { ClientEntitySchema } from '../../istore.js';
 
@@ -129,7 +129,7 @@ const PXParagraphLoader =
       property => property._id === extractor.paragraphNumberPropertyId
     );
 
-    const paragraphsRows = paragraphs.rows?.map(row => {
+    const paragraphsRows = paragraphs.rows?.map(row: any => {
       const [defaultLanguageEntity, ...otherLanguagesEntities] = row.entities.map(entity =>
         getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );

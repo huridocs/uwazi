@@ -19,7 +19,7 @@ import { syncWorker } from './api/sync/syncWorker.js';
 import { tenants } from './api/tenants/index.js';
 import { tocService } from './api/toc_generation/tocService.js';
 import { sleep } from '../../shared/tsUtils.js';
-import { handleError } from './api/utils/handleError';
+import { handleError } from './api/utils/handleError.js';
 
 const systemLogger = SystemLogger();
 
@@ -115,6 +115,6 @@ DB.connect(config.DBHOST, config.DBAUTH)
       process.exit(0);
     });
   })
-  .catch(error => {
+  .catch(error: any => {
     throw error;
   });

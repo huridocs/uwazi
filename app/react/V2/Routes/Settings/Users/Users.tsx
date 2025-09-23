@@ -3,8 +3,8 @@ import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
 import { Translate } from '../../I18N/index.js';
-import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
-import * as usersAPI from 'V2/api/users';
+import { Button, ConfirmationModal, Table, Tabs } from '../../../Components/UI/index.js';
+import * as usersAPI from '../../../api/users/index.js';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import {
   UserFormSidepanel,
@@ -12,9 +12,9 @@ import {
   getUsersColumns,
   getGroupsColumns,
   ListOfItems,
-} from './components';
-import { useHandleNotifications } from './useHandleNotifications';
-import { FormIntent, User, Group } from './types';
+} from './components/index.js';
+import { useHandleNotifications } from './useHandleNotifications.js';
+import { FormIntent, User, Group } from './types.js';
 
 type ActiveTab = 'Groups' | 'Users';
 
@@ -74,7 +74,7 @@ const Users = () => {
 
         <SettingsContent.Body>
           <Tabs
-            onTabSelected={tab => {
+            onTabSelected={tab: any => {
               setActiveTab(tab as ActiveTab);
               setSelectedUsers([]);
               setSelectedGroups([]);
@@ -216,7 +216,7 @@ const Users = () => {
               ['bulk-reset-2fa', 'delete-users'].includes(bulkActionIntent.current || '')) ||
             false
           }
-          onAcceptClick={async value => {
+          onAcceptClick={async value: any => {
             password.current = value;
             await handleBulkAction();
             setShowConfirmationModal(false);

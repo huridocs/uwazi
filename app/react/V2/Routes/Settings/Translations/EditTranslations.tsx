@@ -20,14 +20,14 @@ import { ClientTranslationSchema } from '../../istore.js';
 import { InputField } from '../../V2/Components/Forms.js';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
-import { Button, ToggleButton, ConfirmNavigationModal } from 'V2/Components/UI';
-import * as translationsAPI from 'V2/api/translations';
-import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom } from 'V2/atoms';
+import { Button, ToggleButton, ConfirmNavigationModal } from '../../../Components/UI/index.js';
+import * as translationsAPI from '../../../api/translations/index.js';
+import * as settingsAPI from '../../../api/settings/index.js';
+import { notificationAtom } from '../../../atoms/index.js';
 import { availableLanguages } from '../../shared/language/index.js';
 import { Settings } from '../../shared/types/settingsType.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
-import { LanguagePill } from './components/LanguagePill';
+import { LanguagePill } from './components/LanguagePill.js';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -35,8 +35,8 @@ const editTranslationsLoader =
     const translations = await translationsAPI.get(headers, params);
     const settings = await settingsAPI.get(headers);
 
-    const sortedTranslations = translations.map(language => {
-      const sortedContexts = language.contexts.map(context => {
+    const sortedTranslations = translations.map(language: any => {
+      const sortedContexts = language.contexts.map(context: any => {
         const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
 
         const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
@@ -135,7 +135,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
     language => language.locale === defaultLanguageKey
   )?.contexts[0].values;
 
-  return translations.map(language => {
+  return translations.map(language: any => {
     const values = Object.entries(language.contexts[0].values || {}).reduce(
       (result, [key, value], index) => ({
         ...result,
@@ -298,7 +298,7 @@ const EditTranslations = () => {
           <div className="flex-grow">
             <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
               {tablesData?.length ? (
-                tablesData?.map(tableData => {
+                tablesData?.map(tableData: any => {
                   if (!tableData) return null;
                   const [title] = Object.keys(tableData);
                   const values = tableData[title];
@@ -331,7 +331,7 @@ const EditTranslations = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {values.map(value => {
+                            {values.map(value: any => {
                               const hasErrors = Boolean(
                                 getFieldState(value.fieldKey as any)?.error
                               );

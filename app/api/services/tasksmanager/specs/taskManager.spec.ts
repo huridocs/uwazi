@@ -3,7 +3,7 @@ import waitForExpect from 'wait-for-expect';
 import { TaskManager, Service } from '../services/tasksmanager/TaskManager.js';
 import { config } from '../config.js';
 import * as handleError from '../utils/handleError.js.js';
-import { ExternalDummyService } from './ExternalDummyService';
+import { ExternalDummyService } from './ExternalDummyService.js';
 import { Redis } from '../infrastructure/Redis.js';
 
 describe('taskManager', () => {

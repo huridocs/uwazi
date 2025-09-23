@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import api from '../../utils/api.js';
 import { RequestParams } from '../../utils/RequestParams.js';
-import { ClientTemplateSchema } from 'V2/shared/types';
+import { ClientTemplateSchema } from '../../shared/types.js';
 import { Template } from '../../apiResponseTypes.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Template[]> => {
@@ -30,7 +30,7 @@ const checkTemplatesEntityCount = async (
 ): Promise<Record<string, number>> => {
   if (!templateIds || !Array.isArray(templateIds) || templateIds.length === 0) return {};
   const counts = await Promise.all(
-    templateIds.map(async id => {
+    templateIds.map(async id: any => {
       const requestParams = new RequestParams({}, headers);
       const response = await api.get(
         `v2/entities/count_by_template?templateId=${id}`,

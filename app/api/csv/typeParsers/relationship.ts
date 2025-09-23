@@ -4,8 +4,8 @@ import { RawEntity } from '../csv/entityRow.js';
 import { ensure } from '../../shared/tsUtils.js';
 import { PropertySchema, MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
-import { csvConstants } from '../csvDefinitions';
-import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils';
+import { csvConstants } from '../csvDefinitions.js';
+import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
 
 export interface ParserResult {
   data: MetadataObjectSchema[];

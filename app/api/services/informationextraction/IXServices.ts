@@ -9,7 +9,7 @@ import { propertyIsMultiValued } from '../../shared/getIXSuggestionState.js';
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
 import { IXModelType } from '../../shared/types/IXModelType.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
-import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels';
+import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels.js';
 
 type GetTargetPropertyInput = {
   extractor: IXExtractorType;

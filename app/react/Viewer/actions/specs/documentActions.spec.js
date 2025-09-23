@@ -15,10 +15,10 @@ import * as notificationsTypes from '../../Notifications/actions/actionTypes.js'
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '../../Relationships.js';
 import { RequestParams } from '../../utils/RequestParams.js';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
-import * as libraryActions from '../../../Library/actions/saveEntityWithFiles';
-import * as actions from '../documentActions';
-import * as types from '../actionTypes';
+import { atomStore, deletedEntityAtom } from '../../../V2/atoms/index.js';
+import * as libraryActions from '../../../Library/actions/saveEntityWithFiles.js';
+import * as actions from '../documentActions.js';
+import * as types from '../actionTypes.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -281,7 +281,7 @@ describe('documentActions', () => {
     afterEach(() => backend.restore());
 
     describe('saveDocument', () => {
-      it('should save the document (omitting fullText) and dispatch a notification on success', done => {
+      it('should save the document (omitting fullText) and dispatch a notification on success', done: any => {
         const defaultDocument = { _id: 'file1', originalName: 'File 1' };
         const docWithExtractedMetadata = {
           ...defaultDocument,
@@ -367,7 +367,7 @@ describe('documentActions', () => {
     });
 
     describe('saveToc', () => {
-      it('should save the document with the new toc and dispatch a notification on success', done => {
+      it('should save the document with the new toc and dispatch a notification on success', done: any => {
         const toc = [
           { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 },
           { range: { start: 22, end: 44 }, label: 'Chapter 1.1', indentation: 1 },
@@ -454,7 +454,7 @@ describe('documentActions', () => {
     });
 
     describe('deleteDocument', () => {
-      it('should delete the document and dispatch a notification on success', done => {
+      it('should delete the document and dispatch a notification on success', done: any => {
         spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');
         const doc = { sharedId: 'sharedId', name: 'doc' };

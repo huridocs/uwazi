@@ -3,11 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { useAtom } from 'jotai';
-import { pdfScaleAtom } from 'V2/atoms';
-import { EventBus, PDFJSViewer, PDFJS } from './pdfjs';
-import { TextHighlight } from './types';
-import { calculateScaling } from './functions/calculateScaling';
-import { adjustSelectionsToScale } from './functions/handleTextSelection';
+import { pdfScaleAtom } from '../../atoms/index.js';
+import { EventBus, PDFJSViewer, PDFJS } from './pdfjs.js';
+import { TextHighlight } from './types.js';
+import { calculateScaling } from './functions/calculateScaling.js';
+import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
@@ -28,7 +28,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
 
     pdf
       .getPage(page)
-      .then(pdfPage => {
+      .then(pdfPage: any => {
         if (currentContainer && pdfPage) {
           const originalViewport = pdfPage.getViewport({ scale: 1 });
           const scale = calculateScaling(
@@ -50,11 +50,11 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
 
           pageViewer.setPdfPage(pdfPage);
 
-          const handleIntersection: IntersectionObserverCallback = entries => {
+          const handleIntersection: IntersectionObserverCallback = entries: any => {
             const [entry] = entries;
             if (entry.isIntersecting) {
               if (pageViewer.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
-                pageViewer.draw().catch(e => {
+                pageViewer.draw().catch(e: any => {
                   setError(e.message);
                 });
               }
@@ -93,7 +93,7 @@ const PDFPage = ({ pdf, page, eventBus, containerWidth, highlights }: PDFPagePro
 
   return (
     <div ref={pageContainerRef} className="pdf-page">
-      {highlights?.map(highlight => {
+      {highlights?.map(highlight: any => {
         const scaledHightlight = {
           ...highlight,
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),

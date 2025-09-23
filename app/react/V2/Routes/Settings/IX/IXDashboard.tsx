@@ -4,23 +4,23 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 import * as extractorsAPI from '../../api/V2/api/ix/extractors.js';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import * as templatesAPI from '../../../api/templates/index.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { ClientTemplateSchema } from '../../istore.js';
-import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table } from '../../../Components/UI/index.js';
 import { Translate, t } from '../../I18N/index.js';
-import { notificationAtom } from 'V2/atoms';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { ExtractorModal } from './components/ExtractorModal';
-import { extractorsTableColumns } from './components/TableElements';
-import { List } from './components/List';
-import { TableExtractor } from './types';
+import { notificationAtom } from '../../../atoms/index.js';
+import { ClientIXExtractorType } from '../../../shared/types.js';
+import { ExtractorModal } from './components/ExtractorModal.js';
+import { extractorsTableColumns } from './components/TableElements.js';
+import { List } from './components/List.js';
+import { TableExtractor } from './types.js';
 
 const formatExtractors = (
   extractors: ClientIXExtractorType[],
   templates: ClientTemplateSchema[]
 ): TableExtractor[] =>
-  extractors.map(extractor => {
+  extractors.map(extractor: any => {
     let propertyType: TableExtractor['propertyType'] = 'text';
     let propertyLabel = '';
     let sourceLabel: string | undefined =
@@ -31,7 +31,7 @@ const formatExtractors = (
         templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate
     );
 
-    templates.some(template => {
+    templates.some(template: any => {
       const property = template.properties.find(
         templateProperty => templateProperty.name === extractor.property
       );

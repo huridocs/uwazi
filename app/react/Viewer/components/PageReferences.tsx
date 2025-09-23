@@ -7,8 +7,8 @@ import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { unique } from '../../shared/filterUnique.js';
 import { SelectionRectangleSchema } from '../../shared/types/commonTypes.js';
-import { pdfScaleAtom } from 'V2/atoms';
-import { selectionHandlers } from 'V2/Components/PDFViewer';
+import { pdfScaleAtom } from '../../V2/atoms/index.js';
+import { selectionHandlers } from '../../V2/Components/PDFViewer/index.js';
 
 type ReferenceGroup = {
   _id: string;
@@ -59,7 +59,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
         );
 
         if (props.groupedReferences && reference._id) {
-          props.groupedReferences.forEach(group => {
+          props.groupedReferences.forEach(group: any => {
             const belongingGroup = group.find(ref => ref._id === reference._id);
             if (belongingGroup) {
               referenceGroup.current = group.map(ref => ref._id);
@@ -108,7 +108,7 @@ const indexdReferencesByPage = createSelector(
               .map(selection => selection.page)
               .filter(unique);
 
-            pages.forEach(page => {
+            pages.forEach(page: any => {
               if (!page) {
                 return;
               }
@@ -140,7 +140,7 @@ const groupByRectangle = createSelector(
       if (!rectangles?.size) return groups;
 
       const hasGroup = groups?.some(refGroups =>
-        refGroups.some(refGroup => {
+        refGroups.some(refGroup: any => {
           if (
             refGroup.length === rectangles.size &&
             refGroup.start.page === rectangles.get(0).get('page') &&

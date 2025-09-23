@@ -24,9 +24,9 @@ import request from '../../shared/JSONRequest.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import { config } from '../config.js';
-import { PDFSegmentation } from '../PDFSegmentation';
-import { SegmentationModel } from '../segmentationModel';
-import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
+import { PDFSegmentation } from '../PDFSegmentation.js';
+import { SegmentationModel } from '../segmentationModel.js';
+import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 

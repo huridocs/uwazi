@@ -6,8 +6,8 @@ import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 
-import { validateMetadataField } from './validateMetadataField';
-import { customErrorMessages, validators } from './metadataValidators';
+import { validateMetadataField } from './validateMetadataField.js';
+import { customErrorMessages, validators } from './metadataValidators.js';
 
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);

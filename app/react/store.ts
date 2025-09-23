@@ -1,11 +1,11 @@
 /* eslint-disable import/no-mutable-exports,prefer-destructuring,global-require */
 
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import { applyMiddleware, createStore, Store } from 'redux';
-import reducer from './reducer';
+import reducer from './reducer.js';
 import { IStore } from './istore';
 
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};

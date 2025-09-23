@@ -5,8 +5,8 @@ import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 import { ClientSettings } from '../../apiResponseTypes.js';
-import * as activityLogAPI from 'V2/api/activityLog';
-import type { ActivityLogResponse } from 'V2/api/activityLog';
+import * as activityLogAPI from '../../../api/activityLog/index.js';
+import type { ActivityLogResponse } from '../../../api/activityLog/index.js';
 import { ActivityLogEntryType } from '../../shared/types/activityLogEntryType.js';
 
 const ITEMS_PER_PAGE = 100;
@@ -136,7 +136,7 @@ const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
   } else if (value.length > 0) {
     prev.set(key, value[0]);
     value.splice(0, 1);
-    value.forEach(item => {
+    value.forEach(item: any => {
       prev.append(key, item);
     });
   }

@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Translate } from '../../I18N/index.js';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button } from 'V2/Components/UI';
-import { notificationAtom, templatesAtom } from 'V2/atoms';
-import type { PXEntityLoaderResponse, TablePXEntityRow } from 'V2/shared/ParagraphExtractionTypes';
-import { EntityStatus } from 'V2/shared/ParagraphExtractionTypes';
-import * as entitiesAPI from 'V2/api/paragraphExtractor/entities';
-import { EntitiesTable } from './components/entities/Table';
-import { generateDisplayPill } from './utils/generateDisplayPill';
-import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog';
-import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel';
-import { filterSidepanelStatusAtom } from './components/FilterSidePanel/filterSidepanelAtom';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { Button } from '../../../Components/UI/index.js';
+import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
+import type { PXEntityLoaderResponse, TablePXEntityRow } from '../../../shared/ParagraphExtractionTypes.js';
+import { EntityStatus } from '../../../shared/ParagraphExtractionTypes.js';
+import * as entitiesAPI from '../../../api/paragraphExtractor/entities.js';
+import { EntitiesTable } from './components/entities/Table.js';
+import { generateDisplayPill } from './utils/generateDisplayPill.js';
+import { ExtractEntitiesDialog } from './components/entities/ExtractEntitiesDialog/index.js';
+import { EntityFilterSidepanel } from './components/FilterSidePanel/EntityFilterSidepanel.js';
+import { filterSidepanelStatusAtom } from './components/FilterSidePanel/filterSidepanelAtom.js';
 
 const DisplayPill = generateDisplayPill({
   label: 'New',
@@ -75,7 +75,7 @@ const PXEntityDashboard = () => {
       previousPageRef.current = page;
     } else {
       setData(prevRows =>
-        prevRows.map(row => {
+        prevRows.map(row: any => {
           const newStatus = rows.find(r => r.entity._id === row.entity._id)?.status;
           if (newStatus && newStatus.status !== row.status.status) {
             // Only reassign if status changed

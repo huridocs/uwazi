@@ -1,6 +1,6 @@
 import { createStore } from 'jotai';
 import { sortBy } from 'lodash';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 import { store } from '../../store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '../../apiResponseTypes.js';
 import {
@@ -8,16 +8,16 @@ import {
   ClientTranslationSchema,
   RelationshipTypesType,
 } from '../../istore.js';
-import { globalMatomoAtom } from './globalMatomoAtom';
-import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
-import { relationshipTypesAtom } from './relationshipTypes';
-import { settingsAtom } from './settingsAtom';
-import { templatesAtom } from './templatesAtom';
-import { translationsAtom, localeAtom } from './translationsAtoms';
-import { userAtom } from './userAtom';
-import { thesauriAtom } from './thesauriAtom';
-import { pdfScaleAtom } from './pdfScaleAtom';
-import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms';
+import { globalMatomoAtom } from './globalMatomoAtom.js';
+import { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
+import { relationshipTypesAtom } from './relationshipTypes.js';
+import { settingsAtom } from './settingsAtom.js';
+import { templatesAtom } from './templatesAtom.js';
+import { translationsAtom, localeAtom } from './translationsAtoms.js';
+import { userAtom } from './userAtom.js';
+import { thesauriAtom } from './thesauriAtom.js';
+import { pdfScaleAtom } from './pdfScaleAtom.js';
+import { acceptedSuggestions as ixAcceptedSuggestions } from '../Routes/Settings/IX/components/atoms/index.js';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };

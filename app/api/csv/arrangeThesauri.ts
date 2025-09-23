@@ -14,13 +14,13 @@ import { DoubleIndexedObject } from '../../shared/data_utils/DoubleIndexedObject
 import { TemplateSchema } from '../../shared/types/templateType.js';
 import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 
-import csv, { CSVRow } from './csv';
-import { toSafeName } from './entityRow';
-import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect';
-import { determineParentChildRelationship } from './typeParsers/select';
-import { headerWithLanguage } from './csvDefinitions';
-import { sanitizeStringValue } from './sanitizationUtils';
-import { LabelInfoBase } from './typeParsers/shared';
+import csv, { CSVRow } from './csv.js';
+import { toSafeName } from './entityRow.js';
+import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect.js';
+import { determineParentChildRelationship } from './typeParsers/select.js';
+import { headerWithLanguage } from './csvDefinitions.js';
+import { sanitizeStringValue } from './sanitizationUtils.js';
+import { LabelInfoBase } from './typeParsers/shared.js';
 
 class ArrangeThesauriError extends Error {
   row: CSVRow;
@@ -86,19 +86,19 @@ type ThesaurusMap = {
 
 type ThesaurusMaps = Record<string, ThesaurusMap>;
 
-const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesaurusMaps => {
+const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesaurusMaps: any => {
   const maps: ThesaurusMaps = {};
 
-  allRelatedThesauri.forEach(t => {
+  allRelatedThesauri.forEach(t: any => {
     const id = t._id.toString();
 
     const normalizedLabelsPerParent: Sets<string> = new Sets({ '': [] });
-    (t.values || []).forEach(v => {
+    (t.values || []).forEach(v: any => {
       const normalizedLabel = normalizeThesaurusLabel(v.label);
       if (!normalizedLabel) return;
       const isParent = v.values;
       if (isParent) {
-        (v.values || []).forEach(child => {
+        (v.values || []).forEach(child: any => {
           const childNormalizedLabel = normalizeThesaurusLabel(child.label);
           if (childNormalizedLabel) {
             normalizedLabelsPerParent.add(normalizedLabel, childNormalizedLabel);
@@ -132,7 +132,7 @@ const isNewLabel = (
   map: ThesaurusMap,
   parentInfo: LabelInfoBase,
   childInfo: LabelInfoBase
-): boolean => {
+): boolean: any => {
   const hasInExisting = map.normalizedLabelsPerParent.has(
     parentInfo.normalizedLabel,
     childInfo.normalizedLabel
@@ -260,7 +260,7 @@ const tryAddingTranslation = (
   thesauriValueData: ThesaurusMaps,
   potentialTranslations: (string | undefined)[][],
   newKeys: Set<string>
-): void => {
+): void: any => {
   potentialTranslations
     .filter(([id, language, key, value]) => id && language && key && value && newKeys.has(key))
     .forEach(([id, language, key, value]) => {
@@ -279,16 +279,16 @@ const handleRow = (
   languagesPerHeader: Record<string, Set<string>>,
   defaultLanguage: string,
   template: TemplateSchema
-): void => {
+): void: any => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
 
-  headersWithoutLanguage.forEach(header => {
+  headersWithoutLanguage.forEach(header: any => {
     const property = template.properties?.find(p => p.name === header);
     const isMultiselect = property?.type === 'multiselect';
 
     if (isMultiselect) {
       const result = splitMultiselectLabels(safeNamedRow[header]);
-      result.labelInfos.forEach(labelInfo => {
+      result.labelInfos.forEach(labelInfo: any => {
         tryAddingLabel(thesauriValueData, labelInfo, header, propNameToThesauriId[header], row);
       });
     } else {
@@ -309,7 +309,7 @@ const handleRow = (
     }
   });
 
-  Object.keys(languagesPerHeader).forEach(header => {
+  Object.keys(languagesPerHeader).forEach(header: any => {
     const defaultLanguageHeader = headerWithLanguage(header, defaultLanguage);
 
     const property = template.properties?.find(p => p.name === header);
@@ -340,7 +340,7 @@ const handleRow = (
     }
 
     const potentialTranslations = Array.from(languagesPerHeader[header])
-      .map(lang => {
+      .map(lang: any => {
         const fullHeader = headerWithLanguage(header, lang);
         let labelInfos: LabelInfo[] = [];
         if (isMultiselect) {
@@ -379,7 +379,7 @@ const handleRow = (
         return ptrs;
       })
       .flat();
-    keyInfos.forEach(labelInfo => {
+    keyInfos.forEach(labelInfo: any => {
       const newKeys = tryAddingLabel(
         thesauriValueData,
         labelInfo,
@@ -404,7 +404,7 @@ const syncSaveThesauri = async (
     const { newInfos } = thesaurusMaps[thesaurus._id.toString()];
     const normalizedRootLabelsToOriginalRootLabels: Record<string, string> = {};
     const normalizedRootLabelsToChildLabels: Arrays<string> = new Arrays();
-    newInfos.forEach(info => {
+    newInfos.forEach(info: any => {
       if (!(info.normalizedLabel in normalizedRootLabelsToOriginalRootLabels)) {
         normalizedRootLabelsToOriginalRootLabels[info.normalizedLabel] = info.label;
       }
@@ -415,7 +415,7 @@ const syncSaveThesauri = async (
 
     const newValues: ThesaurusSchema['values'] = Object.keys(
       normalizedRootLabelsToOriginalRootLabels
-    ).map(normalizedLabel => {
+    ).map(normalizedLabel: any => {
       const rootValue = {
         label: normalizedRootLabelsToOriginalRootLabels[normalizedLabel],
       };

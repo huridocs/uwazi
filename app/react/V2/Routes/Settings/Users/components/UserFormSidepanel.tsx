@@ -6,13 +6,13 @@ import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { t, Translate } from '../../I18N/index.js';
-import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
-import { Button, Card, ConfirmationModal, Sidepanel } from 'V2/Components/UI';
-import { validEmailFormat } from 'V2/shared/formatHelpers';
+import { InputField, Select, MultiSelect } from '../../../../Components/Forms/index.js';
+import { Button, Card, ConfirmationModal, Sidepanel } from '../../../../Components/UI/index.js';
+import { validEmailFormat } from '../../../../shared/formatHelpers.js';
 import { UserRole } from '../../shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import { PermissionsListModal } from './PermissionsListModal';
-import { User, Group } from '../types';
+import { PermissionsListModal } from './PermissionsListModal.js';
+import { User, Group } from '../types.js';
 
 type SubmitType = 'formSubmit' | 'reset-2fa' | 'unlock-user' | 'reset-password' | undefined;
 
@@ -43,7 +43,7 @@ const isUnique = (nameVal: string, selectedUser?: User, users?: User[]) =>
   );
 
 const calculateSelectedGroups = (selectedGroups: string[], groups?: Group[]) =>
-  selectedGroups.map(selectedGroup => {
+  selectedGroups.map(selectedGroup: any => {
     const group = groups?.find(originalGroup => originalGroup.name === selectedGroup);
     return { _id: group?._id as string, name: group?.name as string };
   });
@@ -304,7 +304,7 @@ const UserFormSidepanel = ({
                       Groups
                     </Translate>
                   }
-                  onChange={selectedGroups => {
+                  onChange={selectedGroups: any => {
                     const values = calculateSelectedGroups(selectedGroups, groups);
                     setValue('groups', values, { shouldDirty: true });
                   }}
@@ -350,7 +350,7 @@ const UserFormSidepanel = ({
           body="Confirm action"
           usePassword
           onCancelClick={() => setShowConfirmationModal(false)}
-          onAcceptClick={async value => {
+          onAcceptClick={async value: any => {
             password.current = value;
 
             if (actionType.current === 'formSubmit' && formSubmitRef.current) {

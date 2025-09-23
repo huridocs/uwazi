@@ -1,6 +1,6 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
-import { risonDecodeOrIgnore } from '../../utils/index.js';
+import { risonDecodeOrIgnore } from '../../api/utils/index.js';
 import Big from 'big.js';
 
 import searchApi from '../../Search/SearchAPI.js';
@@ -30,7 +30,7 @@ const conformUrl = ({ url = '', geolocation = false }) => {
 
 const conformValues = attribs => (attribs.entity ? attribs : conformUrl(attribs));
 
-const parseDatasets = markdown => {
+const parseDatasets = markdown: any => {
   const result = {};
   const parser = new HTMLParser(
     {
@@ -52,7 +52,7 @@ const parseDatasets = markdown => {
 
 const requestDatasets = (datasets, requestParams) =>
   Promise.all(
-    Object.keys(datasets).map(name => {
+    Object.keys(datasets).map(name: any => {
       if (datasets[name].query) {
         return api
           .get(datasets[name].url, requestParams)
@@ -80,7 +80,7 @@ const getAggregations = (state, { property, dataset = 'default' }) => {
 
 const addValues = (aggregations, values) => {
   let result = new Big(0);
-  values.forEach(key => {
+  values.forEach(key: any => {
     const value = aggregations.find(bucket => bucket.get('key') === key);
     const filteredValue = value ? value.getIn(['filtered', 'doc_count']) : 0;
     result = result.plus(filteredValue || 0);

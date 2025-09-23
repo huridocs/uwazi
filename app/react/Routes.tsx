@@ -7,23 +7,23 @@ import LibraryRoot from '../../Library/Library.js';
 import { LibraryMap } from '../../Library/LibraryMap.js';
 import { LibraryCards } from '../../Library/LibraryCards.js';
 import { LibraryTable } from '../../Library/LibraryTable.js';
-import { Preserve } from 'V2/Routes/Settings/Preserve/Preserve';
-import { Settings } from 'V2/Routes/Settings/Settings';
+import { Preserve } from './V2/Routes/Settings/Preserve/Preserve.js';
+import { Settings } from './V2/Routes/Settings/Settings.js';
 import { Login } from '../../Users/Login.js';
-import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
-import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
+import { Users, usersLoader, userAction } from './V2/Routes/Settings/Users/Users.js';
+import { Collection, collectionLoader } from './V2/Routes/Settings/Collection/Collection.js';
 import ViewerRoute from '../../Viewer/ViewerRoute.js';
 import { ClientSettings } from '../../apiResponseTypes.js';
 import {
   TranslationsList,
   translationsListLoader,
-} from 'V2/Routes/Settings/Translations/TranslationsList';
+} from './V2/Routes/Settings/Translations/TranslationsList.js';
 import {
   EditTranslations,
   editTranslationsLoader,
   editTranslationsAction,
-} from 'V2/Routes/Settings/Translations/EditTranslations';
-import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboard';
+} from './V2/Routes/Settings/Translations/EditTranslations.js';
+import { Dashboard, dashboardLoader } from './V2/Routes/Settings/Dashboard/Dashboard.js';
 
 import {
   EditThesaurus,
@@ -32,29 +32,29 @@ import {
   editThesaurusLoader,
 } from '../../V2/Routes/Settings/Thesauri.js';
 
-import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
+import { MenuConfig, menuConfigloader } from './V2/Routes/Settings/MenuConfig/MenuConfig.js';
 import {
   RelationshipTypes,
   relationshipTypesLoader,
-} from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
-import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
-import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
-import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
-import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
-import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
-import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
-import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
-import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
-import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
-import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
+} from './V2/Routes/Settings/RelationshipTypes/RelationshipTypes.js';
+import { LanguagesList, languagesListLoader } from './V2/Routes/Settings/Languages/LanguagesList.js';
+import { Account, accountLoader } from './V2/Routes/Settings/Account/Account.js';
+import { IXdashboardLoader, IXDashboard } from './V2/Routes/Settings/IX/IXDashboard.js';
+import { IXSuggestions, IXSuggestionsLoader } from './V2/Routes/Settings/IX/IXSuggestions.js';
+import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from './V2/Routes/Settings/Pages/index.js';
+import { customisationLoader, Customisation } from './V2/Routes/Settings/Customization/Customization.js';
+import { ActivityLog, activityLogLoader } from './V2/Routes/Settings/ActivityLog/index.js';
+import { CustomUploads, customUploadsLoader } from './V2/Routes/Settings/CustomUploads/CustomUploads.js';
+import { FiltersTable, filtersLoader } from './V2/Routes/Settings/Filters/index.js';
+import { RouteErrorBoundary, GeneralError } from './V2/Components/ErrorHandling/index.js';
 import {
   ParagraphExtractorLoader,
   PXEntityLoader,
   PXParagraphLoader,
-} from 'V2/Routes/Settings/ParagraphExtraction/Loaders';
-import { ParagraphExtractorDashboard } from 'V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
-import { PXEntityDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXEntities';
-import { PXParagraphDashboard } from 'V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
+} from './V2/Routes/Settings/ParagraphExtraction/Loaders.js';
+import { ParagraphExtractorDashboard } from './V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction.js';
+import { PXEntityDashboard } from './V2/Routes/Settings/ParagraphExtraction/PXEntities.js';
+import { PXParagraphDashboard } from './V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js';
 import {
   Templates,
   templatesLoader,
@@ -66,12 +66,12 @@ import {
   adminsOnlyRoute,
   privateRoute,
   ProtectedRoute,
-} from './ProtectedRoute';
-import { getIndexElement } from './getIndexElement';
-import { PageView } from './Pages/PageView';
-import ResetPassword from './Users/ResetPassword';
-import ConnectedUnlockAccount from './Users/UnlockAccount';
-import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+} from './ProtectedRoute.js';
+import { getIndexElement } from './getIndexElement.js';
+import { PageView } from './Pages/PageView.js';
+import ResetPassword from './Users/ResetPassword.js';
+import ConnectedUnlockAccount from './Users/UnlockAccount.js';
+import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard.js';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,

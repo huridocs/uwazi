@@ -17,8 +17,8 @@ import { UserGroupSchema } from '../../shared/types/userGroupType.js';
 import uniqueID from '../../shared/uniqueID.js';
 import { config } from '../config.js';
 import { UserSchema } from '../../shared/types/userType';
-import { elasticTesting } from './elastic_testing';
-import { testingTenants } from './testingTenants';
+import { elasticTesting } from './elastic_testing.js';
+import { testingTenants } from './testingTenants.js';
 
 mongoose.Promise = Promise;
 let connected = false;
@@ -44,7 +44,7 @@ const fixturer = {
       _collections || (await db.listCollections().toArray()).map(c => c.name);
 
     await Promise.all(
-      collections.map(async c => {
+      collections.map(async c: any => {
         await db.collection(c).deleteMany({});
       })
     );
@@ -60,7 +60,7 @@ const fixturer = {
     await this.clear(db);
     await Promise.all(missingCollections.map(async collname => db.createCollection(collname)));
     await Promise.all(
-      Object.keys(fixtures).map(async collectionName => {
+      Object.keys(fixtures).map(async collectionName: any => {
         if (fixtures[collectionName].length) {
           await db.collection(collectionName).insertMany(fixtures[collectionName]);
         }

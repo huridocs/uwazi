@@ -7,14 +7,14 @@ import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { ClientUserSchema } from '../../apiResponseTypes.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
-import { validEmailFormat } from 'V2/shared/formatHelpers';
+import { validEmailFormat } from '../../../shared/formatHelpers.js';
 import { Translate } from '../../I18N/index.js';
-import { updateUser, getCurrentUser } from 'V2/api/users';
-import { notificationAtom } from 'V2/atoms';
-import { InputField } from 'V2/Components/Forms';
-import { Button, Card, ConfirmationModal } from 'V2/Components/UI';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { TwoFactorSetup } from './Components/TwoFactorSetup';
+import { updateUser, getCurrentUser } from '../../../api/users/index.js';
+import { notificationAtom } from '../../../atoms/index.js';
+import { InputField } from '../../../Components/Forms/index.js';
+import { Button, Card, ConfirmationModal } from '../../../Components/UI/index.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { TwoFactorSetup } from './Components/TwoFactorSetup.js';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -224,7 +224,7 @@ const Account = () => {
           body="Confirm action"
           usePassword
           onCancelClick={() => setConfirmationModal(false)}
-          onAcceptClick={value => {
+          onAcceptClick={value: any => {
             if (formSubmit.current) {
               passwordConfirmation.current = value;
               formSubmit.current.disabled = false;

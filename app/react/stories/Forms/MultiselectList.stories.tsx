@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { defaultSearch, MultiselectList } from 'V2/Components/Forms';
-import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures';
+import { defaultSearch, MultiselectList } from '../../V2/Components/Forms/index.js';
+import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures.js';
 
 const meta: Meta<typeof MultiselectList> = {
   title: 'Forms/MultiselectList',
@@ -28,7 +28,7 @@ const StoryComponent = ({ args }: any) => {
             startOnSelected={args.startOnSelected}
             selectedValues={args.selectedValues}
             search={searchAndFocus}
-            onSearch={async term => {
+            onSearch={async term: any => {
               const newItems = await args.onSearch(term, args.items);
               setSelectItems(newItems);
             }}

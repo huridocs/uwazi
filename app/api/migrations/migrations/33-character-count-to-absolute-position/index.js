@@ -12,7 +12,7 @@ async function getCharacterCountToAbsolutePositionConvertor(file) {
   return characterCountToAbsoluteConversion;
 }
 
-const absolutePositionReferenceToTextSelection = absolutePositionReference => {
+const absolutePositionReferenceToTextSelection = absolutePositionReference: any => {
   const textSelectionRectangles = absolutePositionReference.selectionRectangles.map(x => ({
     left: x.left,
     top: x.top,
@@ -56,7 +56,7 @@ function isWrongConversion(textSelection) {
 const convertTocToAbsolutePosition = async (fileConvertor, file, db) => {
   const wrongConversion = [];
 
-  const absolutePositionToc = file.toc.map(x => {
+  const absolutePositionToc = file.toc.map(x: any => {
     const absolutePositionReference = fileConvertor.convertToAbsolutePosition(
       x.label,
       x.range.start,

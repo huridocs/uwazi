@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useLoaderData, useParams } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import type {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from 'V2/shared/ParagraphExtractionTypes';
-import { templatesAtom } from 'V2/atoms';
-import { ParagraphsTable } from './components/paragraphs/Table';
-import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel';
-import { PDFSidepanel } from './components/paragraphs/PDFSidepanel';
+} from '../../../shared/ParagraphExtractionTypes.js';
+import { templatesAtom } from '../../../atoms/index.js';
+import { ParagraphsTable } from './components/paragraphs/Table.js';
+import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel.js';
+import { PDFSidepanel } from './components/paragraphs/PDFSidepanel.js';
 
 const PXParagraphDashboard = () => {
   const { extractorId } = useParams();

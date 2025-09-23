@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux';
 import Immutable from 'immutable';
 import createReducer from '../../BasicReducer/index.js';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 
 import { modelReducer, formReducer } from 'react-redux-form';
 import { manageAttachmentsReducer } from '../../Attachments.js';
 import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
-import { documentsReducer } from './documentsReducer';
-import libraryUI from './uiReducer';
-import libraryFilters from './filtersReducer';
-import aggregationsReducer from './aggregationsReducer';
+import { documentsReducer } from './documentsReducer.js';
+import libraryUI from './uiReducer.js';
+import libraryFilters from './filtersReducer.js';
+import aggregationsReducer from './aggregationsReducer.js';
 
 let templates = null;
 if (isClient) {

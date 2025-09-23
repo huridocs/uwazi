@@ -6,10 +6,10 @@ import { useLoaderData } from 'react-router';
 import uniqueID from '../../shared/uniqueID.js';
 import { Translate } from '../../I18N/index.js';
 import { ClientTemplateSchema } from '../../istore.js';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiSelect } from 'V2/Components/Forms';
-import { sidepanelAtom } from './sidepanelAtom';
-import { Filter, LoaderData } from './helpers';
+import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
+import { InputField, MultiSelect } from '../../../../Components/Forms/index.js';
+import { sidepanelAtom } from './sidepanelAtom.js';
+import { Filter, LoaderData } from './helpers.js';
 
 type FiltersSidepanelProps = {
   showSidepanel: boolean;
@@ -32,7 +32,7 @@ const FiltersSidepanel = ({
 
   const selectedValues: string[] = [];
   const selectedOptions =
-    multiselectValues?.map(value => {
+    multiselectValues?.map(value: any => {
       const template = allTemplates.find(t => t._id === value)!;
       selectedValues.push(template?._id);
       return {
@@ -64,7 +64,7 @@ const FiltersSidepanel = ({
   };
 
   const formatSelected = (selected: string[] | undefined) =>
-    selected?.map(selection => {
+    selected?.map(selection: any => {
       const templateName = allTemplates?.find(template => template._id === selection)?.name;
       return { id: selection, name: templateName, rowId: selection };
     });

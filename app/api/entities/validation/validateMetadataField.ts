@@ -10,7 +10,7 @@ import { arrayBidirectionalDiff } from '../../shared/data_utils/arrayBidirection
 import entities from '../entities/index.js';
 import thesauris from '../thesauri.js';
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
-import { validators, customErrorMessages } from './metadataValidators';
+import { validators, customErrorMessages } from './metadataValidators.js';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
@@ -199,7 +199,7 @@ const validateSameRelationshipsMatch = (
         p.relationType?.toString() === property.relationType?.toString()
     ) || [];
 
-  const valid = sameProps.every(p => {
+  const valid = sameProps.every(p: any => {
     const otherProp = entity.metadata?.[p.name] || [];
     return (
       otherProp?.length === value?.length &&

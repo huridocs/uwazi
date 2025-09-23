@@ -54,7 +54,7 @@ export function syncWrapValidator(validator: any) {
 }
 
 export async function sleep(ms: number) {
-  return new Promise(resolve => {
+  return new Promise(resolve: any => {
     setTimeout(resolve, ms);
   });
 }

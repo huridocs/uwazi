@@ -5,11 +5,11 @@ import { useSetAtom } from 'jotai';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { ClientSettings } from '../../apiResponseTypes.js';
 import { Translate } from '../../I18N/index.js';
-import * as settingsAPI from 'V2/api/settings';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import * as settingsAPI from '../../../api/settings/index.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, Tabs } from '../../V2/Components/UI.js';
 import { CodeEditor } from '../../V2/Components/CodeEditor.js';
-import { ConfirmNavigationModal } from 'V2/Components/UI';
+import { ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import { notificationAtom } from '../../V2/atoms.js';
 
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
@@ -68,7 +68,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor => {
+                  onMount={editor: any => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setNewCSS(editor.getValue());
@@ -81,7 +81,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="javascript"
                   intialValue={customJS}
-                  onMount={editor => {
+                  onMount={editor: any => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setNewJS(editor.getValue());
@@ -97,7 +97,7 @@ const Customisation = () => {
                 <CodeEditor
                   language="css"
                   intialValue={customCSS}
-                  onMount={editor => {
+                  onMount={editor: any => {
                     editor.getModel()?.onDidChangeContent(() => {
                       setHasChanges(true);
                       setNewCSS(editor.getValue());

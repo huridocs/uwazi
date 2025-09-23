@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { Select } from 'V2/Components/Forms';
+import { Select } from '../../../../../Components/Forms/index.js';
 import { t, Translate } from '../../I18N/index.js';
-import { thesauriAtom } from 'V2/atoms';
+import { thesauriAtom } from '../../../../../atoms/index.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { orderBy } from 'lodash';
 

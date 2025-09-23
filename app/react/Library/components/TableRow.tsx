@@ -6,7 +6,7 @@ import { Icon as PropertyIcon } from '../../Layout.js';
 import formatter from '../../Metadata/helpers/formater.js';
 import { FormattedMetadataValue, TableCell } from '../../Library/components/TableCell.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from '../../V2/atoms/index.js';
 import { IImmutable } from '../../shared/types/Immutable.js';
 
 interface TableRowProps {

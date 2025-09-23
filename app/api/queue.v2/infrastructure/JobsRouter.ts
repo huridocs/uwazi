@@ -1,7 +1,7 @@
 import { config } from '../config.js';
-import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { Dispatchable } from '../application/contracts/Dispatchable';
-import { NamespacedDispatcher } from './NamespacedDispatcher';
+import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
+import { Dispatchable } from '../application/contracts/Dispatchable.js';
+import { NamespacedDispatcher } from './NamespacedDispatcher.js';
 
 interface DispactcherFactory {
   (name: string): NamespacedDispatcher;

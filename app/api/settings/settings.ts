@@ -46,7 +46,7 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
     return [...result, value];
   }, [] as T[]);
 
-  flattenedCurrentValues.forEach(value => {
+  flattenedCurrentValues.forEach(value: any => {
     const matchValue = flattenedNewValues.find(
       (v): v is T =>
         v[matchProperty] && v[matchProperty]?.toString() === value[matchProperty]?.toString()
@@ -64,7 +64,7 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
   });
 
   //latest values
-  flattenedNewValues.forEach(value => {
+  flattenedNewValues.forEach(value: any => {
     values[ensure<string>(value[propertyName])] = ensure<string>(value[propertyName]);
   });
 
@@ -121,7 +121,7 @@ const saveFiltersTranslations = async (
 
 function removeTemplate(filters: SettingsFilterSchema[], templateId: ObjectIdSchema) {
   const filterTemplate = (filter: SettingsFilterSchema) => filter.id !== templateId;
-  return filters.filter(filterTemplate).map(_filter => {
+  return filters.filter(filterTemplate).map(_filter: any => {
     const filter = _filter;
     if (filter.items) {
       filter.items = removeTemplate(filter.items, templateId);
@@ -178,7 +178,7 @@ export default {
   },
 
   async setDefaultLanguage(key: string) {
-    return this.get().then(async currentSettings => {
+    return this.get().then(async currentSettings: any => {
       const languages = ensure<LanguageSchema[]>(currentSettings.languages).map(language => ({
         ...language,
         default: language.key === key,

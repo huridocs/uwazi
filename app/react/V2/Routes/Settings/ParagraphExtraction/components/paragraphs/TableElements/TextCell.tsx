@@ -1,6 +1,6 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { TablePXEntityParagraphRow } from 'V2/shared/ParagraphExtractionTypes';
+import { TablePXEntityParagraphRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
 import { Truncate } from '../../V2/Components/UI.js';
 
 const TextCell = ({

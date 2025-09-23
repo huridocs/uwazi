@@ -1,5 +1,5 @@
 import React from 'react';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 import { actions } from '../../BasicReducer/index.js';
 import { unselectAllDocuments } from '../../Library/actions/libraryActions.js';
 import { wrapDispatch } from '../../Multireducer.js';
@@ -9,9 +9,9 @@ import SelectMultiplePanelContainer from '../../Library/containers/SelectMultipl
 import { withRouter } from '../../componentWrappers.js';
 import { trackPage } from '../../App/GoogleAnalytics.js';
 import { ErrorBoundary } from '../../V2/Components/ErrorHandling.js';
-import { PageViewer } from './components/PageViewer';
-import { getPageAssets } from './utils/getPageAssets';
-import { updatePageDatasets } from './utils/updatePageDatasets';
+import { PageViewer } from './components/PageViewer.js';
+import { getPageAssets } from './utils/getPageAssets.js';
+import { updatePageDatasets } from './utils/updatePageDatasets.js';
 
 class PageViewComponent extends RouteHandler {
   static async requestState(requestParams) {

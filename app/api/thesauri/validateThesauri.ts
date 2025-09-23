@@ -29,7 +29,7 @@ const getDuplicatedLabels = (values: { label: string }[] | undefined): string[] 
   const labels = values.map(v => v.label);
   const asSet: Set<string> = new Set();
   const duplicated: Set<string> = new Set();
-  labels.forEach(label => {
+  labels.forEach(label: any => {
     if (asSet.has(label)) {
       duplicated.add(label);
     }
@@ -42,7 +42,7 @@ ajv.addKeyword({
   keyword: 'uniqueLabels',
   validate: (_config: any, thesaurus: ThesaurusSchema) => {
     const duplicated = getDuplicatedLabels(thesaurus.values);
-    thesaurus.values?.forEach(v => {
+    thesaurus.values?.forEach(v: any => {
       duplicated.push(...getDuplicatedLabels(v.values).map(l => `${v.label}/${l}`));
     });
     if (duplicated.length > 0) {

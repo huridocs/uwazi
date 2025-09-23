@@ -7,21 +7,21 @@ import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { PropertyValueSchema } from '../../shared/types/commonTypes.js';
 import { Translate } from '../../I18N/index.js';
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
-import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from 'V2/Components/UI';
-import { notificationAtom } from 'V2/atoms';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { TableSuggestion } from '../types';
+import { Button, Sidepanel, ToggleButton, VerticalDrawer, Truncate } from '../../../../Components/UI/index.js';
+import { notificationAtom } from '../../../../atoms/index.js';
+import { secondsToISODate } from '../../../../shared/dateHelpers.js';
+import { ClientIXExtractorType } from '../../../../shared/types.js';
+import { TableSuggestion } from '../types.js';
 import {
   coerceValue,
   getFormValue,
   handleEntitySave,
   loadSidepanelData,
   SELECT_TYPES,
-} from '../helpers';
-import { SidepanelForms } from './SidepanelForms';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from './atoms';
-import { selectAndSearchAtom } from './atoms/selectAndSearchAtom';
+} from '../helpers/index.js';
+import { SidepanelForms } from './SidepanelForms.js';
+import { highlightsAtom, selectionErrorAtom, textSelectionAtom } from './atoms/index.js';
+import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 
 //This is imported via loadable due to https://github.com/huridocs/uwazi/issues/7808
 const TextProperty = loadable(async () => (await import('./TextProperty')).TextProperty);
@@ -58,7 +58,7 @@ const PropertySidepanel = ({
         .then(({ entity: suggestionEntity }) => {
           setEntity(suggestionEntity);
         })
-        .catch(e => {
+        .catch(e: any => {
           throw e;
         });
     }
@@ -138,7 +138,7 @@ const PropertySidepanel = ({
           propertyName={suggestion?.extractorSource.property}
           entity={entity}
           template={template}
-          onSelect={selection => {
+          onSelect={selection: any => {
             setSelectedText(selection);
           }}
           onDeselect={() => {

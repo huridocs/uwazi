@@ -6,12 +6,12 @@ import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
-import * as thesauriAPI from 'V2/api/thesauri';
+import * as thesauriAPI from '../../../api/thesauri/index.js';
 import { notificationAtom } from '../../V2/atoms.js';
-import { Table } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { addSelection, sanitizeThesaurusValues } from './helpers';
-import { columnsThesaurus, ThesaurusRow } from './components/TableComponents';
+import { Table } from '../../../Components/UI/index.js';
+import { InputField } from '../../../Components/Forms/index.js';
+import { addSelection, sanitizeThesaurusValues } from './helpers.js';
+import { columnsThesaurus, ThesaurusRow } from './components/TableComponents.js';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;
@@ -64,7 +64,7 @@ const ThesaurusForm = ({
     await handleRevalidate(savedThesaurus);
   };
 
-  const formSubmit: SubmitHandler<ClientThesaurus> = async data => {
+  const formSubmit: SubmitHandler<ClientThesaurus> = async data: any => {
     try {
       await saveThesaurus(data);
     } catch (e) {
@@ -96,7 +96,7 @@ const ThesaurusForm = ({
           onSelect={({ selectedRows }) => {
             setSelectedThesaurusValue(() => {
               const selection: ThesaurusRow[] = [];
-              thesaurusValues.forEach(item => {
+              thesaurusValues.forEach(item: any => {
                 addSelection(selectedRows, selection)(item);
                 item.subRows?.forEach(addSelection(selectedRows, selection));
               });

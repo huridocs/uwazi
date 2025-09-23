@@ -5,7 +5,7 @@ import { validateAndCoerceRequest } from '../utils/validateRequest.js';
 import { Application, Request, Response, NextFunction } from 'express';
 import { ObjectId } from 'mongodb';
 import { ensure } from '../../shared/tsUtils.js';
-import { serviceMiddleware } from './serviceMiddleware';
+import { serviceMiddleware } from './serviceMiddleware.js';
 
 export const extractorsRoutes = (app: Application) => {
   app.post(

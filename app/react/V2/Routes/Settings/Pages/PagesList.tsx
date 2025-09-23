@@ -5,7 +5,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
-import * as pagesAPI from 'V2/api/pages';
+import * as pagesAPI from '../../../api/pages/index.js';
 import { Button, ConfirmationModal, Table } from '../../V2/Components/UI.js';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { Page } from '../../shared/V2/shared/types.js';
@@ -20,7 +20,7 @@ import {
   UrlCell,
   ActionHeader,
   List,
-} from './components/PageListTable';
+} from './components/PageListTable.js';
 
 type TablePage = Page & { rowId: string };
 

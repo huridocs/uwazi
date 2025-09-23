@@ -3,17 +3,17 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { Translate, I18NLinkV2 as I18NLink, t } from '../../I18N/index.js';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'V2/atoms';
-import { Table } from 'V2/Components/UI/Table/Table';
-import { Button } from 'V2/Components/UI/Button';
-import * as templatesApi from 'V2/api/templates';
+import { notificationAtom } from '../../../atoms/index.js';
+import { Table } from '../../../Components/UI/Table/Table.js';
+import { Button } from '../../../Components/UI/Button.js';
+import * as templatesApi from '../../../api/templates/index.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { ColumnDef } from '@tanstack/react-table';
 import { Template } from '../../apiResponseTypes.js';
-import { columns } from './components/TemplatesTableComponents';
-import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal';
-import { TemplateRow } from './types';
+import { columns } from './components/TemplatesTableComponents.js';
+import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';
+import { TemplateRow } from './types.js';
 
 const templatesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>

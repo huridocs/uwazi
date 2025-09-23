@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
@@ -17,7 +17,7 @@ const createMonacoEditor = (
   container: HTMLDivElement,
   language: string,
   initialValue?: string
-): CodeEditorInstance => {
+): CodeEditorInstance: any => {
   const editor = monaco.editor.create(container, {
     value: initialValue,
     language,
@@ -27,7 +27,7 @@ const createMonacoEditor = (
     fontLigatures: false,
   });
 
-  editor.changeViewZones(accessor => {
+  editor.changeViewZones(accessor: any => {
     accessor.addZone({
       afterLineNumber: 0,
       heightInPx: 8,
@@ -58,7 +58,7 @@ const CodeEditorComponent = ({
           monaco.editor.remeasureFonts();
           setFontsReady(true);
         })
-        .catch(e => {
+        .catch(e: any => {
           setHasError(true);
           const error = new Error('Code editor error', { cause: e });
           captureException(error);

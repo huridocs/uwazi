@@ -4,8 +4,8 @@ import { PermissionType } from '../../shared/types/permissionSchema.js';
 import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
 import { UserSchema } from '../../shared/types/userType.js';
 import { WithId } from '../odm/index.js';
-import { permissionsContext } from './permissionsContext';
-import { PUBLIC_PERMISSION } from './publicPermission';
+import { permissionsContext } from './permissionsContext.js';
+import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
@@ -27,7 +27,7 @@ export const collaborators = {
       });
     });
 
-    groups.forEach(group => {
+    groups.forEach(group: any => {
       availableCollaborators.push({
         refId: group._id!.toString(),
         type: PermissionType.GROUP,

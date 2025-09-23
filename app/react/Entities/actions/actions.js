@@ -12,10 +12,10 @@ import { notificationActions } from '../../Notifications.js';
 import { actions as relationshipActions } from '../../Relationships.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { atomStore, deletedEntityAtom } from '../../V2/atoms/index.js';
 
 export function saveEntity(entity) {
-  return async dispatch => {
+  return async dispatch: any => {
     const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
     if (!errors.length) {
       dispatch(notificationActions.notify(t('System', 'Entity saved', null, false), 'success'));
@@ -38,7 +38,7 @@ export function resetForm() {
 }
 
 export function deleteEntity(entity) {
-  return async dispatch => {
+  return async dispatch: any => {
     await api.delete(new RequestParams({ sharedId: entity.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
@@ -48,7 +48,7 @@ export function deleteEntity(entity) {
 }
 
 export function deleteEntities(entities) {
-  return async dispatch => {
+  return async dispatch: any => {
     await api.deleteMultiple(new RequestParams({ sharedIds: entities.map(e => e.sharedId) }));
     dispatch(notificationActions.notify(t('System', 'Deletion success', null, false), 'success'));
     await dispatch(unselectAllDocuments());

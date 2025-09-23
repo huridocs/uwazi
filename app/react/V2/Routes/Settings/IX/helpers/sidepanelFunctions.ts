@@ -1,9 +1,9 @@
 import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
 import { MetadataObjectSchema, PropertyValueSchema } from '../../shared/types/commonTypes.js';
 import { EntitySuggestionType } from '../../shared/types/suggestionType.js';
-import { secondsToISODate } from 'V2/shared/dateHelpers';
-import * as entitiesAPI from 'V2/api/entities';
-import * as filesAPI from 'V2/api/files';
+import { secondsToISODate } from '../../../../shared/dateHelpers.js';
+import * as entitiesAPI from '../../../../api/entities/index.js';
+import * as filesAPI from '../../../../api/files/index.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
@@ -86,7 +86,7 @@ const handleEntitySave = async (
           prop.content === property.content &&
           prop.type === property.type
       )
-      .forEach(prop => {
+      .forEach(prop: any => {
         data.properties?.push({ [prop.name]: metadata });
       });
   }

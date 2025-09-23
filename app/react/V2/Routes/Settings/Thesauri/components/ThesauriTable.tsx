@@ -2,9 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
-import { Table } from 'V2/Components/UI';
+import { Table } from '../../../../Components/UI/index.js';
 import { ClientThesaurus, Template } from '../../apiResponseTypes.js';
-import { columnsThesauri } from './TableComponents';
+import { columnsThesauri } from './TableComponents.js';
 
 interface ThesauriRow extends ClientThesaurus {
   rowId: string;

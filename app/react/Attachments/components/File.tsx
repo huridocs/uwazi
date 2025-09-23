@@ -17,7 +17,7 @@ import { isBlobFile } from '../../shared/tsUtils.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { FileType } from '../../shared/types/fileType.js';
 
-import { ViewDocumentLink } from './ViewDocumentLink';
+import { ViewDocumentLink } from './ViewDocumentLink.js';
 
 type FileOwnProps = {
   file: FileType | ClientBlobFile;

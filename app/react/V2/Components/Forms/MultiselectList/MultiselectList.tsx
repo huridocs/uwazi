@@ -4,11 +4,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { isString } from 'lodash';
 import { t, Translate } from '../../I18N/index.js';
-import { debounce } from '../../utils/index.js';
-import { Label } from '../Label';
-import { Checkbox } from '../Checkbox';
-import { MultiselectListButtonItem } from './MultiselectListButtonItem';
-import { MultiselectListGroup } from './MultiselectListGroup';
+import { debounce } from '../../api/utils/index.js';
+import { Label } from '../Label.js';
+import { Checkbox } from '../Checkbox.js';
+import { MultiselectListButtonItem } from './MultiselectListButtonItem.js';
+import { MultiselectListGroup } from './MultiselectListGroup.js';
 import { InputField, RadioSelect } from '..';
 
 interface MultiselectListOption {
@@ -58,7 +58,7 @@ const defaultSearch = (search: string, items?: MultiselectListOption[]) => {
     return a.includes(b);
   };
 
-  items?.forEach(item => {
+  items?.forEach(item: any => {
     const matchesSearch = !search || labelIncludesSearch(item.searchLabel);
 
     const containsChildrenMatchingSearch =
@@ -149,13 +149,13 @@ const MultiselectList = ({
   useEffect(() => {
     const newSet = new Set<string>(selections);
 
-    availableItems?.forEach(item => {
+    availableItems?.forEach(item: any => {
       if (item.suggested) {
         newSet.add(item.value);
       }
 
       if (item.items) {
-        item.items.forEach(subItem => {
+        item.items.forEach(subItem: any => {
           if (subItem.suggested) {
             newSet.add(subItem.value);
           }
@@ -183,7 +183,7 @@ const MultiselectList = ({
   const handleSelectAll = () => {
     const allValues: string[] = [];
 
-    availableItems?.forEach(item => {
+    availableItems?.forEach(item: any => {
       if (item.items?.length) {
         item.items?.forEach(subItem => allValues.push(subItem.value));
       } else {
@@ -308,7 +308,7 @@ const MultiselectList = ({
           clearFieldAction={() => {
             setSearchTerm('');
           }}
-          onChange={e => {
+          onChange={e: any => {
             setSearchTerm(e.currentTarget.value);
             setIsDirty(true);
           }}

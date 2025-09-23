@@ -3,9 +3,9 @@ import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js'
 import { Translate } from '../../I18N/index.js';
 import { PreserveIcon } from '../../Layout/PreserveIcon.js';
 import { useAtomValue } from 'jotai';
-import { settingsAtom, userAtom } from 'V2/atoms';
+import { settingsAtom, userAtom } from '../../../atoms/index.js';
 import { Button, Card, CopyValueInput } from '../../V2/Components/UI.js';
-import { requestToken } from 'V2/api/preserve';
+import { requestToken } from '../../../api/preserve/index.js';
 
 const Preserve = () => {
   const settings = useAtomValue(settingsAtom);

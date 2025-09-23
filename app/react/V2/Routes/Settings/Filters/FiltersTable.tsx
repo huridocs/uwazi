@@ -7,11 +7,11 @@ import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { Translate } from '../../I18N/index.js';
-import { notificationAtom, settingsAtom } from 'V2/atoms';
-import * as settingsAPI from 'V2/api/settings';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table, ConfirmNavigationModal } from 'V2/Components/UI';
+import { notificationAtom, settingsAtom } from '../../../atoms/index.js';
+import * as settingsAPI from '../../../api/settings/index.js';
+import * as templatesAPI from '../../../api/templates/index.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { Button, Table, ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import {
   createColumns,
   AddTemplatesModal,
@@ -25,7 +25,7 @@ import {
   sanitizeFilters,
   formatFilters,
   Filter,
-} from './components';
+} from './components/index.js';
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
@@ -82,12 +82,12 @@ const FiltersTable = () => {
 
   const handleDelete = () => {
     const idsToRemove: string[] = [];
-    currentFilters.current?.forEach(filter => {
+    currentFilters.current?.forEach(filter: any => {
       if (filter.rowId in selectedFilters) {
         idsToRemove.push(filter.rowId);
       }
       if (filter.subRows) {
-        filter.subRows.forEach(subRow => {
+        filter.subRows.forEach(subRow: any => {
           if (subRow.rowId in selectedFilters) {
             idsToRemove.push(subRow.rowId);
           }
@@ -246,7 +246,7 @@ const FiltersTable = () => {
       <FiltersSidepanel
         showSidepanel={showSidepanel}
         setShowSidepanel={setShowSidepanel}
-        onSave={newFilter => {
+        onSave={newFilter: any => {
           if (newFilter) {
             setFilters(updateFilters(newFilter, filters) || []);
           }

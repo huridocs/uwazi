@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import api from '../../utils/api.js';
 import { RequestParams } from '../../utils/RequestParams.js';
-import { Page } from 'V2/shared/types';
+import { Page } from '../../shared/types.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Page[]> => {

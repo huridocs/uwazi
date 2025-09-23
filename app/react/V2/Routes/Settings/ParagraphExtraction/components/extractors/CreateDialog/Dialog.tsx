@@ -1,9 +1,9 @@
 import React from 'react';
-import { Modal } from 'V2/Components/UI';
+import { Modal } from '../../../../../../Components/UI/index.js';
 import { Translate } from '../../I18N/index.js';
-import { AddExtractorSteps } from './steps';
-import { useCreateExtractorContext } from './CreateExtractorContext';
-import { Steppers } from './Steppers';
+import { AddExtractorSteps } from './steps/index.js';
+import { useCreateExtractorContext } from './CreateExtractorContext.js';
+import { Steppers } from './Steppers.js';
 
 const Dialog = () => {
   const { step, setShowModal, targetTemplateOptions } = useCreateExtractorContext();

@@ -44,19 +44,19 @@ import { retryWithBackoff, descriptiveError } from '../utils/retryWithBackoff.js
 import { SuggestionFactory } from '../suggestions/suggestionFactory.js';
 import { AcceptSuggestionsFactory } from '../suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { IXSuggestionType } from '../../shared/types/suggestionType.js';
-import ixmodels from './ixmodels';
-import { IXModelsModel } from './IXModelsModel';
-import { Extractors } from './ixextractors';
+import ixmodels from './ixmodels.js';
+import { IXModelsModel } from './IXModelsModel.js';
+import { Extractors } from './ixextractors.js';
 import {
   CommonSuggestion,
   RawSuggestion,
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
   formatSuggestionFacade,
-} from './suggestionFormatting';
-import { ExtractionKey } from './ExtractionKey';
-import { IXTrainModelJob } from './TrainModelJob';
-import { IXServices } from './IXServices';
+} from './suggestionFormatting.js';
+import { ExtractionKey } from './ExtractionKey.js';
+import { IXTrainModelJob } from './TrainModelJob.js';
+import { IXServices } from './IXServices.js';
 
 const defaultTrainingLanguage = 'en';
 
@@ -275,7 +275,7 @@ class InformationExtraction {
     propertyType: FileWithAggregation['propertyType'],
     file: FileWithAggregation,
     _data: CommonMaterialsData
-  ): MaterialsData => {
+  ): MaterialsData: any => {
     const languageIso =
       LanguageUtils.fromISO639_3(file.language!, false)?.ISO639_1 || defaultTrainingLanguage;
 
@@ -287,7 +287,7 @@ class InformationExtraction {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
-        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
+        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r: any => {
           const { page, ...rectangle } = r;
           return { ...rectangle, page_number: page };
         }),
@@ -320,7 +320,7 @@ class InformationExtraction {
     }
 
     await Promise.all(
-      files.map(async file => {
+      files.map(async file: any => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -393,7 +393,7 @@ class InformationExtraction {
     targetProperty: PropertySchema,
     type = 'labeled_data'
   ) {
-    await ArrayUtils.sequentialFor(entitiesForTraining, async entity => {
+    await ArrayUtils.sequentialFor(entitiesForTraining, async entity: any => {
       const extractionKey = ExtractionKey.create({
         entitySharedId: entity.sharedId!,
         language: entity.language as LanguageISO6391,
@@ -530,7 +530,7 @@ class InformationExtraction {
   ) {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-    await ArrayUtils.sequentialFor(rawSuggestions, async rawSuggestion => {
+    await ArrayUtils.sequentialFor(rawSuggestions, async rawSuggestion: any => {
       if (!rawSuggestion.entity_name) {
         return;
       }
@@ -564,7 +564,7 @@ class InformationExtraction {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
 
     return Promise.all(
-      rawSuggestions.map(async rawSuggestion => {
+      rawSuggestions.map(async rawSuggestion: any => {
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
         if (!entity) {
           return Promise.resolve();

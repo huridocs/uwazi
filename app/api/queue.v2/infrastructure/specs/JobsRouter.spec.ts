@@ -3,8 +3,8 @@ import { config } from '../config.js';
 import { Dispatchable } from '../queue.v2/application/contracts/Dispatchable.js';
 import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
-import { NamespacedDispatcher } from '../NamespacedDispatcher';
-import { JobsRouter } from '../JobsRouter';
+import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
+import { JobsRouter } from '../JobsRouter.js';
 
 class ExampleJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this

@@ -27,8 +27,8 @@ import { PipelineBuilder } from '../suggestions/queryBuilder.js';
 import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { ObjectId } from 'mongodb';
 import { Suggestions } from '../suggestions/suggestions.js';
-import { Extractors } from './ixextractors';
-import { IXServices } from './IXServices';
+import { Extractors } from './ixextractors.js';
+import { IXServices } from './IXServices.js';
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;
@@ -227,7 +227,7 @@ async function getEntitiesForSuggestionsQuery(
   const uniquePairs = Array.from(
     new Set(suggestions.map(s => `${s.entityId}::${s.language || ''}`))
   )
-    .map(key => {
+    .map(key: any => {
       const [sharedId, language] = key.split('::');
       return { sharedId, language } as { sharedId: string; language: string };
     })
@@ -472,7 +472,7 @@ async function getFileIdsWithReadySegmentations(
       );
       // Partition ready fileIds into labeled / unlabeled buckets preserving insertion order
       const readySet = new Set(readySegmentationFileIds.map(id => id.toString()));
-      currentBatch.forEach(s => {
+      currentBatch.forEach(s: any => {
         const fId = s.fileId as ObjectIdSchema | undefined;
         if (!fId) return;
         if (!readySet.has(fId.toString())) return;

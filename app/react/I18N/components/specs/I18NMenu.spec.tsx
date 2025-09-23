@@ -6,11 +6,11 @@ import { act, fireEvent, RenderResult, screen, render } from '@testing-library/r
 import { Location, MemoryRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { ClientUserSchema } from '../../apiResponseTypes.js';
-import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '../../../V2/atoms/index.js';
+import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { UserRole } from '../../shared/types/userSchema.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { I18NMenu } from '../I18NMenu';
+import { I18NMenu } from '../I18NMenu.js';
 
 const defaultLanguages = [
   {

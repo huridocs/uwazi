@@ -1,7 +1,7 @@
 import React from 'react';
-import { ConfirmationModal } from 'V2/Components/UI/ConfirmationModal';
+import { ConfirmationModal } from '../../../../Components/UI/ConfirmationModal.js';
 import { Translate } from '../../I18N/index.js';
-import { TemplateRow } from '../types';
+import { TemplateRow } from '../types.js';
 
 interface DeleteTemplatesConfirmationModalProps {
   open: boolean;

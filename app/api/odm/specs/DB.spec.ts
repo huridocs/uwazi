@@ -5,8 +5,8 @@ import { tenants } from '../tenants/tenantContext.js';
 import { testingTenants } from '../utils/testingTenants.js';
 
 import { config } from '../config.js';
-import { DB } from '../DB';
-import { instanceModel } from '../model';
+import { DB } from '../DB.js';
+import { instanceModel } from '../model.js';
 import testingDB from '../utils/testing_db.js';
 
 const testSchema = new mongoose.Schema({

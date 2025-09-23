@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent } from 'react';
 import { t, Translate } from '../../I18N/index.js';
-import { Modal, Button } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import { save as saveThesauri } from 'V2/api/thesauri';
+import { Modal, Button } from '../../../../Components/UI/index.js';
+import { InputField } from '../../../../Components/Forms/index.js';
+import { save as saveThesauri } from '../../../../api/thesauri/index.js';
 import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, thesauriAtom } from 'V2/atoms';
+import { notificationAtom, thesauriAtom } from '../../../../atoms/index.js';
 import { sanitizeThesaurusName } from '../../shared/sanitizationUtils.js';
 
 interface AddThesaurusModalProps {

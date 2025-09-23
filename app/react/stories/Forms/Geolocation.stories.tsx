@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
 import { Geolocation } from '../../V2/Components/Forms.js';
-import { LEGACY_createStore as createStore } from 'V2/testing';
+import { LEGACY_createStore as createStore } from '../../V2/testing/index.js';
 import { Provider } from 'react-redux';
 
 const meta: Meta<typeof Geolocation> = {

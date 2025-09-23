@@ -8,11 +8,11 @@ import { appContextMiddleware } from '../utils/appContextMiddleware.js';
 import { config } from '../config.js';
 import waitForExpect from 'wait-for-expect';
 
-import { endSocketServer, setupApiSockets } from '../setupSockets';
-import { emitSocketEvent } from '../standaloneEmitSocketEvent';
+import { endSocketServer, setupApiSockets } from '../setupSockets.js';
+import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
-  new Promise(resolve => {
+  new Promise(resolve: any => {
     httpServer.close(() => {
       resolve();
     });
@@ -23,7 +23,7 @@ const connectSocket = async (
   tenant: string,
   session: string = ''
 ): Promise<SocketIOClient.Socket> =>
-  new Promise(resolve => {
+  new Promise(resolve: any => {
     const socket = io.connect(`http://localhost:${port}`, {
       transports: ['websocket'],
       //@ts-ignore
@@ -42,7 +42,7 @@ let server: Server;
 
 const createServer = async (app: Application, port: number) => {
   server = new Server(app);
-  await new Promise<void>(resolve => {
+  await new Promise<void>(resolve: any => {
     server.listen(port, resolve);
   });
   app.use(appContextMiddleware);
@@ -124,7 +124,7 @@ describe('socket middlewares setup', () => {
       await req.set('tenant', tenant);
     }
 
-    return req.expect(response => {
+    return req.expect(response: any => {
       if (response.status !== 200) {
         throw new Error(response.text);
       }

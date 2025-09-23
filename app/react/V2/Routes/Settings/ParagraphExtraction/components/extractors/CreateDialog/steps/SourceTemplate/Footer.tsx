@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from 'V2/Components/UI';
+import { Button } from '../../../../../../../../Components/UI/index.js';
 import { Translate } from '../../I18N/index.js';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { useCreateExtractorContext } from '../../CreateExtractorContext';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Footer = () => {
   const { setStep, sourceTemplateId } = useCreateExtractorContext();

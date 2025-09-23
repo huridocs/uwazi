@@ -5,8 +5,8 @@ import { has } from 'lodash';
 import Footer from '../../App/Footer.js';
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 import { t } from '../../I18N/index.js';
-import { handledErrors } from 'V2/shared/errorUtils';
-import { ErrorFallback } from './ErrorFallback';
+import { handledErrors } from '../../shared/errorUtils.js';
+import { ErrorFallback } from './ErrorFallback.js';
 
 const GeneralError = () => {
   const { errorCode } = useParams();

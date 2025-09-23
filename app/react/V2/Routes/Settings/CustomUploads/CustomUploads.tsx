@@ -8,17 +8,17 @@ import { useSetAtom } from 'jotai';
 import { Translate } from '../../I18N/index.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { getByType, remove, UploadService } from 'V2/api/files';
-import { Button, ConfirmationModal, Table, ConfirmNavigationModal } from 'V2/Components/UI';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { notificationAtom } from 'V2/atoms';
+import { getByType, remove, UploadService } from '../../../api/files/index.js';
+import { Button, ConfirmationModal, Table, ConfirmNavigationModal } from '../../../Components/UI/index.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { notificationAtom } from '../../../atoms/index.js';
 import {
   createColumns,
   FileList,
   UploadProgress,
   DropzoneModal,
   EditFileSidepanel,
-} from './components';
+} from './components/index.js';
 
 type CustomUpload = FileType & { rowId: string };
 
@@ -114,7 +114,7 @@ const CustomUploads = () => {
         <SettingsContent.Body>
           <Table
             data={files}
-            columns={createColumns(handleDelete, file => {
+            columns={createColumns(handleDelete, file: any => {
               setShowSidepanel(true);
               setFileToEdit(file);
             })}

@@ -11,8 +11,8 @@ import {
 } from '../suggestions/blankSuggestions.js';
 import { Subset } from '../../shared/tsUtils.js';
 import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
-import { IXExtractorModel as model } from './IXExtractorModel';
-import { IXErrorCode, IXValidationError } from './IXValidationError';
+import { IXExtractorModel as model } from './IXExtractorModel.js';
+import { IXErrorCode, IXValidationError } from './IXValidationError.js';
 
 type AllowedPropertyTypes =
   | Subset<
@@ -60,7 +60,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     t => t._id.toString(),
     t => t
   );
-  templateIds.forEach(id => {
+  templateIds.forEach(id: any => {
     if (!(id in usedTemplates)) {
       throw new IXValidationError(IXErrorCode.TEMPLATE_MISSING, `template "${id}" does not exists`);
     }
@@ -70,7 +70,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     return;
   }
 
-  templateIds.forEach(id => {
+  templateIds.forEach(id: any => {
     const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
 
     if (!property) {

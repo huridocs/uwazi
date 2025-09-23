@@ -5,7 +5,7 @@ import { Suggestions } from '../suggestions/suggestions.js';
 import { DataType, UwaziFilterQuery } from '../odm/index.js';
 import { IXSuggestionType } from '../../shared/types/suggestionType.js';
 import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
-import { updateStates } from '../updateState';
+import { updateStates } from '../updateState.js';
 
 type Input = { extractorId: string; batchSize: number; tenantName?: string };
 

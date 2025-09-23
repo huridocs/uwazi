@@ -2,9 +2,9 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { fn } from '@storybook/test';
-import { DatePicker } from 'V2/Components/Forms';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { settingsAtom } from 'V2/atoms';
+import { DatePicker } from '../../V2/Components/Forms/index.js';
+import { TestAtomStoreProvider } from '../../V2/testing/index.js';
+import { settingsAtom } from '../../V2/atoms/index.js';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Forms/DatePicker',

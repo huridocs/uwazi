@@ -1,4 +1,4 @@
-import { risonDecodeOrIgnore } from '../../utils/index.js';
+import { risonDecodeOrIgnore } from '../../api/utils/index.js';
 import markdownEscapedValues from '../../utils/markdownEscapedValues.js';
 
 const listPlaceholder = '{---UWAZILIST---}';
@@ -23,12 +23,12 @@ const extractAdditionalOptions = (content, match) => {
 };
 
 export default {
-  generate: originalText => {
+  generate: originalText: any => {
     const values = markdownEscapedValues(originalText, '(...)', listEscape);
     const options = [];
     let content = originalText || '';
 
-    const params = values.map(match => {
+    const params = values.map(match: any => {
       const additionalOptions = extractAdditionalOptions(content, match);
       options.push(additionalOptions.options);
       content = content.replace(

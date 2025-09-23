@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Select, SelectProps } from 'V2/Components/Forms';
+import { Select, SelectProps } from '../../V2/Components/Forms/index.js';
 
 const meta: Meta<typeof Select> = {
   title: 'Forms/Select',
@@ -22,7 +22,7 @@ const ComponentWithSelect = ({ args }: { args: SelectProps }) => {
           disabled={args.disabled}
           hideLabel={args.hideLabel}
           hasErrors={args.hasErrors}
-          onChange={e => {
+          onChange={e: any => {
             setValue(e.target.value);
           }}
           value={value}

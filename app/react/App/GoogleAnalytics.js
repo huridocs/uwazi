@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 
 function trackPage() {
   if (isClient && window.gtag) {

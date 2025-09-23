@@ -3,14 +3,14 @@ import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-
 import { config } from '../config.js';
 import { Tenant } from '../tenants/tenantContext.js';
 import path from 'path';
-import { FileStorage, GetFileInput } from '../contracts/FileStorage';
-import { Attachment } from '../model/Attachment';
-import { UwaziFile } from '../model/UwaziFile';
-import { URLAttachment } from '../model/URLAttachment';
-import { CustomUpload } from '../model/CustomUpload';
-import { StoredFile } from '../model/StoredFile';
-import { PathManager } from './PathManager';
-import { File } from '../model/File';
+import { FileStorage, GetFileInput } from '../contracts/FileStorage.js';
+import { Attachment } from '../model/Attachment.js';
+import { UwaziFile } from '../model/UwaziFile.js';
+import { URLAttachment } from '../model/URLAttachment.js';
+import { CustomUpload } from '../model/CustomUpload.js';
+import { StoredFile } from '../model/StoredFile.js';
+import { PathManager } from './PathManager.js';
+import { File } from '../model/File.js';
 
 export class S3FileStorage implements FileStorage {
   private bucket = config.s3.bucket;

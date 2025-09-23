@@ -4,8 +4,8 @@ import { RequestParams } from '../../utils/RequestParams.js';
 import {
   ParagraphExtractorApiPayload,
   PXTable,
-} from 'V2/Routes/Settings/ParagraphExtraction/types';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
+} from '../../Routes/Settings/ParagraphExtraction/types.js';
+import { Extractor } from '../../shared/ParagraphExtractionTypes.js';
 import api from '../../utils/api.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Extractor[]> => {
@@ -30,7 +30,7 @@ const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extr
 
 const remove = async (extractors: PXTable[]) =>
   Promise.all(
-    extractors.map(extractor => {
+    extractors.map(extractor: any => {
       const id = extractor._id;
       const requestParams = new RequestParams({ id });
       return api.delete('paragraphExtraction/extractor', requestParams);

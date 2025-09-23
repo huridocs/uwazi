@@ -7,8 +7,8 @@ import { Row } from '@tanstack/react-table';
 import { isEmpty } from 'lodash';
 import { Translate } from '../../I18N/index.js';
 import { ClientThesaurus } from '../../apiResponseTypes.js';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, ConfirmNavigationModal } from 'V2/Components/UI';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { Button, ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import { notificationAtom, templatesAtom } from '../../V2/atoms.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import {
@@ -20,12 +20,12 @@ import {
   sanitizeThesaurusValues,
   sortValues,
   thesaurusAsRow,
-} from './helpers';
-import type { ConfirmationCallback } from './helpers';
-import { DeletionModal, GroupForm, ThesaurusValueForm, ThesaurusActions } from './components';
-import type { ThesaurusRow } from './components';
-import { ThesaurusForm } from './ThesaurusForm';
-import { ImportButton } from './components/ImportButton';
+} from './helpers.js';
+import type { ConfirmationCallback } from './helpers.js';
+import { DeletionModal, GroupForm, ThesaurusValueForm, ThesaurusActions } from './components/index.js';
+import type { ThesaurusRow } from './components/index.js';
+import { ThesaurusForm } from './ThesaurusForm.js';
+import { ImportButton } from './components/ImportButton.js';
 
 const EditThesaurus = () => {
   const navigate = useNavigate();
@@ -97,8 +97,8 @@ const EditThesaurus = () => {
   const edit = (row: Row<ThesaurusRow>) => (row.original.subRows ? editGroup(row) : editValue(row));
 
   const proceedDeletion = () => {
-    setThesaurusValues(prev => {
-      selectedThesaurusValue.forEach(deletedItem => {
+    setThesaurusValues(prev: any => {
+      selectedThesaurusValue.forEach(deletedItem: any => {
         removeItem(prev, deletedItem);
       });
       return [...prev];

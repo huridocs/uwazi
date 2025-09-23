@@ -3,8 +3,8 @@ import React from 'react';
 import { Link } from 'react-router';
 import { CellContext } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
-import { Button, Pill } from 'V2/Components/UI';
-import { TranslationContext } from '../TranslationsList';
+import { Button, Pill } from '../../../../Components/UI/index.js';
+import { TranslationContext } from '../TranslationsList.js';
 
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;

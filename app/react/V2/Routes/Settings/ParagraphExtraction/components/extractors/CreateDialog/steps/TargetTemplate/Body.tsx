@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { templatesAtom } from 'V2/atoms';
-import { defaultSearch, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
-import { useCreateExtractorContext } from '../../CreateExtractorContext';
-import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates';
-import { formatTemplatesToOptions } from '../../../../../utils/formatters';
+import { templatesAtom } from '../../../../../../../../atoms/index.js';
+import { defaultSearch, MultiselectList, MultiselectListOption } from '../../../../../../../../Components/Forms/index.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
+import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates.js';
+import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';
 
 const Body = () => {
   const { targetTemplateId, setTargetTemplateId } = useCreateExtractorContext();
@@ -18,7 +18,7 @@ const Body = () => {
       <MultiselectList
         selectedValues={[targetTemplateId]}
         items={options}
-        onChange={selected => {
+        onChange={selected: any => {
           setTargetTemplateId(selected[0]);
         }}
         onSearch={s => setOptions(() => defaultSearch(s, targetTemplateOptions))}

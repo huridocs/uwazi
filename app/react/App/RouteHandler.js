@@ -1,7 +1,7 @@
 /** @format */
 
 import { I18NUtils } from '../../I18N/index.js';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 import api from '../../utils/api.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import moment from 'moment';
@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 
 const getLocale = ({ store }) => store.getState().locale;
 
-const setLocale = locale => {
+const setLocale = locale: any => {
   moment.locale(locale);
   api.locale(locale);
   I18NUtils.saveLocale(locale);
@@ -37,7 +37,7 @@ class RouteHandler extends Component {
     setLocale(getLocale(context));
     this.state = {};
     if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
-      this.getClientState(this.props).catch(ex => {
+      this.getClientState(this.props).catch(ex: any => {
         // used in inherited types
         // eslint-disable-next-line react/no-unused-state
         this.setState({ loadingError: ex });
@@ -66,7 +66,7 @@ class RouteHandler extends Component {
     const requestParams = new RequestParams({ ...query, ...routeParams }, headers);
     const actions = await this.constructor.requestState(requestParams, store.getState());
 
-    actions.forEach(action => {
+    actions.forEach(action: any => {
       store.dispatch(action);
     });
   }

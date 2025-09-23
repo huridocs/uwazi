@@ -1,12 +1,12 @@
 import { Template } from '../../apiResponseTypes.js';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import { PXTemplate, PXTable } from '../types';
-import { getTemplateProperties } from './getTemplateProperties';
+import { Extractor } from '../../../../shared/ParagraphExtractionTypes.js';
+import { PXTemplate, PXTable } from '../types.js';
+import { getTemplateProperties } from './getTemplateProperties.js';
 
 const requiredTemplateProperties = ['_id', 'name', 'color'];
 
 const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTable[] =>
-  extractors.map(extractor => {
+  extractors.map(extractor: any => {
     const targetTemplate = getTemplateProperties(
       templates,
       extractor.targetTemplateId,
@@ -28,7 +28,7 @@ const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTab
   });
 
 const formatTemplatesToOptions = (templates: Template[]) =>
-  templates.map(template => {
+  templates.map(template: any => {
     const option = {
       label: template.name,
       id: template._id,

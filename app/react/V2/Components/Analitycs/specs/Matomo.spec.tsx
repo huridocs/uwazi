@@ -5,9 +5,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { Matomo } from '../Matomo';
+import { globalMatomoAtom, settingsAtom } from '../../../atoms/index.js';
+import { TestAtomStoreProvider } from '../../../testing/index.js';
+import { Matomo } from '../Matomo.js';
 
 describe('Matomo', () => {
   const originalLocation = window.location;

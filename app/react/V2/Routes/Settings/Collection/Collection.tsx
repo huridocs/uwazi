@@ -10,8 +10,8 @@ import { useSetAtom } from 'jotai';
 import { isUndefined } from 'lodash';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import * as SettingsAPI from 'V2/api/settings';
-import * as TemplatesAPI from 'V2/api/templates';
+import * as SettingsAPI from '../../../api/settings/index.js';
+import * as TemplatesAPI from '../../../api/templates/index.js';
 import { notificationAtom } from '../../V2/atoms.js';
 import { InputField, Select, MultiSelect, Geolocation } from '../../V2/Components/Forms.js';
 import { Button, Card } from '../../V2/Components/UI.js';
@@ -20,8 +20,8 @@ import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js'
 import { Translate, t } from '../../I18N/index.js';
 import { ClientSettings, Template } from '../../apiResponseTypes.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
-import * as tips from './collectionSettingsTips';
-import { CollectionOptionToggle } from './CollectionOptionToggle';
+import * as tips from './collectionSettingsTips.js';
+import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -312,7 +312,7 @@ const Collection = () => {
                   <MultiSelect
                     label={labelWithTip('Whitelisted templates', tips.publicForm[2])}
                     options={templateOptions}
-                    onChange={newValues => {
+                    onChange={newValues: any => {
                       setValue('allowedPublicTemplates', newValues);
                     }}
                     value={settings.allowedPublicTemplates || []}
@@ -347,7 +347,7 @@ const Collection = () => {
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
-                    onChange={newValues => {
+                    onChange={newValues: any => {
                       clearErrors('mapLayers');
                       if (!newValues.length) {
                         setError(

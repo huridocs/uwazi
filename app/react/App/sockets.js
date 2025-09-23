@@ -2,13 +2,13 @@ import { actions } from '../../BasicReducer/index.js';
 import { t } from '../../I18N/index.js';
 import { notificationActions } from '../../Notifications.js';
 import { documentProcessed } from '../../Uploads/actions/uploadsActions.js';
-import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from 'V2/atoms';
-import { store } from '../store';
-import { socket, reconnectSocket } from '../socket';
+import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '../V2/atoms/index.js';
+import { store } from '../store.js';
+import { socket, reconnectSocket } from '../socket.js';
 
 let disconnectNotifyId;
 let disconnectTimeoutMessage;
-socket.on('disconnect', reason => {
+socket.on('disconnect', reason: any => {
   if (reason === 'transport close') {
     if (disconnectNotifyId) {
       store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
@@ -40,7 +40,7 @@ socket.on('forceReconnect', () => {
   reconnectSocket();
 });
 
-socket.on('templateChange', template => {
+socket.on('templateChange', template: any => {
   const currentTemplates = atomStore.get(templatesAtom);
   const index = currentTemplates.findIndex(current => current._id === template._id);
   atomStore.set(
@@ -51,18 +51,18 @@ socket.on('templateChange', template => {
   );
 });
 
-socket.on('templateDelete', payload => {
+socket.on('templateDelete', payload: any => {
   const updatedTemplates = atomStore
     .get(templatesAtom)
     .filter(currentTemplate => currentTemplate._id !== payload._id);
   atomStore.set(templatesAtom, updatedTemplates);
 });
 
-socket.on('updateSettings', settings => {
+socket.on('updateSettings', settings: any => {
   atomStore.set(settingsAtom, settings);
 });
 
-socket.on('thesauriChange', thesaurus => {
+socket.on('thesauriChange', thesaurus: any => {
   const currentThesauri = atomStore.get(thesauriAtom);
   const index = currentThesauri.findIndex(current => current._id === thesaurus._id);
   atomStore.set(
@@ -74,14 +74,14 @@ socket.on('thesauriChange', thesaurus => {
   store?.dispatch(actions.update('thesauris', thesaurus));
 });
 
-socket.on('thesauriDelete', payload => {
+socket.on('thesauriDelete', payload: any => {
   const updatedThesauri = atomStore
     .get(thesauriAtom)
     .filter(currentThesauri => currentThesauri._id !== payload._id);
   atomStore.set(thesauriAtom, updatedThesauri);
 });
 
-socket.on('translationsChange', languageTranslations => {
+socket.on('translationsChange', languageTranslations: any => {
   const translations = atomStore.get(translationsAtom);
   const modifiedLanguage = translations.find(
     translation => translation.locale === languageTranslations.locale
@@ -94,9 +94,9 @@ socket.on('translationsChange', languageTranslations => {
   atomStore.set(translationsAtom, [...translations]);
 });
 
-socket.on('translationKeysChange', translationsEntries => {
+socket.on('translationKeysChange', translationsEntries: any => {
   const translations = atomStore.get(translationsAtom);
-  translationsEntries.forEach(item => {
+  translationsEntries.forEach(item: any => {
     const modifiedContext = translations
       .find(translation => translation.locale === item.language)
       .contexts.find(c => c.id && c.id === item.context.id);
@@ -114,7 +114,7 @@ socket.on('translationsInstallDone', () => {
   );
 });
 
-socket.on('translationsInstallError', errorMessage => {
+socket.on('translationsInstallError', errorMessage: any => {
   store.dispatch(
     notificationActions.notify(
       `${t(
@@ -128,7 +128,7 @@ socket.on('translationsInstallError', errorMessage => {
   );
 });
 
-socket.on('translationsDelete', locale => {
+socket.on('translationsDelete', locale: any => {
   const translations = atomStore.get(translationsAtom);
   const updatedTranslations = translations.filter(language => language.locale !== locale);
   atomStore.set(translationsAtom, [...updatedTranslations]);
@@ -143,7 +143,7 @@ socket.on('translationsDeleteDone', () => {
   );
 });
 
-socket.on('translationsDeleteError', errorMessage => {
+socket.on('translationsDeleteError', errorMessage: any => {
   store.dispatch(
     notificationActions.notify(
       `${t(
@@ -157,7 +157,7 @@ socket.on('translationsDeleteError', errorMessage => {
   );
 });
 
-socket.on('documentProcessed', sharedId => {
+socket.on('documentProcessed', sharedId: any => {
   store.dispatch(documentProcessed(sharedId, 'library'));
 });
 

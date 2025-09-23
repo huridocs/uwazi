@@ -5,7 +5,7 @@ import { CreateTemplateService } from '../templates.v2/services/service_factorie
 import { ensure } from '../../shared/tsUtils.js';
 import { TemplateSchema } from '../../shared/types/templateType.js';
 import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import templates from './templates';
+import templates from './templates.js';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const transactionManager = DefaultTransactionManager();
@@ -16,7 +16,7 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const createTemplateService = await CreateTemplateService();
 
   const mappedProperties = await Promise.all(
-    (template.properties || []).map(async property => {
+    (template.properties || []).map(async property: any => {
       if (property.type !== 'newRelationship') {
         return property;
       }

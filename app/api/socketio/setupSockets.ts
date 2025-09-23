@@ -46,7 +46,7 @@ const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
 const setupApiSockets = (server: Server, app: Application) => {
   io = new SocketIoServer(server);
 
-  io.on('connection', socket => {
+  io.on('connection', socket: any => {
     //eslint-disable-next-line @typescript-eslint/no-floating-promises
     socket.join(socket.request.headers.tenant || config.defaultTenant.name);
     const socketCookie = cookie.parse(socket.request.headers.cookie || '');
@@ -77,7 +77,7 @@ const setupApiSockets = (server: Server, app: Application) => {
     }
 
     io.adapter(createAdapter(pubClient, subClient));
-    io.of('/').adapter.on('error', e => {
+    io.of('/').adapter.on('error', e: any => {
       handleError(e, { useContext: false });
     });
   }
@@ -109,7 +109,7 @@ const setupWorkerSockets = (redisClient: RedisClient) => {
   }
 
   // Keep listening for errors across the client lifetime
-  redisClient.on('error', error => {
+  redisClient.on('error', error: any => {
     throw error;
   });
 

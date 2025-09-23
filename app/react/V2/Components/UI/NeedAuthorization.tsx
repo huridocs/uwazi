@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
 import { PermissionSchema } from '../../shared/types/permissionType.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
-import { userAtom } from 'V2/atoms';
+import { userAtom } from '../../atoms/index.js';
 import { ClientUserSchema } from '../../apiResponseTypes.js';
 
 type PropTypes = {

@@ -3,13 +3,13 @@ import { RawEntity } from '../csv/entityRow.js';
 import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
 import { ensure } from '../../shared/tsUtils.js';
-import { sanitizeStringValue } from '../sanitizationUtils';
+import { sanitizeStringValue } from '../sanitizationUtils.js';
 import {
   LabelInfo,
   determineParentChildRelationship,
   generateMetadataValue,
   parseParentChildWithSpaces,
-} from './shared';
+} from './shared.js';
 
 type ParserResult = {
   data: MetadataObjectSchema[];

@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import rison from '@huridocs/rison';
-import { risonDecodeOrIgnore } from '../../utils/index.js';
+import { risonDecodeOrIgnore } from '../../api/utils/index.js';
 import qs from 'qs';
 
 import { Loader } from '../../components/Elements/Loader.js';
 import { arrayUtils } from '../../Charts.js';
-import MarkdownLink from './MarkdownLink';
-import markdownDatasets from '../markdownDatasets';
+import MarkdownLink from './MarkdownLink.js';
+import markdownDatasets from '../markdownDatasets.js';
 
-export const ListChartComponent = props => {
+export const ListChartComponent = props: any => {
   const { excludeZero, property, data, classname, context, scatter, colors } = props;
   const sliceColors = colors.split(',');
 

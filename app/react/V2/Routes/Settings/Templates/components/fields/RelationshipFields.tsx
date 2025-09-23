@@ -2,9 +2,9 @@
 import React, { useMemo, useEffect } from 'react';
 import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
-import { Select } from 'V2/Components/Forms';
+import { Select } from '../../../../../Components/Forms/index.js';
 import { t, Translate } from '../../I18N/index.js';
-import { relationshipTypesAtom, templatesAtom } from 'V2/atoms';
+import { relationshipTypesAtom, templatesAtom } from '../../../../../atoms/index.js';
 import { orderBy } from 'lodash';
 
 interface RelationshipFieldsProps {
@@ -39,7 +39,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
     const options = orderBy(
       templates
         .filter(template => template._id !== templateId)
-        .map(template => {
+        .map(template: any => {
           const name =
             template.name.length > 30 ? `${template.name.slice(0, 30)}...` : template.name;
           const translatedName = t(template._id, template.name, null, false, 30);
@@ -128,7 +128,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
               label={<Translate>Inherit property</Translate>}
               options={propertyOptions}
               disabled={disabled}
-              onChange={e => {
+              onChange={e: any => {
                 const { value } = e.target;
                 const option = propertyOptions.find(opt => opt.value === value);
                 if (option && option.type) {

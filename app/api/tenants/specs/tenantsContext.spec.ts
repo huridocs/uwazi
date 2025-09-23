@@ -2,8 +2,8 @@ import { Db } from 'mongodb';
 import testingDB from '../utils/testing_db.js';
 import { testingEnvironment } from '../utils/testingEnvironment.js';
 import { config } from '../config.js';
-import { tenants } from '../tenantContext';
-import { tenantsModel } from '../tenantsModel';
+import { tenants } from '../tenantContext.js';
+import { tenantsModel } from '../tenantsModel.js';
 
 describe('tenantsContext', () => {
   describe('add', () => {

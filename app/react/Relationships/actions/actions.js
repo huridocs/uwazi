@@ -1,17 +1,17 @@
 import { sortBy } from 'lodash';
 import api from '../../utils/api.js';
 import { actions } from '../../BasicReducer/index.js';
-import { debounce } from '../../utils/index.js';
+import { debounce } from '../../api/utils/index.js';
 import { createSelector } from 'reselect';
 import { notificationActions } from '../../Notifications.js';
 import { referencesActions } from '../../Viewer.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import SearchApi from '../../Search/SearchAPI.js';
 import { t } from '../../I18N/index.js';
-import EntitiesApi from '../../Entities/EntitiesAPI';
-import * as types from './actionTypes';
-import * as uiActions from './uiActions';
-import * as routeUtils from '../utils/routeUtils';
+import EntitiesApi from '../../Entities/EntitiesAPI.js';
+import * as types from './actionTypes.js';
+import * as uiActions from './uiActions.js';
+import * as routeUtils from '../utils/routeUtils.js';
 
 function parseResults(results, parentEntity, editing) {
   return { type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing };
@@ -67,7 +67,7 @@ function updateRightRelationshipType(index, rightIndex, _id) {
 }
 
 function addEntity(index, rightIndex, entity, errors = []) {
-  return dispatch => {
+  return dispatch: any => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
     let message = t('System', 'added to hub.', null, false);
 
@@ -154,8 +154,8 @@ function saveRelationships() {
             });
           }
 
-          hubData.rightRelationships.forEach(rightGroup => {
-            rightGroup.relationships.forEach(r => {
+          hubData.rightRelationships.forEach(rightGroup: any => {
+            rightGroup.relationships.forEach(r: any => {
               const deleted = rightGroup.deleted || r.deleted || r.moved;
 
               if (deleted && r._id) {
@@ -210,7 +210,7 @@ function saveRelationships() {
           notificationActions.notify(t('System', 'Relationships saved', null, false), 'success')
         );
       })
-      .catch(e => {
+      .catch(e: any => {
         dispatch({ type: types.SAVED_RELATIONSHIPS, e });
       });
   };
@@ -240,7 +240,7 @@ const selectRelationTypes = createSelector(
     const translationContexts = translations.find(
       translation => translation.get('locale') === locale
     );
-    const relations = relationTypes.toJS().map(rel => {
+    const relations = relationTypes.toJS().map(rel: any => {
       const [translationContext] = translationContexts
         .get('contexts')
         .filter(context => context.get('id') === rel._id);
@@ -259,7 +259,7 @@ const selectRelationTypes = createSelector(
 );
 
 function search(searchTerm) {
-  return dispatch => {
+  return dispatch: any => {
     dispatch(actions.set('relationships/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm);
   };

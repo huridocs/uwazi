@@ -6,7 +6,7 @@ import { testingEnvironment } from '../utils/testingEnvironment.js';
 import RedisSMQ from 'rsmq';
 import { UserSchema } from '../../shared/types/userType.js';
 import waitForExpect from 'wait-for-expect';
-import { ATServiceListener } from '../ATServiceListener';
+import { ATServiceListener } from '../ATServiceListener.js';
 import { Redis } from '../infrastructure/Redis.js';
 import { RedisClient } from 'redis';
 
@@ -59,7 +59,7 @@ describe('ATServiceListener', () => {
       await redisSMQ.createQueueAsync({ qname: queueName });
     };
 
-    await recreateQueue(`${ATServiceListener.SERVICE_NAME}_results`).catch(error => {
+    await recreateQueue(`${ATServiceListener.SERVICE_NAME}_results`).catch(error: any => {
       throw error;
     });
 

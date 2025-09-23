@@ -2,9 +2,9 @@
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { t, Translate } from '../../I18N/index.js';
-import { Button, Pill } from 'V2/Components/UI';
+import { Button, Pill } from '../../../../Components/UI/index.js';
 import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
-import { ThesauriRow } from './ThesauriTable';
+import { ThesauriRow } from './ThesauriTable.js';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 

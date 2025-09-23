@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
-import { debounce } from '../../utils/index.js';
+import { debounce } from '../../api/utils/index.js';
 import libraryHelper, { prepareDefaultFilters } from '../../Library/helpers/libraryFilters.js';
 import { searchDocuments } from '../../Library/actions/libraryActions.js';
 import { Translate } from '../../I18N/index.js';
@@ -15,9 +15,9 @@ import { FilterTocGeneration } from '../../ToggledFeatures/tocGeneration.js';
 import { TemplatesFilter } from '../../Library/components/TemplatesFilter.js';
 import { AssigneeFilter } from '../../Library/components/AssigneeFilter.js';
 import { withRouter } from '../../componentWrappers.js';
-import { PermissionsFilter } from './PermissionsFilter';
-import { PublishedFilters } from './PublishedFilters';
-import Filters from './FiltersFromProperties';
+import { PermissionsFilter } from './PermissionsFilter.js';
+import { PublishedFilters } from './PublishedFilters.js';
+import Filters from './FiltersFromProperties.js';
 
 class FiltersForm extends Component {
   constructor(props) {

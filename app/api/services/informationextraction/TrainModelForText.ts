@@ -10,13 +10,13 @@ import { emitToTenant } from '../socketio/setupSockets.js';
 import { EnforcedWithId } from '../odm/index.js';
 import { IXExtractorType } from '../../shared/types/extractorType.js';
 import { Suggestions } from '../suggestions/suggestions.js';
-import { getEntitiesForTraining } from './ixMaterials';
-import { PropertySourceMaterials } from './InformationExtraction';
-import { IXTaskService } from './TaskService';
-import { IXServices } from './IXServices';
-import { ExtractionKey } from './ExtractionKey';
-import { IXWebSocketEvents } from './WebSocketEvents';
-import ixmodels from './ixmodels';
+import { getEntitiesForTraining } from './ixMaterials.js';
+import { PropertySourceMaterials } from './InformationExtraction.js';
+import { IXTaskService } from './TaskService.js';
+import { IXServices } from './IXServices.js';
+import { ExtractionKey } from './ExtractionKey.js';
+import { IXWebSocketEvents } from './WebSocketEvents.js';
+import ixmodels from './ixmodels.js';
 
 type Input = {
   extractor: EnforcedWithId<IXExtractorType>;
@@ -56,7 +56,7 @@ class TrainModelForText implements UseCase<Input, Output> {
       const processedEntityIds: string[] = [];
       const targetProperty = await IXServices.getTargetProperty({ extractor });
 
-      await ArrayUtils.sequentialFor(entities, async entity => {
+      await ArrayUtils.sequentialFor(entities, async entity: any => {
         const extractionKey = ExtractionKey.create({
           entitySharedId: entity.sharedId!,
           language: entity.language as LanguageISO6391,

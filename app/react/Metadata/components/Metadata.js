@@ -7,13 +7,13 @@ import { t } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import MarkdownViewer from '../../Markdown/index.js';
 import { GroupedGeolocationViewer } from '../../Metadata/components/GroupedGeolocationViewer.js';
-import { MediaPlayer } from 'V2/Components/UI';
-import GeolocationViewer from './GeolocationViewer';
-import { RelationshipLink } from './RelationshipLink';
-import ValueList from './ValueList';
-import { ImageViewer } from './ImageViewer';
+import { MediaPlayer } from '../../V2/Components/UI/index.js';
+import GeolocationViewer from './GeolocationViewer.js';
+import { RelationshipLink } from './RelationshipLink.js';
+import ValueList from './ValueList.js';
+import { ImageViewer } from './ImageViewer.js';
 
-const getMediaUrlAndName = fileUrl => {
+const getMediaUrlAndName = fileUrl: any => {
   let url = fileUrl;
   let filename = url.split('/').pop();
 
@@ -79,7 +79,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
         result = (
           <div
             className="tw-content video-container compact"
-            onClick={e => {
+            onClick={e: any => {
               e.stopPropagation();
             }}
           >
@@ -127,7 +127,7 @@ export const showByType = ({ prop, templateId = '', useV2Player = false, compact
         );
 
         // eslint-disable-next-line no-param-reassign
-        prop.value = propValue.map(_value => {
+        prop.value = propValue.map(_value: any => {
           const value = showByType({ prop: _value, templateId, compact });
           return value && value.value
             ? value
@@ -159,7 +159,7 @@ const computeGroup = (metadata, startIndex) => {
   return [members, index];
 };
 
-const getNewGroupedGeolocationField = members => {
+const getNewGroupedGeolocationField = members: any => {
   if (members.length === 1) {
     return {
       type: 'geolocation_group',
@@ -177,7 +177,7 @@ const getNewGroupedGeolocationField = members => {
   };
 };
 
-const groupAdjacentGeolocations = metadata => {
+const groupAdjacentGeolocations = metadata: any => {
   const groupedMetadata = [];
   let index = 0;
 
@@ -197,7 +197,7 @@ const groupAdjacentGeolocations = metadata => {
 };
 
 function filterProps(showSubset) {
-  return p => {
+  return p: any => {
     if (showSubset && !showSubset.includes(p.name)) {
       return false;
     }
@@ -212,7 +212,7 @@ function filterProps(showSubset) {
 }
 
 const flattenInherittedRelationships = metadata =>
-  metadata.map(property => {
+  metadata.map(property: any => {
     if (property.type === 'inherit' && property.inheritedType === 'relationship') {
       // eslint-disable-next-line no-param-reassign
       property.value = property.value.reduce(

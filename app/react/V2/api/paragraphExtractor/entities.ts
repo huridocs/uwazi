@@ -8,7 +8,7 @@ import {
   PXEntityQuery,
   PXEntityRows,
   EntityStatus,
-} from 'V2/shared/ParagraphExtractionTypes';
+} from '../../shared/ParagraphExtractionTypes.js';
 
 const get = async (
   parameters: PXEntityQuery,

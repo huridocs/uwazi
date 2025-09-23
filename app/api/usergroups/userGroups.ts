@@ -40,12 +40,12 @@ export default {
   },
 
   async saveMultiple(userGroups: UserGroupSchema[]) {
-    const groupsToUpdate = userGroups.map(userGroup => {
+    const groupsToUpdate = userGroups.map(userGroup: any => {
       const members = userGroup.members.map(m => ({ refId: m.refId.toString() }));
       return { ...userGroup, members };
     });
     await Promise.all(
-      groupsToUpdate.map(async group => {
+      groupsToUpdate.map(async group: any => {
         await validateUserGroup(group);
       })
     );

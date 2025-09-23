@@ -3,10 +3,10 @@
 import React, { useEffect } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { Translate } from '../../I18N/index.js';
-import { Modal, Button } from 'V2/Components/UI';
-import { Checkbox, InputField, RadioSelect } from 'V2/Components/Forms';
-import { ProcessParameters } from 'V2/api/ix/suggestions';
-import { IXFilters } from '../types';
+import { Modal, Button } from '../../../../Components/UI/index.js';
+import { Checkbox, InputField, RadioSelect } from '../../../../Components/Forms/index.js';
+import { ProcessParameters } from '../../../../api/ix/suggestions.js';
+import { IXFilters } from '../types.js';
 
 type FormData = {
   shouldFind: boolean;

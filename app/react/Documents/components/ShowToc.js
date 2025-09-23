@@ -5,7 +5,7 @@ import { scrollToToc } from '../../Viewer/actions/uiActions.js';
 import ShowIf from '../../App/ShowIf.js';
 import { t } from '../../I18N/index.js';
 import { Icon } from 'UI';
-import { selectionHandlers } from 'V2/Components/PDFViewer';
+import { selectionHandlers } from '../../V2/Components/PDFViewer/index.js';
 import './scss/showToc.scss';
 
 class ShowToc extends Component {

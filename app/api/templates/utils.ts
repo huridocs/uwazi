@@ -56,7 +56,7 @@ const setInheritedPropertiesType = async (template: TemplateSchema) => {
 
   const inheritedProperties: { [k: string]: PropertySchema } = await getInheritedProps([template]);
 
-  return template.properties?.map(prop => {
+  return template.properties?.map(prop: any => {
     if (!prop.inherit?.property) {
       // eslint-disable-next-line no-param-reassign
       delete prop.inherit;
@@ -122,7 +122,7 @@ function getUpdatedIds(
   const flatOld = flattenProperties(oldProperties);
   const flatNew = flattenProperties(newProperties);
   const newByIndex = objectIndex(flatNew, indexOf, p => p);
-  flatOld.forEach(property => {
+  flatOld.forEach(property: any => {
     const newProperty = newByIndex[indexOf(property)];
     const oldValue = property[prop];
     const newValue = newProperty?.[prop];
@@ -173,7 +173,7 @@ function getUpdatedNames(
     return { key: previous[prop], value: current[prop] };
   };
 
-  flatOld.forEach(property => {
+  flatOld.forEach(property: any => {
     const newProperty = newByIndex[indexOf(property)];
     const { key, value } = compareProps(property, newProperty);
     if (key && value) {
@@ -261,7 +261,7 @@ const updateExtractedMetadataProperties = async (
 
   if (renamedProperties.length > 0) {
     await propertyUpdater(renamedProperties, (metadata, property) =>
-      metadata.map(data => {
+      metadata.map(data: any => {
         if (data.propertyID === property._id?.toString()) {
           return { ...data, name: property.name };
         }

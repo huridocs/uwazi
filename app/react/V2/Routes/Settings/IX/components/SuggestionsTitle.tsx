@@ -1,7 +1,7 @@
 import React from 'react';
 import { Translate, t } from '../../I18N/index.js';
-import { Pill } from 'V2/Components/UI';
-import { ClientTemplateSchema } from 'V2/shared/types';
+import { Pill } from '../../../../Components/UI/index.js';
+import { ClientTemplateSchema } from '../../../../shared/types.js';
 import {
   DatePropertyIcon,
   MarkdownPropertyIcon,
@@ -9,7 +9,7 @@ import {
   TextPropertyIcon,
   SelectPropertyIcon,
   RelationshipPropertyIcon,
-} from 'V2/Components/CustomIcons';
+} from '../../../../Components/CustomIcons/index.js';
 
 const SuggestionsTitle = ({
   property,

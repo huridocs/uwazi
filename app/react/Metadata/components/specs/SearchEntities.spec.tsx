@@ -3,7 +3,7 @@ import React from 'react';
 import SearchInput from '../../Layout/SearchInput.js';
 import { sleep } from '../../shared/tsUtils.js';
 import SearchApi from '../../Search/SearchAPI.js';
-import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities';
+import { SearchEntities, SearchEntitiesProps, SearchEntitiesState } from '../SearchEntities.js';
 
 import SearchResults from '../../Connections/components/SearchResults.js';
 

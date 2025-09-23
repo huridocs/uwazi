@@ -4,10 +4,10 @@ import { useSetAtom } from 'jotai';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 import { Translate } from '../../I18N/index.js';
 import { FileType } from '../../shared/types/fileType.js';
-import { FileDropzone } from 'V2/Components/Forms';
-import { Button, Modal } from 'V2/Components/UI';
-import { UploadService } from 'V2/api/files';
-import { uploadProgressAtom } from './uploadProgressAtom';
+import { FileDropzone } from '../../../../Components/Forms/index.js';
+import { Button, Modal } from '../../../../Components/UI/index.js';
+import { UploadService } from '../../../../api/files/index.js';
+import { uploadProgressAtom } from './uploadProgressAtom.js';
 
 type DropzoneModalProps = {
   notify: (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => void;
@@ -52,7 +52,7 @@ const DropzoneModal = ({ notify, isOpen, setIsOpen, uploadService }: DropzoneMod
       <Modal.Body>
         <FileDropzone
           className="w-auto md:min-w-72"
-          onChange={newFiles => {
+          onChange={newFiles: any => {
             setFilesToUpload(newFiles);
           }}
         />

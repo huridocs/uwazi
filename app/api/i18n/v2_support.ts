@@ -20,7 +20,7 @@ import {
   TranslationValue,
 } from '../../shared/translationType.js';
 import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { IndexedContextValues } from './translations';
+import { IndexedContextValues } from './translations.js';
 
 models.translationsV2 = () =>
   new MongoTranslationsSyncDataSource(getConnection(), DefaultTransactionManager());
@@ -29,7 +29,7 @@ const flattenTranslations = (translation: TranslationType): CreateTranslationsDa
   if (translation.contexts?.length) {
     return translation.contexts.reduce<CreateTranslationsData[]>((flatTranslations, context) => {
       if (context.values) {
-        context.values.forEach(contextValue => {
+        context.values.forEach(contextValue: any => {
           flatTranslations.push({
             language: translation.locale,
             key: contextValue.key,
@@ -73,7 +73,7 @@ export const resultsToV1TranslationType = async (
     return memo;
   }, {});
 
-  await tranlationsResult.forEach(translation => {
+  await tranlationsResult.forEach(translation: any => {
     if (!resultMap[translation.language]) {
       resultMap[translation.language] = {
         locale: translation.language,
@@ -95,7 +95,7 @@ export const resultsToV1TranslationType = async (
     });
   });
 
-  return Object.values(resultMap).map(translation => {
+  return Object.values(resultMap).map(translation: any => {
     // eslint-disable-next-line no-param-reassign
     translation.contexts = Object.values(contexts[translation.locale]);
     return translation;

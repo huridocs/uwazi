@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent } from 'react';
 import { t, Translate } from '../../I18N/index.js';
-import { Modal, Button } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
-import * as relationshipTypesAPI from 'V2/api/relationshiptypes';
+import { Modal, Button } from '../../../../Components/UI/index.js';
+import { InputField } from '../../../../Components/Forms/index.js';
+import * as relationshipTypesAPI from '../../../../api/relationshiptypes/index.js';
 import { useSetAtom, useAtom } from 'jotai';
-import { notificationAtom, relationshipTypesAtom } from 'V2/atoms';
+import { notificationAtom, relationshipTypesAtom } from '../../../../atoms/index.js';
 
 interface AddRelationshipTypeModalProps {
   onClose: () => void;

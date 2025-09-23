@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import SearchResults from '../../Connections/components/SearchResults.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import SearchInput from '../../Layout/SearchInput.js';
-import { debounce } from '../../utils/index.js';
+import { debounce } from '../../api/utils/index.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { IImmutable } from '../../shared/types/Immutable.js';
 import Immutable from 'immutable';

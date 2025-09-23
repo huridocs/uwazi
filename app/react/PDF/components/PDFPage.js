@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 import { PageReferences } from '../../Viewer/components/PageReferences.js';
 import { PageSelections } from '../../Viewer/components/PageSelections.js';
-import { calculateScaling } from 'V2/Components/PDFViewer';
-import { atomStore, pdfScaleAtom } from 'V2/atoms';
-import PDFJS, { EventBus } from '../PDFJS';
+import { calculateScaling } from '../../V2/Components/PDFViewer/index.js';
+import { atomStore, pdfScaleAtom } from '../../V2/atoms/index.js';
+import PDFJS, { EventBus } from '../PDFJS.js';
 
 class PDFPage extends Component {
   constructor(props) {
@@ -113,7 +113,7 @@ class PDFPage extends Component {
     if (!this.state.rendered) {
       this.props.onLoading(this.props.page);
       this.setState({ rendered: true });
-      this.props.pdf.getPage(this.props.page).then(page => {
+      this.props.pdf.getPage(this.props.page).then(page: any => {
         const originalViewport = page.getViewport({ scale: 1 });
         const scale = calculateScaling(
           originalViewport.width * PDFJS.PixelsPerInch.PDF_TO_CSS_UNITS,
@@ -154,7 +154,7 @@ class PDFPage extends Component {
       <div
         id={`page-${this.props.page}`}
         className="pdf-page"
-        ref={ref => {
+        ref={ref: any => {
           this.pageContainer = ref;
         }}
         style={style}

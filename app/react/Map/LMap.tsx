@@ -7,7 +7,7 @@ import { GeolocationSchema } from '../../shared/types/commonTypes.js';
 import uniqueID from '../../shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from '../V2/atoms/index.js';
 import {
   DataMarker,
   getClusterMarker,
@@ -15,8 +15,8 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
-} from './MapHelper';
-import { getMapProvider } from './TilesProviderFactory';
+} from './MapHelper.js';
+import { getMapProvider } from './TilesProviderFactory.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 
@@ -67,16 +67,16 @@ const LMap = ({
   const initMarkers = () => {
     const markers = pointMarkers
       .map(pointMarker => parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo))
-      .filter(marker => {
+      .filter(marker: any => {
         const entityId = marker.properties.entity?.sharedId;
         return entityId !== deletedEntity;
       });
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
-    markerGroup.on('clusterclick', cluster => {
+    markerGroup.on('clusterclick', cluster: any => {
       props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
     });
-    markerGroup.on('click', marker => {
+    markerGroup.on('click', marker: any => {
       props.clickOnMarker?.(marker.layer);
     });
     if (pointMarkers.length) {
@@ -104,7 +104,7 @@ const LMap = ({
   const initMap = () => {
     const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
     const mapLayers: { [k: string]: L.TileLayer } = {};
-    Object.keys(baseMaps).forEach(key => {
+    Object.keys(baseMaps).forEach(key: any => {
       const mapKey = baseMaps[key].key;
       if (layers && layers.length && !layers.includes(mapKey as Layer)) {
         return;

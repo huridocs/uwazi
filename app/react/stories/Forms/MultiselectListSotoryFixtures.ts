@@ -1,4 +1,4 @@
-import { MultiselectListOption } from 'V2/Components/Forms';
+import { MultiselectListOption } from '../../V2/Components/Forms/index.js';
 
 const items = [
   { searchLabel: 'Someone', label: 'Someone', value: 'someone' },
@@ -33,7 +33,7 @@ const items = [
 ];
 
 const remoteLookupFunction = async (search: string): Promise<MultiselectListOption[]> =>
-  new Promise(resolve => {
+  new Promise(resolve: any => {
     setTimeout(() => {
       resolve(
         items.filter(({ searchLabel }) => searchLabel?.toLowerCase().includes(search.toLowerCase()))

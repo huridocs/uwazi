@@ -2,8 +2,8 @@ import { Translate } from '../../I18N/index.js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from 'UI';
 import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
-import { debounce } from '../../utils/index.js';
-import { MemberListItemInfo } from './MemberListItemInfo';
+import { debounce } from '../../api/utils/index.js';
+import { MemberListItemInfo } from './MemberListItemInfo.js';
 
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;
@@ -77,7 +77,7 @@ export const UserGroupsLookupField = ({
         placeholder="Add people or groups"
         onChange={onChangeHandler}
         onKeyDown={onKeyPressHandler}
-        onBlur={e => {
+        onBlur={e: any => {
           if (e.relatedTarget !== optionsListRef.current) {
             setShow(false);
           }

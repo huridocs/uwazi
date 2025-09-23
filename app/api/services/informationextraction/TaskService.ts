@@ -6,9 +6,9 @@ import entities from '../entities/index.js';
 import dictionatiesModel from '../thesauri/dictionariesModel.js';
 import _ from 'lodash';
 import { EnforcedWithId } from '../odm/index.js';
-import { IXTaskManager, TaskParameters } from './InformationExtraction';
-import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials';
-import { IXServices } from './IXServices';
+import { IXTaskManager, TaskParameters } from './InformationExtraction.js';
+import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials.js';
+import { IXServices } from './IXServices.js';
 
 type Props = {
   taskManager: IXTaskManager;

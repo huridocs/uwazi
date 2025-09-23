@@ -13,18 +13,18 @@ import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { isEmpty } from 'lodash';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import * as extractorsAPI from 'V2/api/ix/extractors';
-import * as suggestionsAPI from 'V2/api/ix/suggestions';
-import * as templatesAPI from 'V2/api/templates';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
-import { notificationAtom } from 'V2/atoms';
+import * as extractorsAPI from '../../../api/ix/extractors.js';
+import * as suggestionsAPI from '../../../api/ix/suggestions.js';
+import * as templatesAPI from '../../../api/templates/index.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { Button, PaginationState, Paginator, Table } from '../../../Components/UI/index.js';
+import { notificationAtom } from '../../../atoms/index.js';
 import { Translate } from '../../I18N/index.js';
 import { ClientPropertySchema } from '../../istore.js';
-import { SuggestionsTitle } from './components/SuggestionsTitle';
-import { FiltersSidepanel } from './components/FiltersSidepanel';
-import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { generateChildrenRows, formatAccepted } from './helpers';
+import { SuggestionsTitle } from './components/SuggestionsTitle.js';
+import { FiltersSidepanel } from './components/FiltersSidepanel.js';
+import { suggestionsTableColumnsBuilder } from './components/TableElements.js';
+import { generateChildrenRows, formatAccepted } from './helpers/index.js';
 import {
   TableSuggestion,
   MultiValueSuggestion,
@@ -32,19 +32,19 @@ import {
   ixStatus,
   IXSuggestionsLoaderResponse,
   EntitySuggestion,
-} from './types';
-import { useEventHandler } from './hooks/useEventHandler';
-import { acceptedSuggestions } from './components/atoms';
-import { PDFSidepanel } from './components/PDFSidepanel';
-import { PropertySidepanel } from './components/PropertySidepanel';
+} from './types.js';
+import { useEventHandler } from './hooks/useEventHandler.js';
+import { acceptedSuggestions } from './components/atoms/index.js';
+import { PDFSidepanel } from './components/PDFSidepanel.js';
+import { PropertySidepanel } from './components/PropertySidepanel.js';
 
-import { TrainModelModal } from './components/TrainModelModal';
-import { ProcessExtractorModal } from './components/ProcessExtractorModal';
+import { TrainModelModal } from './components/TrainModelModal.js';
+import { ProcessExtractorModal } from './components/ProcessExtractorModal.js';
 import {
   getPropertyValuesMap,
   getRelationshipInfo,
   updateSuggestionValues,
-} from './helpers/loaderHelper';
+} from './helpers/loaderHelper.js';
 
 const SUGGESTIONS_PER_PAGE = 100;
 
@@ -58,7 +58,7 @@ const ixmessages = {
   error: 'Error',
 };
 
-const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
+const getDefaultSorting = (searchParams: URLSearchParams): SortingState: any => {
   if (searchParams?.get('sort')) {
     const { property: sortingProperty, order } = JSON.parse(searchParams.get('sort') || '') as {
       property: string;
@@ -110,7 +110,7 @@ const IXSuggestions = () => {
     try {
       await suggestionsAPI.accept(preparedSuggestions);
       const newAcceptedIds = suggestionsToAccept.map(s => s._id);
-      setAcceptedSuggestionsAtom(prev => {
+      setAcceptedSuggestionsAtom(prev: any => {
         const newSet = new Set(prev || []);
         newAcceptedIds.forEach(id => newSet.add(id));
         return newSet;
@@ -217,7 +217,7 @@ const IXSuggestions = () => {
   const handleSorting = (sortingState: SortingState) => {
     if (sortingState.length === 0) {
       if (searchParams.has('sort')) {
-        setSearchParams(prev => {
+        setSearchParams(prev: any => {
           const newSearchParams = new URLSearchParams(prev);
           newSearchParams.delete('sort');
           return newSearchParams;
@@ -230,7 +230,7 @@ const IXSuggestions = () => {
         order: sortingObject.desc ? 'desc' : 'asc',
       };
 
-      setSearchParams(prev => {
+      setSearchParams(prev: any => {
         const newSearchParams = new URLSearchParams(prev);
         newSearchParams.set('sort', JSON.stringify(sortingParams));
         return newSearchParams;

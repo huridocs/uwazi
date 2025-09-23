@@ -5,9 +5,9 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { ClientPropertySchema } from '../../istore.js';
-import { TestRouterContext } from 'V2/testing/TestRouterContext';
-import { TestAtomStoreProvider as AtomProvider } from 'V2/testing';
-import { thesauriAtom } from 'V2/atoms';
+import { TestRouterContext } from '../../../../../testing/TestRouterContext.js';
+import { TestAtomStoreProvider as AtomProvider } from '../../../../../testing/index.js';
+import { thesauriAtom } from '../../../../../atoms/index.js';
 import {
   loaderData,
   suggestion1,
@@ -19,10 +19,10 @@ import {
   template1,
   entity1,
   thesauri,
-} from './SidepanelsFixtures';
-import { PDFSidepanel } from '../PDFSidepanel';
-import { PropertySidepanel } from '../PropertySidepanel';
-import * as sidepanelFunctions from '../../helpers/sidepanelFunctions';
+} from './SidepanelsFixtures.js';
+import { PDFSidepanel } from '../PDFSidepanel.js';
+import { PropertySidepanel } from '../PropertySidepanel.js';
+import * as sidepanelFunctions from '../../helpers/sidepanelFunctions.js';
 
 const renderPDFSidepanel = (
   suggestion: any,
@@ -125,7 +125,7 @@ jest.mock('V2/api/entities', () => ({
 }));
 
 jest.mock('V2/api/search', () => ({
-  search: jest.fn().mockImplementation(async query => {
+  search: jest.fn().mockImplementation(async query: any => {
     if (query.filters.searchString.includes('template:template2')) {
       return Promise.resolve({
         rows: [

@@ -12,8 +12,8 @@ import {
 } from '../../Uploads/actions/uploadsActions.js';
 import { unselectAllDocuments as unselectAllDocumentsAction } from '../../Library/actions/libraryActions.js';
 import { ClientEntitySchema } from '../../istore.js';
-import { templatesAtom } from 'V2/atoms';
-import { ClientTemplateSchema } from 'V2/shared/types';
+import { templatesAtom } from '../../V2/atoms/index.js';
+import { ClientTemplateSchema } from '../../V2/shared/types.js';
 
 const extractTitle = (file: File) => {
   const title = file.name

@@ -13,12 +13,12 @@ import { removeDocument, unselectAllDocuments } from '../../Library/actions/libr
 import { actions as relationshipActions } from '../../Relationships.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { closePanel as closeConnectionPanel } from '../../Connections/actions/uiActions.js.js';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
-import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles';
-import * as selectionActions from './selectionActions';
-import * as uiActions from './uiActions';
-import { sortTextSelections } from '../utils/sortTextSelections';
-import EntitiesApi from '../../Entities/EntitiesAPI';
+import { atomStore, deletedEntityAtom } from '../../V2/atoms/index.js';
+import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
+import * as selectionActions from './selectionActions.js';
+import * as uiActions from './uiActions.js';
+import { sortTextSelections } from '../utils/sortTextSelections.js';
+import EntitiesApi from '../../Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
@@ -80,7 +80,7 @@ export function saveToc(toc, fileId) {
     const doc = {
       ...currentDoc,
       defaultDoc: updatedFile,
-      documents: currentDoc.documents.map(d => {
+      documents: currentDoc.documents.map(d: any => {
         if (d._id === updatedFile._id) {
           return updatedFile;
         }
@@ -96,7 +96,7 @@ export function saveToc(toc, fileId) {
 }
 
 export function deleteDocument(doc) {
-  return async dispatch => {
+  return async dispatch: any => {
     await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
@@ -115,11 +115,11 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
 
 export function loadTargetDocument(sharedId) {
   return (dispatch, getState) =>
-    getDocument(new RequestParams({ sharedId }), getState().locale).then(entity => {
+    getDocument(new RequestParams({ sharedId }), getState().locale).then(entity: any => {
       dispatch(actions.set('viewer/targetDoc', entity));
       return referencesAPI
         .get(new RequestParams({ sharedId, file: entity.defaultDoc._id, onlyTextReferences: true }))
-        .then(references => {
+        .then(references: any => {
           dispatch(actions.set('viewer/targetDocReferences', references));
         });
     });
@@ -137,7 +137,7 @@ export function reloadDocument(sharedId) {
 }
 
 export function cancelTargetDocument() {
-  return dispatch => {
+  return dispatch: any => {
     dispatch({ type: connectionsTypes.CANCEL_RANGED_CONNECTION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocReferences'));
@@ -147,7 +147,7 @@ export function cancelTargetDocument() {
 }
 
 export function editToc(toc) {
-  return dispatch => {
+  return dispatch: any => {
     dispatch(closeConnectionPanel());
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
@@ -157,7 +157,7 @@ export function editToc(toc) {
 }
 
 export function leaveEditMode() {
-  return dispatch => {
+  return dispatch: any => {
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
   };

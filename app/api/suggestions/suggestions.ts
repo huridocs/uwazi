@@ -21,13 +21,13 @@ import {
 } from '../services/informationextraction/ixMaterials.js';
 import { ArrayUtils } from '../common.v2/utils/Array.js';
 import { IXModelType } from '../../shared/types/IXModelType.js';
-import { registerEventListeners } from './eventListeners';
-import { updateStates } from './updateState';
+import { registerEventListeners } from './eventListeners.js';
+import { updateStates } from './updateState.js';
 import {
   AcceptedSuggestion,
   SuggestionAcceptanceError,
   updateEntitiesWithSuggestion,
-} from './updateEntities';
+} from './updateEntities.js';
 
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],

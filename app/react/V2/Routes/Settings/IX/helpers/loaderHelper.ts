@@ -1,10 +1,10 @@
 import { IncomingHttpHeaders } from 'http';
 import { get, has, isEmpty } from 'lodash';
 import { ClientPropertySchema, ClientEntitySchema } from '../../istore.js';
-import { search } from 'V2/api/search';
+import { search } from '../../../../api/search/index.js';
 import { PropertySchema } from '../../shared/types/commonTypes.js';
 import { ClientTemplateSchema } from '../../shared/V2/shared/types.js';
-import { SuggestionValue, EntitySuggestion } from '../types';
+import { SuggestionValue, EntitySuggestion } from '../types.js';
 
 type TransformedSuggestion = EntitySuggestion & {
   rowId: string;
@@ -75,9 +75,9 @@ const getRelationshipInfo = (
 ) => {
   const allCurrentValueIds = new Set<string>();
   const allSuggestedValueIds = new Set<string>();
-  suggestions.forEach(suggestion => {
+  suggestions.forEach(suggestion: any => {
     if (Array.isArray(suggestion.currentValue)) {
-      suggestion.currentValue.forEach(value => {
+      suggestion.currentValue.forEach(value: any => {
         if (typeof value === 'string') {
           allCurrentValueIds.add(value);
         }
@@ -86,7 +86,7 @@ const getRelationshipInfo = (
       allCurrentValueIds.add(suggestion.currentValue);
     }
     if (Array.isArray(suggestion.suggestedValue)) {
-      suggestion.suggestedValue.forEach(value => {
+      suggestion.suggestedValue.forEach(value: any => {
         if (has(value, 'id')) {
           allSuggestedValueIds.add(get(value, 'id') as string);
         }
@@ -112,7 +112,7 @@ const updateSuggestionValues = (
   entityCurrentValuesMap: Map<string, string>,
   entitySuggestedValuesMap: Map<string, string>
 ) => {
-  suggestions = suggestions.map(suggestion => {
+  suggestions = suggestions.map(suggestion: any => {
     const currentValue =
       suggestion.currentValue && !Array.isArray(suggestion.currentValue)
         ? [suggestion.currentValue]
@@ -126,7 +126,7 @@ const updateSuggestionValues = (
     let updatedSuggestedValue: EntitySuggestion['suggestedValue'] = suggestedValue;
 
     if (suggestion.currentValue && !isEmpty(currentValue)) {
-      updatedCurrentValue = currentValue.map(value => {
+      updatedCurrentValue = currentValue.map(value: any => {
         if (typeof value === 'string' && entityCurrentValuesMap.has(value)) {
           return { id: value, label: entityCurrentValuesMap.get(value)! };
         }
@@ -134,7 +134,7 @@ const updateSuggestionValues = (
       });
     }
     if (suggestion.suggestedValue && !isEmpty(suggestedValue)) {
-      updatedSuggestedValue = suggestedValue.map(value => {
+      updatedSuggestedValue = suggestedValue.map(value: any => {
         const suggestionValue = get(value, 'id') || value;
         if (typeof suggestionValue === 'string' && entitySuggestedValuesMap.has(suggestionValue)) {
           return { id: suggestionValue, label: entitySuggestedValuesMap.get(suggestionValue)! };

@@ -4,16 +4,16 @@ import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from '../../I18N/index.js';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '../../istore.js';
-import { Table } from 'V2/Components/UI';
+import { Table } from '../../../Components/UI/index.js';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-import * as translationsAPI from 'V2/api/translations/index';
+import * as translationsAPI from '../../../api/translations/index.js';
 import {
   ContextPill,
   RenderButton,
   LabelHeader,
   TypeHeader,
   ActionHeader,
-} from './components/TableComponents';
+} from './components/TableComponents.js';
 
 type TranslationContext = ClientTranslationContextSchema & { rowId: string };
 
@@ -32,7 +32,7 @@ const TranslationsList = () => {
     contentContexts: TranslationContext[];
   } = { systemContexts: [], contentContexts: [] };
 
-  translations[0]?.contexts?.forEach(context => {
+  translations[0]?.contexts?.forEach(context: any => {
     const contextTranslations: TranslationContext = {
       ...context,
       rowId: context.id!,

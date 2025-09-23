@@ -57,11 +57,11 @@ import {
   getRenamedTitle,
   getUpdatedNames,
   updateExtractedMetadataProperties,
-} from './utils';
-import model from './templatesModel';
-import { checkIfReindex } from './reindex';
-import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
-import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
+} from './utils.js';
+import model from './templatesModel.js';
+import { checkIfReindex } from './reindex.js';
+import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent.js';
+import { TemplateDeletedEvent } from './events/TemplateDeletedEvent.js';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -157,7 +157,7 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
     session,
   });
   const thesauriByKey: Record<any, TemplateSchema> = {};
-  thesauri.forEach(t => {
+  thesauri.forEach(t: any => {
     thesauriByKey[t._id.toString()] = t;
   });
   return thesauriByKey;
@@ -275,7 +275,7 @@ export default {
 
     const currentTemplate = ensure<TemplateSchema>(current);
     currentTemplate.properties = currentTemplate.properties || [];
-    currentTemplate.properties.forEach(prop => {
+    currentTemplate.properties.forEach(prop: any => {
       const swapingNameWithExistingProperty = (template.properties || []).find(
         p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
@@ -402,7 +402,7 @@ export default {
           }
           return false;
         })
-        .then(async denormalizationExecuted => {
+        .then(async denormalizationExecuted: any => {
           await onTemplateProcessed(
             undefined,
             !denormalizationExecuted && template.processing?.active

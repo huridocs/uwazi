@@ -6,10 +6,10 @@ import { useAtom } from 'jotai';
 import { get } from 'lodash';
 import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Button, Pill } from 'V2/Components/UI';
-import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { ClientTemplateSchema } from 'V2/shared/types';
-import { propertyIcons } from 'V2/Components/UI/Icons';
+import { Button, Pill } from '../../../../Components/UI/index.js';
+import { EmbededButton } from '../../../../Components/UI/EmbededButton.js';
+import { ClientTemplateSchema } from '../../../../shared/types.js';
+import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import { ClientPropertySchema } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
 import {
@@ -18,16 +18,16 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
   SuggestionValue,
-} from '../types';
-import { Dot } from './Dot';
-import { SuggestedValue } from './SuggestedValue';
-import { acceptedSuggestions } from './atoms';
-import { ContextCell } from './ContextCell';
+} from '../types.js';
+import { Dot } from './Dot.js';
+import { SuggestedValue } from './SuggestedValue.js';
+import { acceptedSuggestions } from './atoms/index.js';
+import { ContextCell } from './ContextCell.js';
 
 const extractorColumnHelper = createColumnHelper<TableExtractor>();
 const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
 
-const statusColor = (suggestion: TableSuggestion): Color => {
+const statusColor = (suggestion: TableSuggestion): Color: any => {
   if (!suggestion.isChild && (!suggestion.suggestedValue || suggestion.suggestedValue === '')) {
     return 'red';
   }
@@ -197,7 +197,7 @@ const AcceptButton = ({
         color={color}
         disabled={isDisabled}
         onClick={async () => {
-          setAccepted(prev => {
+          setAccepted(prev: any => {
             const newSet = new Set(prev || []);
             newSet.add(rowId);
             return newSet;

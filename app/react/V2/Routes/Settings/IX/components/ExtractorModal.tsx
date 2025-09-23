@@ -5,16 +5,16 @@ import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from '../../I18N/index.js';
 import { ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { InputField } from 'V2/Components/Forms/InputField';
-import { defaultSearch, MultiselectList, RadioSelect } from 'V2/Components/Forms';
-import { Modal, Button, Pill } from 'V2/Components/UI';
-import { propertyIcons } from '../../../../Components/UI/Icons';
+import { ClientIXExtractorType } from '../../../../shared/types.js';
+import { InputField } from '../../../../Components/Forms/InputField.js';
+import { defaultSearch, MultiselectList, RadioSelect } from '../../../../Components/Forms/index.js';
+import { Modal, Button, Pill } from '../../../../Components/UI/index.js';
+import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import {
   getAvailableSources,
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
-} from '../helpers';
+} from '../helpers/index.js';
 
 const SUPPORTED_PROPERTIES = [
   'text',
@@ -61,7 +61,7 @@ const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
   const propertyName = values.length ? getPropertyNameFromExtractPair(values[0]) : null;
   return templates
-    .map(template => {
+    .map(template: any => {
       const option = {
         label: template.name,
         id: template._id,
@@ -197,7 +197,7 @@ const ExtractorModal = ({
           placeholder="Extractor name"
           hasErrors={hasNameError}
           value={name}
-          onChange={event => {
+          onChange={event: any => {
             setName(event.target.value);
             setNameError(false);
           }}
@@ -225,7 +225,7 @@ const ExtractorModal = ({
               <Translate>Selected templates</Translate>
             </h6>
             <div className="flex flex-wrap p-3">
-              {values.map(value => {
+              {values.map(value: any => {
                 const templateId = getTemplateFromExtractPair(value);
                 const template = templates.find(temp => temp._id === templateId);
                 return (
@@ -242,7 +242,7 @@ const ExtractorModal = ({
               <RadioSelect
                 name="pdf"
                 options={getAvailableSources(templates, values, extractor)}
-                onChange={selected => {
+                onChange={selected: any => {
                   setSource(selected.currentTarget.value);
                 }}
               />

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Truncate } from 'V2/Components/UI';
+import { Truncate } from '../../../../Components/UI/index.js';
 import { parseDocument } from 'htmlparser2';
 import { ChildNode } from 'domhandler';
 import sanitizeHtml from 'sanitize-html';
@@ -74,7 +74,7 @@ const filterNodes = (nodes: React.ReactNode[]) => {
   );
 
   if (hasMatches) {
-    return nodes.filter(node => {
+    return nodes.filter(node: any => {
       if (
         React.isValidElement(node) &&
         (node.props.className === ixContextClassnames.ix_adjacent_paragraph ||
@@ -89,7 +89,7 @@ const filterNodes = (nodes: React.ReactNode[]) => {
   return nodes;
 };
 
-const createNode = (node: ChildNode, key: number): React.ReactNode => {
+const createNode = (node: ChildNode, key: number): React.ReactNode: any => {
   if (node.type === 'text') {
     return node.data;
   }

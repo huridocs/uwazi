@@ -8,9 +8,9 @@ import { setUpApp } from '../utils/testingRoutes.js';
 import { ensure } from '../../shared/tsUtils.js';
 import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
 import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { routes } from '../routes';
-import { thesauri } from '../thesauri';
-import { fixtures } from './fixtures';
+import { routes } from '../routes.js';
+import { thesauri } from '../thesauri.js';
+import { fixtures } from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

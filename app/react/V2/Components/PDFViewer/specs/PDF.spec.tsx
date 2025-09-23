@@ -5,10 +5,10 @@
 import React from 'react';
 import { render, act, queryAllByAttribute, cleanup, RenderResult } from '@testing-library/react';
 import { configMocks, mockIntersectionObserver } from 'jsdom-testing-mocks';
-import { pdfScaleAtom } from 'V2/atoms';
-import { TestAtomStoreProvider } from 'V2/testing';
-import PDF, { PDFProps } from '../PDF';
-import * as helpers from '../functions/helpers';
+import { pdfScaleAtom } from '../../../atoms/index.js';
+import { TestAtomStoreProvider } from '../../../testing/index.js';
+import PDF, { PDFProps } from '../PDF.js';
+import * as helpers from '../functions/helpers.js';
 
 configMocks({ act });
 const oberserverMock = mockIntersectionObserver();
@@ -38,7 +38,7 @@ const renderingStates = {
 jest.mock('../pdfjs.ts', () => ({
   EventBus: jest.fn(),
   PDFJS: {
-    getDocument: jest.fn(args => {
+    getDocument: jest.fn(args: any => {
       mockGetDocument(args);
       return {
         promise: Promise.resolve({
@@ -54,7 +54,7 @@ jest.mock('../pdfjs.ts', () => ({
     PixelsPerInch: { PDF_TO_CSS_UNITS: 0.5 },
   },
   PDFJSViewer: {
-    PDFPageView: jest.fn().mockImplementation(args => {
+    PDFPageView: jest.fn().mockImplementation(args: any => {
       mockPageViewer(args);
       return {
         setPdfPage: jest.fn(),

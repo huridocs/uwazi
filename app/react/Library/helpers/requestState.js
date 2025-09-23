@@ -2,16 +2,16 @@ import { actions } from '../../BasicReducer/index.js';
 import libraryHelpers from '../../Library/helpers/libraryFilters.js';
 import api from '../../Search/SearchAPI.js';
 import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
-import { risonDecodeOrIgnore } from '../../utils/index.js';
+import { risonDecodeOrIgnore } from '../../api/utils/index.js';
 import { getThesaurusPropertyNames } from '../../shared/commonTopicClassification.js';
 import { setTableViewColumns } from '../../Library/actions/libraryActions.js';
 import { tocGenerationUtils } from '../../ToggledFeatures/tocGeneration.js';
 import { wrapDispatch } from '../../Multireducer.js';
 import { UserRole } from '../../shared/types/userSchema.js';
-import { getTableColumns } from './tableColumns';
+import { getTableColumns } from './tableColumns.js';
 import setReduxState from './setReduxState.js';
 
-const decodeQuery = params => {
+const decodeQuery = params: any => {
   try {
     return risonDecodeOrIgnore(params.q || '()');
   } catch (error) {

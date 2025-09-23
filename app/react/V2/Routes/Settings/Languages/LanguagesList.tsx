@@ -8,11 +8,11 @@ import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi, t } from '../../I18N/index.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { settingsAtom } from '../../V2/atoms/settingsAtom.js';
-import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
-import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
+import { Button, Table, ConfirmationModal } from '../../../Components/UI/index.js';
+import { useApiCaller } from '../../../CustomHooks/useApiCaller.js';
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { LanguageSchema } from '../../shared/types/commonTypes.js';
-import { InstallLanguagesModal } from './components/InstallLanguagesModal';
+import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
 import {
   DefaultHeader,
   LabelHeader,
@@ -22,7 +22,7 @@ import {
   ResetButton,
   UninstallButton,
   LanguageLabel,
-} from './components/TableComponents';
+} from './components/TableComponents.js';
 
 type TableLanguages = LanguageSchema & { rowId: string };
 const columnHelper = createColumnHelper<TableLanguages>();

@@ -4,11 +4,11 @@ import { useAtomValue } from 'jotai';
 import { get, isArray } from 'lodash';
 import { ClientTemplateSchema } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
-import { secondsToDate } from 'V2/shared/dateHelpers';
-import { Truncate } from 'V2/Components/UI';
-import { thesauriAtom } from 'V2/atoms';
+import { secondsToDate } from '../../../../shared/dateHelpers.js';
+import { Truncate } from '../../../../Components/UI/index.js';
+import { thesauriAtom } from '../../../../atoms/index.js';
 import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
-import { EntitySuggestion } from '../types';
+import { EntitySuggestion } from '../types.js';
 
 // eslint-disable-next-line max-statements
 const SuggestedValue = ({

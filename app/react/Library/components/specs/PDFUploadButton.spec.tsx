@@ -7,10 +7,10 @@ import * as IDGenerator from '../../shared/IDGenerator.js';
 import { renderConnectedContainer, defaultState } from '../../utils/test/renderConnected.js';
 import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
 import * as libraryActions from '../../Library/actions/libraryActions.js';
-import { TestAtomStoreProvider } from 'V2/testing';
-import { templatesAtom } from 'V2/atoms';
-import { PDFUploadButton } from '../PDFUploadButton';
-import { template1, template2, template3 } from './fixtures/templates';
+import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
+import { templatesAtom } from '../../../V2/atoms/index.js';
+import { PDFUploadButton } from '../PDFUploadButton.js';
+import { template1, template2, template3 } from './fixtures/templates.js';
 
 describe('PDFUploadButton', () => {
   const files = [new File([], 'file1 with some name.pdf'), new File([], 'file2-pdf.pdf')];

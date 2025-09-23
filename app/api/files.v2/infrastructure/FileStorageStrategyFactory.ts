@@ -3,10 +3,10 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { tenants } from '../tenants.js';
 import { config } from '../config.js';
 
-import { FileSystemStorage } from './FileSystemStorage';
-import { PathManager } from './PathManager';
-import { S3FileStorage } from './S3FileStorage';
-import { FileStorageStrategy } from '../contracts/FileStorageStrategy';
+import { FileSystemStorage } from './FileSystemStorage.js';
+import { PathManager } from './PathManager.js';
+import { S3FileStorage } from './S3FileStorage.js';
+import { FileStorageStrategy } from '../contracts/FileStorageStrategy.js';
 
 export class FileStorageStrategyFactory {
   static createDefault() {

@@ -8,7 +8,7 @@ import {
   ExtractedMetadataSchema,
   SelectionRectangleSchema,
 } from '../../shared/types/commonTypes.js';
-import { pdfScaleAtom } from 'V2/atoms';
+import { pdfScaleAtom } from '../../V2/atoms/index.js';
 import { selectionHandlers } from '../../V2/Components/PDFViewer.js';
 
 interface Selection extends ExtractedMetadataSchema {
@@ -51,7 +51,7 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
   if (selections.length) {
     return (
       <>
-        {selections.map(selection => {
+        {selections.map(selection: any => {
           const selected = selection.selection;
           const rectangles = (selected?.selectionRectangles || []).map(rectangle => ({
             regionId: rectangle.page,

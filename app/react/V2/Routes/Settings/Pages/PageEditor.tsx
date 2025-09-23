@@ -16,16 +16,16 @@ import { useSetAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from '../../I18N/index.js';
-import * as pagesAPI from 'V2/api/pages';
-import { Page } from 'V2/shared/types';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from 'V2/Components/UI';
-import { CodeEditor } from 'V2/Components/CodeEditor';
+import * as pagesAPI from '../../../api/pages/index.js';
+import { Page } from '../../../shared/types.js';
+import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+import { Button, CopyValueInput, Tabs, ConfirmNavigationModal } from '../../../Components/UI/index.js';
+import { CodeEditor } from '../../../Components/CodeEditor/index.js';
 import { EnableButtonCheckbox, InputField } from '../../V2/Components/Forms.js';
-import { notificationAtom } from 'V2/atoms';
+import { notificationAtom } from '../../../atoms/index.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
-import { getPageUrl } from './components/PageListTable';
-import { HTMLNotification, JSNotification } from './components/PageEditorComponents';
+import { getPageUrl } from './components/PageListTable.js';
+import { HTMLNotification, JSNotification } from './components/PageEditorComponents.js';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -190,7 +190,7 @@ const PageEditor = () => {
                   <CodeEditor
                     language="html"
                     intialValue={page.metadata?.content}
-                    onMount={editor => {
+                    onMount={editor: any => {
                       editor.getModel()?.onDidChangeContent(
                         debouncedChangeHandler(() => {
                           setValue('metadata.content', editor.getValue(), { shouldDirty: true });
@@ -212,7 +212,7 @@ const PageEditor = () => {
                   <CodeEditor
                     language="javascript"
                     intialValue={page.metadata?.script}
-                    onMount={editor => {
+                    onMount={editor: any => {
                       editor.getModel()?.onDidChangeContent(
                         debouncedChangeHandler(() => {
                           setValue('metadata.script', editor.getValue(), { shouldDirty: true });

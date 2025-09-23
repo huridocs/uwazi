@@ -10,7 +10,7 @@ import { TableRow } from '../../Library/components/TableRow.js';
 import { EntitySchema } from '../../shared/types/entityType.js';
 import { TableViewColumn } from '../../istore.js';
 import { IImmutable } from '../../shared/types/Immutable.js';
-import { deletedEntityAtom } from 'V2/atoms';
+import { deletedEntityAtom } from '../../../V2/atoms/index.js';
 
 describe('TableRow', () => {
   const formattedPropertyDate = 'May 20, 2019';

@@ -15,12 +15,12 @@ import { DocumentCounter } from '../../Layout/DocumentCounter.js';
 import { Icon } from 'UI';
 import { withRouter } from '../../componentWrappers.js';
 import { LibraryHeader } from '../../Library/components/LibraryHeader.js';
-import { risonDecodeOrIgnore } from '../../utils/index.js';
-import Welcome from './components/Welcome';
-import { TilesViewer } from './TilesViewer';
-import blankState from '../Library/helpers/blankState';
+import { risonDecodeOrIgnore } from '../../api/utils/index.js';
+import Welcome from './components/Welcome.js';
+import { TilesViewer } from './TilesViewer.js';
+import blankState from '../Library/helpers/blankState.js';
 
-const selectAllEntities = command => {
+const selectAllEntities = command: any => {
   command.selectAllDocuments();
 };
 class DocumentsList extends Component {
@@ -86,7 +86,7 @@ class DocumentsList extends Component {
       <Link
         to={url}
         className="btn btn-default btn-load-more"
-        onClick={e => {
+        onClick={e: any => {
           e.preventDefault();
           this.loadMoreDocuments(amount, from);
         }}

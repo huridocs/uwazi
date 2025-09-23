@@ -10,7 +10,7 @@ const asyncFs = fs.promises;
 
 export const fileExists = async filePath =>
   new Promise((resolve, reject) => {
-    fs.stat(filePath, err => {
+    fs.stat(filePath, err: any => {
       if (err === null) {
         resolve(true);
       }
@@ -34,13 +34,13 @@ describe('migration separate-custom-uploads-from-documents', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterEach(done => {
+  afterEach(done: any => {
     config.defaultTenant.uploadedDocuments = originalDocumentsPath;
     config.defaultTenant.customUploads = originalUploadsPath;
     done();
   });
 
-  afterAll(done => {
+  afterAll(done: any => {
     testingDB.disconnect().then(done);
   });
 
@@ -57,7 +57,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     afterEach(async () => {
       await Promise.all(
-        files.map(async f => {
+        files.map(async f: any => {
           try {
             await asyncFs.unlink(path.join(config.defaultTenant.customUploads, f));
             // eslint-disable-next-line

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
-import { formatTemplatesToOptions } from 'V2/Routes/Settings/ParagraphExtraction/utils/formatters';
-import { MultiselectListOption, MultiselectList, defaultSearch } from 'V2/Components/Forms';
-import { templatesAtom } from 'V2/atoms';
-import { Extractor } from 'V2/shared/ParagraphExtractionTypes';
-import { useCreateExtractorContext } from '../../CreateExtractorContext';
+import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';
+import { MultiselectListOption, MultiselectList, defaultSearch } from '../../../../../../../../Components/Forms/index.js';
+import { templatesAtom } from '../../../../../../../../atoms/index.js';
+import { Extractor } from '../../../../../../../../shared/ParagraphExtractionTypes.js';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Body = () => {
   const { extractors = [] } = useLoaderData() as {
@@ -27,7 +27,7 @@ const Body = () => {
       <MultiselectList
         selectedValues={[sourceTemplateId]}
         items={options}
-        onChange={selected => {
+        onChange={selected: any => {
           setSourceTemplateId(selected[0]);
         }}
         onSearch={s => setOptions(() => defaultSearch(s, sourceTemplateOptions))}

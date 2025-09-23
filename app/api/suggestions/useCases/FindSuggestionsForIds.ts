@@ -7,7 +7,7 @@ import { EnforcedWithId } from '../odm/index.js';
 import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
 import ixmodels from '../services/informationextraction/ixmodels.js';
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
-import { Suggestions } from '../suggestions';
+import { Suggestions } from '../suggestions.js';
 
 type Input = {
   extractorId: ObjectIdSchema;

@@ -3,17 +3,17 @@ import { useEffect } from 'react';
 import { useRevalidator } from 'react-router';
 import { socket } from '../../socket.js';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'V2/atoms';
+import { notificationAtom } from '../../../../atoms/index.js';
 import { t } from '../../I18N/index.js';
-import { ModelEvents, SuggestionEvents } from '../events';
+import { ModelEvents, SuggestionEvents } from '../events.js';
 import type {
   IXModelStatusCallback,
   IXErrorTrainingModelCallback,
   AcceptSuggestionSuccessCallback,
   AcceptSuggestionErrorCallback,
-} from '../events';
-import { ixStatus } from '../types';
-import { acceptedSuggestions } from '../components/atoms/acceptedSuggestions';
+} from '../events.js';
+import { ixStatus } from '../types.js';
+import { acceptedSuggestions } from '../components/atoms/acceptedSuggestions.js';
 
 type useEventHandlerProps = {
   extractorId: string;
@@ -81,7 +81,7 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
       });
     };
 
-    const handleSuggestionError: AcceptSuggestionErrorCallback = async message => {
+    const handleSuggestionError: AcceptSuggestionErrorCallback = async message: any => {
       await revalidate();
       setNotifications({
         type: 'error',

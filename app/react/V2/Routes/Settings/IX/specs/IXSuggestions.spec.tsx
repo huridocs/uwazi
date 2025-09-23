@@ -4,12 +4,12 @@
 import React from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as suggestionsAPI from 'V2/api/ix/suggestions';
-import { TestAtomStoreProvider, TestRouterContext } from 'V2/testing';
-import { thesauriAtom } from 'V2/atoms';
-import { IXSuggestions } from '../IXSuggestions';
-import { loaderData, thesauri, entity1, entity2 } from './fixtures';
-import { ixStatus, IXSuggestionsLoaderResponse } from '../types';
+import * as suggestionsAPI from '../../../../api/ix/suggestions.js';
+import { TestAtomStoreProvider, TestRouterContext } from '../../../../testing/index.js';
+import { thesauriAtom } from '../../../../atoms/index.js';
+import { IXSuggestions } from '../IXSuggestions.js';
+import { loaderData, thesauri, entity1, entity2 } from './fixtures.js';
+import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
 
 jest.mock('V2/api/entities', () => ({
   ...jest.requireActual('V2/api/entities'),
@@ -41,7 +41,7 @@ jest.mock('V2/Components/PDFViewer', () => ({
 }));
 
 const testCheckboxes = async (expectedSelected?: string) => {
-  thesauri[0].values.forEach(async value => {
+  thesauri[0].values.forEach(async value: any => {
     const checkbox = await screen.findByLabelText(value.label);
     if (value.label === expectedSelected) {
       expect(checkbox).toBeChecked();

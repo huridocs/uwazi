@@ -43,7 +43,7 @@ import { DefaultTransactionManager } from '../common.v2/database/data_source_def
 import { Db, ObjectId } from 'mongodb';
 import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
 import * as utils from '../../shared/tsUtils.js';
-import { syncWorker } from '../syncWorker';
+import { syncWorker } from '../syncWorker.js';
 import {
   host1Fixtures,
   host2Fixtures,
@@ -56,7 +56,7 @@ import {
   template1,
   template2,
   thesauri1Value2,
-} from './fixtures';
+} from './fixtures.js';
 
 async function runAllTenants() {
   try {
@@ -192,10 +192,10 @@ describe('syncWorker', () => {
     await tenants.run(async () => {
       await rm(attachmentsPath(), { recursive: true });
     }, 'target2');
-    await new Promise(resolve => {
+    await new Promise(resolve: any => {
       server.close(resolve);
     });
-    await new Promise(resolve => {
+    await new Promise(resolve: any => {
       server2.close(resolve);
     });
     await db.disconnect();

@@ -15,7 +15,7 @@ import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
 import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
-import { FileNotFound } from './FileNotFound';
+import { FileNotFound } from './FileNotFound.js';
 import {
   activityLogPath,
   attachmentsPath,
@@ -23,8 +23,8 @@ import {
   customUploadsPath,
   deleteFile,
   uploadsPath,
-} from './filesystem';
-import { S3Error, S3Storage } from './S3Storage';
+} from './filesystem.js';
+import { S3Error, S3Storage } from './S3Storage.js';
 
 let s3Instance: S3Storage;
 
@@ -40,7 +40,7 @@ const buildS3Client = (params: {}) => {
   });
 
   // eslint-disable-next-line max-statements
-  client.middlewareStack.add((next, context) => async args => {
+  client.middlewareStack.add((next, context) => async args: any => {
     const startTime = Date.now();
 
     const input = args.input as { Body?: Buffer; Key?: string };
@@ -216,7 +216,7 @@ export const storage = {
     await Array.from(uniquePaths).reduce(async (prev, filesPath) => {
       await prev;
       try {
-        (await readdir(filesPath, { withFileTypes: true })).forEach(file => {
+        (await readdir(filesPath, { withFileTypes: true })).forEach(file: any => {
           if (file.isFile()) {
             files.push(path.join(filesPath, file.name));
           }

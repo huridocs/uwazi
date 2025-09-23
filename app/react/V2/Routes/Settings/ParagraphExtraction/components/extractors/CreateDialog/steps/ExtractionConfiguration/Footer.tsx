@@ -1,15 +1,15 @@
 //////
 
 import React from 'react';
-import { Button } from 'V2/Components/UI';
+import { Button } from '../../../../../../../../Components/UI/index.js';
 import { Translate } from '../../I18N/index.js';
-import { isClient } from '../../utils/index.js';
+import { isClient } from '../../api/utils/index.js';
 import { captureException } from '@sentry/react';
-import * as extractorsAPI from 'V2/api/paragraphExtractor/extractors';
-import { notificationAtom } from 'V2/atoms';
+import * as extractorsAPI from '../../../../../../../../api/paragraphExtractor/extractors.js';
+import { notificationAtom } from '../../../../../../../../atoms/index.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { useCreateExtractorContext } from '../../CreateExtractorContext';
+import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 
 const Footer = () => {
   const revalidator = useRevalidator();

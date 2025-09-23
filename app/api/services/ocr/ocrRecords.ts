@@ -2,7 +2,7 @@ import { EnforcedWithId, WithId } from '../odm/index.js';
 import { ensure } from '../../../shared/tsUtils.js';
 import { ObjectIdSchema } from '../../../shared/types/commonTypes.js';
 import { FileType } from '../../../shared/types/fileType.js';
-import { OcrModel, OcrRecord, OcrStatus } from './ocrModel';
+import { OcrModel, OcrRecord, OcrStatus } from './ocrModel.js';
 
 const createForFile = async (file: FileType) =>
   OcrModel.save({
@@ -23,7 +23,7 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
   const recordsToNullSource: OcrRecord[] = [];
   const recordIdsToDelete: string[] = [];
 
-  records.forEach(record => {
+  records.forEach(record: any => {
     if (record.sourceFile) {
       idRecordMap.set(record.sourceFile.toString(), record);
     }
@@ -32,7 +32,7 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
     }
   });
 
-  idStrings.forEach(fileId => {
+  idStrings.forEach(fileId: any => {
     if (idRecordMap.has(fileId)) {
       const record = idRecordMap.get(fileId);
       if (record.sourceFile?.toString() === fileId) {

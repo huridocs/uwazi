@@ -11,7 +11,7 @@ import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from '../../a
 import { FileType } from '../../shared/types/fileType.js';
 import { PageType } from '../../shared/types/pageType.js';
 import { TranslationContext, TranslationType } from '../../shared/translationType.js';
-import { ClientIXExtractorType } from 'V2/shared/types';
+import { ClientIXExtractorType } from './V2/shared/types.js';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };

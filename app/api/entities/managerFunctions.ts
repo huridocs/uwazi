@@ -12,7 +12,7 @@ import { FileType } from '../../shared/types/fileType.js';
 import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
 import { TypeOfFile } from '../../shared/types/fileSchema.js';
-import { FileAttachment } from './entitySavingManager';
+import { FileAttachment } from './entitySavingManager.js';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -27,7 +27,7 @@ const prepareNewFiles = async (
 
   if (newAttachments.length) {
     await Promise.all(
-      newAttachments.map(async file => {
+      newAttachments.map(async file: any => {
         await storage.storeFile(file.filename, createReadStream(file.path), 'attachment');
         attachments.push({
           ...file,
@@ -40,7 +40,7 @@ const prepareNewFiles = async (
 
   if (newDocuments.length) {
     await Promise.all(
-      newDocuments.map(async doc => {
+      newDocuments.map(async doc: any => {
         await storage.storeFile(doc.filename, createReadStream(doc.path), 'document');
         documents.push({
           ...doc,
@@ -187,7 +187,7 @@ const saveFiles = async (
   const filesToSave = [...attachments, ...documentsToSave];
 
   await Promise.all(
-    filesToSave.map(async file => {
+    filesToSave.map(async file: any => {
       try {
         await filesAPI.save(file, false);
       } catch (e) {
@@ -200,7 +200,7 @@ const saveFiles = async (
   if (documentsToProcess.length) {
     const documentsBeingProcessed = Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
-    ).then(results => {
+    ).then(results: any => {
       results
         .filter(result => result.status === 'rejected')
         .map(rejected => handleError(rejected.reason));

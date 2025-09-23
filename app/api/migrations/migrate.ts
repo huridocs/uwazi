@@ -1,7 +1,7 @@
 import { DB } from '../odm/index.js';
 import { tenants } from '../tenants/tenantContext.js';
 import { config } from '../config.js';
-import { migrator } from './migrator';
+import { migrator } from './migrator.js';
 
 export const runMigration = async () => {
   await DB.connect(config.DBHOST, config.DBAUTH);

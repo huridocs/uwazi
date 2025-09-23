@@ -2,10 +2,10 @@ import { notificationActions } from '../../Notifications.js';
 import api from '../../Entities/EntitiesAPI.js';
 import { actions as relationshipActions } from '../../Relationships.js';
 import { RequestParams } from '../../utils/RequestParams.js';
-import { atomStore, deletedEntityAtom } from 'V2/atoms';
+import { atomStore, deletedEntityAtom } from '../../../V2/atoms/index.js';
 
 import * as saveEntityWithFiles from '../../Library/actions/saveEntityWithFiles.js';
-import * as actions from '../actions';
+import * as actions from '../actions.js';
 
 describe('Entities actions', () => {
   let dispatch;
@@ -19,7 +19,7 @@ describe('Entities actions', () => {
   });
 
   describe('saveEntity', () => {
-    it('should dispatch a saving entity and save the data', done => {
+    it('should dispatch a saving entity and save the data', done: any => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
         type: 'reloadRelationships',
       });
@@ -65,7 +65,7 @@ describe('Entities actions', () => {
   });
 
   describe('deleteEntity', () => {
-    it('should delete the entity and notify', done => {
+    it('should delete the entity and notify', done: any => {
       const entity = { sharedId: 'sharedId' };
       actions
         .deleteEntity(entity)(dispatch)

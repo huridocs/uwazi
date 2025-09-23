@@ -11,7 +11,7 @@ import {
   generateMetadataValue,
   splitMultiselectLabels,
   normalizeMultiselectLabels,
-} from './shared';
+} from './shared.js';
 
 type ParserResult = {
   data: MetadataObjectSchema[];

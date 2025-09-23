@@ -17,8 +17,8 @@ import {
   ValuesSelectionSuggestionSchema,
 } from '../../shared/types/suggestionSchema.js';
 import { syncWrapValidator } from '../../shared/tsUtils.js';
-import { InternalIXResultsMessage } from './InformationExtraction';
-import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';
+import { InternalIXResultsMessage } from './InformationExtraction.js';
+import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors.js';
 
 type RawSuggestion = {
   entity_name?: string;
@@ -47,14 +47,14 @@ const valuesSelectionAjv = createAjvValidator(ValuesSelectionSuggestionSchema);
 
 const textSelectionValidator = (
   suggestion: RawSuggestion
-): suggestion is TextSelectionSuggestion => {
+): suggestion is TextSelectionSuggestion: any => {
   textSelectionAjv(suggestion);
   return true;
 };
 
 const valuesSelectionValidator = (
   suggestion: RawSuggestion
-): suggestion is ValuesSelectionSuggestion => {
+): suggestion is ValuesSelectionSuggestion: any => {
   valuesSelectionAjv(suggestion);
   return true;
 };
@@ -64,7 +64,7 @@ const VALIDATORS = {
   text: textSelectionValidator,
   numeric: textSelectionValidator,
   date: textSelectionValidator,
-  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
+  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion: any => {
     if (!valuesSelectionValidator(suggestion)) {
       throw new RawSuggestionValidationError('Select suggestion is not valid.');
     }

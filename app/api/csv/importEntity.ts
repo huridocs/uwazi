@@ -18,8 +18,8 @@ import { ensure } from '../../shared/tsUtils.js';
 import { files, generateFileName, storage } from '../files.js';
 import { generateID } from '../../shared/IDGenerator.js';
 
-import typeParsers from './typeParsers';
-import { csvConstants } from './csvDefinitions';
+import typeParsers from './typeParsers.js';
+import { csvConstants } from './csvDefinitions.js';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) => {
   const parser = typeParsers[prop.type] || typeParsers.text;
@@ -47,7 +47,7 @@ const toMetadata = async (
 
   const propertyPromises = (template.properties || [])
     .filter(prop => hasValidValue(prop, toImportEntity))
-    .map(async prop => {
+    .map(async prop: any => {
       const propName = ensure<string>(prop.name);
       const originalValue = toImportEntity.propertiesFromColumns[propName];
 
@@ -56,7 +56,7 @@ const toMetadata = async (
       if (parsed && typeof parsed === 'object' && 'data' in parsed) {
         const { data, warnings } = parsed;
 
-        warnings.forEach(warning => {
+        warnings.forEach(warning: any => {
           if (feedbackCallback) {
             feedbackCallback(warning);
           }
@@ -304,7 +304,7 @@ const translateEntity = async (
   }, Promise.resolve());
 
   await Promise.all(
-    translations.map(async translatedEntity => {
+    translations.map(async translatedEntity: any => {
       if (translatedEntity.propertiesFromColumns.file) {
         const file = await importFile.extractFile(translatedEntity.propertiesFromColumns.file);
         await processDocument(ensure(entity.sharedId), file);

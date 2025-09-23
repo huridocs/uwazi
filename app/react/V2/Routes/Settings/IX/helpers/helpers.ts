@@ -3,10 +3,10 @@ import { get, uniqBy } from 'lodash';
 import { ClientEntitySchema, ClientTemplateSchema } from '../../istore.js';
 import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
 import { t } from '../../I18N/index.js';
-import { RadioProps } from 'V2/Components/Forms';
-import { ClientIXExtractorType } from 'V2/shared/types';
-import { TableSuggestion, MultiValueSuggestion } from '../types';
-import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions';
+import { RadioProps } from '../../../../Components/Forms/index.js';
+import { ClientIXExtractorType } from '../../../../shared/types.js';
+import { TableSuggestion, MultiValueSuggestion } from '../types.js';
+import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions.js';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
@@ -25,7 +25,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
 
   suggestion.subRows = [];
 
-  const generateRowId = (value: any): string => {
+  const generateRowId = (value: any): string: any => {
     if (typeof value === 'string' || typeof value === 'number') return String(value);
     if (typeof value === 'object' && value !== null) {
       const id =
@@ -44,7 +44,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   };
 
   const { subRows, ...suggestionWithoutChildren } = suggestion;
-  suggestedValues.forEach(suggestedValue => {
+  suggestedValues.forEach(suggestedValue: any => {
     const suggestedValueId = generateRowId(suggestedValue);
     const valuePresent = currentValues.find(
       v =>
@@ -68,7 +68,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
     });
   });
 
-  currentValues.forEach(currentValue => {
+  currentValues.forEach(currentValue: any => {
     const currentValueId = generateRowId(currentValue);
     suggestion.subRows?.push({
       ...suggestionWithoutChildren,
@@ -93,7 +93,7 @@ const propertyIsInAllTemplates = (
       .filter(
         templateProperty => templateProperty.type === 'markdown' || templateProperty.type === 'text'
       )
-      .some(templateProperty => {
+      .some(templateProperty: any => {
         if (templateProperty.name === property.propertyName) {
           return true;
         }
@@ -131,7 +131,7 @@ const getAvailableSources = (
   let markdownProperties: { templateId: string; propertyName: string; propertyLabel: string }[] =
     [];
 
-  templatesIncluded.every(template => {
+  templatesIncluded.every(template: any => {
     const templateMarkdownProperties = template.properties?.filter(
       property => property.type === 'markdown' || property.type === 'text'
     );
@@ -173,7 +173,7 @@ const getAvailableSources = (
       })),
   ];
 
-  options.some(option => {
+  options.some(option: any => {
     if (!extractor || extractor.source.pdf) {
       // intentional pass by reference
       // eslint-disable-next-line no-param-reassign
@@ -194,7 +194,7 @@ const getAvailableSources = (
 const getMetadataFromProperty = (
   entity?: ClientEntitySchema,
   propertyName?: string
-): MetadataObjectSchema | undefined => {
+): MetadataObjectSchema | undefined: any => {
   if (!propertyName) {
     return { value: '' };
   }
@@ -212,7 +212,7 @@ const getMetadataFromProperty = (
 
 const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
   // eslint-disable-next-line max-statements
-  acceptedSuggestions.map(acceptedSuggestion => {
+  acceptedSuggestions.map(acceptedSuggestion: any => {
     let addedValues: string[] | undefined;
     let removedValues: string[] | undefined;
 
@@ -249,7 +249,7 @@ const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
     };
   });
 
-const escapeLucene = (value: string): string => {
+const escapeLucene = (value: string): string: any => {
   return value.replace(/([+!(){}[\]^"~*?:\\/-]|&&|\|\|)/g, '\\$1');
 };
 

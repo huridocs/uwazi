@@ -23,9 +23,9 @@ import {
   setupTestUploadedPaths,
   streamToString,
   uploadsPath,
-} from '../filesystem';
-import { storage } from '../storage';
-import { FileNotFound } from '../FileNotFound';
+} from '../filesystem.js';
+import { storage } from '../storage.js';
+import { FileNotFound } from '../FileNotFound.js';
 
 let s3: S3Client;
 

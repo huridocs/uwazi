@@ -7,16 +7,16 @@ import Notifications from '../../Notifications.js';
 import Cookiepopup from '../../App/Cookiepopup.js';
 import { Icon } from 'UI';
 import { socket } from '../../socket.js';
-import { NotificationsContainer } from 'V2/Components/UI';
+import { NotificationsContainer } from '../V2/Components/UI/index.js';
 import { Matomo, CleanInsights } from '../../V2/Components/Analitycs.js';
-import { settingsAtom } from 'V2/atoms/settingsAtom';
+import { settingsAtom } from '../V2/atoms/settingsAtom.js';
 import { TranslateModal, t } from '../../I18N/index.js';
-import { inlineEditAtom } from 'V2/atoms';
-import Confirm from './Confirm';
-import { Menu } from './Menu';
-import { AppMainContext } from './AppMainContext';
-import SiteName from './SiteName';
-import GoogleAnalytics from './GoogleAnalytics';
+import { inlineEditAtom } from '../V2/atoms/index.js';
+import Confirm from './Confirm.js';
+import { Menu } from './Menu.js';
+import { AppMainContext } from './AppMainContext.js';
+import SiteName from './SiteName.js';
+import GoogleAnalytics from './GoogleAnalytics.js';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
@@ -41,11 +41,11 @@ const App = ({ customParams }) => {
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
 
-  const toggleMobileMenu = visible => {
+  const toggleMobileMenu = visible: any => {
     setShowMenu(visible);
   };
 
-  const confirm = options => {
+  const confirm = options: any => {
     setConfirmOptions(options);
   };
 
@@ -62,7 +62,7 @@ const App = ({ customParams }) => {
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
-  socket.on('updateSettings', _settings => {
+  socket.on('updateSettings', _settings: any => {
     setSettings(_settings);
   });
 

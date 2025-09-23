@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from '../utils/testingEnvironment.js';
 import testingDB from '../utils/testing_db.js';
-import { TenantsModel, tenantsModel } from '../tenantsModel';
+import { TenantsModel, tenantsModel } from '../tenantsModel.js';
 
 describe('tenantsModel', () => {
   let db: Db;
@@ -97,7 +97,7 @@ describe('tenantsModel', () => {
   it('should emit the new list after a change', async () => {
     let list = [];
 
-    model.on('change', data => {
+    model.on('change', data: any => {
       list = data;
     });
 

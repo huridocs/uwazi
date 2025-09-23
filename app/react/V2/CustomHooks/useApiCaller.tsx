@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSetAtom } from 'jotai';
 import { Translate } from '../../I18N/index.js';
-import { notificationAtom } from 'V2/atoms';
+import { notificationAtom } from '../atoms/index.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { FetchResponseError } from '../../shared/JSONRequest.js';
 
