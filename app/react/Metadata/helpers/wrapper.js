@@ -37,20 +37,12 @@ const prepareFiles = async (mediaProperties, values) => {
   if (values.metadata) {
     await Promise.all(
       mediaProperties.map(async p => {
-        if (
-          !values.metadata[p.name] ||
-          (typeof values.metadata[p.name] === 'string' &&
-            /^https?:\/\//.test(values.metadata[p.name]))
-        ) {
+        if (!values.metadata[p.name]) {
           return Promise.resolve();
         }
 
         const metadataValue = values.metadata[p.name];
         if (shouldSkipValue(metadataValue)) {
-          return Promise.resolve();
-        }
-
-        if (typeof metadataValue === 'string' && /^https?:\/\//.test(metadataValue)) {
           return Promise.resolve();
         }
 
