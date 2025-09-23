@@ -42,7 +42,7 @@ let server: Server;
 
 const createServer = async (app: Application, port: number) => {
   server = new Server(app);
-  await new Promise<void>(resolve) => {
+  await new Promise<void>((resolve) => {
     server.listen(port, resolve);
   });
   app.use(appContextMiddleware);

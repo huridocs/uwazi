@@ -10,7 +10,7 @@ const asyncFs = fs.promises;
 
 export const fileExists = async filePath =>
   new Promise((resolve, reject) => {
-    fs.stat(filePath, err: any => {
+    fs.stat(filePath, (err) => {
       if (err === null) {
         resolve(true);
       }

@@ -97,7 +97,7 @@ describe('tenantsModel', () => {
   it('should emit the new list after a change', async () => {
     let list = [];
 
-    model.on('change', data: any => {
+    model.on('change', (data: any) => {
       list = data;
     });
 

@@ -31,7 +31,7 @@ export function immediateSearch(dispatch, searchString, connectionType) {
 const debouncedSearch = debounce(immediateSearch, 400);
 
 export function search(searchTerm, connectionType) {
-  return dispatch: any => {
+  return (dispatch) => {
     dispatch(actions.set('connections/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm, connectionType);
   };
@@ -99,7 +99,7 @@ export function saveConnection(connection, callback = () => {}) {
 }
 
 export function selectRangedTarget(connection, onRangedConnect) {
-  return dispatch: any => {
+  return (dispatch) => {
     dispatch({ type: types.CREATING_RANGED_CONNECTION });
     onRangedConnect(connection.targetDocument);
   };

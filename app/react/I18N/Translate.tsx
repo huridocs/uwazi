@@ -74,7 +74,7 @@ const Translate = ({
 
   return (
     <span
-      onClick={event: any => {
+      onClick={(event: any) => {
         if (inlineEditState.inlineEdit) {
           event.stopPropagation();
           event.preventDefault();

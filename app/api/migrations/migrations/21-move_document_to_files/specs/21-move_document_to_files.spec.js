@@ -19,7 +19,7 @@ const createThumbnail = entity =>
     fs.writeFile(
       `${config.defaultTenant.uploadedDocuments}${entity._id}.jpg`,
       'image content',
-      err: any => {
+      (err) => {
         if (err) {
           reject(err);
         }

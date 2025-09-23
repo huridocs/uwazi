@@ -23,7 +23,7 @@ const extractAdditionalOptions = (content, match) => {
 };
 
 export default {
-  generate: originalText: any => {
+  generate: (originalText: any) => {
     const values = markdownEscapedValues(originalText, '(...)', listEscape);
     const options = [];
     let content = originalText || '';
