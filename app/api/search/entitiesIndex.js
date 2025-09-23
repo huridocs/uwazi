@@ -182,11 +182,15 @@ const updateMapping = async tmpls => {
   await elastic.indices.putMapping({ body: mapping });
 };
 
-const reindexAll = async (tmpls, searchInstance) => {
+const resetIndex = async () => {
   await elastic.indices.delete();
   await elastic.indices.create({ body: getTenantESMapping() });
+};
+
+const reindexAll = async (tmpls, searchInstance) => {
+  await resetIndex();
   await updateMapping(tmpls);
   return indexEntities({ query: {}, select: '+fullText', searchInstance });
 };
 
-export { IndexError, bulkIndex, indexEntities, updateMapping, reindexAll };
+export { IndexError, bulkIndex, indexEntities, updateMapping, reindexAll, resetIndex };

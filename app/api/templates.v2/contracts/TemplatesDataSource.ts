@@ -6,6 +6,7 @@ import { Template } from '../model/Template';
 import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 
 export interface TemplatesDataSource {
+  updateMapping(template: Template, reset?: boolean): Promise<void>;
   getAll(): ResultSet<Template>;
   getAllTemplatesIds(): ResultSet<string>;
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;

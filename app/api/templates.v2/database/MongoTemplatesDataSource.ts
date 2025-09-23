@@ -2,11 +2,12 @@
 import { MongoDataSource, MongoDSOptions } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
+import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
+import { resetIndex, updateMapping } from 'api/search/entitiesIndex';
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { TemplateMapper } from 'api/core/infrastructure/mongodb/template/Mapper';
-import { updateMapping } from 'api/search/entitiesIndex';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -15,7 +16,6 @@ import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TemplateDBO } from './schemas/TemplateDBO';
 import { TemplateMappers } from './TemplateMappers';
-import { GenerateIdProperty } from 'api/core/domain/template/GenerateIdProperty';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -35,6 +35,14 @@ export class MongoTemplatesDataSource
       this.templatesMutated.clear();
       await updateMapping(templates);
     });
+  }
+
+  async updateMapping(template: Template, reset = false) {
+    if (reset) {
+      await resetIndex();
+      return updateMapping(await this.getCollection().find({}).toArray());
+    }
+    return updateMapping([TemplateMapper.toSchema(template)]);
   }
 
   getAll() {
@@ -260,7 +268,7 @@ export class MongoTemplatesDataSource
   async update(template: Template): Promise<void> {
     const schema = TemplateMapper.toSchema(template);
     await this.getCollection().updateOne({ _id: new ObjectId(template.id) }, { $set: schema });
-    await updateMapping([schema]);
+    this.templatesMutated.set(schema._id, schema);
   }
 
   async create(template: Template): Promise<void> {
