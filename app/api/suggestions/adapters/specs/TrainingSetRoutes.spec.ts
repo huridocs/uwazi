@@ -151,7 +151,7 @@ describe('POST /api/suggestions/training-set', () => {
     const collection = testingEnvironment.db.getCollection('ixsuggestions')!;
     const suggestions = await collection
       .find({ _id: { $in: ids.map(i => new ObjectId(i)) } })
-      .project({ _id: 1, useForTraining: 1 as any })
+      .project({ _id: 1, useForTraining: 1 })
       .toArray();
     const mapById = new Map(suggestions.map((s: any) => [s._id.toString(), s.useForTraining]));
     ids.forEach(id => expect(mapById.get(id)).toBe(true));
