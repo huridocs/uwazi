@@ -38,7 +38,7 @@ jobs:
           path: ~/.local/bin
           key: ${{ runner.os }}-mongodb-tools-7.0
 
-      - name: Install MongoDB tools if not cached (7.0; Ubuntu 24.04/noble; keyring)
+      - name: Install MongoDB tools if not cached (7.0; jammy repo; keyring)
         run: |
           set -euo pipefail
           mkdir -p ~/.local/bin
@@ -50,7 +50,7 @@ jobs:
             sudo install -d -m 0755 /etc/apt/keyrings
             wget -qO- https://www.mongodb.org/static/pgp/server-7.0.asc \
               | sudo gpg --dearmor -o /etc/apt/keyrings/mongodb-server-7.0.gpg
-            echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" \
+            echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" \
               | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list > /dev/null
             sudo apt-get update -qq
             # If you want to pin strictly to 7.0.x, uncomment the next line and remove the one after:
