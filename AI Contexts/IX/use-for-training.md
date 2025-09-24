@@ -111,3 +111,50 @@ Last updated: 2025-09-24
 
 - Do not change prediction/suggestion request flows to be aware of training provenance.
 - Do not alter `suggestionsToFind` semantics or process flow.
+
+## Current status (backend, tests-first)
+
+- Endpoint added: `POST /api/suggestions/training-set`
+
+  - Middleware: `serviceMiddleware`, `needsAuthorization(['admin','editor'])`
+  - Controller: `app/api/suggestions/adapters/TrainingSetController.ts`
+    - Zod validation messages:
+      - extractorId: "You should provide an Extractor"
+      - suggestionIds[]: "You should provide a Suggestion"
+      - suggestionIds min(1): "You should provide at least one Suggestion"
+    - Delegates to use case via factory (PX style)
+  - Use case: `app/api/suggestions/application/MarkSuggestionsUseForTrainingUseCase.ts`
+    - Filters provided IDs by `extractorId`
+    - Bulk `updateMany` sets/unsets `useForTraining`
+    - Returns `{ updated: string[], useForTraining: boolean }`
+  - Factory: `app/api/suggestions/infrastructure/TrainingSetFactory.ts`
+  - Route wiring: `app/api/suggestions/routes.ts`
+
+- Schema/model updates for suggestions:
+
+  - `app/api/suggestions/IXSuggestionsModel.ts`: added `useForTraining: boolean` (default `false`) and index `{ extractorId: 1, useForTraining: 1 }`
+  - `app/shared/types/suggestionSchema.ts`: added `useForTraining: { type: 'boolean' }` to `IXSuggestionSchema`
+
+- Tests: `app/api/suggestions/adapters/specs/TrainingSetRoutes.spec.ts`
+  - Covers: validation errors, idempotent marking, unmarking, ignoring IDs from other extractors, defaulting when `useForTraining` omitted, and bulk updates
+  - DB assertions via `testingEnvironment.db` on `ixsuggestions`
+  - Auth: injects `req.user` through `setUpApp` middleware (no global auth mock needed)
+  - External deps: mocks `api/services/informationextraction/InformationExtraction` to avoid Redis/TaskManager initialization and eliminate open handle warnings
+  - Style: follows paragraphExtraction test patterns; avoids `as any`
+
+## What remains (next steps)
+
+1. Extend aggregation to include a `useForTraining` count; add tests
+2. Extend GET `/api/suggestions` filter to filter by `useForTraining`; add tests
+3. Update `/api/suggestions/train` to accept `options.samplePolicy` (mutually exclusive: `only_marked` | `marked_plus_labeled`); add tests
+4. Implement training dataset selection honoring `samplePolicy` for Text and PDF, preserving existing filtering logic
+5. Include `useForTraining` in outbound payloads to IX service (Text `labeled_data`, PDF materials); add tests/e2e
+
+## Notes for future implementers
+
+- Keep `suggestionsToFind` unchanged on `/api/suggestions/train`.
+- PDF/Text training specifics are deferred; marking logic is independent.
+- When adding tests that import `api/suggestions/routes.ts`, mock `api/services/informationextraction/InformationExtraction` to avoid Redis handles.
+- Prefer injecting `req.user` through the `setUpApp` callback in tests to satisfy `ensureUser()`.
+- Follow PX controller/use case via factory; keep controllers free of business logic.
+- Maintain the "no `as any`" guideline; prefer precise typings and adapters where needed.
