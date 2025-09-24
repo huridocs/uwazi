@@ -3,87 +3,114 @@ name: Check Translations
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: check-translations-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check_translations:
     runs-on: ubuntu-24.04
+
+    env:
+      DBHOST: localhost:27017
+      ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
+        # Keep, but also wait below from the runner (container may lack curl/wget)
+        options: >-
+          -e "discovery.type=single-node"
+          -e "xpack.security.enabled=false"
+          --health-cmd="bash -c 'exec 3<>/dev/tcp/localhost/9200 || exit 1'"
+          --health-interval=30s --health-timeout=30s --health-retries=10
+
     steps:
       - name: Cache MongoDB tools
         id: cache-mongodb
         uses: actions/cache@v4
         with:
           path: ~/.local/bin
-          key: ${{ runner.os }}-mongodb-tools-6.0
+          key: ${{ runner.os }}-mongodb-tools-7.0
 
-      - name: Install MongoDB tools if not cached
+      - name: Install MongoDB tools if not cached (7.0, noble, keyring)
         run: |
-          if [ -f ~/.local/bin/mongosh ] && [ -f ~/.local/bin/mongorestore ]; then
+          set -euo pipefail
+          mkdir -p ~/.local/bin
+          if [[ -x ~/.local/bin/mongosh && -x ~/.local/bin/mongorestore ]]; then
             echo "MongoDB tools found in cache"
-            export PATH="$HOME/.local/bin:$PATH"
           else
-            echo "Installing MongoDB tools..."
-            # Add MongoDB repo if not already present
-            if [ ! -f /etc/apt/sources.list.d/mongodb-org-6.0.list ]; then
-              sudo apt-get update -qq
-              sudo apt-get install -y wget gnupg
-              wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-              echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-            fi
-
-            # Install MongoDB tools
             sudo apt-get update -qq
+            sudo apt-get install -y wget gnupg ca-certificates
+            sudo install -d -m 0755 /etc/apt/keyrings
+            wget -qO- https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /etc/apt/keyrings/mongodb-server-7.0.gpg
+            echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list > /dev/null
+            sudo apt-get update -qq
+            # If you want to pin to 7.0.x only, uncomment the next line and remove the following one:
+            # sudo apt-get install -y mongodb-mongosh=2.* mongodb-org-tools=7.0*
             sudo apt-get install -y mongodb-mongosh mongodb-org-tools
-            
-            # Copy to cache location for next run
-            mkdir -p ~/.local/bin
-            sudo cp /usr/bin/mongosh ~/.local/bin/
-            sudo cp /usr/bin/mongorestore ~/.local/bin/
+            sudo cp /usr/bin/mongosh /usr/bin/mongorestore ~/.local/bin/
             sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
           fi
+          # Make cached tools available to later steps
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Start MongoDB
+      - name: Start MongoDB 7 (replica set)
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 6.0
+          mongodb-version: 7.0
           mongodb-replica-set: test-rs
+
       - uses: actions/checkout@v4
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: install dependencies
-        run: yarn install
-      - run: yarn blank-state
-        id: blank-state-attempt1
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        timeout-minutes: 10
+
+      # Proactively wait for Elasticsearch from the runner
+      - name: Wait for Elasticsearch to be ready
+        run: |
+          set -e
+          for i in {1..20}; do
+            if curl -fsS "$ELASTICSEARCH_URL/_cluster/health" >/dev/null; then
+              echo "Elasticsearch is up"; exit 0
+            fi
+            echo "Waiting for Elasticsearch... ($i/20)"; sleep 5
+          done
+          echo "Elasticsearch did not become ready in time" >&2
+          exit 1
+
+      - id: blank-state-attempt1
+        run: yarn blank-state
         continue-on-error: true
-        env:
-          DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - run: yarn blank-state --force
-        id: blank-state-attempt2
+        timeout-minutes: 10
+
+      - id: blank-state-attempt2
         if: steps.blank-state-attempt1.outcome == 'failure'
-        env:
-          DBHOST: localhost:27017
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        run: yarn blank-state --force
+        timeout-minutes: 10
+
       - name: Download production build artifact
         uses: actions/download-artifact@v4
         with:
           name: prod
           path: ./prod
-      - run: cd prod; yarn update-translations-db
+
+      - name: Update translations DB (prod)
+        run: cd prod && yarn update-translations-db
         env:
           NODE_ENV: production
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
-      - run: yarn check-translations
-        env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+
+      - name: Check translations
+        run: yarn check-translations
