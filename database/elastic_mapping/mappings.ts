@@ -34,21 +34,10 @@ const id = {
   },
 };
 
-const date = {
-  type: 'date',
-  format: 'epoch_millis',
-  fields: {
-    sort: { type: 'date', format: 'epoch_millis' },
-  },
-};
-
 const nested = { type: 'nested' };
 const number = {
   type: 'double',
   doc_values: true,
-  fields: {
-    sort: { type: 'double' },
-  },
 };
 
 const noSortNumber = {
@@ -153,7 +142,6 @@ export {
   noSorttext,
   noIndexText,
   id,
-  date,
   nested,
   number,
   noSortNumber,
