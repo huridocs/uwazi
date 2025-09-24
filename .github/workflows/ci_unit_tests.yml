@@ -26,10 +26,9 @@ jobs:
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
-        options: --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
-        command: server /data --console-address :9001
+          MINIO_CONSOLE_ADDRESS: ":9001"
       redis:
-        image: redis:8.4
+        image: redis:7-alpine
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -67,6 +66,14 @@ jobs:
 
       - run: sudo apt update
       - run: sudo apt-get install -y poppler-utils
+      - name: Wait for MinIO
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:9000/minio/health/live > /dev/null; then
+              echo "MinIO is ready"; break
+            fi
+            echo "Waiting for MinIO..."; sleep 2
+          done
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
@@ -100,10 +107,9 @@ jobs:
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
-        options: --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
-        command: server /data --console-address :9001
+          MINIO_CONSOLE_ADDRESS: ":9001"
       redis:
-        image: redis:8.4
+        image: redis:7-alpine
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -138,6 +144,14 @@ jobs:
         run: yarn install --frozen-lockfile
       - run: sudo apt update
       - run: sudo apt-get install -y poppler-utils
+      - name: Wait for MinIO
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:9000/minio/health/live > /dev/null; then
+              echo "MinIO is ready"; break
+            fi
+            echo "Waiting for MinIO..."; sleep 2
+          done
       - name: Run migration tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
