@@ -21,7 +21,7 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
 
 describe('POST /api/suggestions/training-set', () => {
   const app: Application = setUpApp(suggestionsRoutes, (req, _res, next) => {
-    (req as any).user = { username: 'admin', role: 'admin' };
+    req.user = { username: 'admin', role: 'admin' };
     next();
   });
 
@@ -45,7 +45,7 @@ describe('POST /api/suggestions/training-set', () => {
     const extractorId = factory.id('title_extractor').toString();
     const response = await request(app)
       .post('/api/suggestions/training-set')
-      .send({ extractorId, suggestionIds: 'not-an-array' as unknown as string[] })
+      .send({ extractorId, suggestionIds: 'not-an-array' })
       .expect(422);
     expect(response.body.error).toContain('You should provide at least one Suggestion');
 
