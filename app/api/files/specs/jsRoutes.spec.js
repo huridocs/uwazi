@@ -9,6 +9,7 @@ import request from 'supertest';
 import mailer from 'api/utils/mailer';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { ObjectId } from 'mongodb';
 import { legacyLogger } from '../../log';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import { createDirIfNotExists, deleteFiles } from '../filesystem';
@@ -101,6 +102,27 @@ describe('upload routes', () => {
           files: [file, attachment],
           io: {},
         };
+      });
+    });
+
+    it('should create an Entity and return the created Entity on body response', async () => {
+      const response = await routes.post('/api/public', { ...req, files: [] });
+
+      expect(response).toEqual({
+        _id: expect.any(ObjectId),
+        title: req.body.entity.title,
+        language: req.language,
+        template: new ObjectId(req.body.entity.template),
+        sharedId: expect.any(String),
+        published: false,
+        creationDate: 1000,
+        editDate: 1000,
+        metadata: {},
+        permissions: [{ refId: expect.any(String), type: 'user', level: 'write' }],
+        obsoleteMetadata: [],
+        __v: 0,
+        documents: [],
+        attachments: [],
       });
     });
 
