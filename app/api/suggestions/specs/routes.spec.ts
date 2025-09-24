@@ -256,6 +256,7 @@ describe('aggregation routes', () => {
         error: 2,
         noContext: 12,
         nonProcessed: 0,
+        useForTraining: 2,
         accuracy: 50,
       });
     });

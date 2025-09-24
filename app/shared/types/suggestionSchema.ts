@@ -352,5 +352,6 @@ export const IXSuggestionAggregationSchema = {
     error: { type: 'number' },
     noContext: { type: 'number' },
     nonProcessed: { type: 'number' },
+    useForTraining: { type: 'number' },
   },
 };

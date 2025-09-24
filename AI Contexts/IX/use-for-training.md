@@ -158,3 +158,4 @@ Last updated: 2025-09-24
 - Prefer injecting `req.user` through the `setUpApp` callback in tests to satisfy `ensureUser()`.
 - Follow PX controller/use case via factory; keep controllers free of business logic.
 - Maintain the "no `as any`" guideline; prefer precise typings and adapters where needed.
+- Be disciplined with fixtures: if you add data to the wrong fixture while iterating (e.g., set a flag in `comprehensiveTestFixtures` but the test uses `stateFilterFixtures`), remove the incorrect changes. Keep fixture mutations minimal and scoped to the test that requires them to avoid cross-test pollution.
