@@ -144,19 +144,27 @@ Last updated: 2025-09-24
   - Style: follows paragraphExtraction test patterns; avoids `as any`
 
 - Aggregation:
+
   - Implemented `useForTraining` count in `app/api/suggestions/suggestions.ts` aggregation pipeline
   - Exposed new field in schema: `useForTraining: number` in `IXSuggestionAggregationSchema`
   - Test updated in `app/api/suggestions/specs/routes.spec.ts` to assert non-zero counts
   - Fixtures: added `useForTraining` to two `stateFilterFixtures.ixsuggestions` records for `test_extractor` so count == 2
   - Clean-up: removed accidental `useForTraining` additions from unrelated `comprehensiveTestFixtures` to avoid cross-test pollution
 
+- GET filtering support (table query):
+  - Schema: `SuggestionCustomFilterSchema` includes `useForTraining: boolean` (required in shape)
+  - Pipeline: `filterFragments.useForTraining` and `translateCustomFilter` extended
+  - Tests:
+    - Route-level filtering removed (was noisy); filtering assertions live in:
+      - `app/api/suggestions/specs/getSuggestionsForTableQuery.spec.ts` → end-to-end table query filtering, including `useForTraining` scenario (flags two records then asserts total 2)
+      - `app/api/suggestions/specs/customFilters.spec.ts` → aggregation-level count covers `useForTraining` = 2
+  - Fixtures hygiene preserved; tests mark flags via DB writes where needed
+
 ## What remains (next steps)
 
-1. Extend aggregation to include a `useForTraining` count; add tests
-2. Extend GET `/api/suggestions` filter to filter by `useForTraining`; add tests
-3. Update `/api/suggestions/train` to accept `options.samplePolicy` (mutually exclusive: `only_marked` | `marked_plus_labeled`); add tests
-4. Implement training dataset selection honoring `samplePolicy` for Text and PDF, preserving existing filtering logic
-5. Include `useForTraining` in outbound payloads to IX service (Text `labeled_data`, PDF materials); add tests/e2e
+1. Update `/api/suggestions/train` to accept `options.samplePolicy` (mutually exclusive: `only_marked` | `marked_plus_labeled`); add tests
+2. Implement training dataset selection honoring `samplePolicy` for Text and PDF, preserving existing filtering logic
+3. Include `useForTraining` in outbound payloads to IX service (Text `labeled_data`, PDF materials); add tests/e2e
 
 ## Notes for future implementers
 
