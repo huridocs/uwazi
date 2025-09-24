@@ -96,13 +96,22 @@ const buildSortQuery = (query: SearchQuery, currentMappings: Record<string, any>
   if (sortProp.startsWith('metadata.')) {
     const labelPriority = { [`${sortProp}.label.sort`]: { unmapped_type: 'keyword', order } };
     const valuePriority = { [`${sortProp}.value.sort`]: { unmapped_type: 'keyword', order } };
-    return currentMappings.metadata.properties[sortProp.split('.')[1]].properties?.value?.fields
-      ?.sort
-      ? [labelPriority, valuePriority]
-      : [{ [`${sortProp}.value`]: { order } }];
+    if (
+      currentMappings.metadata.properties[sortProp.split('.')[1]].properties?.value?.fields?.sort
+    ) {
+      return [valuePriority];
+    }
+    if (
+      currentMappings.metadata.properties[sortProp.split('.')[1]].properties?.label?.fields?.sort
+    ) {
+      return [labelPriority];
+    }
+    return [{ [`${sortProp}.value`]: { order } }];
   }
 
-  return [{ [`${sortProp}.sort`]: order }];
+  return currentMappings[sortProp]?.fields?.sort
+    ? [{ [`${sortProp}.sort`]: { order } }]
+    : [{ [`${sortProp}`]: { order } }];
 };
 
 export const buildQuery = async (

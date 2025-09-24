@@ -29,15 +29,15 @@ const noIndexText = {
 
 const id = {
   type: 'keyword',
-  fields: {
-    sort: textSortField,
-  },
 };
 
 const nested = { type: 'nested' };
 const number = {
   type: 'double',
   doc_values: true,
+  fields: {
+    sort: { type: 'double' },
+  },
 };
 
 const noSortNumber = {

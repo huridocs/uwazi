@@ -23,6 +23,11 @@ exports[`entitiesIndex updateMapping should update the mapping provided by the f
 Object {
   "properties": Object {
     "value": Object {
+      "fields": Object {
+        "sort": Object {
+          "type": "double",
+        },
+      },
       "type": "double",
     },
   },
@@ -59,25 +64,11 @@ Object {
           "type": "text",
         },
         "value": Object {
-          "fields": Object {
-            "sort": Object {
-              "analyzer": "string_sorter",
-              "fielddata": true,
-              "type": "text",
-            },
-          },
           "type": "keyword",
         },
       },
     },
     "value": Object {
-      "fields": Object {
-        "sort": Object {
-          "analyzer": "string_sorter",
-          "fielddata": true,
-          "type": "text",
-        },
-      },
       "type": "keyword",
     },
   },
