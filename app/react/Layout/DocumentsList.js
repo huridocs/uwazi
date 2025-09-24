@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import { toUrlParams } from '../../shared/JSONRequest.js';
+import { toUrlParams } from 'shared/JSONRequest.js';
 import rison from '@huridocs/rison';
 import { SearchBar } from '../../Library/components/SearchBar.js';
 import ConnectionSearchBar from '../../ConnectionsList/components/SearchBar.js';
@@ -15,12 +15,12 @@ import { DocumentCounter } from '../../Layout/DocumentCounter.js';
 import { Icon } from 'UI';
 import { withRouter } from '../../componentWrappers.js';
 import { LibraryHeader } from '../../Library/components/LibraryHeader.js';
-import { risonDecodeOrIgnore } from '../../api/utils/index.js';
+import { risonDecodeOrIgnore } from 'api/utils/index.js';
 import Welcome from './components/Welcome.js';
 import { TilesViewer } from './TilesViewer.js';
 import blankState from '../Library/helpers/blankState.js';
 
-const selectAllEntities = (command) => {
+const selectAllEntities = command => {
   command.selectAllDocuments();
 };
 class DocumentsList extends Component {
@@ -86,7 +86,7 @@ class DocumentsList extends Component {
       <Link
         to={url}
         className="btn btn-default btn-load-more"
-         onClick={(e) => {
+        onClick={e => {
           e.preventDefault();
           this.loadMoreDocuments(amount, from);
         }}

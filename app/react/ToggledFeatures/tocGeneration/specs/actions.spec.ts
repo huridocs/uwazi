@@ -1,12 +1,18 @@
+// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
 import api from '../../utils/api.js';
 import backend from 'fetch-mock';
+// @ts-expect-error TS(2307): Cannot find module '../../Notifications/actions/ac... Remove this comment to see the full error message
 import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Relationships.js' or its... Remove this comment to see the full error message
 import { actions as relationshipActions } from '../../Relationships.js';
+// @ts-expect-error TS(2307): Cannot find module '../../config.js' or its corres... Remove this comment to see the full error message
 import { APIURL } from '../../config.js';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
-import { mockID } from '../../shared/uniqueID.js.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js.js' o... Remove this comment to see the full error message
+import { mockID } from 'shared/uniqueID.js.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema } from '../../istore.js';
 import { tocGenerationActions } from '../actions';
 

@@ -9,7 +9,7 @@ import { RelationsV1Collection } from '../../relationships/RelationsV1Collection
 import { search } from '../../search/index.js';
 import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataSource.js';
 import { cloneDeep } from 'lodash';
-import { generateID } from '../../../shared/IDGenerator.js';
+import { generateID } from 'shared/IDGenerator.js';
 
 type Input = {
   entitiesIds: string[];
@@ -89,6 +89,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         if (generatedIdProps.length) {
           modifiedEntities.forEach(entity => {
             generatedIdProps.forEach(prop => {
+              // @ts-expect-error TS(2339): Property 'name' does not exist on type 'GenerateId... Remove this comment to see the full error message
               entity.translations.setValueInAllLanguages(prop.name, [
                 { value: generateID(3, 4, 4), label: '' },
               ]);
@@ -106,6 +107,7 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
           )
         );
 
+        // @ts-expect-error TS(2345): Argument of type '(V1RelationshipProperty | Genera... Remove this comment to see the full error message
         await this.dependencies.entitiesDS.bulkUpdate(modifiedEntities, [
           ...relationshipProps,
           ...generatedIdProps,

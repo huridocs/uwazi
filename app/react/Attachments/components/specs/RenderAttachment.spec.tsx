@@ -1,6 +1,8 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { AttachmentSchema } from '../../shared/types/commonTypes.js';
+
+import { AttachmentSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Markdown/components/Mark... Remove this comment to see the full error message
 import MarkdownMedia, { MarkdownMediaProps } from '../../Markdown/components/MarkdownMedia.js';
 import ReactPlayer from 'react-player';
 import { RenderAttachment } from '../RenderAttachment';

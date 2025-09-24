@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';

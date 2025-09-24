@@ -1,9 +1,13 @@
 import React, { useMemo } from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { OptionSchema, Select } from '../../V2/Components/Forms.js';
 import { useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { relationshipTypesAtom, templatesAtom } from '../../V2/atoms.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
 import { useCreateExtractorContext } from '../../CreateExtractorContext';
 
 const getOptions = (options: OptionSchema[]) => [
@@ -21,7 +25,9 @@ const getTemplateProperties = (
 ): OptionSchema[] =>
   targetTemplate?.properties
     ? targetTemplate.properties
+        // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
         .filter(property => property.type === type)
+        // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
         .map(property => ({
           key: property._id?.toString(),
           value: property._id?.toString() ?? '',
@@ -43,6 +49,7 @@ const Body = () => {
   } = useCreateExtractorContext();
   const templates = useAtomValue(templatesAtom);
   const relationTypes = useAtomValue(relationshipTypesAtom);
+  // @ts-expect-error TS(2571): Object is of type 'unknown'.
   const targetTemplate = templates.find(template => template._id === targetTemplateId);
 
   const richTextProperties = useMemo(
@@ -55,6 +62,7 @@ const Body = () => {
   );
   const relationships = useMemo(
     () =>
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       relationTypes.map(relation => ({
         key: relation._id,
         value: relation._id,
@@ -75,6 +83,7 @@ const Body = () => {
           }
           value={paragraphPropertyId}
           options={getOptions(richTextProperties)}
+          // @ts-expect-error TS(7006): Parameter 'evt' implicitly has an 'any' type.
           onChange={evt => {
             setParagraphPropertyId(evt.target.value);
           }}
@@ -90,6 +99,7 @@ const Body = () => {
           }
           value={paragraphNumberPropertyId}
           options={getOptions(numericProperties)}
+          // @ts-expect-error TS(7006): Parameter 'evt' implicitly has an 'any' type.
           onChange={evt => {
             setParagraphNumberPropertyId(evt.target.value);
           }}
@@ -111,8 +121,10 @@ const Body = () => {
           }
           value={targetRelationshipId}
           options={getOptions(
+            // @ts-expect-error TS(7006): Parameter 'relation' implicitly has an 'any' type.
             relationships.filter(relation => relation.value !== sourceRelationshipId)
           )}
+          // @ts-expect-error TS(7006): Parameter 'evt' implicitly has an 'any' type.
           onChange={evt => {
             setTargetRelationshipId(evt.target.value);
           }}
@@ -133,8 +145,10 @@ const Body = () => {
           }
           value={sourceRelationshipId}
           options={getOptions(
+            // @ts-expect-error TS(7006): Parameter 'relation' implicitly has an 'any' type.
             relationships.filter(relation => relation.value !== targetRelationshipId)
           )}
+          // @ts-expect-error TS(7006): Parameter 'evt' implicitly has an 'any' type.
           onChange={evt => {
             setSourceRelationshipId(evt.target.value);
           }}

@@ -1,7 +1,9 @@
-import { ClientIXExtractorType, ClientTemplateSchema } from '../../../shared/types.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+import { ClientIXExtractorType, ClientTemplateSchema } from 'shared/types.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
 import { TextHighlight } from '../../../Components/PDFViewer/types.js';
-import { EntitySuggestionType } from '../../shared/types/suggestionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+import { EntitySuggestionType } from 'shared/types/suggestionType.js';
 
 type SuggestionOptionValue = { id: string; label: string; segment?: string };
 

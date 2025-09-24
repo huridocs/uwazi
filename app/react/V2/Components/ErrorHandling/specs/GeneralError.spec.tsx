@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { screen } from '@testing-library/react';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnectedContainer, defaultState } from '../../utils/test/renderConnected.js';
 import { fromJS } from 'immutable';
 import { GeneralError } from '../GeneralError';

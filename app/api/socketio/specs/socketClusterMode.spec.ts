@@ -2,9 +2,13 @@ import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
 import io from 'socket.io-client';
+// @ts-expect-error TS(2307): Cannot find module '../utils/multitenantMiddleware... Remove this comment to see the full error message
 import { multitenantMiddleware } from '../utils/multitenantMiddleware.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { tenants, Tenant } from '../tenants/tenantContext.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/appContextMiddleware.... Remove this comment to see the full error message
 import { appContextMiddleware } from '../utils/appContextMiddleware.js';
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
 import waitForExpect from 'wait-for-expect';
 
@@ -12,7 +16,7 @@ import { endSocketServer, setupApiSockets } from '../setupSockets.js';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     httpServer.close(() => {
       resolve();
     });
@@ -22,8 +26,10 @@ const connectSocket = async (
   port: number,
   tenant: string,
   session: string = ''
+  // @ts-expect-error TS(2503): Cannot find namespace 'SocketIOClient'.
 ): Promise<SocketIOClient.Socket> =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
+    // @ts-expect-error TS(2339): Property 'connect' does not exist on type '{ (opts... Remove this comment to see the full error message
     const socket = io.connect(`http://localhost:${port}`, {
       transports: ['websocket'],
       //@ts-ignore
@@ -42,7 +48,7 @@ let server: Server;
 
 const createServer = async (app: Application, port: number) => {
   server = new Server(app);
-  await new Promise<void>((resolve) => {
+  await new Promise<void>(resolve => {
     server.listen(port, resolve);
   });
   app.use(appContextMiddleware);
@@ -52,9 +58,13 @@ const createServer = async (app: Application, port: number) => {
 };
 
 const port = 3051;
+// @ts-expect-error TS(2503): Cannot find namespace 'SocketIOClient'.
 let socket1Tenant1: SocketIOClient.Socket;
+// @ts-expect-error TS(2503): Cannot find namespace 'SocketIOClient'.
 let socket2Tenant1: SocketIOClient.Socket;
+// @ts-expect-error TS(2503): Cannot find namespace 'SocketIOClient'.
 let socket3Tenant2: SocketIOClient.Socket;
+// @ts-expect-error TS(2503): Cannot find namespace 'SocketIOClient'.
 let socket4TenantDefault: SocketIOClient.Socket;
 const app: Application = express();
 
@@ -124,7 +134,7 @@ describe('socket middlewares setup', () => {
       await req.set('tenant', tenant);
     }
 
-    return req.expect((response) => {
+    return req.expect(response => {
       if (response.status !== 200) {
         throw new Error(response.text);
       }

@@ -1,6 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { TestingRoundRobinQueueAdapter } from '../queue.v2/configuration/factories.js';
 import { createTestJob, pickJobs, pushJobsForNamespaces } from './fixtures';
 import { RoundRobinMongoQueueAdapter } from '../RoundRobinQueueAdapter';

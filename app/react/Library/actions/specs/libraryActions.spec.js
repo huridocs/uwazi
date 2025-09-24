@@ -13,7 +13,7 @@ import * as types from '../../Library/actions/actionTypes.js';
 import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
 import * as actions from '../../Library/actions/libraryActions.js';
 import { documentsApi } from '../../Documents.js';
-import { mockID } from '../../shared/uniqueID.js.js';
+import { mockID } from 'shared/uniqueID.js.js';
 
 import { api } from '../../Entities.js';
 import referencesAPI from '../../Viewer/referencesAPI.js';

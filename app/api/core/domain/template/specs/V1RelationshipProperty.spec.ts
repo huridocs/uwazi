@@ -1,4 +1,5 @@
-import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/V1Relati... Remove this comment to see the full error message
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
   PropertyRelationTypeMismatchError,

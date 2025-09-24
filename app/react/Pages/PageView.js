@@ -1,5 +1,5 @@
 import React from 'react';
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 import { actions } from '../../BasicReducer/index.js';
 import { unselectAllDocuments } from '../../Library/actions/libraryActions.js';
 import { wrapDispatch } from '../../Multireducer.js';

@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
 import {
   ParagraphExtractorApiPayload,
   PXTable,
 } from '../../Routes/Settings/ParagraphExtraction/types.js';
-import { Extractor } from '../../shared/ParagraphExtractionTypes.js';
+import { Extractor } from 'shared/ParagraphExtractionTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
 import api from '../../utils/api.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<Extractor[]> => {
@@ -30,7 +32,7 @@ const save = async (extractorValues: ParagraphExtractorApiPayload): Promise<Extr
 
 const remove = async (extractors: PXTable[]) =>
   Promise.all(
-    extractors.map((extractor) => {
+    extractors.map(extractor => {
       const id = extractor._id;
       const requestParams = new RequestParams({ id });
       return api.delete('paragraphExtraction/extractor', requestParams);

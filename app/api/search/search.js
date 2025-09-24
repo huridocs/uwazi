@@ -2,19 +2,19 @@
 import _ from 'lodash';
 
 import date from '../utils/date.js';
-import propertiesHelper from '../../shared/commonProperties.js';
+import propertiesHelper from 'shared/commonProperties.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';
 import { createError } from '../utils/index.js';
-import { filterOptions } from '../../shared/optionsUtils.js';
-import { preloadOptionsLimit, preloadOptionsSearch } from '../../shared/config.js';
+import { filterOptions } from 'shared/optionsUtils.js';
+import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config.js';
 import { permissionsContext } from '../permissions/permissionsContext.js';
-import { checkWritePermissions } from '../../shared/permissionsUtils.js';
+import { checkWritePermissions } from 'shared/permissionsUtils.js';
 import usersModel from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';
-import { sequentialPromises } from '../../shared/asyncUtils.js';
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+import { sequentialPromises } from 'shared/asyncUtils.js';
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
+import { UserRole } from 'shared/types/userSchema.js';
 import { OperationalError } from '../common.v2/errors/OperationalError.js';
 import { inspect } from 'util';
 import documentQueryBuilder from './documentQueryBuilder';

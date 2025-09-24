@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../users/usersModel.js';
+import { User } from 'api/users/usersModel.js';
 import usersModel from '../users/users';
 import { comparePasswords } from './encryptPassword';
 

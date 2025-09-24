@@ -1,19 +1,30 @@
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
 import translations from '../i18n.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { elastic } from '../search.js';
 import {
   factory,
   fixtures,
   templateId,
   textPropertyId,
+  // @ts-expect-error TS(2307): Cannot find module '../templates/specs/generatedId... Remove this comment to see the full error message
 } from '../templates/specs/generatedIdPropertyAutoFillerFixtures.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
 import { elasticTesting } from '../utils/elastic_testing.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/filters.js' or its co... Remove this comment to see the full error message
 import { unique } from '../utils/filters.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
 import * as setupSockets from '../socketio/setupSockets.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
 import { inspect } from 'util';
 import templates from '../templates';
 

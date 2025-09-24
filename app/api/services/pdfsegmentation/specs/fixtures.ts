@@ -1,6 +1,9 @@
-import db, { DBFixture } from '../utils/testing_db.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { Settings } from '../../shared/types/settingsType.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+import { Settings } from 'shared/types/settingsType.js';
 
 const factory = getFixturesFactory();
 

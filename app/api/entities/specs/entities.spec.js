@@ -11,12 +11,12 @@ import relationships from '../relationships.js';
 import { storage, uploadsPath } from '../files.js';
 import { search } from '../search.js';
 import date from '../utils/date.js.js';
-import db from '../utils/testing_db.js';
+import db from 'api/utils/testing_db.js';
 import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+import { UserRole } from 'shared/types/userSchema.js';
 
 import { applicationEventsBus } from '../eventsbus.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import entities from '../entities.js';
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';

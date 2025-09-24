@@ -7,7 +7,7 @@ import { ConnectionsGroups } from '../../ConnectionsList.js';
 import SidePanel from '../../Layout/SidePanel.js';
 import Connections from '../../Viewer/components/ConnectionsList.js';
 import * as viewerModule from '../../Viewer.js';
-import { entityDefaultDocument } from '../../shared/entityDefaultDocument.js';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
 
 import ShowToc from '../ShowToc';
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';

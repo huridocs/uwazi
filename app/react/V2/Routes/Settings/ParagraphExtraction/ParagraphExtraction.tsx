@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '../../../atoms/index.js';
-import { Extractor } from '../../../shared/ParagraphExtractionTypes.js';
+import { Extractor } from 'shared/ParagraphExtractionTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button } from '../../V2/Components/UI.js';
 import { PXTable } from './types.js';
 import { formatExtractors } from './utils/formatters.js';

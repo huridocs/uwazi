@@ -3,7 +3,13 @@
  */
 /* eslint-disable max-statements */
 import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
-import { atomStore, settingsAtom, templatesAtom, thesauriAtom, translationsAtom } from '../../V2/atoms/index.js';
+import {
+  atomStore,
+  settingsAtom,
+  templatesAtom,
+  thesauriAtom,
+  translationsAtom,
+} from '../../V2/atoms/index.js';
 import { socket } from '../../socket.js';
 import '../sockets';
 import { store } from '../../store.js';

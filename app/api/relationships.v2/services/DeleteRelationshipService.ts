@@ -1,4 +1,6 @@
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/services/A... Remove this comment to see the full error message
 import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MissingRelationshipError } from '../errors/relationshipErrors';
@@ -30,6 +32,7 @@ export class DeleteRelationshipService {
     const ids = Array.isArray(_ids) ? _ids : [_ids];
     const toBeDeleted = await this.relationshipsDS.getById(ids).all();
 
+    // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
     const sharedIds = toBeDeleted.map(r => [r.from.entity, r.to.entity]).flat();
     await this.authService.validateAccess('write', sharedIds);
 

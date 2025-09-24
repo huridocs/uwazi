@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { templatesAtom } from '../../../../../../atoms/index.js';
 import { useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { MultiselectListOption } from '../../V2/Components/Forms.js';
 import { AddExtractorSteps } from './steps/index.js';
 import { formatTemplatesToOptions } from '../../../utils/formatters.js';

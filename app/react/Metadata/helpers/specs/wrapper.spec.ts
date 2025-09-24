@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import fetchMock from 'fetch-mock';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientTemplateSchema } from '../../istore.js';
 import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper';
 
@@ -206,6 +207,7 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'some/mimetype' },
     });
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(
       entity,
@@ -256,6 +258,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
@@ -284,6 +287,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
@@ -333,6 +337,7 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'image/jpeg' },
     });
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
@@ -374,6 +379,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
@@ -433,6 +439,7 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'image/jpeg' },
     });
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const wrappedEntity = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
@@ -496,6 +503,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const result = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 
@@ -538,6 +546,7 @@ describe('prepareMetadataAndFiles', () => {
       },
     };
 
+    // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
     const mediaProperties = template.properties.filter(prop => prop.type === 'image');
     const result = await prepareMetadataAndFiles(entity, [], template, mediaProperties);
 

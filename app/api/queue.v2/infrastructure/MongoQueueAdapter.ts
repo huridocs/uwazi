@@ -1,6 +1,8 @@
 import { Db, ObjectId } from 'mongodb';
-import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
-import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
 import { Job, QueueAdapter } from './QueueAdapter';
 
 export interface JobDBO {
@@ -28,6 +30,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   async renewJobLock(job: Job) {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().findOneAndUpdate(
       {
         _id: new ObjectId(job.id),
@@ -37,12 +40,14 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   async deleteJob(job: Job) {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection().findOneAndDelete({
       _id: new ObjectId(job.id),
     });
   }
 
   protected async markExceededRetryJobsAsFailed(queueName: string): Promise<void> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const exceededRetryJobs = await this.getCollection()
       .find({
         queue: queueName,
@@ -58,11 +63,15 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
     }
 
     if (exceededRetryJobs.length > 0) {
+      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       await this.getCollection(this.failedJobsCollectionName).insertMany(
+        // @ts-expect-error TS(7006): Parameter 'job' implicitly has an 'any' type.
         exceededRetryJobs.map(job => ({ ...job, failed: true }))
       );
 
+      // @ts-expect-error TS(7006): Parameter 'job' implicitly has an 'any' type.
       const jobIds = exceededRetryJobs.map(job => job._id);
+      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       await this.getCollection().deleteMany({ _id: { $in: jobIds } });
     }
   }
@@ -70,6 +79,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   async pickJob(queueName: string): Promise<Job | null> {
     await this.markExceededRetryJobsAsFailed(queueName);
 
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const result = await this.getCollection().findOneAndUpdate(
       {
         queue: queueName,
@@ -104,16 +114,19 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   async moveToFailedJobs(job: Job) {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const jobToMove = await this.getCollection().findOne({ _id: new ObjectId(job.id) });
     if (!jobToMove) {
       throw new Error(`Job not found: ${job.id}`);
     }
 
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     await this.getCollection(this.failedJobsCollectionName).insertOne(jobToMove);
     await this.deleteJob(job);
   }
 
   async markJobAsFailed(job: Job) {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const result = await this.getCollection().findOneAndUpdate(
       {
         _id: new ObjectId(job.id),
@@ -136,6 +149,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   }
 
   async updateLockWindow(job: Job, newLockWindow: number) {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const result = await this.getCollection().findOneAndUpdate(
       {
         _id: new ObjectId(job.id),
@@ -157,6 +171,7 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
   async pushJob(
     job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt' | 'retryCount'>
   ): Promise<string> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const result = await this.getCollection().insertOne({
       _id: new ObjectId(),
       lockedUntil: 0,

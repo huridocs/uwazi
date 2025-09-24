@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
 import routes from '../routes';
 

@@ -1,8 +1,11 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
 
 const f = getFixturesFactory();
 

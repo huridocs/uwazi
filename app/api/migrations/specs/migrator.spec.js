@@ -1,7 +1,7 @@
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
 
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import testingDB from '../../utils/testing_db';
 import migrationsModel from '../migrationsModel';

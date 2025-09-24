@@ -10,7 +10,7 @@ import * as actions from '../../Uploads/actions/uploadsActions.js';
 import * as libraryTypes from '../../Library/actions/actionTypes.js';
 import * as types from '../../Uploads/actions/actionTypes.js';
 import entitiesApi from '../../Entities/EntitiesAPI.js';
-import { mockID } from '../../shared/uniqueID.js.js';
+import { mockID } from 'shared/uniqueID.js.js';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

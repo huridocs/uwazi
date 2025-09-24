@@ -1,7 +1,7 @@
 import { setUpApp } from '../utils/testingRoutes.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import request from 'supertest';
-import { UserRole } from '../../shared/types/userSchema.js';
+import { UserRole } from 'shared/types/userSchema.js';
 import { legacyLogger } from '../log.js';
 import documentRoutes from '../deprecatedRoutes.js';
 import documents from '../documents';

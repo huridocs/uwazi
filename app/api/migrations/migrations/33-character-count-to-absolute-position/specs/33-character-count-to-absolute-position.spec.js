@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 
-import testingDB from '../utils/testing_db.js';
+import testingDB from 'api/utils/testing_db.js';
 import { legacyLogger } from '../log.js';
 import { config } from '../config.js';
 import {
@@ -25,7 +25,7 @@ describe('conversion of character count to absolute position', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 

@@ -9,7 +9,7 @@ import { reloadThesauri } from '../../Thesauri/actions/thesaurisActions.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import searchAPI from '../../Search/SearchAPI.js';
 import { actions } from '../../BasicReducer/index.js';
-import { generateID } from '../../shared/IDGenerator.js';
+import { generateID } from 'shared/IDGenerator.js';
 import emptyTemplate from '../helpers/defaultTemplate';
 
 function resetReduxForm(form) {

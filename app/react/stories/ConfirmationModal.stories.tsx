@@ -2,7 +2,9 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { action } from '@storybook/addon-actions';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI/Confirm... Remove this comment to see the full error message
 import { ConfirmationModal } from '../../V2/Components/UI/ConfirmationModal.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 
 const meta: Meta<typeof ConfirmationModal> = {
@@ -24,15 +26,25 @@ const Primary: Story = {
       <div className="container w-10 h-10">
         <ConfirmationModal
           size="md"
+          // @ts-expect-error TS(2339): Property 'header' does not exist on type '{}'.
           header={args.header}
+          // @ts-expect-error TS(2339): Property 'body' does not exist on type '{}'.
           body={args.body}
+          // @ts-expect-error TS(2339): Property 'acceptButton' does not exist on type '{}... Remove this comment to see the full error message
           acceptButton={args.acceptButton}
+          // @ts-expect-error TS(2339): Property 'cancelButton' does not exist on type '{}... Remove this comment to see the full error message
           cancelButton={args.cancelButton}
+          // @ts-expect-error TS(2339): Property 'warningText' does not exist on type '{}'... Remove this comment to see the full error message
           warningText={args.warningText}
+          // @ts-expect-error TS(2339): Property 'confirmWord' does not exist on type '{}'... Remove this comment to see the full error message
           confirmWord={args.confirmWord}
+          // @ts-expect-error TS(2339): Property 'usePassword' does not exist on type '{}'... Remove this comment to see the full error message
           usePassword={args.usePassword}
+          // @ts-expect-error TS(2339): Property 'onAcceptClick' does not exist on type '{... Remove this comment to see the full error message
           onAcceptClick={args.onAcceptClick}
+          // @ts-expect-error TS(2339): Property 'onCancelClick' does not exist on type '{... Remove this comment to see the full error message
           onCancelClick={args.onCancelClick}
+          // @ts-expect-error TS(2339): Property 'disabled' does not exist on type '{}'.
           disabled={args.disabled}
         />
       </div>

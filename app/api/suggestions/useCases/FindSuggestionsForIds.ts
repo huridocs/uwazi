@@ -1,11 +1,20 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
-import { ModelStatus } from '../../shared/types/IXModelSchema.js';
-import { IXModelType } from '../../shared/types/IXModelType.js';
-import { IXExtractorType } from '../../shared/types/extractorType.js';
+
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelSche... Remove this comment to see the full error message
+import { ModelStatus } from 'shared/types/IXModelSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelType... Remove this comment to see the full error message
+import { IXModelType } from 'shared/types/IXModelType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+import { IXExtractorType } from 'shared/types/extractorType.js';
+
 import { EnforcedWithId } from '../odm/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import { Extractors, ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import ixmodels from '../services/informationextraction/ixmodels.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
 import { Suggestions } from '../suggestions.js';
 

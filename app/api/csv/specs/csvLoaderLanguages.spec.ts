@@ -1,13 +1,22 @@
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../files/files.js' or its corr... Remove this comment to see the full error message
 import { files } from '../files/files.js';
+// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
 import * as filesystem from '../files/filesystem.js';
+// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
 import { uploadsPath } from '../files/filesystem.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.js' or its corresp... Remove this comment to see the full error message
 import settings from '../settings.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import path from 'path';
-import { EntitySchema } from '../../shared/types/entityType.js';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+import path from 'path';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+
+// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
 import translations from '../i18n.js';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';
@@ -44,6 +53,7 @@ describe('csvLoader languages', () => {
     const csv = path.join(__dirname, 'zipData/testLanguages.zip');
     jest
       .spyOn(filesystem, 'generateFileName')
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       .mockImplementation(file => `generatedLang${file.originalname}`);
     await loader.load(csv, template1Id, { language: 'en', user: {} });
 
@@ -51,6 +61,7 @@ describe('csvLoader languages', () => {
   });
 
   afterAll(async () => {
+    // @ts-expect-error TS(7006): Parameter 'u' implicitly has an 'any' type.
     const generatedImages = (await files.get({})).map(u => u._id.toString());
 
     await filesystem.deleteFiles([
@@ -90,6 +101,7 @@ describe('csvLoader languages', () => {
 
   it('should import translated files', async () => {
     const importedFiles = await files.get({ type: 'document' });
+    // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
     expect(importedFiles.map(f => f.filename)).toEqual([
       'generatedLang2.pdf',
       'generatedLang1.pdf',

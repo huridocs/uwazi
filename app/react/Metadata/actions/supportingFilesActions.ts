@@ -1,7 +1,8 @@
 import { Dispatch } from 'redux';
 import { actions } from 'react-redux-form';
 import { readFileAsBase64 } from '../../Library/actions/saveEntityWithFiles.js';
-import uniqueID from '../../shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
 import * as types from '../../Attachments/actions/actionTypes';
 
 const uploadLocalAttachment =

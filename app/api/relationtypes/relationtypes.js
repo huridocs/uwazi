@@ -2,7 +2,7 @@ import translations from '../i18n/translations.js';
 import relationships from '../relationships/relationships.js';
 import templates from '../templates/index.js';
 import { createError } from '../utils/index.js';
-import { ContextType } from '../../shared/translationSchema.js';
+import { ContextType } from 'shared/translationSchema.js';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
 import * as v2 from './v2_support';

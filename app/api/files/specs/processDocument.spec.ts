@@ -1,9 +1,12 @@
-import testingDB from '../utils/testing_db.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import {
   convertToPDFService,
   MimeTypeNotSupportedForConversion,
+  // @ts-expect-error TS(2307): Cannot find module '../services/convertToPDF/conve... Remove this comment to see the full error message
 } from '../services/convertToPDF/convertToPdfService.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { files, UpdateFileError } from '../files';
@@ -31,6 +34,7 @@ describe('processDocument', () => {
     });
 
     it('should save the document as an attachment (when feature is active)', async () => {
+      // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
       jest.spyOn(convertToPDFService, 'upload').mockResolvedValue();
       await testingEnvironment.setUp({
         settings: [

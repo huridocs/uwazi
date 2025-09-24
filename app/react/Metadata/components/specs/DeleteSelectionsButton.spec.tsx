@@ -4,8 +4,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, RenderResult, act } from '@testing-library/react';
-import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
+
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientFile } from '../../istore.js';
 import { DeleteSelectionButton } from '../DeleteSelectionButton';
 import * as actions from '../../actions/metadataExtractionActions';

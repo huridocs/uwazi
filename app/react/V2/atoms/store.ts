@@ -1,6 +1,7 @@
 import { createStore } from 'jotai';
 import { sortBy } from 'lodash';
-import { isClient } from '../../api/utils/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+import { isClient } from 'api/utils/index.js';
 import { store } from '../../store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '../../apiResponseTypes.js';
 import {

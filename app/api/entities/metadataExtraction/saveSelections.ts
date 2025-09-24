@@ -1,8 +1,11 @@
 import { files } from '../../files/index.js';
 import { uniqBy } from 'lodash';
-import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { FileType } from '../../shared/types/fileType.js';
+
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
 
 interface EntityWithExtractedMetadata extends EntitySchema {
   __extractedMetadata?: { fileID: string; selections: ExtractedMetadataSchema[] };

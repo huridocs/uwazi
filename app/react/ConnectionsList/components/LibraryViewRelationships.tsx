@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Layout.js' or its corres... Remove this comment to see the full error message
 import { Item } from '../../Layout.js';
 import { Collapsible } from '../../App/Collapsible.js';
 import { StickyHeader } from '../../App/StickyHeader.js';

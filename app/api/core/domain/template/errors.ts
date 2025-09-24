@@ -1,7 +1,10 @@
 /* eslint-disable max-classes-per-file */
-import { Property } from '../templates.v2/model/Property.js';
-import { Template } from '../templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+import { Property } from 'api/templates.v2/model/Property.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Template... Remove this comment to see the full error message
+import { Template } from 'api/templates.v2/model/Template.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/V1Relati... Remove this comment to see the full error message
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { DomainError } from '../error/DomainError';
 import { AJVObject, ValidationError } from '../error/ValidationError';
 import { AbstractSelectProperty } from './AbstractSelectProperty';
@@ -106,6 +109,7 @@ class PropertyTypeMismatchError extends DomainError {
 class PropertyThesaurusMismatchError extends DomainError {
   constructor(existing: AbstractSelectProperty, attempted: AbstractSelectProperty) {
     super(
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'AbstractSe... Remove this comment to see the full error message
       // eslint-disable-next-line max-len
       `Property with the name "${existing.name}" has a thesaurus mismatch. It must be linked to ${existing.content} thesaurus, but a link to ${attempted.content} thesaurus was provided.`,
       'template.property.thesaurus_mismatch_error'

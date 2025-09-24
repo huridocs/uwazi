@@ -1,9 +1,15 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.js' or its corresp... Remove this comment to see the full error message
 import settings from '../settings.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
 import templates from '../templates.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauri from '../thesauri.js';
-import request from '../../shared/JSONRequest.js';
-import { PreserveConfig } from '../../shared/types/settingsType.js.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import request from 'shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+import { PreserveConfig } from 'shared/types/settingsType.js.js';
 import fixtures, { userId1, userId2 } from './fixtures';
 import { Preserve } from '../preserve';
 
@@ -31,6 +37,7 @@ describe('Preserve', () => {
         await Preserve.setup('en', user);
         const savedSettings: any = await settings.get({});
         const configs: PreserveConfig['config'] = savedSettings.features.preserve.config;
+        // @ts-expect-error TS(7006): Parameter 'conf' implicitly has an 'any' type.
         const config = configs.find(conf => conf.user!.toString() === user._id.toString());
         expect(config?.template).toBeDefined();
         const template = await templates.getById(config!.template.toString());
@@ -47,6 +54,7 @@ describe('Preserve', () => {
             label: 'Source',
           },
         ]);
+        // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
         const thesauriId = template?.properties?.find(prop => prop.type === 'select')?.content;
         const thesaurus = await thesauri.getById(thesauriId);
         expect(thesaurus?.name).toBe('Preserve');

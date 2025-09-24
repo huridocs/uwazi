@@ -1,10 +1,14 @@
 import 'isomorphic-fetch';
 import request from 'supertest';
 
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
 import { entitiesRoutes } from '..';
 
 describe('entities countByTemplate V2 routes', () => {
@@ -12,6 +16,7 @@ describe('entities countByTemplate V2 routes', () => {
   const createTemplate = factory.template;
   const createEntity = factory.entity;
 
+  // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
   const app = setUpApp(entitiesRoutes, (req, _res, next) => {
     req.user = {
       username: 'admin',

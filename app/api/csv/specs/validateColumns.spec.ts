@@ -1,6 +1,9 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ArrangeColumnsError } from '../validateColumns';
 import { CSVLoader } from '../csvLoader';
 import { mockCsvFileReadStream } from './helpers';

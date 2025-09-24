@@ -9,12 +9,18 @@ import { MockStoreEnhanced } from 'redux-mock-store';
 import Immutable, { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { defaultState, renderConnectedContainer } from '../../utils/test/renderConnected.js';
+// @ts-expect-error TS(2307): Cannot find module '../../SemanticSearch/actions/a... Remove this comment to see the full error message
 import * as semanticSearchActions from '../../SemanticSearch/actions/actions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/actions/libraryA... Remove this comment to see the full error message
 import * as libraryActions from '../../Library/actions/libraryActions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Searc... Remove this comment to see the full error message
 import { SearchBar } from '../../Library/components/SearchBar.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { IStore } from '../../istore.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
 
 describe('SearchBar', () => {
   let renderResult: RenderResult;

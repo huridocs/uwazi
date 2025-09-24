@@ -2,8 +2,10 @@ import { Link } from 'react-router';
 import React from 'react';
 import { shallow } from 'enzyme';
 
+// @ts-expect-error TS(2307): Cannot find module '../../Layout.js' or its corres... Remove this comment to see the full error message
 import { CurrentLocationLink } from '../../Layout.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 
 import { ViewDocumentLink } from '../ViewDocumentLink';
 
@@ -36,6 +38,7 @@ describe('ViewDocumentLink', () => {
   describe('when on viewer', () => {
     it('should change file name and set page 1 if its in document view', () => {
       const component = renderComponent(entity);
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       expect(component.find(CurrentLocationLink).props().queryParams).toEqual({
         file: 'file.pdf',
         page: 1,

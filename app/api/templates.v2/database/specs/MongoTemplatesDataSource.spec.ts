@@ -1,10 +1,17 @@
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Trav... Remove this comment to see the full error message
 import { TraversalQueryNode } from '../relationships.v2/model/TraversalQueryNode.js';
-import { Property } from '../templates.v2/model/Property.js';
-import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+import { Property } from 'api/templates.v2/model/Property.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Relation... Remove this comment to see the full error message
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
 import { mapPropertyQuery } from '../QueryMapper';
 

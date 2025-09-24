@@ -6,7 +6,8 @@ import { TemplatesDataSource } from '../../templates.v2/contracts/TemplatesDataS
 import { TemplateProperty } from '../../templates.v2/model/Template.js';
 import { V1RelationshipProperty } from '../../templates.v2/model/V1RelationshipProperty.js';
 import { Db, Filter, ObjectId } from 'mongodb';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { MultiLanguageEntityDataSource } from '../contracts/MultiLanguageEntitiesDataSource.js';
 import { MultiLanguageEntity } from '../model/MultiLanguageEntity.js';
 import { EntityMappers } from './EntityMapper.js';
@@ -71,6 +72,7 @@ export class MongoMultiLanguageEntityDataSource
             const $set = properties.reduce<{ [k: string]: any }>((setOperation, property) => {
               const value = entity.getValue(property, language);
               if (value) {
+                // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplatePr... Remove this comment to see the full error message
                 return { ...setOperation, [`metadata.${property.name}`]: value };
               }
               return setOperation;

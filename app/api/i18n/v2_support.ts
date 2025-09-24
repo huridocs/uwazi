@@ -1,6 +1,6 @@
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 import { MongoTranslationsSyncDataSource } from '../i18n.v2/database/MongoTranslationsSyncDataSource.js';
 import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
 import { Translation } from '../i18n.v2/model/Translation.js';
@@ -18,8 +18,8 @@ import {
   TranslationContext,
   TranslationType,
   TranslationValue,
-} from '../../shared/translationType.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+} from 'shared/translationType.js';
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { IndexedContextValues } from './translations.js';
 
 models.translationsV2 = () =>
@@ -29,7 +29,7 @@ const flattenTranslations = (translation: TranslationType): CreateTranslationsDa
   if (translation.contexts?.length) {
     return translation.contexts.reduce<CreateTranslationsData[]>((flatTranslations, context) => {
       if (context.values) {
-        context.values.forEach((contextValue) => {
+        context.values.forEach(contextValue => {
           flatTranslations.push({
             language: translation.locale,
             key: contextValue.key,
@@ -57,23 +57,27 @@ export const resultsToV1TranslationType = async (
 
   // const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
 
+  // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
   const resultMap = languageKeys.reduce<{
     [language: string]: TranslationType & { locale: string };
+    // @ts-expect-error TS(7006): Parameter 'memo' implicitly has an 'any' type.
   }>((memo, key) => {
     // eslint-disable-next-line no-param-reassign
     memo[key] = { locale: key, contexts: [] };
     return memo;
   }, {});
 
+  // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
   const contexts = languageKeys.reduce<{
     [language: string]: { [context: string]: TranslationContext & { values: TranslationValue[] } };
+    // @ts-expect-error TS(7006): Parameter 'memo' implicitly has an 'any' type.
   }>((memo, key) => {
     // eslint-disable-next-line no-param-reassign
     memo[key] = {};
     return memo;
   }, {});
 
-  await tranlationsResult.forEach((translation) => {
+  await tranlationsResult.forEach(translation => {
     if (!resultMap[translation.language]) {
       resultMap[translation.language] = {
         locale: translation.language,
@@ -95,7 +99,8 @@ export const resultsToV1TranslationType = async (
     });
   });
 
-  return Object.values(resultMap).map((translation) => {
+  return Object.values(resultMap).map(translation => {
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     // eslint-disable-next-line no-param-reassign
     translation.contexts = Object.values(contexts[translation.locale]);
     return translation;

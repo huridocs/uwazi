@@ -3,12 +3,23 @@ import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLoaderData } from 'react-router';
-import { FileType } from '../../shared/types/fileType.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
-import { PropertyValueSchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
+
+import { PropertyValueSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
-import { Button, Sidepanel, ToggleButton, Truncate, VerticalDrawer } from '../../../../Components/UI/index.js';
+import {
+  Button,
+  Sidepanel,
+  ToggleButton,
+  Truncate,
+  VerticalDrawer,
+} from '../../../../Components/UI/index.js';
 import { PDF, selectionHandlers } from '../../../../Components/PDFViewer/index.js';
 import { notificationAtom, pdfScaleAtom } from '../../../../atoms/index.js';
 import { secondsToISODate } from '../../../../shared/dateHelpers.js';
@@ -22,7 +33,12 @@ import {
   SELECT_TYPES,
 } from '../helpers/index.js';
 import { SidepanelForms } from './SidepanelForms.js';
-import { highlightsAtom, selectionErrorAtom, textSelectionAtom, selectionsAtom } from './atoms/index.js';
+import {
+  highlightsAtom,
+  selectionErrorAtom,
+  textSelectionAtom,
+  selectionsAtom,
+} from './atoms/index.js';
 import { selectAndSearchAtom } from './atoms/selectAndSearchAtom.js';
 
 interface PDFSidepanelProps {
@@ -61,12 +77,13 @@ const PDFSidepanel = ({
 
   useEffect(() => {
     if (showSidepanel && suggestion) {
+      // @ts-expect-error TS(2345): Argument of type 'TableSuggestion' is not assignab... Remove this comment to see the full error message
       loadSidepanelData(suggestion)
         .then(({ file, entity: suggestionEntity }) => {
           setPdfFile(file || undefined);
           setEntity(suggestionEntity);
         })
-        .catch((e) => {
+        .catch(e => {
           throw e;
         });
     }
@@ -231,6 +248,8 @@ const PDFSidepanel = ({
                 </div>
               }
             >
+              // @ts-expect-error TS(2786): 'SidepanelForms' cannot be used as a JSX component...
+              Remove this comment to see the full error message
               <SidepanelForms
                 property={property}
                 suggestion={suggestion}

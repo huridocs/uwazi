@@ -13,15 +13,21 @@ import {
   updateRelationshipMigrationField,
   deleteRelationshipMigrationField,
 } from '../../Entities/actions/V2NewRelationshipsActions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
 import {
   GetRelationshipMigrationFieldsResponse,
   ResponseElement,
-} from '../../shared/types/api.v2/relationshipMigrationField.get.js';
-import { PlanElement } from '../../shared/types/api.v2/relationships.migrate.js';
-import { CreateRelationshipMigRationFieldResponse } from '../../shared/types/api.v2/relationshipMigrationField.create.js';
-import { GetMigrationHubRecordsResponse } from '../../shared/types/api.v2/migrationHubRecords.get.js';
+  // @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+} from 'shared/types/api.v2/relationshipMigrationField.get.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { PlanElement } from 'shared/types/api.v2/relationships.migrate.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/migr... Remove this comment to see the full error message
+import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get.js';
 
 const UNUSED_RECORDS_PAGE_SIZE = 10;
 
@@ -70,10 +76,12 @@ const mapPlanElementFromApiResponse = (
     ? templateIndex[response.targetTemplate]
     : undefined;
   return {
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
     sourceTemplate: template.name,
     sourceTemplateId: response.sourceTemplate,
     relationType: relationType.name,
     relationTypeId: response.relationType,
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
     targetTemplate: targetTemplate?.name || 'ALL',
     targetTemplateId: response.targetTemplate,
     inferred: response.infered,
@@ -85,6 +93,7 @@ const mapGetPlanResponse = (
   response: GetRelationshipMigrationFieldsResponse,
   templateIndex: Record<string, ClientTemplateSchema>,
   relationTypeIndex: Record<string, RelationshipTypesType>
+  // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
 ) => response.map(r => mapPlanElementFromApiResponse(r, templateIndex, relationTypeIndex));
 
 const formatTime = (time: number) => {
@@ -132,13 +141,18 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   async componentDidMount() {
     this.templateIndex = objectIndex(
       this.props.templates,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t._id,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t
     );
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
     this.templatesNameSorted = _.orderBy(this.props.templates, t => t.name);
     this.relationTypeIndex = objectIndex(
       this.props.relationTypes,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t._id,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t
     );
     this.relationTypesNameSorted = _.orderBy(this.props.relationTypes, t => t.name);
@@ -147,10 +161,12 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
     const ordered = _.orderBy(mapped, ['sourceTemplate', 'relationType', 'targetTemplate']);
     this.currentPlan = ordered;
     this.newPlanElement = {
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
       sourceTemplate: this.templatesNameSorted[0].name,
       sourceTemplateId: this.templatesNameSorted[0]._id,
       relationType: this.relationTypesNameSorted[0].name,
       relationTypeId: this.relationTypesNameSorted[0]._id,
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
       targetTemplate: this.templatesNameSorted[1].name,
       targetTemplateId: this.templatesNameSorted[1]._id,
     };
@@ -220,6 +236,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   storeNewPlanElementSourceTemplate(event: React.ChangeEvent<HTMLSelectElement>) {
     this.newPlanElement.sourceTemplateId = event.target.value;
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
     this.newPlanElement.sourceTemplate = this.templateIndex[event.target.value].name;
     this.forceUpdate();
   }
@@ -232,6 +249,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   storeNewPlanElementTargetTemplate(event: React.ChangeEvent<HTMLSelectElement>) {
     this.newPlanElement.targetTemplateId = event.target.value;
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
     this.newPlanElement.targetTemplate = this.templateIndex[event.target.value].name;
     this.forceUpdate();
   }
@@ -288,17 +306,21 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               →
             </button>
           </div>
+          // @ts-expect-error TS(7006): Parameter 'records' implicitly has an 'any' type.
           {this.unusedConnectionsInfo.hubRecords.map((records, index) => (
             <div key={`UnusedConnectionList_${records.hubId}`}>
               <div>
                 {index + 1}---------------------------:{records.hubId}
               </div>
+              // @ts-expect-error TS(7006): Parameter 'connection' implicitly has an 'any' typ...
+              Remove this comment to see the full error message
               {records.connections.map(connection => (
                 <div key={`unusedConnection_${records.hubId}_${connection.id}`}>
                   &emsp;
                   {`(${connection.templateName})`}
                   <Icon icon="link" />
                   {`${connection.entityTitle}(${
+                    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
                     this.templateIndex[connection.entityTemplate].name
                   })`}
                 </div>
@@ -313,25 +335,33 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   render() {
     const oneHubTestEntityTitlesBySharedId = objectIndex(
       this.hubTestResult?.original || [],
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t.entity,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t.entityTitle
     );
     const oneHubTestEntityTemplatesBySharedId = objectIndex(
       this.hubTestResult?.original || [],
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t.entity,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t.entityTemplate
     );
     const oneHubRelTypeNamesById = objectIndex(
       this.hubTestResult?.original || [],
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t.template,
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       t => t.templateName
     );
     const displayEntityTitleAndNameFromOriginal = (orig: OriginalEntityInfo) =>
       `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${
+        // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
         this.templateIndex[orig.entityTemplate].name
       })`;
     const displayEntityTitleAndNameFromTransformed = (entity: string) =>
       `${oneHubTestEntityTitlesBySharedId[entity]}(${
+        // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ClientTemp... Remove this comment to see the full error message
         this.templateIndex[oneHubTestEntityTemplatesBySharedId[entity]].name
       })`;
 
@@ -427,6 +457,8 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               >
                 {this.templatesNameSorted.map(t => (
                   <option key={`sourceDropdown_${t._id}`} value={t._id}>
+                    // @ts-expect-error TS(2339): Property 'name' does not exist on type
+                    'ClientTemp... Remove this comment to see the full error message
                     {t.name}
                   </option>
                 ))}
@@ -447,6 +479,8 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               >
                 {this.templatesNameSorted.map(t => (
                   <option key={`targetDropdown_${t._id}`} value={t._id}>
+                    // @ts-expect-error TS(2339): Property 'name' does not exist on type
+                    'ClientTemp... Remove this comment to see the full error message
                     {t.name}
                   </option>
                 ))}

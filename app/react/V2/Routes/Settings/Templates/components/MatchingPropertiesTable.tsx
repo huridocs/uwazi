@@ -5,9 +5,11 @@ import { useAtomValue } from 'jotai';
 import { templatesAtom, thesauriAtom, relationshipTypesAtom } from '../../../../atoms/index.js';
 import { Table } from '../../../../Components/UI/index.js';
 import { propertyIconsSmall } from '../../../../Components/UI/Icons.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, t } from '../../I18N/index.js';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
+
+import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
 import { ClientTemplateSchema } from '../../../../shared/types.js';
 import { translationsKeys } from '../helpers.js';
 
@@ -199,6 +201,7 @@ export const MatchingPropertiesTable = ({
       columnHelper.accessor('content', {
         id: 'thesauriOrRelationship',
         header: ThesauriHeader,
+        // @ts-expect-error TS(2345): Argument of type 'ClientThesaurus[]' is not assign... Remove this comment to see the full error message
         cell: thesauriCellRenderer(content, thesauri),
         enableSorting: false,
       })

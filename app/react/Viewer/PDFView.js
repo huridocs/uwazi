@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 import { withRouter } from '../../componentWrappers.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { actions } from '../../BasicReducer/index.js';
-import { isClient, events } from '../../api/utils/index.js';
-import { toUrlParams } from '../../shared/JSONRequest.js';
+import { isClient, events } from 'api/utils/index.js';
+import { toUrlParams } from 'shared/JSONRequest.js';
 import { ConnectedViewer as Viewer } from '../../Viewer/components/Viewer.js';
 import entitiesAPI from '../../Entities/EntitiesAPI.js';
 import { leaveEditMode } from '../../Viewer/actions/documentActions.js';
@@ -52,7 +52,7 @@ class PDFViewComponent extends Component {
     ) {
       entitiesAPI
         .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
-        .then((pageText) => {
+        .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
     }

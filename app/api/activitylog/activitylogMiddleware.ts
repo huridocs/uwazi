@@ -1,6 +1,6 @@
-import { storage } from '../files.js';
+import { storage } from 'api/files/storage.js';
 import date from '../utils/date.js';
-import { tenants } from '../tenants.js';
+import { tenants } from 'api/tenants/index.js';
 import { Readable } from 'stream';
 import activitylog from './activitylog';
 import { NextFunction, Request, Response } from 'express';
@@ -62,7 +62,7 @@ export default (req: Request, _res: Response, next: NextFunction) => {
   if (mustBeLogged(baseurl, method, body)) {
     const entry = createEntry(req, baseurl);
 
-    activitylog.save(entry).catch(e => {
+    activitylog.save(entry).catch((e: any) => {
       handleError(e, { req });
     });
 
@@ -72,7 +72,7 @@ export default (req: Request, _res: Response, next: NextFunction) => {
         Readable.from([Buffer.from(JSON.stringify(entry))]),
         'activitylog'
       )
-      .catch(e => {
+      .catch((e: any) => {
         handleError(e, { req });
       });
   }

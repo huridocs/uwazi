@@ -1,15 +1,23 @@
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
 import settings from '../settings.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
 import templates from '../templates.js';
+// @ts-expect-error TS(2307): Cannot find module '../users/users.js' or its corr... Remove this comment to see the full error message
 import users from '../users/users.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
 import { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
+// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
 import translations from '../i18n.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import waitForExpect from 'wait-for-expect';
 import settingsRoutes from '../routes';
 import { settingsModel } from '../settingsModel';
@@ -30,6 +38,7 @@ describe('Settings routes', () => {
     });
 
   beforeAll(async () => {
+    // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
     jest.spyOn(search, 'indexEntities').mockResolvedValue();
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     const elasticIndex = 'settings_index';

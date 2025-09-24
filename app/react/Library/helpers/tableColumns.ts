@@ -1,6 +1,8 @@
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { ensure } from '../../../shared/tsUtils';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
+
+import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes.js';
+import { ensure } from 'shared/tsUtils';
 
 interface TranslatableColumn extends PropertySchema {
   translationContext?: string;
@@ -9,9 +11,11 @@ interface TranslatableColumn extends PropertySchema {
 function columnsFromTemplates(templates: TemplateSchema[]): TranslatableColumn[] {
   return templates.reduce((properties: TranslatableColumn[], template) => {
     const propsToAdd: TranslatableColumn[] = [];
+    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     (template.properties || []).forEach(property => {
       if (
         !['image', 'preview', 'media', 'nested'].includes(property.type) &&
+        // @ts-expect-error TS(2339): Property 'name' does not exist on type 'Translatab... Remove this comment to see the full error message
         !properties.find(columnProperty => property.name === columnProperty.name)
       ) {
         propsToAdd.push({ ...property, translationContext: ensure<string>(template._id) });

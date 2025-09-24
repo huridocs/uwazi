@@ -1,11 +1,20 @@
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/data_s... Remove this comment to see the full error message
 import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/MockL... Remove this comment to see the full error message
 import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
 import { Logger } from '../log.v2/contracts/Logger.js';
 import { SaveEntityTranslations } from '../SaveEntityTranslations';
 import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
@@ -63,18 +72,21 @@ describe('SaveEntityTranslations', () => {
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
       [];
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'es')).toMatchObject({
       metadata: {
         propertyName: [{ value: `${SaveEntityTranslations.AITranslatedText} texto original` }],
       },
     });
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'pt')).toMatchObject({
       metadata: {
         propertyName: [{ value: `${SaveEntityTranslations.AITranslatedText} texto original (pt)` }],
       },
     });
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'en')).toMatchObject({
       metadata: { propertyName: [{ value: 'original text' }] },
     });
@@ -98,14 +110,17 @@ describe('SaveEntityTranslations', () => {
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
       [];
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'es')).toMatchObject({
       title: `${SaveEntityTranslations.AITranslatedText} titulo original`,
     });
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'pt')).toMatchObject({
       title: `${SaveEntityTranslations.AITranslatedText} titulo original (pt)`,
     });
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'en')).toMatchObject({
       title: 'entity',
     });
@@ -204,6 +219,7 @@ describe('SaveEntityTranslations', () => {
       (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
       [];
 
+    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
     expect(entities.find(e => e.language === 'es')).toMatchObject({
       title: 'entity',
     });

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Sidepanel, Button } from '../V2/Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI/Sidepan... Remove this comment to see the full error message
 import { SidePanelProps } from '../../V2/Components/UI/Sidepanel.js';
 import { GeneratedContent } from './helpers/GeneratedContent.js';
 

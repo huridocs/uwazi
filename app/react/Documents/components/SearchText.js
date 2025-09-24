@@ -9,7 +9,7 @@ import { searchSnippets } from '../../Library/actions/libraryActions.js';
 import { selectSnippet } from '../../Viewer/actions/uiActions.js';
 import { Icon } from 'UI';
 import ModalTips from '../../App/ModalTips.js';
-import { toUrlParams } from '../../shared/JSONRequest.js';
+import { toUrlParams } from 'shared/JSONRequest.js';
 import { SearchTipsContent } from '../../App/SearchTipsContent.js';
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
 import SnippetList from './SnippetList';

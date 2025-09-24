@@ -1,6 +1,9 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import {
   Input,
   UpdateSuggestionsAfterEntityUpdate,
@@ -202,10 +205,12 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
         .toArray();
 
       const suggestionsFromExtractor1 = suggestions?.filter(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s => s.extractorId.toString() === factory.id('extractor_source_text_target_text').toString()
       );
 
       const suggestionsFromExtractor2 = suggestions?.filter(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s =>
           s.extractorId.toString() === factory.id('extractor_source_text_target_text_1').toString()
       );
@@ -278,10 +283,12 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
         .toArray();
 
       const suggestionsFromExtractor1 = suggestions?.filter(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s => s.extractorId.toString() === factory.id('extractor_source_text_target_text').toString()
       );
 
       const suggestionsFromExtractor2 = suggestions?.filter(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s =>
           s.extractorId.toString() === factory.id('extractor_source_text_target_text_1').toString()
       );

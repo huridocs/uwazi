@@ -2,11 +2,14 @@ import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientTranslationContextSchema, ClientTranslationSchema } from '../../istore.js';
 import { Table } from '../../../Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-import * as translationsAPI from '../../../api/translations/index.js';
+import * as translationsAPI from 'api/translations/index.js';
 import {
   ContextPill,
   RenderButton,
@@ -32,7 +35,8 @@ const TranslationsList = () => {
     contentContexts: TranslationContext[];
   } = { systemContexts: [], contentContexts: [] };
 
-  translations[0]?.contexts?.forEach((context) => {
+  // @ts-expect-error TS(7006): Parameter 'context' implicitly has an 'any' type.
+  translations[0]?.contexts?.forEach(context => {
     const contextTranslations: TranslationContext = {
       ...context,
       rowId: context.id!,

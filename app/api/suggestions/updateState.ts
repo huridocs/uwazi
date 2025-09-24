@@ -1,13 +1,13 @@
 import settings from '../settings/index.js';
 import templates from '../templates/index.js';
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
 import {
   CurrentValue,
   getSuggestionState,
   SuggestionValues,
-} from '../../shared/getIXSuggestionState.js';
-import { propertyIsMultiselect, propertyIsRelationship } from '../../shared/propertyTypes.js';
-import { LanguagesListSchema, PropertyTypeSchema } from '../../shared/types/commonTypes.js';
+} from 'shared/getIXSuggestionState.js';
+import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes.js';
+import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes.js';
 import { IXExtractorModel } from '../services/informationextraction/IXExtractorModel.js';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
@@ -116,8 +116,9 @@ export const postProcessCurrentValues = (
   propertyType: PropertyTypeSchema
 ) => suggestions.map(s => postProcessCurrentValue(s, propertyType));
 
+// @ts-expect-error TS(7006): Parameter 'query' implicitly has an 'any' type.
 // eslint-disable-next-line max-statements
-export const updateStates = async (query) => {
+export const updateStates = async query => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
     (await templates.get({})).map(t => t.properties || []).flat(),

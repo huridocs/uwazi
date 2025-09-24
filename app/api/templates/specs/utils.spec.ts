@@ -1,7 +1,11 @@
-import settings from '../settings/settings.js';
-import db from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+import settings from 'api/settings/settings.js';
+
+import db from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
 import {
   generateIds,
   generateNames,

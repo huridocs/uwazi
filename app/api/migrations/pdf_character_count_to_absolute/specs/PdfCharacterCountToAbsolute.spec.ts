@@ -1,7 +1,9 @@
 import {
   PdfCharacterCountToAbsolute,
   AbsolutePositionReference,
+  // @ts-expect-error TS(2307): Cannot find module '../migrations/pdf_character_co... Remove this comment to see the full error message
 } from '../migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute.js';
+// @ts-expect-error TS(2307): Cannot find module '../migrations/pdf_character_co... Remove this comment to see the full error message
 import { AbsolutePositionTag } from '../migrations/pdf_character_count_to_absolute/AbsolutePositionLettersList.js';
 
 const pdfInfo = [

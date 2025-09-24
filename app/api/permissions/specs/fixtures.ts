@@ -1,7 +1,11 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import db, { DBFixture } from '../utils/testing_db.js';
-import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
 
 const factory = getFixturesFactory();
 

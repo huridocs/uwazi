@@ -1,7 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Selec... Remove this comment to see the full error message
 import SelectFilter from '../../Library/components/SelectFilter.js';
-import { Aggregations } from '../../shared/types/aggregations.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+import { Aggregations } from 'shared/types/aggregations.js';
 import { PublishedFilters } from '../PublishedFilters';
 
 describe('Published Filter', () => {
@@ -19,7 +21,7 @@ describe('Published Filter', () => {
   };
 
   const render = (aggs: Aggregations = aggregations) => {
-    component = shallow(<PublishedFilters onChange={() => {}} aggregations={aggs} />);
+    component = shallow(<PublishedFilters onChange={() => { }} aggregations={aggs} />);
   };
 
   it('should display the number of published and restricted entities', () => {

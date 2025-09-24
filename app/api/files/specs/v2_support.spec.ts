@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
 import { files } from '../files';
 
 const factory = getFixturesFactory();

@@ -10,9 +10,9 @@ import { search } from '../search/index.js';
 import templates from '../templates/templates.js';
 import date from '../utils/date.js';
 import { unique } from '../utils/filters.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { AccessLevels } from '../../shared/types/permissionSchema.js';
-import ID from '../../shared/uniqueID.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
+import { AccessLevels } from 'shared/types/permissionSchema.js';
+import ID from 'shared/uniqueID.js';
 
 import { ATSolveVersionConflict } from '../externalIntegrations.v2/automaticTranslation/utils/ATSolveVersionConflict.js';
 import settings from '../settings/index.js';

@@ -1,7 +1,7 @@
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { fromJS as Immutable } from 'immutable';
-import { mockID } from '../../shared/uniqueID.js.js';
+import { mockID } from 'shared/uniqueID.js.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import SearchApi from '../../Search/SearchAPI.js';
 import api from '../../utils/api.js';

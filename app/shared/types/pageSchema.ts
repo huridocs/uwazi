@@ -1,9 +1,10 @@
 import Ajv from 'ajv';
 
-import templatesModel from '../api/templates/templatesModel.js';
+// @ts-expect-error TS(2307): Cannot find module '../api/templates/templatesMode... Remove this comment to see the full error message
+import templatesModel from 'api/templates/templatesModel.js';
 
-import { objectIdSchema } from '../../shared/types/commonSchemas.js';
-import { wrapValidator } from '../../shared/tsUtils.js';
+import { objectIdSchema } from 'shared/types/commonSchemas.js';
+import { wrapValidator } from 'shared/tsUtils.js';
 import { PageType } from './pageType';
 
 const ajv = new Ajv({ allErrors: true });
@@ -21,6 +22,7 @@ ajv.addKeyword({
       });
 
       if (templates.length > 0 && !page.entityView) {
+        // @ts-expect-error TS(7006): Parameter 'template' implicitly has an 'any' type.
         const templatesTitles = templates.map(template => template.name);
         throw new Ajv.ValidationError([
           {

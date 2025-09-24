@@ -2,13 +2,19 @@
 import React from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+import { FetchResponseError } from 'shared/JSONRequest.js';
 import { Modal } from '../V2/Components/UI/index.js';
-import { settingsAtom, translationsAtom, inlineEditAtom, notificationAtom } from '../V2/atoms/index.js';
+import {
+  settingsAtom,
+  translationsAtom,
+  inlineEditAtom,
+  notificationAtom,
+} from '../V2/atoms/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { InputField } from '../../V2/Components/Forms.js';
 import { Button } from '../V2/Components/UI/Button.js';
 import { TranslationValue } from '../V2/shared/types.js';
-import { postV2 } from '../V2/api/translations/index.js';
+import { postV2 } from 'app/V2/api/translations/index.js';
 import { t } from './translateFunction.js';
 
 const TranslateModal = () => {
@@ -31,7 +37,7 @@ const TranslateModal = () => {
   const { fields } = useFieldArray({ control, name: 'data' });
 
   React.useEffect(() => {
-    const initialValues = translations.map((translation) => {
+    const initialValues = translations.map(translation => {
       const language = languages.find(lang => lang.key === translation.locale)!;
       const languageContext = translation.contexts.find(c => c.id === context?.id);
       const value =

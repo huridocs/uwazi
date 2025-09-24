@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
+// @ts-expect-error TS(2307): Cannot find module '../../App/Collapsible.js' or i... Remove this comment to see the full error message
 import { Collapsible } from '../../App/Collapsible.js';
 import { LibraryViewRelationshipsComp } from '../LibraryViewRelationships';
 
@@ -56,8 +57,11 @@ describe('LibraryViewRelationships', () => {
   it('should render right relationships as collapsibles', () => {
     render();
     const collapsibleProps = component.find(Collapsible).props();
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     expect(collapsibleProps.header).toEqual('Some name');
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     expect(collapsibleProps.headerInfo).toEqual('(1)');
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     expect(collapsibleProps.collapse).toEqual(true);
   });
 

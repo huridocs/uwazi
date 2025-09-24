@@ -5,14 +5,14 @@ import {
   SettingsLinkSchema,
   SettingsFilterSchema,
   SettingsSublinkSchema,
-} from '../../shared/types/settingsType.js';
-import { ensure } from '../../shared/tsUtils.js';
+} from 'shared/types/settingsType.js';
+import { ensure } from 'shared/tsUtils.js';
 import templates from '../templates/index.js';
-import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes.js';
 
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { validateSettings } from '../../shared/types/settingsSchema.js';
-import { ContextType } from '../../shared/translationSchema.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import { validateSettings } from 'shared/types/settingsSchema.js';
+import { ContextType } from 'shared/translationSchema.js';
 import { settingsModel } from './settingsModel.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
@@ -46,9 +46,10 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
     return [...result, value];
   }, [] as T[]);
 
-  flattenedCurrentValues.forEach((value) => {
+  flattenedCurrentValues.forEach(value => {
     const matchValue = flattenedNewValues.find(
       (v): v is T =>
+        // @ts-expect-error TS(2339): Property 'toString' does not exist on type 'NonNul... Remove this comment to see the full error message
         v[matchProperty] && v[matchProperty]?.toString() === value[matchProperty]?.toString()
     );
 
@@ -64,7 +65,7 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
   });
 
   //latest values
-  flattenedNewValues.forEach((value) => {
+  flattenedNewValues.forEach(value => {
     values[ensure<string>(value[propertyName])] = ensure<string>(value[propertyName]);
   });
 
@@ -121,7 +122,7 @@ const saveFiltersTranslations = async (
 
 function removeTemplate(filters: SettingsFilterSchema[], templateId: ObjectIdSchema) {
   const filterTemplate = (filter: SettingsFilterSchema) => filter.id !== templateId;
-  return filters.filter(filterTemplate).map((_filter) => {
+  return filters.filter(filterTemplate).map(_filter => {
     const filter = _filter;
     if (filter.items) {
       filter.items = removeTemplate(filter.items, templateId);
@@ -161,6 +162,7 @@ export default {
       await (
         await templates.get()
       ).reduce<Promise<TemplateSchema>>(
+        // @ts-expect-error TS(2345): Argument of type '(lastSave: Promise<TemplateSchem... Remove this comment to see the full error message
         async (lastSave, template) => {
           await lastSave;
           return templates.save(
@@ -178,7 +180,7 @@ export default {
   },
 
   async setDefaultLanguage(key: string) {
-    return this.get().then(async (currentSettings) => {
+    return this.get().then(async currentSettings => {
       const languages = ensure<LanguageSchema[]>(currentSettings.languages).map(language => ({
         ...language,
         default: language.key === key,

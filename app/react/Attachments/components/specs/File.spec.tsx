@@ -1,7 +1,10 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+// @ts-expect-error TS(2307): Cannot find module '../../Forms/Form.js' or its co... Remove this comment to see the full error message
 import { LocalForm } from '../../Forms/Form.js';
-import { FileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N.js' or its correspo... Remove this comment to see the full error message
 import { Translate } from '../../I18N.js';
 import { File, FileProps } from '../File';
 
@@ -38,6 +41,7 @@ describe('file', () => {
     const title = component.find('.file-originalname').text();
     expect(title).toBe('Human_name_1.pdf');
 
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     const language = component.find('.badge').find(Translate).props().children;
     expect(language).toBe('English');
   });
@@ -54,6 +58,7 @@ describe('file', () => {
       render();
       const editButton = component.find('.file-edit');
       editButton.simulate('click');
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       expect(component.find(LocalForm).props().initialState).toEqual(props.file);
     });
 

@@ -6,6 +6,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { createStore, Provider } from 'jotai';
 import { fireEvent, RenderResult, screen, waitFor } from '@testing-library/react';
+// @ts-expect-error TS(2307): Cannot find module '../../Map.js' or its correspon... Remove this comment to see the full error message
 import { Map } from '../../Map.js';
 import { renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import * as MapHelper from '../../Map/MapHelper.js';

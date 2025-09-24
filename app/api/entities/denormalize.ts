@@ -4,16 +4,16 @@ import translationsModel, { IndexedTranslations } from '../i18n/translations.js'
 import { search } from '../search/index.js';
 import templates from '../templates/index.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
-import translate, { getContext } from '../../shared/translate.js';
+import { EntitySchema } from 'shared/types/entityType.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType.js';
+import translate, { getContext } from 'shared/translate.js';
 import {
   MetadataSchema,
   MetadataObjectSchema,
   PropertySchema,
   LanguageISO6391,
-} from '../../shared/types/commonTypes.js';
+} from 'shared/types/commonTypes.js';
 import { isString } from 'util';
 
 import model from './entitiesModel.js';
@@ -195,7 +195,7 @@ const denormalizeRelated = async (
   );
 
   await Promise.all(
-    updates.map(async (update) => {
+    updates.map(async update => {
       const inheritProperty = (template.properties || []).find(
         p => update.inheritProperty === p._id?.toString()
       );
@@ -276,7 +276,7 @@ const denormalizeSelectProperty = async (
   const context = getContext(translation, property.content);
 
   const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
-  thesaurus.values?.forEach((dv) => {
+  thesaurus.values?.forEach(dv => {
     if (dv.values) {
       dv.values.map(v => ({ ...v, parent: dv })).forEach(v => flattenValues.push(v));
     } else {
@@ -284,7 +284,7 @@ const denormalizeSelectProperty = async (
     }
   });
 
-  return values.map((value) => {
+  return values.map(value => {
     const denormalizedValue = { ...value };
     const thesaurusValue = flattenValues.find(v => v.id === denormalizedValue.value);
 
@@ -335,11 +335,11 @@ const denormalizeRelationshipProperty = async (
   });
 
   const partnersBySharedId: Record<string, EntitySchema> = {};
-  partners.forEach((partner) => {
+  partners.forEach(partner => {
     partnersBySharedId[partner.sharedId!] = partner;
   });
 
-  return values.map((value) => {
+  return values.map(value => {
     let denormalizedValue = { ...value };
 
     const partner = partnersBySharedId[denormalizedValue.value as string];

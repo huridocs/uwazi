@@ -1,8 +1,11 @@
 import { t } from '../../I18N/index.js';
 import { ClientTemplateSchema } from '../../istore.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { ObjectIdSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+
+import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
 
 type SortType = {
   label: string;
@@ -87,6 +90,7 @@ const filterTemplates = (
   templates: IImmutable<ClientTemplateSchema[]>,
   selectedTemplates: IImmutable<string[]>
 ) =>
+  // @ts-expect-error TS(7006): Parameter 'i' implicitly has an 'any' type.
   templates.filter(i => i !== undefined && selectedTemplates.includes(i.get('_id')))! as IImmutable<
     ClientTemplateSchema[]
   >;

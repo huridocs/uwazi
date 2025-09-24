@@ -2,7 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { captureException } from '@sentry/react';
 import * as monaco from 'monaco-editor';
-import { isClient } from '../../api/utils/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+import { isClient } from 'api/utils/index.js';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
@@ -27,7 +28,7 @@ const createMonacoEditor = (
     fontLigatures: false,
   });
 
-  editor.changeViewZones((accessor) => {
+  editor.changeViewZones(accessor => {
     accessor.addZone({
       afterLineNumber: 0,
       heightInPx: 8,
@@ -58,7 +59,7 @@ const CodeEditorComponent = ({
           monaco.editor.remeasureFonts();
           setFontsReady(true);
         })
-        .catch((e) => {
+        .catch(e => {
           setHasError(true);
           const error = new Error('Code editor error', { cause: e });
           captureException(error);

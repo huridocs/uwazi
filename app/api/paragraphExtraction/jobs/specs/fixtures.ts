@@ -1,5 +1,7 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { DBFixture } from '../utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
 
 const f = getFixturesFactory();
 

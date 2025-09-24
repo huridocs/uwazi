@@ -1,5 +1,7 @@
-import { FileType } from '../../shared/types/fileType.js';
-import { LanguageUtils } from '../../shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { LanguageUtils } from 'shared/language/index.js';
 
 export const entityDefaultDocument = (
   entityDocuments: Array<FileType>,

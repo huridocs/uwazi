@@ -13,7 +13,8 @@ import { Template } from '../../templates.v2/model/Template.js';
 import { V1RelationshipProperty } from '../../templates.v2/model/V1RelationshipProperty.js';
 import { TemplateUpdatedEvent } from '../../templates/events/TemplateUpdatedEvent.js';
 import { tenants } from '../../tenants/index.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
 import { GenerateIdProperty } from '../domain/template/GenerateIdProperty.js';
 import { PropertyCreatorService } from '../domain/template/propertyCreatorService/PropertyCreatorService.js';
@@ -106,6 +107,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
 
     const swappedNameProp = currentTemplate.selectSwappedNameProperties(updatedTemplate);
     if (swappedNameProp) {
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplatePr... Remove this comment to see the full error message
       throw new Error(`Properties can't swap names: ${swappedNameProp.name}`);
     }
     await this.deps.transactionManager.run(async () => {
@@ -119,7 +121,9 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
+        // @ts-expect-error TS(2741): Property 'name' is missing in type 'TemplateDBO' b... Remove this comment to see the full error message
         before: TemplateMapper.toSchema(currentTemplate),
+        // @ts-expect-error TS(2322): Type 'TemplateDBO' is not assignable to type 'Temp... Remove this comment to see the full error message
         after: TemplateMapper.toSchema(updatedTemplate),
       })
     );
@@ -138,9 +142,11 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
     const newProperties = currentTemplate.selectNewProperties(updatedTemplate);
 
     const newRelationshipProps = newProperties.filter(
+      // @ts-expect-error TS(2677): A type predicate's type must be assignable to its ... Remove this comment to see the full error message
       (p): p is V1RelationshipProperty => p.type === 'relationship'
     );
     const newGeneratedIdProps = newProperties.filter(
+      // @ts-expect-error TS(2677): A type predicate's type must be assignable to its ... Remove this comment to see the full error message
       (p): p is GenerateIdProperty => p.type === 'generatedid'
     );
     if (
@@ -172,7 +178,9 @@ class UpdateTemplateUseCase extends AbstractUseCase<UpdateTemplateDTO, Output> {
           templateId: updatedTemplate.id,
           language,
           modifiedRelationshipsProps: relationshipPropsWithChangedRelData
+            // @ts-expect-error TS(2769): No overload matches this call.
             .concat(newRelationshipProps)
+            // @ts-expect-error TS(2339): Property 'id' does not exist on type 'V1Relationsh... Remove this comment to see the full error message
             .map(p => p.id),
           newGeneratedIdProps: newGeneratedIdProps.map(p => p.id),
           deletedProperties,

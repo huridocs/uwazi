@@ -14,17 +14,21 @@ const prepareToMatchImageSnapshot = () => {
 };
 
 const displayGraph = async () => {
+  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   const pageID = page.url().split('/').pop() || '';
 
+  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   const pageTitle = await page.$eval('.template-name > div > input', input =>
     input.getAttribute('value')
   );
 
   const pageUrl = `${host}/page/${pageID}/${kebabCase(pageTitle || '')}`;
 
+  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   await expect(page).toClick('a', { text: '(view page)' });
 
   //waits until the target is available [see browser.targets] this opens on another pane
+  // @ts-expect-error TS(2304): Cannot find name 'browser'.
   const graphsPageTarget = await browser.waitForTarget(target => target.url().includes(pageUrl));
   const graphsPage = await graphsPageTarget.page();
   if (graphsPage === null) {
@@ -39,6 +43,7 @@ const testSelectorShot = async (
   selector: string,
   options: { threshold?: number; page?: Page } = {}
 ) => {
+  // @ts-expect-error TS(2552): Cannot find name 'page'. Did you mean 'Page'?
   const checkedPage = options.page || page;
   await checkedPage.waitForSelector(selector);
   const element = ensure<ElementHandle>(await checkedPage.$(selector));

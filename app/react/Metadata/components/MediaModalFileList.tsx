@@ -2,9 +2,12 @@ import React, { MouseEventHandler } from 'react';
 import { filesize } from 'filesize';
 import { Translate } from '../../I18N/index.js';
 import { ClientFile } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Attachments.js' or its c... Remove this comment to see the full error message
 import { RenderAttachment } from '../../Attachments.js';
-import { AttachmentSchema } from '../../shared/types/commonTypes.js';
-import { isSerializedFile } from '../../shared/fileUploadUtils.js';
+
+import { AttachmentSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/fileUploadUtils.j... Remove this comment to see the full error message
+import { isSerializedFile } from 'shared/fileUploadUtils.js';
 
 type MediaModalFileListProps = {
   filteredAttachments: (AttachmentSchema | ClientFile)[];

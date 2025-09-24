@@ -1,7 +1,12 @@
+// @ts-expect-error TS(2307): Cannot find module '../stats/services/RetrieveStat... Remove this comment to see the full error message
 import { RetrieveStatsService } from '../stats/services/RetrieveStatsService.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../stats/specs/fixtures.js' or... Remove this comment to see the full error message
 import { fixtures } from '../stats/specs/fixtures.js';
-import testingDB from '../utils/testing_db.js';
+
+import testingDB from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../search/elastic.js' or its c... Remove this comment to see the full error message
 import { elastic } from '../search/elastic.js';
 import { Db } from 'mongodb';
 

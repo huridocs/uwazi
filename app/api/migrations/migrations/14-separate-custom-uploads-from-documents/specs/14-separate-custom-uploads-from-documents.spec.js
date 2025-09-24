@@ -1,7 +1,7 @@
 //eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import path from 'path';
-import testingDB from '../utils/testing_db.js';
+import testingDB from 'api/utils/testing_db.js';
 import { config } from '../config.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
@@ -10,7 +10,7 @@ const asyncFs = fs.promises;
 
 export const fileExists = async filePath =>
   new Promise((resolve, reject) => {
-    fs.stat(filePath, (err) => {
+    fs.stat(filePath, err => {
       if (err === null) {
         resolve(true);
       }
@@ -34,13 +34,13 @@ describe('migration separate-custom-uploads-from-documents', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterEach((done) => {
+  afterEach(done => {
     config.defaultTenant.uploadedDocuments = originalDocumentsPath;
     config.defaultTenant.customUploads = originalUploadsPath;
     done();
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -57,7 +57,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     afterEach(async () => {
       await Promise.all(
-        files.map(async (f) => {
+        files.map(async f => {
           try {
             await asyncFs.unlink(path.join(config.defaultTenant.customUploads, f));
             // eslint-disable-next-line

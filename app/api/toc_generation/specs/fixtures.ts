@@ -1,4 +1,5 @@
-import { testingDB, DBFixture } from '../utils/testing_db.js';
+
+import { testingDB, DBFixture } from 'api/utils/testing_db.js';
 
 const templateId = testingDB.id();
 

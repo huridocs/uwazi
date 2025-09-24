@@ -1,7 +1,11 @@
-import userModel from '../users/usersModel.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import db from '../utils/testing_db.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../users/usersModel.js' or its... Remove this comment to see the full error message
+import userModel from 'api/users/usersModel.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import db from 'api/utils/testing_db.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
 import { ModelBulkWriteStream } from '../modelBulkWriteStream';
 
 const fixtures = {
@@ -39,6 +43,7 @@ const newUsers = Array(11)
 
 const checkNames = async (expectedUserNames: string[]) => {
   const inDbUserNames = (await db.mongodb?.collection('users').find({}).toArray())?.map(
+    // @ts-expect-error TS(7006): Parameter 'u' implicitly has an 'any' type.
     u => u.username
   );
   expect(inDbUserNames).toMatchObject(expectedUserNames);

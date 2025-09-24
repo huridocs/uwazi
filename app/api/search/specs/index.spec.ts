@@ -1,9 +1,12 @@
-import db from '../utils/testing_db.js';
+
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
 import { elasticTesting } from '../utils/elastic_testing.js';
 import { search } from '../search';
 import { elastic } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 describe('index (search)', () => {
   beforeEach(async () => {

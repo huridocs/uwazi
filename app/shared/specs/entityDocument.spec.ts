@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module './types/fileType.js' or its co... Remove this comment to see the full error message
 import { FileType } from './types/fileType.js';
 import { entityDefaultDocument } from '../entityDefaultDocument';
 

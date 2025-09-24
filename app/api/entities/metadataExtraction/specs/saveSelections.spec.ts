@@ -1,6 +1,9 @@
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { files } from '../files.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DBFixture, testingDB } from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DBFixture, testingDB } from 'api/utils/testing_db.js';
 import { saveSelections } from '../saveSelections';
 
 const file1ID = testingDB.id();
@@ -64,6 +67,7 @@ describe('saveSelections', () => {
 
   it('should not call save if entity has no main file', async () => {
     await saveSelections({
+      // @ts-expect-error TS(2345): Argument of type '{ sharedId: string; language: st... Remove this comment to see the full error message
       sharedId: 'entityWithNoFile',
       language: 'en',
       __extractedMetadata: {
@@ -76,6 +80,7 @@ describe('saveSelections', () => {
 
   it('should not call save if entity has file, but there is not extracted metadata', async () => {
     await saveSelections({
+      // @ts-expect-error TS(2345): Argument of type '{ sharedId: string; language: st... Remove this comment to see the full error message
       sharedId: 'anotherEntity',
       language: 'en',
       __extractedMetadata: { fileID: file2ID.toString(), selections: [] },
@@ -85,6 +90,7 @@ describe('saveSelections', () => {
 
   it('should not call save if theres no change to files extracted metadata', async () => {
     await saveSelections({
+      // @ts-expect-error TS(2345): Argument of type '{ sharedId: string; __extractedM... Remove this comment to see the full error message
       sharedId: 'entitySharedId',
       __extractedMetadata: {
         fileID: file1ID.toString(),
@@ -108,6 +114,7 @@ describe('saveSelections', () => {
 
   it('should update selections stored in the file with the newer ones', async () => {
     await saveSelections({
+      // @ts-expect-error TS(2345): Argument of type '{ _id: string; sharedId: string;... Remove this comment to see the full error message
       _id: 'entityID',
       sharedId: 'entitySharedId',
       __extractedMetadata: {
@@ -150,6 +157,7 @@ describe('saveSelections', () => {
 
   it('should remove selections marked for deletion', async () => {
     await saveSelections({
+      // @ts-expect-error TS(2345): Argument of type '{ _id: string; sharedId: string;... Remove this comment to see the full error message
       _id: 'entityID',
       sharedId: 'entitySharedId',
       title: 'document title',

@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+// @ts-expect-error TS(2307): Cannot find module '../utils/date.js.js' or its co... Remove this comment to see the full error message
 import date from '../utils/date.js.js';
 
 import { instanceModel } from '../odm/index.js';
-import { FileType } from '../../shared/types/fileType.js';
+import { FileType } from 'shared/types/fileType.js';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },

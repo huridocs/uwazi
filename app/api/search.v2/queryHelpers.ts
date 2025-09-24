@@ -1,8 +1,9 @@
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { elastic } from '../search.js';
-import { SearchQuery } from '../../shared/types/SearchQueryType.js';
+import { SearchQuery } from 'shared/types/SearchQueryType.js';
 import templatesModel from '../templates/templates.js';
-import propertiesHelper from '../../shared/commonProperties.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+import propertiesHelper from 'shared/commonProperties.js';
+import { PropertySchema } from 'shared/types/commonTypes.js';
 
 export const cleanUp = (value: any) => value;
 

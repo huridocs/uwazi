@@ -1,25 +1,43 @@
 /* eslint-disable max-statements */
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/database/d... Remove this comment to see the full error message
 import { DefaultPermissionsDataSource } from '../authorization.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/services/A... Remove this comment to see the full error message
 import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
-} from '../common.v2/database/data_source_defaults.js';
-import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+  
+} from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/data_s... Remove this comment to see the full error message
 import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/database/data_sour... Remove this comment to see the full error message
 import { DefaultFilesDataSource } from '../files.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
 import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
-import { DefaultRelationshipTypesDataSource } from '../relationshiptypes.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/databa... Remove this comment to see the full error message
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
 import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
-import { User } from '../users.v2/model/User.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../users.v2/model/User.js' or ... Remove this comment to see the full error message
+import { User } from 'api/users.v2/model/User.js';
 
-import { tenants } from '../tenants.js';
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+import { UserRole } from 'shared/types/userSchema.js';
+
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/services/Entity... Remove this comment to see the full error message
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from '../entities.v2/services/EntityRelationshipsUpdateService.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/services/servic... Remove this comment to see the full error message
 import { EntityRelationshipsUpdateService } from '../entities.v2/services/service_factories.js';
 import {
   DefaultHubsDataSource,
@@ -43,6 +61,7 @@ import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrate
 import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {

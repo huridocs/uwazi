@@ -1,6 +1,7 @@
 import { SettingsDataSource } from '../../settings.v2/contracts/SettingsDataSource.js';
-import { objectIndex, objectIndexToArrays } from '../../../shared/data_utils/objectIndex.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors.js';
 import { Translation } from '../model/Translation.js';
@@ -72,6 +73,7 @@ export class ValidateTranslationsService {
           t => t
         );
 
+        // @ts-expect-error TS(7006): Parameter 'dbt' implicitly has an 'any' type.
         await dbTranslations.forEach(async dbt => {
           translationsByKey[dbt.key].missingLanguages.push(dbt.language);
         });

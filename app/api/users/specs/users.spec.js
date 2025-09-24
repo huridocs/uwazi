@@ -3,14 +3,14 @@
 
 import { createError } from '../utils.js';
 import mailer from '../utils/mailer.js';
-import db from '../utils/testing_db.js';
-import * as random from '../../shared/uniqueID.js';
+import db from 'api/utils/testing_db.js';
+import * as random from 'shared/uniqueID.js';
 
 import { comparePasswords, encryptPassword } from '../auth/encryptPassword.js';
 import * as usersUtils from '../auth2fa/usersUtils.js';
 import { settingsModel } from '../settings/settingsModel.js';
 import userGroups from '../usergroups/userGroups.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import * as unlockCode from '../generateUnlockCode';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import users from '../users.js';

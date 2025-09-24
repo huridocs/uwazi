@@ -9,6 +9,7 @@ import { ActionCell } from './ActionCell.js';
 const pxColumnHelper = createColumnHelper<TablePXEntityRow>();
 
 const columns = [
+  // @ts-expect-error TS(2345): Argument of type '"entity.title"' is not assignabl... Remove this comment to see the full error message
   pxColumnHelper.accessor('entity.title', {
     header: generateTableHeader('Entity'),
     cell: DisplayCell,
@@ -33,6 +34,7 @@ const columns = [
     meta: { headerClassName: 'w-2/12' },
     enableSorting: false,
   }),
+  // @ts-expect-error TS(2345): Argument of type '"entity.sharedId"' is not assign... Remove this comment to see the full error message
   pxColumnHelper.accessor('entity.sharedId', {
     header: generateTableHeader('Action', { className: 'sr-only' }),
     cell: ActionCell,

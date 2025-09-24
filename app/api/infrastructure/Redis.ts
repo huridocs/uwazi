@@ -9,12 +9,12 @@ const Redis = {
     port: number = config.redis.port
   ): Promise<RedisClient> {
     redisClient = createClient({ url: `redis://${host}:${port}` });
-    redisClient.on('error', (error) => {
+    redisClient.on('error', error => {
       if (error && error.code !== 'ECONNREFUSED') {
         throw error;
       }
     });
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       redisClient.on('connect', () => {
         resolve(redisClient);
       });
@@ -23,7 +23,7 @@ const Redis = {
 
   async disconnect() {
     if (redisClient.connected) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         redisClient.on('end', resolve);
         redisClient.quit();
       });

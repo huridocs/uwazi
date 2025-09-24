@@ -21,6 +21,8 @@ type ComponentProps = ReviewTocButtonProps & MappedProps;
 
 const ReviewTocButton = ({ file, onClick, children }: ComponentProps) => (
   <FeatureToggle feature="tocGeneration">
+    // @ts-expect-error TS(2339): Property 'generatedToc' does not exist on type 'Cl... Remove this
+    comment to see the full error message
     {file.generatedToc && (
       <button type="button" onClick={() => onClick(file._id)} className="edit-toc btn btn-success">
         <Icon icon="tasks" />

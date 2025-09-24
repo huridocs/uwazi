@@ -1,9 +1,13 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { testingDB } from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
+
+import { testingDB } from 'api/utils/testing_db.js';
 
 import fixtures, {
   propertyToBeInherited,
@@ -14,7 +18,7 @@ import fixtures, {
   thesauriId4,
 } from './validatorFixtures';
 
-import { validateTemplate } from '../../../shared/types/templateSchema';
+import { validateTemplate } from 'shared/types/templateSchema';
 import { safeName } from '../utils';
 
 describe('template schema', () => {

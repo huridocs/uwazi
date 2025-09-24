@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher.js';
 import { Dispatchable } from '../application/contracts/Dispatchable.js';

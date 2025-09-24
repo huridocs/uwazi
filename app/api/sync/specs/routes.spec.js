@@ -6,7 +6,7 @@ import 'api/utils/jasmineHelpers';
 import { ObjectId } from 'mongodb';
 
 import * as index from '../search/entitiesIndex.js';
-import { LanguageUtils } from '../../shared/language.js';
+import { LanguageUtils } from 'shared/language.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes';
 

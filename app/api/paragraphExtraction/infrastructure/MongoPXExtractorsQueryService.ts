@@ -1,9 +1,12 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/ResultS... Remove this comment to see the full error message
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
-import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
-import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
 
 import {
   GetEntityParagraphRelationshipsOutput,
@@ -35,6 +38,7 @@ class MongoPXExtractorsQueryService
   protected collectionName = mongoPXExtractorsCollection;
 
   getExtractors(): ResultSet<GetExtractorsOutput> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().aggregate([
       {
         $lookup: {
@@ -115,6 +119,7 @@ class MongoPXExtractorsQueryService
 
     return new MongoResultSet(
       cursor,
+      // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
       item =>
         ({
           _id: item._id.toString(),
@@ -134,6 +139,7 @@ class MongoPXExtractorsQueryService
       input.filter.status.push(EntityStatus.ProcessingObsolete);
     }
 
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().aggregate([
       { $match: { _id: ObjectId.createFromHexString(input.id) } },
       {
@@ -194,6 +200,7 @@ class MongoPXExtractorsQueryService
 
     return new MongoResultSet(
       cursor,
+      // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
       item =>
         ({
           ...item,
@@ -213,6 +220,7 @@ class MongoPXExtractorsQueryService
   getEntityParagraphRelationships(
     input: GetEntityParagraphRelationshipsInput
   ): ResultSet<GetEntityParagraphRelationshipsOutput> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().aggregate([
       { $match: { _id: ObjectId.createFromHexString(input.extractorId) } },
       {
@@ -322,6 +330,7 @@ class MongoPXExtractorsQueryService
       },
     ]);
 
+    // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
     return new MongoResultSet(cursor, item => ({
       id: item._id.toString(),
       entitySharedId: item.entity,
@@ -334,6 +343,7 @@ class MongoPXExtractorsQueryService
     input: GetExtractedParagraphsInput
   ): ResultSet<GetExtractedParagraphsOutput> {
     const { number, size, skip } = getDefaultPagination(input.page?.number, input.page?.size);
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection('entities').aggregate([
       {
         $match: {
@@ -416,6 +426,7 @@ class MongoPXExtractorsQueryService
       },
     ]);
 
+    // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
     return new MongoResultSet(cursor, item => item as GetExtractedParagraphsOutput);
   }
 }

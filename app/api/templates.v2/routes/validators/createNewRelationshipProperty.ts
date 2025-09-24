@@ -1,5 +1,7 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/validation/routes... Remove this comment to see the full error message
 import { ValidatorSchema, createValidator } from '../common.v2/validation/routesValidation.js';
-import { RelationshipPropertyData } from '../../shared/types/api.v2/templates.createTemplateRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/temp... Remove this comment to see the full error message
+import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest.js';
 
 const createNewRelationshipPropertySchema: ValidatorSchema<
   RelationshipPropertyData,

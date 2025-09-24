@@ -1,9 +1,11 @@
 import React from 'react';
-import { AttachmentSchema } from '../../shared/types/commonTypes.js';
+
+import { AttachmentSchema } from 'shared/types/commonTypes.js';
 import ReactPlayer from 'react-player';
 import { ClientFile } from '../../istore.js';
 import MarkdownMedia from '../../Markdown/components/MarkdownMedia.js';
-import { isSerializedFile, prepareHTMLMediaView } from '../../shared/fileUploadUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/fileUploadUtils.j... Remove this comment to see the full error message
+import { isSerializedFile, prepareHTMLMediaView } from 'shared/fileUploadUtils.js';
 
 export const RenderAttachment = ({ attachment }: { attachment: AttachmentSchema | ClientFile }) => {
   const { mimetype = '' } = attachment;

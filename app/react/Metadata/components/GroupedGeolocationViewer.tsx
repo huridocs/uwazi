@@ -5,7 +5,7 @@ import { createSelector } from 'reselect';
 import { Translate } from '../../I18N/index.js';
 import { bindActionCreators, Dispatch } from 'redux';
 import { IStore } from '../../istore';
-import { ensure } from '../../../shared/tsUtils';
+import { ensure } from 'shared/tsUtils';
 import { Pill } from './Pill';
 import * as actions from '../../Relationships/actions/actions';
 
@@ -42,6 +42,7 @@ const templatesMap = createSelector(
   (s: IStore) => s.templates,
   templates =>
     templates.reduce(
+      // @ts-expect-error TS(7006): Parameter 'map' implicitly has an 'any' type.
       (map, template) => ({
         ...map,
         [ensure<string>(template?.get('_id'))]: {

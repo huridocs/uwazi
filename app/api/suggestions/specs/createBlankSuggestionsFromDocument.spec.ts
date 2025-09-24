@@ -1,6 +1,9 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DBFixture } from '../utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
 import { CreateBlankSuggestionsFromDocument } from '../useCases/createBlankSuggestionsFromDocument';
 import {
   ExtractorsNotAvailableError,
@@ -66,10 +69,12 @@ describe('CreateBlankSuggestionsFromDocument', () => {
     expect(suggestions).toHaveLength(2);
 
     const fromExtractor1 = suggestions?.filter(
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.extractorId.toString() === factory.id('extractor_1').toString()
     );
 
     const fromExtractor4 = suggestions?.filter(
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.extractorId.toString() === factory.id('extractor_4').toString()
     );
 

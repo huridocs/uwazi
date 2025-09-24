@@ -1,8 +1,10 @@
 import React from 'react';
 import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import { availableLanguages } from '../../shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { availableLanguages } from 'shared/language/index.js';
 import { templatesAtom } from '../../../../../atoms/index.js';
 import {
   PXParagraphLoaderResponse,
@@ -14,9 +16,11 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
   const { sourceEntity } = useLoaderData() as PXParagraphLoaderResponse;
   const templates = useAtomValue(templatesAtom);
   const paragraphTemplate = templates.find(template => template._id === paragraphData.template);
+  // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
   const language = availableLanguages.find(lang => lang.key === paragraphData.language);
 
   const sourceDocument =
+    // @ts-expect-error TS(2339): Property 'language' does not exist on type 'Client... Remove this comment to see the full error message
     sourceEntity?.documents?.find(document => document.language === language?.ISO639_3) ||
     (sourceEntity?.documents && sourceEntity.documents[0]);
 
@@ -34,6 +38,8 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
         <Translate>Language</Translate>: {language?.localized_label}
       </div>
       <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
+        // @ts-expect-error TS(2339): Property 'originalname' does not exist on type 'Cl... Remove
+        this comment to see the full error message
         <Translate>Document</Translate>: {sourceDocument?.originalname}
       </div>
       <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">

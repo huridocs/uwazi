@@ -1,7 +1,11 @@
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
 
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
 import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/contracts/FilesDat... Remove this comment to see the full error message
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
 
 import {
@@ -35,6 +39,7 @@ class PXGetExtractorStatuses
       .getExtractorStatuses(input)
       .first()) as PXGetExtractorStatusesOutput;
 
+    // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
     const installedLanguages = (await settingsDS.getInstalledLanguages()).map(l => l.key);
 
     await results?.rows.reduce(async (prev, _row) => {
@@ -45,6 +50,7 @@ class PXGetExtractorStatuses
         .getDocumentsForEntity(row.entity.sharedId, { languages: installedLanguages })
         .all();
 
+      // @ts-expect-error TS(7006): Parameter 'f' implicitly has an 'any' type.
       row.availableFileLanguages = [...new Set(entityValidFiles.map(f => f.language))];
 
       const entityParagraphRelationships = await extractorsQueryService

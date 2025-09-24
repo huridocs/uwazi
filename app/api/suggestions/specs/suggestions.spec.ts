@@ -1,7 +1,9 @@
 /* eslint-disable max-params */
 /* eslint-disable max-statements */
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import db from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import db from 'api/utils/testing_db.js';
 
 import { ObjectId } from 'mongodb';
 import {
@@ -9,7 +11,9 @@ import {
   IXSuggestionStateType,
   IXSuggestionType,
   IXSuggestionsFilter,
-} from '../../shared/types/suggestionType.js';
+  // @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+} from 'shared/types/suggestionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
 import { applicationEventsBus } from '../eventsbus.js';
 import { Suggestions } from '../suggestions';
 import {
@@ -95,6 +99,7 @@ const prepareAndAcceptSuggestion = async (
   const acceptedSuggestion = (await getSuggestions({ extractorId: factory.id(extractorName) }))
     .suggestions[0];
   const entities = await db.mongodb?.collection('entities').find({ sharedId }).toArray();
+  // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
   const metadataValues = entities?.map(entity => entity.metadata[propertyName]);
   const allFiles = await db.mongodb?.collection('files').find({}).toArray();
   return { acceptedSuggestion, metadataValues, allFiles };
@@ -303,6 +308,7 @@ describe('suggestions', () => {
           ?.collection('entities')
           .find({ sharedId: 'shared1' })
           .toArray();
+        // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
         const ages1 = entities1?.map(entity => entity.metadata.age[0].value);
         expect(ages1).toEqual([17, 17]);
 
@@ -310,6 +316,7 @@ describe('suggestions', () => {
           ?.collection('entities')
           .find({ sharedId: 'shared2' })
           .toArray();
+        // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
         const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
 
         expect(ages2).toEqual([20, 20, 20]);
@@ -905,6 +912,7 @@ describe('suggestions', () => {
       const query = { entityId: 'shared1' };
       await Suggestions.setObsolete(query);
       const obsoletes = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(obsoletes?.every(s => s.state.obsolete && s.state.match === null)).toBe(true);
       expect(obsoletes?.length).toBe(4);
     });
@@ -919,6 +927,7 @@ describe('suggestions', () => {
       const query = { entityId: 'shared1' };
       await Suggestions.markSuggestionsWithoutSegmentation(query);
       const notSegmented = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
     });
 
@@ -934,8 +943,10 @@ describe('suggestions', () => {
         .find({ _id: shared2AgeSuggestionId })
         .toArray();
       expect(segmented?.length).toBe(1);
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(segmented?.every(s => s.state?.error)).toBe(false);
       expect(notSegmented?.length).toBe(1);
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
     });
   });
@@ -970,6 +981,7 @@ describe('suggestions', () => {
         .toArray();
 
       expect(trainingSamples?.length).toBe(5);
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       expect(trainingSamples?.map(s => s.entityId)).toEqual([
         'shared1',
         'shared1',

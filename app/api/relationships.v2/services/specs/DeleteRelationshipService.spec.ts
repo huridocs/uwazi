@@ -1,14 +1,24 @@
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/database/M... Remove this comment to see the full error message
 import { MongoPermissionsDataSource } from '../authorization.v2/database/MongoPermissionsDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/services/A... Remove this comment to see the full error message
 import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/testing/partialIm... Remove this comment to see the full error message
 import { partialImplementation } from '../common.v2/testing/partialImplementation.js';
-import { User } from '../users.v2/model/User.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB from '../utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../users.v2/model/User.js' or ... Remove this comment to see the full error message
+import { User } from 'api/users.v2/model/User.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
 import { MissingRelationshipError } from '../../errors/relationshipErrors';
 import { DeleteRelationshipService } from '../DeleteRelationshipService';
@@ -83,6 +93,7 @@ describe('delete()', () => {
       const connection = getConnection();
       const transactionManager = DefaultTransactionManager();
       const service = new DeleteRelationshipService(
+        // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
         new AuthorizationService(
@@ -113,6 +124,7 @@ describe('delete()', () => {
       const connection = getConnection();
       const transactionManager = DefaultTransactionManager();
       const service = new DeleteRelationshipService(
+        // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
         new AuthorizationService(
@@ -159,6 +171,7 @@ describe('delete()', () => {
       const connection = getConnection();
       const transactionManager = DefaultTransactionManager();
       const service = new DeleteRelationshipService(
+        // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
         new AuthorizationService(

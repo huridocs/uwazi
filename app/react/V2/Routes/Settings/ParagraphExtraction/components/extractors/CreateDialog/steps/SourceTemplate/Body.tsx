@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router';
 import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';
-import { MultiselectListOption, MultiselectList, defaultSearch } from '../../../../../../../../Components/Forms/index.js';
+import {
+  MultiselectListOption,
+  MultiselectList,
+  defaultSearch,
+} from '../../../../../../../../Components/Forms/index.js';
 import { templatesAtom } from '../../../../../../../../atoms/index.js';
 import { Extractor } from '../../../../../../../../shared/ParagraphExtractionTypes.js';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';

@@ -1,5 +1,8 @@
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/Validator.js' o... Remove this comment to see the full error message
 import { Validator } from '../core/domain/Validator.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/templa... Remove this comment to see the full error message
 import { TemplateWithDuplicatedPropertyValidator } from '../core/domain/template/templateValidator/TemplateWithDuplicatedPropertyValidator.js';
 import { Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 import { V1RelationshipProperty } from './V1RelationshipProperty';
@@ -75,27 +78,35 @@ class Template {
 
   ensurePropertyIsConsistent(property: Property) {
     this.properties.forEach(
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplatePr... Remove this comment to see the full error message
       p => p.name === property.name && p.ensurePropertyIsConsistent(property as any)
     );
   }
 
   selectNewProperties(newTemplate: Template): Property[] {
+    // @ts-expect-error TS(2339): Property 'id' does not exist on type 'TemplateProp... Remove this comment to see the full error message
     const oldIdSet = new Set(this.properties.map(p => p.id));
+    // @ts-expect-error TS(2322): Type 'TemplateProperty[]' is not assignable to typ... Remove this comment to see the full error message
     return newTemplate.properties.filter(p => !oldIdSet.has(p.id));
   }
 
   selectUpdatedProperties(newTemplate: Template): PropertyUpdateInfo[] {
     const oldPropertiesById = objectIndex(
       this.properties.concat(this.commonProperties),
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       p => p.id,
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       p => p
     );
     const newProperties = newTemplate.properties
       .concat(newTemplate.commonProperties)
+      // @ts-expect-error TS(2339): Property 'id' does not exist on type 'TemplateProp... Remove this comment to see the full error message
       .filter(p => p.id in oldPropertiesById);
     const newPropertiesById = objectIndex(
       newProperties,
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       p => p.id,
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       p => p
     );
     const updateInfo = Object.entries(newPropertiesById)
@@ -112,6 +123,7 @@ class Template {
     this.properties.forEach(prop => {
       if (!swapingNameWithExistingProperty) {
         swapingNameWithExistingProperty = (newTemplate.properties || []).find(
+          // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplatePr... Remove this comment to see the full error message
           p => p.name === prop.name && p.id?.toString() !== prop.id?.toString()
         );
       }
@@ -137,11 +149,14 @@ class Template {
   }
 
   selectDeletedProperties(newTemplate: Template): Property[] {
+    // @ts-expect-error TS(2339): Property 'id' does not exist on type 'TemplateProp... Remove this comment to see the full error message
     const newPropertyIds = new Set(newTemplate.properties.map(p => p.id));
+    // @ts-expect-error TS(2322): Type 'TemplateProperty[]' is not assignable to typ... Remove this comment to see the full error message
     return this.properties.filter(p => !newPropertyIds.has(p.id));
   }
 
   getPropertyById(propertyId: string) {
+    // @ts-expect-error TS(2339): Property 'id' does not exist on type 'TemplateProp... Remove this comment to see the full error message
     const property = this.properties.find(p => p.id === propertyId);
     if (property) {
       return property;
@@ -156,10 +171,12 @@ class Template {
   }
 
   getPropertiesByType(type: PropertyTypes) {
+    // @ts-expect-error TS(2339): Property 'type' does not exist on type 'TemplatePr... Remove this comment to see the full error message
     return this.properties.filter(p => p.type === type);
   }
 
   getRelationshipProperties(): V1RelationshipProperty[] {
+    // @ts-expect-error TS(2339): Property 'type' does not exist on type 'TemplatePr... Remove this comment to see the full error message
     return this.properties.filter((p): p is V1RelationshipProperty => p.type === 'relationship');
   }
 }

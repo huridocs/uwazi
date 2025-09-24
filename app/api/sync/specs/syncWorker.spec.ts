@@ -7,8 +7,11 @@ import { rm, writeFile } from 'fs/promises';
 import bodyParser from 'body-parser';
 import _ from 'lodash';
 
+// @ts-expect-error TS(2307): Cannot find module '../auth/routes.js' or its corr... Remove this comment to see the full error message
 import authRoutes from '../auth/routes.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/entitiesModel.js' ... Remove this comment to see the full error message
 import entitiesModel from '../entities/entitiesModel.js';
 import {
   attachmentsPath,
@@ -16,33 +19,58 @@ import {
   files,
   storage,
   testingUploadPaths,
+  // @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 } from '../files.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.js' or its correspondi... Remove this comment to see the full error message
 import translations from '../i18n.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.js' or its co... Remove this comment to see the full error message
 import relationships from '../relationships.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationtypes.js' or its co... Remove this comment to see the full error message
 import relationtypes from '../relationtypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../sync/routes.js' or its corr... Remove this comment to see the full error message
 import syncRoutes from '../sync/routes.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
 import templates from '../templates.js';
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauri from '../thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../users/users.js' or its corr... Remove this comment to see the full error message
 import users from '../users/users.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/AppContext.js' or its... Remove this comment to see the full error message
 import { appContext } from '../utils/AppContext.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/appContextMiddleware.... Remove this comment to see the full error message
 import { appContextMiddleware } from '../utils/appContextMiddleware.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
 import { elasticTesting } from '../utils/elastic_testing.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/error_handling_middle... Remove this comment to see the full error message
 import errorHandlingMiddleware from '../utils/error_handling_middleware.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/mailer.js' or its cor... Remove this comment to see the full error message
 import mailer from '../utils/mailer.js';
-import db, { DBFixture } from '../utils/testing_db.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../../utils/advancedSort.js... Remove this comment to see the full error message
 import { advancedSort } from '../../../utils/advancedSort.js';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/database/data_sourc... Remove this comment to see the full error message
 import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/services/CreateTran... Remove this comment to see the full error message
 import { CreateTranslationsService } from '../i18n.v2/services/CreateTranslationsService.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/services/ValidateTr... Remove this comment to see the full error message
 import { ValidateTranslationsService } from '../i18n.v2/services/ValidateTranslationsService.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
 import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { Db, ObjectId } from 'mongodb';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
-import * as utils from '../../shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/tsUtils.js' or it... Remove this comment to see the full error message
+import * as utils from 'shared/tsUtils.js';
 import { syncWorker } from '../syncWorker.js';
 import {
   host1Fixtures,
@@ -192,10 +220,10 @@ describe('syncWorker', () => {
     await tenants.run(async () => {
       await rm(attachmentsPath(), { recursive: true });
     }, 'target2');
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       server.close(resolve);
     });
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       server2.close(resolve);
     });
     await db.disconnect();
@@ -450,6 +478,7 @@ describe('syncWorker', () => {
         .toArray();
       const syncedTranslations = await translations.get({});
 
+      // @ts-expect-error TS(7006): Parameter 'i' implicitly has an 'any' type.
       expect(syncedTranslationsV2.filter(i => i.key === 'System Key')).toEqual([
         {
           _id: expect.any(ObjectId),

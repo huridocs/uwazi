@@ -2,7 +2,9 @@
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
 import {
   factory,
@@ -10,9 +12,13 @@ import {
   shared6enId,
   stateFilterFixtures,
   suggestionSharedId6Title,
+  // @ts-expect-error TS(2307): Cannot find module '../suggestions/specs/fixtures.... Remove this comment to see the full error message
 } from '../suggestions/specs/fixtures.js';
+// @ts-expect-error TS(2307): Cannot find module '../suggestions/routes.js' or i... Remove this comment to see the full error message
 import { suggestionsRoutes } from '../suggestions/routes.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { iosocket, setUpApp, TestEmitSources } from '../utils/testingRoutes.js';
 import waitForExpect from 'wait-for-expect';
 import { Suggestions } from '../suggestions';

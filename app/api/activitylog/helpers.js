@@ -1,11 +1,11 @@
-import { availableLanguages } from '../../shared/language/index.js';
+import { availableLanguages } from 'shared/language/index.js';
 import { typeParsers } from '../activitylog/migrationsParser.js';
 import templates from '../templates/templates.js';
 import entities from '../entities/entities.js';
 import users from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';
 import { files } from '../files.js';
-import { PermissionType } from '../../shared/types/permissionSchema.js';
+import { PermissionType } from 'shared/types/permissionSchema.js';
 import { Suggestions } from '../suggestions/suggestions.js';
 import { Extractors } from '../services/informationextraction/ixextractors.js';
 

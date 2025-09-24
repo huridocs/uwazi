@@ -3,10 +3,14 @@ import React from 'react';
 import moment from 'moment';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Tooltip } from 'flowbite-react';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Pill, Button } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import type { PillColor } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import { ActivityLogSemanticType } from '../../shared/types/activityLogEntryType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/activityLog... Remove this comment to see the full error message
+import { ActivityLogSemanticType } from 'shared/types/activityLogEntryType.js';
 import { LogEntry } from '../ActivityLogLoader';
 
 const ActionHeader = () => <Translate>Action</Translate>;

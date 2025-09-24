@@ -1,14 +1,23 @@
 import { ObjectId } from 'mongodb';
 import Ajv, { ErrorObject } from 'ajv';
 import { isUndefined, isNull } from 'util';
-import { ensure } from '../../shared/tsUtils.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { PropertySchema, MetadataObjectSchema } from '../../shared/types/commonTypes.js';
-import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { arrayBidirectionalDiff } from '../../shared/data_utils/arrayBidirectionalDiff.js';
+
+import { ensure } from 'shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+
+import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/arrayB... Remove this comment to see the full error message
+import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/index.js' or its c... Remove this comment to see the full error message
 import entities from '../entities/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauris from '../thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri/thesauri.js' or it... Remove this comment to see the full error message
 import { flatThesaurusValues } from '../thesauri/thesauri.js';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
@@ -55,6 +64,7 @@ const validateType = (
 
 const compareThesaurusValue = async (property: PropertySchema, value: MetadataObjectSchema[]) => {
   const thesaurus = await thesauris.getById(property.content);
+  // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
   const thesaurusValues = flatThesaurusValues(thesaurus).map(v => v.id);
 
   return value.filter(v => v.value && !thesaurusValues.includes(String(v.value)));
@@ -130,7 +140,9 @@ const validateRelationshipV2 = async (
       const diff = arrayBidirectionalDiff(
         currentEntity?.metadata?.[property.name] || [],
         value,
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.value as string,
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v
       );
 
@@ -153,6 +165,7 @@ const validateRelationshipV2 = async (
     const entitiesInValues: EntityWithFilesSchema[] = await entities.getUnrestricted(
       {
         sharedId: { $in: valueIds },
+        // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
         template: { $in: targetTemplates.map(t => new ObjectId(t)) },
       },
       { sharedId: 1, template: 1 }
@@ -193,16 +206,19 @@ const validateSameRelationshipsMatch = (
 
   const sameProps =
     template.properties?.filter(
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       p =>
         p.type === propertyTypes.relationship &&
         p.content?.toString() === property.content?.toString() &&
         p.relationType?.toString() === property.relationType?.toString()
     ) || [];
 
-  const valid = sameProps.every((p) => {
+  // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
+  const valid = sameProps.every(p => {
     const otherProp = entity.metadata?.[p.name] || [];
     return (
       otherProp?.length === value?.length &&
+      // @ts-expect-error TS(7006): Parameter '_mo' implicitly has an 'any' type.
       value.every(mo => otherProp?.find(_mo => _mo.value === mo.value))
     );
   });

@@ -1,15 +1,17 @@
 import multer from 'multer';
 
 import { models, WithId } from '../odm/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
 
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { storage, uploadMiddleware } from '../files.js';
 import { updateMapping } from '../search/entitiesIndex.js';
 import { Application, Request } from 'express';
-import { TranslationType } from '../../shared/translationType.js';
-import { FileType } from '../../shared/types/fileType.js';
+import { TranslationType } from 'shared/translationType.js';
+import { FileType } from 'shared/types/fileType.js';
 
-import { TemplateSchema } from '../../shared/types/templateType.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
 import { needsAuthorization } from '../auth/index.js';
 
 const diskStorage = multer.diskStorage({

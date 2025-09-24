@@ -1,4 +1,5 @@
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
 import React, { useState } from 'react';
 import { ShareEntityModal } from './ShareEntityModal';

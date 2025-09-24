@@ -1,5 +1,7 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { RequestEntityTranslation } from '../../RequestEntityTranslation';
 import { SaveEntityTranslations } from '../../SaveEntityTranslations';
 import { ATSolveVersionConflict } from '../ATSolveVersionConflict';

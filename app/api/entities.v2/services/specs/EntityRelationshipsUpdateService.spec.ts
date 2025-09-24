@@ -1,12 +1,21 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/MongoE... Remove this comment to see the full error message
 import { MongoEntitiesDataSource } from '../entities.v2/database/MongoEntitiesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/MongoS... Remove this comment to see the full error message
 import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
-import { MongoTemplatesDataSource } from '../templates.v2/database/MongoTemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/database/M... Remove this comment to see the full error message
 import { MongoRelationshipsDataSource } from '../relationships.v2/database/MongoRelationshipsDataSource.js';
-import testingDB from '../utils/testing_db.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+
+import testingDB from 'api/utils/testing_db.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService';
 
 const factory = getFixturesFactory();

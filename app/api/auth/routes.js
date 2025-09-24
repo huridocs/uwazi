@@ -8,8 +8,8 @@ import urljoin from 'url-join';
 import { DB } from '../odm/index.ts';
 import { config } from '../config.ts';
 import cors from 'cors';
-import request from '../../shared/JSONRequest.js';
-import { randomSleep } from '../../shared/tsUtils.ts';
+import request from 'shared/JSONRequest.js';
+import { randomSleep } from 'shared/tsUtils.ts';
 import { CaptchaModel } from './CaptchaModel.ts';
 
 import { validation } from '../utils/index.js';

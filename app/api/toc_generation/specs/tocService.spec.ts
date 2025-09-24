@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { files, storage } from '../files.js';
-import { tenants } from '../tenants.js';
-import { testingDB } from '../utils/testing_db.js';
-import request from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+
+import { testingDB } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import request from 'shared/JSONRequest.js';
 import { tocService } from '../tocService';
 import { fixtures } from './fixtures';
 

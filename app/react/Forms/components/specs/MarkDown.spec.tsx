@@ -2,6 +2,7 @@ import { TabLink, TabContent } from 'react-tabs-redux';
 import React from 'react';
 
 import { shallow, ShallowWrapper } from 'enzyme';
+// @ts-expect-error TS(2307): Cannot find module '../../Markdown.js' or its corr... Remove this comment to see the full error message
 import MarkDownViewer from '../../Markdown.js';
 
 import { MarkDown, MarkDownType } from '../MarkDown';
@@ -54,6 +55,7 @@ describe('MarkDown', () => {
       props.value = '# <b>This is a title</b>';
       render();
       const container = component.find(MarkDownViewer);
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       expect(container.props().markdown).toBe('# <b>This is a title</b>');
     });
     it('should not display if the pages is for an entity view', () => {

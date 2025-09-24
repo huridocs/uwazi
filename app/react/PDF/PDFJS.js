@@ -1,7 +1,7 @@
 /* eslint-disable import/no-mutable-exports, global-require, prefer-destructuring */
 import * as pdfjs from 'pdfjs-dist';
 import { EventBus } from 'pdfjs-dist/web/pdf_viewer.mjs';
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 
 let PDFJS = {};
 let pdfjsLib = {};

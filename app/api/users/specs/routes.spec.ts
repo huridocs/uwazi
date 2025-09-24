@@ -1,12 +1,17 @@
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
 import request from 'supertest';
 
+// @ts-expect-error TS(2307): Cannot find module '../odm/model.js.js' or its cor... Remove this comment to see the full error message
 import { WithId } from '../odm/model.js.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { NextFunction, Request, Response } from 'express';
 import { DeleteResult } from 'mongodb';
-import { UserRole } from '../../shared/types/userSchema.js';
-import { UserSchema } from '../../shared/types/userType.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
+
+import { UserSchema } from 'shared/types/userType.js';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 import { User } from '../usersModel.js';

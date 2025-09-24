@@ -1,10 +1,10 @@
 import { WithId } from '../odm/index.js';
 import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-import { validateCreateNewRelationshipProperty } from '../templates.v2/routes/validators/createNewRelationshipProperty.js';
-import { CreateTemplateService } from '../templates.v2/services/service_factories.js';
-import { ensure } from '../../shared/tsUtils.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty.js';
+import { CreateTemplateService } from 'api/templates.v2/services/service_factories.js';
+import { ensure } from 'shared/tsUtils.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import templates from './templates.js';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
@@ -16,7 +16,7 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const createTemplateService = await CreateTemplateService();
 
   const mappedProperties = await Promise.all(
-    (template.properties || []).map(async (property) => {
+    (template.properties || []).map(async property => {
       if (property.type !== 'newRelationship') {
         return property;
       }

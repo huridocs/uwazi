@@ -7,16 +7,16 @@ import * as setupSockets from '../../socketio/setupSockets.js';
 import db, { testingDB } from '../../utils/testing_db.js';
 import { testingEnvironment } from '../../utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import * as idGenerator from '../../../shared/IDGenerator.js';
-import { propertyTypes } from '../../../shared/propertyTypes.js';
+import * as idGenerator from 'shared/IDGenerator.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
 import documents from '../documents/documents.js.js';
 import * as generatedIdPropertyAutoFiller from '../entities/generatedIdPropertyAutoFiller.js';
 import translations from '../i18n/translations.js';
 import { elasticClient } from '../search/elastic.js';
-import db, { testingDB } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import db, { testingDB } from 'api/utils/testing_db.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { propertyTypes } from '../../shared/propertyTypes.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
 
 
 import { spyOnEmit } from '../eventsbus/eventTesting.js';
@@ -30,7 +30,7 @@ import { applicationEventsBus } from '../eventsbus.js';
 import { testingTenants } from '../utils/testingTenants.js';
 import { inspect } from 'util';
 import { DefaultTranslationsDataSource } from '../i18n.v2/database/data_source_defaults.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';

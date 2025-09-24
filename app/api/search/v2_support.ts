@@ -1,14 +1,15 @@
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 import { DefaultEntitiesDataSource } from '../entities.v2/database/data_source_defaults.js';
 import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
+import { PropertySchema } from 'shared/types/commonTypes.js';
 
 async function checkFeatureEnabled() {
   const db = getConnection();
 
   const transactionManager = DefaultTransactionManager();
+  // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   return settingsDataSource.readNewRelationshipsAllowed();
@@ -19,7 +20,8 @@ function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
     return (hit: any) => hit._source.metadata;
   }
 
-  return (hit) => {
+  // @ts-expect-error TS(7006): Parameter 'hit' implicitly has an 'any' type.
+  return hit => {
     const mappedMetadata = {} as any;
     Object.keys(hit._source.metadata || {}).forEach(propertyName => {
       mappedMetadata[propertyName] = (hit._source.metadata[propertyName] || []).map(
@@ -52,6 +54,7 @@ async function createObsoleteMetadataResponseProcessor(
       hits.map(h => h._source.sharedId),
       language
     )
+    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     .indexed(entity => entity.sharedId);
 
   return (hit: any) => obsoleteMetadataByEntity[hit._source.sharedId]?.obsoleteMetadata ?? [];

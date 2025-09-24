@@ -1,7 +1,10 @@
 import superagent, { MultipartValueSingle, SuperAgentRequest } from 'superagent';
+// @ts-expect-error TS(2307): Cannot find module '../../config.js' or its corres... Remove this comment to see the full error message
 import { APIURL } from '../../config.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
 
 type Endpoint = 'attachment' | 'custom' | 'document';
 

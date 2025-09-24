@@ -1,5 +1,7 @@
-import db, { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 const setupTestingEnviroment = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(

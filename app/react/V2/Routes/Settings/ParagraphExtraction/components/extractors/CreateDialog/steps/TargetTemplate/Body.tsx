@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '../../../../../../../../atoms/index.js';
-import { defaultSearch, MultiselectList, MultiselectListOption } from '../../../../../../../../Components/Forms/index.js';
+import {
+  defaultSearch,
+  MultiselectList,
+  MultiselectListOption,
+} from '../../../../../../../../Components/Forms/index.js';
 import { useCreateExtractorContext } from '../../CreateExtractorContext.js';
 import { filterPXQualifiedTemplates } from '../../../../../utils/filterPXQualifiedTemplates.js';
 import { formatTemplatesToOptions } from '../../../../../utils/formatters.js';

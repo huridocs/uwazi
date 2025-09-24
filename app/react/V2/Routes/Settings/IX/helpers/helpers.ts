@@ -1,12 +1,18 @@
 /* eslint-disable max-lines */
 import { get, uniqBy } from 'lodash';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema, ClientTemplateSchema } from '../../istore.js';
-import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
+
+import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t } from '../../I18N/index.js';
 import { RadioProps } from '../../../../Components/Forms/index.js';
 import { ClientIXExtractorType } from '../../../../shared/types.js';
 import { TableSuggestion, MultiValueSuggestion } from '../types.js';
-import { getPropertyNameFromExtractPair, getTemplateFromExtractPair } from './sidepanelFunctions.js';
+import {
+  getPropertyNameFromExtractPair,
+  getTemplateFromExtractPair,
+} from './sidepanelFunctions.js';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
@@ -44,7 +50,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   };
 
   const { subRows, ...suggestionWithoutChildren } = suggestion;
-  suggestedValues.forEach((suggestedValue) => {
+  suggestedValues.forEach(suggestedValue => {
     const suggestedValueId = generateRowId(suggestedValue);
     const valuePresent = currentValues.find(
       v =>
@@ -68,7 +74,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
     });
   });
 
-  currentValues.forEach((currentValue) => {
+  currentValues.forEach(currentValue => {
     const currentValueId = generateRowId(currentValue);
     suggestion.subRows?.push({
       ...suggestionWithoutChildren,
@@ -91,9 +97,11 @@ const propertyIsInAllTemplates = (
   templates.every(template =>
     template.properties
       .filter(
+        // @ts-expect-error TS(7006): Parameter 'templateProperty' implicitly has an 'an... Remove this comment to see the full error message
         templateProperty => templateProperty.type === 'markdown' || templateProperty.type === 'text'
       )
-      .some((templateProperty) => {
+      // @ts-expect-error TS(7006): Parameter 'templateProperty' implicitly has an 'an... Remove this comment to see the full error message
+      .some(templateProperty => {
         if (templateProperty.name === property.propertyName) {
           return true;
         }
@@ -131,8 +139,9 @@ const getAvailableSources = (
   let markdownProperties: { templateId: string; propertyName: string; propertyLabel: string }[] =
     [];
 
-  templatesIncluded.every((template) => {
+  templatesIncluded.every(template => {
     const templateMarkdownProperties = template.properties?.filter(
+      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       property => property.type === 'markdown' || property.type === 'text'
     );
 
@@ -142,6 +151,7 @@ const getAvailableSources = (
     }
 
     markdownProperties.push(
+      // @ts-expect-error TS(7006): Parameter 'templateMarkdownProperty' implicitly ha... Remove this comment to see the full error message
       ...templateMarkdownProperties.map(templateMarkdownProperty => ({
         templateId: template._id.toString(),
         propertyName: templateMarkdownProperty.name,
@@ -173,7 +183,7 @@ const getAvailableSources = (
       })),
   ];
 
-  options.some((option) => {
+  options.some(option => {
     if (!extractor || extractor.source.pdf) {
       // intentional pass by reference
       // eslint-disable-next-line no-param-reassign
@@ -212,7 +222,7 @@ const getMetadataFromProperty = (
 
 const formatAccepted = (acceptedSuggestions: TableSuggestion[]) =>
   // eslint-disable-next-line max-statements
-  acceptedSuggestions.map((acceptedSuggestion) => {
+  acceptedSuggestions.map(acceptedSuggestion => {
     let addedValues: string[] | undefined;
     let removedValues: string[] | undefined;
 

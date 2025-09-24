@@ -2,15 +2,24 @@ import { performance } from 'perf_hooks';
 
 import { Application, NextFunction, Request, Response } from 'express';
 
+// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
 import { needsAuthorization } from '../auth.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/data_s... Remove this comment to see the full error message
 import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/index.js' or its corr... Remove this comment to see the full error message
 import { parseQuery } from '../utils/index.js';
-import { GetMigrationHubRecordsResponse } from '../../shared/types/api.v2/migrationHubRecords.get.js';
-import { MigrationResponse } from '../../shared/types/api.v2/relationships.migrate.js';
-import { TestOneHubResponse } from '../../shared/types/api.v2/relationships.testOneHub.js';
-import { CreateRelationshipMigRationFieldResponse } from '../../shared/types/api.v2/relationshipMigrationField.create.js';
-import { GetRelationshipMigrationFieldsResponse } from '../../shared/types/api.v2/relationshipMigrationField.get.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/migr... Remove this comment to see the full error message
+import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,

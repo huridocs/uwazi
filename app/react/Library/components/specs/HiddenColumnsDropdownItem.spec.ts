@@ -1,9 +1,12 @@
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
 import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem';
 
 describe('ColumnItem', () => {
   const item: SelectableColumn = {
+    // @ts-expect-error TS(2322): Type '{ label: string; name: string; selectAll: tr... Remove this comment to see the full error message
     label: 'Show all',
     name: 'show_all',
     selectAll: true,

@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
-import { PermissionSchema } from '../../shared/types/permissionType.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionT... Remove this comment to see the full error message
+import { PermissionSchema } from 'shared/types/permissionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 import { ClientUserSchema } from '../../apiResponseTypes.js';
 
 type PropTypes = {

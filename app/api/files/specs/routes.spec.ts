@@ -2,19 +2,32 @@ import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/specs/entitySaving... Remove this comment to see the full error message
 import { editorUser } from '../entities/specs/entitySavingManagerFixtures.js';
+// @ts-expect-error TS(2307): Cannot find module '../eventsbus/eventTesting.js' ... Remove this comment to see the full error message
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from '../eventsbus/eventTesting.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.js' or its correspondin... Remove this comment to see the full error message
 import { legacyLogger } from '../log.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.js' or its co... Remove this comment to see the full error message
 import connections from '../relationships.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/ocr/ocrRecords.js'... Remove this comment to see the full error message
 import * as ocrRecords from '../services/ocr/ocrRecords.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/AppContext.js' or its... Remove this comment to see the full error message
 import { appContext } from '../utils/AppContext.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import db from '../utils/testing_db.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { UserSchema } from '../../shared/types/userType.js';
+
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+
+import { UserSchema } from 'shared/types/userType.js';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
@@ -163,9 +176,11 @@ describe('files routes', () => {
           language: 'eng',
         };
         const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
+        // @ts-expect-error TS(2345): Argument of type 'typeof FileCreatedEvent' is not ... Remove this comment to see the full error message
         await expect(caller).toEmitEventWith(FileCreatedEvent, {
           newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
         });
+        // @ts-expect-error TS(2345): Argument of type 'typeof FileUpdatedEvent' is not ... Remove this comment to see the full error message
         await expect(caller).not.toEmitEvent(FileUpdatedEvent);
       });
 

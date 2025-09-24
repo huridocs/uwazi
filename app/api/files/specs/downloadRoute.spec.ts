@@ -1,9 +1,12 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import testingDB from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import {
   fixtures,
   fileName1,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
 
-import { availableLanguages } from '../../shared/language/index.js';
+import { availableLanguages } from 'shared/language/index.js';
 
 const determineHotAssets = query => ({
   JS: [
@@ -29,7 +29,7 @@ const googelFonts = (
   />
 );
 
-const getFaviconURL = (reduxData) => {
+const getFaviconURL = reduxData => {
   const favicon = reduxData.settings.collection.get('favicon');
 
   if (!favicon || favicon === '') {

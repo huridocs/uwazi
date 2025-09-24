@@ -1,8 +1,8 @@
 import users from '../users/users.js';
-import { UserGroupSchema } from '../../shared/types/userGroupType.js';
+import { UserGroupSchema } from 'shared/types/userGroupType.js';
 import { validateUserGroup } from './validateUserGroup.js';
 import { WithId } from '../odm/index.js';
-import { UserSchema } from '../../shared/types/userType.js';
+import { UserSchema } from 'shared/types/userType.js';
 import model from './userGroupsModel.js';
 
 export default {
@@ -40,12 +40,12 @@ export default {
   },
 
   async saveMultiple(userGroups: UserGroupSchema[]) {
-    const groupsToUpdate = userGroups.map((userGroup) => {
+    const groupsToUpdate = userGroups.map(userGroup => {
       const members = userGroup.members.map(m => ({ refId: m.refId.toString() }));
       return { ...userGroup, members };
     });
     await Promise.all(
-      groupsToUpdate.map(async (group) => {
+      groupsToUpdate.map(async group => {
         await validateUserGroup(group);
       })
     );

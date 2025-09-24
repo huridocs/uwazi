@@ -1,7 +1,10 @@
 import { Db } from 'mongodb';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
 import { MongoPXEntityStatusesQueryService } from './MongoPXEntityStatusesQueryService';
 
 type Props = {
@@ -13,6 +16,7 @@ class PXEntityStatusesQueryServiceFactory {
   static createDefault(props?: Props) {
     const db = props?.connection || getConnection();
     const transactionManager = props?.transactionManager || DefaultTransactionManager();
+    // @ts-expect-error TS(2554): Expected 0 arguments, but got 2.
     return new MongoPXEntityStatusesQueryService(db, transactionManager);
   }
 }

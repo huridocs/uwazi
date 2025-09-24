@@ -1,6 +1,8 @@
 import { Application } from 'express';
 
+// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
 import { needsAuthorization } from '../auth.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/featureFlagEnabledMid... Remove this comment to see the full error message
 import { featureFlagEnabled } from '../utils/featureFlagEnabledMiddleware.js';
 
 import { PXCreateExtractorController } from './PXCreateExtractorController';
@@ -16,6 +18,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractor',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXCreateExtractorController.createHandler()
   );
 
@@ -23,6 +26,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractor',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXDeleteExtractorController.createHandler()
   );
 
@@ -30,6 +34,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extract',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXExtractParagraphFromEntitiesController.createHandler()
   );
 
@@ -37,6 +42,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractNew',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXExtractParagraphsByEntityStatusController.createHandler()
   );
 
@@ -44,6 +50,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractors',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXGetExtractorsController.createHandler()
   );
 
@@ -51,6 +58,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/extractorStatuses',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXGetExtractorStatusesController.createHandler()
   );
 
@@ -58,6 +66,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     '/api/paragraphExtraction/entityParagraphs',
     needsAuthorization(['admin', 'editor']),
     featureFlagEnabled('paragraphExtraction'),
+    // @ts-expect-error TS(2339): Property 'createHandler' does not exist on type 't... Remove this comment to see the full error message
     PXGetEntityParagraphsController.createHandler()
   );
 };

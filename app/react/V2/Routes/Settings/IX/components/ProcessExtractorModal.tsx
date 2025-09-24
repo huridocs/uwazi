@@ -2,10 +2,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Modal, Button } from '../../../../Components/UI/index.js';
 import { Checkbox, InputField, RadioSelect } from '../../../../Components/Forms/index.js';
-import { ProcessParameters } from '../../../../api/ix/suggestions.js';
+import { ProcessParameters } from 'api/ix/suggestions.js';
 import { IXFilters } from '../types.js';
 
 type FormData = {

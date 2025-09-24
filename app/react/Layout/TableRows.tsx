@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 
 import { connect, ConnectedProps } from 'react-redux';
 
+// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Table... Remove this comment to see the full error message
 import { TableRow } from '../../Library/components/TableRow.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { IStore, TableViewColumn } from '../../istore.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+import { EntitySchema } from 'shared/types/entityType.js';
 
 interface TableRowsProps {
   columns: TableViewColumn[];

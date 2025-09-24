@@ -1,7 +1,8 @@
+
 import { EnforcedWithId, WithId } from '../odm/index.js';
-import { ensure } from '../../../shared/tsUtils.js';
-import { ObjectIdSchema } from '../../../shared/types/commonTypes.js';
-import { FileType } from '../../../shared/types/fileType.js';
+import { ensure } from 'shared/tsUtils.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { FileType } from 'shared/types/fileType.js';
 import { OcrModel, OcrRecord, OcrStatus } from './ocrModel.js';
 
 const createForFile = async (file: FileType) =>
@@ -23,7 +24,8 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
   const recordsToNullSource: OcrRecord[] = [];
   const recordIdsToDelete: string[] = [];
 
-  records.forEach((record) => {
+  // @ts-expect-error TS(7006): Parameter 'record' implicitly has an 'any' type.
+  records.forEach(record => {
     if (record.sourceFile) {
       idRecordMap.set(record.sourceFile.toString(), record);
     }
@@ -32,7 +34,7 @@ const cleanupRecordsOfFiles = async (fileIds: (ObjectIdSchema | undefined)[]) =>
     }
   });
 
-  idStrings.forEach((fileId) => {
+  idStrings.forEach(fileId => {
     if (idRecordMap.has(fileId)) {
       const record = idRecordMap.get(fileId);
       if (record.sourceFile?.toString() === fileId) {

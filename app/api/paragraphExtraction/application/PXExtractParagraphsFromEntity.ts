@@ -1,15 +1,26 @@
 import { ObjectId } from 'mongodb';
 
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
 import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
 import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/contracts/FilesDat... Remove this comment to see the full error message
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
 import { Entity } from '../entities.v2/model/Entity.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Document.js'... Remove this comment to see the full error message
 import { Document } from '../files.v2/model/Document.js';
-import { LanguageISO6391, LanguagesListSchema } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391, LanguagesListSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/contracts/FileStor... Remove this comment to see the full error message
 import { FileStorage } from '../files.v2/contracts/FileStorage.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Segmentation... Remove this comment to see the full error message
 import { Segmentation } from '../files.v2/model/Segmentation.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/IdGener... Remove this comment to see the full error message
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
 import { Logger } from '../log.v2/contracts/Logger.js';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
@@ -56,6 +67,7 @@ export class PXExtractParagraphsFromEntity
 
       const files = await this.getSegmentationFiles(segmentations, entity);
 
+      // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
       const defaultLanguage = installedLanguages.find(language => !!language.default)?.key!;
 
       const extractionKey = PXExtractionKey.create({
@@ -160,12 +172,15 @@ export class PXExtractParagraphsFromEntity
   private async getDocuments(entity: Entity, installedLanguages: LanguagesListSchema) {
     const documents = await this.dependencies.filesDS.getDocumentsForEntity(entity.sharedId).all();
 
+    // @ts-expect-error TS(7006): Parameter 'document' implicitly has an 'any' type.
     const filteredDocuments = documents.filter(document =>
+      // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
       installedLanguages.some(language => language.key === document.language)
     );
 
     const uniqueByLanguage = Object.values(
       filteredDocuments.reduce(
+        // @ts-expect-error TS(7006): Parameter 'prev' implicitly has an 'any' type.
         (prev, document) => {
           const existingDocument = prev[document.language];
           if (!existingDocument) {

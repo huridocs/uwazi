@@ -3,7 +3,7 @@ import * as reactReduxForm from 'react-redux-form';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mockID } from '../../shared/uniqueID.js.js';
+import { mockID } from 'shared/uniqueID.js.js';
 import { api } from '../../Entities.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import * as actions from '../actions';

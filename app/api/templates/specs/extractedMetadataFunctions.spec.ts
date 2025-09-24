@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { files } from '../files.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n/translations.js' or it... Remove this comment to see the full error message
 import translations from '../i18n/translations.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
 import templates from '../templates';
 import fixtures, {
   propertyA,

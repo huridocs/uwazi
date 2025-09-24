@@ -17,7 +17,15 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "strict": true,
-    // Path aliases removed for ESM compatibility
+    "baseUrl": ".",
+    "paths": {
+      "api/*": ["./app/api/*"],
+      "app/*": ["./app/react/*"],
+      "shared/*": ["./app/shared/*"],
+      "UI": ["./app/react/UI"],
+      "UI/*": ["./app/react/UI/*"],
+      "V2/*": ["./app/react/V2/*"]
+    },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },

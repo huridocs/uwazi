@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import sanitizeHtml from 'sanitize-html';
-import { risonDecodeOrIgnore } from '../../api/utils/index.js';
+import { risonDecodeOrIgnore } from 'api/utils/index.js';
 import { Translate } from '../../I18N/index.js';
 import { atomStore, userAtom } from '../../V2/atoms.js';
 import { notify } from '../../Notifications/actions/notificationsActions.js';

@@ -1,14 +1,15 @@
 import { WithId } from '../odm/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauri from '../thesauri.js';
 import settings from '../settings/index.js';
 import templates from '../templates/index.js';
-import request from '../../shared/JSONRequest.js';
+import request from 'shared/JSONRequest.js';
 import createError from '../utils/Error.js';
-import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { User } from '../users/usersModel.js';
-import { PreserveConfig } from '../../shared/types/settingsType.js';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import { User } from 'api/users/usersModel.js';
+import { PreserveConfig } from 'shared/types/settingsType.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {

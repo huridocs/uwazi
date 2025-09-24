@@ -1,7 +1,11 @@
-import db from '../api/utils/testing_db.js';
-import { testingEnvironment } from '../api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../api/utils/testing_db.js' or... Remove this comment to see the full error message
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../api/utils/testingEnvironmen... Remove this comment to see the full error message
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
+// @ts-expect-error TS(2307): Cannot find module './types/pageSchema.js' or its ... Remove this comment to see the full error message
 import { validatePage } from './types/pageSchema.js';
+// @ts-expect-error TS(2307): Cannot find module './types/pageType.js' or its co... Remove this comment to see the full error message
 import { PageType } from './types/pageType.js';
 
 describe('pageSchema', () => {

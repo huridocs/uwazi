@@ -49,6 +49,7 @@ const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: 
   };
 
   const isNotDuplicated = (value: string) =>
+    // @ts-expect-error TS(7006): Parameter 'type' implicitly has an 'any' type.
     !relationshipTypes?.find(type => type?.get('name') === value);
 
   return (

@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { elastic, search } from '../search.js';
 import { IndicesPutMapping } from '../search/elasticTypes.js';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
@@ -25,6 +26,7 @@ const elasticTesting = {
   },
 
   async getIndexedEntities(sort = 'title.sort') {
+    // @ts-expect-error TS(7006): Parameter 'i' implicitly has an 'any' type.
     return (await elastic.search({ sort: [sort], size: 1000 })).body.hits.hits.map(i => i._source);
   },
 
@@ -42,6 +44,7 @@ const elasticTesting = {
       },
     });
 
+    // @ts-expect-error TS(7006): Parameter 'i' implicitly has an 'any' type.
     return result.body.hits.hits.map(i => i._source);
   },
 };

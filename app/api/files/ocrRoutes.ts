@@ -1,4 +1,5 @@
 import { Application, Request, Response, NextFunction } from 'express';
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { storage } from '../files.js';
 import needsAuthorization from '../auth/authMiddleware.js';
 import { isOcrEnabled, ocrManager, getOcrStatus } from '../services/ocr/OcrManager.js';

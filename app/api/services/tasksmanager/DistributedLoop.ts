@@ -1,5 +1,6 @@
 import Redis from 'redis';
 import Redlock from 'redlock';
+// @ts-expect-error TS(2307): Cannot find module '../utils/handleError.js' or it... Remove this comment to see the full error message
 import { handleError } from '../utils/handleError.js';
 
 export class DistributedLoop {

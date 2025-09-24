@@ -119,7 +119,8 @@ describe('Settings Thesauri', () => {
       cleanup();
     });
 
-    const checkRightSaving = async (expectedParams) => {
+    // @ts-expect-error TS(7006): Parameter 'expectedParams' implicitly has an 'any'... Remove this comment to see the full error message
+    const checkRightSaving = async expectedParams => {
       await act(async () => {
         fireEvent.click(
           within(screen.getByTestId('settings-content-footer')).getByText('Save').parentNode!

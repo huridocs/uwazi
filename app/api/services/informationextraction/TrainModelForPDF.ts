@@ -1,12 +1,20 @@
 /* eslint-disable max-statements */
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
+// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
 import { emitToTenant } from '../socketio/setupSockets.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { storage } from '../files.js';
 import urljoin from 'url-join';
-import request from '../../shared/JSONRequest.js';
-import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import request from 'shared/JSONRequest.js';
+
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
+
 import { EnforcedWithId } from '../odm/index.js';
-import { IXExtractorType } from '../../shared/types/extractorType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/extractorTy... Remove this comment to see the full error message
+import { IXExtractorType } from 'shared/types/extractorType.js';
+// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
 import { Suggestions } from '../suggestions/suggestions.js';
 import {
   FileWithAggregation,
@@ -46,7 +54,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       const { process } = await getFilesForTraining(extractor);
       const processedEntityIds: string[] = [];
 
-      await process(async (file) => {
+      await process(async file => {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -152,7 +160,8 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       if (propertyLabeledData) {
         data = {
           ...data,
-          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map((r) => {
+          // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
+          label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
             const { page, ...rectangle } = r;
             return { ...rectangle, page_number: page };
           }),

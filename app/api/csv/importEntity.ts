@@ -5,18 +5,19 @@ import entities from '../entities/index.js';
 import { search } from '../search/index.js';
 import { processDocument } from '../files/processDocument.js';
 import { RawEntity } from '../csv/entityRow.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
 import {
   MetadataObjectSchema,
   MetadataSchema,
   PropertySchema,
-} from '../../shared/types/commonTypes.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
+} from 'shared/types/commonTypes.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
 import { ImportFile } from '../csv/importFile.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { ensure } from '../../shared/tsUtils.js';
+import { EntitySchema } from 'shared/types/entityType.js';
+import { ensure } from 'shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { files, generateFileName, storage } from '../files.js';
-import { generateID } from '../../shared/IDGenerator.js';
+import { generateID } from 'shared/IDGenerator.js';
 
 import typeParsers from './typeParsers.js';
 import { csvConstants } from './csvDefinitions.js';
@@ -47,7 +48,7 @@ const toMetadata = async (
 
   const propertyPromises = (template.properties || [])
     .filter(prop => hasValidValue(prop, toImportEntity))
-    .map(async (prop) => {
+    .map(async prop => {
       const propName = ensure<string>(prop.name);
       const originalValue = toImportEntity.propertiesFromColumns[propName];
 
@@ -56,7 +57,7 @@ const toMetadata = async (
       if (parsed && typeof parsed === 'object' && 'data' in parsed) {
         const { data, warnings } = parsed;
 
-        warnings.forEach((warning) => {
+        warnings.forEach(warning => {
           if (feedbackCallback) {
             feedbackCallback(warning);
           }
@@ -172,6 +173,7 @@ const importEntity = async (
 
   if (parsedAttachments?.length) {
     Object.entries(eo.metadata as [string, any[]]).forEach(([key, metadata]) => {
+      // @ts-expect-error TS(2532): Object is possibly 'undefined'.
       const attachment = parsedAttachments.find(pA => pA.originalname === metadata[0].value);
 
       if (attachment) {
@@ -304,7 +306,7 @@ const translateEntity = async (
   }, Promise.resolve());
 
   await Promise.all(
-    translations.map(async (translatedEntity) => {
+    translations.map(async translatedEntity => {
       if (translatedEntity.propertiesFromColumns.file) {
         const file = await importFile.extractFile(translatedEntity.propertiesFromColumns.file);
         await processDocument(ensure(entity.sharedId), file);

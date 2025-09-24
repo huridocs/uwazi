@@ -1,11 +1,18 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../files/files.js' or its corr... Remove this comment to see the full error message
 import { files } from '../files/files.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
 import path from 'path';
+// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
 import * as filesystem from '../files/filesystem.js';
-import { FileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
-import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntityWithFilesSchema } from 'shared/types/entityType.js';
 
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';
@@ -37,6 +44,7 @@ describe('csvLoader zip file', () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest
       .spyOn(filesystem, 'generateFileName')
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       .mockImplementation(file => `generated${file.originalname}`);
     await loader.load(zip, template1Id);
     imported = await files.get({ type: 'document' }, '+fullText');

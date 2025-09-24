@@ -1,6 +1,8 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
 import { NeedAuthorization } from '../../Auth.js';
 import { MembersList } from '../MembersList';
 import { data, pseudoData } from './testData';
@@ -9,7 +11,7 @@ import { MemberListItemPermission } from '../MemberListItemPermission';
 
 describe('MemberList', () => {
   it('should render with the correct data', () => {
-    const component = shallow(<MembersList members={data} onChange={() => {}} />);
+    const component = shallow(<MembersList members={data} onChange={() => { }} />);
 
     expect(component.find('tr').length).toBe(data.length);
     data.forEach(member => {
@@ -22,7 +24,7 @@ describe('MemberList', () => {
   });
 
   it('should render pseudoMembers with the correct data', () => {
-    const component = shallow(<MembersList members={pseudoData} onChange={() => {}} />);
+    const component = shallow(<MembersList members={pseudoData} onChange={() => { }} />);
 
     expect(component.find('tr').length).toBe(pseudoData.length);
     pseudoData.forEach(member => {

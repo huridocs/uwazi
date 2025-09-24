@@ -1,5 +1,6 @@
 import { TranslationService } from '../../../domain/template/TranslationService.js';
 import translations from '../../../../i18n/translations.js';
+// @ts-expect-error TS(2307): Cannot find module '../../../templates.v2/model/Te... Remove this comment to see the full error message
 import { Template } from '../../../templates.v2/model/Template.js';
 import { ContextType } from '../../../../../shared/translationSchema.js';
 import { TemplateSchema } from '../../../../../shared/types/templateType.js';
@@ -11,7 +12,9 @@ class LegacyTemplatesTranslationService implements TranslationService {
 
     await translations.addContext(
       schema._id.toString(),
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplateDB... Remove this comment to see the full error message
       schema.name,
+      // @ts-expect-error TS(2345): Argument of type 'TemplateDBO' is not assignable t... Remove this comment to see the full error message
       this.createTranslationContext(schema),
       ContextType.entity
     );
@@ -25,10 +28,12 @@ class LegacyTemplatesTranslationService implements TranslationService {
 
     const changedLabels = currentTemplate
       .selectUpdatedProperties(updatedTemplate)
+      // @ts-expect-error TS(7006): Parameter 'update' implicitly has an 'any' type.
       .filter(update => update.updatedAttributes.includes('label'));
 
     const deletedLabels: string[] = [];
 
+    // @ts-expect-error TS(7006): Parameter 'change' implicitly has an 'any' type.
     changedLabels.forEach(change => {
       updatedLabels[change.oldProperty.label] = change.newProperty.label;
       deletedLabels.push(change.oldProperty.label);
@@ -38,8 +43,10 @@ class LegacyTemplatesTranslationService implements TranslationService {
       { id: currentTemplate.id.toString(), label: updatedTemplate.name, type: 'Entity' },
       updatedLabels,
       deletedLabels.concat(
+        // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
         currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label)
       ),
+      // @ts-expect-error TS(2345): Argument of type 'TemplateDBO' is not assignable t... Remove this comment to see the full error message
       this.createTranslationContext(TemplateMapper.toSchema(updatedTemplate))
     );
   }

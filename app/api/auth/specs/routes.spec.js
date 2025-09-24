@@ -1,4 +1,4 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import bodyParser from 'body-parser';
 import express from 'express';
 import request from 'supertest';

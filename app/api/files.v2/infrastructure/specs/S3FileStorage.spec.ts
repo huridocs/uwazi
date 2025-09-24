@@ -6,10 +6,15 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Attachment.j... Remove this comment to see the full error message
 import { Attachment } from '../files.v2/model/Attachment.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Document.js'... Remove this comment to see the full error message
 import { Document } from '../files.v2/model/Document.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
 import { testingTenants } from '../utils/testingTenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { Tenant } from '../tenants/tenantContext.js';
 import { S3FileStorage } from '../S3FileStorage.js';
 

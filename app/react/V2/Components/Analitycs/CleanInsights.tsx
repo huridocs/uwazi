@@ -41,7 +41,7 @@ const ci = new CI({
 });
 
 const grant = () => {
-  Object.keys(campaigns).forEach((campaign) => {
+  Object.keys(campaigns).forEach(campaign => {
     ci.grantCampaign(campaign);
   });
   ci.measureEvent('activity', 'daily', 'daily_active_users');
@@ -50,7 +50,7 @@ const grant = () => {
 };
 
 const deny = () => {
-  Object.keys(campaigns).forEach((campaign) => {
+  Object.keys(campaigns).forEach(campaign => {
     ci.denyCampaign(campaign);
   });
 };

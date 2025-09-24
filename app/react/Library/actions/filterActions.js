@@ -1,6 +1,6 @@
 import * as types from '../../Library/actions/actionTypes.js';
 import libraryHelper from '../../Library/helpers/libraryFilters.js';
-import comonPropertiesHelper from '../../shared/commonProperties.js';
+import comonPropertiesHelper from 'shared/commonProperties.js';
 import * as libraryActions from '../../Library/actions/libraryActions.js';
 import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
 import { actions as formActions } from 'react-redux-form';

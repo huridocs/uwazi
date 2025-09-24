@@ -1,6 +1,7 @@
 import { OptionalId } from 'mongodb';
 
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 import { TranslationSyO } from '../schemas/TranslationSyO';

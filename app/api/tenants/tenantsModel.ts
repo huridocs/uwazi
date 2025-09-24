@@ -118,6 +118,7 @@ class TenantsModel extends EventEmitter {
         'tenants model has not been initialized, make sure you called initialize() method'
       );
     }
+    // @ts-expect-error TS(2615): Type of property 'schema' circularly references it... Remove this comment to see the full error message
     return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
   }
 }

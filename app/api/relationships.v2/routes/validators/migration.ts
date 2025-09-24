@@ -1,6 +1,9 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/validation/routes... Remove this comment to see the full error message
 import { createValidator, ValidatorSchema } from '../common.v2/validation/routesValidation.js';
-import { MigrationRequest } from '../../shared/types/api.v2/relationships.migrate.js';
-import { TestOneHubRequest } from '../../shared/types/api.v2/relationships.testOneHub.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { MigrationRequest } from 'shared/types/api.v2/relationships.migrate.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/api.v2/rela... Remove this comment to see the full error message
+import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub.js';
 
 const migrationPlanSchemaDef = {
   elements: {

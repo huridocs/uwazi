@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { Template } from '../../apiResponseTypes.js';
 import { Extractor } from '../../../../shared/ParagraphExtractionTypes.js';
 import { PXTemplate, PXTable } from '../types.js';
@@ -6,7 +7,7 @@ import { getTemplateProperties } from './getTemplateProperties.js';
 const requiredTemplateProperties = ['_id', 'name', 'color'];
 
 const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTable[] =>
-  extractors.map((extractor) => {
+  extractors.map(extractor => {
     const targetTemplate = getTemplateProperties(
       templates,
       extractor.targetTemplateId,
@@ -28,7 +29,7 @@ const formatExtractors = (extractors: Extractor[], templates: Template[]): PXTab
   });
 
 const formatTemplatesToOptions = (templates: Template[]) =>
-  templates.map((template) => {
+  templates.map(template => {
     const option = {
       label: template.name,
       id: template._id,

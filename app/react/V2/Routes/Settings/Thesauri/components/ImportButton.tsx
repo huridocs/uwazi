@@ -1,8 +1,12 @@
 import React, { ChangeEventHandler } from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus } from '../../apiResponseTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button } from '../../V2/Components/UI.js';
-import { importThesaurus } from '../../api/V2/api/thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/V2/api/thesauri.js' ... Remove this comment to see the full error message
+import { importThesaurus } from 'api/V2/api/thesauri.js';
 
 const ImportButton = ({
   onSuccess,
@@ -36,6 +40,7 @@ const ImportButton = ({
       disabled={disabled === true}
       styling="outline"
       data-testid="thesaurus-import-items"
+      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       onClick={e => {
         onClick(e);
         (document.querySelector('input#import') as HTMLElement).click();

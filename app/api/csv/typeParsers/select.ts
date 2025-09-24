@@ -1,8 +1,13 @@
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauri from '../thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../csv/entityRow.js' or its co... Remove this comment to see the full error message
 import { RawEntity } from '../csv/entityRow.js';
-import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
-import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { ensure } from '../../shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/thesaurusTy... Remove this comment to see the full error message
+import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
+
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes.js';
+
+import { ensure } from 'shared/tsUtils.js';
 import { sanitizeStringValue } from '../sanitizationUtils.js';
 import {
   LabelInfo,

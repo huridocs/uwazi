@@ -1,6 +1,7 @@
 /* eslint-disable import/no-mutable-exports,prefer-destructuring,global-require */
 
-import { isClient } from '../../api/utils/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+import { isClient } from 'api/utils/index.js';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
@@ -17,11 +18,13 @@ export default function create(initialData = data) {
   return store;
 }
 
+// @ts-expect-error TS(2339): Property 'hot' does not exist on type 'NodeModule'... Remove this comment to see the full error message
 if (module.hot) {
   if (!window.store) {
     window.store = create();
   }
   store = window.store;
+  // @ts-expect-error TS(2339): Property 'hot' does not exist on type 'NodeModule'... Remove this comment to see the full error message
   module.hot.accept('./reducer', () => {
     const rootReducer = require('./reducer');
     store!.replaceReducer(rootReducer);
@@ -32,6 +35,7 @@ if (!store) {
   store = create();
 }
 
+// @ts-expect-error TS(2339): Property 'hot' does not exist on type 'NodeModule'... Remove this comment to see the full error message
 if (typeof window !== 'undefined' && !module.hot) {
   window.store = store;
 }

@@ -5,15 +5,15 @@ import { DataType, models, WithId } from '../odm/index.js';
 import { settingsModel } from '../settings/settingsModel.js';
 import templatesModel from '../templates/templatesModel.js';
 import { UpdateLog } from '../updatelogs/index.js';
-import { ensure } from '../../shared/tsUtils.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { FileType } from '../../shared/types/fileType.js';
+import { ensure } from 'shared/tsUtils.js';
+import { EntitySchema } from 'shared/types/entityType.js';
+import { FileType } from 'shared/types/fileType.js';
 import {
   Settings,
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
-} from '../../shared/types/settingsType.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+} from 'shared/types/settingsType.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
 import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';
@@ -129,7 +129,7 @@ class ProcessNamespaces {
   ) {
     return hubOtherTemplates.reduce((_isRightRelationship: boolean, template) => {
       let isRightRelationship = _isRightRelationship;
-      (template.properties || []).forEach((p) => {
+      (template.properties || []).forEach(p => {
         if (
           p.type === 'relationship' &&
           p._id &&

@@ -10,6 +10,7 @@ export class SegmentationMapper {
       filename: dbo.filename!,
       pageHeight: dbo.segmentation?.page_height,
       pageWidth: dbo.segmentation?.page_width,
+      // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
       paragraphs: dbo.segmentation?.paragraphs?.map(item => ({
         height: item.height!,
         left: item.left!,

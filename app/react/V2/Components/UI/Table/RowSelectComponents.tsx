@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef } from 'react';
 import { Row, Table } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Tooltip } from 'flowbite-react';
 

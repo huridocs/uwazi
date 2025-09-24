@@ -10,6 +10,7 @@ import {
   processFilters,
 } from '../../Library/actions/libraryActions.js';
 import { t, Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
 import { wrapDispatch } from '../../Multireducer.js';
 import ModalTips from '../../App/ModalTips.js';
 import { SearchTipsContent } from '../../App/SearchTipsContent.js';
@@ -74,7 +75,8 @@ const SearchBarComponent = ({
     semanticSearch(search);
   };
 
-  const doSearch = (newSearch) => {
+  // @ts-expect-error TS(7006): Parameter 'newSearch' implicitly has an 'any' type... Remove this comment to see the full error message
+  const doSearch = newSearch => {
     change('library.search.searchTerm', searchTerm);
     searchDocuments({ search: { ...newSearch, searchTerm }, location, navigate });
   };

@@ -1,11 +1,17 @@
+// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
 import { EventsBus } from '../eventsbus.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DBFixture } from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/events/EntityUpdat... Remove this comment to see the full error message
 import { EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
 
 import { ObjectId } from 'mongodb';
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
 import { PXEntityUpdatedListener } from '../PXEntityUpdatedListener';
 import { MongoPXEntityStatusDBO } from '../MongoPXEntityStatusDBO';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
@@ -110,6 +116,7 @@ describe('PXEntityUpdatedListener', () => {
 
       await eventsBus.emit(
         new EntityUpdatedEvent({
+          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           before: entity1.map(e => ({ ...e, template: template._id })),
           after: entity1,
           targetLanguageKey: 'en',
@@ -133,6 +140,7 @@ describe('PXEntityUpdatedListener', () => {
 
       await eventsBus.emit(
         new EntityUpdatedEvent({
+          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           before: entity1.map(e => ({ ...e, template: template._id })),
           after: entity1,
           targetLanguageKey: 'en',
@@ -164,6 +172,7 @@ describe('PXEntityUpdatedListener', () => {
       await eventsBus.emit(
         new EntityUpdatedEvent({
           before: entity1,
+          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           after: entity1.map(e => ({ ...e, template: template._id })),
           targetLanguageKey: 'en',
         })
@@ -189,6 +198,7 @@ describe('PXEntityUpdatedListener', () => {
       await eventsBus.emit(
         new EntityUpdatedEvent({
           before: entity1,
+          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           after: entity1.map(e => ({ ...e, template: sourceTemplate2._id })),
           targetLanguageKey: 'en',
         })
@@ -223,6 +233,7 @@ describe('PXEntityUpdatedListener', () => {
       await eventsBus.emit(
         new EntityUpdatedEvent({
           after: entity1,
+          // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
           before: entity1.map(e => ({ ...e, template: new ObjectId(e.template?.toString()) })),
           targetLanguageKey: 'en',
         })

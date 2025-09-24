@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { storage } from '../files.js';
-import { tenants } from '../tenants.js';
-import JSONRequest from '../../shared/JSONRequest.js';
-import { FileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import JSONRequest from 'shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
 import { Readable } from 'stream';
 
 export class MimeTypeNotSupportedForConversion extends Error {

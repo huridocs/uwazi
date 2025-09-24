@@ -10,7 +10,7 @@ import path from 'path';
 import { config } from '../config.js';
 import { legacyLogger } from '../log/index.js';
 import { tenants } from '../tenants/index.js';
-import { FileType } from '../../shared/types/fileType.js';
+import { FileType } from 'shared/types/fileType.js';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
@@ -40,7 +40,7 @@ const buildS3Client = (params: {}) => {
   });
 
   // eslint-disable-next-line max-statements
-  client.middlewareStack.add((next, context) => async (args) => {
+  client.middlewareStack.add((next, context) => async args => {
     const startTime = Date.now();
 
     const input = args.input as { Body?: Buffer; Key?: string };
@@ -216,7 +216,7 @@ export const storage = {
     await Array.from(uniquePaths).reduce(async (prev, filesPath) => {
       await prev;
       try {
-        (await readdir(filesPath, { withFileTypes: true })).forEach((file) => {
+        (await readdir(filesPath, { withFileTypes: true })).forEach(file => {
           if (file.isFile()) {
             files.push(path.join(filesPath, file.name));
           }

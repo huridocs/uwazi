@@ -1,7 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
 import api from '../../utils/api.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
-import { ClientIXExtractorType } from '../../shared/types.js';
+import { ClientIXExtractorType } from 'shared/types.js';
 
 const get = async (headers?: IncomingHttpHeaders) => {
   try {

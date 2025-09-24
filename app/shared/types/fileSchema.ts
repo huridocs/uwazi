@@ -1,10 +1,6 @@
 import Ajv from 'ajv';
-import {
-  objectIdSchema,
-  tocSchema,
-  extractedMetadataSchema,
-} from '../../shared/types/commonSchemas.js';
-import { wrapValidator } from '../../shared/tsUtils.js';
+import { objectIdSchema, tocSchema, extractedMetadataSchema } from 'shared/types/commonSchemas.js';
+import { wrapValidator } from 'shared/tsUtils.js';
 import { FileType } from './fileType';
 
 const emitSchemaTypes = true;

@@ -3,10 +3,12 @@ import React, { useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { isEmpty, last } from 'lodash';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
-import uniqueID from '../../shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
 import { ThesaurusRow } from './TableComponents.js';
 import { emptyThesaurus, sanitizeThesaurusLabel } from '../helpers.js';
 

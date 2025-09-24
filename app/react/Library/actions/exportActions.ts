@@ -5,10 +5,14 @@ import { actions } from '../../BasicReducer/index.js';
 import { notify } from '../../Notifications/actions/notificationsActions.js';
 import { t } from '../../I18N/index.js';
 import { Dispatch } from 'redux';
-import { IImmutable } from '../../shared/types/Immutable.js';
-import { CaptchaValue } from '../../shared/types/Captcha.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { CsvExportBody } from '../../shared/types/searchParameterType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Captcha.js'... Remove this comment to see the full error message
+import { CaptchaValue } from 'shared/types/Captcha.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/searchParam... Remove this comment to see the full error message
+import { CsvExportBody } from 'shared/types/searchParameterType.js';
 import { processFilters } from './libraryActions';
 import { ExportStore } from '../reducers/ExportStoreType';
 

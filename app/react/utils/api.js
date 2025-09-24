@@ -1,17 +1,17 @@
 import { redirect } from 'react-router';
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 import { notify } from '../../Notifications/actions/notificationsActions.js';
 import { store } from '../../store.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 import { t } from '../../I18N/index.js';
 
 import { APIURL } from '../config.js';
-import request from '../../shared/JSONRequest.js';
+import request from 'shared/JSONRequest.js';
 
 let API_URL = APIURL;
 let language;
 
-const doneLoading = (data) => {
+const doneLoading = data => {
   loadingBar.done();
   return data;
 };
@@ -55,7 +55,7 @@ function extractMessageFromValidation(error) {
 }
 
 // eslint-disable-next-line max-statements
-const handleErrorStatus = (error) => {
+const handleErrorStatus = error => {
   let errorMessage;
   switch (error.status || true) {
     case 400:
@@ -140,7 +140,7 @@ const _request = (url, req, method) => {
 
   return request[method](API_URL + url, req.data, headers)
     .then(doneLoading)
-    .catch(async (e) => {
+    .catch(async e => {
       await handleError(e, { url, method });
     });
 };

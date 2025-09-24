@@ -1,10 +1,16 @@
+// @ts-expect-error TS(2307): Cannot find module '../search/search.js' or its co... Remove this comment to see the full error message
 import { search } from '../search/search.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
 import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
 
-import { AggregationBucket, Aggregations } from '../../shared/types/aggregations.js';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
-import { UserSchema } from '../../shared/types/userType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+import { AggregationBucket, Aggregations } from 'shared/types/aggregations.js';
+
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
+
+import { UserSchema } from 'shared/types/userType.js';
 import { fixturesTimeOut } from './fixtures_elastic';
 import {
   group1,

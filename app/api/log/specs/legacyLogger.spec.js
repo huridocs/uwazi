@@ -1,10 +1,10 @@
 import { config } from '../config.js';
-import { tenants } from '../tenants.js';
+import { tenants } from 'api/tenants/index.js';
 import { createLegacyLogger } from '../legacyLogger.js';
 
 let lastLogMessage = '';
 
-const testLogger = (log) => {
+const testLogger = log => {
   lastLogMessage = log;
 };
 

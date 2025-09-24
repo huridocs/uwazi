@@ -1,20 +1,36 @@
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/services/A... Remove this comment to see the full error message
 import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/testing/partialIm... Remove this comment to see the full error message
 import { partialImplementation } from '../common.v2/testing/partialImplementation.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/MongoE... Remove this comment to see the full error message
 import { MongoEntitiesDataSource } from '../entities.v2/database/MongoEntitiesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/errors/entityEr... Remove this comment to see the full error message
 import { MissingEntityError } from '../entities.v2/errors/entityErrors.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/database/MongoFile... Remove this comment to see the full error message
 import { MongoFilesDataSource } from '../files.v2/database/MongoFilesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/database/M... Remove this comment to see the full error message
 import { MongoRelationshipsDataSource } from '../relationships.v2/database/MongoRelationshipsDataSource.js';
-import { MongoRelationshipTypesDataSource } from '../relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
-import { MissingRelationshipTypeError } from '../relationshiptypes.v2/errors/relationshipTypeErrors.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/databa... Remove this comment to see the full error message
+import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/errors... Remove this comment to see the full error message
+import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/MongoS... Remove this comment to see the full error message
 import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
-import { MongoTemplatesDataSource } from '../templates.v2/database/MongoTemplatesDataSource.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
 
@@ -210,6 +226,7 @@ describe('create()', () => {
       ]);
 
       expect(denormalizeAfterCreatingRelationshipsMock).toHaveBeenCalledWith(
+        // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
         relationships.map(r => r._id)
       );
     });
@@ -255,6 +272,7 @@ describe('create()', () => {
       const created = await execute();
 
       expect(denormalizeAfterCreatingRelationshipsMock).toHaveBeenCalledWith(
+        // @ts-expect-error TS(7006): Parameter 'c' implicitly has an 'any' type.
         created.map(c => c._id)
       );
     });

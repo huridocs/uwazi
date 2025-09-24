@@ -1,5 +1,7 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { Translation } from '../model/Translation';
 import { ValidateTranslationsService } from './ValidateTranslationsService';

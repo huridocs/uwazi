@@ -17,6 +17,7 @@ describe('CreationDateProperty', () => {
       type: 'date',
     });
 
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'CreationDa... Remove this comment to see the full error message
     expect(creationDateProperty.name).toBe('creationDate');
   });
 

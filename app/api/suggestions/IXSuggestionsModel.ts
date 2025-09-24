@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from '../odm/index.js';
-import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+import { IXSuggestionType } from 'shared/types/suggestionType.js';
 
 const props = {
   status: { type: String, enum: ['processing', 'failed', 'ready'], default: 'processing' },

@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../relationtypes/relationtypes... Remove this comment to see the full error message
 import relationtypes from '../relationtypes/relationtypes.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 const factory = getFixturesFactory();
 

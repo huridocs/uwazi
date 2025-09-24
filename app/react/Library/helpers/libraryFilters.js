@@ -1,4 +1,4 @@
-import comonProperties from '../../shared/commonProperties.js';
+import comonProperties from 'shared/commonProperties.js';
 import prioritySortingCriteria from '../../utils/prioritySortingCriteria.js';
 import { queryToFilter } from './publishedStatusFilter';
 

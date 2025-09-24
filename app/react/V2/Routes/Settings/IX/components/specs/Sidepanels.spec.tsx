@@ -4,6 +4,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientPropertySchema } from '../../istore.js';
 import { TestRouterContext } from '../../../../../testing/TestRouterContext.js';
 import { TestAtomStoreProvider as AtomProvider } from '../../../../../testing/index.js';
@@ -74,7 +75,8 @@ const createSuggestionWithProperty = (propertyName: string, additionalProps = {}
   ...additionalProps,
 });
 
-const clickToFillAndWait = async (expectedValue) => {
+// @ts-expect-error TS(7006): Parameter 'expectedValue' implicitly has an 'any' ... Remove this comment to see the full error message
+const clickToFillAndWait = async expectedValue => {
   fireEvent.click(screen.getByTestId('selectable-text'));
   fireEvent.click(screen.getByText('Click to fill'));
   await waitFor(() => {
@@ -125,7 +127,7 @@ jest.mock('V2/api/entities', () => ({
 }));
 
 jest.mock('V2/api/search', () => ({
-  search: jest.fn().mockImplementation(async (query) => {
+  search: jest.fn().mockImplementation(async query => {
     if (query.filters.searchString.includes('template:template2')) {
       return Promise.resolve({
         rows: [
@@ -652,6 +654,7 @@ describe('Sidepanel forms', () => {
         relationshipProperty,
         jest.fn(),
         jest.fn(),
+        // @ts-expect-error TS(2345): Argument of type '{ inheritedProperty: { _id: stri... Remove this comment to see the full error message
         extractorWithInheritedProperty
       );
 
@@ -685,6 +688,7 @@ describe('Sidepanel forms', () => {
         relationshipProperty,
         jest.fn(),
         jest.fn(),
+        // @ts-expect-error TS(2345): Argument of type '{ inheritedProperty: { _id: stri... Remove this comment to see the full error message
         extractorWithInheritedProperty
       );
 
@@ -722,7 +726,8 @@ describe('Sidepanel forms', () => {
       const { search } = jest.requireMock('V2/api/search');
       const extractorWithInheritedProperty = createExtractorWithInheritedProperty();
 
-      search.mockImplementation(async (query) => {
+      // @ts-expect-error TS(7006): Parameter 'query' implicitly has an 'any' type.
+      search.mockImplementation(async query => {
         if (query.filters.searchString.includes('template:template2')) {
           return Promise.resolve({
             rows: [
@@ -748,6 +753,7 @@ describe('Sidepanel forms', () => {
         relationshipProperty,
         jest.fn(),
         jest.fn(),
+        // @ts-expect-error TS(2345): Argument of type '{ inheritedProperty: { _id: stri... Remove this comment to see the full error message
         extractorWithInheritedProperty
       );
 

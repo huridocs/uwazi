@@ -1,7 +1,8 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
 import ShowIf from '../../App/ShowIf.js';
-import { filterOptions } from '../../shared/optionsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/optionsUtils.js' ... Remove this comment to see the full error message
+import { filterOptions } from 'shared/optionsUtils.js';
 import { t, Translate } from '../../I18N/index.js';
 import { TriStateSelectValue } from '../../istore.js';
 import { Icon as CustomIcon } from '../../Layout/Icon.js';
@@ -55,8 +56,9 @@ const defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
-  onChange: (_v) => {},
-  onFilter: async (_searchTerm: string) => {},
+  // @ts-expect-error TS(7006): Parameter '_v' implicitly has an 'any' type.
+  onChange: _v => { },
+  onFilter: async (_searchTerm: string) => { },
   totalPossibleOptions: 0,
   allowSelectGroup: false,
   topLevelSelectable: true,
@@ -340,7 +342,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   label(option: Option, isSelect = true) {
     const { optionsValue, optionsLabel, prefix } = this.props;
-    const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
+    const clickEvent = isSelect ? () => { } : this.toggleOptions.bind(this, option);
     return (
       <>
         <label
@@ -349,9 +351,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
           onClick={clickEvent}
         >
           <span
-            className={`multiselectItem-icon${
-              !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
-            }`}
+            className={`multiselectItem-icon${!isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
+              }`}
           >
             <Icon icon={['far', 'square']} className="checkbox-empty" />
             <Icon icon="check" className="checkbox-checked" />
@@ -391,9 +392,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return (
       <li key={index} className="multiselect-group" aria-label="group">
         <div
-          className={`multiselectItem${
-            !this.props.topLevelSelectable ? ' no-top-level-select' : ''
-          }`}
+          className={`multiselectItem${!this.props.topLevelSelectable ? ' no-top-level-select' : ''
+            }`}
         >
           {this.props.topLevelSelectable && (
             <input

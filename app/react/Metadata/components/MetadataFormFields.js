@@ -11,7 +11,7 @@ import { FormGroup } from '../../Forms/index.js';
 import { t, Translate } from '../../I18N/index.js';
 import { getSuggestions } from '../../Metadata/actions/actions.js';
 import Tip from '../../Layout/Tip.js';
-import { generateID } from '../../shared/IDGenerator.js';
+import { generateID } from 'shared/IDGenerator.js';
 
 import { saveThesaurus } from '../../Thesauri/actions/thesauriActions.js';
 import { sanitizeThesauri } from '../../V2/Routes/Settings/Thesauri/helpers.js';

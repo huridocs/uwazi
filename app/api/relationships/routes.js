@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 
 import { ObjectIdAsString } from '../utils/ajvSchemas.js';
-import { LanguageISO6391Schema } from '../../shared/types/commonSchemas.js';
+import { LanguageISO6391Schema } from 'shared/types/commonSchemas.js';
 import relationships from './relationships.js';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';

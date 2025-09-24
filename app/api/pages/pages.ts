@@ -1,11 +1,12 @@
-import ID from '../../shared/uniqueID.js';
-import { PageType } from '../../shared/types/pageType.js';
-import { validatePage } from '../../shared/types/pageSchema.js';
+import ID from 'shared/uniqueID.js';
+import { PageType } from 'shared/types/pageType.js';
+import { validatePage } from 'shared/types/pageSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/date.js.js' or its co... Remove this comment to see the full error message
 import date from '../utils/date.js.js';
 import templates from '../templates/index.js';
 import { createError } from '../utils/index.js';
 import { UwaziFilterQuery } from '../odm/index.js';
-import { User } from '../users/usersModel.js';
+import { User } from 'api/users/usersModel.js';
 
 import model from './pagesModel.js';
 import settings from '../settings/index.js';
@@ -95,7 +96,7 @@ export default {
 
     const duplicate = async () => {
       const pages = await this.get({ language: defaultLanguage });
-      const savePages = pages.map(async (_page) => {
+      const savePages = pages.map(async _page => {
         const page: PageType = { ..._page, language };
         delete page._id;
         delete page.__v;

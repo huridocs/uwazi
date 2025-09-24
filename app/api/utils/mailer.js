@@ -1,5 +1,5 @@
 import mailerConfig from '../config/mailer.js';
-import settings from '../settings/settings.js';
+import settings from 'api/settings/settings.js';
 import { getMailerTransport } from './mailerTransport.js';
 
 let transporterOptions = {

@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnected } from '../../utils/test/renderConnected.js';
 import Immutable from 'immutable';
 import { ShallowWrapper } from 'enzyme';

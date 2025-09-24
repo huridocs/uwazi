@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Button, Sidepanel } from '../../../../../Components/UI/index.js';
 import { Extractor } from '../../../../../shared/ParagraphExtractionTypes.js';
@@ -64,9 +65,9 @@ const EntityFilterSidepanel = () => {
   };
 
   const clearFilters = () => {
-    setAppliedFilters((prev) => {
+    setAppliedFilters(prev => {
       const keys = Object.keys(prev);
-      keys.forEach((key) => {
+      keys.forEach(key => {
         prev[key].status = false;
       });
 

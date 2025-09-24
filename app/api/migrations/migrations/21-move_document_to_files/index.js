@@ -6,7 +6,7 @@ import { config } from '../config.js';
 
 const rename = async (current, newPath) =>
   new Promise((resolve, reject) => {
-    fs.rename(current, newPath, (err) => {
+    fs.rename(current, newPath, err => {
       if (err === null) {
         resolve(true);
       }
@@ -18,7 +18,7 @@ const rename = async (current, newPath) =>
 
 export const fileExists = async filePath =>
   new Promise((resolve, reject) => {
-    fs.stat(filePath, (err) => {
+    fs.stat(filePath, err => {
       if (err === null) {
         resolve(true);
       }

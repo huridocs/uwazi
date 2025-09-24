@@ -1,6 +1,7 @@
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
+  // @ts-expect-error TS(2307): Cannot find module '../common.v2/infrastructure/Ab... Remove this comment to see the full error message
 } from '../common.v2/infrastructure/AbstractController.js';
 
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
@@ -18,6 +19,7 @@ class PXGetExtractorsController extends AbstractController {
 
   async handle(): Promise<void> {
     const output = await this.queryService.getExtractors().all();
+    // @ts-expect-error TS(2339): Property 'jsonResponse' does not exist on type 'PX... Remove this comment to see the full error message
     this.jsonResponse(output);
   }
 }

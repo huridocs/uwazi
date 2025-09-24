@@ -3,19 +3,32 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
+// @ts-expect-error TS(2307): Cannot find module '../relationships.js' or its co... Remove this comment to see the full error message
 import relationships from '../relationships.js';
+// @ts-expect-error TS(2459): Module '"../files.js"' declares 'storage' locally,... Remove this comment to see the full error message
 import { storage } from '../files.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/ocr/OcrManager.js'... Remove this comment to see the full error message
 import { ocrManager } from '../services/ocr/OcrManager.js';
-import settings from '../settings/settings.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import db, { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { setUpApp } from '../utils/testingRoutes.js';
-import JSONRequest from '../../shared/JSONRequest.js';
-import { UserRole } from '../../shared/types/userSchema.js';
-import { UserSchema } from '../../shared/types/userType.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings/settings.js' or it... Remove this comment to see the full error message
+import settings from 'api/settings/settings.js';
 
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
+import { setUpApp } from '../utils/testingRoutes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import JSONRequest from 'shared/JSONRequest.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
+
+import { UserSchema } from 'shared/types/userType.js';
+
+// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
 import * as setupSockets from '../socketio/setupSockets.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
@@ -63,7 +76,9 @@ const FIXTURES: DBFixture = {
 };
 
 describe('OCR service', () => {
+  // @ts-expect-error TS(7006): Parameter 'u' implicitly has an 'any' type.
   const collabUser = FIXTURES.users!.find(u => u.username === 'collab');
+  // @ts-expect-error TS(7006): Parameter 'u' implicitly has an 'any' type.
   const adminUser = FIXTURES.users!.find(u => u.username === 'admin');
   let requestMockedUser: UserSchema | undefined;
 

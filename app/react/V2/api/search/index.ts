@@ -1,9 +1,13 @@
 import { IncomingHttpHeaders } from 'http';
 import qs from 'qs';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
 import api from '../../utils/api.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
-import { SearchQuery } from '../../shared/types/SearchQueryType.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/SearchQuery... Remove this comment to see the full error message
+import { SearchQuery } from 'shared/types/SearchQueryType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 
 type SearchResponse = {
   data: (Required<Pick<EntitySchema, 'title' | 'sharedId' | 'template'>> & { _id: string })[];

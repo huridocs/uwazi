@@ -2,11 +2,17 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom, useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import * as ThesauriAPI from '../../api/V2/api/thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/V2/api/thesauri.js' ... Remove this comment to see the full error message
+import * as ThesauriAPI from 'api/V2/api/thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, ConfirmationModal } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { notificationAtom, templatesAtom } from '../../V2/atoms.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus, Template } from '../../apiResponseTypes.js';
 import { ThesauriTable } from './components/ThesauriTable';
 import type { ThesauriRow } from './components/ThesauriTable';
@@ -28,13 +34,16 @@ const ThesauriList = () => {
   useMemo(() => {
     setCurrentThesauri(
       thesauri.map(thesaurus => {
+        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         const templatesUsingIt = templates
+          // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
           .map(t => {
             const usingIt = t.properties?.some(
               (property: any) => property.content === thesaurus._id
             );
             return usingIt ? t : null;
           })
+          // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
           .filter(t => t) as Template[];
         return {
           ...thesaurus,
@@ -49,6 +58,7 @@ const ThesauriList = () => {
   const deleteSelectedThesauri = async () => {
     try {
       const requests = selectedThesauri.map(async thesaurus =>
+        // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ThesauriRow... Remove this comment to see the full error message
         ThesauriAPI.deleteThesauri({ _id: thesaurus._id })
       );
       await Promise.all(requests);
@@ -114,6 +124,7 @@ const ThesauriList = () => {
           body={
             <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
               {selectedThesauri.map(item => (
+                // @ts-expect-error TS(2339): Property 'name' does not exist on type 'ThesauriRo... Remove this comment to see the full error message
                 <li key={item.name}>{item.name}</li>
               ))}
             </ul>

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { isObject } from 'lodash';
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
 import { ClientFile } from '../../istore.js';
-import { prepareHTMLMediaView } from '../../shared/fileUploadUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/fileUploadUtils.j... Remove this comment to see the full error message
+import { prepareHTMLMediaView } from 'shared/fileUploadUtils.js';
 import {
   MediaModal,
   MediaModalProps,
@@ -44,10 +46,12 @@ const prepareValue = (
   }
 
   const supportingFile = localAttachments.find(
+    // @ts-expect-error TS(2339): Property 'url' does not exist on type 'ClientFile'... Remove this comment to see the full error message
     file => values.data === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
   );
 
   if (values.type === 'uploadId' && supportingFile) {
+    // @ts-expect-error TS(2559): Type 'ClientFile' has no properties in common with... Remove this comment to see the full error message
     values.originalFile = supportingFile;
     values.fileURL = prepareHTMLMediaView(supportingFile);
   }
@@ -126,6 +130,7 @@ const MediaField = (props: MediaFieldProps) => {
           (file &&
             file.data &&
             file.supportingFile &&
+            // @ts-expect-error TS(2339): Property 'mimetype' does not exist on type 'Client... Remove this comment to see the full error message
             file.supportingFile.mimetype?.search(/image\/*/) !== -1) ||
           type === MediaModalType.Image
         ) {

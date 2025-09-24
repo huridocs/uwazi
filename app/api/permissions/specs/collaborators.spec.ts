@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../permissions/collaborators.j... Remove this comment to see the full error message
 import { collaborators } from '../permissions/collaborators.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/specs/fixtures.... Remove this comment to see the full error message
 import { fixtures, groupA, groupB, userA, userB } from '../permissions/specs/fixtures.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { PermissionType } from '../../shared/types/permissionSchema.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { PermissionType } from 'shared/types/permissionSchema.js';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
@@ -54,6 +58,7 @@ describe('collaborators', () => {
       });
 
       it('should return all existing groups', async () => {
+        // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
         const availableCollaborators = (await collaborators.search('User')).sort((a, b) =>
           a.refId.toString().localeCompare(b.refId.toString())
         );

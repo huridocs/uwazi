@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import { PageService } from '../../../domain/template/PageService.js';
 import pages from '../../../../pages/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../../templates.v2/model/Te... Remove this comment to see the full error message
 import { Template } from '../../../templates.v2/model/Template.js';
 
 class LegacyPageService implements PageService {

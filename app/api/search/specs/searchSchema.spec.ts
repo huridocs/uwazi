@@ -1,6 +1,8 @@
 import ValidationError from 'ajv/dist/runtime/validation_error';
+// @ts-expect-error TS(2307): Cannot find module '../utils.js' or its correspond... Remove this comment to see the full error message
 import { validation } from '../utils.js';
-import { searchParamsSchema } from '../../shared/types/searchParameterSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/searchParam... Remove this comment to see the full error message
+import { searchParamsSchema } from 'shared/types/searchParameterSchema.js';
 
 describe('search schema', () => {
   const validQuery = {

@@ -1,4 +1,6 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
 import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
 import {
   GetExtractedParagraphsOutput,
@@ -39,6 +41,7 @@ class PXGetEntityParagraphs
 
       const results = (await extractorsQueryService
         .getExtractedParagraphs({
+          // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
           ids: entityParagraphRelationships.map(r => r.entitySharedId),
           mainLanguage,
           paragraphNumberProperty,

@@ -1,4 +1,4 @@
-import { sleep } from '../../shared/tsUtils.js';
+import { sleep } from 'shared/tsUtils.js';
 
 export interface TaskStatus {
   state: 'undefined' | 'created' | 'running' | 'done' | 'failed';
@@ -28,7 +28,7 @@ export abstract class Task {
         this.status.state = 'done';
         this.status.endTime = Date.now();
       },
-      (reason) => {
+      reason => {
         this.status.state = 'failed';
         this.status.endTime = Date.now();
         this.status.message = `Failed with ${reason?.toString()}`;

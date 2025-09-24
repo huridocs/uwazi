@@ -1,6 +1,8 @@
 import express, { Application } from 'express';
 import request from 'supertest';
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { TenantFeatureFlags } from '../tenants/tenantContext.js';
 import { appContextMiddleware } from '../appContextMiddleware';
 import { multitenantMiddleware } from '../multitenantMiddleware';

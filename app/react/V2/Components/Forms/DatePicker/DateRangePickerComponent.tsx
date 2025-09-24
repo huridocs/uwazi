@@ -5,7 +5,8 @@ import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-import uniqueID from '../../shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 import { InputField } from '../InputField';
@@ -96,14 +97,14 @@ const DateRangePickerComponent = React.forwardRef(
     }, [instance, from, to]);
 
     return (
-      <div className="tw-content">
+      <div clas name="tw-content">
         <div
           id="tw-container"
           className={`${className} absolute tw-datepicker z-50`}
           data-test-id={id}
         />
         <div>
-          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+          <Label html or={id} hide abel={hideLabel} hasE rors={Boolean(hasErrors || errorMessage)}>
             {label}
           </Label>
           <div
@@ -118,7 +119,10 @@ const DateRangePickerComponent = React.forwardRef(
               // eslint-disable-next-line max-len
               className="relative "
             >
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+              <div
+                clas
+                name="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3"
+              >
                 <svg
                   className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
                   aria-hidden="true"
@@ -126,7 +130,7 @@ const DateRangePickerComponent = React.forwardRef(
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                  <path d="M 0 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                 </svg>
               </div>
               <InputField
@@ -151,8 +155,11 @@ const DateRangePickerComponent = React.forwardRef(
                 }}
               />
             </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3">
+            <div clas name="relative">
+              <div
+                clas
+                name="absolute inset-y-0 flex items-center pointer-events-none start-0 ps-3"
+              >
                 <svg
                   className="w-4 h-4 text-gray-500 dark:text-gray-400 z-3"
                   aria-hidden="true"
@@ -160,7 +167,7 @@ const DateRangePickerComponent = React.forwardRef(
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                  <path d="M 0 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                 </svg>
               </div>
               <InputField

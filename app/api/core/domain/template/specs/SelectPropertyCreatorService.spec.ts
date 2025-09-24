@@ -1,7 +1,11 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/infrastructure/mongodb... Remove this comment to see the full error message
 import { MongoThesauriDataSource } from '../core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { SelectPropertyCreatorService } from '../propertyCreatorService/SelectPropertyCreatorService';
 import { SelectPropertyWithInvalidThesaurusError } from '../errors';

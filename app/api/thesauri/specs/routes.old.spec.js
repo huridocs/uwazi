@@ -1,6 +1,6 @@
 import translations from '../i18n/translations.js';
 import 'api/utils/jasmineHelpers';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import thesauriRoute from '../routes.js';

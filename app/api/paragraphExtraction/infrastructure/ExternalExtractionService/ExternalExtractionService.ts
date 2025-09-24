@@ -1,6 +1,10 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/HttpCli... Remove this comment to see the full error message
 import { HttpClient } from '../common.v2/contracts/HttpClient.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/HttpFie... Remove this comment to see the full error message
 import { HttpField } from '../common.v2/contracts/HttpField.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
 
 import {
@@ -26,8 +30,10 @@ export class PXExternalExtractionService implements PXExtractionService {
       availableLanguages: dto.available_languages as LanguageISO6391[],
       extractionKey: new PXExtractionKey(dto.key),
       mainLanguage: dto.main_language as LanguageISO6391,
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       paragraphs: dto.paragraphs.map(p => ({
         paragraphNumber: p.position,
+        // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
         translations: p.translations.map(t => ({
           language: t.language as LanguageISO6391,
           text: t.text,

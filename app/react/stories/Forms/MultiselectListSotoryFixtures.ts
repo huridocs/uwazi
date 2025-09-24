@@ -33,7 +33,7 @@ const items = [
 ];
 
 const remoteLookupFunction = async (search: string): Promise<MultiselectListOption[]> =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     setTimeout(() => {
       resolve(
         items.filter(({ searchLabel }) => searchLabel?.toLowerCase().includes(search.toLowerCase()))

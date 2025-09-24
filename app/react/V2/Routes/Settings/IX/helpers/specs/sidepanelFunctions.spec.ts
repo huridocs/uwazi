@@ -2,15 +2,18 @@
  * @jest-environment jsdom
  */
 
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema, ClientPropertySchema } from '../../istore.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
 import {
   getPropertyNameFromExtractPair,
   getTemplateFromExtractPair,
   handleEntitySave,
   getFormValue,
 } from '../sidepanelFunctions';
-import { EntitySuggestionType } from '../../shared/types/suggestionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+import { EntitySuggestionType } from 'shared/types/suggestionType.js';
 
 jest.mock('V2/api/entities', () => ({
   formatter: {

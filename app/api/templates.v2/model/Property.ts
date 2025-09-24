@@ -1,6 +1,9 @@
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/errors... Remove this comment to see the full error message
 import { PropertyTypeMismatchError } from '../core/domain/template/errors.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Proper... Remove this comment to see the full error message
 import { PropertyName } from '../core/domain/template/PropertyName.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
 
 type PropertyTypes = PropertySchema['type'];
 

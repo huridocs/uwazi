@@ -2,10 +2,10 @@ import { ValidationError } from '../common.v2/validation/ValidationError.js';
 import { elastic } from '../search.js';
 import { search } from '../search/search.js';
 import date from '../utils/date.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
-import * as searchLimitsConfig from '../../shared/config.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+import * as searchLimitsConfig from 'shared/config.js';
+import { UserRole } from 'shared/types/userSchema.js';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, fixturesTimeOut, ids } from './fixtures_elastic';
 

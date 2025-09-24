@@ -2,11 +2,14 @@ import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAtomValue } from 'jotai';
 import { IStore } from '../../istore.js';
-import { ConnectionSchema } from '../../shared/types/connectionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/connectionT... Remove this comment to see the full error message
+import { ConnectionSchema } from 'shared/types/connectionType.js';
 import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
-import { unique } from '../../shared/filterUnique.js';
-import { SelectionRectangleSchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/filterUnique.js' ... Remove this comment to see the full error message
+import { unique } from 'shared/filterUnique.js';
+
+import { SelectionRectangleSchema } from 'shared/types/commonTypes.js';
 import { pdfScaleAtom } from '../../V2/atoms/index.js';
 import { selectionHandlers } from '../../V2/Components/PDFViewer/index.js';
 
@@ -50,6 +53,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
         }
 
         const selectionRectangles = reference.reference.selectionRectangles.map(
+          // @ts-expect-error TS(7031): Binding element 'page' implicitly has an 'any' typ... Remove this comment to see the full error message
           ({ page, ...otherProps }) => ({ regionId: page, ...otherProps })
         );
 
@@ -59,7 +63,7 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
         );
 
         if (props.groupedReferences && reference._id) {
-          props.groupedReferences.forEach((group) => {
+          props.groupedReferences.forEach(group => {
             const belongingGroup = group.find(ref => ref._id === reference._id);
             if (belongingGroup) {
               referenceGroup.current = group.map(ref => ref._id);
@@ -105,10 +109,12 @@ const indexdReferencesByPage = createSelector(
 
           if (connection.reference) {
             const pages = connection.reference.selectionRectangles
+              // @ts-expect-error TS(7006): Parameter 'selection' implicitly has an 'any' type... Remove this comment to see the full error message
               .map(selection => selection.page)
               .filter(unique);
 
-            pages.forEach((page) => {
+            // @ts-expect-error TS(7006): Parameter 'page' implicitly has an 'any' type.
+            pages.forEach(page => {
               if (!page) {
                 return;
               }
@@ -130,6 +136,7 @@ const indexdReferencesByPage = createSelector(
 const groupByRectangle = createSelector(
   (state: IStore) => state.documentViewer.references,
   references =>
+    // @ts-expect-error TS(7006): Parameter 'groups' implicitly has an 'any' type.
     references.reduce((groups, reference) => {
       if (!groups) return [];
 
@@ -139,8 +146,10 @@ const groupByRectangle = createSelector(
 
       if (!rectangles?.size) return groups;
 
+      // @ts-expect-error TS(7006): Parameter 'refGroups' implicitly has an 'any' type... Remove this comment to see the full error message
       const hasGroup = groups?.some(refGroups =>
-        refGroups.some((refGroup) => {
+        // @ts-expect-error TS(7006): Parameter 'refGroup' implicitly has an 'any' type.
+        refGroups.some(refGroup => {
           if (
             refGroup.length === rectangles.size &&
             refGroup.start.page === rectangles.get(0).get('page') &&

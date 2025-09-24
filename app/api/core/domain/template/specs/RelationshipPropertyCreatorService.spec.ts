@@ -1,10 +1,16 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { DefaultRelationshipTypesDataSource } from '../relationshiptypes.v2/database/data_source_defaults.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/databa... Remove this comment to see the full error message
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/V1Relati... Remove this comment to see the full error message
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import {
   RelationshipTargetPropertyNotFoundError,
   RelationshipTargetTypeMismatchError,

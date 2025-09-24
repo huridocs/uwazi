@@ -1,8 +1,13 @@
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/specs/utils/... Remove this comment to see the full error message
 import { FileBuilder } from '../files.v2/model/specs/utils/FileBuilder.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();

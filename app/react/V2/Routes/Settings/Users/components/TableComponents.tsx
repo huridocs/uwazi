@@ -3,7 +3,9 @@ import React, { MouseEventHandler } from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { Tooltip } from 'flowbite-react';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, Pill } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
 import { User, Group } from '../types';
 
@@ -46,6 +48,7 @@ const RolePill = ({ cell }: CellContext<User, User['role']>) => {
 
 const MembersPill = ({ cell }: CellContext<Group, Group['members']>) => (
   <div className="flex flex-wrap gap-2">
+    // @ts-expect-error TS(7006): Parameter 'member' implicitly has an 'any' type.
     {cell.getValue().map(member => (
       <div key={member.username}>
         <Pill color="gray">{member.username}</Pill>
@@ -56,6 +59,7 @@ const MembersPill = ({ cell }: CellContext<Group, Group['members']>) => (
 
 const GroupsPill = ({ cell }: CellContext<User, User['groups']>) => (
   <div className="flex flex-wrap gap-2">
+    // @ts-expect-error TS(7006): Parameter 'group' implicitly has an 'any' type.
     {cell.getValue()?.map(group => (
       <div key={cell.id + group._id}>
         <Pill color="gray" className="whitespace-nowrap">

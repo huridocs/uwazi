@@ -4,12 +4,14 @@ import { groupBy } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from '../../istore.js';
 import * as attachmentsTypes from '../../Attachments/actions/actionTypes.js';
 import * as uploadsActionTypes from '../../Uploads/actions/actionTypes.js';
-import { ensure } from '../../shared/tsUtils.js';
-import { constructFile } from '../../shared/fileUploadUtils.js';
+
+import { ensure } from 'shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/fileUploadUtils.j... Remove this comment to see the full error message
+import { constructFile } from 'shared/fileUploadUtils.js';
 import loadingBar from '../../App/LoadingProgressBar.js';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
-  new Promise<void>((resolve) => {
+  new Promise<void>(resolve => {
     const reader = new FileReader();
 
     reader.onload = (base64: any) => {
@@ -36,6 +38,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     : [[], []];
 
   const { oldDocuments = [], newDocuments = [] } = groupBy(entity.documents || [], document =>
+    // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientFile ... Remove this comment to see the full error message
     document._id !== undefined ? 'oldDocuments' : 'newDocuments'
   );
   const entityToSave = { ...entity, documents: oldDocuments };
@@ -60,16 +63,18 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
 
     if (dispatch) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      request.on('progress', (data) => {
+      request.on('progress', data => {
         if (data.percent && Math.floor(data.percent) === 100) {
           return dispatch({
             type: attachmentsTypes.ATTACHMENT_LOCAL_COMPLETE,
+            // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
             entity: entity.sharedId || 'NEW_ENTITY',
           });
         }
 
         return dispatch({
           type: attachmentsTypes.ATTACHMENT_PROGRESS,
+          // @ts-expect-error TS(2339): Property 'sharedId' does not exist on type 'Client... Remove this comment to see the full error message
           entity: entity.sharedId || 'NEW_ENTITY',
           progress: data.percent ? Math.floor(data.percent) : data.percent,
         });

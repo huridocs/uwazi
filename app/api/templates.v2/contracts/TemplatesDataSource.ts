@@ -1,5 +1,7 @@
+// @ts-expect-error TS(2300): Duplicate identifier 'ResultSet'.
 import { ResultSet } from '../../common.v2/contracts/ResultSet.js';
 import { GenerateIdProperty } from '../../core/domain/template/GenerateIdProperty.js';
+// @ts-expect-error TS(2300): Duplicate identifier 'ResultSet'.
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
 
 import { Property } from '../model/Property';

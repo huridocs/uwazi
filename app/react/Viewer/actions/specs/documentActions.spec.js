@@ -8,7 +8,7 @@ import backend from 'fetch-mock';
 import Immutable from 'immutable';
 import api from '../../utils/api.js';
 
-import { mockID } from '../../shared/uniqueID.js.js';
+import { mockID } from 'shared/uniqueID.js.js';
 import { documentsApi } from '../../Documents.js';
 import { APIURL } from '../../config.js.js';
 import * as notificationsTypes from '../../Notifications/actions/actionTypes.js';
@@ -281,7 +281,7 @@ describe('documentActions', () => {
     afterEach(() => backend.restore());
 
     describe('saveDocument', () => {
-      it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
+      it('should save the document (omitting fullText) and dispatch a notification on success', done => {
         const defaultDocument = { _id: 'file1', originalName: 'File 1' };
         const docWithExtractedMetadata = {
           ...defaultDocument,
@@ -367,7 +367,7 @@ describe('documentActions', () => {
     });
 
     describe('saveToc', () => {
-      it('should save the document with the new toc and dispatch a notification on success', (done) => {
+      it('should save the document with the new toc and dispatch a notification on success', done => {
         const toc = [
           { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 },
           { range: { start: 22, end: 44 }, label: 'Chapter 1.1', indentation: 1 },
@@ -454,7 +454,7 @@ describe('documentActions', () => {
     });
 
     describe('deleteDocument', () => {
-      it('should delete the document and dispatch a notification on success', (done) => {
+      it('should delete the document and dispatch a notification on success', done => {
         spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');
         const doc = { sharedId: 'sharedId', name: 'doc' };

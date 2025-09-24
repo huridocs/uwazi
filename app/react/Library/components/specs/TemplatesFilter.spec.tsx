@@ -1,7 +1,11 @@
 import { fromJS } from 'immutable';
-import { SettingsFilterSchema } from '../../shared/types/settingsType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+import { SettingsFilterSchema } from 'shared/types/settingsType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Templ... Remove this comment to see the full error message
 import { ConnectedComponent as TemplatesFilterComponent } from '../../Library/components/TemplatesFilter.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnected } from '../../utils/test/renderConnected.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/actions/filterAc... Remove this comment to see the full error message
 import { filterDocumentTypes } from '../../Library/actions/filterActions.js';
 import * as redux from 'redux';
 import DocumentTypesList from '../DocumentTypesList';

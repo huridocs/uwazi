@@ -29,6 +29,7 @@ class TemplateMutationController extends AbstractController {
 
     this.request.sockets.emitToCurrentTenant('templateChange', response);
 
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TemplateDB... Remove this comment to see the full error message
     const updatedSettings = await settings.updateFilterName(response._id.toString(), response.name);
 
     if (updatedSettings) {

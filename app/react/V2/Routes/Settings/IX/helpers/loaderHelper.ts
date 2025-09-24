@@ -1,9 +1,12 @@
 import { IncomingHttpHeaders } from 'http';
 import { get, has, isEmpty } from 'lodash';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientPropertySchema, ClientEntitySchema } from '../../istore.js';
-import { search } from '../../../../api/search/index.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { ClientTemplateSchema } from '../../shared/V2/shared/types.js';
+import { search } from 'api/search/index.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/types.j... Remove this comment to see the full error message
+import { ClientTemplateSchema } from 'shared/V2/shared/types.js';
 import { SuggestionValue, EntitySuggestion } from '../types.js';
 
 type TransformedSuggestion = EntitySuggestion & {
@@ -75,9 +78,9 @@ const getRelationshipInfo = (
 ) => {
   const allCurrentValueIds = new Set<string>();
   const allSuggestedValueIds = new Set<string>();
-  suggestions.forEach((suggestion) => {
+  suggestions.forEach(suggestion => {
     if (Array.isArray(suggestion.currentValue)) {
-      suggestion.currentValue.forEach((value) => {
+      suggestion.currentValue.forEach(value => {
         if (typeof value === 'string') {
           allCurrentValueIds.add(value);
         }
@@ -86,7 +89,7 @@ const getRelationshipInfo = (
       allCurrentValueIds.add(suggestion.currentValue);
     }
     if (Array.isArray(suggestion.suggestedValue)) {
-      suggestion.suggestedValue.forEach((value) => {
+      suggestion.suggestedValue.forEach(value => {
         if (has(value, 'id')) {
           allSuggestedValueIds.add(get(value, 'id') as string);
         }
@@ -112,7 +115,7 @@ const updateSuggestionValues = (
   entityCurrentValuesMap: Map<string, string>,
   entitySuggestedValuesMap: Map<string, string>
 ) => {
-  suggestions = suggestions.map((suggestion) => {
+  suggestions = suggestions.map(suggestion => {
     const currentValue =
       suggestion.currentValue && !Array.isArray(suggestion.currentValue)
         ? [suggestion.currentValue]
@@ -126,7 +129,7 @@ const updateSuggestionValues = (
     let updatedSuggestedValue: EntitySuggestion['suggestedValue'] = suggestedValue;
 
     if (suggestion.currentValue && !isEmpty(currentValue)) {
-      updatedCurrentValue = currentValue.map((value) => {
+      updatedCurrentValue = currentValue.map(value => {
         if (typeof value === 'string' && entityCurrentValuesMap.has(value)) {
           return { id: value, label: entityCurrentValuesMap.get(value)! };
         }
@@ -134,7 +137,7 @@ const updateSuggestionValues = (
       });
     }
     if (suggestion.suggestedValue && !isEmpty(suggestedValue)) {
-      updatedSuggestedValue = suggestedValue.map((value) => {
+      updatedSuggestedValue = suggestedValue.map(value => {
         const suggestionValue = get(value, 'id') || value;
         if (typeof suggestionValue === 'string' && entitySuggestedValuesMap.has(suggestionValue)) {
           return { id: suggestionValue, label: entitySuggestedValuesMap.get(suggestionValue)! };

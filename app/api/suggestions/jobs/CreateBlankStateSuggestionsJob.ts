@@ -2,8 +2,10 @@ import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
+  // @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 } from '../queue.v2/application/contracts/Dispatchable.js';
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
 import { BatchRange } from '../batchProcessing';
 import { createBlankStateSuggestionsBatch } from '../blankSuggestions';
 

@@ -1,5 +1,6 @@
 /*global page*/
 //Login reloads the page, and will remove this styles. Use after login.
+// @ts-expect-error TS(2304): Cannot find name 'page'.
 export default async (currentPage = page) => {
   await currentPage.addStyleTag({
     content: `

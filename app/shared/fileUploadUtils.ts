@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../istore.js' or its correspon... Remove this comment to see the full error message
 import { ClientFile } from '../istore.js';
 import { AttachmentSchema } from './types/commonTypes';
 

@@ -1,4 +1,5 @@
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { BaseFile } from './BaseFile';
 
 export class Document extends BaseFile {

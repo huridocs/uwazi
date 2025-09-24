@@ -3,6 +3,7 @@
  */
 import React, { act } from 'react';
 import { screen } from '@testing-library/react';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnectedContainer } from '../../utils/test/renderConnected.js';
 import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { localeAtom, translationsAtom } from '../../../V2/atoms/index.js';

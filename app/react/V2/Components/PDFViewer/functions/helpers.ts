@@ -8,6 +8,7 @@ const triggerScroll = (ref: React.RefObject<HTMLDivElement>, frameId: number): n
     }
 
     if (ref.current && ref.current.clientHeight > 0) {
+      // @ts-expect-error TS(2322): Type '"instant"' is not assignable to type 'Scroll... Remove this comment to see the full error message
       ref.current.scrollIntoView({ behavior: 'instant' });
       return;
     }

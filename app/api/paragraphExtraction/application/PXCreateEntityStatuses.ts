@@ -1,6 +1,10 @@
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
 import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
-import { LanguagesListSchema } from '../../shared/types/commonTypes.js';
+
+import { LanguagesListSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/infrastructure/err... Remove this comment to see the full error message
 import { NonRetryableJobError } from '../queue.v2/infrastructure/errors.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService';
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
@@ -41,6 +45,7 @@ class PXCreateEntityStatuses implements UseCase<Input, Output> {
     if (!installedLanguages || installedLanguages.length === 0) {
       throw new NonRetryableJobError(new Error('No languages installed in settings.'));
     }
+    // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
     const defaultLanguage = installedLanguages.find(l => l.default)?.key;
     if (!defaultLanguage) {
       throw new NonRetryableJobError(

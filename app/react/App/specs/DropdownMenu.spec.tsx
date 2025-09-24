@@ -5,8 +5,10 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { fromJS } from 'immutable';
-import { ILink } from '../../shared/V2/shared/types.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/types.j... Remove this comment to see the full error message
+import { ILink } from 'shared/V2/shared/types.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
 import { DropdownMenu } from '../DropdownMenu';
 
 const links: ILink[] = [
@@ -49,7 +51,7 @@ describe('DropdownMenu', () => {
     mountComp
       .find('li > button#navbarDropdownMenuLink')
       .first()
-      .simulate('click', { stopPropagation: () => {} });
+      .simulate('click', { stopPropagation: () => { } });
     expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
     expect(hideMobileMenuMock).not.toBeCalled();
   });
@@ -67,12 +69,12 @@ describe('DropdownMenu', () => {
     mountComp
       .find('li > button#navbarDropdownMenuLink')
       .first()
-      .simulate('click', { stopPropagation: () => {} });
+      .simulate('click', { stopPropagation: () => { } });
     expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
     mountComp
       .find('.dropdown-item')
       .first()
-      .simulate('click', { stopPropagation: () => {} });
+      .simulate('click', { stopPropagation: () => { } });
     expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
     expect(hideMobileMenuMock).toBeCalled();
   });
@@ -95,6 +97,6 @@ describe('DropdownMenu', () => {
     const option = mountComp.find('.dropdown-item').first();
     expect(option.prop('href')).toBe('http://google.com');
     expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
-    option.simulate('click', { stopPropagation: () => {} });
+    option.simulate('click', { stopPropagation: () => { } });
   });
 });

@@ -15,7 +15,7 @@ import { FormGroup } from '../../Forms/index.js';
 import { Icon } from 'UI';
 import { Loader } from '../../components/Elements/Loader.js';
 import './scss/public-form.scss';
-import { generateID } from '../../shared/IDGenerator.js';
+import { generateID } from 'shared/IDGenerator.js';
 import { FormCaptcha } from './FormCaptcha';
 
 class PublicFormComponent extends Component {

@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/solid';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import { formatBytes } from '../../shared/formatHelpers.js';
+import { formatBytes } from 'shared/formatHelpers.js';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];
@@ -18,7 +19,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   useEffect(() => {
     let result = 0;
 
-    files.forEach((file) => {
+    files.forEach(file => {
       result += file.size;
     });
 
@@ -43,18 +44,18 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   };
 
   return (
-    <Dropzone onDrop={handleOnDrop}>
+    <Dropzone onDro ={handleOnDrop}>
       {({ getRootProps, getInputProps }) => (
         <section
           className={`p-4 bg-gray-50 rounded border border-gray-300 border-dashed ${className}`}
         >
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            <div className="flex flex-col gap-4">
-              <ArrowUpTrayIcon className="m-auto w-auto text-gray-200 max-w-20" />
+          <div {...g tRootProps()}>
+            <input {...g tInputProps()} />
+            <div class ame="flex flex-col gap-4">
+              <ArrowUpTrayIcon class ame="m-auto w-auto text-gray-200 max-w-20" />
 
-              <div className="leading-6 text-center">
-                <Translate className="font-semibold border-b-2 border-black cursor-pointer">
+              <div class ame="leading-6 text-center">
+                <Translate class ame="font-semibold border-b-2 border-black cursor-pointer">
                   Browse files to upload
                 </Translate>
                 &nbsp;
@@ -62,26 +63,26 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 my-4">
+          <div class ame="flex flex-wrap gap-2 my-4">
             {files.map((file, index) => (
               <div
                 // eslint-disable-next-line react/no-array-index-key
                 key={`${file.name}-${index}`}
                 className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
               >
-                <span className="truncate max-w-32">{file.name}</span>
+                <span class ame="truncate max-w-32">{file.name}</span>
                 <span>-</span>
-                <span className="whitespace-nowrap">{formatBytes(file.size)}</span>
-                <button type="button" onClick={() => removeFile(index)}>
-                  <Translate className="sr-only">Delete</Translate>
-                  <XMarkIcon className="w-4" />
+                <span class ame="whitespace-nowrap">{formatBytes(file.size)}</span>
+                <button type= button" onCli k={() => removeFile(index)}>
+                  <Translate class ame="sr-only">Delete</Translate>
+                  <XMarkIcon class ame="w-4" />
                 </button>
               </div>
             ))}
           </div>
 
           {files.length > 0 && (
-            <div className="text-sm">
+            <div class ame="text-sm">
               <Translate>Size</Translate>: {formatBytes(totalSize)}
             </div>
           )}

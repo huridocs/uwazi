@@ -7,8 +7,10 @@ import { IStore } from '../../istore.js';
 import {
   ExtractedMetadataSchema,
   SelectionRectangleSchema,
-} from '../../shared/types/commonTypes.js';
+
+} from 'shared/types/commonTypes.js';
 import { pdfScaleAtom } from '../../V2/atoms/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/PDFViewer.... Remove this comment to see the full error message
 import { selectionHandlers } from '../../V2/Components/PDFViewer.js';
 
 interface Selection extends ExtractedMetadataSchema {
@@ -23,6 +25,7 @@ const uniqueSelections = (selections: Selection[], newSelections: Selection[]) =
 const mapStateToProps = (state: IStore) => ({
   userSelections: state.documentViewer.metadataExtraction.get('selections'),
   entityDocument: state.documentViewer.doc.get('defaultDoc'),
+  // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientEntit... Remove this comment to see the full error message
   isEditing: Boolean(state.documentViewer.sidepanel.metadata._id),
 });
 
@@ -41,9 +44,9 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
 
   const currentSelections: Selection[] = entityDocument.get('extractedMetadata')?.size
     ? entityDocument.toJS().extractedMetadata!.map((currentSelection: Selection) => ({
-        ...currentSelection,
-        isCurrent: true,
-      }))
+      ...currentSelection,
+      isCurrent: true,
+    }))
     : [];
 
   const selections = uniqueSelections(currentSelections, newSelections);
@@ -51,8 +54,10 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
   if (selections.length) {
     return (
       <>
-        {selections.map((selection) => {
+        {selections.map(selection => {
+          // @ts-expect-error TS(2339): Property 'selection' does not exist on type 'Selec... Remove this comment to see the full error message
           const selected = selection.selection;
+          // @ts-expect-error TS(7006): Parameter 'rectangle' implicitly has an 'any' type... Remove this comment to see the full error message
           const rectangles = (selected?.selectionRectangles || []).map(rectangle => ({
             regionId: rectangle.page,
             ...(rectangle as Required<SelectionRectangleSchema>),
@@ -67,7 +72,9 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
 
           return (
             <div
+              // @ts-expect-error TS(2339): Property 'propertyID' does not exist on type 'Sele... Remove this comment to see the full error message
               key={selection.propertyID || selection.name}
+              // @ts-expect-error TS(2339): Property 'timestamp' does not exist on type 'Selec... Remove this comment to see the full error message
               data-testid={selection.timestamp}
               className="selection"
             >

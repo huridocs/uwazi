@@ -3,7 +3,8 @@ import { useSetAtom } from 'jotai';
 import { Translate } from '../../I18N/index.js';
 import { notificationAtom } from '../atoms/index.js';
 import { RequestParams } from '../../utils/RequestParams.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
 
 interface ApiCallerResult {
   data?: Promise<any | undefined>;

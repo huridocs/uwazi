@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
-import comonProperties from '../../shared/commonProperties.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/commonProperties.... Remove this comment to see the full error message
+import comonProperties from 'shared/commonProperties.js';
 import { Icon } from 'UI';
 import { ClientEntitySchema } from '../../istore.js';
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Metadata.js' or its corr... Remove this comment to see the full error message
 import { actions, ShowMetadata, wrapEntityMetadata } from '../../Metadata.js';
 import { store } from '../../store.js';
 
@@ -42,7 +46,9 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
   }
 
   onSelect(selectedEntity: ClientEntitySchema) {
+    // @ts-expect-error TS(2339): Property 'template' does not exist on type 'Client... Remove this comment to see the full error message
     const copyFromTemplateId = selectedEntity.template;
+    // @ts-expect-error TS(2339): Property 'template' does not exist on type 'Client... Remove this comment to see the full error message
     const originalTemplate = this.props.originalEntity.template;
 
     const propsToCopy = comonProperties
@@ -51,6 +57,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
         [originalTemplate, copyFromTemplateId],
         ['generatedid', 'media', 'image']
       )
+      // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
       .map(p => p.name);
 
     this.setState({ selectedEntity, propsToCopy });
@@ -62,11 +69,13 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
   }
 
   copy() {
+    // @ts-expect-error TS(2339): Property 'metadata' does not exist on type 'Client... Remove this comment to see the full error message
     if (!this.state.selectedEntity.metadata) {
       return;
     }
 
     const entityTemplate = this.templates.find(
+      // @ts-expect-error TS(2339): Property 'template' does not exist on type 'Client... Remove this comment to see the full error message
       template => template._id === this.props.originalEntity.template
     );
 
@@ -75,16 +84,20 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
       entityTemplate
     );
 
+    // @ts-expect-error TS(2769): No overload matches this call.
     const updatedEntity = this.state.propsToCopy.reduce(
       (entity: ClientEntitySchema, propName: string) => {
+        // @ts-expect-error TS(2339): Property 'metadata' does not exist on type 'Client... Remove this comment to see the full error message
         if (!entity.metadata) {
           return { ...entity, metadata: {} };
         }
 
+        // @ts-expect-error TS(2339): Property 'metadata' does not exist on type 'Client... Remove this comment to see the full error message
         const updatedMetadata = this.state.selectedEntity.metadata![propName];
 
         return {
           ...entity,
+          // @ts-expect-error TS(2339): Property 'metadata' does not exist on type 'Client... Remove this comment to see the full error message
           metadata: { ...entity.metadata, [propName]: updatedMetadata },
         };
       },
@@ -93,6 +106,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
 
     actions
       .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.templates)
+      // @ts-expect-error TS(7006): Parameter 'action' implicitly has an 'any' type.
       .forEach(action => store?.dispatch(action));
 
     this.props.onSelect([]);
@@ -111,6 +125,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
   }
 
   renderPanel() {
+    // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientEntit... Remove this comment to see the full error message
     return this.state.selectedEntity._id ? (
       <>
         <div className="view">

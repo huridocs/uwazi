@@ -3,7 +3,7 @@ import { Readable } from 'stream';
 
 import { appContext } from '../utils/AppContext.js';
 import { FileTypes } from '../files/storage.js';
-import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
 
 export const dbSessionContext = {
   getSession() {

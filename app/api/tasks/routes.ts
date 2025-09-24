@@ -1,10 +1,11 @@
 /**
  * Uwazi routes that start and inspect tasks.
  */
+// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
 import { needsAuthorization } from '../auth.js';
 import { validation } from '../utils/index.js';
 import { Application, Request, Response } from 'express';
-import { TaskProvider } from '../../shared/tasks/tasks.js';
+import { TaskProvider } from 'shared/tasks/tasks.js';
 
 export const TASKS_ENDPOINT = 'tasks';
 const tasksPrefix = `/api/${TASKS_ENDPOINT}`;

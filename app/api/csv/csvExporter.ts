@@ -2,9 +2,9 @@ import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
 import templates from '../templates/index.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import translate, { getLocaleTranslation, getContext } from '../../shared/translate.js';
+import { PropertySchema } from 'shared/types/commonTypes.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import translate, { getLocaleTranslation, getContext } from 'shared/translate.js';
 import translations from '../i18n/translations.js';
 import {
   formatters,
@@ -12,7 +12,7 @@ import {
   formatDocuments,
   formatAttachments,
 } from './typeFormatters';
-import { EntitySchema } from '../../shared/types/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 
 export type SearchResults = {
   rows: any[];

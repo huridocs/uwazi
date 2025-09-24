@@ -1,5 +1,7 @@
-import { objectIdSchema, metadataSchema } from '../../shared/types/commonSchemas.js';
+import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas.js';
+// @ts-expect-error TS(2307): Cannot find module './types/fileSchema.js' or its ... Remove this comment to see the full error message
 import { fileSchema } from './types/fileSchema.js';
+// @ts-expect-error TS(2307): Cannot find module './types/permissionSchema.js' o... Remove this comment to see the full error message
 import { permissionSchema } from './types/permissionSchema.js';
 
 export const emitSchemaTypes = true;

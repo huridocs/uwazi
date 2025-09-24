@@ -1,6 +1,7 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import Immutable from 'immutable';
+// @ts-expect-error TS(2307): Cannot find module '../../store.js' or its corresp... Remove this comment to see the full error message
 import { store } from '../../store.js';
 import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../CopyFromEntity';
 import { SearchEntities } from '../SearchEntities';
@@ -45,6 +46,7 @@ describe('CopyFromEntity', () => {
         },
       ]),
       originalEntity: {
+        // @ts-expect-error TS(2322): Type '{ title: string; template: string; metadata:... Remove this comment to see the full error message
         title: 'I want to be like you',
         template: 'template_1',
         metadata: {
@@ -81,6 +83,7 @@ describe('CopyFromEntity', () => {
   describe('when an entity is selected', () => {
     it('should render the entity an set the common props in the state', () => {
       render();
+      // @ts-expect-error TS(2559): Type '{ title: string; template: string; metadata:... Remove this comment to see the full error message
       component.instance().onSelect(entityToBeSelected);
 
       expect(component.instance().state.propsToCopy).toEqual(['two']);
@@ -91,6 +94,7 @@ describe('CopyFromEntity', () => {
   describe('copy()', () => {
     it('should load in the redux form the entity with matched values', () => {
       render();
+      // @ts-expect-error TS(2559): Type '{ title: string; template: string; metadata:... Remove this comment to see the full error message
       component.instance().onSelect(entityToBeSelected);
       component.instance().copy();
       expect(store?.dispatch).toHaveBeenCalledWith({ type: 'entityThesauris/SET', value: {} });
@@ -130,12 +134,14 @@ describe('CopyFromEntity', () => {
       };
 
       props.originalEntity = {
+        // @ts-expect-error TS(2322): Type '{ title: string; template: string; metadata:... Remove this comment to see the full error message
         title: 'New entity with media',
         template: 'template_3',
         metadata: {},
       };
 
       render();
+      // @ts-expect-error TS(2559): Type '{ title: string; template: string; metadata:... Remove this comment to see the full error message
       component.instance().onSelect(entityWithMedia);
       component.instance().copy();
 

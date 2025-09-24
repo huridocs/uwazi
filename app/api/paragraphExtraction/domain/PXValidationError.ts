@@ -30,6 +30,7 @@ export enum PXErrorCode {
 export class PXValidationError extends Error {
   static codes = PXErrorCode;
 
+  // @ts-expect-error TS(2699): Static property 'name' conflicts with built-in pro... Remove this comment to see the full error message
   static name = 'PXValidationError';
 
   constructor(

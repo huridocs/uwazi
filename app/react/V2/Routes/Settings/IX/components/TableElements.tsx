@@ -10,7 +10,9 @@ import { Button, Pill } from '../../../../Components/UI/index.js';
 import { EmbededButton } from '../../../../Components/UI/EmbededButton.js';
 import { ClientTemplateSchema } from '../../../../shared/types.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientPropertySchema } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import {
   TableExtractor,
@@ -197,7 +199,7 @@ const AcceptButton = ({
         color={color}
         disabled={isDisabled}
         onClick={async () => {
-          setAccepted((prev) => {
+          setAccepted(prev => {
             const newSet = new Set(prev || []);
             newSet.add(rowId);
             return newSet;
@@ -271,6 +273,7 @@ const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion
       </span>
     );
   }
+  // @ts-expect-error TS(2786): 'ContextCell' cannot be used as a JSX component.
   return <ContextCell text={segment} />;
 };
 

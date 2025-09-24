@@ -1,14 +1,18 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/MockL... Remove this comment to see the full error message
 import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
 import {
   Dispatchable,
   HeartbeatCallback,
   JobInfo,
+  // @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 } from '../queue.v2/application/contracts/Dispatchable.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 import { createSignals } from './Signals';
@@ -311,6 +315,7 @@ it('should double the lockWindow time on every retry', async () => {
   const lockWindows: number[] = [];
 
   const originalPickJob = adapter.pickJob.bind(adapter);
+  // @ts-expect-error TS(7006): Parameter 'queueName' implicitly has an 'any' type... Remove this comment to see the full error message
   adapter.pickJob = async queueName => {
     const job = await originalPickJob(queueName);
     if (job) {

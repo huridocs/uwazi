@@ -1,9 +1,14 @@
 import Ajv, { ErrorObject } from 'ajv';
+// @ts-expect-error TS(2307): Cannot find module '../templates/templatesModel.js... Remove this comment to see the full error message
 import templatesModel from '../templates/templatesModel.js';
-import { wrapValidator } from '../../shared/tsUtils.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+
+import { wrapValidator } from 'shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 
 import { validateMetadataField } from './validateMetadataField.js';
@@ -28,6 +33,7 @@ const validateField =
   };
 
 const validateFields = async (template: TemplateSchema, entity: EntitySchema) => {
+  // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
   const errors = await (template.properties || []).reduce<Promise<Partial<ErrorObject>[]>>(
     validateField(entity, template),
     Promise.resolve([])
@@ -37,6 +43,7 @@ const validateFields = async (template: TemplateSchema, entity: EntitySchema) =>
 
 const validateAllowedProperties = async (template: TemplateSchema, entity: EntitySchema) => {
   const errors: ErrorObject[] = [];
+  // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
   const allowedProperties = (template.properties || []).map(p => p.name);
   Object.keys(entity.metadata || {}).forEach((propName: string) => {
     if (!allowedProperties.includes(propName)) {

@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 import { Collection, ObjectId } from 'mongodb';
-import testingDB from '../utils/testing_db.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import { DocumentTracker, MongoDocument } from '../documentTracker/DocumentTracker';
 
 describe('DocumentTracker', () => {

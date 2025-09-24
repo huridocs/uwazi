@@ -1,6 +1,10 @@
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
 import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
-import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
 import { Logger } from '../log.v2/contracts/Logger.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
 import { Entity } from '../entities.v2/model/Entity.js';
 import { TranslationResult } from './types/TranslationResult';
 import { Validator } from './infrastructure/Validator';
@@ -40,6 +44,7 @@ export class SaveEntityTranslations {
 
     const entities = this.entitiesDS.getByIds([entitySharedId]);
 
+    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     await entities.forEach(async entity => {
       const translation = translationResult.translations.find(t => t.language === entity.language);
       if (translation?.success === false) {

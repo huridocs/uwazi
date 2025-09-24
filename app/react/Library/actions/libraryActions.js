@@ -13,7 +13,7 @@ import { RequestParams } from '../../utils/RequestParams.js';
 import searchAPI from '../../Search/SearchAPI.js';
 import referencesAPI from '../../Viewer/referencesAPI.js';
 import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
-import { toUrlParams } from '../../shared/JSONRequest.js';
+import { toUrlParams } from 'shared/JSONRequest.js';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
 import { saveEntityWithFiles } from './saveEntityWithFiles';

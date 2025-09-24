@@ -1,9 +1,13 @@
 /* eslint-disable max-statements */
 import waitForExpect from 'wait-for-expect';
+// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
 import { TaskManager, Service } from '../services/tasksmanager/TaskManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/handleError.js.js' or... Remove this comment to see the full error message
 import * as handleError from '../utils/handleError.js.js';
 import { ExternalDummyService } from './ExternalDummyService.js';
+// @ts-expect-error TS(2307): Cannot find module '../infrastructure/Redis.js' or... Remove this comment to see the full error message
 import { Redis } from '../infrastructure/Redis.js';
 
 describe('taskManager', () => {

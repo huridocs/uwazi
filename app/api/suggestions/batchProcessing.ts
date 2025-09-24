@@ -1,6 +1,6 @@
-import { LanguageISO6391, ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { LanguageISO6391, ObjectIdSchema } from 'shared/types/commonTypes.js';
 import entitiesModel from '../entities/entitiesModel.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+import { EntitySchema } from 'shared/types/entityType.js';
 
 type BatchRange = {
   fromId: string;

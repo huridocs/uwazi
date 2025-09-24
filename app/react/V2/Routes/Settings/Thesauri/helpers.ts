@@ -3,12 +3,17 @@ import { LoaderFunction } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { assign, isEqual, orderBy, remove } from 'lodash';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
-import { get as getThesauri } from '../../../api/thesauri/index.js';
-import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType.js';
-import { httpRequest } from '../../shared/superagent.js';
-import uniqueID from '../../shared/uniqueID.js';
-import { sanitizeThesaurusLabel } from '../../shared/sanitizationUtils.js';
+import { get as getThesauri } from 'api/thesauri/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/thesaurusTy... Remove this comment to see the full error message
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/superagent.js' or... Remove this comment to see the full error message
+import { httpRequest } from 'shared/superagent.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/sanitizationUtils... Remove this comment to see the full error message
+import { sanitizeThesaurusLabel } from 'shared/sanitizationUtils.js';
 import { ThesaurusRow } from './components/TableComponents.js';
 
 const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>
@@ -19,8 +24,9 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
   searchedItem
 ) =>
   items
-    .map((item) => {
+    .map(item => {
       let match = rootItemMatch(item, searchedItem);
+      // @ts-expect-error TS(2345): Argument of type 'Omit<ThesaurusRow, "subRows">[]'... Remove this comment to see the full error message
       match = match || (item.subRows?.length ? findItem(item.subRows, searchedItem) : undefined);
       return match;
     })
@@ -28,19 +34,19 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
 
 const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =>
   (rows || []).map(({ rowId: _rowId, groupId: _groupId, subRows: subItems, ...item }) => {
-    const values = subItems?.map((subItem) => {
+    const values = subItems?.map(subItem => {
       const { rowId, groupId, ...rest } = subItem;
       return rest;
     });
     return values ? assign(item, { values }) : item;
   });
 
-const addSelection =
-  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item) => {
-    if (item.rowId in selectedRows) {
-      selection.push(item);
-    }
-  };
+// @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
+const addSelection = (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => item => {
+  if (item.rowId in selectedRows) {
+    selection.push(item);
+  }
+};
 
 const sanitizeThesauri = (thesaurus: ThesaurusSchema) => {
   const sanitizedThesauri = { ...thesaurus };
@@ -50,6 +56,7 @@ const sanitizeThesauri = (thesaurus: ThesaurusSchema) => {
     .map((value: ThesaurusValueSchema) => {
       const _value = { ...value };
       if (_value.values) {
+        // @ts-expect-error TS(7006): Parameter '_v' implicitly has an 'any' type.
         _value.values = _value.values.filter(_v => _v.label);
       }
       return _value;
@@ -87,6 +94,7 @@ const thesaurusAsRow = ({ values, ...item }: ClientThesaurusValue) =>
   ({
     ...item,
     rowId: item.id || uniqueID(),
+    // @ts-expect-error TS(7006): Parameter 'val' implicitly has an 'any' type.
     subRows: values?.map(val => ({
       ...val,
       rowId: val.id || uniqueID(),
@@ -117,7 +125,7 @@ const removeItem = (prev: ThesaurusRow[], deletedItem: ThesaurusRow) => {
   if (!removed.length) {
     prev
       .filter(prevItem => prevItem.subRows?.length)
-      .forEach((prevItem) => {
+      .forEach(prevItem => {
         remove(prevItem.subRows!, subItem => subItem.rowId === deletedItem.rowId);
         if (prevItem.subRows?.length === 0) {
           remove(prev, item => item.rowId === prevItem.rowId);
@@ -175,6 +183,7 @@ const addGroupSubmit =
       });
     } else {
       setThesaurusValues((prev: ThesaurusRow[]) => {
+        // @ts-expect-error TS(2345): Argument of type 'Omit<ThesaurusRow, "subRows">[]'... Remove this comment to see the full error message
         pushItemsIntoValues(group.subRows || [], prev);
         const prevGroup = findItem(prev, group)!;
         prevGroup.label = group.label;

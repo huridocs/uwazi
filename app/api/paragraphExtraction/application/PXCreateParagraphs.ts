@@ -1,9 +1,14 @@
 import { ObjectId } from 'mongodb';
 
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/utils/Array.js' o... Remove this comment to see the full error message
 import { ArrayUtils } from '../common.v2/utils/Array.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/index.js' or its c... Remove this comment to see the full error message
 import entities from '../entities/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
 import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.js' or its co... Remove this comment to see the full error message
 import relationshipsDS from '../relationships.js';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
@@ -11,6 +16,7 @@ import { ParagraphOutput } from '../domain/PXExtractionService';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
 import { PXCreateParagraph } from './PXCreateParagraph';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/errors/Operationa... Remove this comment to see the full error message
 import { OperationalError } from '../common.v2/errors/OperationalError.js';
 
 type PXCreateParagraphsInput = {
@@ -66,6 +72,7 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
       );
     }
 
+    // @ts-expect-error TS(7006): Parameter 'paragraph' implicitly has an 'any' type... Remove this comment to see the full error message
     await ArrayUtils.sequentialFor(paragraphs, async paragraph => {
       await this.createParagraph.execute({
         paragraph,

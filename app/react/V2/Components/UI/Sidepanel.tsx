@@ -3,7 +3,9 @@ import React from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { availableLanguages } from '../../shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { availableLanguages } from 'shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 
 interface SidePanelProps {
@@ -16,18 +18,18 @@ interface SidePanelProps {
 }
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
-  <div className="flex p-4 mb-2 text-gray-500">
-    <h1 className="text-base font-bold grow">{title}</h1>
+  <div class ame="flex p-4 mb-2 text-gray-500">
+    <h1 class ame="text-base font-bold grow">{title}</h1>
     <button
       type="button"
       className="justify-end"
       data-testid="close-sidepanel"
       onClick={closeSidepanelFunction}
     >
-      <span className="sr-only">
+      <span class ame="sr-only">
         <Translate>Close</Translate>
       </span>
-      <XMarkIcon className="w-6" />
+      <XMarkIcon class ame="w-6" />
     </button>
   </div>
 );
@@ -64,13 +66,14 @@ const Sidepanel = ({
       break;
   }
 
+  // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
   const transition = isRigthToLeft ? transitionRight : transitionLeft;
   const contentClasses = 'flex flex-col h-full overflow-y-auto';
 
   if (withOverlay) {
     return (
-      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
+      <Transition show= isOpen} class ame="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
         <Transition.Child
           className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
           enterFrom="opacity-0"
@@ -85,7 +88,7 @@ const Sidepanel = ({
           enterTo="translate-x-0"
           leaveTo={transition}
         >
-          <div className={contentClasses}>
+          <div class ame={contentClasses}>
             {sidepanelHeader(closeSidepanelFunction, title)}
             {children}
           </div>
@@ -103,7 +106,7 @@ const Sidepanel = ({
       enterTo="translate-x-0"
       leaveTo={transition}
     >
-      <div className={contentClasses}>
+      <div class ame={contentClasses}>
         {sidepanelHeader(closeSidepanelFunction, title)}
         {children}
       </div>
@@ -117,7 +120,7 @@ Sidepanel.Body = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`flex-grow p-4 ${className}`}>{children}</div>;
+}) => <div class ame={`flex-grow p-4 ${className}`}>{children}</div>;
 
 Sidepanel.Footer = ({
   children,
@@ -125,7 +128,7 @@ Sidepanel.Footer = ({
 }: {
   children: React.ReactNode;
   className?: String;
-}) => <div className={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
+}) => <div class ame={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
 
 export type { SidePanelProps };
 export { Sidepanel };

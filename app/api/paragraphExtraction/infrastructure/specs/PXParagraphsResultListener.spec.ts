@@ -1,7 +1,10 @@
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { ObjectId } from 'mongodb';
 
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { PXCreateParagraphsJob } from '../PXCreateParagraphsJob';
 import { PXParagraphsResultListener, ResultMessage } from '../PXParagraphsResultListener';

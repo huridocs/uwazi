@@ -3,10 +3,12 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Field, actions } from 'react-redux-form';
 import { ClientFile } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
 import { Translate } from '../../I18N/index.js';
 import { getFileExtension } from '../../utils/getFileExtension.js';
-import uniqueID from '../../shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
 
 const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
@@ -16,6 +18,7 @@ const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
     </span>
   );
 
+  // @ts-expect-error TS(2339): Property 'filename' does not exist on type 'Client... Remove this comment to see the full error message
   if (file.filename && getFileExtension(file.filename) === 'pdf') {
     thumbnail = (
       <span no-translate>
@@ -24,6 +27,7 @@ const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
     );
   }
 
+  // @ts-expect-error TS(2339): Property 'url' does not exist on type 'ClientFile ... Remove this comment to see the full error message
   if (file.url) {
     thumbnail = (
       <span>
@@ -34,9 +38,12 @@ const getFileIcon = (file: ClientFile & { serializedFile?: string }) => {
 
   if (
     !file.serializedFile &&
+    // @ts-expect-error TS(2339): Property 'filename' does not exist on type 'Client... Remove this comment to see the full error message
     file.filename &&
+    // @ts-expect-error TS(2339): Property 'filename' does not exist on type 'Client... Remove this comment to see the full error message
     acceptedThumbnailExtensions.indexOf(getFileExtension(file.filename.toLowerCase())) !== -1
   ) {
+    // @ts-expect-error TS(2339): Property 'filename' does not exist on type 'Client... Remove this comment to see the full error message
     thumbnail = <img src={`/api/files/${file.filename}`} alt={file.originalname} />;
   }
   return thumbnail;

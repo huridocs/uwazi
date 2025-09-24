@@ -1,10 +1,10 @@
 import Ajv, { ErrorObject } from 'ajv';
 import { ObjectId } from 'mongodb';
 
-import model from '../../api/templates/templatesModel.js';
-import templates from '../../api/templates/index.js';
-import pages from '../../api/pages/index.js';
-import { thesauri } from '../../api/thesauri/thesauri.js';
+import model from 'api/templates/templatesModel.js';
+import templates from 'api/templates/index.js';
+import pages from 'api/pages/index.js';
+import { thesauri } from 'api/thesauri/thesauri.js';
 
 import { ensure, wrapValidator } from '../tsUtils.js';
 import { objectIdSchema, propertySchema } from './commonSchemas.js';

@@ -1,5 +1,8 @@
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/TaskM... Remove this comment to see the full error message
 import { TaskManager } from '../services/tasksmanager/TaskManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
 import { InvalidATServerResponse } from '../../errors/generateATErrors';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
@@ -15,6 +18,7 @@ export class ATServiceListener {
     const validator = new Validator<TranslationResult>(translationResultSchema);
     this.taskManager = new TaskManager({
       serviceName: ATServiceListener.SERVICE_NAME,
+      // @ts-expect-error TS(7006): Parameter 'result' implicitly has an 'any' type.
       processResults: async result => {
         if (!validator.validate(result)) {
           throw new InvalidATServerResponse(validator.getErrors()[0].message, {

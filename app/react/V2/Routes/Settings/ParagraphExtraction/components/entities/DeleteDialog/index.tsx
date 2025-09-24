@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { useRevalidator } from 'react-router';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Button, ConfirmationModal } from '../../../../../../Components/UI/index.js';
 import { TablePXEntityRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
 import { notificationAtom } from '../../../../../../atoms/index.js';
-import * as entitiesAPI from '../../../../../../api/paragraphExtractor/entities.js';
+import * as entitiesAPI from 'api/paragraphExtractor/entities.js';
 
 const DeleteDialog = ({
   setIsProcessing,

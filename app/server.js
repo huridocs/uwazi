@@ -13,29 +13,29 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 
 // Note: These will be loaded dynamically to handle TypeScript files
-// import { registerEventListeners } from './api/eventListeners.js';
-// import { applicationEventsBus } from './api/eventsbus/index.js';
-// import { appContextMiddleware } from './api/utils/appContextMiddleware.js';
-// import { requestIdMiddleware } from './api/utils/requestIdMiddleware.js';
-// import { Redis } from './api/infrastructure/Redis.js';
-// import { maskMongoPassword } from './api/utils/maskMongoPassword.js';
+// import { registerEventListeners } from 'api/eventListeners.js';
+// import { applicationEventsBus } from 'api/eventsbus/index.js';
+// import { appContextMiddleware } from 'api/utils/appContextMiddleware.js';
+// import { requestIdMiddleware } from 'api/utils/requestIdMiddleware.js';
+// import { Redis } from 'api/infrastructure/Redis.js';
+// import { maskMongoPassword } from 'api/utils/maskMongoPassword.js';
 import uwaziMessage from '../message.js';
-import apiRoutes from './api/api.js';
-import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware.js';
-import authRoutes from './api/auth/routes.js';
-// import { config } from './api/config.js'; // This is a TypeScript file
+import apiRoutes from 'api/api.js';
+import privateInstanceMiddleware from 'api/auth/privateInstanceMiddleware.js';
+import authRoutes from 'api/auth/routes.js';
+// import { config } from 'api/config.js'; // This is a TypeScript file
 
 // These will be loaded dynamically to handle TypeScript files
-// import { versionRoutes } from './api/version/routes.js';
-// import { migrator } from './api/migrations/migrator.js';
-// import { DB } from './api/odm/index.js';
-// import { permissionsContext } from './api/permissions/permissionsContext.js';
-// import { closeSockets } from './api/socketio/setupSockets.js';
-// import { tenants } from './api/tenants/tenantContext.js';
-// import errorHandlingMiddleware from './api/utils/error_handling_middleware.js';
-// import { handleError } from './api/utils/handleError.js';
-// import { multitenantMiddleware } from './api/utils/multitenantMiddleware.js';
-// import { routesErrorHandler } from './api/utils/routesErrorHandler.js';
+// import { versionRoutes } from 'api/version/routes.js';
+// import { migrator } from 'api/migrations/migrator.js';
+// import { DB } from 'api/odm/index.js';
+// import { permissionsContext } from 'api/permissions/permissionsContext.js';
+// import { closeSockets } from 'api/socketio/setupSockets.js';
+// import { tenants } from 'api/tenants/tenantContext.js';
+// import errorHandlingMiddleware from 'api/utils/error_handling_middleware.js';
+// import { handleError } from 'api/utils/handleError.js';
+// import { multitenantMiddleware } from 'api/utils/multitenantMiddleware.js';
+// import { routesErrorHandler } from 'api/utils/routesErrorHandler.js';
 // import { serverSideRender } from './react/server.js';
 // import { initSentry } from './initSentry.js';
 // import { setupQueueWorker } from './setupQueueWorker.js';

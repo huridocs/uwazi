@@ -3,6 +3,7 @@ import React, { useMemo, useEffect } from 'react';
 import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Select } from '../../../../../Components/Forms/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
 import { relationshipTypesAtom, templatesAtom } from '../../../../../atoms/index.js';
 import { orderBy } from 'lodash';
@@ -39,7 +40,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
     const options = orderBy(
       templates
         .filter(template => template._id !== templateId)
-        .map((template) => {
+        .map(template => {
           const name =
             template.name.length > 30 ? `${template.name.slice(0, 30)}...` : template.name;
           const translatedName = t(template._id, template.name, null, false, 30);
@@ -65,6 +66,7 @@ export const RelationshipFields = ({ control, disabled, templateId }: Relationsh
   const propertyOptions = useMemo(() => {
     if (!selectedTemplate?.properties) return [];
     const options: { value: string; label: string; type?: string }[] = orderBy(
+      // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
       selectedTemplate.properties.map(prop => ({
         value: String(prop._id || ''),
         label: t(selectedTemplate._id, prop.label, null, false, 100),

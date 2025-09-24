@@ -1,5 +1,8 @@
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../users/users.js' or its corr... Remove this comment to see the full error message
 import users from '../users/users.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
 
 import { Dispatchable, HeartbeatCallback, JobInfo } from './Dispatchable';

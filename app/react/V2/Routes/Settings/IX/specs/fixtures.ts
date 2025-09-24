@@ -1,5 +1,7 @@
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema } from '../../istore.js';
 import { ClientTemplateSchema } from '../../../../shared/types.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
 

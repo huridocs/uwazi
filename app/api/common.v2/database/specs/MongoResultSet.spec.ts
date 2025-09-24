@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
 
 import { MongoResultSet } from '../MongoResultSet';
 
@@ -15,9 +17,11 @@ const testDocuments = [
 ];
 
 const buildCursor = (query?: any) =>
+  // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
   testingDB.mongodb?.collection<(typeof testDocuments)[number]>('testDocuments').find(query || {});
 
 const buildAggregationCursor = () =>
+  // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
   testingDB.mongodb
     ?.collection<(typeof testDocuments)[number]>('testDocuments')
     .aggregate([{ $match: {} }]);
@@ -55,6 +59,7 @@ describe('when built from a $type cursor', () => {
       while (await resultSet.hasNext()) {
         // eslint-disable-next-line no-await-in-loop
         const batch = await resultSet.nextBatch(4);
+        // @ts-expect-error TS(2345): Argument of type 'unknown[]' is not assignable to ... Remove this comment to see the full error message
         visited.push(batch);
       }
       expect(visited).toEqual([
@@ -75,6 +80,7 @@ describe('when built from a $type cursor', () => {
 
     it('should use the mapper function', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.all()).toEqual(testDocuments.map(elem => elem.name));
     });
@@ -85,6 +91,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem);
 
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const index = await resultSet.indexed(elem => elem.name);
 
       for (let i = 1; i <= 6; i += 1) {
@@ -100,6 +107,7 @@ describe('when built from a $type cursor', () => {
     { page: 2, start: 4, end: 6 },
   ])('should return results page $page and close the cursor', async ({ page, start, end }) => {
     const cursor = buildCursor();
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     const resultSet = new MongoResultSet(cursor!, elem => elem.name);
     const result = await resultSet.page(page, 4);
     expect(result).toEqual(testDocuments.slice(start, end).map(elem => elem.name));
@@ -109,6 +117,7 @@ describe('when built from a $type cursor', () => {
   describe('using find(...)', () => {
     it('should return the first result that matches the query', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.find(item => item.startsWith('doc2'))).toBe('doc2');
       //Due to a mongodb driver bug this is failing but its not affecting us for now,
@@ -118,6 +127,7 @@ describe('when built from a $type cursor', () => {
 
     it('should return null if no item matches the query', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.find(item => item.startsWith('notDoc'))).toBe(null);
       expect(cursor?.closed).toBe(true);
@@ -127,6 +137,7 @@ describe('when built from a $type cursor', () => {
   describe('using every(...) to check a predicate against every item', () => {
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(true);
       expect(cursor?.closed).toBe(true);
@@ -134,6 +145,7 @@ describe('when built from a $type cursor', () => {
 
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc1'))).toBe(false);
       //Due to a mongodb driver bug this is failing but its not affecting us for now,
@@ -143,6 +155,7 @@ describe('when built from a $type cursor', () => {
 
     it('should return true if there are no items', async () => {
       const cursor = buildCursor({ name: 'non-existing' });
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(true);
       expect(cursor?.closed).toBe(true);
@@ -152,6 +165,7 @@ describe('when built from a $type cursor', () => {
   describe('using some(...) to check a predicate against every item', () => {
     it('should return true if it is true for at least one item', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.some(item => item === 'doc3')).toBe(true);
       //Due to a mongodb driver bug this is failing but its not affecting us for now,
@@ -161,6 +175,7 @@ describe('when built from a $type cursor', () => {
 
     it('should return false if it is false for every item', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.some(item => item.startsWith('notDoc'))).toBe(false);
       expect(cursor?.closed).toBe(true);
@@ -168,6 +183,7 @@ describe('when built from a $type cursor', () => {
 
     it('should return false if there are no items', async () => {
       const cursor = buildCursor({ name: 'non-existing' });
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.some(item => item.startsWith('doc'))).toBe(false);
       expect(cursor?.closed).toBe(true);
@@ -177,6 +193,7 @@ describe('when built from a $type cursor', () => {
   describe('using forEach(...)', () => {
     it('should execute the sync callback for every item', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[] = [];
       await resultSet.forEach(item => {
@@ -188,6 +205,7 @@ describe('when built from a $type cursor', () => {
 
     it('should execute the async callback for every item', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[] = [];
       await resultSet.forEach(async item => {
@@ -216,6 +234,7 @@ describe('when built from a $type cursor', () => {
 
     it('should allow breaking, when the callback returns false', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[] = [];
       await resultSet.forEach(item => {
@@ -234,6 +253,7 @@ describe('when built from a $type cursor', () => {
   describe('using forEachBatch(...)', () => {
     it('should execute the sync callback for every batch', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[][] = [];
       await resultSet.forEachBatch(4, batch => {
@@ -248,6 +268,7 @@ describe('when built from a $type cursor', () => {
 
     it('should execute the async callback for every batch', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[][] = [];
       await resultSet.forEachBatch(4, async batch => {
@@ -268,6 +289,7 @@ describe('when built from a $type cursor', () => {
 
     it('should allow breaking, when the callback returns false', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[][] = [];
       await resultSet.forEachBatch(2, batch => {
@@ -289,6 +311,7 @@ describe('when built from a $type cursor', () => {
   describe('when calling first()', () => {
     it('should return the first result and close the cursors', async () => {
       const cursor = buildCursor();
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const result = new MongoResultSet(cursor!, elem => elem.name);
       expect(await result.first()).toEqual('doc1');
       expect(cursor?.closed).toBe(true);
@@ -299,6 +322,7 @@ describe('when built from a $type cursor', () => {
 describe('when built from an aggregation cursor', () => {
   it('should correctly count the result and use the mapper', async () => {
     const cursor = buildAggregationCursor();
+    // @ts-expect-error TS(2571): Object is of type 'unknown'.
     const resultSet = new MongoResultSet(cursor!, elem => elem.name);
     const result = await resultSet.page(1, 4);
     expect(result).toEqual(testDocuments.slice(0, 4).map(elem => elem.name));

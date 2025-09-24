@@ -1,8 +1,13 @@
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Matc... Remove this comment to see the full error message
 import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
-import { Template } from '../templates.v2/model/Template.js';
-import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Template... Remove this comment to see the full error message
+import { Template } from 'api/templates.v2/model/Template.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Relation... Remove this comment to see the full error message
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/contracts/... Remove this comment to see the full error message
 import { RelationshipsDataSource } from '../relationships.v2/contracts/RelationshipsDataSource.js';
-import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
 import { Entity, EntityMetadata } from '../model/Entity';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 
@@ -62,12 +67,14 @@ export class EntityRelationshipsUpdateService {
 
   async update(sharedIds: string[]) {
     let template: Template | undefined;
+    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     await this.entitiesDataSource.getByIds(sharedIds).forEach(async entity => {
       template = await this.findTemplate(template, entity.template);
 
       const metadataToUpdate: Record<string, EntityMetadata[]> = {};
 
       await Promise.all(
+        // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
         template.properties.map(async property => {
           if (
             property instanceof RelationshipProperty &&

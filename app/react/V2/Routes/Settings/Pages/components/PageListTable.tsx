@@ -2,7 +2,9 @@
 import React from 'react';
 import { kebabCase } from 'lodash';
 import { CellContext } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, Pill } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
 import { TablePage } from '../PagesList';
 

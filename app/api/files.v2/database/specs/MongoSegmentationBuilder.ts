@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { ParagraphSchema, SegmentationType } from '../../shared/types/segmentationType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+import { ParagraphSchema, SegmentationType } from 'shared/types/segmentationType.js';
 
 type Props = SegmentationType;
 

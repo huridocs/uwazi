@@ -1,25 +1,28 @@
 /* eslint-disable max-statements */
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
-import { ATServiceListener } from './api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
-import { Redis } from './api/infrastructure/Redis.js';
-import { SystemLogger } from './api/log.v2/infrastructure/StandardLogger.js';
-import { DB } from '../odm/index.js';
-import { PXParagraphsResultListener } from './api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
-import { permissionsContext } from './api/permissions/permissionsContext.js';
-import { DefaultDispatcher } from './api/queue.v2/configuration/factories.js';
-import { ConvertToPdfWorker } from './api/services/convertToPDF/ConvertToPdfWorker.js';
-import { InformationExtraction } from './api/services/informationextraction/InformationExtraction.js';
-import { ocrManager } from './api/services/ocr/OcrManager.js';
-import { PDFSegmentation } from './api/services/pdfsegmentation/PDFSegmentation.js';
-import { preserveSync } from './api/services/preserve/preserveSync.js';
-import { DistributedLoop } from './api/services/tasksmanager/DistributedLoop.js';
-import { TwitterIntegration } from './api/services/twitterintegration/TwitterIntegration.js';
-import { setupWorkerSockets } from './api/socketio/setupSockets.js';
-import { syncWorker } from './api/sync/syncWorker.js';
-import { tenants } from './api/tenants/index.js';
-import { tocService } from './api/toc_generation/tocService.js';
-import { sleep } from '../../shared/tsUtils.js';
-import { handleError } from './api/utils/handleError.js';
+import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
+import { Redis } from 'api/infrastructure/Redis.js';
+import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger.js';
+
+import { DB } from 'api/odm/index.js';
+import { PXParagraphsResultListener } from 'api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
+import { permissionsContext } from 'api/permissions/permissionsContext.js';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories.js';
+import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker.js';
+import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction.js';
+import { ocrManager } from 'api/services/ocr/OcrManager.js';
+import { PDFSegmentation } from 'api/services/pdfsegmentation/PDFSegmentation.js';
+import { preserveSync } from 'api/services/preserve/preserveSync.js';
+import { DistributedLoop } from 'api/services/tasksmanager/DistributedLoop.js';
+import { TwitterIntegration } from 'api/services/twitterintegration/TwitterIntegration.js';
+import { setupWorkerSockets } from 'api/socketio/setupSockets.js';
+import { syncWorker } from 'api/sync/syncWorker.js';
+import { tenants } from 'api/tenants/index.js';
+import { tocService } from 'api/toc_generation/tocService.js';
+
+import { sleep } from 'shared/tsUtils.js';
+import { handleError } from 'api/utils/handleError.js';
 
 const systemLogger = SystemLogger();
 
@@ -115,6 +118,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
       process.exit(0);
     });
   })
-  .catch((error) => {
+  // @ts-expect-error TS(7006): Parameter 'error' implicitly has an 'any' type.
+  .catch(error => {
     throw error;
   });

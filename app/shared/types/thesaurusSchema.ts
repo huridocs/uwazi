@@ -1,6 +1,6 @@
 /** @format */
 
-import { objectIdSchema } from '../../shared/types/commonSchemas.js';
+import { objectIdSchema } from 'shared/types/commonSchemas.js';
 
 export const emitSchemaTypes = true;
 

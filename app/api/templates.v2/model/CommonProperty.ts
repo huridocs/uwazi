@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/errors... Remove this comment to see the full error message
 import { CommonPropertyInvalidError } from '../core/domain/template/errors.js';
 import { Context, Property, PropertyProps } from './Property';
 

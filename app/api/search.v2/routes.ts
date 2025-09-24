@@ -2,8 +2,8 @@ import { Application, Request, Response } from 'express';
 
 import { elastic } from '../search/elastic.js';
 import { validateAndCoerceRequest } from '../utils/validateRequest.js';
-import { SearchQuerySchema } from '../../shared/types/SearchQuerySchema.js';
-import { SearchQuery, Page } from '../../shared/types/SearchQueryType.js';
+import { SearchQuerySchema } from 'shared/types/SearchQuerySchema.js';
+import { SearchQuery, Page } from 'shared/types/SearchQueryType.js';
 
 import { mapResults } from '../search.v2/searchResponse.js';
 import qs from 'qs';

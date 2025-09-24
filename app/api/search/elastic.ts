@@ -7,7 +7,7 @@ import {
 } from '@elastic/elasticsearch/lib/Transport';
 import { config } from '../config.js';
 import { tenants } from '../tenants/index.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+import { EntitySchema } from 'shared/types/entityType.js';
 import { IndicesCreate, IndicesDelete, IndicesPutMapping, SearchResponse } from './elasticTypes.js';
 
 const elasticClient = new elasticSearch.Client({

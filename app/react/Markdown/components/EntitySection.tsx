@@ -30,7 +30,8 @@ const getPropertyValue = (property: any, metadataProperty: any) => {
       return metadataProperty.map((v: any) => v.label || v.value);
     case 'relationship': {
       let value: any[] = [];
-      metadataProperty.forEach((v) => {
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
+      metadataProperty.forEach(v => {
         if (v.inheritedType && v.inheritedValue) {
           const properties = getPropertyValue({ type: v.inheritedType }, v.inheritedValue);
           value = Array.isArray(properties) ? [...value, ...properties] : [...value, properties];
@@ -63,6 +64,7 @@ export const UnwrapMetadataObject = (MetadataObject: any, Template: any) =>
 // eslint-disable-next-line max-statements
 const EntitySection = ({ entity, templates, children, 'show-if': showIf }: ComponentProps) => {
   const jsEntity = entity.toJS();
+  // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
   const template = templates.find(t => t?.get('_id') === jsEntity.template);
   const unwrappedMetadata = UnwrapMetadataObject(jsEntity.metadata, template.toJS());
   jsEntity.metadata = unwrappedMetadata;

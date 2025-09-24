@@ -4,12 +4,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
 import { InputField, Select, MultiSelect } from '../../../../Components/Forms/index.js';
 import { Button, Card, ConfirmationModal, Sidepanel } from '../../../../Components/UI/index.js';
 import { validEmailFormat } from '../../../../shared/formatHelpers.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal.js';
 import { User, Group } from '../types.js';
@@ -43,7 +46,7 @@ const isUnique = (nameVal: string, selectedUser?: User, users?: User[]) =>
   );
 
 const calculateSelectedGroups = (selectedGroups: string[], groups?: Group[]) =>
-  selectedGroups.map((selectedGroup) => {
+  selectedGroups.map(selectedGroup => {
     const group = groups?.find(originalGroup => originalGroup.name === selectedGroup);
     return { _id: group?._id as string, name: group?.name as string };
   });
@@ -182,6 +185,7 @@ const UserFormSidepanel = ({
                   <InputField
                     label={<Translate className="block mb-1 font-semibold">Username</Translate>}
                     id="username"
+                    // @ts-expect-error TS(2345): Argument of type 'FieldError | Merge<FieldError, F... Remove this comment to see the full error message
                     errorMessage={getFieldError('username', errors.username?.type)}
                     //break autocomplete token for Chrome
                     //@ts-expect-error
@@ -224,6 +228,7 @@ const UserFormSidepanel = ({
                     autoComplete="new-email"
                     id="email"
                     className="mb-1"
+                    // @ts-expect-error TS(2345): Argument of type 'FieldError | Merge<FieldError, F... Remove this comment to see the full error message
                     errorMessage={getFieldError('email', errors.email?.type)}
                     {...register('email', {
                       required: true,
@@ -249,6 +254,7 @@ const UserFormSidepanel = ({
                   //break autocomplete token for Chrome
                   //@ts-expect-error
                   autoComplete="new-password"
+                  // @ts-expect-error TS(2345): Argument of type 'FieldError | Merge<FieldError, F... Remove this comment to see the full error message
                   errorMessage={getFieldError('password', errors.password?.type)}
                   className="mb-4"
                   {...register('password', { maxLength: 50 })}
@@ -309,6 +315,7 @@ const UserFormSidepanel = ({
                     setValue('groups', values, { shouldDirty: true });
                   }}
                   options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
+                  // @ts-expect-error TS(7006): Parameter 'userGroup' implicitly has an 'any' type... Remove this comment to see the full error message
                   value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
                   placeholder="Nothing selected"
                 />
@@ -350,7 +357,7 @@ const UserFormSidepanel = ({
           body="Confirm action"
           usePassword
           onCancelClick={() => setShowConfirmationModal(false)}
-          onAcceptClick={async (value) => {
+          onAcceptClick={async value => {
             password.current = value;
 
             if (actionType.current === 'formSubmit' && formSubmitRef.current) {

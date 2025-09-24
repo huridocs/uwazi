@@ -3,10 +3,10 @@ import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
 
 import { permissionsContext } from '../permissions/permissionsContext.js';
-import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
-import { UserSchema } from '../../shared/types/userType.js';
-import { PermissionSchema } from '../../shared/types/permissionType.js';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+import { UserSchema } from 'shared/types/userType.js';
+import { PermissionSchema } from 'shared/types/permissionType.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
 
 import { createUpdateLogHelper } from './logHelper.js';
 import {

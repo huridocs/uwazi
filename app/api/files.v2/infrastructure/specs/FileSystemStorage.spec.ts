@@ -1,8 +1,11 @@
 /* eslint-disable node/no-restricted-import */
 import * as fs from 'fs/promises';
 
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { Tenant, tenants } from '../tenants/tenantContext.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/FileType.js'... Remove this comment to see the full error message
 import { FileType } from '../files.v2/model/FileType.js';
 import { FileSystemStorage } from '../FileSystemStorage';
 import { PathManager } from '../PathManager';

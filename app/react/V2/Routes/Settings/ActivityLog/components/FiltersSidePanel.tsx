@@ -1,11 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Sidepanel, Button } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, t } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { InputField, DateRangePicker, MultiSelect } from '../../V2/Components/Forms.js';
 import { useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientSettings } from '../../apiResponseTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { settingsAtom, localeAtom } from '../../V2/atoms.js';
 
 interface ActivityLogSearch {
@@ -35,6 +40,7 @@ const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(m
 }));
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
+  // @ts-expect-error TS(2339): Property 'dateFormat' does not exist on type 'unkn... Remove this comment to see the full error message
   const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
   const locale = useAtomValue(localeAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
@@ -80,6 +86,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
               value={currentFilters.method || []}
               label={<Translate>Action</Translate>}
               options={methodOptions}
+              // @ts-expect-error TS(7006): Parameter 'selected' implicitly has an 'any' type.
               onChange={selected => {
                 setValue('method', selected);
               }}
@@ -127,12 +134,14 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                     labelClear={t('System', 'Clear', null, false)}
                     from={value?.from || ''}
                     to={value?.to || ''}
+                    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
                     onFromDateSelected={e => {
                       setValue('dateRange.from', e.target.value);
                       if (!getValues('dateRange.to')) {
                         setValue('dateRange.to', e.target.value);
                       }
                     }}
+                    // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
                     onToDateSelected={e => {
                       setValue('dateRange.to', e.target.value);
                       if (!getValues('dateRange.from')) {

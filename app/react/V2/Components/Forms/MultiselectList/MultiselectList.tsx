@@ -3,8 +3,10 @@
 /* eslint-disable max-lines */
 import React, { useEffect, useState, useRef } from 'react';
 import { isString } from 'lodash';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
-import { debounce } from '../../api/utils/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+import { debounce } from 'api/utils/index.js';
 import { Label } from '../Label.js';
 import { Checkbox } from '../Checkbox.js';
 import { MultiselectListButtonItem } from './MultiselectListButtonItem.js';
@@ -58,7 +60,7 @@ const defaultSearch = (search: string, items?: MultiselectListOption[]) => {
     return a.includes(b);
   };
 
-  items?.forEach((item) => {
+  items?.forEach(item => {
     const matchesSearch = !search || labelIncludesSearch(item.searchLabel);
 
     const containsChildrenMatchingSearch =
@@ -149,13 +151,13 @@ const MultiselectList = ({
   useEffect(() => {
     const newSet = new Set<string>(selections);
 
-    availableItems?.forEach((item) => {
+    availableItems?.forEach(item => {
       if (item.suggested) {
         newSet.add(item.value);
       }
 
       if (item.items) {
-        item.items.forEach((subItem) => {
+        item.items.forEach(subItem => {
           if (subItem.suggested) {
             newSet.add(subItem.value);
           }
@@ -183,7 +185,7 @@ const MultiselectList = ({
   const handleSelectAll = () => {
     const allValues: string[] = [];
 
-    availableItems?.forEach((item) => {
+    availableItems?.forEach(item => {
       if (item.items?.length) {
         item.items?.forEach(subItem => allValues.push(subItem.value));
       } else {
@@ -349,6 +351,7 @@ const MultiselectList = ({
 
       {availableItems?.length === 0 && (
         <div className="flex grow w-full h-full justify-center items-start">
+          // @ts-expect-error TS(2786): 'WrapChild' cannot be used as a JSX component.
           <WrapChild>{noItems}</WrapChild>
         </div>
       )}

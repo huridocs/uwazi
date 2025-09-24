@@ -4,13 +4,20 @@ import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientSettings } from '../../apiResponseTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, PaginationState, Paginator, Pill, Table } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/CustomHooks/useIsFirs... Remove this comment to see the full error message
 import { useIsFirstRender } from '../../V2/CustomHooks/useIsFirstRender.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { settingsAtom } from '../../V2/atoms.js';
-import { ActivityLogEntryType } from '../../shared/types/activityLogEntryType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/activityLog... Remove this comment to see the full error message
+import { ActivityLogEntryType } from 'shared/types/activityLogEntryType.js';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
 import { FiltersSidePanel } from './components/FiltersSidePanel';
@@ -37,6 +44,7 @@ const getDefaultSorting = (searchParams: URLSearchParams): SortingState => {
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  // @ts-expect-error TS(2339): Property 'dateFormat' does not exist on type 'unkn... Remove this comment to see the full error message
   const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -102,6 +110,7 @@ const ActivityLog = () => {
               columns={columns}
               manualSorting
               defaultSorting={getDefaultSorting(searchParams)}
+              // @ts-expect-error TS(7031): Binding element 'sortingState' implicitly has an '... Remove this comment to see the full error message
               onSort={({ sortingState }) => handleSorting(sortingState)}
               header={
                 <Translate className="text-base font-semibold text-left text-gray-900 bg-white">

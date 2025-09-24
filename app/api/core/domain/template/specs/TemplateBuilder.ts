@@ -1,6 +1,9 @@
-import { Property } from '../templates.v2/model/Property.js';
-import { CommonProperty } from '../templates.v2/model/CommonProperty.js';
-import { Template } from '../templates.v2/model/Template.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+import { Property } from 'api/templates.v2/model/Property.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/CommonPr... Remove this comment to see the full error message
+import { CommonProperty } from 'api/templates.v2/model/CommonProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Template... Remove this comment to see the full error message
+import { Template } from 'api/templates.v2/model/Template.js';
 import { CreationDateProperty } from '../CreationDateProperty';
 import { ModifiedDateProperty } from '../ModifiedDateProperty';
 import { TitleProperty } from '../TitleProperty';

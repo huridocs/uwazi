@@ -1,4 +1,5 @@
-import { ISO6391Codes } from '../../shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { ISO6391Codes } from 'shared/language/index.js';
 
 const linkSchema = {
   type: 'object',

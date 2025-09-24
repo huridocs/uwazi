@@ -5,13 +5,17 @@ import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { get } from 'lodash';
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
 import { ClientFile, IStore } from '../../istore.js';
-import uniqueID from '../../shared/uniqueID.js';
-import { AttachmentSchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
+
+import { AttachmentSchema } from 'shared/types/commonTypes.js';
 import { WebMediaResourceForm } from '../../Attachments/components/WebMediaResourceForm.js';
 import { uploadLocalAttachment } from '../../Metadata/actions/supportingFilesActions.js';
-import { mimeTypeFromUrl } from '../../api/files/extensionHelper.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/files/extensionHelpe... Remove this comment to see the full error message
+import { mimeTypeFromUrl } from 'api/files/extensionHelper.js';
 import { MediaModalFileList } from '../../Metadata/components/MediaModalFileList.js';
 import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 import { validImageFile, validMediaFile } from '../helpers/validator';
@@ -190,9 +194,8 @@ const MediaModalComponent = ({
             </div>
           </div>
           <div
-            className={`tab-content attachments-modal__tabs-content ${
-              !filteredAttachments.length ? 'centered' : ''
-            }`}
+            className={`tab-content attachments-modal__tabs-content ${!filteredAttachments.length ? 'centered' : ''
+              }`}
           >
             <MediaModalFileList
               filteredAttachments={filteredAttachments}

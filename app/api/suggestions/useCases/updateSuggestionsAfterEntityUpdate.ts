@@ -1,7 +1,11 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import { IXServices } from '../services/informationextraction/IXServices.js';
-import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+import { IXSuggestionType } from 'shared/types/suggestionType.js';
 import { PipelineBuilder } from '../queryBuilder';
 import { IXSuggestionsModel } from '../IXSuggestionsModel';
 import { SuggestionFactory } from '../suggestionFactory';

@@ -1,5 +1,5 @@
 import * as Cookie from 'tiny-cookie';
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 
 const languageInLanguages = (languages, locale) => Boolean(languages.find(l => l.key === locale));
 const getURLLocale = (locale, languages = []) =>
@@ -17,7 +17,7 @@ const I18NUtils = {
     );
   },
 
-  saveLocale: (locale) => {
+  saveLocale: locale => {
     if (isClient) {
       Cookie.set('locale', locale, { expires: 365 * 10 });
     }

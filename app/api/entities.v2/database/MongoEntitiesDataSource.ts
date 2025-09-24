@@ -1,15 +1,26 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/ResultS... Remove this comment to see the full error message
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
-import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
-import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
-import { MongoTransactionManager } from '../common.v2/database/MongoTransactionManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoTra... Remove this comment to see the full error message
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/entities.js' or it... Remove this comment to see the full error message
 import entities from '../entities/entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/entitiesModel.js' ... Remove this comment to see the full error message
 import v1EntitiesModel from '../entities/entitiesModel.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/MongoS... Remove this comment to see the full error message
 import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
-import { MongoTemplatesDataSource } from '../templates.v2/database/MongoTemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
 import { Db } from 'mongodb';
-import { MetadataSchema } from '../../shared/types/commonTypes.js';
+
+import { MetadataSchema } from 'shared/types/commonTypes.js';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
@@ -67,6 +78,7 @@ export class MongoEntitiesDataSource
 
   async entitiesExist(sharedIds: string[]) {
     const languages = await this.settingsDS.getLanguageKeys();
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const countInExistence = await this.getCollection().countDocuments({
       sharedId: { $in: sharedIds },
     });
@@ -76,6 +88,7 @@ export class MongoEntitiesDataSource
   async markMetadataAsChanged(
     propData: Parameters<EntitiesDataSource['markMetadataAsChanged']>[0]
   ) {
+    // @ts-expect-error TS(2339): Property 'createBulkStream' does not exist on type... Remove this comment to see the full error message
     const stream = this.createBulkStream();
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
@@ -97,6 +110,7 @@ export class MongoEntitiesDataSource
       sharedId: { $in: sharedIds },
     };
     if (language) match.language = language;
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().aggregate<EntityJoinTemplate>([
       { $match: match },
       {
@@ -109,11 +123,14 @@ export class MongoEntitiesDataSource
       },
     ]);
 
+    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
   }
 
   getIdsByTemplate(templateId: string): ResultSet<string> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().find({ template: MongoIdHandler.mapToDb(templateId) });
+    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     return new MongoResultSet(cursor, async entity => entity.sharedId);
   }
 
@@ -123,6 +140,7 @@ export class MongoEntitiesDataSource
     title: string,
     propertiesToNewValues: { propertyName: string; value?: any }[]
   ) {
+    // @ts-expect-error TS(2339): Property 'createBulkStream' does not exist on type... Remove this comment to see the full error message
     const stream = this.createBulkStream();
 
     await Promise.all(
@@ -149,10 +167,12 @@ export class MongoEntitiesDataSource
   }
 
   getByDenormalizedId(properties: string[], sharedIds: string[]): ResultSet<string> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const result = this.getCollection().find({
       $or: properties.map(property => ({ [`metadata.${property}.value`]: { $in: sharedIds } })),
     });
 
+    // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
     return new MongoResultSet(result, entity => entity.sharedId);
   }
 
@@ -184,6 +204,7 @@ export class MongoEntitiesDataSource
     id: Entity['_id'],
     values: Record<string, EntityMetadata[]>
   ): Promise<void> {
+    // @ts-expect-error TS(2339): Property 'createBulkStream' does not exist on type... Remove this comment to see the full error message
     const stream = this.createBulkStream();
 
     await stream.updateOne(
@@ -206,11 +227,13 @@ export class MongoEntitiesDataSource
   }
 
   getObsoleteMetadata(sharedIds: string[], language: string) {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection().find(
       { sharedId: { $in: sharedIds }, language },
       { projection: { sharedId: 1, obsoleteMetadata: 1 } }
     );
 
+    // @ts-expect-error TS(7006): Parameter 'result' implicitly has an 'any' type.
     return new MongoResultSet(cursor, result => ({
       sharedId: result.sharedId,
       obsoleteMetadata: result.obsoleteMetadata ?? [],

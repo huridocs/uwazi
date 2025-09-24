@@ -8,12 +8,12 @@ import templates from '../templates/index.js';
 import thesauri from '../thesauri/index.js';
 import { EventEmitter } from 'events';
 
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
-import { TranslationType } from '../../shared/translationType.js';
-import { ensure } from '../../shared/tsUtils.js';
-import { LanguageSchema, ObjectIdSchema } from '../../shared/types/commonTypes.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { TranslationType } from 'shared/translationType.js';
+import { ensure } from 'shared/tsUtils.js';
+import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
 
 import { arrangeThesauri } from './arrangeThesauri.js';
 import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv.js';
@@ -159,7 +159,7 @@ export class CSVLoader extends EventEmitter {
 
     if (warnings.length > 0) {
       const groupedWarnings = groupBy(warnings, warning => warning.reason);
-      Object.keys(groupedWarnings).forEach((key) => {
+      Object.keys(groupedWarnings).forEach(key => {
         groupedWarnings[key] = groupedWarnings[key].map(warning => ({
           index: warning.index,
           property: warning.property,
@@ -214,7 +214,7 @@ export class CSVLoader extends EventEmitter {
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow, _index: number): Promise<void> => {
-        Object.keys(row).forEach((lang) => {
+        Object.keys(row).forEach(lang => {
           intermediateTranslation[lang] = intermediateTranslation[lang] || {};
           intermediateTranslation[lang][row.Key] = row[lang];
         });
@@ -237,7 +237,7 @@ export class CSVLoader extends EventEmitter {
         );
 
         if (trans && context) {
-          Object.keys(trans).forEach((transKey) => {
+          Object.keys(trans).forEach(transKey => {
             if (context.values[transKey] && trans[transKey] !== '') {
               context.values[transKey] = trans[transKey];
             }

@@ -2,12 +2,14 @@
 import { createError, validation } from '../utils/index.js';
 import settings from '../settings/index.js';
 import entities from '../entities/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../pages.js' or its correspond... Remove this comment to see the full error message
 import pages from '../pages.js';
 import { CSVLoader } from '../csv/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { uploadMiddleware } from '../files.js';
-import { sequentialPromises } from '../../shared/asyncUtils.js';
-import { LanguageISO6391Schema, languageSchema } from '../../shared/types/commonSchemas.js';
-import { LanguageISO6391, LanguageSchema } from '../../shared/types/commonTypes.js';
+import { sequentialPromises } from 'shared/asyncUtils.js';
+import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas.js';
+import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes.js';
 import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from '../i18n/defaultTranslations.js';
 import needsAuthorization from '../auth/authMiddleware';

@@ -2,24 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientSettings } from '../../apiResponseTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import * as settingsAPI from '../../../api/settings/index.js';
+import * as settingsAPI from 'api/settings/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, Tabs } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/CodeEditor... Remove this comment to see the full error message
 import { CodeEditor } from '../../V2/Components/CodeEditor.js';
 import { ConfirmNavigationModal } from '../../../Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { notificationAtom } from '../../V2/atoms.js';
 
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
 const customisationLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderResponse> =>
-    async () => {
-      const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
-      return { allowcustomJS, customCSS, customJS };
-    };
+  async () => {
+    const { allowcustomJS, customCSS, customJS } = await settingsAPI.get(headers);
+    return { allowcustomJS, customCSS, customJS };
+  };
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;

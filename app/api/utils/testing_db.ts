@@ -1,22 +1,22 @@
 import { setupTestUploadedPaths } from '../files/filesystem.js';
 import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
-import { DB } from '../odm/index.js';
+import { DB } from 'api/odm/index.js';
 import { models } from '../odm/model.js';
 import { RelationshipDBOType } from '../relationships.v2/database/schemas/relationshipTypes.js';
 import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
 import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
 import path from 'path';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { PageType } from '../../shared/types/pageType.js';
-import { Settings } from '../../shared/types/settingsType.js';
-import { IXSuggestionType } from '../../shared/types/suggestionType.js';
-import { ThesaurusSchema } from '../../shared/types/thesaurusType.js';
-import { UserGroupSchema } from '../../shared/types/userGroupType.js';
-import uniqueID from '../../shared/uniqueID.js';
+import { EntitySchema } from 'shared/types/entityType.js';
+import { FileType } from 'shared/types/fileType.js';
+import { PageType } from 'shared/types/pageType.js';
+import { Settings } from 'shared/types/settingsType.js';
+import { IXSuggestionType } from 'shared/types/suggestionType.js';
+import { ThesaurusSchema } from 'shared/types/thesaurusType.js';
+import { UserGroupSchema } from 'shared/types/userGroupType.js';
+import uniqueID from 'shared/uniqueID.js';
 import { config } from '../config.js';
-import { UserSchema } from '../../shared/types/userType';
+import { UserSchema } from 'shared/types/userType';
 import { elasticTesting } from './elastic_testing.js';
 import { testingTenants } from './testingTenants.js';
 
@@ -44,7 +44,7 @@ const fixturer = {
       _collections || (await db.listCollections().toArray()).map(c => c.name);
 
     await Promise.all(
-      collections.map(async (c) => {
+      collections.map(async c => {
         await db.collection(c).deleteMany({});
       })
     );
@@ -60,7 +60,7 @@ const fixturer = {
     await this.clear(db);
     await Promise.all(missingCollections.map(async collname => db.createCollection(collname)));
     await Promise.all(
-      Object.keys(fixtures).map(async (collectionName) => {
+      Object.keys(fixtures).map(async collectionName => {
         if (fixtures[collectionName].length) {
           await db.collection(collectionName).insertMany(fixtures[collectionName]);
         }

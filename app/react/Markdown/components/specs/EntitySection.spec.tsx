@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnectedMount } from '../../utils/test/renderConnected.js';
 import { state } from './fixture/state';
 import { EntitySection } from '../EntitySection';
@@ -20,7 +21,8 @@ describe('EntitySection Markdown', () => {
     spyOn(console, 'error').and.callFake(consoleErrorSpy);
   });
 
-  const render = (innerComponent) => {
+  // @ts-expect-error TS(7006): Parameter 'innerComponent' implicitly has an 'any'... Remove this comment to see the full error message
+  const render = innerComponent => {
     component = renderConnectedMount(() => innerComponent, state);
   };
 

@@ -14,19 +14,27 @@ import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/advancedSort.js' o... Remove this comment to see the full error message
 import { advancedSort } from '../../utils/advancedSort.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientTranslationSchema } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { InputField } from '../../V2/Components/Forms.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import RenderIfVisible from 'react-render-if-visible';
 import { Button, ToggleButton, ConfirmNavigationModal } from '../../../Components/UI/index.js';
-import * as translationsAPI from '../../../api/translations/index.js';
-import * as settingsAPI from '../../../api/settings/index.js';
+import * as translationsAPI from 'api/translations/index.js';
+import * as settingsAPI from 'api/settings/index.js';
 import { notificationAtom } from '../../../atoms/index.js';
-import { availableLanguages } from '../../shared/language/index.js';
-import { Settings } from '../../shared/types/settingsType.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { availableLanguages } from 'shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/settingsTyp... Remove this comment to see the full error message
+import { Settings } from 'shared/types/settingsType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
 import { LanguagePill } from './components/LanguagePill.js';
 
 const editTranslationsLoader =
@@ -35,8 +43,9 @@ const editTranslationsLoader =
     const translations = await translationsAPI.get(headers, params);
     const settings = await settingsAPI.get(headers);
 
-    const sortedTranslations = translations.map((language) => {
-      const sortedContexts = language.contexts.map((context) => {
+    const sortedTranslations = translations.map(language => {
+      // @ts-expect-error TS(7006): Parameter 'context' implicitly has an 'any' type.
+      const sortedContexts = language.contexts.map(context => {
         const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
 
         const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
@@ -102,6 +111,7 @@ const prepareValuesToSave = (
 const composeTableValues = (formValues: formValuesType, termIndex: number) =>
   formValues.map((language, languageIndex) => {
     const languageLabel = availableLanguages.find(
+      // @ts-expect-error TS(7006): Parameter 'availableLanguage' implicitly has an 'a... Remove this comment to see the full error message
       availableLanguage => availableLanguage.key === language.locale
     )?.localized_label;
     return {
@@ -135,7 +145,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
     language => language.locale === defaultLanguageKey
   )?.contexts[0].values;
 
-  return translations.map((language) => {
+  return translations.map(language => {
     const values = Object.entries(language.contexts[0].values || {}).reduce(
       (result, [key, value], index) => ({
         ...result,
@@ -144,6 +154,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
           value,
           translationStatus: getTranslationStatus(
             defaultLanguageValues || {},
+            // @ts-expect-error TS(2322): Type 'unknown' is not assignable to type 'string'.
             { key, value },
             language.locale,
             defaultLanguageKey
@@ -188,6 +199,7 @@ const EditTranslations = () => {
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
+  // @ts-expect-error TS(7006): Parameter 'language' implicitly has an 'any' type.
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
 
@@ -298,7 +310,7 @@ const EditTranslations = () => {
           <div className="flex-grow">
             <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
               {tablesData?.length ? (
-                tablesData?.map((tableData) => {
+                tablesData?.map(tableData => {
                   if (!tableData) return null;
                   const [title] = Object.keys(tableData);
                   const values = tableData[title];
@@ -331,7 +343,7 @@ const EditTranslations = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {values.map((value) => {
+                            {values.map(value => {
                               const hasErrors = Boolean(
                                 getFieldState(value.fieldKey as any)?.error
                               );

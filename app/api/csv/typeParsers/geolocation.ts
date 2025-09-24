@@ -1,6 +1,9 @@
+// @ts-expect-error TS(2307): Cannot find module '../csv/entityRow.js' or its co... Remove this comment to see the full error message
 import { RawEntity } from '../csv/entityRow.js';
-import { MetadataObjectSchema, PropertySchema } from '../../shared/types/commonTypes.js';
-import { ensure } from '../../shared/tsUtils.js';
+
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes.js';
+
+import { ensure } from 'shared/tsUtils.js';
 import { csvConstants } from '../csvDefinitions.js';
 import { sanitizeMetadataValue, SanitizationWarning } from '../sanitizationUtils.js';
 

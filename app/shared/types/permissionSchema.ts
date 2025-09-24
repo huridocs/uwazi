@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import { objectIdSchema } from './commonSchemas.js';
-import { unique } from '../../api/utils/filters.js';
+import { unique } from 'api/utils/filters.js';
 import { wrapValidator } from '../tsUtils.js';
 import { PermissionsDataSchema } from './permissionType.js';
 

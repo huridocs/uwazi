@@ -1,8 +1,13 @@
 import { IncomingHttpHeaders } from 'http';
+// @ts-expect-error TS(2307): Cannot find module '../../Settings.js' or its corr... Remove this comment to see the full error message
 import { SettingsAPI } from '../../Settings.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientSettings, ClientSettingsLinkSchema } from '../../apiResponseTypes.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
 import api from '../../utils/api.js';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<ClientSettings> => {

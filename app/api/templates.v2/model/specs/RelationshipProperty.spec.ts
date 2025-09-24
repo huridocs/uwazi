@@ -1,6 +1,9 @@
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Matc... Remove this comment to see the full error message
 import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Trav... Remove this comment to see the full error message
 import { TraversalQueryNode } from '../relationships.v2/model/TraversalQueryNode.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 const fixtureFactory = getFixturesFactory();
 

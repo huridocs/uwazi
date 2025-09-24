@@ -1,8 +1,12 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import db, { DBFixture } from '../utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { LanguagesListSchema, MetadataSchema } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+
+import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes.js';
 
 const factory = getFixturesFactory();
 
@@ -37,6 +41,7 @@ const languages: LanguagesListSchema = [
   { key: 'es', label: 'Spanish' },
   { key: 'pt', label: 'Portugal' },
 ];
+// @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
 const languageKeys = languages.map(l => l.key);
 
 const createEntitiesInAllLanguages = (
@@ -44,6 +49,7 @@ const createEntitiesInAllLanguages = (
   template: ObjectId,
   metadata: MetadataSchema
 ) =>
+  // @ts-expect-error TS(7006): Parameter 'lKey' implicitly has an 'any' type.
   languageKeys.map(lKey => ({
     metadata,
     template,

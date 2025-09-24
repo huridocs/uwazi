@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientPropertySchema, ClientTemplateSchema } from '../../istore.js';
 import { ClientIXExtractorType } from '../../../../shared/types.js';
 import { InputField } from '../../../../Components/Forms/InputField.js';
@@ -61,7 +63,7 @@ const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
   const propertyName = values.length ? getPropertyNameFromExtractPair(values[0]) : null;
   return templates
-    .map((template) => {
+    .map(template => {
       const option = {
         label: template.name,
         id: template._id,
@@ -69,10 +71,12 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
         value: template._id,
         items: template.properties
           ?.filter(
+            // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
             prop =>
               (!propertyName || prop.name === propertyName) &&
               SUPPORTED_PROPERTIES.includes(prop.type)
           )
+          // @ts-expect-error TS(7006): Parameter 'prop' implicitly has an 'any' type.
           .map(prop => ({
             label: getPropertyLabel(prop as SupportedProperty, template._id),
             value: `${template._id?.toString()}-${prop.name}`,
@@ -110,6 +114,7 @@ const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) =
   }
 
   const matchedProperty = matchedTemplate?.properties.find(
+    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     property => property.name === propertyName
   ) as SupportedProperty;
 
@@ -225,7 +230,7 @@ const ExtractorModal = ({
               <Translate>Selected templates</Translate>
             </h6>
             <div className="flex flex-wrap p-3">
-              {values.map((value) => {
+              {values.map(value => {
                 const templateId = getTemplateFromExtractPair(value);
                 const template = templates.find(temp => temp._id === templateId);
                 return (

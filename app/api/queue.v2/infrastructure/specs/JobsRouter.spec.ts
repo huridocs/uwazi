@@ -1,7 +1,11 @@
 /* eslint-disable max-statements */
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 import { Dispatchable } from '../queue.v2/application/contracts/Dispatchable.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher.js';
 import { JobsRouter } from '../JobsRouter.js';

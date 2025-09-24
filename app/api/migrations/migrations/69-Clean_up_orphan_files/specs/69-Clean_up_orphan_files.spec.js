@@ -1,4 +1,4 @@
-import testingDB from '../utils/testing_db.js';
+import testingDB from 'api/utils/testing_db.js';
 import { config } from '../config.js';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';

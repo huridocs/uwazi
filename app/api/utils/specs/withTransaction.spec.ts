@@ -1,11 +1,16 @@
 import { ClientSession } from 'mongodb';
 import { Schema } from 'mongoose';
 
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../odm/model.js' or its corres... Remove this comment to see the full error message
 import { instanceModel } from '../odm/model.js';
+// @ts-expect-error TS(2307): Cannot find module '../odm/sessionsContext.js' or ... Remove this comment to see the full error message
 import { dbSessionContext } from '../odm/sessionsContext.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { storage } from '../files.js';
 import { Readable } from 'stream';
 import { appContext } from '../AppContext';

@@ -1,5 +1,7 @@
 import L, { TileLayer } from 'leaflet';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Map/GoogleMapLayer.js' o... Remove this comment to see the full error message
 import { getGoogleLayer } from '../../Map/GoogleMapLayer.js';
 
 const DEFAULT_MAPBOX_TOKEN =

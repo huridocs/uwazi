@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, t } from '../../I18N/index.js';
 import { isString } from 'lodash';
 import { Button, Modal } from '../UI';

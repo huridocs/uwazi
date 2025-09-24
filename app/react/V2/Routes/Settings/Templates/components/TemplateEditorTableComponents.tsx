@@ -2,7 +2,9 @@
 import React from 'react';
 import { Button } from '../../../../Components/UI/Button.js';
 import { ColumnDef, createColumnHelper, CellContext } from '@tanstack/react-table';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/Translate.js' or it... Remove this comment to see the full error message
 import { Translate } from '../../I18N/Translate.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import { Pill } from '../../../../Components/UI/index.js';
@@ -21,30 +23,30 @@ const columnHelper = createColumnHelper<PropertyRow>();
 
 const LabelCell =
   (handleEditProperty: (property: PropertyRow) => void) =>
-  ({ cell }: CellContext<PropertyRow, string>) => {
-    const property = cell.row.original;
-    if (property.disableRowDnD) {
+    ({ cell }: CellContext<PropertyRow, string>) => {
+      const property = cell.row.original;
+      if (property.disableRowDnD) {
+        return (
+          <button
+            type="button"
+            onClick={() => handleEditProperty(property)}
+            className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+          >
+            <LockClosedIcon className="w-4 h-4 text-primary-700" />
+            {cell.getValue()}
+          </button>
+        );
+      }
       return (
         <button
           type="button"
           onClick={() => handleEditProperty(property)}
-          className="flex items-center gap-2 text-left text-primary-700 cursor-pointer font-medium"
+          className="text-left text-primary-700 cursor-pointer font-medium"
         >
-          <LockClosedIcon className="w-4 h-4 text-primary-700" />
           {cell.getValue()}
         </button>
       );
-    }
-    return (
-      <button
-        type="button"
-        onClick={() => handleEditProperty(property)}
-        className="text-left text-primary-700 cursor-pointer font-medium"
-      >
-        {cell.getValue()}
-      </button>
-    );
-  };
+    };
 
 const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
   <div className="flex items-center gap-2">
@@ -57,11 +59,11 @@ const TypeCell = ({ cell }: CellContext<PropertyRow, string>) => (
 
 const ActionsCell =
   (handleEditProperty: (property: PropertyRow) => void) =>
-  ({ cell }: CellContext<PropertyRow, any>) => (
-    <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
-      <Translate>Edit</Translate>
-    </Button>
-  );
+    ({ cell }: CellContext<PropertyRow, any>) => (
+      <Button size="small" styling="light" onClick={() => handleEditProperty(cell.row.original)}>
+        <Translate>Edit</Translate>
+      </Button>
+    );
 
 const LabelHeader = () => <Translate>Property</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;

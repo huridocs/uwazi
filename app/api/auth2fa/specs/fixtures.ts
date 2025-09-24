@@ -1,7 +1,6 @@
-/** @format */
+import db from 'api/utils/testing_db.js';
 
-import db from '../utils/testing_db.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+import { UserRole } from 'shared/types/userSchema.js';
 
 const userId = db.id();
 const secretedUserId = db.id();

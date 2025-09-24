@@ -1,13 +1,19 @@
 import React, { useState, useMemo } from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, I18NApi } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, Modal } from '../../V2/Components/UI.js';
 import {
   defaultSearch,
   MultiselectList,
   MultiselectListOption,
+  // @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 } from '../../V2/Components/Forms.js';
-import { LanguageSchema } from '../../shared/types/commonTypes.js';
+
+import { LanguageSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/CustomHooks/useApiCal... Remove this comment to see the full error message
 import { useApiCaller } from '../../V2/CustomHooks/useApiCaller.js';
 
 type InstallLanguagesModalProps = {
@@ -58,7 +64,9 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
         <div className="h-96 pt-2">
           <MultiselectList
             items={options}
+            // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
             onChange={s => setSelected(s)}
+            // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
             onSearch={s => setOptions(() => defaultSearch(s, items))}
           />
         </div>

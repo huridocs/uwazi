@@ -1,7 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/components/Selec... Remove this comment to see the full error message
 import SelectFilter from '../../Library/components/SelectFilter.js';
-import { Aggregations } from '../../shared/types/aggregations.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/aggregation... Remove this comment to see the full error message
+import { Aggregations } from 'shared/types/aggregations.js';
 import { FilterTocGeneration } from '../FilterTocGeneration';
 
 describe('FilterTocGeneration', () => {
@@ -18,7 +20,7 @@ describe('FilterTocGeneration', () => {
   };
 
   const render = (aggs: Aggregations = aggregations) => {
-    component = shallow(<FilterTocGeneration onChange={() => {}} aggregations={aggs} />);
+    component = shallow(<FilterTocGeneration onChange={() => { }} aggregations={aggs} />);
   };
 
   it('should render nothing if file generatedToc is false', () => {

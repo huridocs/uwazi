@@ -1,6 +1,9 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 import { createTestJob } from './fixtures';
 
@@ -384,6 +387,7 @@ describe('Failed Jobs', () => {
     expect(failedJobs!).toHaveLength(3);
 
     // Verify all jobs are in failed collection with correct failed status
+    // @ts-expect-error TS(7006): Parameter 'job' implicitly has an 'any' type.
     const failedJobNames = failedJobs!.map(job => job.name).sort();
     expect(failedJobNames).toEqual([
       'exceeded retry job 1',
@@ -392,6 +396,7 @@ describe('Failed Jobs', () => {
     ]);
 
     // Verify all jobs have failed: true
+    // @ts-expect-error TS(7006): Parameter 'job' implicitly has an 'any' type.
     failedJobs!.forEach(job => {
       expect(job.failed).toBe(true);
     });
@@ -461,6 +466,7 @@ it('should not pick jobs that have exceeded maxRetries', async () => {
   const failedJobs = await testingDB.mongodb?.collection('jobs_failed').find({}).toArray();
   expect(failedJobs!).toHaveLength(1); // exceeded job should be in failed collection
 
+  // @ts-expect-error TS(7006): Parameter 'job' implicitly has an 'any' type.
   const exceededJobAfter = failedJobs!.find(job => job.name === 'exceeded job');
   expect(exceededJobAfter?.retryCount).toBe(3); // Should remain unchanged
   expect(exceededJobAfter?.failed).toBe(true); // Should be marked as failed

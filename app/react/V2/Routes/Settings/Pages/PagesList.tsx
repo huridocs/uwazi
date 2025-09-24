@@ -4,13 +4,19 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { I18NLinkV2 as I18NLink, Translate } from '../../I18N/index.js';
-import * as pagesAPI from '../../../api/pages/index.js';
+import * as pagesAPI from 'api/pages/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, ConfirmationModal, Table } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-import { Page } from '../../shared/V2/shared/types.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/types.j... Remove this comment to see the full error message
+import { Page } from 'shared/V2/shared/types.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { notificationAtom, notificationAtomType } from '../../V2/atoms.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
 import {
   EntityViewHeader,
   YesNoPill,
@@ -99,6 +105,7 @@ const PagesList = () => {
                 Pages
               </Translate>
             }
+            // @ts-expect-error TS(7031): Binding element 'selectedRows' implicitly has an '... Remove this comment to see the full error message
             onSelect={({ selectedRows }) => {
               setSelectedPages(pages.filter(page => page.rowId in selectedRows));
             }}

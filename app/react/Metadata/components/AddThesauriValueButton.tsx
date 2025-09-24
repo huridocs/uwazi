@@ -14,7 +14,8 @@ const AddThesauriValueButton = ({ values, onModalAccept }: AddThesauriValueButto
         values={values}
         isOpen={openModal}
         onCancel={() => setOpenModal(false)}
-        onAccept={(addedValues) => {
+        // @ts-expect-error TS(7006): Parameter 'addedValues' implicitly has an 'any' ty... Remove this comment to see the full error message
+        onAccept={addedValues => {
           setOpenModal(false);
           onModalAccept(addedValues);
         }}

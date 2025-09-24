@@ -1,6 +1,7 @@
 import { Collection, Db } from 'mongodb';
 
-import testingDB from '../utils/testing_db.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import { settingsOnlyDuplication, defaultLanguageDuplication, allCases } from './fixtures';
 import migration from '../index';
 import { Entity, Fixture, Page } from '../types';
@@ -11,6 +12,7 @@ const initTest = async (fixture: Fixture) => {
   await testingDB.setupFixturesAndContext(fixture);
   db = testingDB.mongodb!;
   migration.reindex = false;
+  // @ts-expect-error TS(2345): Argument of type 'Db | null' is not assignable to ... Remove this comment to see the full error message
   await migration.up(db);
 };
 

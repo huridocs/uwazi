@@ -5,13 +5,18 @@ import { useLoaderData, LoaderFunction } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { Row, createColumnHelper } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, I18NApi, t } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms/settingsAtom.js... Remove this comment to see the full error message
 import { settingsAtom } from '../../V2/atoms/settingsAtom.js';
 import { Button, Table, ConfirmationModal } from '../../../Components/UI/index.js';
 import { useApiCaller } from '../../../CustomHooks/useApiCaller.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-import { LanguageSchema } from '../../shared/types/commonTypes.js';
+
+import { LanguageSchema } from 'shared/types/commonTypes.js';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal.js';
 import {
   DefaultHeader,
@@ -29,11 +34,12 @@ const columnHelper = createColumnHelper<TableLanguages>();
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    I18NApi.getLanguages(new RequestParams({}, headers));
+    async () =>
+      I18NApi.getLanguages(new RequestParams({}, headers));
 
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
+  // @ts-expect-error TS(2339): Property 'languages' does not exist on type 'unkno... Remove this comment to see the full error message
   const { languages: collectionLanguages = [] } = useAtomValue(settingsAtom);
   const { requestAction } = useApiCaller();
   const [modalProps, setModalProps] = useState({});
@@ -43,6 +49,7 @@ const LanguagesList = () => {
   const availableLanguages = useLoaderData() as LanguageSchema[];
   const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
   const notInstalledLanguages = availableLanguages.filter(
+    // @ts-expect-error TS(7006): Parameter 'cl' implicitly has an 'any' type.
     l => !collectionLanguages.find(cl => cl.key === l.key)
   );
 
@@ -57,16 +64,16 @@ const LanguagesList = () => {
       key: string,
       currentLanguage?: LanguageSchema
     ) =>
-    async () => {
-      setShowModal(false);
-      if (currentLanguage) {
-        await requestAction(
-          action,
-          new RequestParams({ [key]: currentLanguage.key }),
-          successMessage
-        );
-      }
-    };
+      async () => {
+        setShowModal(false);
+        if (currentLanguage) {
+          await requestAction(
+            action,
+            new RequestParams({ [key]: currentLanguage.key }),
+            successMessage
+          );
+        }
+      };
 
   const confirmAction = (
     message: string,

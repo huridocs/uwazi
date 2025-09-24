@@ -221,7 +221,7 @@ const ParsedActions: { [key: string]: EntryValue } = {
   },
 };
 
-const getSemanticData = async (data) => {
+const getSemanticData = async (data: any) => {
   const action = `${data.method}${data.url}`;
   if (action === 'MIGRATE') {
     return helpers.migrationLog(data);

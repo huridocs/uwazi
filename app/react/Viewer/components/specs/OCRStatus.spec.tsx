@@ -5,8 +5,11 @@ import React from 'react';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import Immutable from 'immutable';
-import { FileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnectedContainer, defaultState } from '../../utils/test/renderConnected.js';
+// @ts-expect-error TS(2307): Cannot find module '../../socket.js' or its corres... Remove this comment to see the full error message
 import { socket } from '../../socket.js';
 import { Provider } from 'react-redux';
 import { OCRStatus } from '../OCRStatus';
@@ -21,9 +24,11 @@ describe('OCRStatus', () => {
 
   const mockSocketOn: any = {};
 
+  // @ts-expect-error TS(2345): Argument of type '(event: string, callback: any) =... Remove this comment to see the full error message
   jest.spyOn(socket, 'on').mockImplementation((event: string, callback: any) => {
     mockSocketOn[event] = callback;
   });
+  // @ts-expect-error TS(2345): Argument of type '(event: string, callback: any) =... Remove this comment to see the full error message
   jest.spyOn(socket, 'off').mockImplementation((event: string, callback: any) => {
     mockSocketOn[event] = callback;
   });

@@ -1,11 +1,18 @@
 import { ObjectId } from 'mongodb';
+// @ts-expect-error TS(2307): Cannot find module '../files/events/FilesDeletedEv... Remove this comment to see the full error message
 import { FilesDeletedEvent } from '../files/events/FilesDeletedEvent.js';
+// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
 import { EventsBus } from '../eventsbus.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-import { DBFixture } from '../utils/testing_db.js';
-import { tenants } from '../tenants.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
 import { mongoPXEntitiesStatusCollection } from '../MongoPXEntitiesStatusDataSource';
 import { MongoExtractorBuilder } from './MongoPXExtractorBuilder';
 import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';

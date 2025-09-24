@@ -1,8 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
 import { Button, Pill } from '../../../../Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus, ClientThesaurusValue } from '../../apiResponseTypes.js';
 import { ThesauriRow } from './ThesauriTable.js';
 
@@ -125,6 +127,7 @@ const columnsThesaurus = (actions: { edit?: Function }, thesaurus: ClientThesaur
 
 const columnHelperThesauri = createColumnHelper<ThesauriRow>();
 const columnsThesauri = ({ edit }: { edit: Function }) => [
+  // @ts-expect-error TS(2345): Argument of type '"name"' is not assignable to par... Remove this comment to see the full error message
   columnHelperThesauri.accessor('name', {
     id: 'name',
     header: LabelHeader,
@@ -137,6 +140,7 @@ const columnsThesauri = ({ edit }: { edit: Function }) => [
     enableSorting: false,
     meta: { headerClassName: 'w-6/12' },
   }),
+  // @ts-expect-error TS(2345): Argument of type '"_id"' is not assignable to para... Remove this comment to see the full error message
   columnHelperThesauri.accessor('_id', {
     header: ActionHeader,
     cell: EditButton,

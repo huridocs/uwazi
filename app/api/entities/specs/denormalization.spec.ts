@@ -1,12 +1,18 @@
 /* eslint-disable max-lines */
 import entities from '../entities.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import db, { DBFixture } from '../utils/testing_db.js';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+
+// @ts-expect-error TS(2307): Cannot find module '../i18n/translations.js' or it... Remove this comment to see the full error message
 import translations from '../i18n/translations.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauris from '../thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
 import { elasticTesting } from '../utils/elastic_testing.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 
 const load = async (data: DBFixture, index?: string) =>
@@ -275,6 +281,7 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const [A1] = results.filter(r => r.sharedId === 'A1');
 
       expect(A1?.metadata?.relationship).toMatchObject([
@@ -365,6 +372,7 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const A1 = results.find(r => r.sharedId === 'A1');
 
       expect(A1?.metadata?.relationship).toMatchObject([
@@ -507,7 +515,9 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const B1en = results.find(r => r.sharedId === 'B1' && r.language === 'en');
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const B1es = results.find(r => r.sharedId === 'B1' && r.language === 'es');
 
       expect(B1en?.metadata?.relationshipB).toMatchObject([
@@ -523,7 +533,9 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const A1en = results.find(r => r.sharedId === 'A1' && r.language === 'en');
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const A1es = results.find(r => r.sharedId === 'A1' && r.language === 'es');
 
       expect(A1en?.metadata?.relationshipA).toMatchObject([
@@ -584,7 +596,9 @@ describe('Denormalize relationships', () => {
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
 
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const A1en = results.find(r => r.sharedId === 'A1' && r.language === 'en');
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const A1es = results.find(r => r.sharedId === 'A1' && r.language === 'es');
 
       expect(A1en?.metadata?.relationshipA).toMatchObject([
@@ -692,7 +706,9 @@ describe('Denormalize relationships', () => {
       });
       await elasticTesting.refresh();
       const results = await elasticTesting.getIndexedEntities();
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const englishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'en');
+      // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
       const spanishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'es');
       expect(englishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'One' }]);
       expect(spanishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'Uno' }]);

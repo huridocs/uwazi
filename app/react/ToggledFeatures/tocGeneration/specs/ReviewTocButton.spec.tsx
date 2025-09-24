@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientFile } from '../../istore.js';
 import { ReviewTocButton } from '../ReviewTocButton';
 

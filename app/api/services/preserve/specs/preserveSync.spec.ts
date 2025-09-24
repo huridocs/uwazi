@@ -1,21 +1,34 @@
+// @ts-expect-error TS(2307): Cannot find module '../entities.js' or its corresp... Remove this comment to see the full error message
 import entities from '../entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../files/filesystem.js' or its... Remove this comment to see the full error message
 import { generateFileName, testingUploadPaths } from '../files/filesystem.js';
+// @ts-expect-error TS(2307): Cannot find module '../files/storage.js' or its co... Remove this comment to see the full error message
 import { storage } from '../files/storage.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.js' or its correspondin... Remove this comment to see the full error message
 import { legacyLogger } from '../log.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
-import { tenants } from '../tenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauri from '../thesauri.js';
-import db from '../utils/testing_db.js';
+
+import db from 'api/utils/testing_db.js';
 import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
-import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
-import { FileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
 import { URL } from 'url';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { Tenant } from '../tenants/tenantContext.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
@@ -42,7 +55,7 @@ const mockVault = async (evidences: any[], token: string = '', isoDate = '') => 
   const downloads = evidences.map(e => e.attributes.downloads).flat();
 
   return Promise.all(
-    downloads.map(async (download) => {
+    downloads.map(async download => {
       const tmpName = generateFileName({ originalname: 'test' });
       await fs.writeFile(path.join('/tmp', tmpName), 'content');
       const file = createReadStream(path.join('/tmp', tmpName));
@@ -193,7 +206,8 @@ describe('preserveSync', () => {
         ).map((entity: EntityWithFilesSchema) => ({
           ...entity,
           attachments: entity.attachments
-            ? entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
+            ? // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
+              entity.attachments.sort((a, b) => (a.originalname! > b.originalname! ? 1 : -1))
             : [],
         }));
 

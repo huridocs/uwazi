@@ -9,6 +9,7 @@ describe('GeoLocationProperty', () => {
       template: 'any',
     });
 
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'Geolocatio... Remove this comment to see the full error message
     expect(geolocationProperty.name).toBe('a_label_geolocation');
   });
 
@@ -21,6 +22,7 @@ describe('GeoLocationProperty', () => {
       template: 'any',
     });
 
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'Geolocatio... Remove this comment to see the full error message
     expect(geolocationProperty.name).toBe('a_label_2_geolocation');
   });
 });

@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Button, FileIcon } from '../../../../Components/UI/index.js';
 import { CustomUpload } from '../CustomUploads.js';

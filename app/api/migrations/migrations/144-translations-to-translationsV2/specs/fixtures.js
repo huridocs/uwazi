@@ -1,5 +1,5 @@
 /** @format */
-import db from '../utils/testing_db.js';
+import db from 'api/utils/testing_db.js';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();

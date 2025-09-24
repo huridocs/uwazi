@@ -1,10 +1,15 @@
 import { ObjectId } from 'mongodb';
 
-import { LanguageUtils } from '../../shared/language/index.js';
-import { SegmentationType } from '../../shared/types/segmentationType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { LanguageUtils } from 'shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+import { SegmentationType } from 'shared/types/segmentationType.js';
 
-import { MongoDataSource } from '../common.v2/database/MongoDataSource.js';
-import { MongoResultSet } from '../common.v2/database/MongoResultSet.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoDat... Remove this comment to see the full error message
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource.js';
+
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/ResultS... Remove this comment to see the full error message
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
 
 import { FilesDataSource, GetDocumentsForEntityOptions } from '../contracts/FilesDataSource';
@@ -31,6 +36,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
   protected collectionName = 'files';
 
   getSegmentations(filesId: string[]): ResultSet<Segmentation> {
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const cursor = this.getCollection<SegmentationDBO>('segmentations').find({
       fileID: { $in: filesId.map(id => new ObjectId(id)) },
       status: 'ready',
@@ -61,6 +67,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
     }
 
     return new MongoResultSet<FileDBOType, Document>(
+      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       this.getCollection().find(query, { projection: { fullText: 0 } }),
       FileMappers.toDocumentModel
     );
@@ -68,6 +75,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
 
   getAll() {
     return new MongoResultSet<FileDBOType, UwaziFile>(
+      // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
       this.getCollection().find({}, { projection: { fullText: 0 } }),
       FileMappers.toModel
     );
@@ -77,6 +85,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
     const query = {
       $or: files.map(file => ({ _id: new ObjectId(file._id), entity: file.entity })),
     };
+    // @ts-expect-error TS(2339): Property 'getCollection' does not exist on type 'M... Remove this comment to see the full error message
     const foundFiles = await this.getCollection().countDocuments(query);
     return foundFiles === files.length;
   }

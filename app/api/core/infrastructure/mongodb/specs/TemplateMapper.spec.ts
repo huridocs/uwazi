@@ -1,18 +1,34 @@
-import { Template } from '../templates.v2/model/Template.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Template... Remove this comment to see the full error message
+import { Template } from 'api/templates.v2/model/Template.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/TitleP... Remove this comment to see the full error message
 import { TitleProperty } from '../core/domain/template/TitleProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Creati... Remove this comment to see the full error message
 import { CreationDateProperty } from '../core/domain/template/CreationDateProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Modifi... Remove this comment to see the full error message
 import { ModifiedDateProperty } from '../core/domain/template/ModifiedDateProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/TextPr... Remove this comment to see the full error message
 import { TextProperty } from '../core/domain/template/TextProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/ImageP... Remove this comment to see the full error message
 import { ImageProperty } from '../core/domain/template/ImageProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Previe... Remove this comment to see the full error message
 import { PreviewProperty } from '../core/domain/template/PreviewProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/MediaP... Remove this comment to see the full error message
 import { MediaProperty } from '../core/domain/template/MediaProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Numeri... Remove this comment to see the full error message
 import { NumericProperty } from '../core/domain/template/NumericProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/MultiD... Remove this comment to see the full error message
 import { MultiDateRangeProperty } from '../core/domain/template/MultiDateRangeProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/MultiD... Remove this comment to see the full error message
 import { MultiDateProperty } from '../core/domain/template/MultiDateProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Markdo... Remove this comment to see the full error message
 import { MarkdownProperty } from '../core/domain/template/MarkdownProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/LinkPr... Remove this comment to see the full error message
 import { LinkProperty } from '../core/domain/template/LinkProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/GeoLoc... Remove this comment to see the full error message
 import { GeolocationProperty } from '../core/domain/template/GeoLocationProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/DatePr... Remove this comment to see the full error message
 import { DateProperty } from '../core/domain/template/DateProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/DateRa... Remove this comment to see the full error message
 import { DateRangeProperty } from '../core/domain/template/DateRangeProperty.js';
 import { ObjectId } from 'mongodb';
 import { TemplateMapper } from '../template/Mapper';

@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnectedMount } from '../../utils/test/renderConnected.js';
 import { ErrorFallback } from '../ErrorFallback';
 import { RouteErrorBoundary } from '../RouteErrorBoundary';

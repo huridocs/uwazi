@@ -5,7 +5,7 @@ import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js'
 import type {
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '../../../shared/ParagraphExtractionTypes.js';
+} from 'shared/ParagraphExtractionTypes.js';
 import { templatesAtom } from '../../../atoms/index.js';
 import { ParagraphsTable } from './components/paragraphs/Table.js';
 import { ViewParagraphSidePanel } from './components/paragraphs/ViewParagraphSidePanel.js';
@@ -32,6 +32,7 @@ const PXParagraphDashboard = () => {
     setParagraphOnView(selectedParagraph);
     setSidePanel(true);
   };
+  // @ts-expect-error TS(2339): Property 'title' does not exist on type 'ClientEnt... Remove this comment to see the full error message
   const entityTitle = sourceEntity?.title || '';
 
   return (

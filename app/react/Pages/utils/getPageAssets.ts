@@ -1,4 +1,5 @@
-import { risonDecodeOrIgnore } from '../../api/utils/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/utils/index.js' or i... Remove this comment to see the full error message
+import { risonDecodeOrIgnore } from 'api/utils/index.js';
 import { get, has, uniq } from 'lodash';
 import api from '../../Search/SearchAPI.js';
 import { markdownDatasets } from '../../Markdown/index.js';

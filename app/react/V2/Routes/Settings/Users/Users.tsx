@@ -2,9 +2,11 @@
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Button, ConfirmationModal, Table, Tabs } from '../../../Components/UI/index.js';
-import * as usersAPI from '../../../api/users/index.js';
+import * as usersAPI from 'api/users/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import {
   UserFormSidepanel,
@@ -216,7 +218,7 @@ const Users = () => {
               ['bulk-reset-2fa', 'delete-users'].includes(bulkActionIntent.current || '')) ||
             false
           }
-          onAcceptClick={async (value) => {
+          onAcceptClick={async value => {
             password.current = value;
             await handleBulkAction();
             setShowConfirmationModal(false);

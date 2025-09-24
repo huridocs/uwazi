@@ -1,8 +1,9 @@
 import 'api/entities';
 import urljoin from 'url-join';
-import request from '../../shared/JSONRequest.js';
-import { SettingsSyncSchema } from '../../shared/types/settingsType.js';
-import { tenants } from '../tenants.js';
+import request from 'shared/JSONRequest.js';
+import { SettingsSyncSchema } from 'shared/types/settingsType.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
 import settings from '../settings/index.js';
 import { permissionsContext } from '../permissions/permissionsContext.js';
 import { synchronizer } from './synchronizer';
@@ -54,6 +55,7 @@ export const syncWorker = {
   UPDATE_LOG_TARGET_COUNT: 50,
 
   async runAllTenants() {
+    // @ts-expect-error TS(7006): Parameter 'previous' implicitly has an 'any' type.
     return tenants.getTenantsForFeatureFlag('sync').reduce(async (previous, tenant) => {
       await previous;
       return tenants.run(async () => {

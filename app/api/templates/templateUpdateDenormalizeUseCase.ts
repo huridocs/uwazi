@@ -1,5 +1,5 @@
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '../core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { TemplatePostProcessEntitiesJob } from '../core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { MongoMultiLanguageEntityDataSource } from '../entities.v2/database/MongoMultiLanguageEntityDataSource.js';
@@ -8,9 +8,9 @@ import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher
 import { DefaultDispatcher } from '../queue.v2/configuration/factories.js';
 import { SyncDispatcherForTests } from '../queue.v2/infrastructure/SyncDispatcherForTests.js';
 import { MongoRelationshipsV1DataSource } from '../relationships/MongoRelationshipsV1DataSource.js';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
-import { Template } from '../templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+import { Template } from 'api/templates.v2/model/Template.js';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { tenants } from '../tenants/index.js';
 
 export const denormalizeTemplateEntities = async (
@@ -63,6 +63,7 @@ export const denormalizeTemplateEntities = async (
       entitiesIds: await resultSet.nextBatch(limit),
       templateId: template.id,
       language,
+      // @ts-expect-error TS(2339): Property 'id' does not exist on type 'V1Relationsh... Remove this comment to see the full error message
       modifiedRelationshipsProps: modifiedRelationshipsProps.map(prop => prop.id),
       newGeneratedIdProps: [],
       deletedProperties,

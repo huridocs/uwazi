@@ -48,6 +48,13 @@ module.exports = production => {
     },
     resolve: {
       extensions: ['.*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      alias: {
+        'api': path.join(rootPath, 'app/api'),
+        'app': path.join(rootPath, 'app/react'),
+        'shared': path.join(rootPath, 'app/shared'),
+        'UI': path.join(rootPath, 'app/react/UI'),
+        'V2': path.join(rootPath, 'app/react/V2'),
+      },
     },
     resolveLoader: {
       modules: ['node_modules'],

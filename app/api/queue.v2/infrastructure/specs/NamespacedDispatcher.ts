@@ -1,5 +1,8 @@
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 import { Dispatchable, HeartbeatCallback } from '../queue.v2/application/contracts/Dispatchable.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 

@@ -1,5 +1,7 @@
-import testingDB from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { files, UpdateFileError } from '../files';
 
 describe('Files', () => {

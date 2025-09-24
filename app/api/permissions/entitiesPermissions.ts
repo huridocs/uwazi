@@ -2,20 +2,21 @@ import { WithId } from 'mongodb';
 
 import { model as entityModel } from '../entities/index.js';
 import entities from '../entities/entities.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
 import users from '../users/users.js';
 import userGroups from '../usergroups/userGroups.js';
 import { unique } from '../utils/filters.js';
-import { EntitySchema, EntityWithFilesSchema } from '../../shared/types/entityType.js';
+import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType.js';
 import {
   AccessLevels,
   PermissionType,
   MixedAccess,
   validateUniquePermissions,
-} from '../../shared/types/permissionSchema.js';
-import { PermissionSchema, PermissionsDataSchema } from '../../shared/types/permissionType.js';
-import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
+} from 'shared/types/permissionSchema.js';
+import { PermissionSchema, PermissionsDataSchema } from 'shared/types/permissionType.js';
+import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';
 

@@ -1,5 +1,6 @@
 import request from 'supertest';
 import express, { Application } from 'express';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { tenants } from '../tenants/tenantContext.js';
 import { multitenantMiddleware } from '../multitenantMiddleware';
 import { appContextMiddleware } from '../appContextMiddleware';

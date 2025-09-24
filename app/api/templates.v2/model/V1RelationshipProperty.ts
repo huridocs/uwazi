@@ -1,10 +1,12 @@
 import {
   FilterableProperty,
   FilterablePropertyProps,
+  // @ts-expect-error TS(2307): Cannot find module '../core/domain/template/Filter... Remove this comment to see the full error message
 } from '../core/domain/template/FilterableProperty.js';
 import {
   PropertyInheritedTypeMismatchError,
   PropertyRelationTypeMismatchError,
+  // @ts-expect-error TS(2307): Cannot find module '../core/domain/template/errors... Remove this comment to see the full error message
 } from '../core/domain/template/errors.js';
 import { Context, Property, PropertyTypes, PropertyUpdateInfo } from './Property';
 
@@ -67,6 +69,7 @@ class V1RelationshipProperty extends FilterableProperty {
     this.inherit = inherit;
   }
 
+  // @ts-expect-error TS(4112): This member cannot have an 'override' modifier bec... Remove this comment to see the full error message
   override updatedAttributes(other: Property): PropertyUpdateInfo {
     if (!(other instanceof V1RelationshipProperty)) {
       throw new Error('Can only compare with another V1RelationshipProperty');

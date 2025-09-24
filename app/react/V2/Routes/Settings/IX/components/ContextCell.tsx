@@ -74,7 +74,7 @@ const filterNodes = (nodes: React.ReactNode[]) => {
   );
 
   if (hasMatches) {
-    return nodes.filter((node) => {
+    return nodes.filter(node => {
       if (
         React.isValidElement(node) &&
         (node.props.className === ixContextClassnames.ix_adjacent_paragraph ||

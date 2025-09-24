@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
 
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
 
 type Props = {
   targetTemplate: TemplateSchema;

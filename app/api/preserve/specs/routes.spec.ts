@@ -1,14 +1,18 @@
 import request from 'supertest';
 import { Application } from 'express';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import requestShared from '../../shared/JSONRequest.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import requestShared from 'shared/JSONRequest.js';
 import { PreserveRoutes } from '../routes';
 
 import fixtures, { userId1, userId2 } from './fixtures';
 
 describe('entities get searchString', () => {
   const user = { _id: userId2 };
+  // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
   const app: Application = setUpApp(PreserveRoutes, (req, _res, next) => {
     req.user = user;
     next();

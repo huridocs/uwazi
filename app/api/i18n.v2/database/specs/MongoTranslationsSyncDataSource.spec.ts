@@ -1,11 +1,19 @@
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
 import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
 import { TranslationSyO } from '../i18n.v2/schemas/TranslationSyO.js';
-import { getIdMapper } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { getIdMapper } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { MongoTranslationsSyncDataSource } from '../MongoTranslationsSyncDataSource';
 
 const id = getIdMapper();

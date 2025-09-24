@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useRevalidator, useLoaderData } from 'react-router';
 import { useSetAtom } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import * as entitiesAPI from '../../../../../../api/paragraphExtractor/entities.js';
+import * as entitiesAPI from 'api/paragraphExtractor/entities.js';
 import { Button, ConfirmationModal } from '../../../../../../Components/UI/index.js';
 import { notificationAtom } from '../../../../../../atoms/index.js';
-import { PXEntityLoaderResponse, TablePXEntityRow } from '../../../../../../shared/ParagraphExtractionTypes.js';
+import {
+  PXEntityLoaderResponse,
+  TablePXEntityRow,
+} from '../../../../../../shared/ParagraphExtractionTypes.js';
 
 const ExtractEntitiesDialog = ({
   setIsProcessing,

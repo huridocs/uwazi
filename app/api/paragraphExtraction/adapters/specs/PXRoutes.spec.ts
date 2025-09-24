@@ -2,10 +2,14 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { ObjectId } from 'mongodb';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/jobs/Cr... Remove this comment to see the full error message
 import { CreateParagraphExtractionEntityStatusesJob } from '../paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { tenants } from '../tenants.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants.js' or its correspo... Remove this comment to see the full error message
+import { tenants } from 'api/tenants/index.js';
 import {
   EntityStatusDTO,
   PXCreateExtractorRequest,
@@ -14,8 +18,11 @@ import {
   PXExtractRequest,
   PXGetEntityParagraphsRequest,
   PXGetExtractorStatusesRequest,
+  // @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/types.j... Remove this comment to see the full error message
 } from '../paragraphExtraction/types.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
 import { paragraphExtractionRoutes } from '../PXRoutes';
 
@@ -81,6 +88,7 @@ const checkValidationForRoute = async (
 };
 
 describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)', () => {
+  // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
   const app: Application = setUpApp(paragraphExtractionRoutes, (req, _res, next) => {
     (req as any).user = user;
     next();
@@ -192,7 +200,9 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       await request(app).post('/api/paragraphExtraction/extract').send(body);
 
       const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const entity1Status = statuses?.find(s => s.entitySharedId === entity1.sharedId);
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
 
       expect(entity1Status?.status).toBe(EntityStatusDTO.Processing);
@@ -217,6 +227,7 @@ describe('PX Routes (Paragraph extraction flow, tests must be run in sequence)',
       await request(app).post('/api/paragraphExtraction/extractNew').send(body);
 
       const statuses = await testingEnvironment.db.getAllFrom(mongoPXEntitiesStatusCollection);
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const entity2Status = statuses?.find(s => s.entitySharedId === entity2.sharedId);
 
       expect(entity2Status?.status).toBe(EntityStatusDTO.Processing);

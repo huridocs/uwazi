@@ -1,10 +1,15 @@
 import request from 'supertest';
 
-import { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { setUpApp } from '../utils/testingRoutes.js';
-import { UserRole } from '../../shared/types/userSchema.js';
-import { UserSchema } from '../../shared/types/userType.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
+
+import { UserSchema } from 'shared/types/userType.js';
 import { expectedLinks, linkFixtures, newLinks } from './fixtures';
 import settingsRoutes from '../routes';
 import settings from '../settings';
@@ -33,6 +38,7 @@ function getUser() {
   return currentUser;
 }
 
+// @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
 const app = setUpApp(settingsRoutes, (req, _res, next) => {
   req.user = getUser();
   next();

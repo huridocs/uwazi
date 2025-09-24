@@ -1,9 +1,14 @@
+// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
 import { Suggestions } from '../suggestions/suggestions.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { toHaveBeenCalledBefore } from 'jest-extended';
-import { ModelStatus } from '../../shared/types/IXModelSchema.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelSche... Remove this comment to see the full error message
+import { ModelStatus } from 'shared/types/IXModelSchema.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import ixmodels from '../ixmodels';
 
 expect.extend({ toHaveBeenCalledBefore });

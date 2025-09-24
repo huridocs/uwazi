@@ -1,5 +1,5 @@
 import { config } from '../config.js';
-import testingDB from '../utils/testing_db.js';
+import testingDB from 'api/utils/testing_db.js';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';

@@ -3,9 +3,10 @@ import { ValidationError } from 'ajv';
 import { ZodError } from 'zod';
 import { Request, Response } from 'express';
 
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { tenants } from '../tenants.js';
-import { User } from '../users/usersModel.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+import { tenants } from 'api/tenants/index.js';
+import { User } from 'api/users/usersModel.js';
 
 export type Dependencies<RequestBody = any> = {
   response: Response;

@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { Row } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Table } from '../../../../Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus, Template } from '../../apiResponseTypes.js';
 import { columnsThesauri } from './TableComponents.js';
 
@@ -20,6 +22,7 @@ interface ThesauriTableProps {
 const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTableProps) => {
   const navigate = useNavigate();
   const navigateToEditThesaurus = async (thesaurus: Row<ThesauriRow>) => {
+    // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ThesauriRow... Remove this comment to see the full error message
     await navigate(`./edit/${thesaurus.original._id}`);
   };
 

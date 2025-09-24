@@ -5,8 +5,8 @@ import { legacyLogger } from '../log/index.js';
 import { spawn } from 'child-process-promise';
 import EventEmitter from 'events';
 import path from 'path';
-import { detectLanguage } from '../../shared/detectLanguage.js';
-import { FileType } from '../../shared/types/fileType.js';
+import { detectLanguage } from 'shared/detectLanguage.js';
+import { FileType } from 'shared/types/fileType.js';
 import { storage } from './storage.js';
 
 class PDF extends EventEmitter {

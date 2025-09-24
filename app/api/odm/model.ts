@@ -1,4 +1,4 @@
-import { SyncDBDataSource } from '../common.v2/database/SyncDBDataSource.js';
+import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource.js';
 import { legacyLogger } from '../log/index.js';
 import { ObjectId, UpdateOptions } from 'mongodb';
 import mongoose, {
@@ -8,7 +8,7 @@ import mongoose, {
   Schema,
   UpdateQuery,
 } from 'mongoose';
-import { ObjectIdSchema } from '../../shared/types/commonTypes.js';
+import { ObjectIdSchema } from 'shared/types/commonTypes.js';
 import { inspect } from 'util';
 import { MongooseModelWrapper } from './MongooseModelWrapper';
 import { UpdateLogger, createUpdateLogHelper } from './logHelper';
@@ -102,6 +102,7 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
         throw Error('The document was not updated!');
       }
 
+      // @ts-expect-error TS(2345): Argument of type 'IfAny<DataType<T>, any, Document... Remove this comment to see the full error message
       await this.logHelper.upsertLogOne(saved);
       return saved.toObject<WithId<T>>();
     }
@@ -114,6 +115,7 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
 
   async create(data: Partial<DataType<T>>) {
     const saved = await this.db.create([data]);
+    // @ts-expect-error TS(2345): Argument of type 'IfAny<DataType<T>, any, Document... Remove this comment to see the full error message
     await this.logHelper.upsertLogOne(saved[0]);
     return saved[0].toObject<WithId<T>>();
   }
@@ -135,6 +137,7 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
     }
 
     const saved = created.concat(updated);
+    // @ts-expect-error TS(2345): Argument of type 'IfAny<DataType<T>, any, Document... Remove this comment to see the full error message
     await Promise.all(saved.map(async s => this.logHelper.upsertLogOne(s)));
     return saved.map(s => s.toObject<WithId<T>>());
   }

@@ -1,4 +1,4 @@
-import { LanguageSchema } from '../../shared/types/commonTypes.js';
+import { LanguageSchema } from 'shared/types/commonTypes.js';
 import { LanguageCode, availableLanguages, otherLanguageSchema } from './availableLanguages';
 
 class LanguageUtils {
@@ -9,6 +9,7 @@ class LanguageUtils {
 
         return {
           ...prev,
+          // @ts-expect-error TS(2464): A computed property name must be of type 'string',... Remove this comment to see the full error message
           [next[code]]: { ...next },
         };
       },

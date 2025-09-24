@@ -1,6 +1,9 @@
-import { PUBLIC_PERMISSION } from '../../api/permissions/publicPermission.js';
-import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
-import { AccessLevels, MixedAccess } from '../../shared/types/permissionSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../api/permissions/publicPe... Remove this comment to see the full error message
+import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema.js';
 
 export const data: MemberWithPermission[] = [
   {

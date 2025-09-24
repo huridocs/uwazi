@@ -2,10 +2,14 @@ import React, { Component } from 'react';
 import { withContext } from '../../componentWrappers.js';
 import { advancedSort } from '../../utils/advancedSort.js';
 import { Translate } from '../../I18N/index.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 import UploadButton from '../../Metadata/components/UploadButton.js';
-import { LanguageUtils } from '../../shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language/index.js... Remove this comment to see the full error message
+import { LanguageUtils } from 'shared/language/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
 import { NeedAuthorization } from '../../Auth.js';
 import { ConnectedFile as File } from './File';
 import './scss/filelist.scss';

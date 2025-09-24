@@ -3,6 +3,7 @@ import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from '../../../../Components/UI/index.js';
 import { StarIcon } from '@heroicons/react/20/solid';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, I18NLinkV2 as I18NLink } from '../../I18N/index.js';
 import { Tooltip } from 'flowbite-react';
 import { TemplateRow } from '../types.js';

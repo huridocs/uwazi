@@ -3,9 +3,11 @@ import { Translate } from '../../I18N/index.js';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
 import { wrapDispatch } from '../../Multireducer.js';
 
 import { Icon } from 'UI';
+// @ts-expect-error TS(2307): Cannot find module '../../Auth.js' or its correspo... Remove this comment to see the full error message
 import { NeedAuthorization } from '../../Auth.js';
 import { SortDropdown } from '../../Library/components/SortDropdown.js';
 import LibraryModeToggleButtons from '../../Library/components/LibraryModeToggleButtons.js';
@@ -16,7 +18,8 @@ import {
 } from '../../Library/actions/libraryActions.js';
 import { showFilters as showFiltersAction } from '../../Entities/actions/uiActions.js';
 import { IStore } from '../../istore.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 interface LibraryHeaderOwnProps {

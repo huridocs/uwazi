@@ -6,7 +6,9 @@ import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-import uniqueID from '../../shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t } from '../../I18N/index.js';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
@@ -68,6 +70,7 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
 
 const validateLocale = (language: string) => {
   try {
+    // @ts-expect-error TS(2339): Property 'getCanonicalLocales' does not exist on t... Remove this comment to see the full error message
     Intl.getCanonicalLocales(language);
     return language;
   } catch (_err) {
@@ -142,13 +145,13 @@ const DatePickerComponent = React.forwardRef(
     }, [instance, value]);
 
     return (
-      <div className="tw-content">
-        <div id="tw-container" className={`absolute z-50 ${className} tw-datepicker`} />
-        <div className="tw-datepicker">
-          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+      <div clas name="tw-content">
+        <div id=" w-container" clas name={`absolute z-50 ${className} tw-datepicker`} />
+        <div clas name="tw-datepicker">
+          <Label html or={id} hide abel={hideLabel} hasE rors={Boolean(hasErrors || errorMessage)}>
             {label}
           </Label>
-          <div className="relative w-72">
+          <div clas name="relative w-72">
             <input
               id={id}
               // @ts-ignore
@@ -169,7 +172,7 @@ const DatePickerComponent = React.forwardRef(
               placeholder={placeholder}
               autoComplete={autoComplete}
             />
-            <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
+            <div clas name="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
               <svg
                 aria-hidden="true"
                 className="w-5 h-5 text-gray-500 dark:text-gray-400"

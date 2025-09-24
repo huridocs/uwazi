@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
 import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
-import { GeolocationSchema } from '../../shared/types/commonTypes.js';
-import uniqueID from '../../shared/uniqueID.js';
+import { GeolocationSchema } from 'shared/types/commonTypes.js';
+import uniqueID from 'shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { deletedEntityAtom } from '../V2/atoms/index.js';
@@ -50,7 +50,8 @@ const LMap = ({
   const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = uniqueID();
 
-  const clickHandler = (markerPoint) => {
+  // @ts-expect-error TS(7006): Parameter 'markerPoint' implicitly has an 'any' ty... Remove this comment to see the full error message
+  const clickHandler = markerPoint => {
     if (!map.dragging.enabled()) {
       map.dragging.enable();
       return;
@@ -67,16 +68,16 @@ const LMap = ({
   const initMarkers = () => {
     const markers = pointMarkers
       .map(pointMarker => parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo))
-      .filter((marker) => {
+      .filter(marker => {
         const entityId = marker.properties.entity?.sharedId;
         return entityId !== deletedEntity;
       });
 
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
-    markerGroup.on('clusterclick', (cluster) => {
+    markerGroup.on('clusterclick', cluster => {
       props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
     });
-    markerGroup.on('click', (marker) => {
+    markerGroup.on('click', marker => {
       props.clickOnMarker?.(marker.layer);
     });
     if (pointMarkers.length) {
@@ -104,7 +105,7 @@ const LMap = ({
   const initMap = () => {
     const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
     const mapLayers: { [k: string]: L.TileLayer } = {};
-    Object.keys(baseMaps).forEach((key) => {
+    Object.keys(baseMaps).forEach(key => {
       const mapKey = baseMaps[key].key;
       if (layers && layers.length && !layers.includes(mapKey as Layer)) {
         return;

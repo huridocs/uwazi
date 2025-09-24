@@ -2,9 +2,11 @@
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Sidepanel } from '../../../../Components/UI/Sidepanel.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
 import { Button } from '../../../../Components/UI/Button.js';
-import { PropertyTypeSchema } from '../../shared/types/commonTypes.js';
+
+import { PropertyTypeSchema } from 'shared/types/commonTypes.js';
 import { ClientTemplateSchema, ClientProperty } from '../../../../shared/types.js';
 import { propertyIcons } from '../../../../Components/UI/Icons.js';
 import { useAtomValue } from 'jotai';
@@ -81,20 +83,20 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   const form = useForm<ClientProperty>({
     defaultValues: propertyToEdit
       ? {
-          type: propertyToEdit.type,
-          label: propertyToEdit.label || '',
-          noLabel: propertyToEdit.noLabel || false,
-          required: propertyToEdit.required || false,
-          showInCard: propertyToEdit.showInCard || false,
-          filter: propertyToEdit.filter || false,
-          defaultfilter: propertyToEdit.defaultfilter || false,
-          prioritySorting: propertyToEdit.prioritySorting || false,
-          style: propertyToEdit.style || '',
-          content: propertyToEdit.content || '',
-          relationType: propertyToEdit.relationType || '',
-          inherit: propertyToEdit.inherit,
-          generatedId: propertyToEdit.generatedId || false,
-        }
+        type: propertyToEdit.type,
+        label: propertyToEdit.label || '',
+        noLabel: propertyToEdit.noLabel || false,
+        required: propertyToEdit.required || false,
+        showInCard: propertyToEdit.showInCard || false,
+        filter: propertyToEdit.filter || false,
+        defaultfilter: propertyToEdit.defaultfilter || false,
+        prioritySorting: propertyToEdit.prioritySorting || false,
+        style: propertyToEdit.style || '',
+        content: propertyToEdit.content || '',
+        relationType: propertyToEdit.relationType || '',
+        inherit: propertyToEdit.inherit,
+        generatedId: propertyToEdit.generatedId || false,
+      }
       : { ...emptyProperty },
   });
 

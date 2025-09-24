@@ -1,8 +1,12 @@
 /* eslint-disable max-statements */
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
 import { StandardLogger } from '../log.v2/infrastructure/StandardLogger.js';
-import { getIdMapper } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import testingDB from '../utils/testing_db.js';
+
+import { getIdMapper } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import { MongoClient, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
 import { MongoTransactionManager } from '../MongoTransactionManager';

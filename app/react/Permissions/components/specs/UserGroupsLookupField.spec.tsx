@@ -3,8 +3,10 @@
  */
 import { mount, shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
-import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+import { MemberWithPermission } from 'shared/types/entityPermisions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 
 describe('UserGroupsLookupField', () => {
@@ -112,7 +114,7 @@ describe('UserGroupsLookupField', () => {
   describe('keyboard use', () => {
     let component: ShallowWrapper;
 
-    const getEvent = (key: string) => ({ preventDefault: () => {}, key });
+    const getEvent = (key: string) => ({ preventDefault: () => { }, key });
 
     beforeEach(() => {
       component = shallow(

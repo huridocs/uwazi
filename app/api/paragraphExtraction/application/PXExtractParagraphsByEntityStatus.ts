@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
 import { EntityStatus } from '../domain/PXEntityStatusModel';
 
@@ -28,6 +29,7 @@ class PXExtractParagraphsByEntityStatus implements UseCase<Input, Output> {
     await this.dependencies.extractParagraphsFromEntities.execute({
       userId,
       extractorId,
+      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       entitySharedIds: entitiesStatus.map(e => e.entitySharedId),
     });
   }

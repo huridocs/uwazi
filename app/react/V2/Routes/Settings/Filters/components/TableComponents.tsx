@@ -2,6 +2,7 @@
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Button } from '../../../../Components/UI/index.js';
 import { sidepanelAtom } from './sidepanelAtom.js';

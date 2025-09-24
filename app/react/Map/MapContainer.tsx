@@ -2,9 +2,13 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { IStore } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Map/index.js' or its cor... Remove this comment to see the full error message
 import { LMap } from '../../Map/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Map/MapHelper.js' or its... Remove this comment to see the full error message
 import { DataMarker, MarkerInput } from '../../Map/MapHelper.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/ErrorHandl... Remove this comment to see the full error message
 import { ErrorBoundary } from '../../V2/Components/ErrorHandling.js';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
@@ -55,6 +59,7 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
   }
 
   const templatesInfo = templates.reduce(
+    // @ts-expect-error TS(7006): Parameter 'info' implicitly has an 'any' type.
     (info, t) => ({
       ...info,
       ...(t

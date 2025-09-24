@@ -1,7 +1,7 @@
 import { Component, Children } from 'react';
 import PropTypes from 'prop-types';
 
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 
 class CustomProvider extends Component {
   constructor(props) {

@@ -16,6 +16,7 @@ describe('TitleProperty', () => {
       isCommonProperty: true,
     });
 
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TitlePrope... Remove this comment to see the full error message
     expect(property.name).toBe('title');
   });
 

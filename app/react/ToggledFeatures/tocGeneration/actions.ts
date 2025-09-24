@@ -2,11 +2,14 @@ import { actions } from '../../BasicReducer/reducer.js';
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from '../../utils/RequestParams.js';
 import api from '../../utils/api.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
 import { notificationActions } from '../../Notifications.js';
 import { IStore } from '../../istore.js';
 import { Dispatch } from 'redux';
-import { ensure } from '../../shared/tsUtils.js';
-import { FileType } from '../../shared/types/fileType.js';
+
+import { ensure } from 'shared/tsUtils.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
 
 const tocGenerationActions = {
   reviewToc(fileId: string) {
@@ -18,7 +21,8 @@ const tocGenerationActions = {
       const doc = {
         ...currentDoc,
         defaultDoc: updatedFile,
-        documents: ensure<FileType[]>(currentDoc.documents).map((d) => {
+        // @ts-expect-error TS(7006): Parameter 'd' implicitly has an 'any' type.
+        documents: ensure<FileType[]>(currentDoc.documents).map(d => {
           if (d._id === updatedFile._id) {
             return updatedFile;
           }

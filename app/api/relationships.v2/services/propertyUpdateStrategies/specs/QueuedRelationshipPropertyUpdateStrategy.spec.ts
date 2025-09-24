@@ -1,5 +1,8 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/configuration/fact... Remove this comment to see the full error message
 import { DefaultTestingQueueAdapter } from '../queue.v2/configuration/factories.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/infrastructure/Nam... Remove this comment to see the full error message
 import { NamespacedDispatcher } from '../queue.v2/infrastructure/NamespacedDispatcher.js';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';

@@ -6,9 +6,11 @@ import { searchParamsFromLocationSearch } from '../../utils/routeHelpers.js';
 import { useLocation, Location } from 'react-router';
 import { Icon } from 'UI';
 import { I18NLink, t } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Multireducer.js' or its ... Remove this comment to see the full error message
 import { wrapDispatch } from '../../Multireducer.js';
 import { IStore } from '../../istore.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '../../utils/useOnClickOutsideElementHook.js';
 import { encodeSearch } from '../actions/libraryActions';
 
@@ -114,7 +116,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
         <button
           type="button"
           disabled={currentQuery.sort === '_score' ? true : undefined}
-          onClick={() => {}}
+          onClick={() => { }}
           className="sorting-toggle"
         >
           <span style={{ display: 'none' }}>

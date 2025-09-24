@@ -1,12 +1,21 @@
+// @ts-expect-error TS(2307): Cannot find module '../log.js' or its correspondin... Remove this comment to see the full error message
 import { legacyLogger } from '../log.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
 import { elasticTesting } from '../utils/elastic_testing.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingUserInContext.... Remove this comment to see the full error message
 import { UserInContextMockFactory } from '../utils/testingUserInContext.js';
-import db from '../utils/testing_db.js';
-import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
-import { UserRole } from '../../shared/types/userSchema.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { FileType } from '../../shared/types/fileType.js';
+
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
 import { elastic } from '../elastic';
 import { reindexAll, updateMapping } from '../entitiesIndex';
 import { search } from '../search';

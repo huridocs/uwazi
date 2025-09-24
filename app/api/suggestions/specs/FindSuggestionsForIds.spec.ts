@@ -1,13 +1,22 @@
 /* eslint-disable max-statements */
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DBFixture } from '../utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
-import { ModelStatus } from '../../shared/types/IXModelSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/IXModelSche... Remove this comment to see the full error message
+import { ModelStatus } from 'shared/types/IXModelSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import { InformationExtraction } from '../services/informationextraction/InformationExtraction.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import { ModelNotReadyError } from '../services/informationextraction/ixextractors.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/specs... Remove this comment to see the full error message
 import { ExternalDummyService } from '../services/tasksmanager/specs/ExternalDummyService.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
 import { testingTenants } from '../utils/testingTenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import ixmodels from '../services/informationextraction/ixmodels.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds';
 
@@ -193,10 +202,12 @@ describe('FindSuggestionsForIds', () => {
       const sentMaterials = IXExternalService.materials;
 
       // Should contain data for entity1 and entity2 only (with language suffix)
+      // @ts-expect-error TS(7006): Parameter 'material' implicitly has an 'any' type.
       const sentEntityNames = sentMaterials.map(material => material.entity_name);
       expect(sentEntityNames).toEqual(expect.arrayContaining(['entity1___en', 'entity2___en']));
 
       // Extract the base entity IDs (without language suffix)
+      // @ts-expect-error TS(7006): Parameter 'name' implicitly has an 'any' type.
       const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
       expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2']));
 
@@ -206,7 +217,9 @@ describe('FindSuggestionsForIds', () => {
       expect(sentEntityIds).not.toContain('entity5');
 
       // Should contain the actual text content for the specified entities
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       const entity1Material = sentMaterials.find(m => m.entity_name === 'entity1___en');
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       const entity2Material = sentMaterials.find(m => m.entity_name === 'entity2___en');
 
       expect(entity1Material).toBeDefined();
@@ -274,7 +287,9 @@ describe('FindSuggestionsForIds', () => {
       });
 
       // Materials should have been sent for entity1, entity2, entity3 (no duplicates)
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       const sentEntityNames = IXExternalService.materials.map(m => m.entity_name);
+      // @ts-expect-error TS(7006): Parameter 'name' implicitly has an 'any' type.
       const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
 
       expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2', 'entity3']));

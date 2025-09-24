@@ -1,4 +1,4 @@
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 
 let Mark;
 if (isClient) {

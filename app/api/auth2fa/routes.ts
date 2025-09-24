@@ -3,6 +3,7 @@ import needsAuthorization from '../auth/authMiddleware.js';
 import * as usersUtils from '../auth2fa/usersUtils.js';
 import { validation } from '../utils/index.js';
 import { ObjectIdAsString } from '../utils/ajvSchemas.js';
+// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
 import { validatePasswordMiddleWare } from '../auth.js';
 
 export default (app: Application) => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { InputField } from '../../../../../Components/Forms/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { ClientTemplateSchema } from '../../../../../shared/types.js';
 import { PropertyRow } from '../../types.js';
@@ -38,6 +39,7 @@ export const LabelField = ({
         required: (value: string) => Boolean(value) || 'This field is required',
         duplicateLabel: (value: string) => {
           const duplicateProperty = template.properties?.find(
+            // @ts-expect-error TS(7006): Parameter 'p' implicitly has an 'any' type.
             p =>
               p.label?.toLowerCase().trim() === value.toLowerCase().trim() &&
               (!propertyToEdit || p._id !== propertyToEdit._id)

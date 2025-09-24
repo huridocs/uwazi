@@ -1,13 +1,20 @@
 /* eslint-disable max-lines,max-statements */
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import { ErrorObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
-import db from '../utils/testing_db.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
 import templates from '../templates.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
+// @ts-expect-error TS(2307): Cannot find module '../search/entitiesIndex.js' or... Remove this comment to see the full error message
 import * as entitiesIndex from '../search/entitiesIndex.js';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 

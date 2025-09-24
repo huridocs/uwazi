@@ -1,4 +1,5 @@
 import { ValidationError as AJVValidationError } from 'ajv';
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/error/Validatio... Remove this comment to see the full error message
 import { ValidationError } from '../core/domain/error/ValidationError.js';
 
 interface UseCase<Input, Output> {

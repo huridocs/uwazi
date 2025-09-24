@@ -3,11 +3,14 @@ import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/routeHelpers.js' o... Remove this comment to see the full error message
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientSettings } from '../../apiResponseTypes.js';
-import * as activityLogAPI from '../../../api/activityLog/index.js';
-import type { ActivityLogResponse } from '../../../api/activityLog/index.js';
-import { ActivityLogEntryType } from '../../shared/types/activityLogEntryType.js';
+import * as activityLogAPI from 'api/activityLog/index.js';
+import type { ActivityLogResponse } from 'api/activityLog/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/activityLog... Remove this comment to see the full error message
+import { ActivityLogEntryType } from 'shared/types/activityLogEntryType.js';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -136,7 +139,7 @@ const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
   } else if (value.length > 0) {
     prev.set(key, value[0]);
     value.splice(0, 1);
-    value.forEach((item) => {
+    value.forEach(item => {
       prev.append(key, item);
     });
   }

@@ -1,7 +1,9 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Pill } from '../../V2/Components/UI.js';
-import { TablePXEntityParagraphRow } from '../../shared/V2/shared/ParagraphExtractionTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/V2/shared/Paragra... Remove this comment to see the full error message
+import { TablePXEntityParagraphRow } from 'shared/V2/shared/ParagraphExtractionTypes.js';
 
 const LanguagesCell = ({
   cell,

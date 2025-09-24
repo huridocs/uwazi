@@ -1,6 +1,7 @@
 import util from 'util';
 import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
+// @ts-expect-error TS(2307): Cannot find module '../istore.js' or its correspon... Remove this comment to see the full error message
 import { ClientBlobFile } from '../istore.js';
 
 export type Subset<K, T extends K> = T;
@@ -18,7 +19,8 @@ export function ensure<T>(argument: T | undefined | null | any, message?: string
 }
 
 export function wrapValidator(validator: any) {
-  return async (value) => {
+  // @ts-expect-error TS(7006): Parameter 'value' implicitly has an 'any' type.
+  return async value => {
     try {
       return validator(value);
     } catch (error) {
@@ -34,7 +36,8 @@ export function wrapValidator(validator: any) {
 }
 
 export function syncWrapValidator(validator: any) {
-  return (value) => {
+  // @ts-expect-error TS(7006): Parameter 'value' implicitly has an 'any' type.
+  return value => {
     const valid = validator(value);
 
     if (!valid) {
@@ -54,7 +57,7 @@ export function syncWrapValidator(validator: any) {
 }
 
 export async function sleep(ms: number) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
 }

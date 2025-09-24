@@ -22,6 +22,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';

@@ -3,7 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Location, useLocation } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import { LanguagesListSchema } from '../../shared/types/commonTypes.js';
+
+import { LanguagesListSchema } from 'shared/types/commonTypes.js';
 import { Translate, t } from '../../I18N/index.js';
 import { useOnClickOutsideElement } from '../../utils/useOnClickOutsideElementHook.js';
 import { NeedAuthorization } from '../../V2/Components/UI/index.js';
@@ -16,6 +17,7 @@ const locationSearch = (location: Location) => {
 
 const prepareValues = (locale: string, location: Location, languages?: LanguagesListSchema) => {
   const selectedLanguage =
+    // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
     languages?.find(lang => lang.key === locale) || languages?.find(lang => lang.default);
 
   const urlLocation = { ...location };
@@ -113,10 +115,9 @@ const I18NMenu = () => {
           </button>
 
           <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
-            {languageList?.map((language) => {
-              const url = `/${language.key}${path}${
-                path.match('document') ? '' : urlLocation.search
-              }`;
+            {languageList?.map(language => {
+              const url = `/${language.key}${path}${path.match('document') ? '' : urlLocation.search
+                }`;
 
               return (
                 <li

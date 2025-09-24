@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/contracts/Logger.js'... Remove this comment to see the full error message
 import { Logger } from '../log.v2/contracts/Logger.js';
 import { performance } from 'perf_hooks';
 import { inspect } from 'util';

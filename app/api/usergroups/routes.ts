@@ -1,4 +1,5 @@
 import { Application, NextFunction, Request, Response } from 'express';
+// @ts-expect-error TS(2307): Cannot find module '../auth.js' or its correspondi... Remove this comment to see the full error message
 import { needsAuthorization } from '../auth.js';
 import { parseQuery, validation } from '../utils/index.js';
 import userGroups from './userGroups';

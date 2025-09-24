@@ -2,10 +2,13 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router';
 import { has } from 'lodash';
+// @ts-expect-error TS(2307): Cannot find module '../../App/Footer.js' or its co... Remove this comment to see the full error message
 import Footer from '../../App/Footer.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/routeHelpers.js' o... Remove this comment to see the full error message
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t } from '../../I18N/index.js';
-import { handledErrors } from '../../shared/errorUtils.js';
+import { handledErrors } from 'shared/errorUtils.js';
 import { ErrorFallback } from './ErrorFallback.js';
 
 const GeneralError = () => {

@@ -9,7 +9,7 @@ import { actions } from '../../Metadata.js';
 import { deleteDocument, searchSnippets } from '../../Library/actions/libraryActions.js';
 import { deleteEntity } from '../../Entities/actions/actions.js';
 import { wrapDispatch } from '../../Multireducer.js';
-import { entityDefaultDocument } from '../../shared/entityDefaultDocument.js';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
 import modals from '../../Modals.js';
 
 import * as connectionsActions from '../../ConnectionsList/actions/actions.js';

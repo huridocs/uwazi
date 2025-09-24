@@ -1,9 +1,15 @@
 import { ObjectId } from 'mongodb';
+// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/informationextract... Remove this comment to see the full error message
 import ixmodels from '../services/informationextraction/ixmodels.js';
+// @ts-expect-error TS(2307): Cannot find module '../suggestions/suggestions.js'... Remove this comment to see the full error message
 import { Suggestions } from '../suggestions/suggestions.js';
+
 import { DataType, UwaziFilterQuery } from '../odm/index.js';
-import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+import { IXSuggestionType } from 'shared/types/suggestionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/Stand... Remove this comment to see the full error message
 import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
 import { updateStates } from '../updateState.js';
 
@@ -73,6 +79,7 @@ export class AcceptSuggestionsUseCase {
       '_id entityId entityLanguageId state modelData',
       { skip: alreadyProcessed, limit: batchSize, sort: { _id: 1 } } as any
     );
+    // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
     const toAccept = suggestions.map(s => ({
       _id: s._id,
       sharedId: s.entityId,
@@ -89,6 +96,7 @@ export class AcceptSuggestionsUseCase {
 
     await Suggestions.accept(toAccept as any);
     // Recompute states so accepted ones stop matching subsequent iterations
+    // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
     const acceptedIds = toAccept.map(a => a._id);
     try {
       const acceptedQuery = { _id: { $in: acceptedIds } };

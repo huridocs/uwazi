@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { Button } from '../../../../Components/UI/Button.js';
 import { CellContext } from '@tanstack/react-table';

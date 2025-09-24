@@ -1,4 +1,4 @@
-import { SearchQuery } from '../../shared/types/SearchQueryType.js';
+import { SearchQuery } from 'shared/types/SearchQueryType.js';
 import { permissionsContext } from '../permissions/permissionsContext.js';
 
 import { cleanUp } from './queryHelpers';

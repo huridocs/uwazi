@@ -8,7 +8,9 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
 import { testingTenants } from '../utils/testingTenants.js';
 // eslint-disable-next-line node/no-restricted-import
 import { rmdir } from 'fs/promises';

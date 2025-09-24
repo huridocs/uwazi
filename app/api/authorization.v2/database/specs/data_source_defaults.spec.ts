@@ -1,4 +1,5 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { DefaultPermissionsDataSource } from '../data_source_defaults';
 import { MongoPermissionsDataSource } from '../MongoPermissionsDataSource';
 

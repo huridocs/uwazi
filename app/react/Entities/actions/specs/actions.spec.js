@@ -19,7 +19,7 @@ describe('Entities actions', () => {
   });
 
   describe('saveEntity', () => {
-    it('should dispatch a saving entity and save the data', (done) => {
+    it('should dispatch a saving entity and save the data', done => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
         type: 'reloadRelationships',
       });
@@ -65,7 +65,7 @@ describe('Entities actions', () => {
   });
 
   describe('deleteEntity', () => {
-    it('should delete the entity and notify', (done) => {
+    it('should delete the entity and notify', done => {
       const entity = { sharedId: 'sharedId' };
       actions
         .deleteEntity(entity)(dispatch)

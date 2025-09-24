@@ -1,17 +1,25 @@
 import { ObjectId } from 'mongodb';
 
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
 import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
-import { Property, PropertyTypes } from '../templates.v2/model/Property.js';
-import { RelationshipProperty } from '../templates.v2/model/RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+import { Property, PropertyTypes } from 'api/templates.v2/model/Property.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Relation... Remove this comment to see the full error message
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/database/s... Remove this comment to see the full error message
 import { RelationshipDBOType } from '../relationships.v2/database/schemas/relationshipTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Matc... Remove this comment to see the full error message
 import { MatchQueryNode } from '../relationships.v2/model/MatchQueryNode.js';
 import {
   EntityPointer,
   ReadableEntityPointer,
   ReadableRelationship,
   Relationship,
+  // @ts-expect-error TS(2307): Cannot find module '../relationships.v2/model/Rela... Remove this comment to see the full error message
 } from '../relationships.v2/model/Relationship.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/model/Enti... Remove this comment to see the full error message
 import { EntityPermissions, Entry } from '../authorization.v2/model/EntityPermissions.js';
 
 type idMapperFunction = (id: string) => ObjectId;

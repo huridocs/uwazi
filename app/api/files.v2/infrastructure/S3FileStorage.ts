@@ -1,6 +1,8 @@
 import { Readable } from 'stream';
 import { _Object, GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+// @ts-expect-error TS(2307): Cannot find module '../config.js' or its correspon... Remove this comment to see the full error message
 import { config } from '../config.js';
+// @ts-expect-error TS(2307): Cannot find module '../tenants/tenantContext.js' o... Remove this comment to see the full error message
 import { Tenant } from '../tenants/tenantContext.js';
 import path from 'path';
 import { FileStorage, GetFileInput } from '../contracts/FileStorage.js';

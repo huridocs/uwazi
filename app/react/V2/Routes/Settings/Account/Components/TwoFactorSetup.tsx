@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/api.js' or its cor... Remove this comment to see the full error message
 import api from '../../utils/api.js';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
 
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { notificationAtom } from '../../V2/atoms.js';
 
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, Card, CopyValueInput, Sidepanel } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import loadable from '@loadable/component';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { InputField } from '../../V2/Components/Forms.js';
 
 const QRCodeSVG = loadable(
@@ -138,6 +144,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
               id="authenticator-secret"
             />
             <InputField
+              // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
               onChange={e => tokenChange(e.target.value)}
               id="authenticator-token"
               label={

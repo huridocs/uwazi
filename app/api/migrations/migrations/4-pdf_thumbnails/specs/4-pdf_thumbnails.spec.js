@@ -4,7 +4,7 @@ import { promisify } from 'util';
 
 import { legacyLogger } from '../log.js';
 import { config } from '../config.js';
-import testingDB from '../utils/testing_db.js';
+import testingDB from 'api/utils/testing_db.js';
 import migration from '../index.js';
 import fixtures, { docId1, docId4 } from './fixtures.js';
 
@@ -18,7 +18,7 @@ describe('migration pdf_thumbnails', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -30,7 +30,7 @@ describe('migration pdf_thumbnails', () => {
     const thumbnail1 = `${__dirname}/${docId1}.jpg`;
     const thumbnail2 = `${__dirname}/${docId4}.jpg`;
 
-    const deleteThumbnails = (done) => {
+    const deleteThumbnails = done => {
       try {
         fs.unlinkSync(thumbnail1);
         fs.unlinkSync(thumbnail2);
@@ -40,11 +40,11 @@ describe('migration pdf_thumbnails', () => {
       }
     };
 
-    beforeEach((done) => {
+    beforeEach(done => {
       deleteThumbnails(done);
     });
 
-    afterEach((done) => {
+    afterEach(done => {
       deleteThumbnails(done);
     });
 

@@ -1,8 +1,14 @@
-import { TemplatesDataSource } from '../templates.v2/contracts/TemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/contracts/Temp... Remove this comment to see the full error message
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/IdGener... Remove this comment to see the full error message
 import { IdGenerator } from '../common.v2/contracts/IdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationtypes.js' or its co... Remove this comment to see the full error message
 import relationshipTypeDS from '../relationtypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/Transac... Remove this comment to see the full error message
 import { TransactionManager } from '../common.v2/contracts/TransactionManager.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/UseCase... Remove this comment to see the full error message
 import { UseCase } from '../common.v2/contracts/UseCase.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob';
 

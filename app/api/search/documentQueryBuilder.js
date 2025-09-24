@@ -2,8 +2,8 @@
 
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
 import { permissionsContext } from '../permissions/permissionsContext.js';
-import { preloadOptionsSearch } from '../../shared/config.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+import { preloadOptionsSearch } from 'shared/config.js';
+import { UserRole } from 'shared/types/userSchema.js';
 import {
   generatedTocAggregations,
   permissionsLevelAgreggations,

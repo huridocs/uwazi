@@ -1,10 +1,16 @@
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Document.js'... Remove this comment to see the full error message
 import { Document } from '../files.v2/model/Document.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Segmentation... Remove this comment to see the full error message
 import { Segmentation } from '../files.v2/model/Segmentation.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { PXExtractionKey } from '../paragraphExtraction/domain/PXExtractionKey.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { PXExtractor } from '../paragraphExtraction/domain/PXExtractor.js';
-import { Property } from '../templates.v2/model/Property.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+import { Property } from 'api/templates.v2/model/Property.js';
 import { ObjectId } from 'mongodb';
 
+// @ts-expect-error TS(2307): Cannot find module '../core/domain/template/specs/... Remove this comment to see the full error message
 import { TemplateBuilder } from '../core/domain/template/specs/TemplateBuilder.js';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 

@@ -2,21 +2,32 @@ import 'isomorphic-fetch';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
+// @ts-expect-error TS(2307): Cannot find module '../csv/csvLoader.js' or its co... Remove this comment to see the full error message
 import * as csvApi from '../csv/csvLoader.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
 import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n/routes.js' or its corr... Remove this comment to see the full error message
 import i18nRoutes from '../i18n/routes.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.js' or its corresp... Remove this comment to see the full error message
 import settings from '../settings.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingRoutes.js' or ... Remove this comment to see the full error message
 import { TestEmitSources, iosocket, setUpApp } from '../utils/testingRoutes.js';
-import { availableLanguages } from '../../shared/language.js';
-import { LanguageSchema } from '../../shared/types/commonTypes.js';
-import { UserRole } from '../../shared/types/userSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/language.js' or i... Remove this comment to see the full error message
+import { availableLanguages } from 'shared/language.js';
+
+import { LanguageSchema } from 'shared/types/commonTypes.js';
+
+import { UserRole } from 'shared/types/userSchema.js';
 import { DefaultTranslations } from '../defaultTranslations';
 import { sortByLocale } from './sortByLocale';
 
 describe('i18n translations routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+  // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
     req.user = {
       username: 'admin',
@@ -124,6 +135,7 @@ describe('i18n translations routes', () => {
       });
 
       it('should only return the requested context', async () => {
+        // @ts-expect-error TS(7006): Parameter 'req' implicitly has an 'any' type.
         const appWithQuery = setUpApp(i18nRoutes, (req, _res, next) => {
           req.user = {
             username: 'admin',

@@ -3,12 +3,16 @@ import { actions as formActions } from 'react-redux-form';
 import { actions } from '../../BasicReducer/index.js';
 import EntitiesAPI from '../../Entities/EntitiesAPI.js';
 import { IStore, QuickLabelState, QuickLabelMetadata } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
 import { notificationActions } from '../../Notifications.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { t } from '../../I18N/index.js';
-import { getThesaurusPropertyNames } from '../../shared/commonTopicClassification.js';
-import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/commonTopicClassi... Remove this comment to see the full error message
+import { getThesaurusPropertyNames } from 'shared/commonTopicClassification.js';
+
+import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 import { updateEntities } from './libraryActions';
 
 function toggleQuickLabelAutoSave() {
@@ -36,6 +40,7 @@ function buildQuickLabelMetadata(docs: EntitySchema[], propNames: string[]): Qui
       if (!counts[p]) {
         counts[p] = {};
       }
+      // @ts-expect-error TS(7006): Parameter 'mo' implicitly has an 'any' type.
       d.metadata[p]!.forEach(mo => {
         if (!mo.value) {
           return;
@@ -72,10 +77,12 @@ function selectedDocumentsChanged() {
     dispatch(formActions.reset(model));
     const sharedIds = state.library.ui
       .get('selectedDocuments')
+      // @ts-expect-error TS(7006): Parameter 'd' implicitly has an 'any' type.
       .map(d => d!.get('sharedId'))
       .toJS();
     const docs: EntitySchema[] = state.library.documents
       .get('rows')
+      // @ts-expect-error TS(7006): Parameter 'd' implicitly has an 'any' type.
       .filter(d => sharedIds.includes(d!.get('sharedId')))
       .toJS();
     if (!docs.length) {
@@ -83,6 +90,7 @@ function selectedDocumentsChanged() {
     }
     const templateIds = docs.map(d => d.template).filter(v => v);
     const templates = state.templates
+      // @ts-expect-error TS(7006): Parameter 'template' implicitly has an 'any' type.
       .filter(template => templateIds.includes(template!.get('_id')))
       .toJS();
     const propNames = getThesaurusPropertyNames(
@@ -118,6 +126,7 @@ function maybeSaveQuickLabels(force?: boolean) {
     }
     const ids = state.library.ui
       .get('selectedDocuments')
+      // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
       .map(entity => entity!.get('sharedId'))
       .toJS();
     const updatedDocs = await EntitiesAPI.multipleUpdate(

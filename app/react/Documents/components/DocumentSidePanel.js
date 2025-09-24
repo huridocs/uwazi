@@ -22,7 +22,7 @@ import { actions } from '../../BasicReducer/index.js';
 import { Item } from '../../Layout.js';
 import * as viewerModule from '../../Viewer.js';
 import * as viewerActions from '../../Viewer/actions/actionTypes.js';
-import { entityDefaultDocument } from '../../shared/entityDefaultDocument.js';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument.js';
 import ViewDocButton from '../../Library/components/ViewDocButton.js';
 import { getDocumentReferences } from '../../Library/actions/libraryActions.js';
 import { store } from '../../store';

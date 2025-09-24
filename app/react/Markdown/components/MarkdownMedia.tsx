@@ -91,7 +91,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     setVideoPlaying(playingStatus);
   };
 
-  const timeLinks = (_timelinks) => {
+  // @ts-expect-error TS(7006): Parameter '_timelinks' implicitly has an 'any' typ... Remove this comment to see the full error message
+  const timeLinks = _timelinks => {
     const timelinks = _timelinks || {};
     return Object.keys(timelinks).map((timeKey, index) => {
       const linkIndex = index;

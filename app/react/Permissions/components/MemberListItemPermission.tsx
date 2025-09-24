@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { MemberWithPermission } from '../../shared/types/entityPermisions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityPermi... Remove this comment to see the full error message
+import { MemberWithPermission } from 'shared/types/entityPermisions.js';
 import { t } from '../../I18N/index.js';
-import { MixedAccess } from '../../shared/types/permissionSchema.js';
-import { PermissionType, AccessLevels } from '../../../shared/types/permissionSchema';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { MixedAccess } from 'shared/types/permissionSchema.js';
+import { PermissionType, AccessLevels } from 'shared/types/permissionSchema';
 
 interface MemberListItemPermissionProps {
   value: MemberWithPermission;

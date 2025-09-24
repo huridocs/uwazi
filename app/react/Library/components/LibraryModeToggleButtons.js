@@ -5,7 +5,7 @@ import { I18NLink, t } from '../../I18N/index.js';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from '../../Library/actions/libraryActions.js';
 import { createSelector } from 'reselect';
-import { isClient } from '../../api/utils/index.js';
+import { isClient } from 'api/utils/index.js';
 
 const LibraryModeToggleButtons = ({
   zoomLevel,

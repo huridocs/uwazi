@@ -28,7 +28,7 @@ const StoryComponent = ({ args }: any) => {
             startOnSelected={args.startOnSelected}
             selectedValues={args.selectedValues}
             search={searchAndFocus}
-            onSearch={async (term) => {
+            onSearch={async term => {
               const newItems = await args.onSearch(term, args.items);
               setSelectItems(newItems);
             }}

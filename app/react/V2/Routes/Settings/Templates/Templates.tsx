@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, I18NLinkV2 as I18NLink, t } from '../../I18N/index.js';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from '../../../atoms/index.js';
 import { Table } from '../../../Components/UI/Table/Table.js';
 import { Button } from '../../../Components/UI/Button.js';
-import * as templatesApi from '../../../api/templates/index.js';
+import * as templatesApi from 'api/templates/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/RequestParams.js' ... Remove this comment to see the full error message
 import { RequestParams } from '../../utils/RequestParams.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
 import { ColumnDef } from '@tanstack/react-table';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { Template } from '../../apiResponseTypes.js';
 import { columns } from './components/TemplatesTableComponents.js';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';

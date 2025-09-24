@@ -1,4 +1,4 @@
-import db from '../utils/testing_db.js';
+import db from 'api/utils/testing_db.js';
 
 const docId1 = db.id().toString();
 const docId4 = db.id().toString();

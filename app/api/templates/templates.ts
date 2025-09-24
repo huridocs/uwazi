@@ -9,36 +9,36 @@ import translations from '../i18n/translations.js';
 import { WithId } from '../odm/index.js';
 import { search } from '../search/index.js';
 import { reindexAll, updateMapping } from '../search/entitiesIndex.js';
-import settings from '../settings/settings.js';
-import { TemplateInputMappers } from '../templates.v2/services/TemplateInputMappers.js';
+import settings from 'api/settings/settings.js';
+import { TemplateInputMappers } from 'api/templates.v2/services/TemplateInputMappers.js';
 import dictionariesModel from '../thesauri/dictionariesModel.js';
 import createError from '../utils/Error.js';
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
-import { ContextType } from '../../shared/translationSchema.js';
-import { ensure } from '../../shared/tsUtils.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { validateTemplate } from '../../shared/types/templateSchema.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
+import { propertyTypes } from 'shared/propertyTypes.js';
+import { ContextType } from 'shared/translationSchema.js';
+import { ensure } from 'shared/tsUtils.js';
+import { PropertySchema } from 'shared/types/commonTypes.js';
+import { validateTemplate } from 'shared/types/templateSchema.js';
+import { TemplateSchema } from 'shared/types/templateType.js';
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
 import { tenants } from '../tenants/index.js';
 import { CreateTemplateUseCase } from '../core/application/CreateTemplate.js';
 import {
   DefaultIdGenerator,
   DefaultTransactionManager,
-} from '../common.v2/database/data_source_defaults.js';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
+} from 'api/common.v2/database/data_source_defaults.js';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
 import { MongoThesauriDataSource } from '../core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
 import { TemplateMapper } from '../core/infrastructure/mongodb/template/Mapper.js';
 import { LegacyTranslationService } from '../core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
 import { DefaultSettingsDataSource } from '../settings.v2/database/data_source_defaults.js';
-import { DefaultRelationshipTypesDataSource } from '../relationshiptypes.v2/database/data_source_defaults.js';
+import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults.js';
 import { UpdateTemplateUseCase } from '../core/application/UpdateTemplate.js';
 import {
   CreateTemplateDTOSchema,
   UpdateTemplateDTOSchema,
 } from '../core/application/TemplateDTOs.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
 import { MongoMultiLanguageEntityDataSource } from '../entities.v2/database/MongoMultiLanguageEntityDataSource.js';
 import { TemplatePostProcessEntitiesJob } from '../core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
@@ -157,7 +157,7 @@ const getRelatedThesauri = async (template: TemplateSchema, session?: ClientSess
     session,
   });
   const thesauriByKey: Record<any, TemplateSchema> = {};
-  thesauri.forEach((t) => {
+  thesauri.forEach(t => {
     thesauriByKey[t._id.toString()] = t;
   });
   return thesauriByKey;
@@ -275,7 +275,7 @@ export default {
 
     const currentTemplate = ensure<TemplateSchema>(current);
     currentTemplate.properties = currentTemplate.properties || [];
-    currentTemplate.properties.forEach((prop) => {
+    currentTemplate.properties.forEach(prop => {
       const swapingNameWithExistingProperty = (template.properties || []).find(
         p => p.name === prop.name && p._id?.toString() !== prop._id?.toString()
       );
@@ -310,6 +310,7 @@ export default {
     let denormalizationExecuted = false;
     const newRelationshipProps = currentTemplateV2
       .selectNewProperties(newTemplate)
+      // @ts-expect-error TS(2677): A type predicate's type must be assignable to its ... Remove this comment to see the full error message
       .filter((p): p is V1RelationshipProperty => p.type === 'relationship');
     if (
       (!(await v2.newRelationshipsAllowed()) && relationshipPropsWithChangedRelData.length) ||
@@ -320,6 +321,7 @@ export default {
       await denormalizeTemplateEntities(
         TemplateInputMappers.toApp(template),
         language,
+        // @ts-expect-error TS(2769): No overload matches this call.
         relationshipPropsWithChangedRelData.concat(newRelationshipProps),
         deletedProperties,
         renamedProperties,
@@ -402,7 +404,7 @@ export default {
           }
           return false;
         })
-        .then(async (denormalizationExecuted) => {
+        .then(async denormalizationExecuted => {
           await onTemplateProcessed(
             undefined,
             !denormalizationExecuted && template.processing?.active

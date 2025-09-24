@@ -1,11 +1,17 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
 import moment from 'moment';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
 import { testingTenants } from '../utils/testingTenants.js';
+// @ts-expect-error TS(2307): Cannot find module '../services/tasksmanager/specs... Remove this comment to see the full error message
 import { ExternalDummyService } from '../services/tasksmanager/specs/ExternalDummyService.js';
+// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
 import * as setupSockets from '../socketio/setupSockets.js';
+// @ts-expect-error TS(2307): Cannot find module '../suggestions/IXSuggestionsMo... Remove this comment to see the full error message
 import { IXSuggestionsModel } from '../suggestions/IXSuggestionsModel.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/entitiesModel.js' ... Remove this comment to see the full error message
 import entitiesModel from '../entities/entitiesModel.js';
 import { InformationExtraction } from '../InformationExtraction';
 import { factory, fixtures } from './fixtures';
@@ -121,6 +127,7 @@ describe('Information Extraction: Extracting from text source', () => {
       await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
 
       expect(IXExternalService.materials.length).toBe(2);
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
         entity_name: extractionKeyOther.key,
         language_iso: extractionKeyOther.language,
@@ -130,6 +137,7 @@ describe('Information Extraction: Extracting from text source', () => {
         label_text: '1088985600',
       });
 
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       expect(IXExternalService.materials.find(m => m.source_text === 'text 2')).toEqual({
         entity_name: extractionKeyEn.key,
         language_iso: extractionKeyEn.language,
@@ -149,9 +157,11 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       const suggestion1 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyA17.key
       );
       const suggestion2 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyA18.key
       );
 
@@ -200,6 +210,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
       await informationExtraction.trainModel(extractorId);
 
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       const suggestion3 = IXExternalService.materials.find(m => m.entity_name === extraction3.key);
 
       expect(IXExternalService.materials.length).toBe(1);
@@ -228,6 +239,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
       await informationExtraction.trainModel(extractorId);
 
+      // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
       const suggestion1 = IXExternalService.materials.find(m => m.entity_name === extraction1.key);
 
       expect(IXExternalService.materials.length).toBe(1);
@@ -251,9 +263,11 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       const suggestion1 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyA21.key
       );
       const suggestion2 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyA22.key
       );
 
@@ -302,9 +316,11 @@ describe('Information Extraction: Extracting from text source', () => {
       await informationExtraction.trainModel(factory.id('extractor_target_date_source_text'));
 
       const suggestion1 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyEn.key
       );
       const suggestion2 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyOther.key
       );
 
@@ -344,9 +360,11 @@ describe('Information Extraction: Extracting from text source', () => {
       await informationExtraction.trainModel(extractorId);
 
       const suggestion1En = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKey1En.key
       );
       const suggestion1Es = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKey1Es.key
       );
 
@@ -434,18 +452,22 @@ describe('Information Extraction: Extracting from text source', () => {
       await informationExtraction.getSuggestions(extractorId);
 
       const material1 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyEn1.key
       );
 
       const material2 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyEn2.key
       );
 
       const material3 = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyEn3.key
       );
 
       const material3Es = IXExternalService.materials.find(
+        // @ts-expect-error TS(7006): Parameter 'm' implicitly has an 'any' type.
         m => m.entity_name === extractionKeyEs3.key
       );
 
@@ -585,7 +607,9 @@ describe('Information Extraction: Extracting from text source', () => {
         extractorId,
       });
 
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const suggestion1 = suggestions.find(s => s.entityId === 'A1' && s.language === 'en');
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       const suggestion2 = suggestions.find(s => s.entityId === 'A1' && s.language === 'other');
 
       expect(suggestion1).toMatchObject({
@@ -960,10 +984,12 @@ describe('Information Extraction: Extracting from text source', () => {
       });
 
       const suggestion1 = suggestions.find(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s =>
           s.entityId === extractionKeyEn.entitySharedId && s.language === extractionKeyEn.language
       );
       const suggestion2 = suggestions.find(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s =>
           s.entityId === extractionKeyEs.entitySharedId && s.language === extractionKeyEs.language
       );

@@ -1,5 +1,8 @@
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/contracts/ResultS... Remove this comment to see the full error message
 import { ResultSet } from '../common.v2/contracts/ResultSet.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/schema... Remove this comment to see the full error message
 import { EntityDBO } from '../entities.v2/database/schemas/EntityTypes.js';
 
 import { EntityStatus } from './PXEntityStatusModel';

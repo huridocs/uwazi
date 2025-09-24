@@ -1,19 +1,21 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
-import * as extractorsAPI from '../../../api/paragraphExtractor/extractors.js';
-import * as pxParagraphApi from '../../../api/paragraphExtractor/paragraphs.js';
-import * as pxEntitiesApi from '../../../api/paragraphExtractor/entities.js';
-import * as entitiesApi from '../../../api/entities/index.js';
-import * as settingsApi from '../../../api/settings/index.js';
-import * as templatesApi from '../../../api/templates/index.js';
+import * as extractorsAPI from 'api/paragraphExtractor/extractors.js';
+import * as pxParagraphApi from 'api/paragraphExtractor/paragraphs.js';
+import * as pxEntitiesApi from 'api/paragraphExtractor/entities.js';
+import * as entitiesApi from 'api/entities/index.js';
+import * as settingsApi from 'api/settings/index.js';
+import * as templatesApi from 'api/templates/index.js';
 import {
   PXEntityLoaderResponse,
   PXEntityQuery,
   PXParagraphQuery,
   PXParagraphLoaderResponse,
   TablePXEntityParagraphRow,
-} from '../../../shared/ParagraphExtractionTypes.js';
+} from 'shared/ParagraphExtractionTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/routeHelpers.js' o... Remove this comment to see the full error message
 import { searchParamsFromSearchParams } from '../../utils/routeHelpers.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema } from '../../istore.js';
 
 const PAGE_SIZE = 30;
@@ -54,6 +56,7 @@ const PXEntityLoader =
       const rows =
         pxEntityRows.rows?.map(row => ({
           ...row,
+          // @ts-expect-error TS(2339): Property '_id' does not exist on type 'ClientEntit... Remove this comment to see the full error message
           rowId: row.entity._id!.toString(),
         })) || [];
 
@@ -102,6 +105,7 @@ const PXParagraphLoader =
       totalRows: 0,
     };
 
+    // @ts-expect-error TS(7006): Parameter 'lang' implicitly has an 'any' type.
     const defaultLanguage = (await settingsApi.get(headers)).languages?.find(lang => lang.default);
 
     const extractors = await extractorsAPI.get(headers);
@@ -123,13 +127,15 @@ const PXParagraphLoader =
 
     const template = templates.find(temp => temp._id === extractor.targetTemplateId);
     const textProperty = template?.properties?.find(
+      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       property => property._id === extractor.paragraphPropertyId
     );
     const numberProperty = template?.properties?.find(
+      // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
       property => property._id === extractor.paragraphNumberPropertyId
     );
 
-    const paragraphsRows = paragraphs.rows?.map((row) => {
+    const paragraphsRows = paragraphs.rows?.map(row => {
       const [defaultLanguageEntity, ...otherLanguagesEntities] = row.entities.map(entity =>
         getPXProperties(entity, textProperty?.name || '', numberProperty?.name || '')
       );

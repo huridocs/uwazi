@@ -1,4 +1,4 @@
-import { ActivityLogGetRequestSchema } from '../../shared/types/activityLogApiSchemas.js';
+import { ActivityLogGetRequestSchema } from 'shared/types/activityLogApiSchemas.js';
 
 import { parseQuery, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';

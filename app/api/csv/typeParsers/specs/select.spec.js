@@ -1,5 +1,5 @@
 /** @format */
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 import thesauri from '../thesauri.js';
 

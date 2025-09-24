@@ -2,11 +2,14 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { ModelAction } from 'react-redux-form';
+// @ts-expect-error TS(2307): Cannot find module '../../UI.js' or its correspond... Remove this comment to see the full error message
 import { Icon } from '../../UI.js';
 import { IStore } from '../../istore.js';
 import { t, Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Notifications.js' or its... Remove this comment to see the full error message
 import { notificationActions } from '../../Notifications.js';
-import { SelectionRectanglesSchema } from '../../shared/types/commonTypes.js';
+
+import { SelectionRectanglesSchema } from 'shared/types/commonTypes.js';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
 
 type OwnPropTypes = {

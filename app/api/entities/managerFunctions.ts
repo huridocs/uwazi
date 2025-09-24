@@ -2,16 +2,19 @@ import { groupBy } from 'lodash';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { WithId } from '../odm/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.js' or its correspond... Remove this comment to see the full error message
 import { files as filesAPI, storage } from '../files.js';
 import { processDocument } from '../files/processDocument.js';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { search } from '../search.js';
 import { legacyLogger } from '../log/index.js';
 import { handleError, prettifyError } from '../utils/handleError.js';
+// @ts-expect-error TS(2307): Cannot find module '../../istore.js' or its corres... Remove this comment to see the full error message
 import { ClientEntitySchema } from '../../istore.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { MetadataObjectSchema } from '../../shared/types/commonTypes.js';
-import { EntityWithFilesSchema } from '../../shared/types/entityType.js';
-import { TypeOfFile } from '../../shared/types/fileSchema.js';
+import { FileType } from 'shared/types/fileType.js';
+import { MetadataObjectSchema } from 'shared/types/commonTypes.js';
+import { EntityWithFilesSchema } from 'shared/types/entityType.js';
+import { TypeOfFile } from 'shared/types/fileSchema.js';
 import { FileAttachment } from './entitySavingManager.js';
 
 const prepareNewFiles = async (
@@ -27,7 +30,7 @@ const prepareNewFiles = async (
 
   if (newAttachments.length) {
     await Promise.all(
-      newAttachments.map(async (file) => {
+      newAttachments.map(async file => {
         await storage.storeFile(file.filename, createReadStream(file.path), 'attachment');
         attachments.push({
           ...file,
@@ -40,7 +43,7 @@ const prepareNewFiles = async (
 
   if (newDocuments.length) {
     await Promise.all(
-      newDocuments.map(async (doc) => {
+      newDocuments.map(async doc => {
         await storage.storeFile(doc.filename, createReadStream(doc.path), 'document');
         documents.push({
           ...doc,
@@ -53,7 +56,7 @@ const prepareNewFiles = async (
 
   if (newUrls && newUrls.length) {
     await Promise.all(
-      newUrls.map(async (url) => {
+      newUrls.map(async url => {
         attachments.push({
           ...url,
           entity: updatedEntity.sharedId,
@@ -187,7 +190,7 @@ const saveFiles = async (
   const filesToSave = [...attachments, ...documentsToSave];
 
   await Promise.all(
-    filesToSave.map(async (file) => {
+    filesToSave.map(async file => {
       try {
         await filesAPI.save(file, false);
       } catch (e) {
@@ -200,9 +203,10 @@ const saveFiles = async (
   if (documentsToProcess.length) {
     const documentsBeingProcessed = Promise.allSettled(
       documentsToProcess.map(async document => processDocument(entity.sharedId!, document))
-    ).then((results) => {
+    ).then(results => {
       results
         .filter(result => result.status === 'rejected')
+        // @ts-expect-error TS(2339): Property 'reason' does not exist on type 'PromiseS... Remove this comment to see the full error message
         .map(rejected => handleError(rejected.reason));
     });
 

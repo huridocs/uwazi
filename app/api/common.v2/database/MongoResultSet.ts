@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, FindCursor } from 'mongodb';
-import { objectIndex } from '../../shared/data_utils/objectIndex.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+import { objectIndex } from 'shared/data_utils/objectIndex.js';
 import { BreakLoopSignal, ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
@@ -57,6 +58,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   async indexed(getKey: (item: U) => string | number) {
     const results = await this.all();
+    // @ts-expect-error TS(7006): Parameter 'i' implicitly has an 'any' type.
     return objectIndex(results, getKey, i => i);
   }
 

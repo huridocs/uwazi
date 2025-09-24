@@ -1,6 +1,9 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DBFixture } from '../utils/testing_db.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 import {
   Input,
   ProcessSuggestionsAfterTemplateChanged,
@@ -126,6 +129,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
     const input: Input = {
       newTemplateId: factory.id('extractor_source_text_target_text_2_template_1'),
       oldTemplateId: factory.id('extractor_source_text_target_text_1_template_1'),
+      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       entities: entity1.map(e => ({
         ...e,
         template: factory.id('template_with_none_extractor'),
@@ -139,6 +143,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
     const suggestions = await testingEnvironment.db.getAllFrom('ixsuggestions');
 
     const oldEntity1Suggestions = suggestions?.filter(
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.entityTemplate === input.oldTemplateId.toString() && s.entityId === entity1[0].sharedId
     );
 
@@ -146,6 +151,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
 
     expect(
       suggestions?.filter(
+        // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
         s => s.entityTemplate === input.oldTemplateId.toString() && s.entityId === 'entity_2'
       )
     ).toHaveLength(2);
@@ -156,6 +162,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
     const input: Input = {
       newTemplateId: factory.id('extractor_source_text_target_text_2_template_1'),
       oldTemplateId: factory.id('extractor_source_text_target_text_1_template_1'),
+      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       entities: entity1.map(e => ({
         ...e,
         template: factory.id('extractor_source_text_target_text_2_template_1'),
@@ -169,6 +176,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
     const suggestions = await testingEnvironment.db.getAllFrom('ixsuggestions');
 
     const newEntity1Suggestions = suggestions?.filter(
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.entityTemplate === input.newTemplateId.toString() && s.entityId === entity1[0].sharedId
     );
 
@@ -180,6 +188,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
     const input: Input = {
       newTemplateId: factory.id('template_with_none_extractor'),
       oldTemplateId: factory.id('extractor_source_text_target_text_1_template_1'),
+      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       entities: entity1.map(e => ({
         ...e,
         template: factory.id('template_with_none_extractor'),
@@ -193,6 +202,7 @@ describe('ProcessSuggestionsAfterTemplateChanged', () => {
     const suggestions = await testingEnvironment.db.getAllFrom('ixsuggestions');
 
     const newEntity1Suggestions = suggestions?.filter(
+      // @ts-expect-error TS(7006): Parameter 's' implicitly has an 'any' type.
       s => s.entityTemplate === input.newTemplateId.toString() && s.entityId === entity1[0].sharedId
     );
 

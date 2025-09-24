@@ -1,16 +1,29 @@
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/database/M... Remove this comment to see the full error message
 import { MongoPermissionsDataSource } from '../authorization.v2/database/MongoPermissionsDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../authorization.v2/services/A... Remove this comment to see the full error message
 import { AuthorizationService } from '../authorization.v2/services/AuthorizationService.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/MongoE... Remove this comment to see the full error message
 import { MongoEntitiesDataSource } from '../entities.v2/database/MongoEntitiesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationships.v2/database/M... Remove this comment to see the full error message
 import { MongoRelationshipsDataSource } from '../relationships.v2/database/MongoRelationshipsDataSource.js';
-import { MongoRelationshipTypesDataSource } from '../relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationshiptypes.v2/databa... Remove this comment to see the full error message
+import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/database/MongoS... Remove this comment to see the full error message
 import { MongoSettingsDataSource } from '../settings.v2/database/MongoSettingsDataSource.js';
-import { MongoTemplatesDataSource } from '../templates.v2/database/MongoTemplatesDataSource.js';
-import { User } from '../users.v2/model/User.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { DBFixture } from '../utils/testing_db.js';
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/Mongo... Remove this comment to see the full error message
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../users.v2/model/User.js' or ... Remove this comment to see the full error message
+import { User } from 'api/users.v2/model/User.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
 import { GetRelationshipService } from '../GetRelationshipService';
 
 const fixtureFactory = getFixturesFactory();

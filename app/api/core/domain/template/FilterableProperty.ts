@@ -1,4 +1,5 @@
-import { Context, Property, PropertyProps } from '../templates.v2/model/Property.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Property... Remove this comment to see the full error message
+import { Context, Property, PropertyProps } from 'api/templates.v2/model/Property.js';
 
 type Props = {
   filter?: boolean;

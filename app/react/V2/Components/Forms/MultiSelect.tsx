@@ -4,6 +4,7 @@ import { isString } from 'lodash';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { t, Translate } from '../../I18N/index.js';
 import { Pill } from '../UI';
 

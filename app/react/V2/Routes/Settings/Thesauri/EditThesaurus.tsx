@@ -5,12 +5,16 @@ import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { isEmpty } from 'lodash';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientThesaurus } from '../../apiResponseTypes.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, ConfirmNavigationModal } from '../../../Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { notificationAtom, templatesAtom } from '../../V2/atoms.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
 import {
   addGroupSubmit,
   addItemSubmit,
@@ -22,7 +26,12 @@ import {
   thesaurusAsRow,
 } from './helpers.js';
 import type { ConfirmationCallback } from './helpers.js';
-import { DeletionModal, GroupForm, ThesaurusValueForm, ThesaurusActions } from './components/index.js';
+import {
+  DeletionModal,
+  GroupForm,
+  ThesaurusValueForm,
+  ThesaurusActions,
+} from './components/index.js';
 import type { ThesaurusRow } from './components/index.js';
 import { ThesaurusForm } from './ThesaurusForm.js';
 import { ImportButton } from './components/ImportButton.js';
@@ -46,6 +55,7 @@ const EditThesaurus = () => {
   useMemo(() => {
     const currentThesaurus = thesaurus || { values: [] };
     setWarnAboutUse(
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       templates.find(t =>
         (t.properties || []).some(
           (property: PropertySchema) => property.content === currentThesaurus._id
@@ -97,8 +107,8 @@ const EditThesaurus = () => {
   const edit = (row: Row<ThesaurusRow>) => (row.original.subRows ? editGroup(row) : editValue(row));
 
   const proceedDeletion = () => {
-    setThesaurusValues((prev) => {
-      selectedThesaurusValue.forEach((deletedItem) => {
+    setThesaurusValues(prev => {
+      selectedThesaurusValue.forEach(deletedItem => {
         removeItem(prev, deletedItem);
       });
       return [...prev];

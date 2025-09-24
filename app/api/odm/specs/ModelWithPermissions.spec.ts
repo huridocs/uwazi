@@ -1,10 +1,16 @@
-import { PermissionSchema } from '../../shared/types/permissionType.js';
-import { AccessLevels, PermissionType } from '../../shared/types/permissionSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionT... Remove this comment to see the full error message
+import { PermissionSchema } from 'shared/types/permissionType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/permissionS... Remove this comment to see the full error message
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema.js';
+// @ts-expect-error TS(2307): Cannot find module '../odm/ModelWithPermissions.js... Remove this comment to see the full error message
 import { instanceModelWithPermissions, ModelWithPermissions } from '../odm/ModelWithPermissions.js';
+// @ts-expect-error TS(2307): Cannot find module '../permissions/permissionsCont... Remove this comment to see the full error message
 import { permissionsContext } from '../permissions/permissionsContext.js';
-import testingDB from '../utils/testing_db.js';
+
+import testingDB from 'api/utils/testing_db.js';
 import * as mongoose from 'mongoose';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 describe('ModelWithPermissions', () => {
   let model: ModelWithPermissions<any>;
@@ -160,12 +166,14 @@ describe('ModelWithPermissions', () => {
 
         it('should filter permissions when they was asked with select', async () => {
           const results = await model.get({}, { permissions: 1 }, {});
+          // @ts-expect-error TS(7006): Parameter 'doc' implicitly has an 'any' type.
           const docsWithPermissions = results.filter(doc => doc.permissions !== undefined);
           expect(docsWithPermissions.length).toBe(4);
         });
 
         it('should not include the permissions by default', async () => {
           const results = await model.get({}, null, {});
+          // @ts-expect-error TS(7006): Parameter 'result' implicitly has an 'any' type.
           results.forEach(result => {
             expect(result.permissions).toBeUndefined();
           });
@@ -420,6 +428,7 @@ describe('ModelWithPermissions', () => {
           } catch (e) {
             expect(e.message).toContain('not updated');
           }
+          // @ts-expect-error TS(7006): Parameter 'd' implicitly has an 'any' type.
           const allNames = new Set((await model.getUnrestricted({})).map(d => d.name));
           expectedNames.forEach(name => expect(allNames).toContain(name));
         });
@@ -524,6 +533,7 @@ describe('ModelWithPermissions', () => {
             name: 'newDoc2',
           },
         ]);
+        // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
         saved.forEach(item => {
           expect(item.permissions).toBe(undefined);
         });

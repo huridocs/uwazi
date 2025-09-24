@@ -1,11 +1,18 @@
 import { ObjectId } from 'mongodb';
 
-import { FileType as LegacyFileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType as LegacyFileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/FileType.js'... Remove this comment to see the full error message
 import { FileType } from '../files.v2/model/FileType.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../settings.v2/contracts/Setti... Remove this comment to see the full error message
 import { SettingsDataSource } from '../settings.v2/contracts/SettingsDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/contracts/FilesDat... Remove this comment to see the full error message
 import { FilesDataSource } from '../files.v2/contracts/FilesDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../files.v2/model/Document.js'... Remove this comment to see the full error message
 import { Document } from '../files.v2/model/Document.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/contracts/Entit... Remove this comment to see the full error message
 import { EntitiesDataSource } from '../entities.v2/contracts/EntitiesDataSource.js';
 
 import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource';
@@ -61,6 +68,7 @@ export class PXEntityStatusManager {
     }
 
     const installedLanguages = (await this.dependencies.settingsDS.getInstalledLanguages()).map(
+      // @ts-expect-error TS(7006): Parameter 'l' implicitly has an 'any' type.
       l => l.key
     );
 
@@ -102,6 +110,7 @@ export class PXEntityStatusManager {
           .getDocumentsForEntity(entity.sharedId!, { languages: installedLanguages })
           .all()
       ).reduce(
+        // @ts-expect-error TS(7006): Parameter 'acc' implicitly has an 'any' type.
         (acc, file) => {
           const existingDocument = acc[file.language!];
           if (!existingDocument) {
@@ -120,6 +129,7 @@ export class PXEntityStatusManager {
       );
 
       const isDocumentUsedForExtraction = Object.values(documentsInInstalledLanguages).some(
+        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         d => d.id === after.id
       );
 

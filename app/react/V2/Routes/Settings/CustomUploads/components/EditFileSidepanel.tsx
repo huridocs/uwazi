@@ -3,14 +3,17 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { FileType } from '../../shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/fileType.js... Remove this comment to see the full error message
+import { FileType } from 'shared/types/fileType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
 import { Button, Card, Sidepanel } from '../../../../Components/UI/index.js';
 import { InputField } from '../../../../Components/Forms/index.js';
 import { getFileNameAndExtension } from '../../../../shared/formatHelpers.js';
 import { notificationAtom } from '../../../../atoms/index.js';
-import { update } from '../../../../api/files/index.js';
+import { update } from 'api/files/index.js';
 import { CustomUpload } from '../CustomUploads.js';
 
 type EditFileSidepanelProps = {

@@ -1,6 +1,6 @@
 import { search } from '../search.js';
 import 'api/utils/jasmineHelpers';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import templates from '../../templates/templates';
 import thesauri from '../../thesauri';
 import instrumentRoutes from '../../utils/instrumentRoutes';

@@ -1,12 +1,12 @@
 import { propertyTypeIsMultiValued } from '../services/informationextraction/ixMaterials.js';
 import { IXServices } from '../services/informationextraction/IXServices.js';
-import { getSuggestionState } from '../../shared/getIXSuggestionState.js';
-import { LanguageUtils } from '../../shared/language/index.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { IXExtractorType } from '../../shared/types/extractorType.js';
-import { FileType } from '../../shared/types/fileType.js';
-import { IXSuggestionStateType, IXSuggestionType } from '../../shared/types/suggestionType.js';
+import { getSuggestionState } from 'shared/getIXSuggestionState.js';
+import { LanguageUtils } from 'shared/language/index.js';
+import { PropertySchema } from 'shared/types/commonTypes.js';
+import { EntitySchema } from 'shared/types/entityType.js';
+import { IXExtractorType } from 'shared/types/extractorType.js';
+import { FileType } from 'shared/types/fileType.js';
+import { IXSuggestionStateType, IXSuggestionType } from 'shared/types/suggestionType.js';
 import { LanguageNotSupportedError } from './ixValidationError';
 
 type CreateForPdfInput = {

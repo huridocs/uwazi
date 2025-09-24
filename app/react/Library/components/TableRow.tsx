@@ -2,12 +2,15 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore, TableViewColumn } from '../../istore.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Layout.js' or its corres... Remove this comment to see the full error message
 import { Icon as PropertyIcon } from '../../Layout.js';
 import formatter from '../../Metadata/helpers/formater.js';
 import { FormattedMetadataValue, TableCell } from '../../Library/components/TableCell.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 import { deletedEntityAtom } from '../../V2/atoms/index.js';
-import { IImmutable } from '../../shared/types/Immutable.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/Immutable.j... Remove this comment to see the full error message
+import { IImmutable } from 'shared/types/Immutable.js';
 
 interface TableRowProps {
   columns: TableViewColumn[];
@@ -25,12 +28,15 @@ const getColumnValue = (
   column: TableViewColumn
 ) => {
   let columnValue: FormattedMetadataValue;
+  // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TableViewC... Remove this comment to see the full error message
   const columnName = column.name!;
+  // @ts-expect-error TS(2339): Property 'isCommonProperty' does not exist on type... Remove this comment to see the full error message
   if (!column.isCommonProperty || columnName === 'creationDate' || columnName === 'editDate') {
     columnValue = columnValues.get(columnName) as FormattedMetadataValue;
   } else {
     const commonPropValue =
       columnName === 'templateName' ? formattedEntity.documentType : formattedEntity[columnName];
+    // @ts-expect-error TS(2352): Conversion of type 'TableViewColumn' to type 'Form... Remove this comment to see the full error message
     columnValue = column as FormattedMetadataValue;
     columnValue.value = commonPropValue;
   }
@@ -95,6 +101,7 @@ const TableRowComponent = ({
   });
 
   const cells = columns.map((column: TableViewColumn) => {
+    // @ts-expect-error TS(2339): Property 'name' does not exist on type 'TableViewC... Remove this comment to see the full error message
     const key = formattedEntity._id + column.name;
     const value = getColumnValue(formattedEntity, columnValues, column);
     return { key, value };
@@ -102,9 +109,8 @@ const TableRowComponent = ({
   const [firstCell, ...rowCells] = cells;
   return (
     <tr
-      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${
-        deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
-      }`}
+      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''} ${deletedEntity === formattedEntity.sharedId ? 'deleted' : ''
+        }`}
       onClick={selectRow}
     >
       {firstCell && (
@@ -113,7 +119,7 @@ const TableRowComponent = ({
             <div className="checkbox-cell" onClick={checkEntity}>
               <input
                 type="checkbox"
-                onChange={() => {}}
+                onChange={() => { }}
                 checked={multipleSelection && selected}
                 onClick={checkEntity}
               />

@@ -1,4 +1,4 @@
-import { testingDB } from '../utils/testing_db.js';
+import { testingDB } from 'api/utils/testing_db.js';
 import {
   BODY_REQUIRED_ENDPOINTS,
   IGNORED_ENDPOINTS,

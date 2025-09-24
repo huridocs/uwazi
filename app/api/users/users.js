@@ -2,7 +2,7 @@
 import SHA256 from 'crypto-js/sha256';
 
 import { createError } from '../utils/index.js';
-import random from '../../shared/uniqueID.js';
+import random from 'shared/uniqueID.js';
 import { encryptPassword, comparePasswords } from '../auth/encryptPassword.js';
 import * as usersUtils from '../auth2fa/usersUtils.js';
 
@@ -14,7 +14,7 @@ import {
 import mailer from '../utils/mailer.js';
 import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
-import settings from '../settings/settings.js';
+import settings from 'api/settings/settings.js';
 import { generateUnlockCode } from './generateUnlockCode.js';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;

@@ -5,11 +5,13 @@ import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate } from '../../I18N/index.js';
 import { notificationAtom, settingsAtom } from '../../../atoms/index.js';
-import * as settingsAPI from '../../../api/settings/index.js';
-import * as templatesAPI from '../../../api/templates/index.js';
+import * as settingsAPI from 'api/settings/index.js';
+import * as templatesAPI from 'api/templates/index.js';
 import { SettingsContent } from '../../../Components/Layouts/SettingsContent.js';
 import { Button, Table, ConfirmNavigationModal } from '../../../Components/UI/index.js';
 import {
@@ -82,12 +84,13 @@ const FiltersTable = () => {
 
   const handleDelete = () => {
     const idsToRemove: string[] = [];
-    currentFilters.current?.forEach((filter) => {
+    currentFilters.current?.forEach(filter => {
       if (filter.rowId in selectedFilters) {
         idsToRemove.push(filter.rowId);
       }
       if (filter.subRows) {
-        filter.subRows.forEach((subRow) => {
+        // @ts-expect-error TS(7006): Parameter 'subRow' implicitly has an 'any' type.
+        filter.subRows.forEach(subRow => {
           if (subRow.rowId in selectedFilters) {
             idsToRemove.push(subRow.rowId);
           }

@@ -1,17 +1,29 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
-import { DefaultTemplatesDataSource } from '../templates.v2/database/data_source_defaults.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/database/data_... Remove this comment to see the full error message
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../relationtypes.js' or its co... Remove this comment to see the full error message
 import relationshipTypeDS from '../relationtypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
 import { PXErrorCode } from '../paragraphExtraction/domain/PXValidationError.js';
-import { DBFixture } from '../utils/testing_db.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
+// @ts-expect-error TS(2307): Cannot find module '../queue.v2/application/contra... Remove this comment to see the full error message
 import { JobsDispatcher } from '../queue.v2/application/contracts/JobsDispatcher.js';
 
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob';

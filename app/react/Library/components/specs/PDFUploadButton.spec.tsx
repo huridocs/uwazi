@@ -3,9 +3,13 @@
  */
 import React from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
-import * as IDGenerator from '../../shared/IDGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/IDGenerator.js' o... Remove this comment to see the full error message
+import * as IDGenerator from 'shared/IDGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../../utils/test/renderConnect... Remove this comment to see the full error message
 import { renderConnectedContainer, defaultState } from '../../utils/test/renderConnected.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Uploads/actions/uploadsA... Remove this comment to see the full error message
 import * as uploadActions from '../../Uploads/actions/uploadsActions.js';
+// @ts-expect-error TS(2307): Cannot find module '../../Library/actions/libraryA... Remove this comment to see the full error message
 import * as libraryActions from '../../Library/actions/libraryActions.js';
 import { TestAtomStoreProvider } from '../../../V2/testing/index.js';
 import { templatesAtom } from '../../../V2/atoms/index.js';

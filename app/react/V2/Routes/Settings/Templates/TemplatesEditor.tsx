@@ -1,8 +1,15 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
-import { Table, ConfirmNavigationModal, ConfirmationModal, ProgressBar } from '../../../Components/UI/index.js';
+import {
+  Table,
+  ConfirmNavigationModal,
+  ConfirmationModal,
+  ProgressBar,
+} from '../../../Components/UI/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/Translate.js' or it... Remove this comment to see the full error message
 import { Translate } from '../../I18N/Translate.js';
 import { IncomingHttpHeaders } from 'http';
 import {
@@ -12,14 +19,17 @@ import {
   useBlocker,
   useRevalidator,
 } from 'react-router';
-import * as templatesAPI from '../../../api/templates/index.js';
-import * as pagesAPI from '../../../api/pages/index.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { Page, ClientTemplateSchema } from '../../../shared/types.js';
+import * as templatesAPI from 'api/templates/index.js';
+import * as pagesAPI from 'api/pages/index.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
+import { Page, ClientTemplateSchema } from 'shared/types.js';
 import { isEqual } from 'lodash';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { notificationAtom, templatesAtom } from '../../../atoms/index.js';
-import uniqueID from '../../shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/uniqueID.js' or i... Remove this comment to see the full error message
+import uniqueID from 'shared/uniqueID.js';
+// @ts-expect-error TS(2307): Cannot find module '../../socket.js' or its corres... Remove this comment to see the full error message
 import { socket } from '../../socket.js';
 import {
   cleanProperty,
@@ -37,31 +47,31 @@ import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
 
 const templatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    const allPages = await pagesAPI.get(headers);
-    const pages = allPages.filter((page: any) => page.entityView);
-    const pagesOptions = pages.map((page: Page) => ({
-      value: page.sharedId,
-      label: page.title,
-    }));
-    let loadedTemplate = emptyTemplate;
-    const templates = await templatesAPI.get(headers);
+    async ({ params }) => {
+      const allPages = await pagesAPI.get(headers);
+      const pages = allPages.filter((page: any) => page.entityView);
+      const pagesOptions = pages.map((page: Page) => ({
+        value: page.sharedId,
+        label: page.title,
+      }));
+      let loadedTemplate = emptyTemplate;
+      const templates = await templatesAPI.get(headers);
 
-    let entityCount = 0;
+      let entityCount = 0;
 
-    if (params.templateId) {
-      const templateToEdit = templates.find(template => template._id === params.templateId);
-      if (templateToEdit) {
-        entityCount =
-          (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
+      if (params.templateId) {
+        const templateToEdit = templates.find(template => template._id === params.templateId);
+        if (templateToEdit) {
+          entityCount =
+            (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
             templateToEdit._id
-          ] || 0;
-        loadedTemplate = templateToEdit as ClientTemplateSchema;
+            ] || 0;
+          loadedTemplate = templateToEdit as ClientTemplateSchema;
+        }
       }
-    }
 
-    return { loadedTemplate, pagesOptions, entityCount };
-  };
+      return { loadedTemplate, pagesOptions, entityCount };
+    };
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();

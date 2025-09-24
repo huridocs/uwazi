@@ -51,6 +51,7 @@ export class FilesHealthCheck {
       countInDb: 0,
     };
 
+    // @ts-expect-error TS(7006): Parameter 'file' implicitly has an 'any' type.
     dbFiles.forEach(file => {
       counters.countInDb += 1;
 

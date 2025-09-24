@@ -1,7 +1,11 @@
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { PropertySchema } from '../../shared/types/commonTypes.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
-import { IXSuggestionType } from '../../shared/types/suggestionType.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { PropertySchema } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/suggestionT... Remove this comment to see the full error message
+import { IXSuggestionType } from 'shared/types/suggestionType.js';
 import { formatSuggestionFacade } from '../suggestionFormatting';
 import { InternalIXResultsMessage } from '../InformationExtraction';
 
@@ -400,6 +404,7 @@ describe('formatSuggestion', () => {
       const cb = async () =>
         formatSuggestionFacade.formatSuggestionPdfSource(
           property,
+          // @ts-expect-error TS(2578): Unused '@ts-expect-error' directive.
           // @ts-expect-error
           rawSuggestion,
           currentSuggestion,

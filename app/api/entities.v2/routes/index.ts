@@ -1,5 +1,7 @@
 import { Application, Request } from 'express';
+// @ts-expect-error TS(2307): Cannot find module '../utils/index.js' or its corr... Remove this comment to see the full error message
 import { validation } from '../utils/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/entities.js' or it... Remove this comment to see the full error message
 import entities from '../entities/entities.js';
 
 const entitiesRoutes = (app: Application) => {

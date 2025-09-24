@@ -1,10 +1,14 @@
-import db from '../utils/testing_db.js';
+
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../search/search.js' or its co... Remove this comment to see the full error message
 import { search } from '../search/search.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 
 import inheritanceFixtures, { ids } from './fixturesInheritance';
 import { fixturesTimeOut } from './fixtures_elastic';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 
 describe('search.searchGeolocations', () => {
   const user = { _id: 'u1' };

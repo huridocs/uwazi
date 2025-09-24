@@ -1,11 +1,19 @@
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import db from '../utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+
+import db from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../thesauri.js' or its corresp... Remove this comment to see the full error message
 import thesauri from '../thesauri.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.js' or its corres... Remove this comment to see the full error message
 import { templateUtils } from '../templates.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n/translations.js' or it... Remove this comment to see the full error message
 import translations from '../i18n/translations.js';
-import { TemplateSchema } from '../../shared/types/templateType.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/templateTyp... Remove this comment to see the full error message
+import { TemplateSchema } from 'shared/types/templateType.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
 
 import { arrangeThesauri, ArrangeThesauriError } from '../arrangeThesauri';
 
@@ -168,6 +176,7 @@ describe('arrangeThesauri', () => {
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       expect(updatedThesaurus!.values).toHaveLength(5); // Original 4 + 1 new
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('New Value');
     });
 
@@ -191,6 +200,7 @@ describe('arrangeThesauri', () => {
       );
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const newParent = updatedThesaurus!.values!.find(v => v.label === 'New Parent');
       expect(newParent).toBeDefined();
       expect(newParent!.values).toHaveLength(1);
@@ -218,6 +228,7 @@ describe('arrangeThesauri', () => {
 
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       const existingValueCount = updatedThesaurus!.values!.filter(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === 'Existing Value'
       ).length;
       expect(existingValueCount).toBe(1); // Should not duplicate
@@ -247,11 +258,13 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should find the sanitized version (trimmed)
       const sanitizedValue = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === 'New Value With Spaces'
       );
       expect(sanitizedValue).toBeDefined();
       // Should not have the unsanitized version
       const unsanitizedValue = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === '  New Value With Spaces  '
       );
       expect(unsanitizedValue).toBeUndefined();
@@ -279,6 +292,7 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
 
       const newParent = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === 'Unique Parent With Spaces'
       );
       expect(newParent).toBeDefined();
@@ -287,6 +301,7 @@ describe('arrangeThesauri', () => {
 
       // Should not have unsanitized versions
       const unsanitizedParent = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === '  Unique Parent With Spaces  '
       );
       expect(unsanitizedParent).toBeUndefined();
@@ -314,10 +329,12 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should preserve the existing unsanitized value
       const existingUnsanitized = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === '  Unsanitized Value  '
       );
       expect(existingUnsanitized).toBeDefined();
       // Should not create a new sanitized version
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const sanitizedVersion = updatedThesaurus!.values!.find(v => v.label === 'Unsanitized Value');
       expect(sanitizedVersion).toBeUndefined();
     });
@@ -344,6 +361,7 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should preserve the existing unsanitized parent
       const existingUnsanitizedParent = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === '  Parent With Spaces  '
       );
       expect(existingUnsanitizedParent).toBeDefined();
@@ -373,10 +391,12 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
       // Should not create a new value since it matches existing (case-insensitive)
       const existingValueCount = updatedThesaurus!.values!.filter(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === 'Existing Value'
       ).length;
       expect(existingValueCount).toBe(1);
       // Should not create uppercase version
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const uppercaseVersion = updatedThesaurus!.values!.find(v => v.label === 'EXISTING VALUE');
       expect(uppercaseVersion).toBeUndefined();
     });
@@ -401,11 +421,15 @@ describe('arrangeThesauri', () => {
       );
 
       const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value1');
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value2');
 
       // Should not have unsanitized versions
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const unsanitizedValue1 = updatedThesaurus!.values!.find(v => v.label === '  Value1  ');
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const unsanitizedValue2 = updatedThesaurus!.values!.find(v => v.label === '  Value2  ');
       expect(unsanitizedValue1).toBeUndefined();
       expect(unsanitizedValue2).toBeUndefined();
@@ -433,11 +457,13 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
       // Should preserve the existing unsanitized value
       const existingUnsanitized = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === '  Unsanitized Multi Value  '
       );
       expect(existingUnsanitized).toBeDefined();
       // Should not create a new sanitized version
       const sanitizedVersion = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === 'Unsanitized Multi Value'
       );
       expect(sanitizedVersion).toBeUndefined();
@@ -465,16 +491,19 @@ describe('arrangeThesauri', () => {
       const updatedThesaurus = await thesauri.getById(selectThesaurusId);
 
       // Should add new sanitized value
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const newSanitized = updatedThesaurus!.values!.find(v => v.label === 'New Sanitized Value');
       expect(newSanitized).toBeDefined();
 
       // Should preserve existing unsanitized value
       const existingUnsanitized = updatedThesaurus!.values!.find(
+        // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
         v => v.label === '  Unsanitized Value  '
       );
       expect(existingUnsanitized).toBeDefined();
 
       // Should not create duplicate sanitized versions
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       const sanitizedVersion = updatedThesaurus!.values!.find(v => v.label === 'Unsanitized Value');
       expect(sanitizedVersion).toBeUndefined();
     });
@@ -525,10 +554,12 @@ describe('arrangeThesauri', () => {
       );
 
       const allTranslations = await translations.get();
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       const spanishTranslations = allTranslations.find(t => t.locale === 'es');
       expect(spanishTranslations).toBeDefined();
 
       const thesaurusContext = spanishTranslations?.contexts?.find(
+        // @ts-expect-error TS(7006): Parameter 'c' implicitly has an 'any' type.
         c => c.label === 'test_select_thesaurus'
       );
       expect(thesaurusContext).toBeDefined();
@@ -555,10 +586,12 @@ describe('arrangeThesauri', () => {
       );
 
       const allTranslations = await translations.get();
+      // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
       const spanishTranslations = allTranslations.find(t => t.locale === 'es');
       expect(spanishTranslations).toBeDefined();
 
       const thesaurusContext = spanishTranslations?.contexts?.find(
+        // @ts-expect-error TS(7006): Parameter 'c' implicitly has an 'any' type.
         c => c.label === 'test_select_thesaurus'
       );
       expect(thesaurusContext).toBeDefined();
@@ -588,7 +621,9 @@ describe('arrangeThesauri', () => {
       );
 
       const updatedThesaurus = await thesauri.getById(multiselectThesaurusId);
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value1');
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
       expect(updatedThesaurus!.values!.map(v => v.label)).toContain('Value2');
     });
   });

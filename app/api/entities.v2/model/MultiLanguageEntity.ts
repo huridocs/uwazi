@@ -1,8 +1,13 @@
+// @ts-expect-error TS(2307): Cannot find module '../relationships/RelationsV1Co... Remove this comment to see the full error message
 import { RelationsV1Collection } from '../relationships/RelationsV1Collection.js';
-import { Template, TemplateProperty } from '../templates.v2/model/Template.js';
-import { V1RelationshipProperty } from '../templates.v2/model/V1RelationshipProperty.js';
-import { IndexTypes } from '../../shared/data_utils/objectIndex.js';
-import { LanguageISO6391 } from '../../shared/types/commonTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/Template... Remove this comment to see the full error message
+import { Template, TemplateProperty } from 'api/templates.v2/model/Template.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates.v2/model/V1Relati... Remove this comment to see the full error message
+import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+import { IndexTypes } from 'shared/data_utils/objectIndex.js';
+
+import { LanguageISO6391 } from 'shared/types/commonTypes.js';
 import { Entity } from './Entity';
 import { EntityTranslations } from './EntityTranslations';
 
@@ -66,6 +71,7 @@ export class MultiLanguageEntity {
           relationsForEntity
             .getRelationsBelongingToProperty(property)
             .uniqueByEntity()
+            // @ts-expect-error TS(7006): Parameter 'r' implicitly has an 'any' type.
             .map(r => ({
               value: r.entity,
               label: r.entityData.title,
@@ -80,6 +86,7 @@ export class MultiLanguageEntity {
   denormalizeRelationshipProps(
     relatedEntities: Record<IndexTypes, MultiLanguageEntity | undefined>
   ) {
+    // @ts-expect-error TS(7006): Parameter 'property' implicitly has an 'any' type.
     this.template.getRelationshipProperties().forEach(property => {
       this.translations.denormalizeRelationshipProperty(property, relatedEntities);
     });

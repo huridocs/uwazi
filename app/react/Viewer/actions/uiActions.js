@@ -1,5 +1,5 @@
 import { actions } from '../../BasicReducer/index.js';
-import { events } from '../../api/utils/index.js';
+import { events } from 'api/utils/index.js';
 import { setTargetSelection } from '../../Viewer/actions/selectionActions.js';
 import Marker from '../../Viewer/utils/Marker.js.js';
 import scroller from '../../Viewer/utils/Scroller.js';
@@ -183,7 +183,7 @@ export async function scrollTo(connection) {
 }
 
 export function selectSnippet(page, snippet) {
-    return (dispatch) => {
+  return dispatch => {
     waitForElement(`.document-viewer div#page-${page}`, () => {
       scrollToPage(page);
       waitForElement(`.document-viewer div#page-${page} .textLayer`, () => {
@@ -207,14 +207,14 @@ export function activateReference(
 
   const activeRefenreceSelection = {
     ...connection.reference,
-    selectionRectangles: connection.reference.selectionRectangles?.map((rectangle) => {
+    selectionRectangles: connection.reference.selectionRectangles?.map(rectangle => {
       const { _id, ...selectionRectangle } = rectangle;
       return selectionRectangle;
     }),
   };
 
   // eslint-disable-next-line max-statements
-    return (dispatch) => {
+  return dispatch => {
     dispatch({ type: types.DEACTIVATE_REFERENCE });
     if (referenceGroup?.length) {
       dispatch({ type: types.ACTIVATE_MULTIPLE_REFERENCES, references: referenceGroup });
@@ -244,7 +244,7 @@ export function activateReference(
 }
 
 export function scrollToActive(reference, tab, doScroll) {
-    return (dispatch) => {
+  return dispatch => {
     if (doScroll) {
       dispatch(goToActive(false));
       dispatch(activateReference(reference, tab));
@@ -253,7 +253,7 @@ export function scrollToActive(reference, tab, doScroll) {
 }
 
 export function selectReference(connection) {
-    return (dispatch) => {
+  return dispatch => {
     dispatch(activateReference(connection));
     dispatch(setTargetSelection(connection.reference));
   };

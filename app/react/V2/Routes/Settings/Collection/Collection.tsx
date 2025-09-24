@@ -10,26 +10,34 @@ import { useSetAtom } from 'jotai';
 import { isUndefined } from 'lodash';
 import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
-import * as SettingsAPI from '../../../api/settings/index.js';
-import * as TemplatesAPI from '../../../api/templates/index.js';
+import * as SettingsAPI from 'api/settings/index.js';
+import * as TemplatesAPI from 'api/templates/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms.js' or its corr... Remove this comment to see the full error message
 import { notificationAtom } from '../../V2/atoms.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Forms.js' ... Remove this comment to see the full error message
 import { InputField, Select, MultiSelect, Geolocation } from '../../V2/Components/Forms.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/UI.js' or ... Remove this comment to see the full error message
 import { Button, Card } from '../../V2/Components/UI.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/atoms/settingsAtom.js... Remove this comment to see the full error message
 import { settingsAtom } from '../../V2/atoms/settingsAtom.js';
+// @ts-expect-error TS(2307): Cannot find module '../../V2/Components/Layouts/Se... Remove this comment to see the full error message
 import { SettingsContent } from '../../V2/Components/Layouts/SettingsContent.js';
+// @ts-expect-error TS(2307): Cannot find module '../../I18N/index.js' or its co... Remove this comment to see the full error message
 import { Translate, t } from '../../I18N/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientSettings, Template } from '../../apiResponseTypes.js';
-import { FetchResponseError } from '../../shared/JSONRequest.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/JSONRequest.js' o... Remove this comment to see the full error message
+import { FetchResponseError } from 'shared/JSONRequest.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-    async () => {
-      const settings = await SettingsAPI.get(headers);
-      const templates = await TemplatesAPI.get(headers);
-      return { settings, templates };
-    };
+  async () => {
+    const settings = await SettingsAPI.get(headers);
+    const templates = await TemplatesAPI.get(headers);
+    return { settings, templates };
+  };
 
 const dateOptions = () => {
   const date = new Date();

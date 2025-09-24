@@ -1,5 +1,6 @@
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
-import { ExtractedMetadataSchema } from '../../shared/types/commonTypes.js';
+
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes.js';
 import { Highlights } from '../../../Routes/Settings/IX/types';
 
 const getHighlightsFromFile = (
@@ -13,6 +14,7 @@ const getHighlightsFromFile = (
 
   const highlights: Highlights = {};
 
+  // @ts-expect-error TS(7006): Parameter 'rectangle' implicitly has an 'any' type... Remove this comment to see the full error message
   selectionsForProperty?.selection?.selectionRectangles?.forEach(rectangle => {
     const { page } = rectangle;
     if (!page) return;

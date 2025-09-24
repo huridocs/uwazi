@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+
 import { instanceModel } from '../odm/index.js';
-import { ObjectIdSchema } from '../../../shared/types/commonTypes';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 enum OcrStatus {
   NONE = 'noOCR',

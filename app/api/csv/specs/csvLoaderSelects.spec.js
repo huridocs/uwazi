@@ -4,7 +4,7 @@ import translations from '../i18n/translations.js';
 import thesauri from '../thesauri.js';
 import entities from '../entities.js';
 import { fixtureFactory } from '../csv/specs/csvLoaderSelectsFixtures.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
 import { fixtures } from './csvLoaderSelectsFixtures';
 
 import { CSVLoader } from '../csvLoader';

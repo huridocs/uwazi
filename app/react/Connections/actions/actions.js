@@ -2,7 +2,7 @@ import qs from 'qs';
 import { actions } from '../../BasicReducer/index.js';
 import { notificationActions } from '../../Notifications.js';
 import api from '../../utils/api.js';
-import { debounce } from '../../api/utils/index.js';
+import { debounce } from 'api/utils/index.js';
 import { RequestParams } from '../../utils/RequestParams.js';
 import { t } from '../../I18N/index.js';
 
@@ -31,7 +31,7 @@ export function immediateSearch(dispatch, searchString, connectionType) {
 const debouncedSearch = debounce(immediateSearch, 400);
 
 export function search(searchTerm, connectionType) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(actions.set('connections/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm, connectionType);
   };
@@ -88,7 +88,7 @@ export function saveConnection(connection, callback = () => {}) {
       save: [[sourceRelationship, targetRelationship]],
     };
 
-    return api.post('relationships/bulk', new RequestParams(apiCall)).then((response) => {
+    return api.post('relationships/bulk', new RequestParams(apiCall)).then(response => {
       dispatch({ type: types.CONNECTION_CREATED });
       callback(response.json);
       dispatch(
@@ -99,7 +99,7 @@ export function saveConnection(connection, callback = () => {}) {
 }
 
 export function selectRangedTarget(connection, onRangedConnect) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: types.CREATING_RANGED_CONNECTION });
     onRangedConnect(connection.targetDocument);
   };

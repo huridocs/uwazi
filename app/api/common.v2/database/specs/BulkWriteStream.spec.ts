@@ -1,4 +1,5 @@
-import db from '../utils/testing_db.js';
+
+import db from 'api/utils/testing_db.js';
 import { BulkWriteStream } from '../BulkWriteStream';
 
 const fixtures = {
@@ -15,9 +16,11 @@ const newValues: NumberValueType[] = Array(11)
   }));
 
 const checkValues = async (expectedValues: number[]) => {
-  const inDbUserNames = (
-    await db.mongodb?.collection<NumberValueType>('values').find({}).toArray()
-  )?.map(v => v.value);
+  const inDbUserNames =
+    // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
+    (await db.mongodb?.collection<NumberValueType>('values').find({}).toArray())
+      // @ts-expect-error TS(7006): Parameter 'v' implicitly has an 'any' type.
+      ?.map(v => v.value);
   expect(inDbUserNames).toMatchObject(expectedValues);
 };
 
@@ -29,6 +32,7 @@ describe('BulkWriteStream', () => {
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
+    // @ts-expect-error TS(2347): Untyped function calls may not accept type argumen... Remove this comment to see the full error message
     stream = new BulkWriteStream(db.mongodb!.collection<NumberValueType>('values'), stackLimit);
   });
 

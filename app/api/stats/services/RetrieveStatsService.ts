@@ -1,6 +1,8 @@
 import { Db } from 'mongodb';
+// @ts-expect-error TS(2307): Cannot find module '../search.js' or its correspon... Remove this comment to see the full error message
 import { elastic } from '../search.js';
-import { UserSchema } from '../../shared/types/userType.js';
+
+import { UserSchema } from 'shared/types/userType.js';
 
 type RoleCount = {
   _id: UserSchema['role'];
@@ -91,6 +93,7 @@ export class RetrieveStatsService {
 
     return users.reduce(
       (userStats, role) => {
+        // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         userStats[role._id] = role.count;
         userStats.total += role.count;
         return userStats;

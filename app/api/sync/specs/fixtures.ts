@@ -1,8 +1,11 @@
 /* eslint-disable max-lines */
 
-import db, { DBFixture } from '../utils/testing_db.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../updatelogs/index.js' or its... Remove this comment to see the full error message
 import { UpdateLog } from '../updatelogs/index.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();

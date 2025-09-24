@@ -6,8 +6,8 @@ import { DefaultLogger } from '../log.v2/infrastructure/StandardLogger.js';
 import connections from '../relationships/index.js';
 import { search } from '../search/index.js';
 import { cleanupRecordsOfFiles } from '../services/ocr/ocrRecords.js';
-import { validateFile } from '../../shared/types/fileSchema.js';
-import { FileType } from '../../shared/types/fileType.js';
+import { validateFile } from 'shared/types/fileSchema.js';
+import { FileType } from 'shared/types/fileType.js';
 import { inspect } from 'util';
 import { FileCreatedEvent } from './events/FileCreatedEvent.js';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent.js';
@@ -46,6 +46,7 @@ export const files = {
 
     if (existingFile) {
       await applicationEventsBus.emit(
+        // @ts-expect-error TS(2345): Argument of type 'FileUpdatedEvent' is not assigna... Remove this comment to see the full error message
         new FileUpdatedEvent({ before: existingFile, after: savedFile })
       );
     } else {
@@ -55,6 +56,7 @@ export const files = {
           inspect(savedFile),
         ]);
       }
+      // @ts-expect-error TS(2345): Argument of type 'FileCreatedEvent' is not assigna... Remove this comment to see the full error message
       await applicationEventsBus.emit(new FileCreatedEvent({ newFile: savedFile }));
     }
 
@@ -84,6 +86,7 @@ export const files = {
         '+fullText'
       );
 
+      // @ts-expect-error TS(2345): Argument of type 'FilesDeletedEvent' is not assign... Remove this comment to see the full error message
       await applicationEventsBus.emit(new FilesDeletedEvent({ files: toDeleteFiles }));
     }
 

@@ -1,8 +1,13 @@
-import db, { DBFixture } from '../utils/testing_db.js';
-import { propertyTypes } from '../../shared/propertyTypes.js';
+
+import db, { DBFixture } from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/propertyTypes.js'... Remove this comment to see the full error message
+import { propertyTypes } from 'shared/propertyTypes.js';
+// @ts-expect-error TS(2307): Cannot find module '../templates/index.js' or its ... Remove this comment to see the full error message
 import { templateUtils } from '../templates/index.js';
+// @ts-expect-error TS(2307): Cannot find module '../i18n.v2/schemas/Translation... Remove this comment to see the full error message
 import { TranslationDBO } from '../i18n.v2/schemas/TranslationDBO.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();

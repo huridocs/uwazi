@@ -1,8 +1,12 @@
-import testingDB from '../utils/testing_db.js';
+
+import testingDB from 'api/utils/testing_db.js';
+// @ts-expect-error TS(2307): Cannot find module '../migrations/migrator.js' or ... Remove this comment to see the full error message
 import { migrator } from '../migrations/migrator.js';
 import path from 'path';
+// @ts-expect-error TS(2307): Cannot find module '../migrations/migrate.js' or i... Remove this comment to see the full error message
 import { runMigration } from '../migrations/migrate.js';
 import { Connection } from 'mongoose';
+// @ts-expect-error TS(2307): Cannot find module '../odm.js' or its correspondin... Remove this comment to see the full error message
 import { DB } from '../odm.js';
 
 describe('migrate', () => {

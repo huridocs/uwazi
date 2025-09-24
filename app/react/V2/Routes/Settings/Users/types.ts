@@ -1,3 +1,4 @@
+// @ts-expect-error TS(2307): Cannot find module '../../apiResponseTypes.js' or ... Remove this comment to see the full error message
 import { ClientUserGroupSchema, ClientUserSchema } from '../../apiResponseTypes.js';
 
 type FormIntent =

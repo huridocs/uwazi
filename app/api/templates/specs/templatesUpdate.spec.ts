@@ -1,15 +1,27 @@
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/validation/Valida... Remove this comment to see the full error message
 import { ValidationError } from '../common.v2/validation/ValidationError.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/entities.js.js' or... Remove this comment to see the full error message
 import entities from '../entities/entities.js.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities/events/EntityUpdat... Remove this comment to see the full error message
 import { EntityUpdatedData, EntityUpdatedEvent } from '../entities/events/EntityUpdatedEvent.js';
+// @ts-expect-error TS(2307): Cannot find module '../eventsbus.js' or its corres... Remove this comment to see the full error message
 import { applicationEventsBus } from '../eventsbus.js';
+// @ts-expect-error TS(2307): Cannot find module '../migrations/migrations/143-p... Remove this comment to see the full error message
 import { TemplateSchema } from '../migrations/migrations/143-parse-numeric-fields/types.js';
+// @ts-expect-error TS(2307): Cannot find module '../socketio/setupSockets.js' o... Remove this comment to see the full error message
 import * as setupSockets from '../socketio/setupSockets.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/elastic_testing.js' o... Remove this comment to see the full error message
 import { elasticTesting } from '../utils/elastic_testing.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import testingDB, { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import testingDB, { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../utils/testingTenants.js' or... Remove this comment to see the full error message
 import { testingTenants } from '../utils/testingTenants.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
 import { inspect } from 'util';
 import templates from '../templates';
 
@@ -24,9 +36,11 @@ const getEntitiesByTemplate = async (
     const allEntities = await testingEnvironment.db.getAllFrom('entities');
     const filtered =
       allEntities?.filter(
+        // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
         entity =>
           entity.template?.toString() === f.idString(templateId) && entity.language === language
       ) || [];
+    // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
     return filtered.sort((a, b) => (a.sharedId || '').localeCompare(b.sharedId || ''));
   }
   await elasticTesting.refresh();
@@ -34,9 +48,11 @@ const getEntitiesByTemplate = async (
   return (
     allEntities
       ?.filter(
+        // @ts-expect-error TS(7006): Parameter 'entity' implicitly has an 'any' type.
         entity =>
           entity.template?.toString() === f.idString(templateId) && entity.language === language
       )
+      // @ts-expect-error TS(7006): Parameter 'a' implicitly has an 'any' type.
       .sort((a, b) => (a.sharedId || '').localeCompare(b.sharedId || '')) || []
   );
 };
@@ -77,6 +93,7 @@ describe('Templates Update', () => {
   async function setUpFixtures(_fixtures: DBFixture, featureFlag = false) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
     await Promise.all(
+      // @ts-expect-error TS(7006): Parameter 'e' implicitly has an 'any' type.
       (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
     );
 
@@ -666,6 +683,7 @@ describe('Templates Update', () => {
           ]);
 
           const eventData: EntityUpdatedData[] = [];
+          // @ts-expect-error TS(7006): Parameter 'triggeredEventData' implicitly has an '... Remove this comment to see the full error message
           applicationEventsBus.on(EntityUpdatedEvent, async triggeredEventData => {
             eventData.push(triggeredEventData);
           });
@@ -832,6 +850,7 @@ describe('Templates Update', () => {
         updateTemplate(f.template('templateD', [f.property('text_property_d', 'numeric')]), true)
       ).rejects.toThrow('Reason: mapper');
       const templateD = (await testingEnvironment.db.getAllFrom('templates'))?.find(
+        // @ts-expect-error TS(7006): Parameter 't' implicitly has an 'any' type.
         t => t.name === 'templateD'
       );
       expect(templateD?.properties).toEqual([]);

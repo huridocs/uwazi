@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+
 import { instanceModel } from '../odm/index.js';
-import { SegmentationType } from '../../shared/types/segmentationType.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/segmentatio... Remove this comment to see the full error message
+import { SegmentationType } from 'shared/types/segmentationType.js';
 
 const props = {
   autoexpire: { type: Date, expires: 86400, default: Date.now }, // 24 hours

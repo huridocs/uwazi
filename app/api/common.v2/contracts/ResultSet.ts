@@ -1,4 +1,5 @@
-import { IndexTypes } from '../../shared/data_utils/objectIndex.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/data_utils/object... Remove this comment to see the full error message
+import { IndexTypes } from 'shared/data_utils/objectIndex.js';
 
 export type BreakLoopSignal = Promise<void | boolean> | void | boolean;
 

@@ -1,21 +1,36 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { DefaultTransactionManager } from '../common.v2/database/data_source_defaults.js';
-import { getConnection } from '../common.v2/database/getConnectionForCurrentTenant.js';
-import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
-import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
-import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
-import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
-import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
-import { getFixturesFactory } from '../utils/fixturesFactory.js';
-import { DBFixture } from '../utils/testing_db.js';
-import { testingEnvironment } from '../utils/testingEnvironment.js';
-import { EntitySchema } from '../../shared/types/entityType.js';
 
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/getConne... Remove this comment to see the full error message
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant.js';
+// @ts-expect-error TS(2307): Cannot find module '../log.v2/infrastructure/MockL... Remove this comment to see the full error message
+import { createMockLogger } from '../log.v2/infrastructure/MockLogger.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+import { EntityStatus } from '../paragraphExtraction/domain/PXEntityStatusModel.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/domain/... Remove this comment to see the full error message
+import { PXValidationError } from '../paragraphExtraction/domain/PXValidationError.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+import { MongoPXExtractorDBO } from '../paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
+import { mongoPXExtractorsCollection } from '../paragraphExtraction/infrastructure/MongoPXExtractorsDataSource.js';
+
+import { getFixturesFactory } from 'api/utils/fixturesFactory.js';
+
+import { DBFixture } from 'api/utils/testing_db.js';
+
+import { testingEnvironment } from 'api/utils/testingEnvironment.js';
+// @ts-expect-error TS(2307): Cannot find module '../../shared/types/entityType.... Remove this comment to see the full error message
+import { EntitySchema } from 'shared/types/entityType.js';
+
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { mongoPXEntitiesStatusCollection } from '../paragraphExtraction/infrastructure/MongoPXEntitiesStatusDataSource.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { MongoPXEntityStatusDBO } from '../paragraphExtraction/infrastructure/MongoPXEntityStatusDBO.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { PXEntitiesStatusDataSourceFactory } from '../paragraphExtraction/infrastructure/PXEntityStatusDataSourceFactory.js';
+// @ts-expect-error TS(2307): Cannot find module '../paragraphExtraction/infrast... Remove this comment to see the full error message
 import { PXExtractorsDataSourceFactory } from '../paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 
 import { PXCreateParagraphs, PXCreateParagraphsInput } from '../PXCreateParagraphs';
@@ -153,6 +168,7 @@ const filterAndSortParagraphs = (paragraphs: EntitySchema[], language: string) =
 
 const getExtractedParagraphs = async () => {
   const extractedParagraphs = (await testingEnvironment.db.getAllFrom('entities'))?.filter(
+    // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
     item => item.template.toString() === targetTemplate._id.toString()
   ) as EntitySchema[];
   return extractedParagraphs;
@@ -337,6 +353,7 @@ describe('PXCreateParagraphs', () => {
 
     const relationships = await testingEnvironment.db.getAllFrom('connections');
 
+    // @ts-expect-error TS(7006): Parameter '_prev' implicitly has an 'any' type.
     const hubs = relationships?.reduce((_prev, relationship) => {
       const prev = _prev;
       if (!prev[relationship.hub.toString()]) {

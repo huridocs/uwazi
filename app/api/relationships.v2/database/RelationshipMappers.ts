@@ -1,7 +1,11 @@
-import { MongoIdHandler } from '../common.v2/database/MongoIdGenerator.js';
+// @ts-expect-error TS(2307): Cannot find module '../common.v2/database/MongoIdG... Remove this comment to see the full error message
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator.js';
 import { ObjectId } from 'mongodb';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/Entity... Remove this comment to see the full error message
 import { EntityMappers } from '../entities.v2/database/EntityMapper.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/model/Entity.js... Remove this comment to see the full error message
 import { Entity } from '../entities.v2/model/Entity.js';
+// @ts-expect-error TS(2307): Cannot find module '../entities.v2/database/schema... Remove this comment to see the full error message
 import { EntityDBO } from '../entities.v2/database/schemas/EntityTypes.js';
 import { RelationshipDBOType } from './schemas/relationshipTypes';
 import {
