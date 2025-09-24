@@ -186,5 +186,98 @@ describe('Media Modal', () => {
       render();
       expect(component.find('input[type="file"]').length).toBe(0);
     });
+
+    it('Should handle file upload in public form with blob URL for display and File object for processing', () => {
+      const newFile = new File(
+        [Buffer.from('image content').toString('base64')],
+        'test-image.jpg',
+        {
+          type: 'image/jpeg',
+        }
+      );
+
+      const mockBlobUrl = 'blob:http://localhost:3000/12345678-1234-1234-1234-123456789abc';
+      global.URL.createObjectURL = jest.fn().mockReturnValue(mockBlobUrl);
+
+      const publicFormProps = {
+        ...props,
+        formModel: 'publicform',
+      };
+
+      render(publicFormProps);
+
+      component.find('input[type="file"]').simulate('change', {
+        target: {
+          files: [newFile],
+        },
+      });
+
+      expect(props.onChange).toHaveBeenCalledWith({
+        data: mockBlobUrl,
+        originalFile: newFile,
+      });
+      expect(props.onClose).toHaveBeenCalled();
+
+      expect(global.URL.createObjectURL).toHaveBeenCalledWith(newFile);
+    });
+
+    it('Should handle URL input and preserve original URL string', () => {
+      render();
+
+      const testUrl = 'https://example.com/image.jpg';
+      const form = component.find(WebMediaResourceForm).at(0);
+      const formData = { url: testUrl };
+
+      form.props().handleSubmit(formData);
+
+      expect(props.onChange).toHaveBeenCalledWith(testUrl);
+      expect(props.onClose).toHaveBeenCalled();
+    });
+
+    it('Should handle multiple file uploads correctly', () => {
+      const file1 = new File([Buffer.from('image1').toString('base64')], 'image1.jpg', {
+        type: 'image/jpeg',
+      });
+      const file2 = new File([Buffer.from('image2').toString('base64')], 'image2.jpg', {
+        type: 'image/jpeg',
+      });
+
+      const mockBlobUrl1 = 'blob:http://localhost:3000/11111111-1111-1111-1111-111111111111';
+      const mockBlobUrl2 = 'blob:http://localhost:3000/22222222-2222-2222-2222-222222222222';
+
+      global.URL.createObjectURL = jest
+        .fn()
+        .mockReturnValueOnce(mockBlobUrl1)
+        .mockReturnValueOnce(mockBlobUrl2);
+
+      const publicFormProps = {
+        ...props,
+        formModel: 'publicform',
+      };
+
+      render(publicFormProps);
+
+      component.find('input[type="file"]').simulate('change', {
+        target: {
+          files: [file1],
+        },
+      });
+
+      expect(props.onChange).toHaveBeenCalledWith({
+        data: mockBlobUrl1,
+        originalFile: file1,
+      });
+
+      component.find('input[type="file"]').simulate('change', {
+        target: {
+          files: [file2],
+        },
+      });
+
+      expect(props.onChange).toHaveBeenCalledWith({
+        data: mockBlobUrl2,
+        originalFile: file2,
+      });
+    });
   });
 });

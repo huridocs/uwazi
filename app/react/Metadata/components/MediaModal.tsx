@@ -116,7 +116,13 @@ const MediaModalComponent = ({
   const handleFileInPublicForm = (event: React.FormEvent<HTMLInputElement>) => {
     const { files } = event.target as HTMLInputElement;
     if (files && files.length > 0) {
-      const data = { data: URL.createObjectURL(files[0]), originalFile: files[0] };
+      const file = files[0];
+      const blobUrl = URL.createObjectURL(file);
+      const data = {
+        data: blobUrl,
+        originalFile: file,
+      };
+
       onChange(data);
       onClose();
     }
