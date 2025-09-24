@@ -1,13 +1,7 @@
 import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
 import { legacyLogger } from 'api/log';
 import { ObjectId, UpdateOptions } from 'mongodb';
-import mongoose, {
-  FilterQuery,
-  MongooseQueryOptions,
-  QueryOptions,
-  Schema,
-  UpdateQuery,
-} from 'mongoose';
+import mongoose, { FilterQuery, MongooseBaseQueryOptions, QueryOptions, Schema, UpdateQuery } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { inspect } from 'util';
 import { MongooseModelWrapper } from './MongooseModelWrapper';
@@ -30,7 +24,7 @@ export type EnforcedWithId<T> = T & { _id: ObjectId };
 export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
-export type UwaziUpdateOptions<T> = (UpdateOptions & Omit<MongooseQueryOptions<T>, 'lean'>) | null;
+export type UwaziUpdateOptions<T> = (UpdateOptions & Omit<MongooseBaseQueryOptions<T>, 'lean'>) | null;
 
 export class OdmModel<T> implements SyncDBDataSource<T, T> {
   private collectionName: string;

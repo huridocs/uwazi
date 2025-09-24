@@ -3,7 +3,7 @@ import mongoose, { Model, Document } from 'mongoose';
 import { config } from 'api/config';
 import { DB } from 'api/odm/DB';
 import { handleError } from 'api/utils';
-import { ChangeStream, MongoError } from 'mongodb';
+import { MongoError } from 'mongodb';
 
 import { Tenant } from './tenantContext';
 
@@ -52,7 +52,7 @@ class TenantsModel extends EventEmitter {
 
   collectionName: string;
 
-  changeStream?: ChangeStream;
+  changeStream?: ReturnType<Model<TenantDocument>['watch']>;
 
   constructor() {
     super();
@@ -112,13 +112,18 @@ class TenantsModel extends EventEmitter {
     this.emit('change', tenants);
   }
 
-  async get() {
+  async get(): Promise<DBTenant[]> {
     if (!this.model) {
       throw new Error(
         'tenants model has not been initialized, make sure you called initialize() method'
       );
     }
-    return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
+    const projection: Record<string, 1> = {};
+    for (const key of Object.keys(mongoSchema.paths)) {
+      projection[key] = 1;
+    }
+    const results = await this.model.find({}, projection).lean();
+    return results as unknown as DBTenant[];
   }
 }
 

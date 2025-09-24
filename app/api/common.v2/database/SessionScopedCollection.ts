@@ -9,6 +9,7 @@ import {
   Collection,
   CommandOperationOptions,
   CountDocumentsOptions,
+  Db,
   DeleteOptions,
   DeleteResult,
   DistinctOptions,
@@ -46,6 +47,11 @@ export class SessionScopedCollection<TSchema extends Document = Document>
   constructor(collection: Collection<TSchema>, transactionManager: MongoTransactionManager) {
     super(collection);
     this.transactionManager = transactionManager;
+  }
+
+  get db(): Db {
+    // re-expose underlying collection's db to satisfy Collection interface
+    return (this.collection as unknown as { db: Db }).db;
   }
 
   private appendSession<S extends CommandOperationOptions>(
@@ -90,7 +96,7 @@ export class SessionScopedCollection<TSchema extends Document = Document>
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
     options?: ReplaceOptions | undefined
-  ): Promise<Document | UpdateResult<TSchema>> {
+  ): Promise<UpdateResult<TSchema>> {
     return this.collection.replaceOne(filter, replacement, this.appendSession(options));
   }
 

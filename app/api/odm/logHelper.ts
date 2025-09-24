@@ -59,7 +59,7 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
         await updatelogsModel._updateMany(
           { mongoId: { $in: batch }, namespace: this.collectionName },
           { $set: { timestamp: Date.now(), deleted } },
-          { lean: true }
+          null
         );
       });
   }

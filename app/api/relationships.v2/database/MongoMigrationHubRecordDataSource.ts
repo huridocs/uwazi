@@ -42,7 +42,7 @@ class MongoMigrationHubRecordDataSource
   openSaveStream(): MongoSaveStream<MigrationHubRecordDBO, MigrationHubRecord> {
     const collection = this.getCollection();
     return new MongoSaveStream<MigrationHubRecordDBO, MigrationHubRecord>(
-      collection,
+      (collection as unknown) as any,
       mapRecordToDBO
     );
   }

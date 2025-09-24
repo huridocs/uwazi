@@ -325,7 +325,7 @@ describe('settings', () => {
       jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
       jest
         .spyOn(settings, 'save')
-        .mockImplementation(async () => Promise.resolve({} as WithId<Settings>));
+        .mockImplementation(async (s: Settings): Promise<any> => ({ ...(s as any), __v: 0 }));
       await settings.removeTemplateFromFilters('123');
       expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
     });
@@ -340,9 +340,7 @@ describe('settings', () => {
       jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
       jest
         .spyOn(settings, 'save')
-        .mockImplementation(async () =>
-          Promise.resolve({ project: 'updatedSettings' } as WithId<Settings>)
-        );
+        .mockImplementation(async (s: Settings): Promise<any> => ({ ...(s as any), __v: 0 }));
 
       const updatedFilter = await settings.updateFilterName('123', 'The dark knight');
 
@@ -356,7 +354,7 @@ describe('settings', () => {
       jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
       jest
         .spyOn(settings, 'save')
-        .mockImplementation(async () => Promise.resolve({} as WithId<Settings>));
+        .mockImplementation(async (s: Settings): Promise<any> => ({ ...(s as any), __v: 0 }));
 
       const updatedFilter = await settings.updateFilterName('321', 'Filter not present');
 

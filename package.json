@@ -86,6 +86,7 @@
     "body-parser": "^1.20.3",
     "cross-spawn": "^7.0.5",
     "form-data": "^4.0.4",
+    "mongodb": "6.20.0",
     "//underscore & axios": "Are required exclusively for testing purposes.",
     "underscore": "1.13.7",
     "axios": "0.30.0"

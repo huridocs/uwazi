@@ -5,12 +5,19 @@ import {
   UpdateFilter,
   CollationOptions,
   UpdateManyModel,
-  Collection,
+  BulkWriteResult,
   Document,
 } from 'mongodb';
 
+export interface BulkWritableCollection<CollSchema extends Document> {
+  bulkWrite(
+    operations: ReadonlyArray<AnyBulkWriteOperation<CollSchema>>, 
+    options?: { ordered?: boolean }
+  ): Promise<BulkWriteResult>;
+}
+
 class BulkWriteStream<CollSchema extends Document> {
-  collection: Collection<CollSchema>;
+  collection: BulkWritableCollection<CollSchema>;
 
   stackLimit: number;
 
@@ -18,7 +25,11 @@ class BulkWriteStream<CollSchema extends Document> {
 
   protected actions: Array<AnyBulkWriteOperation<CollSchema>>;
 
-  constructor(collection: Collection<CollSchema>, stackLimit?: number, ordered?: boolean) {
+  constructor(
+    collection: BulkWritableCollection<CollSchema>,
+    stackLimit?: number,
+    ordered?: boolean
+  ) {
     this.collection = collection;
     this.actions = [];
     this.stackLimit = stackLimit || 1000;

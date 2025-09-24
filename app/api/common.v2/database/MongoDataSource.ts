@@ -40,10 +40,7 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
     return this.useSyncedCollection
       ? new SyncedCollection<Collection>(
-          new SessionScopedCollection<Collection>(
-            this.db.collection<Collection>(collectionName),
-            this.transactionManager
-          ),
+          this.db.collection<Collection>(collectionName),
           this.transactionManager,
           this.db
         )

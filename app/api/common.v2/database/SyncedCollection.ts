@@ -45,9 +45,9 @@ export class SyncedCollection<TSchema extends Document = Document>
 {
   private transactionManager: MongoTransactionManager;
 
-  private db: Db;
+  private _db: Db;
 
-  private sessionScopedCollection: SessionScopedCollection;
+  private sessionScopedCollection: SessionScopedCollection<Document>;
 
   constructor(
     collection: Collection<TSchema>,
@@ -56,11 +56,16 @@ export class SyncedCollection<TSchema extends Document = Document>
   ) {
     super(collection);
     this.transactionManager = transactionManager;
-    this.db = db;
-    this.sessionScopedCollection = new SessionScopedCollection(
-      this.db.collection('updatelogs'),
+    this._db = db;
+    this.sessionScopedCollection = new SessionScopedCollection<Document>(
+      this._db.collection<Document>('updatelogs'),
       this.transactionManager
     );
+  }
+
+  get db(): Db {
+    // conform to Collection interface shape
+    return (this.collection as unknown as { db: Db }).db;
   }
 
   private async insertSyncLogs(mongoIds: ObjectId[]) {
@@ -155,7 +160,7 @@ export class SyncedCollection<TSchema extends Document = Document>
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
     options?: ReplaceOptions | undefined
-  ): Promise<Document | UpdateResult<TSchema>> {
+  ): Promise<UpdateResult<TSchema>> {
     const result = await this.collection.replaceOne(filter, replacement, options);
     await this.upsertSyncLogs([filter]);
     return result;

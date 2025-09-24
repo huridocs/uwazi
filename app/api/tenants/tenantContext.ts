@@ -57,7 +57,7 @@ class Tenants {
   async updateTenants(model: TenantsModel) {
     const tenants = await model.get();
 
-    tenants.forEach((tenant: TenantDocument) => {
+    tenants.forEach((tenant: DBTenant) => {
       this.add(tenant);
     });
   }
