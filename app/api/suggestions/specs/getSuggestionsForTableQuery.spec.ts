@@ -700,6 +700,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         noContext: false,
         nonProcessed: false,
+        useForTraining: false,
       },
     };
 
@@ -877,6 +878,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         noContext: false,
         nonProcessed: false,
+        useForTraining: false,
       },
     });
 
@@ -892,6 +894,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         noContext: false,
         nonProcessed: false,
+        useForTraining: false,
       },
     });
 
@@ -907,6 +910,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: true,
         noContext: false,
         nonProcessed: false,
+        useForTraining: false,
       },
     });
 
@@ -922,6 +926,54 @@ describe('getSuggestionsForTableQuery', () => {
     expect(errorResult).toHaveProperty('suggestions');
     expect(obsoleteResult).toHaveProperty('total');
     expect(obsoleteResult).toHaveProperty('suggestions');
+  });
+
+  it('should filter by useForTraining', async () => {
+    const { sut } = createSut();
+    const extractorId = factory.id('extractor_source_text_target_text');
+
+    // Initial query: none are flagged
+    const initial = await sut.execute({
+      extractorId: extractorId.toString(),
+      pagination: { size: 50, number: 1 },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+        useForTraining: true,
+      },
+    });
+    expect(initial.total).toBe(0);
+
+    // Flag two suggestions for this extractor
+    const collection = testingEnvironment.db.getCollection('ixsuggestions')!;
+    const two = await collection.find({ extractorId }).limit(2).project({ _id: 1 }).toArray();
+    const ids = two.map(d => d._id);
+    await collection.updateMany({ _id: { $in: ids } }, { $set: { useForTraining: true } });
+
+    const filtered = await sut.execute({
+      extractorId: extractorId.toString(),
+      pagination: { size: 50, number: 1 },
+      filter: {
+        match: false,
+        error: false,
+        labeled: false,
+        mismatch: false,
+        nonLabeled: false,
+        obsolete: false,
+        noContext: false,
+        nonProcessed: false,
+        useForTraining: true,
+      },
+    });
+
+    expect(filtered.total).toBe(2);
+    expect(filtered.suggestions).toHaveLength(2);
   });
 
   it('should handle nonProcessed filter correctly', async () => {
@@ -943,6 +995,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         noContext: false,
         nonProcessed: false,
+        useForTraining: false,
       },
     });
 
@@ -962,6 +1015,7 @@ describe('getSuggestionsForTableQuery', () => {
         obsolete: false,
         noContext: false,
         nonProcessed: true,
+        useForTraining: false,
       },
     });
 

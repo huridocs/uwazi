@@ -262,6 +262,7 @@ export const SuggestionCustomFilterSchema = {
     error: { type: 'boolean' },
     noContext: { type: 'boolean' },
     nonProcessed: { type: 'boolean' },
+    useForTraining: { type: 'boolean' },
   },
   required: [
     'labeled',
@@ -272,6 +273,7 @@ export const SuggestionCustomFilterSchema = {
     'error',
     'noContext',
     'nonProcessed',
+    'useForTraining',
   ],
 };
 

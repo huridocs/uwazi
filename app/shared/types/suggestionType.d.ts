@@ -126,6 +126,7 @@ export interface SuggestionCustomFilter {
   error: boolean;
   noContext: boolean;
   nonProcessed: boolean;
+  useForTraining: boolean;
 }
 
 export interface IXSuggestionsFilter {
