@@ -164,6 +164,7 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
     trainingSample: { type: 'boolean' },
+    useForTraining: { type: 'boolean' },
     entityTitle: { type: 'string' },
     currentValue: {
       anyOf: [

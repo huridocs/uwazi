@@ -17,6 +17,7 @@ import { handleError } from 'api/utils';
 import { serviceMiddleware } from './serviceMiddleware';
 import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController';
+import { TrainingSetController } from './adapters/TrainingSetController';
 
 const IX = new InformationExtraction();
 
@@ -162,6 +163,13 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin', 'editor']),
     ProcessSuggestionsController.createHandler()
+  );
+
+  app.post(
+    '/api/suggestions/training-set',
+    serviceMiddleware,
+    needsAuthorization(['admin', 'editor']),
+    TrainingSetController.createHandler()
   );
 
   app.post(
