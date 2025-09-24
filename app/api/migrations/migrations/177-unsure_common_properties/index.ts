@@ -21,7 +21,7 @@ const fixPropertyName = (name: string) => {
 };
 
 export default {
-  delta: 176,
+  delta: 177,
 
   name: 'Ensure Common Properties',
 

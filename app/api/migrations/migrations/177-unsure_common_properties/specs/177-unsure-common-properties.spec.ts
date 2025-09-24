@@ -19,7 +19,7 @@ describe('migration test', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(176);
+    expect(migration.delta).toBe(177);
   });
 
   it('should create missing Common Properties if not present', async () => {
