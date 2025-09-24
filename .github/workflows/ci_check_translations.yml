@@ -14,20 +14,20 @@ jobs:
   check_translations:
     runs-on: ubuntu-24.04
 
+    # Set once; reuse everywhere (no job.services lookups)
     env:
       DBHOST: localhost:27017
-      ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      ELASTICSEARCH_URL: http://localhost:9200
 
     services:
       elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0-amd64
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.18.0
         ports:
-          - 9200/tcp
-        # Keep, but also wait below from the runner (container may lack curl/wget)
+          - 9200:9200
         options: >-
           -e "discovery.type=single-node"
           -e "xpack.security.enabled=false"
-          --health-cmd="bash -c 'exec 3<>/dev/tcp/localhost/9200 || exit 1'"
+          --health-cmd="bash -c 'exec 3<>/dev/tcp/127.0.0.1/9200 || exit 1'"
           --health-interval=30s --health-timeout=30s --health-retries=10
 
     steps:
@@ -38,7 +38,7 @@ jobs:
           path: ~/.local/bin
           key: ${{ runner.os }}-mongodb-tools-7.0
 
-      - name: Install MongoDB tools if not cached (7.0, noble, keyring)
+      - name: Install MongoDB tools if not cached (7.0; Ubuntu 24.04/noble; keyring)
         run: |
           set -euo pipefail
           mkdir -p ~/.local/bin
@@ -48,16 +48,18 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y wget gnupg ca-certificates
             sudo install -d -m 0755 /etc/apt/keyrings
-            wget -qO- https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /etc/apt/keyrings/mongodb-server-7.0.gpg
-            echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list > /dev/null
+            wget -qO- https://www.mongodb.org/static/pgp/server-7.0.asc \
+              | sudo gpg --dearmor -o /etc/apt/keyrings/mongodb-server-7.0.gpg
+            echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb-server-7.0.gpg] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" \
+              | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list > /dev/null
             sudo apt-get update -qq
-            # If you want to pin to 7.0.x only, uncomment the next line and remove the following one:
+            # If you want to pin strictly to 7.0.x, uncomment the next line and remove the one after:
             # sudo apt-get install -y mongodb-mongosh=2.* mongodb-org-tools=7.0*
             sudo apt-get install -y mongodb-mongosh mongodb-org-tools
             sudo cp /usr/bin/mongosh /usr/bin/mongorestore ~/.local/bin/
             sudo chown $USER:$USER ~/.local/bin/mongosh ~/.local/bin/mongorestore
           fi
-          # Make cached tools available to later steps
+          # Make binaries available to subsequent steps
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Start MongoDB 7 (replica set)
@@ -78,7 +80,6 @@ jobs:
         run: yarn install --frozen-lockfile
         timeout-minutes: 10
 
-      # Proactively wait for Elasticsearch from the runner
       - name: Wait for Elasticsearch to be ready
         run: |
           set -e
@@ -91,12 +92,14 @@ jobs:
           echo "Elasticsearch did not become ready in time" >&2
           exit 1
 
-      - id: blank-state-attempt1
+      - name: Blank state (try 1)
+        id: blank-state-attempt1
         run: yarn blank-state
         continue-on-error: true
         timeout-minutes: 10
 
-      - id: blank-state-attempt2
+      - name: Blank state (force; try 2 on failure)
+        id: blank-state-attempt2
         if: steps.blank-state-attempt1.outcome == 'failure'
         run: yarn blank-state --force
         timeout-minutes: 10
