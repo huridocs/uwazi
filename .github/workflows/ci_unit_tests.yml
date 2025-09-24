@@ -20,16 +20,16 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
       minio:
-        # fixme: let's not depend on external unofficial image. #updated coment: ok!
-        image: lazybit/minio
+        image: minio/minio
         ports:
           - 9000:9000
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
-        options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
+        options: --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
+        command: server /data --console-address :9001
       redis:
-        image: redis
+        image: redis:8.4
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -44,12 +44,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - name: 🍃 Install mongosh
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get install -y curl gnupg
+          curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
+          echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
           sudo apt-get update
           sudo apt-get install -y mongodb-mongosh
           sudo apt-get install -y mongodb-org-tools
@@ -60,20 +62,15 @@ jobs:
           mongodb-replica-set: uwazi_replica_set
           mongodb-port: 27017
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - run: sudo apt update
-      - run: sudo apt-get install poppler-utils
+      - run: sudo apt-get install -y poppler-utils
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --maxWorkers=2 --logHeapUsage
+        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api app/shared --testPathIgnorePatterns="app/api/migrations" --maxWorkers=2 --logHeapUsage
   app_unit_tests:
     runs-on: ubuntu-24.04
     steps:
@@ -82,13 +79,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - name: install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Run tests
         run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --maxWorkers=2
   migrations_unit_tests:
@@ -100,15 +94,16 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" -e="xpack.security.enabled=false" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=30s --health-timeout=30s --health-retries=10
       minio:
-        image: lazybit/minio
+        image: minio/minio
         ports:
           - 9000:9000
         env:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
-        options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
+        options: --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
+        command: server /data --console-address :9001
       redis:
-        image: redis
+        image: redis:8.4
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -122,12 +117,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - name: 🍃 Install mongosh
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+          sudo apt-get install -y curl gnupg
+          curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
+          echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
           sudo apt-get update
           sudo apt-get install -y mongodb-mongosh
           sudo apt-get install -y mongodb-org-tools
@@ -137,16 +134,11 @@ jobs:
           mongodb-version: 7.0
           mongodb-replica-set: uwazi_replica_set
           mongodb-port: 27017
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - run: sudo apt update
-      - run: sudo apt-get install poppler-utils
+      - run: sudo apt-get install -y poppler-utils
       - name: Run migration tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api/migrations --maxWorkers=2 --logHeapUsage
+        run: node --expose-gc --no-compilation-cache ./node_modules/.bin/jest app/api/migrations --maxWorkers=2 --logHeapUsage
