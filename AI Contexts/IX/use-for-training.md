@@ -136,11 +136,19 @@ Last updated: 2025-09-24
   - `app/shared/types/suggestionSchema.ts`: added `useForTraining: { type: 'boolean' }` to `IXSuggestionSchema`
 
 - Tests: `app/api/suggestions/adapters/specs/TrainingSetRoutes.spec.ts`
+
   - Covers: validation errors, idempotent marking, unmarking, ignoring IDs from other extractors, defaulting when `useForTraining` omitted, and bulk updates
   - DB assertions via `testingEnvironment.db` on `ixsuggestions`
   - Auth: injects `req.user` through `setUpApp` middleware (no global auth mock needed)
   - External deps: mocks `api/services/informationextraction/InformationExtraction` to avoid Redis/TaskManager initialization and eliminate open handle warnings
   - Style: follows paragraphExtraction test patterns; avoids `as any`
+
+- Aggregation:
+  - Implemented `useForTraining` count in `app/api/suggestions/suggestions.ts` aggregation pipeline
+  - Exposed new field in schema: `useForTraining: number` in `IXSuggestionAggregationSchema`
+  - Test updated in `app/api/suggestions/specs/routes.spec.ts` to assert non-zero counts
+  - Fixtures: added `useForTraining` to two `stateFilterFixtures.ixsuggestions` records for `test_extractor` so count == 2
+  - Clean-up: removed accidental `useForTraining` additions from unrelated `comprehensiveTestFixtures` to avoid cross-test pollution
 
 ## What remains (next steps)
 
