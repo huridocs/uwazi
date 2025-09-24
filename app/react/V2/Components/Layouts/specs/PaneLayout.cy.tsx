@@ -1,30 +1,33 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { PaneLayout } from '../PaneLayout';
+import { composeStories } from '@storybook/react';
+import * as stories from 'app/stories/Layouts/PaneLayout.stories';
+
+const { Basic } = composeStories(stories);
 
 describe('PaneLayout', () => {
   const render = () => {
-    mount(
-      <div className="tw-content">
-        <BrowserRouter></BrowserRouter>
-      </div>
-    );
+    mount(<Basic />);
   };
 
-  describe('rendering', () => {
-    it('should render two panes', () => {
+  describe('Desktop', () => {
+    it('should have the expected HTML', () => {
+      render();
+      cy.get('section').eq(0).should('have.attr', 'style').and('match', /width/);
+      cy.get('div.main-view').toMatchSnapshot({ name: 'Pane desktop view' });
+    });
+
+    it('should be accessible', () => {
+      render();
+      cy.injectAxe();
+      cy.checkA11y();
+    });
+
+    it('should be able to resize panes', () => {
       render();
     });
 
-    it('should hide tab content if not visible by default', () => {});
-
-    it('should allow unmounting tab content when not visible', () => {});
-  });
-
-  describe('resizing', () => {
-    it('should be able to resize panes', () => {});
     it('panel should have a minimum size', () => {});
   });
 
@@ -35,15 +38,13 @@ describe('PaneLayout', () => {
   });
 
   describe('accessibility', () => {
-    it('should pass the accessibility check', () => {
-      render();
-      cy.injectAxe();
-      cy.checkA11y();
-    });
+    it('should pass the accessibility check', () => {});
 
     it('should be able to tab between panes', () => {});
 
-    describe('mobile', () => {
+    describe('mobile', { viewportWidth: 450, viewportHeight: 650 }, () => {
+      it('should have the expected html ', () => {});
+
       it('should pass the accessibility check', () => {
         render();
         cy.injectAxe();
@@ -52,11 +53,5 @@ describe('PaneLayout', () => {
 
       it('it should have hidden inputs to switch between panes', () => {});
     });
-  });
-
-  describe('snapshots', () => {
-    it('should have the expected html on the layout elements', () => {});
-
-    it('should have the expected html for mobile', () => {});
   });
 });

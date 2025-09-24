@@ -10,7 +10,7 @@ const meta: Meta<typeof PaneLayout> = {
 type Story = StoryObj<typeof PaneLayout>;
 
 const Component = () => (
-  <PaneLayout>
+  <PaneLayout className="main-view">
     <PaneLayout.Pane key="pane-1">
       <div>
         <p>

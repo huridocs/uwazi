@@ -18,6 +18,7 @@ import '@4tw/cypress-drag-drop';
 import 'cypress-real-events';
 import './commands';
 import '../../app/react/App/styles/globals.css';
+import 'cypress-plugin-snapshots/commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

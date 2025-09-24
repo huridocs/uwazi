@@ -24,9 +24,9 @@ const MIN_WIDTH = 100;
 const MOBILE_VIEW_MAX_WIDTH = 768;
 
 const Pane = ({ children, className, background = 'white' }: PaneProps) => (
-  <section style={{ background }} className={className}>
+  <div style={{ background }} className={className}>
     {children}
-  </section>
+  </div>
 );
 
 const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
@@ -42,10 +42,8 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
         setWidths(initials);
       }
     };
-
     window.addEventListener('resize', handleResize);
     handleResize();
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -58,20 +56,15 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
     (event: MouseEvent | TouchEvent) => {
       event.preventDefault?.();
       if (draggingIndex.current === null || !containerRef.current) return;
-
       const xValue = getClientXValue(event);
-
       if (xValue === undefined) return;
-
       const newWidths = [...widths];
       const leftIndex = draggingIndex.current;
       const rightIndex = leftIndex + 1;
-
       const leftStart = newWidths.slice(0, leftIndex).reduce((a, b) => a + b, 0);
       const currentLeft = xValue - containerRef.current.getBoundingClientRect().left - leftStart;
       const totalPair = newWidths[leftIndex] + newWidths[rightIndex];
       const rightNew = totalPair - currentLeft;
-
       if (currentLeft >= MIN_WIDTH && rightNew >= MIN_WIDTH) {
         newWidths[leftIndex] = currentLeft;
         newWidths[rightIndex] = rightNew;
@@ -111,9 +104,13 @@ const PaneLayoutDesktop = ({ children, className = '' }: PaneLayoutProps) => {
     <div ref={containerRef} className={`flex h-full min-h-0 ${className ?? ''}`}>
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
-          <div style={{ width: widths[index] }} className="flex-shrink-0 h-full min-h-0">
-            <div className="h-full min-h-0 overflow-auto">{child}</div>
-          </div>
+          <section style={{ width: widths[index] }} className="h-full min-h-0">
+            {/* tabIndex requiered by cypress accessibility test */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+            <div tabIndex={0} className="h-full min-h-0 overflow-auto">
+              {child}
+            </div>
+          </section>
 
           {index < children.length - 1 && (
             <div
