@@ -169,9 +169,11 @@ export default {
     await model.updateMany({ extractorId: extractorObjectId }, { $unset: { processRun: '' } });
   },
   setAutoAcceptProgress: async (
-    extractorId: ObjectIdSchema,
+    extractorId: ObjectIdSchema | string,
     progress: { total?: number; processed?: number }
   ) => {
+    const extractorObjectId =
+      typeof extractorId === 'string' ? ObjectId.createFromHexString(extractorId) : extractorId;
     const update: any = {};
     if (typeof progress.total === 'number') {
       update['processRun.autoAcceptProgress.total'] = progress.total;
@@ -180,7 +182,7 @@ export default {
       update['processRun.autoAcceptProgress.processed'] = progress.processed;
     }
     if (Object.keys(update).length) {
-      await model.updateMany({ extractorId }, { $set: update });
+      await model.updateMany({ extractorId: extractorObjectId }, { $set: update });
     }
   },
   incAutoAcceptProcessed: async (extractorId: string, incBy: number) => {

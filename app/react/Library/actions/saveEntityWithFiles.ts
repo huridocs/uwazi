@@ -46,17 +46,17 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
 
   return new Promise((resolve, reject) => {
     loadingBar.start();
+
+    const entityToSend = {
+      ...entityToSave,
+      ...(attachments.length > 0 && { attachments }),
+    };
+
     const request = superagent
       .post('/api/entities')
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field(
-        'entity',
-        JSON.stringify({
-          ...entityToSave,
-          ...(attachments.length > 0 && { attachments }),
-        })
-      );
+      .field('entity', JSON.stringify(entityToSend));
 
     if (dispatch) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
