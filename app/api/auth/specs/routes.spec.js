@@ -5,6 +5,7 @@ import request from 'supertest';
 
 import users from 'api/users/users';
 import backend from 'fetch-mock';
+import passport from 'passport';
 import svgCaptcha from 'svg-captcha';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import { CaptchaModel } from '../CaptchaModel';
@@ -56,6 +57,21 @@ describe('Auth Routes', () => {
 
     it('should fail properly with sha256', async () => {
       await expectNextOnError('oldUser');
+    });
+
+    it('should fail properly with sha256', async () => {
+      const originalSerializers = passport._serializers;
+      passport._serializers = [];
+
+      passport.serializeUser((_user, done) => {
+        done(new Error('logIn error'));
+      });
+      await request(app)
+        .post('/api/login')
+        .send({ username: 'oldUser', password: 'oldPassword' })
+        .expect(500);
+
+      passport._serializers = originalSerializers;
     });
 
     it('should login succesfully with bcrypt', async () => {
