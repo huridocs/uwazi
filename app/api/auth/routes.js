@@ -67,7 +67,7 @@ export default app => {
         }
         req.logIn(user, error => {
           if (error) {
-            next(err);
+            next(error);
             return;
           }
           res.status(200);
